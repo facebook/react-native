@@ -21,7 +21,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libyoga glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_graphics librrc_image libreact_render_uimanager libreact_render_imagemanager librrc_view libreact_render_componentregistry libreact_codegen_rncore
+LOCAL_SHARED_LIBRARIES := libyoga glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_graphics librrc_image libreact_render_uimanager libreact_render_imagemanager librrc_view libreact_render_componentregistry libreact_codegen_rncore libreact_render_mapbuffer
 
 include $(BUILD_SHARED_LIBRARY)
 
@@ -37,3 +37,4 @@ $(call import-module,react/renderer/uimanager)
 $(call import-module,react/renderer/components/image)
 $(call import-module,react/renderer/components/view)
 $(call import-module,yogajni)
+$(call import-module,react/renderer/mapbuffer)

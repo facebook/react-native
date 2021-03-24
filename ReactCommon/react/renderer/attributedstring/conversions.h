@@ -23,6 +23,11 @@
 #include <react/renderer/graphics/conversions.h>
 #include <cmath>
 
+#ifdef ANDROID
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
+
 #include <glog/logging.h>
 
 namespace facebook {
@@ -39,6 +44,7 @@ inline std::string toString(const EllipsizeMode &ellipsisMode) {
     case EllipsizeMode::Middle:
       return "middle";
   }
+  abort();
 }
 
 inline void fromRawValue(const RawValue &value, EllipsizeMode &result) {
@@ -71,6 +77,7 @@ inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
     case TextBreakStrategy::Balanced:
       return "balanced";
   }
+  abort();
 }
 
 inline void fromRawValue(const RawValue &value, TextBreakStrategy &result) {
@@ -173,6 +180,7 @@ inline std::string toString(const FontStyle &fontStyle) {
     case FontStyle::Oblique:
       return "oblique";
   }
+  abort();
 }
 
 inline void fromRawValue(const RawValue &value, FontVariant &result) {
@@ -267,6 +275,7 @@ inline std::string toString(const TextAlignment &textAlignment) {
     case TextAlignment::Justified:
       return "justified";
   }
+  abort();
 }
 
 inline void fromRawValue(const RawValue &value, WritingDirection &result) {
@@ -295,6 +304,7 @@ inline std::string toString(const WritingDirection &writingDirection) {
     case WritingDirection::RightToLeft:
       return "rtl";
   }
+  abort();
 }
 
 inline void fromRawValue(
@@ -337,6 +347,7 @@ inline std::string toString(
     case TextDecorationLineType::UnderlineStrikethrough:
       return "underline-strikethrough";
   }
+  abort();
 }
 
 inline void fromRawValue(
@@ -368,6 +379,7 @@ inline std::string toString(
     case TextDecorationLineStyle::Double:
       return "double";
   }
+  abort();
 }
 
 inline void fromRawValue(
@@ -411,6 +423,7 @@ inline std::string toString(
     case TextDecorationLinePattern::DashDotDot:
       return "dash-dot-dot";
   }
+  abort();
 }
 
 inline std::string toString(const AccessibilityRole &accessibilityRole) {
@@ -470,6 +483,7 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
     case AccessibilityRole::Toolbar:
       return "toolbar";
   }
+  abort();
 }
 
 inline void fromRawValue(const RawValue &value, AccessibilityRole &result) {
@@ -807,6 +821,224 @@ inline folly::dynamic toDynamic(AttributedString::Range const &range) {
   dynamicValue["location"] = range.location;
   dynamicValue["length"] = range.length;
   return dynamicValue;
+}
+
+// constants for AttributedString serialization
+constexpr static Key AS_KEY_HASH = 0;
+constexpr static Key AS_KEY_STRING = 1;
+constexpr static Key AS_KEY_FRAGMENTS = 2;
+constexpr static Key AS_KEY_CACHE_ID = 3;
+
+// constants for Fragment serialization
+constexpr static Key FR_KEY_STRING = 0;
+constexpr static Key FR_KEY_REACT_TAG = 1;
+constexpr static Key FR_KEY_IS_ATTACHMENT = 2;
+constexpr static Key FR_KEY_WIDTH = 3;
+constexpr static Key FR_KEY_HEIGHT = 4;
+constexpr static Key FR_KEY_TEXT_ATTRIBUTES = 5;
+
+// constants for Text Attributes serialization
+constexpr static Key TA_KEY_FOREGROUND_COLOR = 0;
+constexpr static Key TA_KEY_BACKGROUND_COLOR = 1;
+constexpr static Key TA_KEY_OPACITY = 2;
+constexpr static Key TA_KEY_FONT_FAMILY = 3;
+constexpr static Key TA_KEY_FONT_SIZE = 4;
+constexpr static Key TA_KEY_FONT_SIZE_MULTIPLIER = 5;
+constexpr static Key TA_KEY_FONT_WEIGHT = 6;
+constexpr static Key TA_KEY_FONT_STYLE = 7;
+constexpr static Key TA_KEY_FONT_VARIANT = 8;
+constexpr static Key TA_KEY_ALLOW_FONT_SCALING = 9;
+constexpr static Key TA_KEY_LETTER_SPACING = 10;
+constexpr static Key TA_KEY_LINE_HEIGHT = 11;
+constexpr static Key TA_KEY_ALIGNMENT = 12;
+constexpr static Key TA_KEY_BEST_WRITING_DIRECTION = 13;
+constexpr static Key TA_KEY_TEXT_DECORATION_COLOR = 14;
+constexpr static Key TA_KEY_TEXT_DECORATION_LINE = 15;
+constexpr static Key TA_KEY_TEXT_DECORATION_LINE_STYLE = 16;
+constexpr static Key TA_KEY_TEXT_DECORATION_LINE_PATTERN = 17;
+constexpr static Key TA_KEY_TEXT_SHADOW_RAIDUS = 18;
+constexpr static Key TA_KEY_TEXT_SHADOW_COLOR = 19;
+constexpr static Key TA_KEY_IS_HIGHLIGHTED = 20;
+constexpr static Key TA_KEY_LAYOUT_DIRECTION = 21;
+constexpr static Key TA_KEY_ACCESSIBILITY_ROLE = 22;
+
+// constants for ParagraphAttributes serialization
+constexpr static Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
+constexpr static Key PA_KEY_ELLIPSIZE_MODE = 1;
+constexpr static Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
+constexpr static Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
+constexpr static Key PA_KEY_INCLUDE_FONT_PADDING = 4;
+
+inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
+  auto builder = MapBufferBuilder();
+  builder.putInt(
+      PA_KEY_MAX_NUMBER_OF_LINES, paragraphAttributes.maximumNumberOfLines);
+  builder.putString(
+      PA_KEY_ELLIPSIZE_MODE, toString(paragraphAttributes.ellipsizeMode));
+  builder.putString(
+      PA_KEY_TEXT_BREAK_STRATEGY,
+      toString(paragraphAttributes.textBreakStrategy));
+  builder.putBool(
+      PA_KEY_ADJUST_FONT_SIZE_TO_FIT, paragraphAttributes.adjustsFontSizeToFit);
+  builder.putBool(
+      PA_KEY_INCLUDE_FONT_PADDING, paragraphAttributes.includeFontPadding);
+
+  return builder.build();
+}
+
+inline MapBuffer toMapBuffer(const FontVariant &fontVariant) {
+  auto builder = MapBufferBuilder();
+  int index = 0;
+  if ((int)fontVariant & (int)FontVariant::SmallCaps) {
+    builder.putString(index++, "small-caps");
+  }
+  if ((int)fontVariant & (int)FontVariant::OldstyleNums) {
+    builder.putString(index++, "oldstyle-nums");
+  }
+  if ((int)fontVariant & (int)FontVariant::LiningNums) {
+    builder.putString(index++, "lining-nums");
+  }
+  if ((int)fontVariant & (int)FontVariant::TabularNums) {
+    builder.putString(index++, "tabular-nums");
+  }
+  if ((int)fontVariant & (int)FontVariant::ProportionalNums) {
+    builder.putString(index++, "proportional-nums");
+  }
+
+  return builder.build();
+}
+
+inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
+  auto builder = MapBufferBuilder();
+  if (textAttributes.foregroundColor) {
+    builder.putInt(
+        TA_KEY_FOREGROUND_COLOR, toMapBuffer(textAttributes.foregroundColor));
+  }
+  if (textAttributes.backgroundColor) {
+    builder.putInt(
+        TA_KEY_BACKGROUND_COLOR, toMapBuffer(textAttributes.backgroundColor));
+  }
+  if (!std::isnan(textAttributes.opacity)) {
+    builder.putDouble(TA_KEY_OPACITY, textAttributes.opacity);
+  }
+  if (!textAttributes.fontFamily.empty()) {
+    builder.putString(TA_KEY_FONT_FAMILY, textAttributes.fontFamily);
+  }
+  if (!std::isnan(textAttributes.fontSize)) {
+    builder.putDouble(TA_KEY_FONT_SIZE, textAttributes.fontSize);
+  }
+  if (!std::isnan(textAttributes.fontSizeMultiplier)) {
+    builder.putDouble(
+        TA_KEY_FONT_SIZE_MULTIPLIER, textAttributes.fontSizeMultiplier);
+  }
+  if (textAttributes.fontWeight.has_value()) {
+    builder.putString(TA_KEY_FONT_WEIGHT, toString(*textAttributes.fontWeight));
+  }
+  if (textAttributes.fontStyle.has_value()) {
+    builder.putString(TA_KEY_FONT_STYLE, toString(*textAttributes.fontStyle));
+  }
+  if (textAttributes.fontVariant.has_value()) {
+    auto fontVariantMap = toMapBuffer(*textAttributes.fontVariant);
+    builder.putMapBuffer(TA_KEY_FONT_VARIANT, fontVariantMap);
+  }
+  if (textAttributes.allowFontScaling.has_value()) {
+    builder.putBool(
+        TA_KEY_ALLOW_FONT_SCALING, *textAttributes.allowFontScaling);
+  }
+  if (!std::isnan(textAttributes.letterSpacing)) {
+    builder.putDouble(TA_KEY_LETTER_SPACING, textAttributes.letterSpacing);
+  }
+  if (!std::isnan(textAttributes.lineHeight)) {
+    builder.putDouble(TA_KEY_LINE_HEIGHT, textAttributes.lineHeight);
+  }
+  if (textAttributes.alignment.has_value()) {
+    builder.putString(TA_KEY_ALIGNMENT, toString(*textAttributes.alignment));
+  }
+  if (textAttributes.baseWritingDirection.has_value()) {
+    builder.putString(
+        TA_KEY_BEST_WRITING_DIRECTION,
+        toString(*textAttributes.baseWritingDirection));
+  }
+  // Decoration
+  if (textAttributes.textDecorationColor) {
+    builder.putInt(
+        TA_KEY_TEXT_DECORATION_COLOR,
+        toMapBuffer(textAttributes.textDecorationColor));
+  }
+  if (textAttributes.textDecorationLineType.has_value()) {
+    builder.putString(
+        TA_KEY_TEXT_DECORATION_LINE,
+        toString(*textAttributes.textDecorationLineType));
+  }
+  if (textAttributes.textDecorationLineStyle.has_value()) {
+    builder.putString(
+        TA_KEY_TEXT_DECORATION_LINE_STYLE,
+        toString(*textAttributes.textDecorationLineStyle));
+  }
+  if (textAttributes.textDecorationLinePattern.has_value()) {
+    builder.putString(
+        TA_KEY_TEXT_DECORATION_LINE_PATTERN,
+        toString(*textAttributes.textDecorationLinePattern));
+  }
+  // Shadow
+  if (!std::isnan(textAttributes.textShadowRadius)) {
+    builder.putDouble(
+        TA_KEY_TEXT_SHADOW_RAIDUS, textAttributes.textShadowRadius);
+  }
+  if (textAttributes.textShadowColor) {
+    builder.putInt(
+        TA_KEY_TEXT_SHADOW_COLOR, toMapBuffer(textAttributes.textShadowColor));
+  }
+  // Special
+  if (textAttributes.isHighlighted.has_value()) {
+    builder.putBool(TA_KEY_IS_HIGHLIGHTED, *textAttributes.isHighlighted);
+  }
+  if (textAttributes.layoutDirection.has_value()) {
+    builder.putString(
+        TA_KEY_LAYOUT_DIRECTION, toString(*textAttributes.layoutDirection));
+  }
+  if (textAttributes.accessibilityRole.has_value()) {
+    builder.putString(
+        TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
+  }
+  return builder.build();
+}
+
+inline MapBuffer toMapBuffer(const AttributedString &attributedString) {
+  auto fragmentsBuilder = MapBufferBuilder();
+
+  int index = 0;
+  for (auto fragment : attributedString.getFragments()) {
+    auto dynamicFragmentBuilder = MapBufferBuilder();
+    dynamicFragmentBuilder.putString(FR_KEY_STRING, fragment.string);
+    if (fragment.parentShadowView.componentHandle) {
+      dynamicFragmentBuilder.putInt(
+          FR_KEY_REACT_TAG, fragment.parentShadowView.tag);
+    }
+    if (fragment.isAttachment()) {
+      dynamicFragmentBuilder.putBool(FR_KEY_IS_ATTACHMENT, true);
+      dynamicFragmentBuilder.putDouble(
+          FR_KEY_WIDTH,
+          fragment.parentShadowView.layoutMetrics.frame.size.width);
+      dynamicFragmentBuilder.putDouble(
+          FR_KEY_HEIGHT,
+          fragment.parentShadowView.layoutMetrics.frame.size.height);
+    }
+    auto textAttributesMap = toMapBuffer(fragment.textAttributes);
+    dynamicFragmentBuilder.putMapBuffer(
+        FR_KEY_TEXT_ATTRIBUTES, textAttributesMap);
+    auto dynamicFragmentMap = dynamicFragmentBuilder.build();
+    fragmentsBuilder.putMapBuffer(index++, dynamicFragmentMap);
+  }
+
+  auto builder = MapBufferBuilder();
+  builder.putInt(
+      AS_KEY_HASH,
+      std::hash<facebook::react::AttributedString>{}(attributedString));
+  builder.putString(AS_KEY_STRING, attributedString.getString());
+  auto fragmentsMap = fragmentsBuilder.build();
+  builder.putMapBuffer(AS_KEY_FRAGMENTS, fragmentsMap);
+  return builder.build();
 }
 
 #endif

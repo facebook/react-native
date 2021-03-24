@@ -53,6 +53,7 @@ import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -81,6 +82,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.views.text.TextLayoutManager;
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -420,6 +422,21 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
+  private NativeArray measureLinesMapBuffer(
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
+      float width,
+      float height) {
+    return (NativeArray)
+        TextLayoutManagerMapBuffer.measureLines(
+            mReactApplicationContext,
+            attributedString,
+            paragraphAttributes,
+            PixelUtil.toPixelFromDIP(width));
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
   private long measure(
       int rootTag,
       String componentName,
@@ -475,6 +492,44 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         localData,
         props,
         state,
+        getYogaSize(minWidth, maxWidth),
+        getYogaMeasureMode(minWidth, maxWidth),
+        getYogaSize(minHeight, maxHeight),
+        getYogaMeasureMode(minHeight, maxHeight),
+        attachmentsPositions);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private long measureMapBuffer(
+      int surfaceId,
+      String componentName,
+      ReadableMapBuffer attributedString,
+      ReadableMapBuffer paragraphAttributes,
+      float minWidth,
+      float maxWidth,
+      float minHeight,
+      float maxHeight,
+      @Nullable float[] attachmentsPositions) {
+
+    ReactContext context;
+    if (surfaceId > 0) {
+      SurfaceMountingManager surfaceMountingManager =
+          mMountingManager.getSurfaceManagerEnforced(surfaceId, "measure");
+      if (surfaceMountingManager.isStopped()) {
+        return 0;
+      }
+      context = surfaceMountingManager.getContext();
+    } else {
+      context = mReactApplicationContext;
+    }
+
+    // TODO: replace ReadableNativeMap -> ReadableMapBuffer
+    return mMountingManager.measureTextMapBuffer(
+        context,
+        componentName,
+        attributedString,
+        paragraphAttributes,
         getYogaSize(minWidth, maxWidth),
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),

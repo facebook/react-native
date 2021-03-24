@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import javax.annotation.Nullable;
 
 /**
@@ -17,6 +18,15 @@ import javax.annotation.Nullable;
  * by calling updateState, which communicates state back to the C++ layer.
  */
 public interface StateWrapper {
+
+  /**
+   * Get a ReadableMapBuffer object from the C++ layer, which is a K/V map of short keys to values.
+   *
+   * <p>Unstable API - DO NOT USE.
+   */
+  @Nullable
+  ReadableMapBuffer getStatDataMapBuffer();
+
   /**
    * Get a ReadableNativeMap object from the C++ layer, which is a K/V map of string keys to values.
    */

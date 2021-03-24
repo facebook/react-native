@@ -14,6 +14,7 @@
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
 #endif
 
 namespace facebook {
@@ -60,6 +61,7 @@ class ParagraphState final {
     react_native_assert(false && "Not supported");
   };
   folly::dynamic getDynamic() const;
+  MapBuffer getMapBuffer() const;
 #endif
 };
 

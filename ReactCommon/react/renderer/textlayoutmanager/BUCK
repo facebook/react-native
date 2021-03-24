@@ -62,6 +62,7 @@ rn_xplat_cxx_library(
     cxx_tests = [":tests"],
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
+        react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],
     fbandroid_exported_headers = subdir_glob(
         [

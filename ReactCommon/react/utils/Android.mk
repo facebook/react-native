@@ -20,8 +20,9 @@ LOCAL_CFLAGS := \
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
-LOCAL_SHARED_LIBRARIES := libreact_debug
+LOCAL_SHARED_LIBRARIES := libreact_debug libreact_render_mapbuffer
 
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,react/debug)
+$(call import-module,react/renderer/mapbuffer)

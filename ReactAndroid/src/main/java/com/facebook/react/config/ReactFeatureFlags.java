@@ -65,4 +65,7 @@ public class ReactFeatureFlags {
 
   /** Enables JS Responder in Fabric */
   public static boolean enableJSResponder = false;
+
+  /** Enables MapBuffer Serialization */
+  public static boolean mapBufferSerializationEnabled = false;
 }
