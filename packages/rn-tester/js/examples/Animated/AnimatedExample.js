@@ -16,6 +16,7 @@ const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
 
 import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 import RotatingImagesExample from './RotatingImagesExample';
+import FadeInViewExample from './FadeInViewExample';
 
 const styles = StyleSheet.create({
   content: {
@@ -42,80 +43,7 @@ exports.description = ('Animated provides a powerful ' +
   'interactive user experiences.': string);
 
 exports.examples = ([
-  {
-    title: 'FadeInView',
-    name: 'fadeInView',
-    description: ('Uses a simple timing animation to ' +
-      'bring opacity from 0 to 1 when the component ' +
-      'mounts.': string),
-    render: function(): React.Node {
-      class FadeInView extends React.Component<$FlowFixMeProps, any> {
-        constructor(props) {
-          super(props);
-          this.state = {
-            fadeAnim: new Animated.Value(0), // opacity 0
-          };
-        }
-        componentDidMount() {
-          Animated.timing(
-            // Uses easing functions
-            this.state.fadeAnim, // The value to drive
-            {
-              // Target
-              toValue: 1,
-
-              // Configuration
-              duration: 2000,
-
-              useNativeDriver: false,
-            },
-          ).start(); // Don't forget start!
-        }
-        render() {
-          return (
-            <Animated.View // Special animatable View
-              style={{
-                opacity: this.state.fadeAnim, // Binds
-              }}>
-              {this.props.children}
-            </Animated.View>
-          );
-        }
-      }
-
-      type Props = $ReadOnly<{||}>;
-      type State = {|show: boolean|};
-      class FadeInExample extends React.Component<Props, State> {
-        constructor(props: Props) {
-          super(props);
-          this.state = {
-            show: true,
-          };
-        }
-        render() {
-          return (
-            <View>
-              <RNTesterButton
-                testID="toggle-button"
-                onPress={() => {
-                  this.setState(state => ({show: !state.show}));
-                }}>
-                Press to {this.state.show ? 'Hide' : 'Show'}
-              </RNTesterButton>
-              {this.state.show && (
-                <FadeInView>
-                  <View testID="fade-in-view" style={styles.content}>
-                    <Text>FadeInView</Text>
-                  </View>
-                </FadeInView>
-              )}
-            </View>
-          );
-        }
-      }
-      return <FadeInExample />;
-    },
-  },
+  FadeInViewExample,
   {
     title: 'Transform Bounce',
     description: ('One `Animated.Value` is driven by a ' +
