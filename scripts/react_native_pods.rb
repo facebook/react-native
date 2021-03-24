@@ -114,26 +114,10 @@ def flipper_post_install(installer)
 end
 
 def exclude_architectures(installer)
-  projects = installer.aggregate_targets
-    .map{ |t| t.user_project }
-    .uniq{ |p| p.path }
-    .push(installer.pods_project)
-
-  arm_value = `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i
-
-  # Hermes does not support `i386` architecture
-  excluded_archs_default = has_pod(installer, 'hermes-engine') ? "i386" : ""
-
-  projects.each do |project|
-    project.build_configurations.each do |config|
-      if arm_value == 1 then
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
-      else
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64 " + excluded_archs_default
-      end
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
     end
-
-    project.save()
   end
 end
 
