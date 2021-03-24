@@ -44,7 +44,7 @@ public class WorkflowInvoker implements WorkflowInvokerLocal {
 	private String clientid;
 	private String clientsecret;
 
-	/*public WorkflowInvoker() {
+	public WorkflowInvoker() {
 		try {
 			JSONObject jsonObj = new JSONObject(System.getenv("VCAP_SERVICES"));
 			System.err.println("[WorkflowInvoker:VCAP_SERVICES] : " + jsonObj.toString());
@@ -69,7 +69,7 @@ public class WorkflowInvoker implements WorkflowInvokerLocal {
 			MYLOGGER.error("[WorkflowInvoker] reading environmental variables failed:" + e.getMessage());
 		}
 	}
-*/
+
 	@Override
 	public JSONObject triggerWorkflow(String input) throws ClientProtocolException, IOException, JSONException {
 
@@ -183,6 +183,35 @@ public class WorkflowInvoker implements WorkflowInvokerLocal {
 		jsonString = EntityUtils.toString(httpResponse.getEntity());
 
 		responseObj = new JSONArray(jsonString);
+
+		httpClient.close();
+
+		return responseObj;
+	}
+	
+	public JSONObject getWorkflowApprovalTaskInstanceId(String workflowInstanceId)
+			throws ClientProtocolException, IOException, JSONException {
+
+		HttpResponse httpResponse = null;
+		String jsonString = null;
+		JSONObject responseObj = null;
+
+		HttpRequestBase httpRequestBase = null;
+		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+
+		String bearerToken = getBearerToken(httpClient);
+
+		httpRequestBase = new HttpGet(
+				workflow_rest_url + WorkflowConstants.APPROVE_TASK_URL + workflowInstanceId);
+
+		httpRequestBase.addHeader(WorkflowConstants.ACCEPT, WorkflowConstants.CONTENT_TYPE);
+		httpRequestBase.addHeader(WorkflowConstants.AUTHORIZATION, AuthorizationConstants.BEARER + " " + bearerToken);
+
+		httpResponse = httpClient.execute(httpRequestBase);
+
+		jsonString = EntityUtils.toString(httpResponse.getEntity());
+
+		responseObj = new JSONObject(jsonString);
 
 		httpClient.close();
 

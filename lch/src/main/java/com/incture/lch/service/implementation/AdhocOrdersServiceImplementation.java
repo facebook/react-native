@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import com.incture.lch.adhoc.custom.dto.AdhocWorkflowCustomDto;
+import com.incture.lch.adhoc.custom.dto.WorkflowCustomDto;
 import com.incture.lch.adhoc.workflow.service.WorkflowInvoker;
 import com.incture.lch.dto.AdhocOrderDto;
 import com.incture.lch.dto.AdhocOrderWorkflowDto;
@@ -38,7 +40,7 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 
 	@Autowired
 	private AdhocOrdersRepository adhocOrdersRepository;
-	
+
 	@Autowired
 	private WorkflowInvoker wfInvoker;
 
@@ -46,14 +48,12 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 	public List<AdhocOrderDto> getAllAdhocOrders() {
 		return adhocOrdersRepository.getAllAdhocOrders();
 	}
-	
-  
 
 	@Override
 	public ResponseDto addAdhocOrders(AdhocOrderDto AdhocOrderDto) {
 		return adhocOrdersRepository.addAdhocOrders(AdhocOrderDto);
 	}
-	
+
 	@Override
 	public AdhocOrderDto saveAdhocOrders(AdhocOrderDto AdhocOrderDto) {
 		return adhocOrdersRepository.saveAdhocOrders(AdhocOrderDto);
@@ -134,91 +134,84 @@ public class AdhocOrdersServiceImplementation implements AdhocOrdersService {
 	public List<LkShipperDetailsDto> getAllShipperDetails() {
 		return adhocOrdersRepository.getAllShipperDetails();
 	}
-	
-	public PartNumberDescDto getByPartNumber(PartNumberDescDto partNum){
+
+	public PartNumberDescDto getByPartNumber(PartNumberDescDto partNum) {
 		return adhocOrdersRepository.getByPartNumber(partNum);
 	}
 
-	/*public Map<String, Object> getLoggedInUser(Jwt jwt) {
-		try {
-			Map<String, Object> userDetailsMap = new LinkedHashMap<String, Object>();
-			if (!jwt.getClaims().isEmpty()) {
-				userDetailsMap.put("sub", jwt.getClaims().get("sub"));
-				userDetailsMap.put("userId", jwt.getClaims().get("user_id"));
-				userDetailsMap.put("user_name", jwt.getClaims().get("user_name"));
-				userDetailsMap.put("xs.system.attributes", jwt.getClaims().get("xs.system.attributes"));
-				userDetailsMap.put("Given_Name", jwt.getClaims().get("given_name"));
-				userDetailsMap.put("email", jwt.getClaims().get("email"));
-				userDetailsMap.put("family_name", jwt.getClaims().get("family_name"));
-				userDetailsMap.put("scope", jwt.getClaims().get("scope"));
-
-			}
-			
-			 * UserDetailsDto loggedInUser = new UserDetailsDto();
-			 * loggedInUser.setID(token.getClaims().get("user_id").toString());
-			 * loggedInUser.setDisplayName(token.getClaims().get("given_name").
-			 * toString());
-			 * loggedInUser.setFirstName(token.getClaims().get("given_name").
-			 * toString());
-			 * loggedInUser.setLastName(token.getClaims().get("family_name").
-			 * toString());
-			 * loggedInUser.setEmail(token.getClaims().get("email").toString());
-			 * return ResponseEntity.ok().body(new
-			 * Response<UserDetailsDto>(loggedInUser));
-			 
-			return userDetailsMap;
-		} catch (Exception e) {
-			
-			 * final Response<String> body = new
-			 * Response<String>(e.getMessage());
-			 * body.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()
-			 * ); body.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			 * return
-			 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body
-			 * );
-			 }
-
-		return null;
-	}
-*/
+	/*
+	 * public Map<String, Object> getLoggedInUser(Jwt jwt) { try { Map<String,
+	 * Object> userDetailsMap = new LinkedHashMap<String, Object>(); if
+	 * (!jwt.getClaims().isEmpty()) { userDetailsMap.put("sub",
+	 * jwt.getClaims().get("sub")); userDetailsMap.put("userId",
+	 * jwt.getClaims().get("user_id")); userDetailsMap.put("user_name",
+	 * jwt.getClaims().get("user_name"));
+	 * userDetailsMap.put("xs.system.attributes",
+	 * jwt.getClaims().get("xs.system.attributes"));
+	 * userDetailsMap.put("Given_Name", jwt.getClaims().get("given_name"));
+	 * userDetailsMap.put("email", jwt.getClaims().get("email"));
+	 * userDetailsMap.put("family_name", jwt.getClaims().get("family_name"));
+	 * userDetailsMap.put("scope", jwt.getClaims().get("scope"));
+	 * 
+	 * }
+	 * 
+	 * UserDetailsDto loggedInUser = new UserDetailsDto();
+	 * loggedInUser.setID(token.getClaims().get("user_id").toString());
+	 * loggedInUser.setDisplayName(token.getClaims().get("given_name").
+	 * toString());
+	 * loggedInUser.setFirstName(token.getClaims().get("given_name").
+	 * toString());
+	 * loggedInUser.setLastName(token.getClaims().get("family_name").
+	 * toString());
+	 * loggedInUser.setEmail(token.getClaims().get("email").toString()); return
+	 * ResponseEntity.ok().body(new Response<UserDetailsDto>(loggedInUser));
+	 * 
+	 * return userDetailsMap; } catch (Exception e) {
+	 * 
+	 * final Response<String> body = new Response<String>(e.getMessage());
+	 * body.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase() );
+	 * body.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value()); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body ); }
+	 * 
+	 * return null; }
+	 */
 
 	@Override
 	public List<AdhocOrderDto> getDrafts(AdhocRequestDto adhocRequestDto) {
 		return adhocOrdersRepository.getDrafts(adhocRequestDto);
 	}
 
-
-
 	@Override
-	public List<AdhocOrderDto> getKpi(int days,AdhocRequestDto adhocRequestDto) {
-		return adhocOrdersRepository.getKpi(days,adhocRequestDto);
+	public List<AdhocOrderDto> getKpi(int days, AdhocRequestDto adhocRequestDto) {
+		return adhocOrdersRepository.getKpi(days, adhocRequestDto);
 	}
 
-
-
 	@Override
-	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto) 
-	{
+	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto) {
 		return adhocOrdersRepository.updateWorflowDetails(workflowDto);
-	
-		
+
 	}
-	
+
 	@Override
-	public String updateApprovalWorflowDetails(JSONObject obj) throws JSONException
-	{
+	public String updateApprovalWorflowDetails(JSONObject obj) throws JSONException {
 		return adhocOrdersRepository.updateApprovalWorflowDetails(obj);
-	
-		
+
 	}
-	
-	
+
+	public String updateApprovalWorflowDetails(WorkflowCustomDto dto)
+			throws JSONException, ClientProtocolException, IOException {
+		return adhocOrdersRepository.updateApprovalWorflowDetails(dto);
+	}
+
 	@Override
-	public HttpResponse approveTask(String taskId) throws ClientProtocolException, IOException, JSONException{
+	public HttpResponse approveTask(String taskId) throws ClientProtocolException, IOException, JSONException {
 		return wfInvoker.approveTask(null, taskId);
 	}
 	
 	
+	public String updateApprovalWorflowDetailsForType4(AdhocWorkflowCustomDto dto) throws JSONException, ClientProtocolException, IOException{
+		return adhocOrdersRepository.updateApprovalWorflowDetailsForType4(dto);
+	}
 
 
 }

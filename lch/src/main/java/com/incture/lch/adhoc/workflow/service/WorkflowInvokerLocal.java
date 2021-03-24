@@ -21,6 +21,9 @@ public interface WorkflowInvokerLocal  {
 
 	JSONArray getWorkflowTaskInstanceId(String workflowInstanceId)
 			throws ClientProtocolException, IOException, JSONException;
+	
+	JSONObject getWorkflowApprovalTaskInstanceId(String workflowInstanceId)
+			throws ClientProtocolException, IOException, JSONException;
 
 	Boolean validateString(String input);
 

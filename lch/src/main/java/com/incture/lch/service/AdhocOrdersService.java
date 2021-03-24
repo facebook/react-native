@@ -11,6 +11,8 @@ import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.oauth2.jwt.Jwt;
 
+import com.incture.lch.adhoc.custom.dto.AdhocWorkflowCustomDto;
+import com.incture.lch.adhoc.custom.dto.WorkflowCustomDto;
 import com.incture.lch.dto.AdhocOrderDto;
 import com.incture.lch.dto.AdhocOrderWorkflowDto;
 import com.incture.lch.dto.AdhocRequestDto;
@@ -25,20 +27,14 @@ import com.incture.lch.dto.ResponseDto;
 public interface AdhocOrdersService {
 
 	public List<AdhocOrderDto> getAllAdhocOrders();
-	
-	
-	public List<AdhocOrderDto> getKpi(int days,AdhocRequestDto adhocRequestDto);
 
-	
-	
+	public List<AdhocOrderDto> getKpi(int days, AdhocRequestDto adhocRequestDto);
+
 	public List<AdhocOrderDto> getDrafts(AdhocRequestDto adhocRequestDto);
-	
-	
+
 	public ResponseDto addAdhocOrders(AdhocOrderDto adhocOrdersDto);
-	
 
 	public AdhocOrderDto saveAdhocOrders(AdhocOrderDto adhocOrdersDto);
-
 
 	public ResponseDto deleteAdhocOrders(String adhocOrderId, String userId, String partNum);
 
@@ -59,17 +55,20 @@ public interface AdhocOrdersService {
 	public List<LkShipperDetailsDto> getAllShipperDetails();
 
 	// public ResponseEntity<Response<?>> getLoggedInUser(Jwt token);
-	//public Map<String, Object> getLoggedInUser(Jwt token);
+	// public Map<String, Object> getLoggedInUser(Jwt token);
 
 	public PartNumberDescDto getByPartNumber(PartNumberDescDto partNum);
-	
+
 	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto);
-	
+
 	public String updateApprovalWorflowDetails(JSONObject obj) throws JSONException;
 
+	public String updateApprovalWorflowDetails(WorkflowCustomDto dto)
+			throws JSONException, ClientProtocolException, IOException;
 
 	public HttpResponse approveTask(String taskId) throws ClientProtocolException, IOException, JSONException;
-	
-	
+
+	public String updateApprovalWorflowDetailsForType4(AdhocWorkflowCustomDto dto)
+			throws JSONException, ClientProtocolException, IOException;
 
 }

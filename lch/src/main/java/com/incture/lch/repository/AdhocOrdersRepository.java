@@ -1,11 +1,15 @@
 package com.incture.lch.repository;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.simple.JSONObject;
 
+import com.incture.lch.adhoc.custom.dto.AdhocWorkflowCustomDto;
+import com.incture.lch.adhoc.custom.dto.WorkflowCustomDto;
 import com.incture.lch.dto.AdhocOrderDto;
 import com.incture.lch.dto.AdhocOrderWorkflowDto;
 import com.incture.lch.dto.AdhocRequestDto;
@@ -58,5 +62,9 @@ public interface AdhocOrdersRepository {
 	public String updateWorflowDetails(AdhocOrderWorkflowDto workflowDto);
 	
 	public String updateApprovalWorflowDetails(org.json.JSONObject obj) throws JSONException;
+	
+	public String updateApprovalWorflowDetails(WorkflowCustomDto dto) throws JSONException, ClientProtocolException, IOException ;
+
+	public String updateApprovalWorflowDetailsForType4(AdhocWorkflowCustomDto dto) throws JSONException, ClientProtocolException, IOException ;
 
 }
