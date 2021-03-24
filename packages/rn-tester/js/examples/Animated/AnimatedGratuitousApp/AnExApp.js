@@ -15,9 +15,7 @@ const {
   Animated,
   LayoutAnimation,
   PanResponder,
-  Platform,
   StyleSheet,
-  UIManager,
   View,
 } = require('react-native');
 
@@ -41,10 +39,6 @@ class Circle extends React.Component<any, any> {
       pan: new Animated.ValueXY(), // Vectors reduce boilerplate.  (step1: uncomment)
       pop: new Animated.Value(0), // Initial value.               (step2a: uncomment)
     };
-
-    if (Platform.OS === 'android') {
-      UIManager.setLayoutAnimationEnabledExperimental(true);
-    }
   }
 
   _onLongPress(): void {
