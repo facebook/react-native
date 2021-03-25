@@ -32,7 +32,7 @@ MapBuffer::MapBuffer(uint8_t *const data, uint16_t dataSize) {
   if (dataSize != dataSize_) {
     LOG(ERROR) << "Error: Data size does not match, expected " << dataSize
                << " found: " << dataSize_;
-    throw "Error: Data size does not match";
+    abort();
   }
 }
 

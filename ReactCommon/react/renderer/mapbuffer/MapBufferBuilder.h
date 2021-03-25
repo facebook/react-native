@@ -9,6 +9,7 @@
 
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/primitives.h>
+#include <stdlib.h>
 
 namespace facebook {
 namespace react {

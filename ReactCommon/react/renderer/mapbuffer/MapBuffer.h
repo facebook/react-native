@@ -9,6 +9,7 @@
 
 #include <react/renderer/mapbuffer/primitives.h>
 
+#include <stdlib.h>
 #include <limits>
 
 namespace facebook {
