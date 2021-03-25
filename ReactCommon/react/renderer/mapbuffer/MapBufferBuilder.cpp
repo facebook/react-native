@@ -21,34 +21,34 @@ MapBuffer MapBufferBuilder::EMPTY() {
 }
 
 MapBufferBuilder::MapBufferBuilder(uint16_t initialSize) {
-  _keyValuesSize = initialSize;
-  _keyValues = new Byte[_keyValuesSize];
+  keyValuesSize_ = initialSize;
+  keyValues_ = new Byte[keyValuesSize_];
   // First Key should be written right after the header.
-  _keyValuesOffset = HEADER_SIZE;
+  keyValuesOffset_ = HEADER_SIZE;
 
-  _dynamicDataSize = 0;
-  _dynamicDataValues = nullptr;
-  _dynamicDataOffset = 0;
+  dynamicDataSize_ = 0;
+  dynamicDataValues_ = nullptr;
+  dynamicDataOffset_ = 0;
 }
 
 void MapBufferBuilder::ensureKeyValueSpace() {
-  int oldKeyValuesSize = _keyValuesSize;
-  if (_keyValuesSize >= std::numeric_limits<uint16_t>::max() / 2) {
+  int oldKeyValuesSize = keyValuesSize_;
+  if (keyValuesSize_ >= std::numeric_limits<uint16_t>::max() / 2) {
     LOG(ERROR)
         << "Error: trying to assign a value beyond the capacity of uint16_t"
-        << static_cast<uint32_t>(_keyValuesSize) * 2;
+        << static_cast<uint32_t>(keyValuesSize_) * 2;
     throw "Error: trying to assign a value beyond the capacity of uint16_t";
   }
-  _keyValuesSize *= 2;
-  uint8_t *newKeyValues = new Byte[_keyValuesSize];
-  uint8_t *oldKeyValues = _keyValues;
-  memcpy(newKeyValues, _keyValues, oldKeyValuesSize);
-  _keyValues = newKeyValues;
+  keyValuesSize_ *= 2;
+  uint8_t *newKeyValues = new Byte[keyValuesSize_];
+  uint8_t *oldKeyValues = keyValues_;
+  memcpy(newKeyValues, keyValues_, oldKeyValuesSize);
+  keyValues_ = newKeyValues;
   delete[] oldKeyValues;
 }
 
 void MapBufferBuilder::storeKeyValue(Key key, uint8_t *value, int valueSize) {
-  if (key < _minKeyToStore) {
+  if (key < minKeyToStore_) {
     LOG(ERROR) << "Error: key out of order - key: " << key;
     throw "Error: key out of order";
   }
@@ -61,18 +61,18 @@ void MapBufferBuilder::storeKeyValue(Key key, uint8_t *value, int valueSize) {
   int valueOffset = keyOffset + KEY_SIZE;
 
   int nextKeyValueOffset = keyOffset + BUCKET_SIZE;
-  if (nextKeyValueOffset >= _keyValuesSize) {
+  if (nextKeyValueOffset >= keyValuesSize_) {
     ensureKeyValueSpace();
   }
 
-  memcpy(_keyValues + keyOffset, &key, KEY_SIZE);
-  memcpy(_keyValues + valueOffset, value, valueSize);
+  memcpy(keyValues_ + keyOffset, &key, KEY_SIZE);
+  memcpy(keyValues_ + valueOffset, value, valueSize);
 
   _header.count++;
 
-  _minKeyToStore = key + 1;
-  // Move _keyValuesOffset to the next available [key, value] position
-  _keyValuesOffset = std::max(nextKeyValueOffset, _keyValuesOffset);
+  minKeyToStore_ = key + 1;
+  // Move keyValuesOffset_ to the next available [key, value] position
+  keyValuesOffset_ = std::max(nextKeyValueOffset, keyValuesOffset_);
 }
 
 void MapBufferBuilder::putBool(Key key, bool value) {
@@ -94,26 +94,26 @@ void MapBufferBuilder::putInt(Key key, int value) {
 }
 
 void MapBufferBuilder::ensureDynamicDataSpace(int size) {
-  if (_dynamicDataValues == nullptr) {
-    _dynamicDataSize = std::max(INITIAL_DYNAMIC_DATA_SIZE, size);
-    _dynamicDataValues = new Byte[_dynamicDataSize];
-    _dynamicDataOffset = 0;
+  if (dynamicDataValues_ == nullptr) {
+    dynamicDataSize_ = std::max(INITIAL_DYNAMIC_DATA_SIZE, size);
+    dynamicDataValues_ = new Byte[dynamicDataSize_];
+    dynamicDataOffset_ = 0;
     return;
   }
 
-  if (_dynamicDataOffset + size >= _dynamicDataSize) {
-    int oldDynamicDataSize = _dynamicDataSize;
-    if (_dynamicDataSize >= std::numeric_limits<uint16_t>::max() / 2) {
+  if (dynamicDataOffset_ + size >= dynamicDataSize_) {
+    int oldDynamicDataSize = dynamicDataSize_;
+    if (dynamicDataSize_ >= std::numeric_limits<uint16_t>::max() / 2) {
       LOG(ERROR)
           << "Error: trying to assign a value beyond the capacity of uint16_t"
-          << static_cast<uint32_t>(_dynamicDataSize) * 2;
+          << static_cast<uint32_t>(dynamicDataSize_) * 2;
       throw "Error: trying to assign a value beyond the capacity of uint16_t";
     }
-    _dynamicDataSize *= 2;
-    uint8_t *newDynamicDataValues = new Byte[_dynamicDataSize];
-    uint8_t *oldDynamicDataValues = _dynamicDataValues;
-    memcpy(newDynamicDataValues, _dynamicDataValues, oldDynamicDataSize);
-    _dynamicDataValues = newDynamicDataValues;
+    dynamicDataSize_ *= 2;
+    uint8_t *newDynamicDataValues = new Byte[dynamicDataSize_];
+    uint8_t *oldDynamicDataValues = dynamicDataValues_;
+    memcpy(newDynamicDataValues, dynamicDataValues_, oldDynamicDataSize);
+    dynamicDataValues_ = newDynamicDataValues;
     delete[] oldDynamicDataValues;
   }
 }
@@ -129,16 +129,16 @@ void MapBufferBuilder::putString(Key key, std::string value) {
 
   int sizeOfDynamicData = sizeOfLength + strLength;
   ensureDynamicDataSpace(sizeOfDynamicData);
-  memcpy(_dynamicDataValues + _dynamicDataOffset, &strLength, sizeOfLength);
+  memcpy(dynamicDataValues_ + dynamicDataOffset_, &strLength, sizeOfLength);
   memcpy(
-      _dynamicDataValues + _dynamicDataOffset + sizeOfLength,
+      dynamicDataValues_ + dynamicDataOffset_ + sizeOfLength,
       cstring,
       strLength);
 
   // Store Key and pointer to the string
-  putInt(key, _dynamicDataOffset);
+  putInt(key, dynamicDataOffset_);
 
-  _dynamicDataOffset += sizeOfDynamicData;
+  dynamicDataOffset_ += sizeOfDynamicData;
 }
 
 void MapBufferBuilder::putMapBuffer(Key key, MapBuffer &map) {
@@ -150,31 +150,31 @@ void MapBufferBuilder::putMapBuffer(Key key, MapBuffer &map) {
   // format [Array of bytes of the mapBuffer]
   ensureDynamicDataSpace(sizeOfDynamicData);
 
-  memcpy(_dynamicDataValues + _dynamicDataOffset, &mapBufferSize, UINT16_SIZE);
-  // Copy the content of the map into _dynamicDataValues
-  map.copy(_dynamicDataValues + _dynamicDataOffset + UINT16_SIZE);
+  memcpy(dynamicDataValues_ + dynamicDataOffset_, &mapBufferSize, UINT16_SIZE);
+  // Copy the content of the map into dynamicDataValues_
+  map.copy(dynamicDataValues_ + dynamicDataOffset_ + UINT16_SIZE);
 
   // Store Key and pointer to the string
-  putInt(key, _dynamicDataOffset);
+  putInt(key, dynamicDataOffset_);
 
-  _dynamicDataOffset += sizeOfDynamicData;
+  dynamicDataOffset_ += sizeOfDynamicData;
 }
 
 MapBuffer MapBufferBuilder::build() {
   // Create buffer: [header] + [key, values] + [dynamic data]
-  int bufferSize = _keyValuesOffset + _dynamicDataOffset;
+  int bufferSize = keyValuesOffset_ + dynamicDataOffset_;
 
   _header.bufferSize = bufferSize;
 
-  // Copy header at the beginning of "_keyValues"
-  memcpy(_keyValues, &_header, HEADER_SIZE);
+  // Copy header at the beginning of "keyValues_"
+  memcpy(keyValues_, &_header, HEADER_SIZE);
 
   uint8_t *buffer = new Byte[bufferSize];
 
-  memcpy(buffer, _keyValues, _keyValuesOffset);
+  memcpy(buffer, keyValues_, keyValuesOffset_);
 
-  if (_dynamicDataValues != nullptr) {
-    memcpy(buffer + _keyValuesOffset, _dynamicDataValues, _dynamicDataOffset);
+  if (dynamicDataValues_ != nullptr) {
+    memcpy(buffer + keyValuesOffset_, dynamicDataValues_, dynamicDataOffset_);
   }
 
   // TODO: should we use std::move here?
@@ -184,27 +184,27 @@ MapBuffer MapBufferBuilder::build() {
   // called.
 
   // Reset internal data
-  delete[] _keyValues;
-  _keyValues = nullptr;
-  _keyValuesSize = 0;
-  _keyValuesOffset = 0;
+  delete[] keyValues_;
+  keyValues_ = nullptr;
+  keyValuesSize_ = 0;
+  keyValuesOffset_ = 0;
 
-  if (_dynamicDataValues != nullptr) {
-    delete[] _dynamicDataValues;
-    _dynamicDataValues = nullptr;
+  if (dynamicDataValues_ != nullptr) {
+    delete[] dynamicDataValues_;
+    dynamicDataValues_ = nullptr;
   }
-  _dynamicDataSize = 0;
-  _dynamicDataOffset = 0;
+  dynamicDataSize_ = 0;
+  dynamicDataOffset_ = 0;
 
   return map;
 }
 
 MapBufferBuilder::~MapBufferBuilder() {
-  if (_keyValues != nullptr) {
-    delete[] _keyValues;
+  if (keyValues_ != nullptr) {
+    delete[] keyValues_;
   }
-  if (_dynamicDataValues != nullptr) {
-    delete[] _dynamicDataValues;
+  if (dynamicDataValues_ != nullptr) {
+    delete[] dynamicDataValues_;
   }
 }
 

@@ -38,30 +38,30 @@ class MapBufferBuilder {
   // - Value is stored into 8 bytes. The 8 bytes of the value will contain the
   // actual value for the key or a pointer to the actual value (based on the
   // type)
-  uint8_t *_keyValues;
+  uint8_t *keyValues_;
 
   // Amount of bytes allocated on _keyValues
-  uint16_t _keyValuesSize;
+  uint16_t keyValuesSize_;
 
   // Relative offset on the _keyValues array.
   // This represents the first byte that can be written in _keyValues array
-  int _keyValuesOffset;
+  int keyValuesOffset_;
 
   // This array contains data for dynamic values in the MapBuffer.
   // A dynamic value is a String or another MapBuffer.
-  uint8_t *_dynamicDataValues;
+  uint8_t *dynamicDataValues_;
 
   // Amount of bytes allocated on _dynamicDataValues
-  uint16_t _dynamicDataSize;
+  uint16_t dynamicDataSize_;
 
   // Relative offset on the _dynamicDataValues array.
   // This represents the first byte that can be written in _dynamicDataValues
   // array
-  int _dynamicDataOffset;
+  int dynamicDataOffset_;
 
   // Minimmum key to store in the MapBuffer (this is used to guarantee
   // consistency)
-  uint16_t _minKeyToStore = 0;
+  uint16_t minKeyToStore_ = 0;
 
  public:
   MapBufferBuilder();
