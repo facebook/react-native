@@ -14,24 +14,24 @@ namespace react {
 
 MapBuffer::MapBuffer(uint8_t *const data, uint16_t dataSize) {
   // Should we move the memory here or document it?
-  _data = data;
+  data_ = data;
 
-  _count = 0;
+  count_ = 0;
   memcpy(
-      reinterpret_cast<uint8_t *>(&_count),
-      reinterpret_cast<const uint8_t *>(_data + HEADER_COUNT_OFFSET),
+      reinterpret_cast<uint8_t *>(&count_),
+      reinterpret_cast<const uint8_t *>(data_ + HEADER_COUNT_OFFSET),
       UINT16_SIZE);
 
   // TODO: extract memcpy calls into an inline function to simplify the code
-  _dataSize = 0;
+  dataSize_ = 0;
   memcpy(
-      reinterpret_cast<uint8_t *>(&_dataSize),
-      reinterpret_cast<const uint8_t *>(_data + HEADER_BUFFER_SIZE_OFFSET),
+      reinterpret_cast<uint8_t *>(&dataSize_),
+      reinterpret_cast<const uint8_t *>(data_ + HEADER_BUFFER_SIZE_OFFSET),
       UINT16_SIZE);
 
-  if (dataSize != _dataSize) {
+  if (dataSize != dataSize_) {
     LOG(ERROR) << "Error: Data size does not match, expected " << dataSize
-               << " found: " << _dataSize;
+               << " found: " << dataSize_;
     throw "Error: Data size does not match";
   }
 }
@@ -40,7 +40,7 @@ int MapBuffer::getInt(Key key) const {
   int value = 0;
   memcpy(
       reinterpret_cast<uint8_t *>(&value),
-      reinterpret_cast<const uint8_t *>(_data + getValueOffset(key)),
+      reinterpret_cast<const uint8_t *>(data_ + getValueOffset(key)),
       INT_SIZE);
   return value;
 }
@@ -55,7 +55,7 @@ double MapBuffer::getDouble(Key key) const {
   double value = 0;
   memcpy(
       reinterpret_cast<uint8_t *>(&value),
-      reinterpret_cast<const uint8_t *>(_data + getValueOffset(key)),
+      reinterpret_cast<const uint8_t *>(data_ + getValueOffset(key)),
       DOUBLE_SIZE);
   return value;
 }
@@ -63,7 +63,7 @@ double MapBuffer::getDouble(Key key) const {
 int MapBuffer::getDynamicDataOffset() const {
   // The begininig of dynamic data can be calculated as the offset of the next
   // key in the map
-  return getKeyOffset(_count);
+  return getKeyOffset(count_);
 }
 
 std::string MapBuffer::getString(Key key) const {
@@ -73,7 +73,7 @@ std::string MapBuffer::getString(Key key) const {
   int stringLength = 0;
   memcpy(
       reinterpret_cast<uint8_t *>(&stringLength),
-      reinterpret_cast<const uint8_t *>(_data + dynamicDataOffset),
+      reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset),
       INT_SIZE);
 
   int valueOffset = getInt(key) + sizeof(stringLength);
@@ -82,7 +82,7 @@ std::string MapBuffer::getString(Key key) const {
 
   memcpy(
       reinterpret_cast<char *>(value),
-      reinterpret_cast<const char *>(_data + dynamicDataOffset + valueOffset),
+      reinterpret_cast<const char *>(data_ + dynamicDataOffset + valueOffset),
       stringLength);
 
   return std::string(value);
@@ -97,7 +97,7 @@ MapBuffer MapBuffer::getMapBuffer(Key key) const {
 
   memcpy(
       reinterpret_cast<uint8_t *>(&mapBufferLength),
-      reinterpret_cast<const uint8_t *>(_data + dynamicDataOffset),
+      reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset),
       UINT16_SIZE);
 
   int valueOffset = getInt(key) + UINT16_SIZE;
@@ -107,7 +107,7 @@ MapBuffer MapBuffer::getMapBuffer(Key key) const {
   memcpy(
       reinterpret_cast<uint8_t *>(value),
       reinterpret_cast<const uint8_t *>(
-          _data + dynamicDataOffset + valueOffset),
+          data_ + dynamicDataOffset + valueOffset),
       mapBufferLength);
 
   return MapBuffer(value, mapBufferLength);
@@ -118,11 +118,11 @@ bool MapBuffer::isNull(Key key) const {
 }
 
 uint16_t MapBuffer::getBufferSize() const {
-  return _dataSize;
+  return dataSize_;
 }
 
 void MapBuffer::copy(uint8_t *output) const {
-  memcpy(output, _data, _dataSize);
+  memcpy(output, data_, dataSize_);
 }
 
 uint16_t MapBuffer::getCount() const {
@@ -131,7 +131,7 @@ uint16_t MapBuffer::getCount() const {
   memcpy(
       reinterpret_cast<uint16_t *>(&size),
       reinterpret_cast<const uint16_t *>(
-          _data + UINT16_SIZE), // TODO refactor this: + UINT16_SIZE describes
+          data_ + UINT16_SIZE), // TODO refactor this: + UINT16_SIZE describes
                                 // the position in the header
       UINT16_SIZE);
 
@@ -139,7 +139,7 @@ uint16_t MapBuffer::getCount() const {
 }
 
 MapBuffer::~MapBuffer() {
-  delete[] _data;
+  delete[] data_;
 }
 
 } // namespace react
