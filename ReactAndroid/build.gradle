@@ -326,6 +326,14 @@ def reactNativeInspectorProxyPort() {
     return value != null ? value : reactNativeDevServerPort()
 }
 
+def reactNativeArchitectures() {
+    def isDebug = gradle.startParameter.taskRequests.any {
+        it.args.any { it.endsWith("Debug") }
+    }
+    def value = project.getProperties().get("reactNativeDebugArchitectures")
+    return value != null && isDebug ? value : "all"
+}
+
 def getNdkBuildFullPath() {
     def ndkBuildFullPath = findNdkBuildFullPath()
     if (ndkBuildFullPath == null) {
@@ -355,6 +363,7 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
     inputs.dir("src/main/java/com/facebook/react/modules/blob")
     outputs.dir("$buildDir/react-ndk/all")
     commandLine(getNdkBuildFullPath(),
+            "APP_ABI=${reactNativeArchitectures()}",
             "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),
             "NDK_PROJECT_PATH=null",
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
