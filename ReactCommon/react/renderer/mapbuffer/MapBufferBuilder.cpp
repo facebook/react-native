@@ -37,7 +37,7 @@ void MapBufferBuilder::ensureKeyValueSpace() {
     LOG(ERROR)
         << "Error: trying to assign a value beyond the capacity of uint16_t"
         << static_cast<uint32_t>(keyValuesSize_) * 2;
-    throw "Error: trying to assign a value beyond the capacity of uint16_t";
+    abort();
   }
   keyValuesSize_ *= 2;
   uint8_t *newKeyValues = new Byte[keyValuesSize_];
@@ -50,10 +50,12 @@ void MapBufferBuilder::ensureKeyValueSpace() {
 void MapBufferBuilder::storeKeyValue(Key key, uint8_t *value, int valueSize) {
   if (key < minKeyToStore_) {
     LOG(ERROR) << "Error: key out of order - key: " << key;
-    throw "Error: key out of order";
+    abort();
   }
   if (valueSize > MAX_VALUE_SIZE) {
-    throw "Error: size of value must be <= MAX_VALUE_SIZE";
+    LOG(ERROR) << "Error: size of value must be <= MAX_VALUE_SIZE. ValueSize: "
+               << valueSize;
+    abort();
   }
   // TODO: header.count points to the next index
   // TODO: add test to verify storage of sparse keys
@@ -107,7 +109,7 @@ void MapBufferBuilder::ensureDynamicDataSpace(int size) {
       LOG(ERROR)
           << "Error: trying to assign a value beyond the capacity of uint16_t"
           << static_cast<uint32_t>(dynamicDataSize_) * 2;
-      throw "Error: trying to assign a value beyond the capacity of uint16_t";
+      abort();
     }
     dynamicDataSize_ *= 2;
     uint8_t *newDynamicDataValues = new Byte[dynamicDataSize_];
