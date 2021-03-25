@@ -18,6 +18,7 @@ const invariant = require('invariant');
 
 import type {ViewToken} from './ViewabilityHelper';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
+import VirtualizedSectionListInjection from './VirtualizedSectionListInjection';
 
 type Item = any;
 
@@ -581,11 +582,12 @@ class ItemWithSeparator extends React.Component<
   }
 }
 
-module.exports = (VirtualizedSectionList: React.AbstractComponent<
+const VSLToExport: React.AbstractComponent<
   React.ElementConfig<typeof VirtualizedSectionList>,
   $ReadOnly<{
     getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
     scrollToLocation: (params: ScrollToLocationParamsType) => void,
     ...
   }>,
->);
+> = VirtualizedSectionListInjection.unstable_VSL ?? VirtualizedSectionList;
+module.exports = VSLToExport;
