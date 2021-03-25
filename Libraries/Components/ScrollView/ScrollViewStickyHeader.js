@@ -64,6 +64,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
   _debounceTimeout: number = Platform.OS === 'android' ? 15 : 64;
 
   setNextHeaderY(y: number) {
+    this._shouldRecreateTranslateY = true;
     this.setState({nextHeaderLayoutY: y});
   }
 
