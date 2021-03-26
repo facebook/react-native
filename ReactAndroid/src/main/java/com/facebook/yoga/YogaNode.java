@@ -9,7 +9,7 @@ package com.facebook.yoga;
 
 import javax.annotation.Nullable;
 
-public abstract class YogaNode {
+public abstract class YogaNode implements YogaProps {
 
   /** The interface the {@link #getData()} object can optionally implement. */
   public interface Inputs {
