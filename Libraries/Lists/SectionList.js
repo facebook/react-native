@@ -78,7 +78,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    * falls back to using the index, like react does. Note that this sets keys for each item, but
    * each overall section still needs its own key.
    */
-  keyExtractor: (item: Item, index: number) => string,
+  keyExtractor?: ?(item: Item, index: number) => string,
   /**
    * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
    * content.
@@ -105,6 +105,10 @@ export type Props<SectionT> = {|
         VirtualizedSectionListProps<SectionT>,
         'renderItem',
       >,
+      keyExtractor: $PropertyType<
+        VirtualizedSectionListProps<SectionT>,
+        'keyExtractor',
+      >,
       ...
     },
   >,
@@ -113,7 +117,6 @@ export type Props<SectionT> = {|
 |};
 
 const defaultProps = {
-  ...VirtualizedSectionList.defaultProps,
   stickySectionHeadersEnabled: Platform.OS === 'ios',
 };
 

@@ -15,6 +15,6 @@ fb_native.android_prebuilt_aar(
 
 fb_native.remote_file(
     name = "fbjni-binary-aar",
-    sha1 = "d9e1b6ebbe55fe25f6ee6257ef64588e0f8a8db0",
-    url = "mvn:com.facebook.fbjni:fbjni:aar:0.0.2",
+    sha1 = "b20ae3406d911a28315b6ab53f122075500bfa27",
+    url = "mvn:com.facebook.fbjni:fbjni:aar:0.2.2",
 )

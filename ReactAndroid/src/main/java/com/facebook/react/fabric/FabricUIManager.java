@@ -34,7 +34,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -86,7 +86,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * We instruct ProGuard not to strip out any fields or methods, because many of these methods are
+ * only called through the JNI from Cxx so it appears that most of this class is "unused".
+ */
 @SuppressLint("MissingNativeLoadLibrary")
+@DoNotStripAny
 public class FabricUIManager implements UIManager, LifecycleEventListener {
   public static final String TAG = FabricUIManager.class.getSimpleName();
 
@@ -284,7 +289,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   /** Method called when an event has been dispatched on the C++ side. */
-  @DoNotStrip
   @SuppressWarnings("unused")
   public void onRequestEventBeat() {
     mEventDispatcher.dispatchAllEvents();
@@ -356,7 +360,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
-  @DoNotStrip
   @SuppressWarnings("unused")
   private NativeArray measureLines(
       ReadableMap attributedString, ReadableMap paragraphAttributes, float width, float height) {
@@ -368,7 +371,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             PixelUtil.toPixelFromDIP(width));
   }
 
-  @DoNotStrip
   @SuppressWarnings("unused")
   private NativeArray measureLinesMapBuffer(
       ReadableMapBuffer attributedString,
@@ -383,7 +385,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             PixelUtil.toPixelFromDIP(width));
   }
 
-  @DoNotStrip
   @SuppressWarnings("unused")
   private long measure(
       int rootTag,
@@ -408,7 +409,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         null);
   }
 
-  @DoNotStrip
   @SuppressWarnings("unused")
   private long measure(
       int surfaceId,
@@ -447,7 +447,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         attachmentsPositions);
   }
 
-  @DoNotStrip
   @SuppressWarnings("unused")
   private long measureMapBuffer(
       int surfaceId,
@@ -491,7 +490,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    *     padding used by RN Android TextInput.
    * @return if theme data is available in the output parameters.
    */
-  @DoNotStrip
   public boolean getThemeData(int surfaceId, float[] defaultTextInputPadding) {
     SurfaceMountingManager surfaceMountingManager =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData");
@@ -590,7 +588,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
   }
 
-  @DoNotStrip
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
@@ -612,7 +609,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             isLayoutable));
   }
 
-  @DoNotStrip
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
@@ -626,7 +622,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * to enforce execution order using {@link ReactChoreographer.CallbackType}. This method should
    * only be called as the result of a new tree being committed.
    */
-  @DoNotStrip
   @SuppressWarnings("unused")
   @AnyThread
   @ThreadConfined(ANY)
@@ -825,7 +820,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         new DispatchIntCommandMountItem(surfaceId, reactTag, commandId, commandArgs));
   }
 
-  @DoNotStrip
   @AnyThread
   @ThreadConfined(ANY)
   public void dispatchCommand(
@@ -846,7 +840,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountItemDispatcher.addMountItem(new SendAccessibilityEvent(View.NO_ID, reactTag, eventType));
   }
 
-  @DoNotStrip
   @AnyThread
   @ThreadConfined(ANY)
   public void sendAccessibilityEventFromJS(int surfaceId, int reactTag, String eventTypeJS) {
@@ -871,7 +864,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @param initialReactTag React tag of the JS view that initiated the touch operation
    * @param blockNativeResponder If native responder should be blocked or not
    */
-  @DoNotStrip
   public void setJSResponder(
       final int surfaceId,
       final int reactTag,
@@ -905,7 +897,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * Clears the JS Responder specified by {@link #setJSResponder}. After this method is called, all
    * the touch events are going to be handled by JS.
    */
-  @DoNotStrip
   public void clearJSResponder() {
     if (ReactFeatureFlags.enableJSResponder) {
       mMountItemDispatcher.addMountItem(
@@ -942,14 +933,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   // Called from Binding.cpp
-  @DoNotStrip
   @AnyThread
   public void onAnimationStarted() {
     mDriveCxxAnimations = true;
   }
 
   // Called from Binding.cpp
-  @DoNotStrip
   @AnyThread
   public void onAllAnimationsComplete() {
     mDriveCxxAnimations = false;
