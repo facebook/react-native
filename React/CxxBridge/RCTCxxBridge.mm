@@ -244,6 +244,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
 
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return _objCModuleRegistry;
+}
+
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
   _turboModuleRegistry = turboModuleRegistry;

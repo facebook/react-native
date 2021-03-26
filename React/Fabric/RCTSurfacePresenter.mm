@@ -24,6 +24,7 @@
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
+#import <React/RCTDevSettings.h>
 
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
@@ -40,6 +41,8 @@
 
 #import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
+
+#import "Timeline/RCTTimeline.h"
 
 using namespace facebook::react;
 
@@ -85,6 +88,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
   better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
+
+  RCTTimeline *_timeline;
 }
 
 - (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
@@ -95,6 +100,13 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     _runtimeExecutor = runtimeExecutor;
     _contextContainer = contextContainer;
 
+#if RCT_DEV
+    if (@available(iOS 13.0, *)) {
+      _timeline = [RCTTimeline currentInstance];
+      [_timeline initializeWithContextContainer:_contextContainer];
+    }
+#endif
+    
     _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
     _mountingManager = [[RCTMountingManager alloc] init];
     _mountingManager.delegate = self;
@@ -316,6 +328,13 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
       return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
     }
   };
+
+#if RCT_DEV
+  auto commitHook = _timeline.commitHook;
+  if (commitHook) {
+    toolbox.commitHooks.push_back(commitHook);
+  }
+#endif
 
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
   scheduler.delegate = self;

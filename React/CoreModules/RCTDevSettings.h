@@ -87,6 +87,11 @@
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
 
 /**
+ * Whether the timeline recorging is enabled.
+ */
+@property (nonatomic, assign) BOOL isTimelineRecordingEnabled;
+
+/**
  * Toggle the element inspector.
  */
 - (void)toggleElementInspector;
