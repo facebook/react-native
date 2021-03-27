@@ -28,7 +28,12 @@ function requireModule<T: TurboModule>(name: string): ?T {
     const module: ?T = turboModuleProxy(name);
     if (module == null) {
       // Common fixes: Verify the TurboModule is registered in the native binary, and adopts the code generated type-safe Spec base class.
-      console.info('Unable to get iOS TurboModule for ' + name + '.');
+      // May be caused by importing legacy modules in JS.
+      console.info(
+        'Unable to get TurboModule for ' +
+          name +
+          '. Safe to ignore if module works.',
+      );
     }
     return module;
   }
