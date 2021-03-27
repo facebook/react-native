@@ -25,6 +25,7 @@ import type {
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
 import type {RenderItemType, RenderItemProps} from './VirtualizedList';
+import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 
 type RequiredProps<ItemT> = {|
   /**
@@ -120,7 +121,7 @@ type OptionalProps<ItemT> = {|
    * and as the react key to track item re-ordering. The default extractor checks `item.key`, then
    * falls back to using the index, like React does.
    */
-  keyExtractor: (item: ItemT, index: number) => string,
+  keyExtractor?: ?(item: ItemT, index: number) => string,
   /**
    * Multiple columns can only be rendered with `horizontal={false}` and will zig-zag like a
    * `flexWrap` layout. Items should all be the same height - masonry layouts are not supported.
@@ -156,7 +157,6 @@ export type Props<ItemT> = {
 };
 
 const defaultProps = {
-  ...VirtualizedList.defaultProps,
   numColumns: 1,
   /**
    * Enabling this prop on Android greatly improves scrolling performance with no known issues.
@@ -503,20 +503,24 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   _keyExtractor = (items: ItemT | Array<ItemT>, index: number) => {
-    const {keyExtractor, numColumns} = this.props;
+    const {numColumns} = this.props;
+    const keyExtractor = this.props.keyExtractor ?? defaultKeyExtractor;
+
     if (numColumns > 1) {
-      invariant(
-        Array.isArray(items),
-        'FlatList: Encountered internal consistency error, expected each item to consist of an ' +
-          'array with 1-%s columns; instead, received a single item.',
-        numColumns,
-      );
-      return (
-        items
-          // $FlowFixMe[incompatible-call]
-          .map((it, kk) => keyExtractor(it, index * numColumns + kk))
-          .join(':')
-      );
+      if (Array.isArray(items)) {
+        return items
+          .map((item, kk) =>
+            keyExtractor(((item: $FlowFixMe): ItemT), index * numColumns + kk),
+          )
+          .join(':');
+      } else {
+        invariant(
+          Array.isArray(items),
+          'FlatList: Encountered internal consistency error, expected each item to consist of an ' +
+            'array with 1-%s columns; instead, received a single item.',
+          numColumns,
+        );
+      }
     } else {
       // $FlowFixMe Can't call keyExtractor with an array
       return keyExtractor(items, index);
@@ -524,7 +528,8 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   _pushMultiColumnViewable(arr: Array<ViewToken>, v: ViewToken): void {
-    const {numColumns, keyExtractor} = this.props;
+    const {numColumns} = this.props;
+    const keyExtractor = this.props.keyExtractor ?? defaultKeyExtractor;
     v.item.forEach((item, ii) => {
       invariant(v.index != null, 'Missing index!');
       const index = v.index * numColumns + ii;

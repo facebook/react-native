@@ -440,7 +440,7 @@ android {
 
 dependencies {
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
-    api("com.facebook.yoga:proguard-annotations:1.14.1")
+    api("com.facebook.yoga:proguard-annotations:1.17.0")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
     api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
@@ -452,9 +452,9 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
     api("com.squareup.okio:okio:1.17.5")
-    api("com.facebook.fbjni:fbjni-java-only:0.0.3")
-    extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
-    extractJNI("com.facebook.fbjni:fbjni:0.0.2")
+    api("com.facebook.fbjni:fbjni-java-only:0.2.2")
+    extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
+    extractJNI("com.facebook.fbjni:fbjni:0.2.2")
 
     javadocDeps("com.squareup:javapoet:1.13.0")
 
