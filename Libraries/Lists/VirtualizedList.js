@@ -22,7 +22,10 @@ const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 import VirtualizedListInjection from './VirtualizedListInjection';
 
-import {computeWindowedRenderLimits} from './VirtualizeUtils';
+import {
+  keyExtractor as defaultKeyExtractor,
+  computeWindowedRenderLimits,
+} from './VirtualizeUtils';
 
 import * as React from 'react';
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
@@ -132,7 +135,7 @@ type OptionalProps = {|
    * Reverses the direction of scroll. Uses scale transforms of -1.
    */
   inverted?: ?boolean,
-  keyExtractor: (item: Item, index: number) => string,
+  keyExtractor?: ?(item: Item, index: number) => string,
   /**
    * Each cell is rendered using this element. Can be a React Component Class,
    * or a render function. Defaults to using View.
@@ -303,10 +306,6 @@ type Props = {|
   ...OptionalProps,
 |};
 
-type DefaultProps = {|
-  keyExtractor: (item: Item, index: number) => string,
-|};
-
 let _usedIndexForKey = false;
 let _keylessItemComponentName: string = '';
 
@@ -315,26 +314,37 @@ type State = {
   last: number,
 };
 
+/**
+ * Default Props Helper Functions
+ * Use the following helper functions for default values
+ */
+
+// horizontalOrDefault(this.props.horizontal)
 function horizontalOrDefault(horizontal: ?boolean) {
   return horizontal ?? false;
 }
 
+// initialNumToRenderOrDefault(this.props.initialNumToRenderOrDefault)
 function initialNumToRenderOrDefault(initialNumToRender: ?number) {
   return initialNumToRender ?? 10;
 }
 
+// maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
 function maxToRenderPerBatchOrDefault(maxToRenderPerBatch: ?number) {
   return maxToRenderPerBatch ?? 10;
 }
 
+// onEndReachedThresholdOrDefault(this.props.onEndReachedThreshold)
 function onEndReachedThresholdOrDefault(onEndReachedThreshold: ?number) {
   return onEndReachedThreshold ?? 2;
 }
 
+// scrollEventThrottleOrDefault(this.props.scrollEventThrottle)
 function scrollEventThrottleOrDefault(scrollEventThrottle: ?number) {
   return scrollEventThrottle ?? 50;
 }
 
+// windowSizeOrDefault(this.props.windowSize)
 function windowSizeOrDefault(windowSize: ?number) {
   return windowSize ?? 21;
 }
@@ -365,6 +375,7 @@ function windowSizeOrDefault(windowSize: ?number) {
  *   and we are working on improving it behind the scenes.
  * - By default, the list looks for a `key` or `id` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
+ * - As an effort to remove defaultProps, use helper functions when referencing certain props
  *
  */
 class VirtualizedList extends React.PureComponent<Props, State> {
@@ -580,22 +591,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  static defaultProps: DefaultProps = {
-    keyExtractor: (item: Item, index: number) => {
-      if (item.key != null) {
-        return item.key;
-      }
-      if (item.id != null) {
-        return item.id;
-      }
-      _usedIndexForKey = true;
-      if (item.type && item.type.displayName) {
-        _keylessItemComponentName = item.type.displayName;
-      }
-      return String(index);
-    },
-  };
-
   _getCellKey(): string {
     return this.context?.cellKey || 'rootList';
   }
@@ -804,7 +799,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItem,
       getItemCount,
       horizontal,
-      keyExtractor,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
@@ -812,7 +806,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
-      const key = keyExtractor(item, ii);
+      const key = this._keyExtractor(item, ii);
       this._indicesToKeys.set(ii, key);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
@@ -863,6 +857,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _getSpacerKey = (isVertical: boolean): string =>
     isVertical ? 'height' : 'width';
+
+  _keyExtractor(item: Item, index: number) {
+    if (this.props.keyExtractor != null) {
+      return this.props.keyExtractor(item, index);
+    }
+
+    const key = defaultKeyExtractor(item, index);
+    if (key === String(index)) {
+      _usedIndexForKey = true;
+      if (item.type && item.type.displayName) {
+        _keylessItemComponentName = item.type.displayName;
+      }
+    }
+    return key;
+  }
 
   render(): React.Node {
     if (__DEV__) {
@@ -1816,9 +1825,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _createViewToken = (index: number, isViewable: boolean) => {
-    const {data, getItem, keyExtractor} = this.props;
+    const {data, getItem} = this.props;
     const item = getItem(data, index);
-    return {index, item, key: keyExtractor(item, index), isViewable};
+    return {index, item, key: this._keyExtractor(item, index), isViewable};
   };
 
   _getFrameMetricsApprox = (
@@ -1854,19 +1863,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     inLayout?: boolean,
     ...
   } => {
-    const {
-      data,
-      getItem,
-      getItemCount,
-      getItemLayout,
-      keyExtractor,
-    } = this.props;
+    const {data, getItem, getItemCount, getItemLayout} = this.props;
     invariant(
       getItemCount(data) > index,
       'Tried to get frame for out of range index ' + index,
     );
     const item = getItem(data, index);
-    let frame = item && this._frames[keyExtractor(item, index)];
+    let frame = item && this._frames[this._keyExtractor(item, index)];
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         frame = getItemLayout(data, index);

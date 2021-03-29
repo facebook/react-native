@@ -37,6 +37,9 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
+    fbandroid_deps = [
+        react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
+    ],
     fbandroid_exported_headers = subdir_glob(
         [
             ("", "*.h"),

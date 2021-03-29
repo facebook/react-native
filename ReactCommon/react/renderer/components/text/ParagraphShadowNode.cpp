@@ -14,6 +14,7 @@
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/graphics/rounding.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 
 #include "ParagraphState.h"
 
@@ -103,12 +104,8 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
   auto &state = getStateData();
 
   react_native_assert(textLayoutManager_);
-  react_native_assert(
-      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
-      "`StateData` refers to a different `TextLayoutManager`");
 
-  if (state.attributedString == content.attributedString &&
-      state.layoutManager == textLayoutManager_) {
+  if (state.attributedString == content.attributedString) {
     return;
   }
 

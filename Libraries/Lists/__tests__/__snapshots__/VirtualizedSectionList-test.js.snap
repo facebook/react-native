@@ -596,6 +596,140 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
 </RCTScrollView>
 `;
 
+exports[`VirtualizedSectionList handles separators correctly 4`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "data": Array [
+          Object {
+            "key": "i0",
+          },
+          Object {
+            "key": "i1",
+          },
+          Object {
+            "key": "i2",
+          },
+        ],
+        "title": "s0",
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  keyExtractor={[Function]}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    />
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <View>
+        <item
+          title="i0"
+        />
+        <separator
+          highlighted={false}
+          leadingItem={
+            Object {
+              "key": "i0",
+            }
+          }
+          section={
+            Object {
+              "data": Array [
+                Object {
+                  "key": "i0",
+                },
+                Object {
+                  "key": "i1",
+                },
+                Object {
+                  "key": "i2",
+                },
+              ],
+              "title": "s0",
+            }
+          }
+          trailingItem={
+            Object {
+              "key": "i1",
+            }
+          }
+        />
+      </View>
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <View>
+        <item
+          title="i1"
+        />
+        <separator
+          highlighted={false}
+          leadingItem={
+            Object {
+              "key": "i1",
+            }
+          }
+          press={true}
+          section={
+            Object {
+              "data": Array [
+                Object {
+                  "key": "i0",
+                },
+                Object {
+                  "key": "i1",
+                },
+                Object {
+                  "key": "i2",
+                },
+              ],
+              "title": "s0",
+            }
+          }
+          trailingItem={
+            Object {
+              "key": "i2",
+            }
+          }
+        />
+      </View>
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <item
+        title="i2"
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    />
+  </View>
+</RCTScrollView>
+`;
+
 exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
 <RCTScrollView
   ListEmptyComponent={[Function]}

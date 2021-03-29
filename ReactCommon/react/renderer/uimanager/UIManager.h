@@ -85,12 +85,10 @@ class UIManager final : public ShadowTreeDelegate {
 
 #pragma mark - Surface Start & Stop
 
-  ShadowTree const &startSurface(
-      SurfaceId surfaceId,
+  void startSurface(
+      ShadowTree::Unique &&shadowTree,
       std::string const &moduleName,
-      folly::dynamic const &props,
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext) const;
+      folly::dynamic const &props) const;
 
   ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
@@ -109,6 +107,9 @@ class UIManager final : public ShadowTreeDelegate {
   friend class UIManagerBinding;
   friend class Scheduler;
   friend class SurfaceHandler;
+
+  // `TimelineController` needs to call private `getShadowTreeRegistry()`.
+  friend class TimelineController;
 
   ShadowNode::Shared createNode(
       Tag tag,

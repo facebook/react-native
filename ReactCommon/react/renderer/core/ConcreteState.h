@@ -105,6 +105,9 @@ class ConcreteState : public State {
   void updateState(folly::dynamic data) const override {
     updateState(std::move(Data(getData(), data)));
   }
+  MapBuffer getMapBuffer() const override {
+    return getData().getMapBuffer();
+  }
 #endif
 };
 

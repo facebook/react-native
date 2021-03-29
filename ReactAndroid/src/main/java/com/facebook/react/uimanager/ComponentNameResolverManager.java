@@ -9,9 +9,11 @@ package com.facebook.react.uimanager;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.soloader.SoLoader;
 
+@DoNotStripAny
 public class ComponentNameResolverManager {
 
   static {

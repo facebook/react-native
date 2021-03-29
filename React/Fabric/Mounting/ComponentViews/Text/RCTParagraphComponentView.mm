@@ -106,8 +106,7 @@ using namespace facebook::react;
     return;
   }
 
-  auto textLayoutManager = _state->getData().layoutManager;
-  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
+  auto textLayoutManager = _state->getData().layoutManager.lock();
 
   if (!textLayoutManager) {
     return;
@@ -152,14 +151,18 @@ using namespace facebook::react;
   auto &data = _state->getData();
 
   if (![_accessibilityProvider isUpToDate:data.attributedString]) {
-    RCTTextLayoutManager *textLayoutManager =
-        (RCTTextLayoutManager *)unwrapManagedObject(data.layoutManager->getNativeTextLayoutManager());
-    CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
-    _accessibilityProvider = [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
-                                                                                  layoutManager:textLayoutManager
-                                                                            paragraphAttributes:data.paragraphAttributes
-                                                                                          frame:frame
-                                                                                           view:self];
+    auto textLayoutManager = data.layoutManager.lock();
+    if (textLayoutManager) {
+      RCTTextLayoutManager *nativeTextLayoutManager =
+          (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
+      CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+      _accessibilityProvider =
+          [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
+                                                               layoutManager:nativeTextLayoutManager
+                                                         paragraphAttributes:data.paragraphAttributes
+                                                                       frame:frame
+                                                                        view:self];
+    }
   }
 
   return _accessibilityProvider.accessibilityElements;
@@ -178,9 +181,7 @@ using namespace facebook::react;
     return _eventEmitter;
   }
 
-  auto textLayoutManager = _state->getData().layoutManager;
-
-  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
+  auto textLayoutManager = _state->getData().layoutManager.lock();
 
   if (!textLayoutManager) {
     return _eventEmitter;

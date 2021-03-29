@@ -43,6 +43,9 @@ rn_xplat_cxx_library(
         "-Wall",
     ],
     cxx_tests = [":tests"],
+    fbandroid_deps = [
+        react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
+    ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
@@ -72,6 +75,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/mounting:mounting"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/utils:utils"),
+        react_native_xplat_target("react/renderer/telemetry:telemetry"),
     ],
 )
 

@@ -508,6 +508,11 @@ void Binding::installFabricUIManager(
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
 
+  contextContainer->insert(
+      "MapBufferSerializationEnabled",
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_mapbuffer_serialization_android"));
+
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 

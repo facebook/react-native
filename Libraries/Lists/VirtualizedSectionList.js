@@ -17,6 +17,8 @@ const VirtualizedList = require('./VirtualizedList');
 const invariant = require('invariant');
 
 import type {ViewToken} from './ViewabilityHelper';
+import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
+import VirtualizedSectionListInjection from './VirtualizedSectionListInjection';
 
 type Item = any;
 
@@ -99,14 +101,18 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
   onEndReached?: ?({distanceFromEnd: number, ...}) => void,
 |};
 
-type VirtualizedListProps = React.ElementProps<typeof VirtualizedList>;
+type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
 export type Props<SectionT> = {|
   ...RequiredProps<SectionT>,
   ...OptionalProps<SectionT>,
   ...$Diff<
     VirtualizedListProps,
-    {renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>, ...},
+    {
+      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
+      data: $PropertyType<VirtualizedListProps, 'data'>,
+      ...
+    },
   >,
 |};
 export type ScrollToLocationParamsType = {|
@@ -115,11 +121,6 @@ export type ScrollToLocationParamsType = {|
   sectionIndex: number,
   viewOffset?: number,
   viewPosition?: number,
-|};
-
-type DefaultProps = {|
-  ...typeof VirtualizedList.defaultProps,
-  data: $ReadOnlyArray<Item>,
 |};
 
 type State = {childProps: VirtualizedListProps, ...};
@@ -132,11 +133,6 @@ type State = {childProps: VirtualizedListProps, ...};
 class VirtualizedSectionList<
   SectionT: SectionBase<any>,
 > extends React.PureComponent<Props<SectionT>, State> {
-  static defaultProps: DefaultProps = {
-    ...VirtualizedList.defaultProps,
-    data: [],
-  };
-
   scrollToLocation(params: ScrollToLocationParamsType) {
     let index = params.itemIndex;
     for (let i = 0; i < params.sectionIndex; i++) {
@@ -217,11 +213,11 @@ class VirtualizedSectionList<
     );
   }
 
-  _getItem = (
+  _getItem(
     props: Props<SectionT>,
     sections: ?$ReadOnlyArray<Item>,
     index: number,
-  ): ?Item => {
+  ): ?Item {
     if (!sections) {
       return null;
     }
@@ -243,7 +239,7 @@ class VirtualizedSectionList<
       }
     }
     return null;
-  };
+  }
 
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
@@ -292,7 +288,8 @@ class VirtualizedSectionList<
           trailingSection: sections[i + 1],
         };
       } else {
-        const extractor = section.keyExtractor || keyExtractor;
+        const extractor =
+          section.keyExtractor || keyExtractor || defaultKeyExtractor;
         return {
           section,
           key:
@@ -313,14 +310,18 @@ class VirtualizedSectionList<
     if (!info) {
       return null;
     }
-    const keyExtractor = info.section.keyExtractor || this.props.keyExtractor;
+    const keyExtractorWithNullableIndex = info.section.keyExtractor;
+    const keyExtractorWithNonNullableIndex =
+      this.props.keyExtractor || defaultKeyExtractor;
+    const key =
+      keyExtractorWithNullableIndex != null
+        ? keyExtractorWithNullableIndex(viewable.item, info.index)
+        : keyExtractorWithNonNullableIndex(viewable.item, info.index ?? 0);
+
     return {
       ...viewable,
       index: info.index,
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
-      key: keyExtractor(viewable.item, info.index),
+      key,
       section: info.section,
     };
   };
@@ -581,4 +582,12 @@ class ItemWithSeparator extends React.Component<
   }
 }
 
-module.exports = VirtualizedSectionList;
+const VSLToExport: React.AbstractComponent<
+  React.ElementConfig<typeof VirtualizedSectionList>,
+  $ReadOnly<{
+    getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
+    scrollToLocation: (params: ScrollToLocationParamsType) => void,
+    ...
+  }>,
+> = VirtualizedSectionListInjection.unstable_VSL ?? VirtualizedSectionList;
+module.exports = VSLToExport;

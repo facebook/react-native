@@ -62,6 +62,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/components/view:view"),
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/debug:debug"),
+        react_native_xplat_target("react/renderer/telemetry:telemetry"),
         react_native_xplat_target("react/utils:utils"),
     ],
 )
