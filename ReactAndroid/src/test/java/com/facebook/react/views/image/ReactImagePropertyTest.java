@@ -121,6 +121,14 @@ public class ReactImagePropertyTest {
   }
 
   @Test
+  public void testRoundedCorners() {
+    ReactImageManager viewManager = new ReactImageManager();
+    ReactImageView view = viewManager.createViewInstance(mThemeContext);
+    viewManager.setAccessible(view, true);
+    assertEquals(true, view.isFocusable());
+  }
+
+  @Test
   public void testTintColor() {
     ReactImageManager viewManager = new ReactImageManager();
     ReactImageView view = viewManager.createViewInstance(mThemeContext);
