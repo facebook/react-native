@@ -121,7 +121,7 @@ public class ReactImagePropertyTest {
   }
 
   @Test
-  public void testRoundedCorners() {
+  public void testAccessibilityFocus() {
     ReactImageManager viewManager = new ReactImageManager();
     ReactImageView view = viewManager.createViewInstance(mThemeContext);
     viewManager.setAccessible(view, true);
