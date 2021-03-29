@@ -15,7 +15,7 @@ load(
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
-    name = "mounting",
+    name = "telemetry",
     srcs = glob(
         ["**/*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
@@ -30,7 +30,7 @@ rn_xplat_cxx_library(
             ("", "*.h"),
             ("stubs", "*.h"),
         ],
-        prefix = "react/renderer/mounting",
+        prefix = "react/renderer/telemetry",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -58,11 +58,6 @@ rn_xplat_cxx_library(
         "//xplat/folly:molly",
         react_native_xplat_target("better:better"),
         react_native_xplat_target("react/debug:debug"),
-        react_native_xplat_target("react/renderer/components/root:root"),
-        react_native_xplat_target("react/renderer/components/view:view"),
-        react_native_xplat_target("react/renderer/core:core"),
-        react_native_xplat_target("react/renderer/debug:debug"),
-        react_native_xplat_target("react/renderer/telemetry:telemetry"),
         react_native_xplat_target("react/utils:utils"),
     ],
 )
@@ -81,12 +76,8 @@ fb_xplat_cxx_test(
     fbandroid_use_instrumentation_test = True,
     platforms = (ANDROID, APPLE, CXX),
     deps = [
-        ":mounting",
+        ":telemetry",
         "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
-        react_native_xplat_target("react/renderer/element:element"),
-        react_native_xplat_target("react/renderer/components/root:root"),
-        react_native_xplat_target("react/renderer/components/view:view"),
-        react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
     ],
 )
