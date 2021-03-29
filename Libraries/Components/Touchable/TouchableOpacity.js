@@ -129,7 +129,7 @@ type State = $ReadOnly<{|
  *
  */
 class TouchableOpacity extends React.Component<Props, State> {
-  _disabled: ?boolean = false;
+  _disabled: ?boolean;
 
   state: State = {
     anim: new Animated.Value(this._getChildStyleOpacityWithDefault()),
