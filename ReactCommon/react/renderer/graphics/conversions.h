@@ -20,10 +20,10 @@ namespace react {
 #pragma mark - Color
 
 inline void fromRawValue(const RawValue &value, SharedColor &result) {
-  float red;
-  float green;
-  float blue;
-  float alpha;
+  float red = 0;
+  float green = 0;
+  float blue = 0;
+  float alpha = 0;
 
   if (value.hasType<int>()) {
     auto argb = (int64_t)value;
@@ -40,9 +40,8 @@ inline void fromRawValue(const RawValue &value, SharedColor &result) {
     green = items.at(1);
     blue = items.at(2);
     alpha = length == 4 ? items.at(3) : 1.0f;
-  } else {
-    abort();
   }
+
   result = colorFromComponents({red, green, blue, alpha});
 }
 
