@@ -29,6 +29,9 @@ const checkImageSource = require('./check.png');
 const uncheckImageSource = require('./uncheck.png');
 const mixedCheckboxImageSource = require('./mixed.png');
 const {createRef} = require('react');
+const fullImage = {
+  uri: 'https://www.facebook.com/ads/pics/successstories.png',
+};
 
 const styles = StyleSheet.create({
   image: {
@@ -890,6 +893,20 @@ exports.examples = [
     title: 'Check if these properties are enabled',
     render(): React.Element<typeof EnabledExamples> {
       return <EnabledExamples />;
+    },
+  },
+  {
+    title: 'Check if these properties are enabled',
+    render(): React.Element<typeof EnabledExamples> {
+      return (
+        <Image
+          accessible={true}
+          accessibilityLabel="plain network image"
+          accessibilityState={{disabled: true}}
+          source={fullImage}
+          style={styles.image}
+        />
+      );
     },
   },
 ];
