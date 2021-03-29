@@ -129,6 +129,8 @@ type State = $ReadOnly<{|
  *
  */
 class TouchableOpacity extends React.Component<Props, State> {
+  _disabled: ?boolean = false;
+
   state: State = {
     anim: new Animated.Value(this._getChildStyleOpacityWithDefault()),
     pressability: new Pressability(this._createPressabilityConfig()),
@@ -136,9 +138,11 @@ class TouchableOpacity extends React.Component<Props, State> {
 
   _createPressabilityConfig(): PressabilityConfig {
     const {accessibilityState, disabled} = this.props;
+    this._disabled = disabled != null ? disabled : accessibilityState?.disabled;
+
     return {
       cancelable: !this.props.rejectResponderTermination,
-      disabled: disabled != null ? disabled : accessibilityState?.disabled,
+      disabled: this._disabled,
       hitSlop: this.props.hitSlop,
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
@@ -216,12 +220,13 @@ class TouchableOpacity extends React.Component<Props, State> {
       ...eventHandlersWithoutBlurAndFocus
     } = this.state.pressability.getEventHandlers();
 
-    const {disabled} = this.props;
-
     const accessibilityState =
-      disabled != null
-        ? {...this.props.accessibilityState, disabled}
-        : disabled;
+      this._disabled !== null
+        ? {
+            ...this.props.accessibilityState,
+            disabled: this._disabled,
+          }
+        : this.props.accessibilityState;
 
     return (
       <Animated.View
