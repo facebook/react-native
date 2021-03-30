@@ -38,27 +38,27 @@ void PrintMutationInstructionRelative(
 
 // This corresponds exactly with JS.
 enum class AnimationType {
-  None,
-  Spring,
-  Linear,
-  EaseInEaseOut,
-  EaseIn,
-  EaseOut,
-  Keyboard
+  None = 0,
+  Spring = 1,
+  Linear = 2,
+  EaseInEaseOut = 4,
+  EaseIn = 8,
+  EaseOut = 16,
+  Keyboard = 32
 };
 enum class AnimationProperty {
-  NotApplicable,
-  Opacity,
-  ScaleX,
-  ScaleY,
-  ScaleXY
+  NotApplicable = 0,
+  Opacity = 1,
+  ScaleX = 2,
+  ScaleY = 4,
+  ScaleXY = 8
 };
 enum class AnimationConfigurationType {
-  Noop, // for animation placeholders that are not animated, and should be
+  Noop = 0, // for animation placeholders that are not animated, and should be
   // executed once other animations have completed
-  Create,
-  Update,
-  Delete
+  Create = 1,
+  Update = 2,
+  Delete = 4
 };
 
 // This corresponds exactly with JS.
