@@ -40,6 +40,7 @@ import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactOverflowView;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
@@ -60,7 +61,8 @@ public class ReactViewGroup extends ViewGroup
         ReactClippingViewGroup,
         ReactPointerEventsView,
         ReactHitSlopView,
-        ReactZIndexedViewGroup {
+        ReactZIndexedViewGroup,
+        ReactOverflowView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -692,6 +694,7 @@ public class ReactViewGroup extends ViewGroup
     invalidate();
   }
 
+  @Override
   public @Nullable String getOverflow() {
     return mOverflow;
   }
