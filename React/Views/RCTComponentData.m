@@ -39,6 +39,7 @@ static SEL selectorForType(NSString *type)
 }
 
 @synthesize manager = _manager;
+@synthesize bridgelessViewManager = _bridgelessViewManager;
 
 - (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge
 {
@@ -55,10 +56,15 @@ static SEL selectorForType(NSString *type)
 
 - (RCTViewManager *)manager
 {
-  if (!_manager) {
+  if (!_manager && _bridge) {
     _manager = [_bridge moduleForClass:_managerClass];
+  } else if (!_manager && !_bridgelessViewManager) {
+    _bridgelessViewManager = [_managerClass new];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
+                                                        object:nil
+                                                      userInfo:@{@"module" : _bridgelessViewManager}];
   }
-  return _manager;
+  return _manager ?: _bridgelessViewManager;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)

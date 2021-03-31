@@ -22,6 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) Class managerClass;
 @property (nonatomic, copy, readonly) NSString *name;
 @property (nonatomic, weak, readonly) RCTViewManager *manager;
+/*
+ * When running React Native with the bridge, view managers are retained by the
+ * bridge. When running in bridgeless mode, allocate and retain view managers
+ * in this class.
+ */
+@property (nonatomic, strong, readonly) RCTViewManager *bridgelessViewManager;
 
 - (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
