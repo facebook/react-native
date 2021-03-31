@@ -52,8 +52,7 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
    */
   @ThreadConfined(ANY)
   protected @Nullable final ReactApplicationContext getReactApplicationContextIfActiveOrWarn() {
-    if (mReactApplicationContext.hasActiveReactInstance()
-        || mReactApplicationContext.isBridgeless()) {
+    if (mReactApplicationContext.hasActiveReactInstance()) {
       return mReactApplicationContext;
     }
 

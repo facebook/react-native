@@ -914,8 +914,7 @@ public abstract class DevSupportManagerBase
                         });
 
                     @Nullable ReactContext context = mCurrentContext;
-                    if (context == null
-                        || (!context.isBridgeless() && !context.hasActiveReactInstance())) {
+                    if (context == null || !context.hasActiveReactInstance()) {
                       return;
                     }
 
