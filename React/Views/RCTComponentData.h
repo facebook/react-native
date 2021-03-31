@@ -14,6 +14,7 @@
 @class RCTBridge;
 @class RCTShadowView;
 @class UIView;
+@class RCTEventDispatcherProtocol;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, readonly) RCTViewManager *bridgelessViewManager;
 
-- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithManagerClass:(Class)managerClass
+                              bridge:(RCTBridge *)bridge
+                     eventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
 - (UIView *)createViewWithTag:(nullable NSNumber *)tag rootTag:(nullable NSNumber *)rootTag;
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;

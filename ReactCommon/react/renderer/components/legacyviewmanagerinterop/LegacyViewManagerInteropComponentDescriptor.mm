@@ -8,6 +8,7 @@
 #include "LegacyViewManagerInteropComponentDescriptor.h"
 #include <React/RCTBridge.h>
 #include <React/RCTComponentData.h>
+#include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
 #include <React/RCTUIManager.h>
 #include <react/utils/ContextContainer.h>
@@ -64,8 +65,16 @@ static std::shared_ptr<void> const constructCoordinator(
   if (optionalBridge) {
     bridge = unwrapManagedObjectWeakly(optionalBridge.value());
   }
+
+  auto optionalEventDispatcher = contextContainer->find<std::shared_ptr<void>>("RCTEventDispatcher");
+  RCTEventDispatcher *eventDispatcher;
+  if (optionalEventDispatcher) {
+    eventDispatcher = unwrapManagedObject(optionalEventDispatcher.value());
+  }
+
   RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:module
-                                                                            bridge:bridge];
+                                                                            bridge:bridge
+                                                                   eventDispatcher:eventDispatcher];
   return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc] initWithComponentData:componentData
                                                                                           bridge:bridge]);
 }

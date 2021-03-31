@@ -13,6 +13,7 @@
 #import "RCTBridgeModule.h"
 #import "RCTComponentEvent.h"
 #import "RCTConvert.h"
+#import "RCTEventDispatcherProtocol.h"
 #import "RCTParserUtils.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
@@ -36,15 +37,19 @@ static SEL selectorForType(NSString *type)
   RCTPropBlockDictionary *_viewPropBlocks;
   RCTPropBlockDictionary *_shadowPropBlocks;
   __weak RCTBridge *_bridge;
+  __weak id<RCTEventDispatcherProtocol> _eventDispatcher;
 }
 
 @synthesize manager = _manager;
 @synthesize bridgelessViewManager = _bridgelessViewManager;
 
-- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge
+- (instancetype)initWithManagerClass:(Class)managerClass
+                              bridge:(RCTBridge *)bridge
+                     eventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   if ((self = [super init])) {
     _bridge = bridge;
+    _eventDispatcher = eventDispatcher;
     _managerClass = managerClass;
     _viewPropBlocks = [NSMutableDictionary new];
     _shadowPropBlocks = [NSMutableDictionary new];
@@ -104,10 +109,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   }
 }
 
-static RCTPropBlock
-createEventSetter(NSString *propName, SEL setter, InterceptorBlock eventInterceptor, RCTBridge *bridge)
+static RCTPropBlock createEventSetter(
+    NSString *propName,
+    SEL setter,
+    InterceptorBlock eventInterceptor,
+    id<RCTEventDispatcherProtocol> eventDispatcher)
 {
-  __weak RCTBridge *weakBridge = bridge;
+  __weak id<RCTEventDispatcherProtocol> weakEventDispatcher = eventDispatcher;
   return ^(id target, id json) {
     void (^eventHandler)(NSDictionary *event) = nil;
     if ([RCTConvert BOOL:json]) {
@@ -125,7 +133,7 @@ createEventSetter(NSString *propName, SEL setter, InterceptorBlock eventIntercep
           RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName
                                                                               viewTag:strongTarget.reactTag
                                                                                  body:event];
-          [weakBridge.eventDispatcher sendEvent:componentEvent];
+          [weakEventDispatcher sendEvent:componentEvent];
         }
       };
     }
@@ -254,7 +262,8 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     if (type == NSSelectorFromString(@"RCTBubblingEventBlock:") ||
         type == NSSelectorFromString(@"RCTDirectEventBlock:")) {
       // Special case for event handlers
-      setterBlock = createEventSetter(name, setter, self.eventInterceptor, _bridge);
+      setterBlock =
+          createEventSetter(name, setter, self.eventInterceptor, _bridge ? _bridge.eventDispatcher : _eventDispatcher);
     } else {
       // Ordinary property handlers
       NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];
