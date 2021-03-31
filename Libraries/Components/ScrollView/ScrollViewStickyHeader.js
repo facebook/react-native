@@ -20,6 +20,8 @@ import Platform from '../../Utilities/Platform';
 
 import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
+import ScrollViewStickyHeaderInjection from './ScrollViewStickyHeaderInjection';
+
 const AnimatedView = AnimatedImplementation.createAnimatedComponent(View);
 
 export type Props = $ReadOnly<{
@@ -328,4 +330,8 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ScrollViewStickyHeader;
+const SHToExport: React.AbstractComponent<
+  Props,
+  $ReadOnly<{setNextHeaderY: number => void, ...}>,
+> = ScrollViewStickyHeaderInjection.unstable_SH ?? ScrollViewStickyHeader;
+module.exports = SHToExport;

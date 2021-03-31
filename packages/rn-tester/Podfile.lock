@@ -264,6 +264,7 @@ PODS:
     - React-Fabric/leakchecker (= 1000.0.0)
     - React-Fabric/mounting (= 1000.0.0)
     - React-Fabric/scheduler (= 1000.0.0)
+    - React-Fabric/telemetry (= 1000.0.0)
     - React-Fabric/templateprocessor (= 1000.0.0)
     - React-Fabric/textlayoutmanager (= 1000.0.0)
     - React-Fabric/uimanager (= 1000.0.0)
@@ -514,6 +515,14 @@ PODS:
     - React-jsiexecutor (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-Fabric/scheduler (1000.0.0):
+    - RCT-Folly/Fabric (= 2020.01.13.00)
+    - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-Fabric/telemetry (1000.0.0):
     - RCT-Folly/Fabric (= 2020.01.13.00)
     - RCTRequired (= 1000.0.0)
     - RCTTypeSafety (= 1000.0.0)
@@ -841,7 +850,7 @@ SPEC CHECKSUMS:
   React-Core: 2d53d893ddeff7a58e7ed51b43a15a3d94c3c4a7
   React-CoreModules: c096a150e14753b07dc68a498508da4e55b026e9
   React-cxxreact: 14cce64344ab482615dfe82a2cbea6eb73be6481
-  React-Fabric: bcced8f57507c2bc11d65f31f83891119fc7a330
+  React-Fabric: d99f756e7ead26e764371939265120d3af324564
   React-graphics: 246b8e6cb4aad51271358767c965e47d692921ab
   React-jsi: 08c6628096d2025d4085fbaec8fe14a3c9dc667c
   React-jsiexecutor: 896c41b04121803e4ee61e4c9ed0900fdb420fea

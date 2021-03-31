@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/utils/Telemetry.h>
 
 using namespace facebook::react;

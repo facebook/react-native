@@ -96,7 +96,7 @@ public class NetworkingModuleTest {
     CatalystInstance reactInstance = mock(CatalystInstance.class);
     ReactApplicationContext reactContext = mock(ReactApplicationContext.class);
     when(reactContext.getCatalystInstance()).thenReturn(reactInstance);
-    when(reactContext.hasActiveCatalystInstance()).thenReturn(true);
+    when(reactContext.hasActiveReactInstance()).thenReturn(true);
     when(reactContext.getJSModule(any(Class.class))).thenReturn(mEmitter);
     mNetworkingModule = new NetworkingModule(reactContext, "", mHttpClient);
   }
