@@ -117,7 +117,7 @@ void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
   }
 }
 
-static void callMethodOfModule(
+static jsi::Value callMethodOfModule(
     jsi::Runtime &runtime,
     std::string const &moduleName,
     std::string const &methodName,
@@ -129,13 +129,15 @@ static void callMethodOfModule(
       react_native_assert(object.hasProperty(runtime, methodName.c_str()));
       if (object.hasProperty(runtime, methodName.c_str())) {
         auto method = object.getPropertyAsFunction(runtime, methodName.c_str());
-        method.callWithThis(runtime, object, args);
+        return method.callWithThis(runtime, object, args);
       } else {
         LOG(ERROR) << "getPropertyAsFunction: property '" << methodName
                    << "' is undefined, expected a Function";
       }
     }
   }
+
+  return jsi::Value::undefined();
 }
 
 void UIManagerBinding::startSurface(
