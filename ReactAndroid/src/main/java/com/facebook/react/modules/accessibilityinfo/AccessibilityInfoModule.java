@@ -56,7 +56,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
-          if (getReactApplicationContext().hasActiveCatalystInstance()) {
+          if (getReactApplicationContext().hasActiveReactInstance()) {
             AccessibilityInfoModule.this.updateAndSendReduceMotionChangeEvent();
           }
         }

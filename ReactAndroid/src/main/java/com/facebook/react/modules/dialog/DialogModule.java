@@ -130,7 +130,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     public void onClick(DialogInterface dialog, int which) {
       if (!mCallbackConsumed) {
         if (getReactApplicationContext().isBridgeless()
-            || getReactApplicationContext().hasActiveCatalystInstance()) {
+            || getReactApplicationContext().hasActiveReactInstance()) {
           mCallback.invoke(ACTION_BUTTON_CLICKED, which);
           mCallbackConsumed = true;
         }
@@ -141,7 +141,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     public void onDismiss(DialogInterface dialog) {
       if (!mCallbackConsumed) {
         if (getReactApplicationContext().isBridgeless()
-            || getReactApplicationContext().hasActiveCatalystInstance()) {
+            || getReactApplicationContext().hasActiveReactInstance()) {
           mCallback.invoke(ACTION_DISMISSED);
           mCallbackConsumed = true;
         }
