@@ -1,104 +1,42 @@
 import * as React from 'react';
-
+import ReactTestRenderer from 'react-test-renderer';
 import Button from '../Button';
-import {expectRendersMatchingSnapshot} from '../../Utilities/ReactNativeTestTools';
 
 describe('<Button />', () => {
   it('should render as expected', () => {
-    expectRendersMatchingSnapshot(
-      'Button',
-      () => (
-        <Button title="Test Button" />
-      ),
-      () => {
-        jest.dontMock('../Button');
-      },
-    );
+    expect(ReactTestRenderer.create(<Button title="Test Button" />)).toMatchSnapshot();
   });
-});
 
-describe('<Button />', () => {
-  it('should be disabled when disabled={true}', () => {
-    expectRendersMatchingSnapshot(
-      'Button',
-      () => (
-        <Button title="Test Button" disabled={true} />
-      ),
-      () => {
-        jest.dontMock('../Button');
-      },
-    );
+  it('should be disabled and it should set accessibilityState to disabled when disabled={true}', () => {
+    expect(
+      ReactTestRenderer.create(<Button title="Test Button" disabled={true} />)
+    ).toMatchSnapshot();
   });
-});
 
-describe('<Button />', () => {
   it('should be disabled when disabled={true} and accessibilityState={{disabled: true}}', () => {
-    expectRendersMatchingSnapshot(
-      'Button',
-      () => (
-        <Button title="Test Button" disabled={true} accessibilityState={{disabled: true}} />
-      ),
-      () => {
-        jest.dontMock('../Button');
-      },
-    );
+    expect(
+      ReactTestRenderer.create(<Button title="Test Button" disabled={true} accessibilityState={{disabled: true}} />)
+    ).toMatchSnapshot();
   });
-});
 
-describe('<Button />', () => {
   it('should be disabled when disabled is empty and accessibilityState={{disabled: true}}', () => {
-    expectRendersMatchingSnapshot(
-      'Button',
-      () => (
-        <Button title="Test Button" accessibilityState={{disabled: true}} />
-      ),
-      () => {
-        jest.dontMock('../Button');
-      },
-    );
+    expect(
+      ReactTestRenderer.create(<Button title="Test Button" accessibilityState={{disabled: true}} />)
+    ).toMatchSnapshot();
   });
-});
 
-
-
-describe('<Button />', () => {
   it('should overwrite accessibilityState with value of disabled prop', () => {
-    expectRendersMatchingSnapshot(
-      'Button',
-      () => (
-        <Button title="Test Button" disabled={true} accessibilityState={{disabled: false}} />
-      ),
-      () => {
-        jest.dontMock('../Button');
-      },
-    );
+    expect(ReactTestRenderer.create(<Button title="Test Button" disabled={true} accessibilityState={{disabled: false}} />)
+    ).toMatchSnapshot();
   });
-});
 
-describe('<Button />', () => {
   it('should not be disabled when disabled={false} and accessibilityState={{disabled: true}}', () => {
-    expectRendersMatchingSnapshot(
-      'Button',
-      () => (
-        <Button title="Test Button" disabled={false} accessibilityState={{disabled: true}} />
-      ),
-      () => {
-        jest.dontMock('../Button');
-      },
-    );
+    expect(ReactTestRenderer.create(<Button title="Test Button" disabled={false} accessibilityState={{disabled: true}} />)
+    ).toMatchSnapshot();
   });
-});
 
-describe('<Button />', () => {
   it('should not be disabled when disabled={false} and accessibilityState={{disabled: false}}', () => {
-    expectRendersMatchingSnapshot(
-      'Button',
-      () => (
-        <Button title="Test Button" disabled={false} accessibilityState={{disabled: false}} />
-      ),
-      () => {
-        jest.dontMock('../Button');
-      },
-    );
+    expect(ReactTestRenderer.create( <Button title="Test Button" disabled={false} accessibilityState={{disabled: false}} />)
+    ).toMatchSnapshot();
   });
 });
