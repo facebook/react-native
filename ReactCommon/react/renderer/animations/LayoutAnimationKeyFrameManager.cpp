@@ -1215,6 +1215,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   << "Due to conflict, replacing 'viewStart' of animated keyframe: ["
                   << conflictingKeyFrame.viewPrev.tag << "]";
 #endif
+              // Pick a Prop or layout property, depending on the current
+              // animation configuration. Figure out how much progress we've
+              // already made in the current animation, and start the animation
+              // from this point.
+              keyFrame.viewPrev = conflictingKeyFrame.viewPrev;
               keyFrame.viewStart = conflictingKeyFrame.viewPrev;
               react_native_assert(keyFrame.viewStart.tag > 0);
               keyFrame.initialProgress = 0;
