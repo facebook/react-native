@@ -60,8 +60,19 @@ static std::string GetMutationInstructionString(
 void PrintMutationInstruction(
     std::string message,
     ShadowViewMutation const &mutation) {
-  LOG(ERROR) << message
-             << " Mutation: " << GetMutationInstructionString(mutation);
+  [&](std::ostream &stream) -> std::ostream & {
+    stream << message
+           << " Mutation: " << GetMutationInstructionString(mutation);
+    if (mutation.oldChildShadowView.tag != 0) {
+      stream << " old hash: ##"
+             << std::hash<ShadowView>{}(mutation.oldChildShadowView);
+    }
+    if (mutation.newChildShadowView.tag != 0) {
+      stream << " new hash: ##"
+             << std::hash<ShadowView>{}(mutation.newChildShadowView);
+    }
+    return stream;
+  }(LOG(ERROR));
 }
 void PrintMutationInstructionRelative(
     std::string message,
