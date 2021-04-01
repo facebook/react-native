@@ -705,10 +705,13 @@ void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
                 finalMutationForKeyFrame);
 #endif
           }
-          if (!isVirtual) {
-            conflictingAnimations.push_back(animatedKeyFrame);
-            for (const auto &finalMutationForKeyFrame :
-                 animatedKeyFrame.finalMutationsForKeyFrame) {
+
+          conflictingAnimations.push_back(animatedKeyFrame);
+          for (const auto &finalMutationForKeyFrame :
+               animatedKeyFrame.finalMutationsForKeyFrame) {
+            if (!isVirtual ||
+                finalMutationForKeyFrame.type ==
+                    ShadowViewMutation::Type::Delete) {
               localConflictingMutations.push_back(finalMutationForKeyFrame);
             }
           }
