@@ -1201,7 +1201,6 @@ const ExportedForwardRef: React.AbstractComponent<
 });
 
 // TODO: Deprecate this
-// $FlowFixMe
 ExportedForwardRef.propTypes = DeprecatedTextInputPropTypes;
 
 // $FlowFixMe

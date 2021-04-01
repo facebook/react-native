@@ -111,12 +111,10 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   let sources;
   let style: ImageStyleProp;
   if (Array.isArray(source)) {
-    // $FlowFixMe flattenStyle is not strong enough
     style = flattenStyle([styles.base, props.style]) || {};
     sources = source;
   } else {
     const {width, height, uri} = source;
-    // $FlowFixMe flattenStyle is not strong enough
     style = flattenStyle([{width, height}, styles.base, props.style]) || {};
     sources = [source];
 
@@ -233,9 +231,6 @@ Image.queryCache = queryCache;
  * comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
 
-/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
 Image.propTypes = DeprecatedImagePropType;
 
 const styles = StyleSheet.create({

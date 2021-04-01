@@ -222,7 +222,6 @@ const AccessibilityInfo = {
     if (eventName === 'change') {
       subscription = RCTDeviceEventEmitter.addListener(
         CHANGE_EVENT_NAME.screenReaderChanged,
-        // $FlowFixMe[incompatible-call]
         handler,
       );
     } else if (CHANGE_EVENT_NAME[eventName]) {
