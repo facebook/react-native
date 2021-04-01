@@ -14,8 +14,7 @@
 #include <react/renderer/core/EventHandler.h>
 #include <react/renderer/core/ShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using BackgroundExecutor =
     std::function<void(std::function<void()> &&callback)>;
@@ -137,5 +136,4 @@ inline static folly::dynamic commandArgsFromValue(
   return jsi::dynamicFromValue(runtime, value);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

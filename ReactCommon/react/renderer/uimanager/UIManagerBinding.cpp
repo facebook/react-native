@@ -13,8 +13,7 @@
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value getModule(
     jsi::Runtime &runtime,
@@ -753,5 +752,4 @@ jsi::Value UIManagerBinding::get(
   return jsi::Value::undefined();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
