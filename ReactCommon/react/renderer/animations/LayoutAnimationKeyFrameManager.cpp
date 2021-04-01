@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <chrono>
 
+#include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
@@ -1080,7 +1081,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 baselineShadowView,
                 0};
           } else if (mutation.type == ShadowViewMutation::Type::Delete) {
-            // This is just for assertion purposes.
+// This is just for assertion purposes.
+// The NDEBUG check here is to satisfy the compiler in certain environments
+// complaining about correspondingRemoveIt being unused.
+#ifdef REACT_NATIVE_DEBUG
+#ifndef NDEBUG
             Tag deleteTag = mutation.oldChildShadowView.tag;
             auto correspondingRemoveIt = std::find_if(
                 mutations.begin(),
@@ -1090,6 +1095,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                       mutation.oldChildShadowView.tag == deleteTag;
                 });
             react_native_assert(correspondingRemoveIt != mutations.end());
+#endif
+#endif
             continue;
           } else if (mutation.type == ShadowViewMutation::Type::Update) {
             viewFinal = ShadowView(mutation.newChildShadowView);
