@@ -313,4 +313,6 @@ const getBackgroundProp =
           : {nativeBackgroundAndroid: background}
     : (background, useForeground) => null;
 
+TouchableNativeFeedback.displayName = 'TouchableNativeFeedback';
+
 module.exports = TouchableNativeFeedback;
