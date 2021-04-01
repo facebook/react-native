@@ -845,12 +845,12 @@ SPEC CHECKSUMS:
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
   RCTRequired: 047bd218d23dbe95d2a933eb5030a269d2a42929
   RCTTypeSafety: c2fc670603ca48eb4c1230091eaffb422e6d0d4d
-  React: 63b1f2a4e0e908c95416fd54e9dcca5d409e2a45
+  React: 8acdd3dbc39d3413461725c645553bc76d275630
   React-callinvoker: 42d87829505c1bfa2174ddaeb9272a147c81e998
   React-Core: 2d53d893ddeff7a58e7ed51b43a15a3d94c3c4a7
   React-CoreModules: c096a150e14753b07dc68a498508da4e55b026e9
   React-cxxreact: 14cce64344ab482615dfe82a2cbea6eb73be6481
-  React-Fabric: d99f756e7ead26e764371939265120d3af324564
+  React-Fabric: bf713bb8a442b56361b0ed4ca7d070697cc69b38
   React-graphics: 246b8e6cb4aad51271358767c965e47d692921ab
   React-jsi: 08c6628096d2025d4085fbaec8fe14a3c9dc667c
   React-jsiexecutor: 896c41b04121803e4ee61e4c9ed0900fdb420fea

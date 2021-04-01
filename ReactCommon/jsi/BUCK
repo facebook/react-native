@@ -18,7 +18,7 @@ rn_xplat_cxx_library(
         "-O3",
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
         "-Werror",
         "-Wextra",

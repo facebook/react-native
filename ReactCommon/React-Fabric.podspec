@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
   s.source_files           = "dummyFile.cpp"
   s.library                = "stdc++"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
+                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
 
   s.dependency folly_dep_name, folly_version
   s.dependency "React-graphics", version
