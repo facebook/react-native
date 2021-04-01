@@ -513,6 +513,8 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
     bool skipLastAnimation) const {
   bool isRemoveMutation = mutation.type == ShadowViewMutation::Type::Remove;
   bool isInsertMutation = mutation.type == ShadowViewMutation::Type::Insert;
+  auto tag = isRemoveMutation ? mutation.oldChildShadowView.tag
+                              : mutation.newChildShadowView.tag;
   react_native_assert(isRemoveMutation || isInsertMutation);
 
   if (mutation.mutatedViewIsVirtual()) {
@@ -556,9 +558,7 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
 
       for (auto &finalAnimationMutation :
            animatedKeyFrame.finalMutationsForKeyFrame) {
-        if (finalAnimationMutation.oldChildShadowView.tag ==
-            (isRemoveMutation ? mutation.oldChildShadowView.tag
-                              : mutation.newChildShadowView.tag)) {
+        if (finalAnimationMutation.oldChildShadowView.tag == tag) {
           continue;
         }
 
