@@ -376,7 +376,7 @@ class MessageQueue {
   // can be configured by the VM or any Inspector
   __shouldPauseOnThrow(): boolean {
     return (
-      // $FlowFixMe
+      // $FlowFixMe[cannot-resolve-name]
       typeof DebuggerInternal !== 'undefined' &&
       DebuggerInternal.shouldPauseOnThrow === true // eslint-disable-line no-undef
     );

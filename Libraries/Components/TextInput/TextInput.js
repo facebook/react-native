@@ -1142,8 +1142,14 @@ function InternalTextInput(props: Props): React.Node {
     }
 
     textInput = (
-      /* $FlowFixMe the types for AndroidTextInput don't match up exactly with
-        the props for TextInput. This will need to get fixed */
+      /* $FlowFixMe[prop-missing] the types for AndroidTextInput don't match up
+       * exactly with the props for TextInput. This will need to get fixed */
+      /* $FlowFixMe[incompatible-type] the types for AndroidTextInput don't
+       * match up exactly with the props for TextInput. This will need to get
+       * fixed */
+      /* $FlowFixMe[incompatible-type-arg] the types for AndroidTextInput don't
+       * match up exactly with the props for TextInput. This will need to get
+       * fixed */
       <AndroidTextInput
         ref={_setNativeRef}
         {...props}
@@ -1159,8 +1165,12 @@ function InternalTextInput(props: Props): React.Node {
         onBlur={_onBlur}
         onChange={_onChange}
         onFocus={_onFocus}
-        /* $FlowFixMe the types for AndroidTextInput don't match up exactly
-         * with the props for TextInput. This will need to get fixed */
+        /* $FlowFixMe[prop-missing] the types for AndroidTextInput don't match
+         * up exactly with the props for TextInput. This will need to get fixed
+         */
+        /* $FlowFixMe[incompatible-type-arg] the types for AndroidTextInput
+         * don't match up exactly with the props for TextInput. This will need
+         * to get fixed */
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         selection={selection}
@@ -1203,7 +1213,7 @@ const ExportedForwardRef: React.AbstractComponent<
 // TODO: Deprecate this
 ExportedForwardRef.propTypes = DeprecatedTextInputPropTypes;
 
-// $FlowFixMe
+// $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
   currentlyFocusedInput: TextInputState.currentlyFocusedInput,
 

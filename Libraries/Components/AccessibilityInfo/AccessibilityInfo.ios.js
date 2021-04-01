@@ -233,7 +233,7 @@ const AccessibilityInfo = {
 
     return {
       remove: () => {
-        // $FlowIssue flow does not recognize handler properly
+        // $FlowIssue[incompatible-call] flow does not recognize handler properly
         AccessibilityInfo.removeEventListener<K>(eventName, handler);
       },
     };

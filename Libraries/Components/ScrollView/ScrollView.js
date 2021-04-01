@@ -639,7 +639,8 @@ export type Props = $ReadOnly<{|
    *
    * See [RefreshControl](docs/refreshcontrol.html).
    */
-  // $FlowFixMe - how to handle generic type without existential operator?
+  /* $FlowFixMe[unclear-type] - how to handle generic type without existential
+   * operator? */
   refreshControl?: ?React.Element<any>,
   children?: React.Node,
   /**
@@ -855,7 +856,7 @@ class ScrollView extends React.Component<Props, State> {
    * to the underlying scroll responder's methods.
    */
   getScrollResponder: () => ScrollResponderType = () => {
-    // $FlowFixMe
+    // $FlowFixMe[unclear-type]
     return ((this: any): ScrollResponderType);
   };
 
@@ -1799,7 +1800,7 @@ function Wrapper(props, ref) {
 Wrapper.displayName = 'ScrollView';
 const ForwardedScrollView = React.forwardRef(Wrapper);
 
-// $FlowFixMe Add static context to ForwardedScrollView
+// $FlowFixMe[prop-missing] Add static context to ForwardedScrollView
 ForwardedScrollView.Context = ScrollViewContext;
 
 ForwardedScrollView.displayName = 'ScrollView';

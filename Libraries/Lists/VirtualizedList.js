@@ -681,7 +681,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     invariant(
-      // $FlowFixMe
+      // $FlowFixMe[prop-missing]
       !props.onScroll || !props.onScroll.__isNative,
       'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
         'to support native onScroll events with useNativeDriver',
@@ -905,7 +905,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const element = React.isValidElement(ListHeaderComponent) ? (
         ListHeaderComponent
       ) : (
-        // $FlowFixMe
+        // $FlowFixMe[not-a-component]
+        // $FlowFixMe[incompatible-type-arg]
         <ListHeaderComponent />
       );
       cells.push(
@@ -919,7 +920,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this.props.ListHeaderComponentStyle,
             )}>
             {
-              // $FlowFixMe - Typing ReactNativeComponent revealed errors
+              // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
             }
           </View>
@@ -1028,7 +1029,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ) ? (
         ListEmptyComponent
       ) : (
-        // $FlowFixMe
+        // $FlowFixMe[not-a-component]
+        // $FlowFixMe[incompatible-type-arg]
         <ListEmptyComponent />
       )): any);
       cells.push(
@@ -1048,7 +1050,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const element = React.isValidElement(ListFooterComponent) ? (
         ListFooterComponent
       ) : (
-        // $FlowFixMe
+        // $FlowFixMe[not-a-component]
+        // $FlowFixMe[incompatible-type-arg]
         <ListFooterComponent />
       );
       cells.push(
@@ -1062,7 +1065,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this.props.ListFooterComponentStyle,
             )}>
             {
-              // $FlowFixMe - Typing ReactNativeComponent revealed errors
+              // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
             }
           </View>
@@ -1235,7 +1238,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
-      // $FlowFixMe - Typing ReactNativeComponent revealed errors
+      // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
       return <View {...props} />;
     } else if (onRefresh) {
       invariant(
@@ -1245,7 +1248,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           '`',
       );
       return (
-        // $FlowFixMe Invalid prop usage
+        // $FlowFixMe[prop-missing] Invalid prop usage
         <ScrollView
           {...props}
           refreshControl={
@@ -1262,7 +1265,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />
       );
     } else {
-      // $FlowFixMe Invalid prop usage
+      // $FlowFixMe[prop-missing] Invalid prop usage
       return <ScrollView {...props} />;
     }
   };
@@ -1423,9 +1426,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const itemCount = this.props.getItemCount(this.props.data);
     for (let ii = 0; ii < itemCount; ii++) {
       const frame = this._getFrameMetricsApprox(ii);
-      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.68 was deployed. To see the error delete this
-       * comment and run Flow. */
+      /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
+       * suppresses an error found when Flow v0.68 was deployed. To see the
+       * error delete this comment and run Flow. */
       if (frame.inLayout) {
         framesInLayout.push(frame);
       }
@@ -1872,9 +1875,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         frame = getItemLayout(data, index);
       }
     }
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
+    /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
+     * suppresses an error found when Flow v0.63 was deployed. To see the error
+     * delete this comment and run Flow. */
     return frame;
   };
 
@@ -2001,9 +2004,12 @@ class CellRenderer extends React.Component<
     }
 
     if (ListItemComponent) {
-      /* $FlowFixMe(>=0.108.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.108 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[not-a-component] (>=0.108.0 site=react_native_fb) This
+       * comment suppresses an error found when Flow v0.108 was deployed. To
+       * see the error, delete this comment and run Flow. */
+      /* $FlowFixMe[incompatible-type-arg] (>=0.108.0 site=react_native_fb)
+       * This comment suppresses an error found when Flow v0.108 was deployed.
+       * To see the error, delete this comment and run Flow. */
       return React.createElement(ListItemComponent, {
         item,
         index,
@@ -2045,9 +2051,9 @@ class CellRenderer extends React.Component<
     );
 
     const onLayout =
-      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.68 was deployed. To see the error delete this
-       * comment and run Flow. */
+      /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
+       * suppresses an error found when Flow v0.68 was deployed. To see the
+       * error delete this comment and run Flow. */
       getItemLayout && !parentProps.debug && !fillRateHelper.enabled()
         ? undefined
         : this.props.onLayout;
@@ -2064,9 +2070,9 @@ class CellRenderer extends React.Component<
       ? [styles.row, inversionStyle]
       : inversionStyle;
     const result = !CellRendererComponent ? (
-      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.89 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
+        This comment suppresses an error found when Flow v0.89 was deployed. *
+        To see the error, delete this comment and run Flow. */
       <View style={cellStyle} onLayout={onLayout}>
         {element}
         {itemSeparator}

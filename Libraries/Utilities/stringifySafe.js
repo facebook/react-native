@@ -99,7 +99,7 @@ export function createStringifySafeWithLimits(limits: {|
       } catch (e) {
         if (typeof arg.toString === 'function') {
           try {
-            // $FlowFixMe: toString shouldn't take any arguments in general.
+            // $FlowFixMe[incompatible-use] : toString shouldn't take any arguments in general.
             return arg.toString();
           } catch (E) {}
         }
