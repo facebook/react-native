@@ -170,7 +170,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
         *family.getMostRecentState());
   }
 
-  virtual ShadowNodeFamily::Shared createFamily(
+  ShadowNodeFamily::Shared createFamily(
       ShadowNodeFamilyFragment const &fragment,
       SharedEventTarget eventTarget) const override {
     auto eventEmitter = std::make_shared<ConcreteEventEmitter const>(
