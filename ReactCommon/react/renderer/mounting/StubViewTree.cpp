@@ -77,9 +77,14 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         if (!mutation.mutatedViewIsVirtual()) {
           react_native_assert(mutation.oldChildShadowView == ShadowView{});
           auto parentTag = mutation.parentShadowView.tag;
+          auto childTag = mutation.newChildShadowView.tag;
+          if (registry.find(parentTag) == registry.end()) {
+            LOG(ERROR)
+                << "StubView: ASSERT FAILURE: INSERT mutation assertion failure: parentTag not found: ["
+                << parentTag << "] inserting child: [" << childTag << "]";
+          }
           react_native_assert(registry.find(parentTag) != registry.end());
           auto parentStubView = registry[parentTag];
-          auto childTag = mutation.newChildShadowView.tag;
           react_native_assert(registry.find(childTag) != registry.end());
           auto childStubView = registry[childTag];
           react_native_assert(childStubView->parentTag == NO_VIEW_TAG);
@@ -106,9 +111,14 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         if (!mutation.mutatedViewIsVirtual()) {
           react_native_assert(mutation.newChildShadowView == ShadowView{});
           auto parentTag = mutation.parentShadowView.tag;
+          auto childTag = mutation.oldChildShadowView.tag;
+          if (registry.find(parentTag) == registry.end()) {
+            LOG(ERROR)
+                << "StubView: ASSERT FAILURE: REMOVE mutation assertion failure: parentTag not found: ["
+                << parentTag << "] removing child: [" << childTag << "]";
+          }
           react_native_assert(registry.find(parentTag) != registry.end());
           auto parentStubView = registry[parentTag];
-          auto childTag = mutation.oldChildShadowView.tag;
           STUB_VIEW_LOG({
             LOG(ERROR) << "StubView: Remove [" << childTag << "] from ["
                        << parentTag << "] @" << mutation.index << " with "
@@ -159,7 +169,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         if (!mutation.mutatedViewIsVirtual()) {
           if ((ShadowView)(*oldStubView) != mutation.oldChildShadowView) {
             LOG(ERROR)
-                << "UPDATE mutation assertion failure: oldChildShadowView doesn't match oldStubView: ["
+                << "StubView: ASSERT FAILURE: UPDATE mutation assertion failure: oldChildShadowView doesn't match oldStubView: ["
                 << mutation.oldChildShadowView.tag << "]";
           }
           react_native_assert(
