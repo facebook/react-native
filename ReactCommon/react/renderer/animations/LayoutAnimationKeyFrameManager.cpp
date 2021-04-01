@@ -624,12 +624,11 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
   }
 }
 
-std::vector<AnimationKeyFrame>
-LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
+void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     SurfaceId surfaceId,
-    ShadowViewMutationList const &mutations) const {
-  std::vector<AnimationKeyFrame> conflictingAnimations{};
-
+    ShadowViewMutationList const &mutations,
+    std::vector<AnimationKeyFrame> &conflictingAnimations) const {
+  ShadowViewMutationList localConflictingMutations{};
   for (auto const &mutation : mutations) {
     bool mutationIsCreateOrDelete =
         mutation.type == ShadowViewMutation::Type::Create ||
@@ -639,6 +638,7 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
          mutation.type == ShadowViewMutation::Type::Create)
         ? mutation.newChildShadowView
         : mutation.oldChildShadowView;
+    auto baselineTag = baselineShadowView.tag;
 
     for (auto &inflightAnimation : inflightAnimations_) {
       if (inflightAnimation.surfaceId != surfaceId) {
@@ -664,9 +664,10 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
         // Parent deletion is important because deleting a parent recursively
         // deletes all children. If we previously deferred deletion of a child,
         // we need to force deletion/removal to happen immediately.
-        bool conflicting = animatedKeyFrame.tag == baselineShadowView.tag ||
+        bool conflicting = animatedKeyFrame.tag == baselineTag ||
             (mutationIsCreateOrDelete &&
-             animatedKeyFrame.parentView.tag == baselineShadowView.tag);
+             animatedKeyFrame.parentView.tag == baselineTag &&
+             animatedKeyFrame.parentView.tag != 0);
 
         // Conflicting animation detected: if we're mutating a tag under
         // animation, or deleting the parent of a tag under animation, or
@@ -678,6 +679,7 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
           // they have a "final mutation" to execute. This is important with,
           // for example, "insert" mutations where the final update needs to set
           // opacity to "1", even if there's no final ShadowNode update.
+          // TODO: don't animate virtual views in the first place?
           bool isVirtual = false;
           for (const auto &finalMutationForKeyFrame :
                animatedKeyFrame.finalMutationsForKeyFrame) {
@@ -693,6 +695,10 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
           }
           if (!isVirtual) {
             conflictingAnimations.push_back(animatedKeyFrame);
+            for (const auto &finalMutationForKeyFrame :
+                 animatedKeyFrame.finalMutationsForKeyFrame) {
+              localConflictingMutations.push_back(finalMutationForKeyFrame);
+            }
           }
 
           // Delete from existing animation
@@ -704,7 +710,12 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
     }
   }
 
-  return conflictingAnimations;
+  // Recurse, in case conflicting mutations conflict with other existing
+  // animations
+  if (!localConflictingMutations.empty()) {
+    getAndEraseConflictingAnimations(
+        surfaceId, localConflictingMutations, conflictingAnimations);
+  }
 }
 
 better::optional<MountingTransaction>
@@ -808,8 +819,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     // current mutations then these deleted mutations will serve as the baseline
     // for the next animation. If not, the current mutations are executed
     // immediately without issues.
-    auto conflictingAnimations =
-        getAndEraseConflictingAnimations(surfaceId, mutations);
+    std::vector<AnimationKeyFrame> conflictingAnimations{};
+    getAndEraseConflictingAnimations(
+        surfaceId, mutations, conflictingAnimations);
 
     // Are we animating this list of mutations?
     better::optional<LayoutAnimation> currentAnimation{};

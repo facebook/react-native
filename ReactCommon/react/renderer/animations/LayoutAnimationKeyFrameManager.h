@@ -218,9 +218,10 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowViewMutation const &mutation,
       bool skipLastAnimation = false) const;
 
-  std::vector<AnimationKeyFrame> getAndEraseConflictingAnimations(
+  void getAndEraseConflictingAnimations(
       SurfaceId surfaceId,
-      ShadowViewMutationList const &mutations) const;
+      ShadowViewMutationList const &mutations,
+      std::vector<AnimationKeyFrame> &conflictingAnimations) const;
 
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable std::vector<SurfaceId> surfaceIdsToStop_{};
