@@ -57,7 +57,8 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
 
       case ShadowViewMutation::Delete: {
         STUB_VIEW_LOG({
-          LOG(ERROR) << "Delete [" << mutation.oldChildShadowView.tag << "]";
+          LOG(ERROR) << "StubView: Delete [" << mutation.oldChildShadowView.tag
+                     << "]";
         });
         react_native_assert(mutation.parentShadowView == ShadowView{});
         react_native_assert(mutation.newChildShadowView == ShadowView{});
