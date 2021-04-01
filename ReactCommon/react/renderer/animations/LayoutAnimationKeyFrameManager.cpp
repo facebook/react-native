@@ -1100,7 +1100,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 // complaining about correspondingRemoveIt being unused.
 #ifdef REACT_NATIVE_DEBUG
 #ifndef NDEBUG
-            Tag deleteTag = mutation.oldChildShadowView.tag;
+// This block is temporarily disabled to fix some internal builds.
+// In some build configurations, we get a compiler error that
+// `correspondingRemoveIt` is unused.
+/*            Tag deleteTag = mutation.oldChildShadowView.tag;
             auto correspondingRemoveIt = std::find_if(
                 mutations.begin(),
                 mutations.end(),
@@ -1109,6 +1112,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                       mutation.oldChildShadowView.tag == deleteTag;
                 });
             react_native_assert(correspondingRemoveIt != mutations.end());
+*/
 #endif
 #endif
             continue;
