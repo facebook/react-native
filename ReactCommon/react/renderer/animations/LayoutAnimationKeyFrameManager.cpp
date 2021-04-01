@@ -1679,6 +1679,9 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   mutatedShadowView.props = componentDescriptor.interpolateProps(
       progress, startingView.props, finalView.props);
   react_native_assert(mutatedShadowView.props != nullptr);
+  if (mutatedShadowView.props == nullptr) {
+    return finalView;
+  }
 
   // Interpolate LayoutMetrics
   LayoutMetrics const &finalLayoutMetrics = finalView.layoutMetrics;
