@@ -146,6 +146,9 @@ void LayoutAnimationDriver::animationMutationsForFrame(
               keyframe.viewPrev,
               keyframe.viewEnd,
               -1};
+          PrintMutationInstruction(
+              "Animation Complete: Queuing up Final Synthetic Mutation:",
+              mutation);
           react_native_assert(mutation.oldChildShadowView.tag > 0);
           react_native_assert(mutation.newChildShadowView.tag > 0);
           mutationsList.push_back(mutation);
