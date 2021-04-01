@@ -1353,64 +1353,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           continue;
         }
 
-        if (keyFrame.finalMutationsForKeyFrame.size() > 0) {
-          ShadowView prev = keyFrame.viewPrev;
-          for (auto const &finalMutation : keyFrame.finalMutationsForKeyFrame) {
-            auto mutationInstruction = ShadowViewMutation{
-                finalMutation.type,
-                finalMutation.parentShadowView,
-                prev,
-                finalMutation.newChildShadowView,
-                finalMutation.index};
-            PrintMutationInstruction(
-                "Queueing up final mutation instruction - update:",
-                mutationInstruction);
-            react_native_assert(mutationInstruction.oldChildShadowView.tag > 0);
-            react_native_assert(
-                mutationInstruction.newChildShadowView.tag > 0 ||
-                mutationInstruction.type == ShadowViewMutation::Delete ||
-                mutationInstruction.type == ShadowViewMutation::Remove);
-            finalConflictingMutations.push_back(mutationInstruction);
-            if (finalMutation.newChildShadowView.tag > 0) {
-              prev = finalMutation.newChildShadowView;
-            }
-          }
-        } else {
-          // If there's no final mutation associated, create a mutation that
-          // corresponds to the animation being 100% complete. This is
-          // important for, for example, INSERT mutations being animated from
-          // opacity 0 to 1. If the animation is interrupted we must force the
-          // View to be at opacity 1. For Android - since it passes along only
-          // deltas, not an entire bag of props - generate an "animation"
-          // frame corresponding to a final update for this view. Only then,
-          // generate an update that will cause the ShadowTree to be
-          // consistent with the Mounting layer by passing viewEnd,
-          // unmodified, to the mounting layer. This helps with, for example,
-          // opacity animations.
-          // TODO: is this still necessary at all?
-          auto mutatedShadowView = createInterpolatedShadowView(
-              1, keyFrame.viewStart, keyFrame.viewEnd);
-          auto generatedPenultimateMutation =
-              ShadowViewMutation::UpdateMutation(
-                  keyFrame.viewPrev, mutatedShadowView);
-          react_native_assert(
-              generatedPenultimateMutation.oldChildShadowView.tag > 0);
-          react_native_assert(
-              generatedPenultimateMutation.newChildShadowView.tag > 0);
-          PrintMutationInstruction(
-              "Queueing up penultimate mutation instruction - synthetic",
-              generatedPenultimateMutation);
-          finalConflictingMutations.push_back(generatedPenultimateMutation);
-
-          auto generatedMutation = ShadowViewMutation::UpdateMutation(
-              mutatedShadowView, keyFrame.viewEnd);
-          react_native_assert(generatedMutation.oldChildShadowView.tag > 0);
-          react_native_assert(generatedMutation.newChildShadowView.tag > 0);
-          PrintMutationInstruction(
-              "Queueing up final mutation instruction - synthetic",
-              generatedMutation);
-          finalConflictingMutations.push_back(generatedMutation);
-        }
+        queueFinalMutationsForCompletedKeyFrame(
+            keyFrame,
+            finalConflictingMutations,
+            true,
+            "KeyFrameManager: Finished Conflicting Keyframe");
       }
 
       // Make sure that all operations execute in the proper order, since
@@ -1549,60 +1496,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 #endif
       ShadowViewMutationList finalMutationsForConflictingAnimations{};
       for (auto const &keyFrame : conflictingAnimations) {
-        ShadowView prev = keyFrame.viewPrev;
-        if (keyFrame.finalMutationsForKeyFrame.size() > 0) {
-          for (auto &finalMutation : keyFrame.finalMutationsForKeyFrame) {
-            auto mutation = ShadowViewMutation{
-                finalMutation.type,
-                finalMutation.parentShadowView,
-                prev,
-                finalMutation.newChildShadowView,
-                finalMutation.index};
-            PrintMutationInstruction(
-                "No Animation: Queueing up final conflicting mutation instruction",
-                mutation);
-            finalMutationsForConflictingAnimations.push_back(mutation);
-            if (finalMutation.newChildShadowView.tag > 0) {
-              prev = finalMutation.newChildShadowView;
-            }
-          }
-        } else {
-          // TODO: is this still needed?
-          // If there's no final mutation associated, create a mutation that
-          // corresponds to the animation being 100% complete. This is
-          // important for, for example, INSERT mutations being animated from
-          // opacity 0 to 1. If the animation is interrupted we must force the
-          // View to be at opacity 1. For Android - since it passes along only
-          // deltas, not an entire bag of props - generate an "animation"
-          // frame corresponding to a final update for this view. Only then,
-          // generate an update that will cause the ShadowTree to be
-          // consistent with the Mounting layer by passing viewEnd,
-          // unmodified, to the mounting layer. This helps with, for example,
-          // opacity animations.
-          auto mutatedShadowView = createInterpolatedShadowView(
-              1, keyFrame.viewStart, keyFrame.viewEnd);
-          auto generatedPenultimateMutation =
-              ShadowViewMutation::UpdateMutation(
-                  keyFrame.viewPrev, mutatedShadowView);
-          react_native_assert(
-              generatedPenultimateMutation.oldChildShadowView.tag > 0);
-          react_native_assert(
-              generatedPenultimateMutation.newChildShadowView.tag > 0);
-          PrintMutationInstruction(
-              "No Animation: Queueing up penultimate mutation instruction - synthetic",
-              generatedPenultimateMutation);
-          finalMutationsForConflictingAnimations.push_back(
-              generatedPenultimateMutation);
-
-          auto generatedMutation = ShadowViewMutation::UpdateMutation(
-              mutatedShadowView, keyFrame.viewEnd);
-          react_native_assert(generatedMutation.oldChildShadowView.tag > 0);
-          react_native_assert(generatedMutation.newChildShadowView.tag > 0);
-          PrintMutationInstruction(
-              "No Animation: Queueing up final mutation instruction - synthetic",
-              generatedMutation);
-          finalMutationsForConflictingAnimations.push_back(generatedMutation);
-        }
+        queueFinalMutationsForCompletedKeyFrame(
+            keyFrame,
+            finalMutationsForConflictingAnimations,
+            true,
+            "Conflict with non-animated mutation");
       }
 
       // Make sure that all operations execute in the proper order.
@@ -1805,6 +1703,90 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   mutatedShadowView.layoutMetrics = interpolatedLayoutMetrics;
 
   return mutatedShadowView;
+}
+
+void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
+    AnimationKeyFrame const &keyframe,
+    ShadowViewMutation::List &mutationsList,
+    bool interrupted,
+    std::string logPrefix) const {
+  if (keyframe.finalMutationsForKeyFrame.size() > 0) {
+    // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
+    // as well.
+    ShadowView prev = keyframe.viewPrev;
+    for (auto const &finalMutation : keyframe.finalMutationsForKeyFrame) {
+      PrintMutationInstruction(
+          logPrefix + "Queuing up Final Mutation:", finalMutation);
+      // Copy so that if something else mutates the inflight animations,
+      // it won't change this mutation after this point.
+      auto mutation = ShadowViewMutation{
+          finalMutation.type,
+          finalMutation.parentShadowView,
+          prev,
+          finalMutation.newChildShadowView,
+          finalMutation.index};
+      react_native_assert(mutation.oldChildShadowView.tag > 0);
+      react_native_assert(
+          mutation.newChildShadowView.tag > 0 ||
+          finalMutation.type == ShadowViewMutation::Remove ||
+          finalMutation.type == ShadowViewMutation::Delete);
+      mutationsList.push_back(mutation);
+      if (finalMutation.newChildShadowView.tag > 0) {
+        prev = finalMutation.newChildShadowView;
+      }
+    }
+  } else {
+    // If there's no final mutation associated, create a mutation that
+    // corresponds to the animation being 100% complete. This is
+    // important for, for example, INSERT mutations being animated from
+    // opacity 0 to 1. If the animation is interrupted we must force the
+    // View to be at opacity 1. For Android - since it passes along only
+    // deltas, not an entire bag of props - generate an "animation"
+    // frame corresponding to a final update for this view. Only then,
+    // generate an update that will cause the ShadowTree to be
+    // consistent with the Mounting layer by passing viewEnd,
+    // unmodified, to the mounting layer. This helps with, for example,
+    // opacity animations.
+    // This is necessary for INSERT (create) and UPDATE (update) mutations, but
+    // not REMOVE/DELETE mutations ("delete" animations).
+    if (interrupted) {
+      auto mutatedShadowView =
+          createInterpolatedShadowView(1, keyframe.viewStart, keyframe.viewEnd);
+      auto generatedPenultimateMutation = ShadowViewMutation::UpdateMutation(
+          keyframe.viewPrev, mutatedShadowView);
+      react_native_assert(
+          generatedPenultimateMutation.oldChildShadowView.tag > 0);
+      react_native_assert(
+          generatedPenultimateMutation.newChildShadowView.tag > 0);
+      PrintMutationInstruction(
+          "Queueing up penultimate mutation instruction - synthetic",
+          generatedPenultimateMutation);
+      mutationsList.push_back(generatedPenultimateMutation);
+
+      auto generatedMutation = ShadowViewMutation::UpdateMutation(
+          mutatedShadowView, keyframe.viewEnd);
+      react_native_assert(generatedMutation.oldChildShadowView.tag > 0);
+      react_native_assert(generatedMutation.newChildShadowView.tag > 0);
+      PrintMutationInstruction(
+          "Queueing up final mutation instruction - synthetic",
+          generatedMutation);
+      mutationsList.push_back(generatedMutation);
+    } else {
+      auto mutation = ShadowViewMutation{
+          ShadowViewMutation::Type::Update,
+          keyframe.parentView,
+          keyframe.viewPrev,
+          keyframe.viewEnd,
+          -1};
+      PrintMutationInstruction(
+          logPrefix +
+              "Animation Complete: Queuing up Final Synthetic Mutation:",
+          mutation);
+      react_native_assert(mutation.oldChildShadowView.tag > 0);
+      react_native_assert(mutation.newChildShadowView.tag > 0);
+      mutationsList.push_back(mutation);
+    }
+  }
 }
 
 void LayoutAnimationKeyFrameManager::callCallback(

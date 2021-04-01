@@ -247,6 +247,16 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowViewMutation::List &mutationsList,
       uint64_t now) const = 0;
 
+  /**
+   * Queue (and potentially synthesize) final mutations for a finished keyframe.
+   * Keyframe animation may have timed-out, or be canceled due to a conflict.
+   */
+  void queueFinalMutationsForCompletedKeyFrame(
+      AnimationKeyFrame const &keyframe,
+      ShadowViewMutation::List &mutationsList,
+      bool interrupted,
+      std::string logPrefix) const;
+
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable better::optional<LayoutAnimation> currentAnimation_{};
   mutable std::mutex currentAnimationMutex_;
