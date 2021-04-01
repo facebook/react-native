@@ -331,9 +331,12 @@ static inline bool shouldFirstComeBeforeSecondMutation(
     // Make sure that removes on the same level are sorted - highest indices
     // must come first.
     if (lhs.type == ShadowViewMutation::Type::Remove &&
-        lhs.parentShadowView.tag == rhs.parentShadowView.tag &&
-        lhs.index > rhs.index) {
-      return true;
+        lhs.parentShadowView.tag == rhs.parentShadowView.tag) {
+      if (lhs.index > rhs.index) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 
