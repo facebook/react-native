@@ -206,6 +206,31 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
 
 bool operator==(StubViewTree const &lhs, StubViewTree const &rhs) {
   if (lhs.registry.size() != rhs.registry.size()) {
+    STUB_VIEW_LOG({
+      LOG(ERROR) << "Registry sizes are different. Sizes: LHS: "
+                 << lhs.registry.size() << " RHS: " << rhs.registry.size();
+
+      [&](std::ostream &stream) -> std::ostream & {
+        stream << "Tags in LHS: ";
+        for (auto const &pair : lhs.registry) {
+          auto &lhsStubView = *lhs.registry.at(pair.first);
+          stream << "[" << lhsStubView.tag << "]##"
+                 << std::hash<ShadowView>{}((ShadowView)lhsStubView) << " ";
+        }
+        return stream;
+      }(LOG(ERROR));
+
+      [&](std::ostream &stream) -> std::ostream & {
+        stream << "Tags in RHS: ";
+        for (auto const &pair : rhs.registry) {
+          auto &rhsStubView = *rhs.registry.at(pair.first);
+          stream << "[" << rhsStubView.tag << "]##"
+                 << std::hash<ShadowView>{}((ShadowView)rhsStubView) << " ";
+        }
+        return stream;
+      }(LOG(ERROR));
+    });
+
     return false;
   }
 
@@ -214,6 +239,13 @@ bool operator==(StubViewTree const &lhs, StubViewTree const &rhs) {
     auto &rhsStubView = *rhs.registry.at(pair.first);
 
     if (lhsStubView != rhsStubView) {
+      STUB_VIEW_LOG({
+        LOG(ERROR) << "Registry entries are different. LHS: ["
+                   << lhsStubView.tag << "] ##"
+                   << std::hash<ShadowView>{}((ShadowView)lhsStubView)
+                   << " RHS: [" << rhsStubView.tag << "] ##"
+                   << std::hash<ShadowView>{}((ShadowView)rhsStubView);
+      });
       return false;
     }
   }
