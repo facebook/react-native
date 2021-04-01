@@ -53,13 +53,7 @@ enum class AnimationProperty {
   ScaleY = 4,
   ScaleXY = 8
 };
-enum class AnimationConfigurationType {
-  Noop = 0, // for animation placeholders that are not animated, and should be
-  // executed once other animations have completed
-  Create = 1,
-  Update = 2,
-  Delete = 4
-};
+enum class AnimationConfigurationType { Create = 1, Update = 2, Delete = 4 };
 
 // This corresponds exactly with JS.
 struct AnimationConfig {
@@ -82,9 +76,11 @@ struct LayoutAnimationConfig {
 };
 
 struct AnimationKeyFrame {
-  // The mutation that should be executed once the animation completes
-  // (optional).
-  better::optional<ShadowViewMutation> finalMutationForKeyFrame;
+  // The mutation(s) that should be executed once the animation completes.
+  // This maybe empty.
+  // For CREATE/INSERT this will contain CREATE, INSERT in that order.
+  // For REMOVE/DELETE, same.
+  std::vector<ShadowViewMutation> finalMutationsForKeyFrame;
 
   // The type of animation this is (for configuration purposes)
   AnimationConfigurationType type;

@@ -44,9 +44,6 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
     int incompleteAnimations = 0;
     for (auto &keyframe : animation.keyFrames) {
-      if (keyframe.type == AnimationConfigurationType::Noop) {
-        continue;
-      }
       if (keyframe.invalidated) {
         continue;
       }
@@ -111,32 +108,38 @@ void LayoutAnimationDriver::animationMutationsForFrame(
         if (keyframe.invalidated) {
           continue;
         }
-        if (keyframe.finalMutationForKeyFrame.hasValue()) {
-          auto const &finalMutationForKeyFrame =
-              *keyframe.finalMutationForKeyFrame;
-          PrintMutationInstruction(
-              "Animation Complete: Queuing up Final Mutation:",
-              finalMutationForKeyFrame);
-
-          // Copy so that if something else mutates the inflight animations, it
-          // won't change this mutation after this point.
-          auto mutation = ShadowViewMutation{
-              finalMutationForKeyFrame.type,
-              finalMutationForKeyFrame.parentShadowView,
-              keyframe.viewPrev,
-              finalMutationForKeyFrame.newChildShadowView,
-              finalMutationForKeyFrame.index};
-          react_native_assert(mutation.oldChildShadowView.tag > 0);
-          react_native_assert(
-              mutation.newChildShadowView.tag > 0 ||
-              finalMutationForKeyFrame.type == ShadowViewMutation::Remove ||
-              finalMutationForKeyFrame.type == ShadowViewMutation::Delete);
-          mutationsList.push_back(mutation);
+        if (!keyframe.finalMutationsForKeyFrame.empty()) {
+          // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
+          // as well.
+          ShadowView prev = keyframe.viewPrev;
+          for (auto const &finalMutation : keyframe.finalMutationsForKeyFrame) {
+            PrintMutationInstruction(
+                "Animation Complete: Queuing up Final Mutation:",
+                finalMutation);
+            // Copy so that if something else mutates the inflight animations,
+            // it won't change this mutation after this point.
+            auto mutation = ShadowViewMutation{
+                finalMutation.type,
+                finalMutation.parentShadowView,
+                prev,
+                finalMutation.newChildShadowView,
+                finalMutation.index};
+            react_native_assert(mutation.oldChildShadowView.tag > 0);
+            react_native_assert(
+                mutation.newChildShadowView.tag > 0 ||
+                finalMutation.type == ShadowViewMutation::Remove ||
+                finalMutation.type == ShadowViewMutation::Delete);
+            mutationsList.push_back(mutation);
+            if (finalMutation.newChildShadowView.tag > 0) {
+              prev = finalMutation.newChildShadowView;
+            }
+          }
         } else {
           // Issue a final UPDATE so that the final props object sent to the
           // mounting layer is the same as the one on the ShadowTree. This is
           // mostly to make the MountingCoordinator StubViewTree assertions
           // pass.
+          // This is necessary for INSERT and UPDATE animations.
           auto mutation = ShadowViewMutation{
               ShadowViewMutation::Type::Update,
               keyframe.parentView,
