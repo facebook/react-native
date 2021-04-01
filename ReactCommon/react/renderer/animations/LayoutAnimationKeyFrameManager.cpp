@@ -443,7 +443,7 @@ void LayoutAnimationKeyFrameManager::
       }
 
       // Detect if they're in the same view hierarchy, but not equivalent
-      // (We've already detected direct conflicts and handled them above)
+      // We've already detected direct conflicts and removed them.
       if (animatedKeyFrame.parentView.tag != mutation.parentShadowView.tag) {
         continue;
       }
@@ -631,6 +631,9 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
   std::vector<AnimationKeyFrame> conflictingAnimations{};
 
   for (auto const &mutation : mutations) {
+    bool mutationIsCreateOrDelete =
+        mutation.type == ShadowViewMutation::Type::Create ||
+        mutation.type == ShadowViewMutation::Type::Delete;
     auto const &baselineShadowView =
         (mutation.type == ShadowViewMutation::Type::Insert ||
          mutation.type == ShadowViewMutation::Type::Create)
@@ -653,7 +656,17 @@ LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
           continue;
         }
 
-        bool conflicting = animatedKeyFrame.tag == baselineShadowView.tag;
+        // A conflict is when either: the animated node itself is mutated
+        // directly; or, the parent of the node is created or deleted. In cases
+        // of reparenting - say, the parent is deleted but the node was moved to
+        // a different parent first - the reparenting (remove/insert) conflict
+        // will be detected before we process the parent DELETE.
+        // Parent deletion is important because deleting a parent recursively
+        // deletes all children. If we previously deferred deletion of a child,
+        // we need to force deletion/removal to happen immediately.
+        bool conflicting = animatedKeyFrame.tag == baselineShadowView.tag ||
+            (mutationIsCreateOrDelete &&
+             animatedKeyFrame.parentView.tag == baselineShadowView.tag);
 
         // Conflicting animation detected: if we're mutating a tag under
         // animation, or deleting the parent of a tag under animation, or
