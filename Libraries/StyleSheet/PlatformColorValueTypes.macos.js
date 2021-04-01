@@ -19,10 +19,33 @@ export opaque type NativeColorValue = {
     light: ?(ColorValue | ProcessedColorValue),
     dark: ?(ColorValue | ProcessedColorValue),
   },
+  colorWithSystemEffect?: {
+    baseColor: ?(ColorValue | ProcessedColorValue),
+    systemEffect: SystemEffectMacOSPrivate,
+  },
 };
 
 export const PlatformColor = (...names: Array<string>): ColorValue => {
   return {semantic: names};
+};
+
+export type SystemEffectMacOSPrivate =
+  | 'none'
+  | 'pressed'
+  | 'deepPressed'
+  | 'disabled'
+  | 'rollover';
+
+export const ColorWithSystemEffectMacOSPrivate = (
+  color: ColorValue,
+  effect: SystemEffectMacOSPrivate,
+): ColorValue => {
+  return {
+    colorWithSystemEffect: {
+      baseColor: color,
+      systemEffect: effect,
+    },
+  };
 };
 
 export type DynamicColorMacOSTuplePrivate = {
@@ -54,8 +77,20 @@ export const normalizeColorObject = (
       },
     };
     return dynamicColor;
+  } else if (
+    'colorWithSystemEffect' in color &&
+    color.colorWithSystemEffect != null
+  ) {
+    const processColor = require('./processColor');
+    const colorWithSystemEffect = color.colorWithSystemEffect;
+    const colorObject: NativeColorValue = {
+      colorWithSystemEffect: {
+        baseColor: processColor(colorWithSystemEffect.baseColor),
+        systemEffect: colorWithSystemEffect.systemEffect,
+      },
+    };
+    return colorObject;
   }
-
   return null;
 };
 
@@ -72,6 +107,19 @@ export const processColorObject = (
       },
     };
     return dynamicColor;
+  } else if (
+    'colorWithSystemEffect' in color &&
+    color.colorWithSystemEffect != null
+  ) {
+    const processColor = require('./processColor');
+    const colorWithSystemEffect = color.colorWithSystemEffect;
+    const colorObject: NativeColorValue = {
+      colorWithSystemEffect: {
+        baseColor: processColor(colorWithSystemEffect.baseColor),
+        systemEffect: colorWithSystemEffect.systemEffect,
+      },
+    };
+    return colorObject;
   }
   return color;
 };

@@ -951,6 +951,28 @@ static NSString *RCTSemanticColorNames()
 }
 // ]TODO(macOS ISS#2323203)
 
+// [TODO(macOS GH#750)
+#if TARGET_OS_OSX
+static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectString) {
+    NSColor *colorWithEffect = color;
+    if (systemEffectString != nil) {
+        if ([systemEffectString isEqualToString:@"none"]) {
+            colorWithEffect = [color colorWithSystemEffect:NSColorSystemEffectNone];
+        } else if ([systemEffectString isEqualToString:@"pressed"]) {
+            colorWithEffect = [color colorWithSystemEffect:NSColorSystemEffectPressed];
+        } else if ([systemEffectString isEqualToString:@"deepPressed"]) {
+            colorWithEffect = [color colorWithSystemEffect:NSColorSystemEffectDeepPressed];
+        } else if ([systemEffectString isEqualToString:@"disabled"]) {
+            colorWithEffect = [color colorWithSystemEffect:NSColorSystemEffectDisabled];
+        } else if ([systemEffectString isEqualToString:@"rollover"]) {
+            colorWithEffect = [color colorWithSystemEffect:NSColorSystemEffectRollover];
+        }
+    }
+    return colorWithEffect;
+}
+#endif //TARGET_OS_OSX
+// ]TODO(macOS GH#750)
+
 + (RCTUIColor *)UIColor:(id)json // TODO(OSS Candidate ISS#2710739)
 {
   if (!json) {
@@ -1030,8 +1052,24 @@ static NSString *RCTSemanticColorNames()
         RCTLogConvertError(json, @"a UIColor. Expected a dynamic appearance aware color.");
         return nil;
       }
+// [TODO(macOS GH#750)
+#if TARGET_OS_OSX
+    } else if((value = [dictionary objectForKey:@"colorWithSystemEffect"])) {
+        NSDictionary *colorWithSystemEffect = value;
+        id base = [colorWithSystemEffect objectForKey:@"baseColor"];
+        NSColor *baseColor = [RCTConvert UIColor:base];
+        NSString * systemEffectString = [colorWithSystemEffect objectForKey:@"systemEffect"];
+        if (baseColor != nil && systemEffectString != nil) {
+            return RCTColorWithSystemEffect(baseColor, systemEffectString);
+        } else {
+            RCTLogConvertError(
+                json, @"a UIColor.  Expected a color with a system effect string, but got something else");
+            return nil;
+        }
+#endif //TARGET_OS_OSX
+// ]TODO(macOS GH#750)
     } else {
-      RCTLogConvertError(json, @"a UIColor. Expected a semantic color or dynamic appearance aware color.");
+      RCTLogConvertError(json, @"a UIColor. Expected a semantic color, dynamic appearance aware color, or color with system effect"); //TODO(macOS GH#750)
       return nil;
     }
 // ]TODO(macOS ISS#2323203)

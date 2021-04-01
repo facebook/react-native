@@ -520,8 +520,8 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: 2b45d0f8e156a5b02354c8a4062de64d41ccb4e0
-  FBLazyVector: 92d78d01de741fe34b2d751e55a037653358ac0c
-  FBReactNativeSpec: e8382054abb3fb8270af2bca565a9f0577830525
+  FBLazyVector: 29fb6e7901d1f0a80f920b6f40e29b459e3ec4d1
+  FBReactNativeSpec: 2abf54e37e2606a820a73b437b997605c563c2ff
   Flipper: be611d4b742d8c87fbae2ca5f44603a02539e365
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
@@ -534,34 +534,34 @@ SPEC CHECKSUMS:
   libevent: 59938c595b8c19e50c83250628ffed9ebf662183
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RCT-Folly: 55d0039b24e192081ec0b2257f7bd9f42e382fb7
-  RCTRequired: 12daee8719711b00cac01ab3f90678356431596e
-  RCTTypeSafety: a4fd9c36901830973a05d074afc75a5147b3e6f2
-  React: 7cf7caa74c0c289d292ae2b2022a259e83b1c4c3
-  React-ART: d50f359f8ba778f8d184cd4b7d5bade4bd3aad81
-  React-callinvoker: 366e5648b012f7b02e1577d6c3d021763a10c9cc
-  React-Core: 712fe9e8aedce8c8f27d46f171a899487617403f
-  React-CoreModules: 75fc59024dea0708b2da5415298f491881de74e7
-  React-cxxreact: 1935fb10e2eecdcea1b225b6679e329b00889611
-  React-jsi: f7c5b9f6ed6bcc2b3ee6aa7a791d317ccbb8313f
-  React-jsiexecutor: cea9a058f0fcb1b8d4c1fad3fc3bb5088c2979bd
-  React-jsinspector: 6b83e9193f44d73358302e53a913e932c385cfa7
-  React-RCTActionSheet: 3f81bc159b69758f2c859f3cd85b15bb9c223ecb
-  React-RCTAnimation: af41afc5b073b180274fcdb2026b9b7b10c3b798
-  React-RCTBlob: 5a48ac364cc476941099367f5fbeffee0673fa87
-  React-RCTImage: 39e2de7650342313728d40955fabd278e5c4c134
-  React-RCTLinking: ed8eb075cff2349e89402663585ffef0381848a2
-  React-RCTNetwork: 9de10fa1593b0db1cca5bbfd5b2a82e809c8758b
-  React-RCTPushNotification: 1e7591f9ef1fa557f017b1eaf99e5c88fd5c8e6f
-  React-RCTSettings: e7a081bcc8c518ce59749ba3803a040f90483ffc
-  React-RCTTest: aa3ca9247f85c78eee060d74d4a8dbdb0e90c47e
-  React-RCTText: efbf71e9af9d6e6a7f9fa5ac87b4bd8baf1d8249
-  React-RCTVibration: d8ef2a3e93ebb0de2c4e0dbbaee56cdd54c5441b
+  RCTRequired: 57e1ef095e22d885256164d8c6df479dbd21da07
+  RCTTypeSafety: f72f3ec5db9ee5fa6bb29fe9f7fa7dacf50adfdf
+  React: b97bad9179f2d53c1c1bb1d0c66e2acef1742872
+  React-ART: 0ad249875e1b8884b3cd1c489e4647ff34996485
+  React-callinvoker: 9d92ac3e7ede9a0a85f037a83910a4d66b0c92ca
+  React-Core: 51a5896743a633f4156873166f8df2ed9cb0b0d5
+  React-CoreModules: e2b16910bbce831fba4ca8ac829b816d82c8eef1
+  React-cxxreact: a32457255e1ec50d5a07f9af396870f4b9ed5bdd
+  React-jsi: 651f42a24396052d7597fec149a7f81ca812165b
+  React-jsiexecutor: bfe7c0dbc6682c6beb1202c0c6afac92493e6cea
+  React-jsinspector: 76b4c121774407834f4e595bffbab9ab2b52b32c
+  React-RCTActionSheet: d2197778c865bbcfb1017ee3fd2c50a19318005b
+  React-RCTAnimation: c9bc756f8fe2bf0b3bd6940c7ab03cd757d8a032
+  React-RCTBlob: 1109c2570e7eb5fb33385b4cca2eec4dc302478c
+  React-RCTImage: 8390b4f788ffc069d0a7c284bb9b21650bc66116
+  React-RCTLinking: 11d1b2a7cbc16e38c717cc4a5e77fe30870ba19f
+  React-RCTNetwork: 5e1de525f5e12e74dae2f34e534dbf2cca1d63d3
+  React-RCTPushNotification: 3d65a4c1e7024261d74c764dd6faff4938cc01cb
+  React-RCTSettings: 73c143d2537688995cac0511e1285f9bec202a46
+  React-RCTTest: f8ad362f336933a7ac2aca51bb72d351b62d0655
+  React-RCTText: dba6bfe53bb0ecf817492cda78f6da8c4677e1ab
+  React-RCTVibration: a1e909ab9ae0b1f4090530e2e90b30ba598d67b4
   React-TurboModuleCxx-RNW: 18bb71af41fe34c8b12a56bef60aae7ee32b0817
-  React-TurboModuleCxx-WinRTPort: 4719553bda4c93a64b8e1d6a474a8afceb49419c
-  ReactCommon: f399d6afd467e33cc3042a9f2eed99e9b8c57eb3
-  Yoga: 831921041b154f425e43cd8c236502457c632d71
+  React-TurboModuleCxx-WinRTPort: 91af7d60f381ea47e2b43a2c0951175dda50218f
+  ReactCommon: eaa845b24197ed3e1f7a3f77d17cb45d98173975
+  Yoga: 8b5431dfe1c915fb925390f0769410304a86e04c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: baaa75a5807a228f32c4218f28c9260336518038
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.10.1

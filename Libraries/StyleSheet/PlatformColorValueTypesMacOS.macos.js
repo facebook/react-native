@@ -11,7 +11,10 @@
 'use strict';
 
 import type {ColorValue} from './StyleSheetTypes';
-import {DynamicColorMacOSPrivate} from './PlatformColorValueTypes';
+import {
+  DynamicColorMacOSPrivate,
+  ColorWithSystemEffectMacOSPrivate,
+} from './PlatformColorValueTypes';
 
 export type DynamicColorMacOSTuple = {
   light: ColorValue,
@@ -22,5 +25,19 @@ export const DynamicColorMacOS = (
   tuple: DynamicColorMacOSTuple,
 ): ColorValue => {
   return DynamicColorMacOSPrivate({light: tuple.light, dark: tuple.dark});
+};
+
+export type SystemEffectMacOS =
+  | 'none'
+  | 'pressed'
+  | 'deepPressed'
+  | 'disabled'
+  | 'rollover';
+
+export const ColorWithSystemEffectMacOS = (
+  color: ColorValue,
+  effect: SystemEffectMacOS,
+): ColorValue => {
+  return ColorWithSystemEffectMacOSPrivate(color, effect);
 };
 // ]TODO(macOS ISS#2323203)
