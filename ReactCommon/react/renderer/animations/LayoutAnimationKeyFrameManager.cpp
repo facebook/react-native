@@ -1203,10 +1203,13 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
             // We've found a conflict.
             if (conflictingMutationBaselineShadowView.tag == tag) {
-// Pick a Prop or layout property, depending on the current
-// animation configuration. Figure out how much progress we've
-// already made in the current animation, and start the animation
-// from this point.
+              conflictingKeyFrame.generateFinalSyntheticMutations = false;
+
+              // Do NOT update viewStart for a CREATE animation.
+              if (keyFrame.type == AnimationConfigurationType::Create) {
+                break;
+              }
+
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
               LOG(ERROR)
                   << "Due to conflict, replacing 'viewStart' of animated keyframe: ["
@@ -1309,6 +1312,21 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               continue;
             }
           }
+        }
+
+        // If the "final" mutation is already accounted for, by previously
+        // setting the correct "viewPrev" of the next conflicting animation, we
+        // don't want to queue up any final UPDATE mutations here.
+        bool shouldGenerateSyntheticMutations =
+            keyFrame.generateFinalSyntheticMutations;
+        bool numFinalMutations = keyFrame.finalMutationsForKeyFrame.size();
+        bool onlyMutationIsUpdate =
+            (numFinalMutations == 1 &&
+             keyFrame.finalMutationsForKeyFrame[0].type ==
+                 ShadowViewMutation::Update);
+        if (!shouldGenerateSyntheticMutations &&
+            (numFinalMutations == 0 || onlyMutationIsUpdate)) {
+          continue;
         }
 
         if (keyFrame.finalMutationsForKeyFrame.size() > 0) {

@@ -102,6 +102,10 @@ struct AnimationKeyFrame {
   double initialProgress;
 
   bool invalidated{false};
+
+  // In the case where some mutation conflicts with this keyframe,
+  // should we generate final synthetic UPDATE mutations for this keyframe?
+  bool generateFinalSyntheticMutations{true};
 };
 
 class LayoutAnimationCallbackWrapper {
