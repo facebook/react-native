@@ -154,6 +154,20 @@ export type Props = $ReadOnly<{|
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 |}>;
 
+function confirmProps(props: Props) {
+  if (__DEV__) {
+    if (
+      props.presentationStyle &&
+      props.presentationStyle !== 'overFullScreen' &&
+      props.transparent === true
+    ) {
+      console.warn(
+        `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
+      );
+    }
+  }
+}
+
 class Modal extends React.Component<Props> {
   static defaultProps: {|hardwareAccelerated: boolean, visible: boolean|} = {
     visible: true,
@@ -167,7 +181,9 @@ class Modal extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
-    Modal._confirmProps(props);
+    if (__DEV__) {
+      confirmProps(props);
+    }
     this._identifier = uniqueModalIdentifier++;
   }
 
@@ -190,19 +206,9 @@ class Modal extends React.Component<Props> {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    Modal._confirmProps(nextProps);
-  }
-
-  static _confirmProps(props: Props) {
-    if (
-      props.presentationStyle &&
-      props.presentationStyle !== 'overFullScreen' &&
-      props.transparent === true
-    ) {
-      console.warn(
-        `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
-      );
+  componentDidUpdate() {
+    if (__DEV__) {
+      confirmProps(this.props);
     }
   }
 
