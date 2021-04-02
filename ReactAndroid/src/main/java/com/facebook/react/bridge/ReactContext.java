@@ -170,6 +170,17 @@ public class ReactContext extends ContextWrapper {
     return Assertions.assertNotNull(mCatalystInstance);
   }
 
+  /**
+   * This API has been deprecated due to naming consideration, please use hasActiveReactInstance()
+   * instead
+   *
+   * @return
+   */
+  @Deprecated
+  public boolean hasActiveCatalystInstance() {
+    return hasActiveReactInstance();
+  }
+
   /** @return true if there is an non-null, alive react native instance */
   public boolean hasActiveReactInstance() {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
