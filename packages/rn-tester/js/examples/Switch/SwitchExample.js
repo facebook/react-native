@@ -182,7 +182,9 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn}
           />
-          <Text>{this.state.eventSwitchIsOn ? 'On' : 'Off'}</Text>
+          <Text testID="event-switch-indicator">
+            {this.state.eventSwitchIsOn ? 'On' : 'Off'}
+          </Text>
         </View>
         <View>
           <Switch
@@ -201,7 +203,9 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
             style={{marginBottom: 10}}
             value={this.state.eventSwitchRegressionIsOn}
           />
-          <Text>{this.state.eventSwitchRegressionIsOn ? 'On' : 'Off'}</Text>
+          <Text testID="event-switch-regression-indicator">
+            {this.state.eventSwitchRegressionIsOn ? 'On' : 'Off'}
+          </Text>
         </View>
       </View>
     );
