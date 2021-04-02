@@ -38,6 +38,7 @@
     "README.md",
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
+    "scripts/find-node.sh",
     "scripts/generate-specs.sh",
     "scripts/generate-specs-cli.js",
     "scripts/ios-configure-glog.sh",

@@ -30,6 +30,10 @@ RN_DIR=$(cd "$THIS_DIR/.." && pwd)
 NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
 USE_FABRIC="${USE_FABRIC:-0}"
 
+# Find path to Node
+# shellcheck source=/dev/null
+source "$RN_DIR/scripts/find-node.sh"
+
 cleanup () {
   set +e
   rm -rf "$TEMP_DIR"
@@ -56,7 +60,7 @@ main() {
   CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
   CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
 
-if [ -z "$NODE_BINARY" ]; then
+  if [ -z "$NODE_BINARY" ]; then
     echo "Error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." 1>&2
     exit 1
   fi
@@ -73,11 +77,6 @@ if [ -z "$NODE_BINARY" ]; then
   if [ ! -d "$CODEGEN_PATH/lib" ]; then
     describe "Building react-native-codegen package"
     bash "$CODEGEN_PATH/scripts/oss/build.sh"
-  fi
-
-  if [ -z "$NODE_BINARY" ]; then
-    echo "Error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." 1>&2
-    exit 1
   fi
 
   describe "Generating schema from flow types"
