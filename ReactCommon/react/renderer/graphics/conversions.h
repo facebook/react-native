@@ -9,6 +9,7 @@
 
 #include <better/map.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/Color.h>
@@ -93,14 +94,19 @@ inline void fromRawValue(const RawValue &value, Point &result) {
     return;
   }
 
+  react_native_assert(value.hasType<std::vector<Float>>());
   if (value.hasType<std::vector<Float>>()) {
     auto array = (std::vector<Float>)value;
     react_native_assert(array.size() == 2);
-    result = {array.at(0), array.at(1)};
-    return;
+    if (array.size() >= 2) {
+      result = {array.at(0), array.at(1)};
+    } else {
+      result = {0, 0};
+      LOG(ERROR) << "Unsupported Point vector size: " << array.size();
+    }
+  } else {
+    LOG(ERROR) << "Unsupported Point type";
   }
-
-  abort();
 }
 
 inline void fromRawValue(const RawValue &value, Size &result) {
@@ -111,19 +117,27 @@ inline void fromRawValue(const RawValue &value, Size &result) {
         result.width = pair.second;
       } else if (pair.first == "height") {
         result.height = pair.second;
+      } else {
+        LOG(ERROR) << "Unsupported Size map key: " << pair.first;
+        react_native_assert(false);
       }
     }
     return;
   }
 
+  react_native_assert(value.hasType<std::vector<Float>>());
   if (value.hasType<std::vector<Float>>()) {
     auto array = (std::vector<Float>)value;
     react_native_assert(array.size() == 2);
-    result = {array.at(0), array.at(1)};
-    return;
+    if (array.size() >= 2) {
+      result = {array.at(0), array.at(1)};
+    } else {
+      result = {0, 0};
+      LOG(ERROR) << "Unsupported Size vector size: " << array.size();
+    }
+  } else {
+    LOG(ERROR) << "Unsupported Size type";
   }
-
-  abort();
 }
 
 inline void fromRawValue(const RawValue &value, EdgeInsets &result) {
@@ -143,25 +157,34 @@ inline void fromRawValue(const RawValue &value, EdgeInsets &result) {
         result.bottom = pair.second;
       } else if (pair.first == "right") {
         result.right = pair.second;
+      } else {
+        LOG(ERROR) << "Unsupported EdgeInsets map key: " << pair.first;
+        react_native_assert(false);
       }
     }
     return;
   }
 
+  react_native_assert(value.hasType<std::vector<Float>>());
   if (value.hasType<std::vector<Float>>()) {
     auto array = (std::vector<Float>)value;
     react_native_assert(array.size() == 4);
-    result = {array.at(0), array.at(1), array.at(2), array.at(3)};
-    return;
+    if (array.size() >= 4) {
+      result = {array.at(0), array.at(1), array.at(2), array.at(3)};
+    } else {
+      result = {0, 0, 0, 0};
+      LOG(ERROR) << "Unsupported EdgeInsets vector size: " << array.size();
+    }
+  } else {
+    LOG(ERROR) << "Unsupported EdgeInsets type";
   }
-
-  abort();
 }
 
 inline void fromRawValue(const RawValue &value, CornerInsets &result) {
   if (value.hasType<Float>()) {
     auto number = (Float)value;
     result = {number, number, number, number};
+    return;
   }
 
   if (value.hasType<better::map<std::string, Float>>()) {
@@ -175,19 +198,29 @@ inline void fromRawValue(const RawValue &value, CornerInsets &result) {
         result.bottomLeft = pair.second;
       } else if (pair.first == "bottomRight") {
         result.bottomRight = pair.second;
+      } else {
+        LOG(ERROR) << "Unsupported CornerInsets map key: " << pair.first;
+        react_native_assert(false);
       }
     }
     return;
   }
 
+  react_native_assert(value.hasType<std::vector<Float>>());
   if (value.hasType<std::vector<Float>>()) {
     auto array = (std::vector<Float>)value;
     react_native_assert(array.size() == 4);
-    result = {array.at(0), array.at(1), array.at(2), array.at(3)};
-    return;
+    if (array.size() >= 4) {
+      result = {array.at(0), array.at(1), array.at(2), array.at(3)};
+    } else {
+      LOG(ERROR) << "Unsupported CornerInsets vector size: " << array.size();
+    }
   }
 
-  abort();
+  // Error case - we should only here if all other supported cases fail
+  // In dev we would crash on assert before this point
+  result = {0, 0, 0, 0};
+  LOG(ERROR) << "Unsupported CornerInsets type";
 }
 
 inline std::string toString(const Point &point) {
