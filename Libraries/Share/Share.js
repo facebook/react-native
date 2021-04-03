@@ -51,7 +51,7 @@ class Share {
    *
    * #### iOS
    *
-   *  - `url` - an URL to share
+   *  - `url` - a URL to share
    *
    * At least one of URL and message is required.
    *
