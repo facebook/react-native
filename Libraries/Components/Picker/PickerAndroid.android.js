@@ -32,7 +32,7 @@ type PickerItemValue = number | string;
 
 type Props = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
-  importantForAccessibility?: ?string,
+  importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   children?: React.Node,
   style?: ?TextStyleProp,
   backgroundColor?: ?ColorValue,

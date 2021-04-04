@@ -143,7 +143,7 @@ type ButtonProps = $ReadOnly<{|
   /**
    * [Android] Controlling if a view fires accessibility events and if it is reported to accessibility services.
    */
-  importantForAccessibility?: ?string,
+  importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
 |}>;
 
 /**
