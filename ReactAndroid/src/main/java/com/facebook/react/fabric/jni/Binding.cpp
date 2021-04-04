@@ -376,6 +376,14 @@ void Binding::stopSurface(jint surfaceId) {
   }
 }
 
+void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandler) {
+  surfaceHandler->registerScheduler(getScheduler());
+}
+
+void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandler) {
+  surfaceHandler->unregisterScheduler(getScheduler());
+}
+
 static inline float scale(Float value, Float pointScaleFactor) {
   std::feclearexcept(FE_ALL_EXCEPT);
   float result = value * pointScaleFactor;
@@ -500,6 +508,11 @@ void Binding::installFabricUIManager(
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
 
+  contextContainer->insert(
+      "MapBufferSerializationEnabled",
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_mapbuffer_serialization_android"));
+
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 
@@ -610,8 +623,7 @@ void Binding::schedulerDidFinishTransaction(
     auto &mutationType = mutation.type;
     auto &index = mutation.index;
 
-    bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
-        oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+    bool isVirtual = mutation.mutatedViewIsVirtual();
 
     switch (mutationType) {
       case ShadowViewMutation::Create: {
@@ -1182,7 +1194,8 @@ void Binding::schedulerDidSendAccessibilityEvent(
 
 void Binding::schedulerDidSetIsJSResponder(
     ShadowView const &shadowView,
-    bool isJSResponder) {
+    bool isJSResponder,
+    bool blockNativeResponder) {
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR) << "Binding::schedulerSetJSResponder: JavaUIManager disappeared";
@@ -1207,28 +1220,31 @@ void Binding::schedulerDidSetIsJSResponder(
         // be flattened because the only component that uses this feature -
         // ScrollView - cannot be flattened.
         shadowView.tag,
-        (jboolean) true);
+        (jboolean)blockNativeResponder);
   } else {
     clearJSResponder(localJavaUIManager);
   }
 }
 
 void Binding::registerNatives() {
-  registerHybrid(
-      {makeNativeMethod("initHybrid", Binding::initHybrid),
-       makeNativeMethod(
-           "installFabricUIManager", Binding::installFabricUIManager),
-       makeNativeMethod("startSurface", Binding::startSurface),
-       makeNativeMethod(
-           "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
-       makeNativeMethod(
-           "renderTemplateToSurface", Binding::renderTemplateToSurface),
-       makeNativeMethod("stopSurface", Binding::stopSurface),
-       makeNativeMethod("setConstraints", Binding::setConstraints),
-       makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
-       makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
-       makeNativeMethod(
-           "uninstallFabricUIManager", Binding::uninstallFabricUIManager)});
+  registerHybrid({
+      makeNativeMethod("initHybrid", Binding::initHybrid),
+      makeNativeMethod(
+          "installFabricUIManager", Binding::installFabricUIManager),
+      makeNativeMethod("startSurface", Binding::startSurface),
+      makeNativeMethod(
+          "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
+      makeNativeMethod(
+          "renderTemplateToSurface", Binding::renderTemplateToSurface),
+      makeNativeMethod("stopSurface", Binding::stopSurface),
+      makeNativeMethod("setConstraints", Binding::setConstraints),
+      makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
+      makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
+      makeNativeMethod(
+          "uninstallFabricUIManager", Binding::uninstallFabricUIManager),
+      makeNativeMethod("registerSurface", Binding::registerSurface),
+      makeNativeMethod("unregisterSurface", Binding::unregisterSurface),
+  });
 }
 
 } // namespace react

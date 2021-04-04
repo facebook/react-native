@@ -54,11 +54,15 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
   private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
 
+  private static int NO_SCROLL_POSITION = Integer.MIN_VALUE;
+
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
   private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
   private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
   private int mLayoutDirection;
+
+  private int mScrollXAfterMeasure = NO_SCROLL_POSITION;
 
   private static final int UNSET_CONTENT_OFFSET = -1;
 
@@ -275,13 +279,45 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
           measuredHeight);
     }
 
+    boolean measuredHeightChanged = getMeasuredHeight() != measuredHeight;
+
     setMeasuredDimension(measuredWidth, measuredHeight);
+
+    // See how `mScrollXAfterMeasure` is used in `onLayout`, and why we only enable the
+    // hack if the height has changed.
+    if (measuredHeightChanged && mScroller != null) {
+      mScrollXAfterMeasure = mScroller.getCurrX();
+    }
   }
 
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
     if (DEBUG_MODE) {
       FLog.i(TAG, "onLayout[%d] l %d t %d r %d b %d", getId(), l, t, r, b);
+    }
+
+    // Has the scrollX changed between the last onMeasure and this layout?
+    // If so, cancel the animation.
+    // Essentially, if the height changes (due to keyboard popping up, for instance) the
+    // underlying View.layout method will in some cases scroll to an incorrect X position -
+    // see also the hacks in `fling`. The order of layout is called in the order of: onMeasure,
+    // layout, onLayout.
+    // We cannot override `layout` but we can detect the sequence of events between onMeasure
+    // and onLayout.
+    if (mScrollXAfterMeasure != NO_SCROLL_POSITION
+        && mScroller != null
+        && mScrollXAfterMeasure != mScroller.getFinalX()
+        && !mScroller.isFinished()) {
+      if (DEBUG_MODE) {
+        FLog.i(
+            TAG,
+            "onLayout[%d] scroll hack enabled: reset to previous scrollX position of %d",
+            getId(),
+            mScrollXAfterMeasure);
+      }
+      mScroller.startScroll(mScrollXAfterMeasure, mScroller.getFinalY(), 0, 0);
+      mScroller.forceFinished(true);
+      mScrollXAfterMeasure = NO_SCROLL_POSITION;
     }
 
     // Call with the present values in order to re-layout if necessary
@@ -291,7 +327,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
     int scrollToY =
         pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
-    reactScrollTo(scrollToX, scrollToY);
+    scrollTo(scrollToX, scrollToY);
     ReactScrollViewHelper.emitLayoutEvent(this);
   }
 
@@ -489,6 +525,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   @Override
   public void fling(int velocityX) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "fling[%d] velocityX %d", getId(), velocityX);
+    }
 
     // Workaround.
     // On Android P if a ScrollView is inverted, we will get a wrong sign for
@@ -603,7 +642,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     if (DEBUG_MODE) {
       FLog.i(
           TAG,
-          "onOverScrolled[%d] scrollX %d scrollY %d clampedX %d clampedY %d",
+          "onOverScrolled[%d] scrollX %d scrollY %d clampedX %b clampedY %b",
           getId(),
           scrollX,
           scrollY,
@@ -671,6 +710,15 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * runnable that checks if we scrolled in the last frame and if so assumes we are still scrolling.
    */
   private void handlePostTouchScrolling(int velocityX, int velocityY) {
+    if (DEBUG_MODE) {
+      FLog.i(
+          TAG,
+          "handlePostTouchScrolling[%d] velocityX %d velocityY %d",
+          getId(),
+          velocityX,
+          velocityY);
+    }
+
     // Check if we are already handling this which may occur if this is called by both the touch up
     // and a fling call
     if (mPostTouchRunnable != null) {
@@ -784,6 +832,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * scrolling, and handling any momentum scrolling.
    */
   private void smoothScrollAndSnap(int velocity) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "smoothScrollAndSnap[%d] velocity %d", getId(), velocity);
+    }
+
     double interval = (double) getSnapInterval();
     double currentOffset = (double) (getPostAnimationScrollX());
     double targetOffset = (double) predictFinalScrollPosition(velocity);
@@ -829,6 +881,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   private void flingAndSnap(int velocityX) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "smoothScrollAndSnap[%d] velocityX %d", getId(), velocityX);
+    }
+
     if (getChildCount() <= 0) {
       return;
     }
@@ -962,6 +1018,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   private void smoothScrollToNextPage(int direction) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "smoothScrollToNextPage[%d] direction %d", getId(), direction);
+    }
+
     int width = getWidth();
     int currentX = getScrollX();
 
@@ -1070,17 +1130,21 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   /**
-   * Calls `reactScrollTo` and updates state.
+   * Calls `super.scrollTo` and updates state.
    *
-   * <p>`reactScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
-   * scroll view and state. Calling raw `reactScrollTo` doesn't update state.
+   * <p>`super.scrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
+   * scroll view and state.
+   *
+   * <p>Note that while we can override scrollTo, we *cannot* override `smoothScrollTo` because it
+   * is final. See `reactSmoothScrollTo`.
    */
-  public void reactScrollTo(int x, int y) {
+  @Override
+  public void scrollTo(int x, int y) {
     if (DEBUG_MODE) {
-      FLog.i(TAG, "reactScrollTo[%d] x %d y %d", getId(), x, y);
+      FLog.i(TAG, "scrollTo[%d] x %d y %d", getId(), x, y);
     }
 
-    scrollTo(x, y);
+    super.scrollTo(x, y);
     updateStateOnScroll(x, y);
     setPendingContentOffsets(x, y);
   }
@@ -1093,6 +1157,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * @param y
    */
   private void setPendingContentOffsets(int x, int y) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "setPendingContentOffsets[%d] x %d y %d", getId(), x, y);
+    }
     View child = getContentView();
     if (child != null && child.getWidth() != 0 && child.getHeight() != 0) {
       pendingContentOffsetX = UNSET_CONTENT_OFFSET;
@@ -1107,6 +1174,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
    */
   private void updateStateOnScroll(final int scrollX, final int scrollY) {
+    if (DEBUG_MODE) {
+      FLog.i(TAG, "updateStateOnScroll[%d] scrollX %d scrollY %d", getId(), scrollX, scrollY);
+    }
+
     // Dedupe events to reduce JNI traffic
     if (scrollX == mLastStateUpdateScrollX && scrollY == mLastStateUpdateScrollY) {
       return;

@@ -43,7 +43,8 @@ type AccessibilityEventDefinitions = {
   ],
 };
 
-type AccessibilityEventTypes = 'focus';
+// 'click' event type is not implemented in iOS. It's declared here to avoid flow type errors
+type AccessibilityEventTypes = 'focus' | 'click';
 
 const _subscriptions = new Map();
 
@@ -221,7 +222,6 @@ const AccessibilityInfo = {
     if (eventName === 'change') {
       subscription = RCTDeviceEventEmitter.addListener(
         CHANGE_EVENT_NAME.screenReaderChanged,
-        // $FlowFixMe[incompatible-call]
         handler,
       );
     } else if (CHANGE_EVENT_NAME[eventName]) {
@@ -233,7 +233,7 @@ const AccessibilityInfo = {
 
     return {
       remove: () => {
-        // $FlowIssue flow does not recognize handler properly
+        // $FlowIssue[incompatible-call] flow does not recognize handler properly
         AccessibilityInfo.removeEventListener<K>(eventName, handler);
       },
     };

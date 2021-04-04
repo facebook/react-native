@@ -158,7 +158,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             mEventDispatcher,
             minTimeLeftInFrameForNonBatchedOperationMs);
 
-    reactContext.addLifecycleEventListenerAndCheckState(this);
+    reactContext.addLifecycleEventListener(this);
   }
 
   @Deprecated
@@ -180,7 +180,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             mEventDispatcher,
             minTimeLeftInFrameForNonBatchedOperationMs);
 
-    reactContext.addLifecycleEventListenerAndCheckState(this);
+    reactContext.addLifecycleEventListener(this);
   }
 
   /**

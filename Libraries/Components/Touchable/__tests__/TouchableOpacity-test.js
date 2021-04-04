@@ -45,4 +45,8 @@ describe('TouchableOpacity', () => {
 
     expect(instance.toJSON()).toMatchSnapshot();
   });
+
+  it('has displayName', () => {
+    expect(TouchableOpacity.displayName).toEqual('TouchableOpacity');
+  });
 });

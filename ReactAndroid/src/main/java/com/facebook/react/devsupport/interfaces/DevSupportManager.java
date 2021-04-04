@@ -90,6 +90,9 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   @Nullable
   StackFrame[] getLastErrorStack();
 
+  @Nullable
+  ErrorType getLastErrorType();
+
   void registerErrorCustomizer(ErrorCustomizer errorCustomizer);
 
   /**

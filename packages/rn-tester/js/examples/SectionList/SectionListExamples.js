@@ -16,7 +16,11 @@ import {
   Text,
   View,
 } from 'react-native';
+
 import * as React from 'react';
+type SectionListProps = React.ElementProps<typeof SectionList>;
+
+type ViewabilityConfig = $PropertyType<SectionListProps, 'viewabilityConfig'>;
 
 const DATA = [
   {
@@ -36,12 +40,6 @@ const DATA = [
     data: ['Cheesecake', 'Ice Cream'],
   },
 ];
-
-const VIEWABILITY_CONFIG = {
-  minimumViewTime: 1000,
-  viewAreaCoveragePercentThreshold: 100,
-  waitForInteraction: true,
-};
 
 const Item = ({item, section, separators}) => {
   return (
@@ -193,7 +191,7 @@ export function SectionList_onEndReached(): React.Node {
     onEndReached: info => setOutput('onEndReached'),
     onEndReachedThreshold: 0,
   };
-  const ref = React.createRef<?React.ElementRef<typeof SectionList>>();
+  const ref = React.useRef(null);
 
   const onTest = () => {
     const scrollResponder = ref?.current?.getScrollResponder();
@@ -217,14 +215,19 @@ export function SectionList_withSeparators(): React.Node {
     ItemSeparatorComponent: Separator('lightgreen', 'green', false),
     SectionSeparatorComponent: Separator('lightblue', 'blue', true),
   };
-  const ref = React.createRef<?React.ElementRef<typeof SectionList>>();
+  const ref = React.useRef(null);
 
   return (
     <SectionListExampleWithForwardedRef ref={ref} exampleProps={exampleProps} />
   );
 }
 
-export function SectionList_onViewableItemsChanged(): React.Node {
+export function SectionList_onViewableItemsChanged(props: {
+  viewabilityConfig: ViewabilityConfig,
+  offScreen?: ?boolean,
+  horizontal?: ?boolean,
+}): React.Node {
+  const {viewabilityConfig, offScreen, horizontal} = props;
   const [output, setOutput] = React.useState('');
   const exampleProps = {
     onViewableItemsChanged: info =>
@@ -234,14 +237,16 @@ export function SectionList_onViewableItemsChanged(): React.Node {
           .map(viewToken => viewToken.item)
           .join(', '),
       ),
-    viewabilityConfig: VIEWABILITY_CONFIG,
+    viewabilityConfig,
+    horizontal,
   };
 
   return (
     <SectionListExampleWithForwardedRef
       exampleProps={exampleProps}
-      testOutput={output}
-    />
+      testOutput={output}>
+      {offScreen === true ? <View style={styles.offScreen} /> : null}
+    </SectionListExampleWithForwardedRef>
   );
 }
 
@@ -250,15 +255,13 @@ type Props = {
   onTest?: ?() => void,
   testLabel?: ?string,
   testOutput?: ?string,
+  children?: ?React.Node,
 };
 
 const SectionListExampleWithForwardedRef = React.forwardRef(
-  function SectionListExample(
-    props: Props,
-    ref: ?React.ElementRef<typeof SectionListExampleWithForwardedRef>,
-  ): React.Node {
+  (props: Props, ref): React.Node => {
     return (
-      <View>
+      <View style={styles.container}>
         {props.testOutput != null ? (
           <View testID="test_container" style={styles.testContainer}>
             <Text numberOfLines={1} testID="output">
@@ -273,11 +276,13 @@ const SectionListExampleWithForwardedRef = React.forwardRef(
             ) : null}
           </View>
         ) : null}
+        {props.children}
         <SectionList
           ref={ref}
           testID="section_list"
           sections={DATA}
           keyExtractor={(item, index) => item + index}
+          style={styles.list}
           renderItem={Item}
           renderSectionHeader={({section: {title}}) => (
             <Text style={styles.header}>{title}</Text>
@@ -323,6 +328,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f2f2f7ff',
     padding: 4,
+    height: 40,
   },
   output: {
     fontSize: 12,
@@ -332,5 +338,12 @@ const styles = StyleSheet.create({
   },
   separtorText: {
     fontSize: 10,
+  },
+  list: {
+    flex: 1,
+  },
+  container: {flex: 1},
+  offScreen: {
+    height: 1000,
   },
 });

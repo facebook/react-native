@@ -8,6 +8,8 @@
 #pragma once
 
 #include <folly/dynamic.h>
+#include <glog/logging.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/AccessibilityPrimitives.h>
 #include <react/renderer/core/propsConversions.h>
 
@@ -100,17 +102,19 @@ inline void fromRawValue(const RawValue &value, AccessibilityTraits &result) {
     return;
   }
 
+  result = {};
+
+  react_native_assert(value.hasType<std::vector<std::string>>());
   if (value.hasType<std::vector<std::string>>()) {
-    result = {};
     auto items = (std::vector<std::string>)value;
     for (auto &item : items) {
       AccessibilityTraits itemAccessibilityTraits;
       fromString(item, itemAccessibilityTraits);
       result = result | itemAccessibilityTraits;
     }
+  } else {
+    LOG(ERROR) << "AccessibilityTraits parsing: unsupported type";
   }
-
-  abort();
 }
 
 inline void fromRawValue(const RawValue &value, AccessibilityState &result) {
@@ -168,24 +172,24 @@ inline std::string toString(
 inline void fromRawValue(
     const RawValue &value,
     ImportantForAccessibility &result) {
-  auto string = (std::string)value;
-  if (string == "auto") {
-    result = ImportantForAccessibility::Auto;
-    return;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "auto") {
+      result = ImportantForAccessibility::Auto;
+    } else if (string == "yes") {
+      result = ImportantForAccessibility::Yes;
+    } else if (string == "no") {
+      result = ImportantForAccessibility::No;
+    } else if (string == "no-hide-descendants") {
+      result = ImportantForAccessibility::NoHideDescendants;
+    } else {
+      LOG(ERROR) << "Unsupported ImportantForAccessiblity value: " << string;
+      react_native_assert(false);
+    }
+  } else {
+    LOG(ERROR) << "Unsupported ImportantForAccessiblity type";
   }
-  if (string == "yes") {
-    result = ImportantForAccessibility::Yes;
-    return;
-  }
-  if (string == "no") {
-    result = ImportantForAccessibility::No;
-    return;
-  }
-  if (string == "no-hide-descendants") {
-    result = ImportantForAccessibility::NoHideDescendants;
-    return;
-  }
-  abort();
 }
 
 } // namespace react

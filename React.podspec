@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "11.0" }
   s.source                 = source
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
-  s.cocoapods_version      = ">= 1.2.0"
+  s.cocoapods_version      = ">= 1.10.1"
 
   s.dependency "React-Core", version
   s.dependency "React-Core/DevSupport", version

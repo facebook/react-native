@@ -67,14 +67,14 @@ void RawPropsKeyMap::reindex() noexcept {
     auto &item = items_[i];
     if (item.length != length) {
       for (auto j = length; j < item.length; j++) {
-        buckets_[j] = i;
+        buckets_[j] = static_cast<RawPropsPropNameLength>(i);
       }
       length = item.length;
     }
   }
 
   for (auto j = length; j < buckets_.size(); j++) {
-    buckets_[j] = items_.size();
+    buckets_[j] = static_cast<RawPropsPropNameLength>(items_.size());
   }
 }
 

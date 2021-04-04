@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import {Dimensions, Text, useWindowDimensions} from 'react-native';
 import * as React from 'react';
 
@@ -19,19 +20,22 @@ class DimensionsSubscription extends React.Component<
     dims: Dimensions.get(this.props.dim),
   };
 
+  _dimensionsSubscription: ?EventSubscription;
+
   componentDidMount() {
-    Dimensions.addEventListener('change', this._handleDimensionsChange);
+    this._dimensionsSubscription = Dimensions.addEventListener(
+      'change',
+      dimensions => {
+        this.setState({
+          dims: dimensions[this.props.dim],
+        });
+      },
+    );
   }
 
   componentWillUnmount() {
-    Dimensions.removeEventListener('change', this._handleDimensionsChange);
+    this._dimensionsSubscription?.remove();
   }
-
-  _handleDimensionsChange = dimensions => {
-    this.setState({
-      dims: dimensions[this.props.dim],
-    });
-  };
 
   render() {
     return <Text>{JSON.stringify(this.state.dims, null, 2)}</Text>;

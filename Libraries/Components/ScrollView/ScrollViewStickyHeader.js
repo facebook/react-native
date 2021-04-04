@@ -9,6 +9,10 @@
  */
 
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
+import AnimatedAddition from '../../Animated/nodes/AnimatedAddition';
+import AnimatedDiffClamp from '../../Animated/nodes/AnimatedDiffClamp';
+import AnimatedNode from '../../Animated/nodes/AnimatedNode';
+
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import View from '../View/View';
@@ -16,9 +20,11 @@ import Platform from '../../Utilities/Platform';
 
 import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
+import ScrollViewStickyHeaderInjection from './ScrollViewStickyHeaderInjection';
+
 const AnimatedView = AnimatedImplementation.createAnimatedComponent(View);
 
-export type Props = {
+export type Props = $ReadOnly<{
   children?: React.Element<any>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
@@ -29,8 +35,8 @@ export type Props = {
   // The height of the parent ScrollView. Currently only set when inverted.
   scrollViewHeight: ?number,
   nativeID?: ?string,
-  ...
-};
+  hiddenOnScroll?: ?boolean,
+}>;
 
 type State = {
   measured: boolean,
@@ -50,7 +56,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     translateY: null,
   };
 
-  _translateY: ?AnimatedImplementation.Interpolation = null;
+  _translateY: ?AnimatedNode = null;
   _shouldRecreateTranslateY: boolean = true;
   _haveReceivedInitialZeroTranslateY: boolean = true;
   _ref: any; // TODO T53738161: flow type this, and the whole file
@@ -62,6 +68,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
   _debounceTimeout: number = Platform.OS === 'android' ? 15 : 64;
 
   setNextHeaderY(y: number) {
+    this._shouldRecreateTranslateY = true;
     this.setState({nextHeaderLayoutY: y});
   }
 
@@ -87,12 +94,15 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
   updateTranslateListener(
     translateY: AnimatedImplementation.Interpolation,
     isFabric: boolean,
+    offset: AnimatedDiffClamp | null,
   ) {
     if (this._translateY != null && this._animatedValueListenerId != null) {
       this._translateY.removeListener(this._animatedValueListenerId);
     }
+    offset
+      ? (this._translateY = new AnimatedAddition(translateY, offset))
+      : (this._translateY = translateY);
 
-    this._translateY = translateY;
     this._shouldRecreateTranslateY = false;
 
     if (!isFabric) {
@@ -178,7 +188,6 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
       // eslint-disable-next-line dot-notation
       (this._ref && this._ref['_internalInstanceHandle']?.stateNode?.canonical)
     );
-
     // Initially and in the case of updated props or layout, we
     // recreate this interpolated value. Otherwise, we do not recreate
     // when there are state changes.
@@ -259,6 +268,22 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
           outputRange,
         }),
         isFabric,
+        this.props.hiddenOnScroll
+          ? new AnimatedDiffClamp(
+              this.props.scrollAnimatedValue
+                .interpolate({
+                  extrapolateLeft: 'clamp',
+                  inputRange: [layoutY, layoutY + 1],
+                  outputRange: ([0, 1]: Array<number>),
+                })
+                .interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ([0, -1]: Array<number>),
+                }),
+              -this.state.layoutHeight,
+              0,
+            )
+          : null,
       );
     }
 
@@ -305,4 +330,8 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ScrollViewStickyHeader;
+const SHToExport: React.AbstractComponent<
+  Props,
+  $ReadOnly<{setNextHeaderY: number => void, ...}>,
+> = ScrollViewStickyHeaderInjection.unstable_SH ?? ScrollViewStickyHeader;
+module.exports = SHToExport;

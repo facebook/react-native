@@ -9,6 +9,7 @@ package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 
+import android.text.Spannable;
 import android.view.View;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -30,6 +32,8 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.views.text.ReactTextViewManagerCallback;
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -335,6 +339,49 @@ public class MountingManager {
             height,
             heightMode,
             attachmentsPositions);
+  }
+
+  /**
+   * Measure a component, given localData, props, state, and measurement information. This needs to
+   * remain here for now - and not in SurfaceMountingManager - because sometimes measures are made
+   * outside of the context of a Surface; especially from C++ before StartSurface is called.
+   *
+   * @param context
+   * @param componentName
+   * @param attributedString
+   * @param paragraphAttributes
+   * @param width
+   * @param widthMode
+   * @param height
+   * @param heightMode
+   * @param attachmentsPositions
+   * @return
+   */
+  @AnyThread
+  public long measureTextMapBuffer(
+      @NonNull ReactContext context,
+      @NonNull String componentName,
+      @NonNull ReadableMapBuffer attributedString,
+      @NonNull ReadableMapBuffer paragraphAttributes,
+      float width,
+      @NonNull YogaMeasureMode widthMode,
+      float height,
+      @NonNull YogaMeasureMode heightMode,
+      @Nullable float[] attachmentsPositions) {
+
+    return TextLayoutManagerMapBuffer.measureText(
+        context,
+        attributedString,
+        paragraphAttributes,
+        width,
+        widthMode,
+        height,
+        heightMode,
+        new ReactTextViewManagerCallback() {
+          @Override
+          public void onPostProcessSpannable(Spannable text) {}
+        },
+        attachmentsPositions);
   }
 
   public void initializeViewManager(String componentName) {

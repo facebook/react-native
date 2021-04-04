@@ -156,10 +156,13 @@ ScrollViewProps::ScrollViewProps(
           "snapToOffsets",
           sourceProps.snapToOffsets,
           {})),
-      snapToStart(
-          convertRawProp(rawProps, "snapToStart", sourceProps.snapToStart, {})),
+      snapToStart(convertRawProp(
+          rawProps,
+          "snapToStart",
+          sourceProps.snapToStart,
+          true)),
       snapToEnd(
-          convertRawProp(rawProps, "snapToEnd", sourceProps.snapToEnd, {})),
+          convertRawProp(rawProps, "snapToEnd", sourceProps.snapToEnd, true)),
       contentInsetAdjustmentBehavior(convertRawProp(
           rawProps,
           "contentInsetAdjustmentBehavior",

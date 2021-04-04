@@ -138,6 +138,17 @@ class Keyboard {
   }
 
   /**
+   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
+   */
+  removeEventListener<K: $Keys<KeyboardEventDefinitions>>(
+    eventType: K,
+    listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
+  ): void {
+    // NOTE: This will report a deprecation notice via `console.error`.
+    this._emitter.removeListener(eventType, listener);
+  }
+
+  /**
    * Removes all listeners for a specific event type.
    *
    * @param {string} eventType The native event string listeners are watching which will be removed.

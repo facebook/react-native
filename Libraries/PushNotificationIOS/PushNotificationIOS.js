@@ -400,6 +400,20 @@ class PushNotificationIOS {
   }
 
   /**
+   * This method returns a promise that resolves to notification authorization status.
+   */
+  static getAuthorizationStatus(
+    callback: (authorizationStatus: number) => void,
+  ): void {
+    invariant(
+      NativePushNotificationManagerIOS,
+      'PushNotificationManager is not available.',
+    );
+
+    NativePushNotificationManagerIOS.getAuthorizationStatus(callback);
+  }
+
+  /**
    * You will never need to instantiate `PushNotificationIOS` yourself.
    * Listening to the `notification` event and invoking
    * `getInitialNotification` is sufficient

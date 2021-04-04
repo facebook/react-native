@@ -53,7 +53,7 @@ export type Spec = {|
     config: LayoutAnimationConfig,
     callback: () => void, // check what is returned here
     // This error isn't currently called anywhere, so the `error` object is really not defined
-    // $FlowFixMe
+    // $FlowFixMe[unclear-type]
     errorCallback: (error: Object) => void,
   ) => void,
   +sendAccessibilityEvent: (node: Node, eventType: string) => void,

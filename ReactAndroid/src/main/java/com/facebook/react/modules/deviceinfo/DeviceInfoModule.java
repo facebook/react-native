@@ -37,7 +37,7 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mFontScale = reactContext.getResources().getConfiguration().fontScale;
     mReactApplicationContext = reactContext;
-    mReactApplicationContext.addLifecycleEventListenerAndCheckState(this);
+    mReactApplicationContext.addLifecycleEventListener(this);
   }
 
   public DeviceInfoModule(Context context) {
@@ -83,7 +83,7 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
       return;
     }
 
-    if (mReactApplicationContext.hasActiveCatalystInstance()) {
+    if (mReactApplicationContext.hasActiveReactInstance()) {
       // Don't emit an event to JS if the dimensions haven't changed
       WritableNativeMap displayMetrics =
           DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale);
@@ -104,11 +104,8 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
   }
 
   @Override
-  public void invalidate() {}
-
-  @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
 
     ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
     if (applicationContext != null) {
