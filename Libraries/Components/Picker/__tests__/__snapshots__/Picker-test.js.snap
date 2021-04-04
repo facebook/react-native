@@ -1,5 +1,201 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`<Picker /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}: should deep render when mocked (please verify output manually) 1`] = `
+<View>
+  <RCTPicker
+    items={
+      Array [
+        Object {
+          "label": "foo",
+          "textColor": undefined,
+          "value": "foo",
+        },
+        Object {
+          "label": "bar",
+          "textColor": undefined,
+          "value": "bar",
+        },
+      ]
+    }
+    onChange={[Function]}
+    selectedIndex={0}
+    style={
+      Array [
+        Object {
+          "height": 216,
+        },
+        undefined,
+      ]
+    }
+  />
+</View>
+`;
+
+exports[`<Picker /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}: should deep render when not mocked (please verify output manually) 1`] = `
+<View>
+  <RCTPicker
+    items={
+      Array [
+        Object {
+          "label": "foo",
+          "textColor": undefined,
+          "value": "foo",
+        },
+        Object {
+          "label": "bar",
+          "textColor": undefined,
+          "value": "bar",
+        },
+      ]
+    }
+    onChange={[Function]}
+    selectedIndex={0}
+    style={
+      Array [
+        Object {
+          "height": 216,
+        },
+        undefined,
+      ]
+    }
+  />
+</View>
+`;
+
+exports[`<Picker /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}: should shallow render as <Picker /> when mocked 1`] = `
+<Picker
+  importantForAccessibility="no"
+  mode="dialog"
+  onValueChange={[MockFunction]}
+  selectedValue="foo"
+>
+  <PickerItem
+    label="foo"
+    value="foo"
+  />
+  <PickerItem
+    label="bar"
+    value="bar"
+  />
+</Picker>
+`;
+
+exports[`<Picker /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}: should shallow render as <Picker /> when not mocked 1`] = `
+<Picker
+  importantForAccessibility="no"
+  mode="dialog"
+  onValueChange={[MockFunction]}
+  selectedValue="foo"
+>
+  <PickerItem
+    label="foo"
+    value="foo"
+  />
+  <PickerItem
+    label="bar"
+    value="bar"
+  />
+</Picker>
+`;
+
+exports[`<Picker /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}: should deep render when mocked (please verify output manually) 1`] = `
+<View>
+  <RCTPicker
+    items={
+      Array [
+        Object {
+          "label": "foo",
+          "textColor": undefined,
+          "value": "foo",
+        },
+        Object {
+          "label": "bar",
+          "textColor": undefined,
+          "value": "bar",
+        },
+      ]
+    }
+    onChange={[Function]}
+    selectedIndex={0}
+    style={
+      Array [
+        Object {
+          "height": 216,
+        },
+        undefined,
+      ]
+    }
+  />
+</View>
+`;
+
+exports[`<Picker /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}: should deep render when not mocked (please verify output manually) 1`] = `
+<View>
+  <RCTPicker
+    items={
+      Array [
+        Object {
+          "label": "foo",
+          "textColor": undefined,
+          "value": "foo",
+        },
+        Object {
+          "label": "bar",
+          "textColor": undefined,
+          "value": "bar",
+        },
+      ]
+    }
+    onChange={[Function]}
+    selectedIndex={0}
+    style={
+      Array [
+        Object {
+          "height": 216,
+        },
+        undefined,
+      ]
+    }
+  />
+</View>
+`;
+
+exports[`<Picker /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}: should shallow render as <Picker /> when mocked 1`] = `
+<Picker
+  importantForAccessibility="no-hide-descendants"
+  mode="dialog"
+  onValueChange={[MockFunction]}
+  selectedValue="foo"
+>
+  <PickerItem
+    label="foo"
+    value="foo"
+  />
+  <PickerItem
+    label="bar"
+    value="bar"
+  />
+</Picker>
+`;
+
+exports[`<Picker /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}: should shallow render as <Picker /> when not mocked 1`] = `
+<Picker
+  importantForAccessibility="no-hide-descendants"
+  mode="dialog"
+  onValueChange={[MockFunction]}
+  selectedValue="foo"
+>
+  <PickerItem
+    label="foo"
+    value="foo"
+  />
+  <PickerItem
+    label="bar"
+    value="bar"
+  />
+</Picker>
+`;
+
 exports[`<Picker /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <View>
   <RCTPicker

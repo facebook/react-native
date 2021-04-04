@@ -31,4 +31,38 @@ describe('<Picker />', () => {
       },
     );
   });
+  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}', () => {
+    ReactNativeTestTools.expectRendersMatchingSnapshot(
+      'Picker',
+      () => (
+        <Picker
+          importantForAccessibility={'no-hide-descendants'}
+          selectedValue="foo"
+          onValueChange={jest.fn()}>
+          <Picker.Item label="foo" value="foo" />
+          <Picker.Item label="bar" value="bar" />
+        </Picker>
+      ),
+      () => {
+        jest.dontMock('../Picker');
+      },
+    );
+  });
+  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}', () => {
+    ReactNativeTestTools.expectRendersMatchingSnapshot(
+      'Picker',
+      () => (
+        <Picker
+          importantForAccessibility={'no'}
+          selectedValue="foo"
+          onValueChange={jest.fn()}>
+          <Picker.Item label="foo" value="foo" />
+          <Picker.Item label="bar" value="bar" />
+        </Picker>
+      ),
+      () => {
+        jest.dontMock('../Picker');
+      },
+    );
+  });
 });

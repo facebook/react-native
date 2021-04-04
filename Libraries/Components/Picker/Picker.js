@@ -116,6 +116,10 @@ type PickerProps = $ReadOnly<{|
    * The string used for the accessibility label. Will be read once focused on the picker but not on change.
    */
   accessibilityLabel?: ?string,
+  /**
+   * [Android] Controlling if a view fires accessibility events and if it is reported to accessibility services.
+   */
+  importantForAccessibility?: ?string,
 |}>;
 
 /**

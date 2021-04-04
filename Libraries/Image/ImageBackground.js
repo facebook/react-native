@@ -57,9 +57,16 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
 
+    // If `no` is specified for `importantForAccessibility`, it will be changed to `no-hide-descendants` because the text inside should not be focused.
+    const _importantForAccessibility =
+      this.props.importantForAccessibility === 'no'
+        ? 'no-hide-descendants'
+        : this.props.importantForAccessibility;
+
     return (
       <View
         accessibilityIgnoresInvertColors={true}
+        importantForAccessibility={_importantForAccessibility}
         style={style}
         ref={this._captureRef}>
         <Image

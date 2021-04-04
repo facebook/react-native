@@ -32,6 +32,7 @@ type PickerItemValue = number | string;
 
 type Props = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
+  importantForAccessibility?: ?string,
   children?: React.Node,
   style?: ?TextStyleProp,
   backgroundColor?: ?ColorValue,
@@ -110,6 +111,12 @@ function PickerAndroid(props: Props): React.Node {
     ],
   );
 
+  // If `no` is specified for `importantForAccessibility`, it will be changed to `no-hide-descendants` because the Picker.Item should not be focused.
+  const _importantForAccessibility =
+    props.importantForAccessibility === 'no'
+      ? 'no-hide-descendants'
+      : props.importantForAccessibility;
+
   const rootProps = {
     accessibilityLabel: props.accessibilityLabel,
     enabled: props.enabled,
@@ -121,6 +128,7 @@ function PickerAndroid(props: Props): React.Node {
     style: StyleSheet.compose(styles.pickerAndroid, props.style),
     backgroundColor: props.backgroundColor,
     testID: props.testID,
+    importantForAccessibility: _importantForAccessibility,
   };
   return props.mode === 'dropdown' ? (
     <AndroidDropdownPickerNativeComponent {...rootProps} />
