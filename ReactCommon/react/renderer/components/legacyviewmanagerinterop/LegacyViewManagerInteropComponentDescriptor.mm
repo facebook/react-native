@@ -95,7 +95,7 @@ ComponentName LegacyViewManagerInteropComponentDescriptor::getComponentName() co
   return std::static_pointer_cast<std::string const>(this->flavor_)->c_str();
 }
 
-void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode::Unshared shadowNode) const
+void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode::Unshared const &shadowNode) const
 {
   ConcreteComponentDescriptor::adopt(shadowNode);
 
