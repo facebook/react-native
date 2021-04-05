@@ -117,7 +117,8 @@ ShadowNode::ShadowNode(
   }
 }
 
-UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
+ShadowNode::Unshared ShadowNode::clone(
+    const ShadowNodeFragment &fragment) const {
   return family_->componentDescriptor_.cloneShadowNode(*this, fragment);
 }
 

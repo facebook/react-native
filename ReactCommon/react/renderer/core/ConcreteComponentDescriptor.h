@@ -75,7 +75,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNode;
   }
 
-  UnsharedShadowNode cloneShadowNode(
+  ShadowNode::Unshared cloneShadowNode(
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment) const override {
     react_native_assert(
