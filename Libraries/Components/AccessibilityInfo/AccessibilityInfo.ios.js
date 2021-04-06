@@ -8,6 +8,7 @@
  * @flow strict-local
  */
 
+import type EventEmitter from '../../vendor/emitter/EventEmitter';
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import NativeAccessibilityManager from './NativeAccessibilityManager';
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
@@ -16,15 +17,15 @@ import {sendAccessibilityEvent} from '../../Renderer/shims/ReactNative';
 import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import {type ElementRef} from 'react';
 
-const CHANGE_EVENT_NAME = {
-  announcementFinished: 'announcementFinished',
-  boldTextChanged: 'boldTextChanged',
-  grayscaleChanged: 'grayscaleChanged',
-  invertColorsChanged: 'invertColorsChanged',
-  reduceMotionChanged: 'reduceMotionChanged',
-  reduceTransparencyChanged: 'reduceTransparencyChanged',
-  screenReaderChanged: 'screenReaderChanged',
-};
+const SupportedEvents: Set<string> = new Set([
+  'announcementFinished',
+  'boldTextChanged',
+  'grayscaleChanged',
+  'invertColorsChanged',
+  'reduceMotionChanged',
+  'reduceTransparencyChanged',
+  'screenReaderChanged',
+]);
 
 type AccessibilityEventDefinitions = {
   boldTextChanged: [boolean],
@@ -45,8 +46,6 @@ type AccessibilityEventDefinitions = {
 
 // 'click' event type is not implemented in iOS. It's declared here to avoid flow type errors
 type AccessibilityEventTypes = 'focus' | 'click';
-
-const _subscriptions = new Map();
 
 /**
  * Sometimes it's useful to know whether or not the device has a screen reader
@@ -217,24 +216,15 @@ const AccessibilityInfo = {
     eventName: K,
     handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
   ): EventSubscription {
-    let subscription: EventSubscription;
-
     if (eventName === 'change') {
-      subscription = RCTDeviceEventEmitter.addListener(
-        CHANGE_EVENT_NAME.screenReaderChanged,
-        handler,
-      );
-    } else if (CHANGE_EVENT_NAME[eventName]) {
-      subscription = RCTDeviceEventEmitter.addListener(eventName, handler);
+      return RCTDeviceEventEmitter.addListener('screenReaderChanged', handler);
     }
-
-    // $FlowFixMe[escaped-generic]
-    _subscriptions.set(handler, subscription);
-
+    if (SupportedEvents.has(eventName)) {
+      return RCTDeviceEventEmitter.addListener(eventName, handler);
+    }
     return {
-      remove: () => {
-        // $FlowIssue[incompatible-call] flow does not recognize handler properly
-        AccessibilityInfo.removeEventListener<K>(eventName, handler);
+      remove(): void {
+        // Do nothing.
       },
     };
   },
@@ -271,22 +261,28 @@ const AccessibilityInfo = {
   },
 
   /**
-   * Remove an event handler.
-   *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#removeeventlistener
+   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
    */
   removeEventListener: function<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
     handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
   ): void {
-    // $FlowFixMe[escaped-generic]
-    const listener = _subscriptions.get(handler);
-    if (!listener) {
-      return;
+    // NOTE: This will report a deprecation notice via `console.error`.
+    if (eventName === 'change') {
+      // $FlowIgnore[incompatible-cast]
+      (RCTDeviceEventEmitter: EventEmitter<$FlowFixMe>).removeListener(
+        'screenReaderChanged',
+        // $FlowFixMe[invalid-tuple-arity]
+        handler,
+      );
+    } else if (SupportedEvents.has(eventName)) {
+      // $FlowIgnore[incompatible-cast]
+      (RCTDeviceEventEmitter: EventEmitter<$FlowFixMe>).removeListener(
+        eventName,
+        // $FlowFixMe[invalid-tuple-arity]
+        handler,
+      );
     }
-    listener.remove();
-    // $FlowFixMe[escaped-generic]
-    _subscriptions.delete(handler);
   },
 };
 

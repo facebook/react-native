@@ -8,6 +8,7 @@
  * @flow strict-local
  */
 
+import type EventEmitter from '../../vendor/emitter/EventEmitter';
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import NativeAccessibilityInfo from './NativeAccessibilityInfo';
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
@@ -27,8 +28,6 @@ type AccessibilityEventDefinitions = {
 };
 
 type AccessibilityEventTypes = 'focus' | 'click';
-
-const _subscriptions = new Map();
 
 /**
  * Sometimes it's useful to know whether or not the device has a screen reader
@@ -106,43 +105,45 @@ const AccessibilityInfo = {
     eventName: K,
     handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
   ): EventSubscription {
-    let listener;
-
     if (eventName === 'change' || eventName === 'screenReaderChanged') {
-      listener = RCTDeviceEventEmitter.addListener(
+      return RCTDeviceEventEmitter.addListener(
         TOUCH_EXPLORATION_EVENT,
         handler,
       );
-    } else if (eventName === 'reduceMotionChanged') {
-      listener = RCTDeviceEventEmitter.addListener(
-        REDUCE_MOTION_EVENT,
-        handler,
-      );
     }
-
-    // $FlowFixMe[escaped-generic]
-    _subscriptions.set(handler, listener);
-
+    if (eventName === 'reduceMotionChanged') {
+      return RCTDeviceEventEmitter.addListener(REDUCE_MOTION_EVENT, handler);
+    }
     return {
-      remove: () => {
-        // $FlowIssue flow does not recognize handler properly
-        AccessibilityInfo.removeEventListener<K>(eventName, handler);
+      remove(): void {
+        // Do nothing.
       },
     };
   },
 
+  /**
+   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
+   */
   removeEventListener: function<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
     handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
   ): void {
-    // $FlowFixMe[escaped-generic]
-    const listener = _subscriptions.get(handler);
-    if (!listener) {
-      return;
+    // NOTE: This will report a deprecation notice via `console.error`.
+    if (eventName === 'change' || eventName === 'screenReaderChanged') {
+      // $FlowIgnore[incompatible-cast]
+      (RCTDeviceEventEmitter: EventEmitter<$FlowFixMe>).removeListener(
+        TOUCH_EXPLORATION_EVENT,
+        // $FlowFixMe[invalid-tuple-arity]
+        handler,
+      );
+    } else if (eventName === 'reduceMotionChanged') {
+      // $FlowIgnore[incompatible-cast]
+      (RCTDeviceEventEmitter: EventEmitter<$FlowFixMe>).removeListener(
+        REDUCE_MOTION_EVENT,
+        // $FlowFixMe[invalid-tuple-arity]
+        handler,
+      );
     }
-    listener.remove();
-    // $FlowFixMe[escaped-generic]
-    _subscriptions.delete(handler);
   },
 
   /**
