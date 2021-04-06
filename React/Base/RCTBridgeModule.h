@@ -308,6 +308,11 @@ RCT_EXTERN_C_END
 #define RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(method) _RCT_EXTERN_REMAP_METHOD(, method, YES)
 
 /**
+ * Like RCT_EXTERN_METHOD, but allows setting a custom JavaScript name.
+ */
+#define RCT_EXTERN_REMAP_METHOD(js_name, method) _RCT_EXTERN_REMAP_METHOD(js_name, method, NO)
+
+/**
  * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name
  * and also whether this method is synchronous.
  */
