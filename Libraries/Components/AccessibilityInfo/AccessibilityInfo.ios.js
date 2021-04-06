@@ -170,19 +170,6 @@ const AccessibilityInfo = {
   },
 
   /**
-   * Deprecated
-   *
-   * Same as `isScreenReaderEnabled`
-   */
-  // $FlowFixMe[unsafe-getters-setters]
-  get fetch(): $FlowFixMe {
-    console.warn(
-      'AccessibilityInfo.fetch is deprecated, call AccessibilityInfo.isScreenReaderEnabled instead',
-    );
-    return this.isScreenReaderEnabled;
-  },
-
-  /**
    * Add an event handler. Supported events:
    *
    * - `boldTextChanged`: iOS-only event. Fires when the state of the bold text toggle changes.
@@ -222,7 +209,6 @@ const AccessibilityInfo = {
     if (eventName === 'change') {
       subscription = RCTDeviceEventEmitter.addListener(
         CHANGE_EVENT_NAME.screenReaderChanged,
-        // $FlowFixMe[incompatible-call]
         handler,
       );
     } else if (CHANGE_EVENT_NAME[eventName]) {
@@ -234,7 +220,7 @@ const AccessibilityInfo = {
 
     return {
       remove: () => {
-        // $FlowIssue flow does not recognize handler properly
+        // $FlowIssue[incompatible-call] flow does not recognize handler properly
         AccessibilityInfo.removeEventListener<K>(eventName, handler);
       },
     };

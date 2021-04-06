@@ -292,7 +292,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));
       ReactContext reactContext = (ReactContext) host.getContext();
-      if (reactContext.hasActiveCatalystInstance()) {
+      if (reactContext.hasActiveReactInstance()) {
         final int reactTag = host.getId();
         final int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
         UIManager uiManager = UIManagerHelper.getUIManager(reactContext, reactTag);

@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
   s.source_files           = "dummyFile.cpp"
   s.library                = "stdc++"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
+                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
 
   s.dependency folly_dep_name, folly_version
   s.dependency "React-graphics", version
@@ -315,6 +315,15 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/uimanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/uimanager/tests"
     ss.header_dir           = "react/renderer/uimanager"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
+  s.subspec "telemetry" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/telemetry/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/telemetry/tests"
+    ss.header_dir           = "react/renderer/telemetry"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 

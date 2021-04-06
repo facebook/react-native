@@ -405,9 +405,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       );
     } else if (this.props.onViewableItemsChanged) {
       this._virtualizedListPairs.push({
-        /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.63 was deployed. To see the error delete
-         * this comment and run Flow. */
+        /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
+         * comment suppresses an error found when Flow v0.63 was deployed. To
+         * see the error delete this comment and run Flow. */
         viewabilityConfig: this.props.viewabilityConfig,
         onViewableItemsChanged: this._createOnViewableItemsChanged(
           this.props.onViewableItemsChanged,
@@ -448,9 +448,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
   _checkProps(props: Props<ItemT>) {
     const {
-      // $FlowFixMe this prop doesn't exist, is only used for an invariant
+      // $FlowFixMe[prop-missing] this prop doesn't exist, is only used for an invariant
       getItem,
-      // $FlowFixMe this prop doesn't exist, is only used for an invariant
+      // $FlowFixMe[prop-missing] this prop doesn't exist, is only used for an invariant
       getItemCount,
       horizontal,
       numColumns,
@@ -522,7 +522,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         );
       }
     } else {
-      // $FlowFixMe Can't call keyExtractor with an array
+      // $FlowFixMe[incompatible-call] Can't call keyExtractor with an array
       return keyExtractor(items, index);
     }
   };
@@ -580,7 +580,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
     const renderer = (props): React.Node => {
       if (ListItemComponent) {
-        // $FlowFixMe Component isn't valid
+        // $FlowFixMe[not-a-component] Component isn't valid
+        // $FlowFixMe[incompatible-type-arg] Component isn't valid
+        // $FlowFixMe[incompatible-return] Component isn't valid
         return <ListItemComponent {...props} />;
       } else if (renderItem) {
         // $FlowFixMe[incompatible-call]
@@ -591,9 +593,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
 
     return {
-      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.111 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
+       * This comment suppresses an error found when Flow v0.111 was deployed.
+       * To see the error, delete this comment and run Flow. */
       [virtualizedListRenderKey]: (info: RenderItemProps<ItemT>) => {
         if (numColumns > 1) {
           const {item, index} = info;

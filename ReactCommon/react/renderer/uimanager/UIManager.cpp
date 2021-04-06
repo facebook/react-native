@@ -16,8 +16,7 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static std::unique_ptr<LeakChecker> constructLeakChecker(
     RuntimeExecutor const &runtimeExecutor,
@@ -433,5 +432,4 @@ void UIManager::animationTick() {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -61,7 +61,7 @@ public class DatePickerDialogModule extends NativeDatePickerAndroidSpec {
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int day) {
-      if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
+      if (!mPromiseResolved && getReactApplicationContext().hasActiveReactInstance()) {
         WritableMap result = new WritableNativeMap();
         result.putString("action", ACTION_DATE_SET);
         result.putInt("year", year);
@@ -74,7 +74,7 @@ public class DatePickerDialogModule extends NativeDatePickerAndroidSpec {
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-      if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
+      if (!mPromiseResolved && getReactApplicationContext().hasActiveReactInstance()) {
         WritableMap result = new WritableNativeMap();
         result.putString("action", ACTION_DISMISSED);
         mPromise.resolve(result);

@@ -39,7 +39,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     cxx_tests = [":tests"],
@@ -75,6 +75,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/mounting:mounting"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/utils:utils"),
+        react_native_xplat_target("react/renderer/telemetry:telemetry"),
     ],
 )
 
@@ -85,7 +86,7 @@ fb_xplat_cxx_test(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],

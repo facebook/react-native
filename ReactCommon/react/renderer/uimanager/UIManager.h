@@ -24,8 +24,7 @@
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 #include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class UIManagerBinding;
 class UIManagerCommitHook;
@@ -194,5 +193,4 @@ class UIManager final : public ShadowTreeDelegate {
   std::unique_ptr<LeakChecker> leakChecker_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -144,7 +144,6 @@ class AppState {
         return;
       case 'memoryWarning':
         // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
-        // $FlowIssue[incompatible-call]
         emitter.removeListener('memoryWarning', listener);
         return;
       case 'blur':

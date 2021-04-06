@@ -31,7 +31,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -47,10 +46,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
       new ViewGroup.LayoutParams(0, 0);
-
-  private static final ViewGroup.LayoutParams WRAP_CONTENT_LAYOUT_PARAMS =
-      new ViewGroup.LayoutParams(
-          ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
   private boolean mContainsImages;
   private int mDefaultGravityHorizontal;
@@ -274,11 +269,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // null; explicitly set the LayoutParams to prevent this crash. See:
     // https://github.com/facebook/react-native/pull/7011
     if (getLayoutParams() == null) {
-      if (ReactFeatureFlags.enableSettingEmptyLayoutParams) {
-        setLayoutParams(EMPTY_LAYOUT_PARAMS);
-      } else {
-        setLayoutParams(WRAP_CONTENT_LAYOUT_PARAMS);
-      }
+      setLayoutParams(EMPTY_LAYOUT_PARAMS);
     }
     Spannable spannable = update.getText();
     if (mLinkifyMaskType > 0) {

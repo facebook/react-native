@@ -14,6 +14,7 @@
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/graphics/rounding.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 
 #include "ParagraphState.h"
 

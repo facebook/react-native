@@ -15,7 +15,7 @@ public abstract class YogaNode implements YogaProps {
   public interface Inputs {
 
     /** Requests the data object to disable mutations of its inputs. */
-    void freeze();
+    void freeze(final YogaNode node, final @Nullable YogaNode parent);
   }
 
   public abstract void reset();

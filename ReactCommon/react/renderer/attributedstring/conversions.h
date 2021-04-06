@@ -44,28 +44,40 @@ inline std::string toString(const EllipsizeMode &ellipsisMode) {
     case EllipsizeMode::Middle:
       return "middle";
   }
-  abort();
+
+  LOG(ERROR) << "Unsupported EllipsizeMode value";
+  react_native_assert(false);
+
+  // Sane default in case of parsing errors
+  return "tail";
 }
 
 inline void fromRawValue(const RawValue &value, EllipsizeMode &result) {
-  auto string = (std::string)value;
-  if (string == "clip") {
-    result = EllipsizeMode::Clip;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "clip") {
+      result = EllipsizeMode::Clip;
+    } else if (string == "head") {
+      result = EllipsizeMode::Head;
+    } else if (string == "tail") {
+      result = EllipsizeMode::Tail;
+    } else if (string == "middle") {
+      result = EllipsizeMode::Middle;
+    } else {
+      // sane default
+      LOG(ERROR) << "Unsupported EllipsizeMode value: " << string;
+      react_native_assert(false);
+      result = EllipsizeMode::Tail;
+    }
     return;
   }
-  if (string == "head") {
-    result = EllipsizeMode::Head;
-    return;
-  }
-  if (string == "tail") {
-    result = EllipsizeMode::Tail;
-    return;
-  }
-  if (string == "middle") {
-    result = EllipsizeMode::Middle;
-    return;
-  }
-  abort();
+
+  LOG(ERROR) << "Unsupported EllipsizeMode type";
+  react_native_assert(false);
+
+  // Sane default in case of parsing errors
+  result = EllipsizeMode::Tail;
 }
 
 inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
@@ -77,77 +89,76 @@ inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
     case TextBreakStrategy::Balanced:
       return "balanced";
   }
-  abort();
+
+  LOG(ERROR) << "Unsupported TextBreakStrategy value";
+  react_native_assert(false);
+  return "simple";
 }
 
 inline void fromRawValue(const RawValue &value, TextBreakStrategy &result) {
-  auto string = (std::string)value;
-  if (string == "simple") {
-    result = TextBreakStrategy::Simple;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "simple") {
+      result = TextBreakStrategy::Simple;
+    } else if (string == "highQuality") {
+      result = TextBreakStrategy::HighQuality;
+    } else if (string == "balanced") {
+      result = TextBreakStrategy::Balanced;
+    } else {
+      // sane default
+      LOG(ERROR) << "Unsupported TextBreakStrategy value: " << string;
+      react_native_assert(false);
+      result = TextBreakStrategy::Simple;
+    }
     return;
   }
-  if (string == "highQuality") {
-    result = TextBreakStrategy::HighQuality;
-    return;
-  }
-  if (string == "balanced") {
-    result = TextBreakStrategy::Balanced;
-    return;
-  }
-  abort();
+
+  LOG(ERROR) << "Unsupported TextBreakStrategy type";
+  react_native_assert(false);
+  result = TextBreakStrategy::Simple;
 }
 
 inline void fromRawValue(const RawValue &value, FontWeight &result) {
-  auto string = (std::string)value;
-  if (string == "normal") {
-    result = FontWeight::Regular;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "normal") {
+      result = FontWeight::Regular;
+    } else if (string == "regular") {
+      result = FontWeight::Regular;
+    } else if (string == "bold") {
+      result = FontWeight::Bold;
+    } else if (string == "100") {
+      result = FontWeight::Weight100;
+    } else if (string == "200") {
+      result = FontWeight::Weight200;
+    } else if (string == "300") {
+      result = FontWeight::Weight300;
+    } else if (string == "400") {
+      result = FontWeight::Weight400;
+    } else if (string == "500") {
+      result = FontWeight::Weight500;
+    } else if (string == "600") {
+      result = FontWeight::Weight600;
+    } else if (string == "700") {
+      result = FontWeight::Weight700;
+    } else if (string == "800") {
+      result = FontWeight::Weight800;
+    } else if (string == "900") {
+      result = FontWeight::Weight900;
+    } else {
+      LOG(ERROR) << "Unsupported FontWeight value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = FontWeight::Regular;
+    }
     return;
   }
-  if (string == "regular") {
-    result = FontWeight::Regular;
-    return;
-  }
-  if (string == "bold") {
-    result = FontWeight::Bold;
-    return;
-  }
-  if (string == "100") {
-    result = FontWeight::Weight100;
-    return;
-  }
-  if (string == "200") {
-    result = FontWeight::Weight200;
-    return;
-  }
-  if (string == "300") {
-    result = FontWeight::Weight300;
-    return;
-  }
-  if (string == "400") {
-    result = FontWeight::Weight400;
-    return;
-  }
-  if (string == "500") {
-    result = FontWeight::Weight500;
-    return;
-  }
-  if (string == "600") {
-    result = FontWeight::Weight600;
-    return;
-  }
-  if (string == "700") {
-    result = FontWeight::Weight700;
-    return;
-  }
-  if (string == "800") {
-    result = FontWeight::Weight800;
-    return;
-  }
-  if (string == "900") {
-    result = FontWeight::Weight900;
-    return;
-  }
-  abort();
+
+  LOG(ERROR) << "Unsupported FontWeight type";
+  react_native_assert(false);
+  result = FontWeight::Regular;
 }
 
 inline std::string toString(const FontWeight &fontWeight) {
@@ -155,20 +166,28 @@ inline std::string toString(const FontWeight &fontWeight) {
 }
 
 inline void fromRawValue(const RawValue &value, FontStyle &result) {
-  auto string = (std::string)value;
-  if (string == "normal") {
-    result = FontStyle::Normal;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "normal") {
+      result = FontStyle::Normal;
+    } else if (string == "italic") {
+      result = FontStyle::Italic;
+    } else if (string == "oblique") {
+      result = FontStyle::Oblique;
+    } else {
+      LOG(ERROR) << "Unsupported FontStyle value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = FontStyle::Normal;
+    }
     return;
   }
-  if (string == "italic") {
-    result = FontStyle::Italic;
-    return;
-  }
-  if (string == "oblique") {
-    result = FontStyle::Oblique;
-    return;
-  }
-  abort();
+
+  LOG(ERROR) << "Unsupported FontStyle type";
+  react_native_assert(false);
+  // sane default for prod
+  result = FontStyle::Normal;
 }
 
 inline std::string toString(const FontStyle &fontStyle) {
@@ -180,34 +199,38 @@ inline std::string toString(const FontStyle &fontStyle) {
     case FontStyle::Oblique:
       return "oblique";
   }
-  abort();
+
+  LOG(ERROR) << "Unsupported FontStyle value";
+  react_native_assert(false);
+  // sane default for prod
+  return "normal";
 }
 
 inline void fromRawValue(const RawValue &value, FontVariant &result) {
   react_native_assert(value.hasType<std::vector<std::string>>());
   result = FontVariant::Default;
-  auto items = std::vector<std::string>{value};
-  for (const auto &item : items) {
-    if (item == "small-caps") {
-      result = (FontVariant)((int)result | (int)FontVariant::SmallCaps);
+  if (value.hasType<std::vector<std::string>>()) {
+    auto items = std::vector<std::string>{value};
+    for (const auto &item : items) {
+      if (item == "small-caps") {
+        result = (FontVariant)((int)result | (int)FontVariant::SmallCaps);
+      } else if (item == "oldstyle-nums") {
+        result = (FontVariant)((int)result | (int)FontVariant::OldstyleNums);
+      } else if (item == "lining-nums") {
+        result = (FontVariant)((int)result | (int)FontVariant::LiningNums);
+      } else if (item == "tabular-nums") {
+        result = (FontVariant)((int)result | (int)FontVariant::TabularNums);
+      } else if (item == "proportional-nums") {
+        result =
+            (FontVariant)((int)result | (int)FontVariant::ProportionalNums);
+      } else {
+        LOG(ERROR) << "Unsupported FontVariant value: " << item;
+        react_native_assert(false);
+      }
       continue;
     }
-    if (item == "oldstyle-nums") {
-      result = (FontVariant)((int)result | (int)FontVariant::OldstyleNums);
-      continue;
-    }
-    if (item == "lining-nums") {
-      result = (FontVariant)((int)result | (int)FontVariant::LiningNums);
-      continue;
-    }
-    if (item == "tabular-nums") {
-      result = (FontVariant)((int)result | (int)FontVariant::TabularNums);
-      continue;
-    }
-    if (item == "proportional-nums") {
-      result = (FontVariant)((int)result | (int)FontVariant::ProportionalNums);
-      continue;
-    }
+  } else {
+    LOG(ERROR) << "Unsupported FontVariant type";
   }
 }
 
@@ -238,34 +261,37 @@ inline std::string toString(const FontVariant &fontVariant) {
 }
 
 inline void fromRawValue(const RawValue &value, TextAlignment &result) {
-  auto string = (std::string)value;
-  if (string == "auto") {
-    result = TextAlignment::Natural;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "auto") {
+      result = TextAlignment::Natural;
+    } else if (string == "left") {
+      result = TextAlignment::Left;
+    } else if (string == "center") {
+      result = TextAlignment::Center;
+    } else if (string == "right") {
+      result = TextAlignment::Right;
+    } else if (string == "justify") {
+      result = TextAlignment::Justified;
+    } else {
+      LOG(ERROR) << "Unsupported TextAlignment value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = TextAlignment::Natural;
+    }
     return;
   }
-  if (string == "left") {
-    result = TextAlignment::Left;
-    return;
-  }
-  if (string == "center") {
-    result = TextAlignment::Center;
-    return;
-  }
-  if (string == "right") {
-    result = TextAlignment::Right;
-    return;
-  }
-  if (string == "justify") {
-    result = TextAlignment::Justified;
-    return;
-  }
-  abort();
+
+  LOG(ERROR) << "Unsupported TextAlignment type";
+  // sane default for prod
+  result = TextAlignment::Natural;
 }
 
 inline std::string toString(const TextAlignment &textAlignment) {
   switch (textAlignment) {
     case TextAlignment::Natural:
-      return "natural";
+      return "auto";
     case TextAlignment::Left:
       return "left";
     case TextAlignment::Center:
@@ -275,64 +301,81 @@ inline std::string toString(const TextAlignment &textAlignment) {
     case TextAlignment::Justified:
       return "justified";
   }
-  abort();
+
+  LOG(ERROR) << "Unsupported TextAlignment value";
+  // sane default for prod
+  return "auto";
 }
 
 inline void fromRawValue(const RawValue &value, WritingDirection &result) {
-  auto string = (std::string)value;
-  if (string == "natural") {
-    result = WritingDirection::Natural;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "natural" || string == "auto") {
+      result = WritingDirection::Natural;
+    } else if (string == "ltr") {
+      result = WritingDirection::LeftToRight;
+    } else if (string == "rtl") {
+      result = WritingDirection::RightToLeft;
+    } else {
+      LOG(ERROR) << "Unsupported WritingDirection value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = WritingDirection::Natural;
+    }
     return;
   }
-  if (string == "ltr") {
-    result = WritingDirection::LeftToRight;
-    return;
-  }
-  if (string == "rtl") {
-    result = WritingDirection::RightToLeft;
-    return;
-  }
-  abort();
+
+  LOG(ERROR) << "Unsupported WritingDirection type";
+  // sane default for prod
+  result = WritingDirection::Natural;
 }
 
 inline std::string toString(const WritingDirection &writingDirection) {
   switch (writingDirection) {
     case WritingDirection::Natural:
-      return "natural";
+      return "auto";
     case WritingDirection::LeftToRight:
       return "ltr";
     case WritingDirection::RightToLeft:
       return "rtl";
   }
-  abort();
+
+  LOG(ERROR) << "Unsupported WritingDirection value";
+  // sane default for prod
+  return "auto";
 }
 
 inline void fromRawValue(
     const RawValue &value,
     TextDecorationLineType &result) {
-  auto string = (std::string)value;
-  if (string == "none") {
-    result = TextDecorationLineType::None;
-    return;
-  }
-  if (string == "underline") {
-    result = TextDecorationLineType::Underline;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = TextDecorationLineType::None;
+    } else if (string == "underline") {
+      result = TextDecorationLineType::Underline;
+    } else if (string == "strikethrough" || string == "line-through") {
+      // TODO: remove "line-through" after deprecation
+      result = TextDecorationLineType::Strikethrough;
+    } else if (
+        string == "underline-strikethrough" ||
+        string == "underline line-through") {
+      // TODO: remove "underline line-through" after "line-through" deprecation
+      result = TextDecorationLineType::UnderlineStrikethrough;
+    } else {
+      LOG(ERROR) << "Unsupported TextDecorationLineType value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = TextDecorationLineType::None;
+    }
     return;
   }
 
-  // TODO: remove "line-through" after deprecation
-  if (string == "strikethrough" || string == "line-through") {
-    result = TextDecorationLineType::Strikethrough;
-    return;
-  }
-
-  // TODO: remove "underline line-through" after "line-through" deprecation
-  if (string == "underline-strikethrough" ||
-      string == "underline line-through") {
-    result = TextDecorationLineType::UnderlineStrikethrough;
-    return;
-  }
-  abort();
+  LOG(ERROR) << "Unsupported TextDecorationLineType type";
+  // sane default for prod
+  result = TextDecorationLineType::None;
 }
 
 inline std::string toString(
@@ -347,26 +390,37 @@ inline std::string toString(
     case TextDecorationLineType::UnderlineStrikethrough:
       return "underline-strikethrough";
   }
-  abort();
+
+  LOG(ERROR) << "Unsupported TextDecorationLineType value";
+  react_native_assert(false);
+  // sane default for prod
+  return "none";
 }
 
 inline void fromRawValue(
     const RawValue &value,
     TextDecorationLineStyle &result) {
-  auto string = (std::string)value;
-  if (string == "single") {
-    result = TextDecorationLineStyle::Single;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "single") {
+      result = TextDecorationLineStyle::Single;
+    } else if (string == "thick") {
+      result = TextDecorationLineStyle::Thick;
+    } else if (string == "double") {
+      result = TextDecorationLineStyle::Double;
+    } else {
+      LOG(ERROR) << "Unsupported TextDecorationLineStyle value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = TextDecorationLineStyle::Single;
+    }
     return;
   }
-  if (string == "thick") {
-    result = TextDecorationLineStyle::Thick;
-    return;
-  }
-  if (string == "double") {
-    result = TextDecorationLineStyle::Double;
-    return;
-  }
-  abort();
+
+  LOG(ERROR) << "Unsupported TextDecorationLineStyle type";
+  // sane default for prod
+  result = TextDecorationLineStyle::Single;
 }
 
 inline std::string toString(
@@ -379,34 +433,41 @@ inline std::string toString(
     case TextDecorationLineStyle::Double:
       return "double";
   }
-  abort();
+
+  LOG(ERROR) << "Unsupported TextDecorationLineStyle value";
+  react_native_assert(false);
+  // sane default for prod
+  return "single";
 }
 
 inline void fromRawValue(
     const RawValue &value,
     TextDecorationLinePattern &result) {
-  auto string = (std::string)value;
-  if (string == "solid") {
-    result = TextDecorationLinePattern::Solid;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "solid") {
+      result = TextDecorationLinePattern::Solid;
+    } else if (string == "dot") {
+      result = TextDecorationLinePattern::Dot;
+    } else if (string == "dash") {
+      result = TextDecorationLinePattern::Dash;
+    } else if (string == "dash-dot") {
+      result = TextDecorationLinePattern::DashDot;
+    } else if (string == "dash-dot-dot") {
+      result = TextDecorationLinePattern::DashDotDot;
+    } else {
+      LOG(ERROR) << "Unsupported TextDecorationLinePattern value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = TextDecorationLinePattern::Solid;
+    }
     return;
   }
-  if (string == "dot") {
-    result = TextDecorationLinePattern::Dot;
-    return;
-  }
-  if (string == "dash") {
-    result = TextDecorationLinePattern::Dash;
-    return;
-  }
-  if (string == "dash-dot") {
-    result = TextDecorationLinePattern::DashDot;
-    return;
-  }
-  if (string == "dash-dot-dot") {
-    result = TextDecorationLinePattern::DashDotDot;
-    return;
-  }
-  abort();
+
+  LOG(ERROR) << "Unsupported TextDecorationLineStyle type";
+  // sane default for prod
+  result = TextDecorationLinePattern::Solid;
 }
 
 inline std::string toString(
@@ -423,7 +484,11 @@ inline std::string toString(
     case TextDecorationLinePattern::DashDotDot:
       return "dash-dot-dot";
   }
-  abort();
+
+  LOG(ERROR) << "Unsupported TextDecorationLinePattern value";
+  react_native_assert(false);
+  // sane default for prod
+  return "solid";
 }
 
 inline std::string toString(const AccessibilityRole &accessibilityRole) {
@@ -483,120 +548,84 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
     case AccessibilityRole::Toolbar:
       return "toolbar";
   }
-  abort();
+
+  LOG(ERROR) << "Unsupported AccessibilityRole value";
+  react_native_assert(false);
+  // sane default for prod
+  return "none";
 }
 
 inline void fromRawValue(const RawValue &value, AccessibilityRole &result) {
-  auto string = (std::string)value;
-  if (string == "none") {
-    result = AccessibilityRole::None;
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = AccessibilityRole::None;
+    } else if (string == "button") {
+      result = AccessibilityRole::Button;
+    } else if (string == "link") {
+      result = AccessibilityRole::Link;
+    } else if (string == "search") {
+      result = AccessibilityRole::Search;
+    } else if (string == "image") {
+      result = AccessibilityRole::Image;
+    } else if (string == "imagebutton") {
+      result = AccessibilityRole::Imagebutton;
+    } else if (string == "keyboardkey") {
+      result = AccessibilityRole::Keyboardkey;
+    } else if (string == "text") {
+      result = AccessibilityRole::Text;
+    } else if (string == "adjustable") {
+      result = AccessibilityRole::Adjustable;
+    } else if (string == "summary") {
+      result = AccessibilityRole::Summary;
+    } else if (string == "header") {
+      result = AccessibilityRole::Header;
+    } else if (string == "alert") {
+      result = AccessibilityRole::Alert;
+    } else if (string == "checkbox") {
+      result = AccessibilityRole::Checkbox;
+    } else if (string == "combobox") {
+      result = AccessibilityRole::Combobox;
+    } else if (string == "menu") {
+      result = AccessibilityRole::Menu;
+    } else if (string == "menubar") {
+      result = AccessibilityRole::Menubar;
+    } else if (string == "menuitem") {
+      result = AccessibilityRole::Menuitem;
+    } else if (string == "progressbar") {
+      result = AccessibilityRole::Progressbar;
+    } else if (string == "radio") {
+      result = AccessibilityRole::Radio;
+    } else if (string == "radiogroup") {
+      result = AccessibilityRole::Radiogroup;
+    } else if (string == "scrollbar") {
+      result = AccessibilityRole::Scrollbar;
+    } else if (string == "spinbutton") {
+      result = AccessibilityRole::Spinbutton;
+    } else if (string == "switch") {
+      result = AccessibilityRole::Switch;
+    } else if (string == "tab") {
+      result = AccessibilityRole::Tab;
+    } else if (string == "tablist") {
+      result = AccessibilityRole::Tablist;
+    } else if (string == "timer") {
+      result = AccessibilityRole::Timer;
+    } else if (string == "toolbar") {
+      result = AccessibilityRole::Toolbar;
+    } else {
+      LOG(ERROR) << "Unsupported AccessibilityRole value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = AccessibilityRole::None;
+    }
     return;
   }
-  if (string == "button") {
-    result = AccessibilityRole::Button;
-    return;
-  }
-  if (string == "link") {
-    result = AccessibilityRole::Link;
-    return;
-  }
-  if (string == "search") {
-    result = AccessibilityRole::Search;
-    return;
-  }
-  if (string == "image") {
-    result = AccessibilityRole::Image;
-    return;
-  }
-  if (string == "imagebutton") {
-    result = AccessibilityRole::Imagebutton;
-    return;
-  }
-  if (string == "keyboardkey") {
-    result = AccessibilityRole::Keyboardkey;
-    return;
-  }
-  if (string == "text") {
-    result = AccessibilityRole::Text;
-    return;
-  }
-  if (string == "adjustable") {
-    result = AccessibilityRole::Adjustable;
-    return;
-  }
-  if (string == "summary") {
-    result = AccessibilityRole::Summary;
-    return;
-  }
-  if (string == "header") {
-    result = AccessibilityRole::Header;
-    return;
-  }
-  if (string == "alert") {
-    result = AccessibilityRole::Alert;
-    return;
-  }
-  if (string == "checkbox") {
-    result = AccessibilityRole::Checkbox;
-    return;
-  }
-  if (string == "combobox") {
-    result = AccessibilityRole::Combobox;
-    return;
-  }
-  if (string == "menu") {
-    result = AccessibilityRole::Menu;
-    return;
-  }
-  if (string == "menubar") {
-    result = AccessibilityRole::Menubar;
-    return;
-  }
-  if (string == "menuitem") {
-    result = AccessibilityRole::Menuitem;
-    return;
-  }
-  if (string == "progressbar") {
-    result = AccessibilityRole::Progressbar;
-    return;
-  }
-  if (string == "radio") {
-    result = AccessibilityRole::Radio;
-    return;
-  }
-  if (string == "radiogroup") {
-    result = AccessibilityRole::Radiogroup;
-    return;
-  }
-  if (string == "scrollbar") {
-    result = AccessibilityRole::Scrollbar;
-    return;
-  }
-  if (string == "spinbutton") {
-    result = AccessibilityRole::Spinbutton;
-    return;
-  }
-  if (string == "switch") {
-    result = AccessibilityRole::Switch;
-    return;
-  }
-  if (string == "tab") {
-    result = AccessibilityRole::Tab;
-    return;
-  }
-  if (string == "tablist") {
-    result = AccessibilityRole::Tablist;
-    return;
-  }
-  if (string == "timer") {
-    result = AccessibilityRole::Timer;
-    return;
-  }
-  if (string == "toolbar") {
-    result = AccessibilityRole::Toolbar;
-    return;
-  }
-  abort();
+
+  LOG(ERROR) << "Unsupported AccessibilityRole type";
+  react_native_assert(false);
+  // sane default for prod
+  result = AccessibilityRole::None;
 }
 
 inline ParagraphAttributes convertRawProp(
