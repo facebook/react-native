@@ -48,7 +48,7 @@ public class SurfaceMountingManager {
 
   private volatile boolean mIsStopped = false;
 
-  @NonNull private final ThemedReactContext mThemedReactContext;
+  @Nullable private ThemedReactContext mThemedReactContext;
 
   // These are all non-null, until StopSurface is called
   private ConcurrentHashMap<Integer, ViewState> mTagToViewState =
@@ -65,24 +65,26 @@ public class SurfaceMountingManager {
 
   public SurfaceMountingManager(
       int surfaceId,
-      @NonNull final View rootView,
       @NonNull JSResponderHandler jsResponderHandler,
       @NonNull ViewManagerRegistry viewManagerRegistry,
-      @NonNull RootViewManager rootViewManager,
-      @NonNull ThemedReactContext context) {
+      @NonNull RootViewManager rootViewManager) {
     mSurfaceId = surfaceId;
+
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
     mRootViewManager = rootViewManager;
-    mThemedReactContext = context;
-
-    addRootView(rootView);
   }
 
   public boolean isStopped() {
     return mIsStopped;
   }
 
+  public void attachRootView(View rootView, ThemedReactContext themedReactContext) {
+    mThemedReactContext = themedReactContext;
+    addRootView(rootView);
+  }
+
+  @Nullable
   public ThemedReactContext getContext() {
     return mThemedReactContext;
   }
@@ -133,7 +135,10 @@ public class SurfaceMountingManager {
 
   @AnyThread
   private void addRootView(@NonNull final View rootView) {
-    // Since this is called from the constructor, we know the surface cannot have stopped yet.
+    if (isStopped()) {
+      return;
+    }
+
     mTagToViewState.put(mSurfaceId, new ViewState(mSurfaceId, rootView, mRootViewManager, true));
 
     Runnable runnable =
