@@ -8,10 +8,8 @@ set -e
 
 # Set up the asdf node version manager if present
 if [[ -x "$HOME/.asdf/asdf.sh" ]]; then
-  echo "wow1"
   . "$HOME/.asdf/asdf.sh"
 elif [[ -x "$(command -v brew)" && -s "$(brew --prefix asdf)/asdf.sh" ]]; then
-  echo "wow2"
   . "$(brew --prefix asdf)/asdf.sh"
 fi
 
