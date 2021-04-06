@@ -1995,6 +1995,14 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return !!(
+      (this.props.ItemSeparatorComponent &&
+        this.state.separatorProps !== nextState.separatorProps) ||
+      this.props.item !== nextProps.item
+    );
+  }
+
   _renderElement(renderItem, ListItemComponent, item, index) {
     if (renderItem && ListItemComponent) {
       console.warn(
