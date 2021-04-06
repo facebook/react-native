@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<2fe382d0e0ada2126f1d6c90e3d2ef1d>>
+ * @generated SignedSource<<31b307087773581fd58a1b6ae0a24ae9>>
  */
 
 'use strict';
@@ -4093,162 +4093,6 @@ var ReactNativeFiberHostComponent = /*#__PURE__*/ (function() {
   return ReactNativeFiberHostComponent;
 })(); // eslint-disable-next-line no-unused-expressions
 
-// Intentionally not named imports because Rollup would use dynamic dispatch for
-var Scheduler_scheduleCallback = Scheduler.unstable_scheduleCallback,
-  Scheduler_cancelCallback = Scheduler.unstable_cancelCallback,
-  Scheduler_shouldYield = Scheduler.unstable_shouldYield,
-  Scheduler_requestPaint = Scheduler.unstable_requestPaint,
-  Scheduler_now = Scheduler.unstable_now,
-  Scheduler_ImmediatePriority = Scheduler.unstable_ImmediatePriority,
-  Scheduler_UserBlockingPriority = Scheduler.unstable_UserBlockingPriority,
-  Scheduler_NormalPriority = Scheduler.unstable_NormalPriority,
-  Scheduler_LowPriority = Scheduler.unstable_LowPriority,
-  Scheduler_IdlePriority = Scheduler.unstable_IdlePriority;
-
-{
-  // Provide explicit error message when production+profiling bundle of e.g.
-  // react-dom is used with production (non-profiling) bundle of
-  // scheduler/tracing
-  if (
-    !(
-      tracing.__interactionsRef != null &&
-      tracing.__interactionsRef.current != null
-    )
-  ) {
-    throw Error(
-      "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `scheduler/tracing` module with `scheduler/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at https://reactjs.org/link/profiling"
-    );
-  }
-}
-
-// Except for NoPriority, these correspond to Scheduler priorities. We use
-// ascending numbers so we can compare them like numbers. They start at 90 to
-// avoid clashing with Scheduler's priorities.
-var ImmediatePriority = 99;
-var UserBlockingPriority = 98;
-var NormalPriority = 97;
-var LowPriority = 96;
-var IdlePriority = 95; // NoPriority is the absence of priority. Also React-only.
-
-var NoPriority = 90;
-var shouldYield = Scheduler_shouldYield;
-var requestPaint = // Fall back gracefully if we're running an older version of Scheduler.
-  Scheduler_requestPaint !== undefined ? Scheduler_requestPaint : function() {};
-var syncQueue = null;
-var isFlushingSyncQueue = false;
-var initialTimeMs = Scheduler_now(); // If the initial timestamp is reasonably small, use Scheduler's `now` directly.
-// This will be the case for modern browsers that support `performance.now`. In
-// older browsers, Scheduler falls back to `Date.now`, which returns a Unix
-// timestamp. In that case, subtract the module initialization time to simulate
-// the behavior of performance.now and keep our times small enough to fit
-// within 32 bits.
-// TODO: Consider lifting this into Scheduler.
-
-var now =
-  initialTimeMs < 10000
-    ? Scheduler_now
-    : function() {
-        return Scheduler_now() - initialTimeMs;
-      };
-
-function reactPriorityToSchedulerPriority(reactPriorityLevel) {
-  switch (reactPriorityLevel) {
-    case ImmediatePriority:
-      return Scheduler_ImmediatePriority;
-
-    case UserBlockingPriority:
-      return Scheduler_UserBlockingPriority;
-
-    case NormalPriority:
-      return Scheduler_NormalPriority;
-
-    case LowPriority:
-      return Scheduler_LowPriority;
-
-    case IdlePriority:
-      return Scheduler_IdlePriority;
-
-    default: {
-      throw Error("Unknown priority level.");
-    }
-  }
-}
-
-function scheduleCallback(reactPriorityLevel, callback, options) {
-  var priorityLevel = reactPriorityToSchedulerPriority(reactPriorityLevel);
-  return Scheduler_scheduleCallback(priorityLevel, callback, options);
-}
-function scheduleSyncCallback(callback) {
-  // Push this callback into an internal queue. We'll flush these either in
-  // the next tick, or earlier if something calls `flushSyncCallbackQueue`.
-  if (syncQueue === null) {
-    syncQueue = [callback];
-  } else {
-    // Push onto existing queue. Don't need to schedule a callback because
-    // we already scheduled one when we created the queue.
-    syncQueue.push(callback);
-  }
-}
-function cancelCallback(callbackNode) {
-  Scheduler_cancelCallback(callbackNode);
-}
-function flushSyncCallbackQueue() {
-  if (!isFlushingSyncQueue && syncQueue !== null) {
-    // Prevent re-entrancy.
-    isFlushingSyncQueue = true;
-    var i = 0;
-    var previousLanePriority = getCurrentUpdateLanePriority();
-
-    try {
-      var _isSync = true;
-      var queue = syncQueue;
-      setCurrentUpdateLanePriority(SyncLanePriority);
-
-      for (; i < queue.length; i++) {
-        var callback = queue[i];
-
-        do {
-          callback = callback(_isSync);
-        } while (callback !== null);
-      }
-
-      syncQueue = null;
-    } catch (error) {
-      // If something throws, leave the remaining callbacks on the queue.
-      if (syncQueue !== null) {
-        syncQueue = syncQueue.slice(i + 1);
-      } // Resume flushing in the next tick
-
-      Scheduler_scheduleCallback(
-        Scheduler_ImmediatePriority,
-        flushSyncCallbackQueue
-      );
-      throw error;
-    } finally {
-      setCurrentUpdateLanePriority(previousLanePriority);
-      isFlushingSyncQueue = false;
-    }
-  }
-
-  return null;
-}
-
-var SyncLanePriority = 15;
-var SyncBatchedLanePriority = 14;
-var InputDiscreteHydrationLanePriority = 13;
-var InputDiscreteLanePriority = 12;
-var InputContinuousHydrationLanePriority = 11;
-var InputContinuousLanePriority = 10;
-var DefaultHydrationLanePriority = 9;
-var DefaultLanePriority = 8;
-var TransitionHydrationPriority = 7;
-var TransitionPriority = 6;
-var RetryLanePriority = 5;
-var SelectiveHydrationLanePriority = 4;
-var IdleHydrationLanePriority = 3;
-var IdleLanePriority = 2;
-var OffscreenLanePriority = 1;
-var NoLanePriority = 0; // Lane values below should be kept in sync with getLabelsForLanes(), used by react-devtools-scheduling-profiler.
 // If those values are changed that package should be rebuilt and redeployed.
 
 var TotalLanes = 31;
@@ -4261,88 +4105,88 @@ var NoLane =
 var SyncLane =
   /*                        */
   1;
-var SyncBatchedLane =
-  /*                 */
-  2;
-var InputDiscreteHydrationLane =
-  /*      */
-  4;
-var InputDiscreteLane =
-  /*              */
-  8;
 var InputContinuousHydrationLane =
   /*           */
-  16;
+  2;
 var InputContinuousLane =
   /*            */
-  32;
+  4;
 var DefaultHydrationLane =
   /*            */
-  64;
+  8;
 var DefaultLane =
   /*                    */
-  128;
+  16;
 var TransitionHydrationLane =
   /*                */
-  256;
+  32;
 var TransitionLanes =
   /*                       */
-  8388096;
+  4194240;
 var TransitionLane1 =
   /*                        */
-  512;
+  64;
 var TransitionLane2 =
   /*                        */
-  1024;
+  128;
 var TransitionLane3 =
   /*                        */
-  2048;
+  256;
 var TransitionLane4 =
   /*                        */
-  4096;
+  512;
 var TransitionLane5 =
   /*                        */
-  8192;
+  1024;
 var TransitionLane6 =
   /*                        */
-  16384;
+  2048;
 var TransitionLane7 =
   /*                        */
-  32768;
+  4096;
 var TransitionLane8 =
   /*                        */
-  65536;
+  8192;
 var TransitionLane9 =
   /*                        */
-  131072;
+  16384;
 var TransitionLane10 =
   /*                       */
-  262144;
+  32768;
 var TransitionLane11 =
   /*                       */
-  524288;
+  65536;
 var TransitionLane12 =
   /*                       */
-  1048576;
+  131072;
 var TransitionLane13 =
   /*                       */
-  2097152;
+  262144;
 var TransitionLane14 =
   /*                       */
-  4194304;
+  524288;
+var TransitionLane15 =
+  /*                       */
+  1048576;
+var TransitionLane16 =
+  /*                       */
+  2097152;
 var RetryLanes =
   /*                            */
-  125829120;
+  130023424;
 var RetryLane1 =
   /*                             */
-  8388608;
+  4194304;
 var RetryLane2 =
   /*                             */
-  16777216;
+  8388608;
 var RetryLane3 =
   /*                             */
-  33554432;
+  16777216;
 var RetryLane4 =
+  /*                             */
+  33554432;
+var RetryLane5 =
   /*                             */
   67108864;
 var SomeRetryLane = RetryLane1;
@@ -4356,61 +4200,33 @@ var IdleHydrationLane =
   /*               */
   268435456;
 var IdleLane =
-  /*                              */
+  /*                       */
   536870912;
 var OffscreenLane =
   /*                   */
   1073741824; // This function is used for the experimental scheduling profiler (react-devtools-scheduling-profiler)
 var NoTimestamp = -1;
-var currentUpdateLanePriority = NoLanePriority;
 var nextTransitionLane = TransitionLane1;
 var nextRetryLane = RetryLane1;
-function getCurrentUpdateLanePriority() {
-  return currentUpdateLanePriority;
-}
-function setCurrentUpdateLanePriority(newLanePriority) {
-  currentUpdateLanePriority = newLanePriority;
-} // "Registers" used to "return" multiple values
-// Used by getHighestPriorityLanes and getNextLanes:
-
-var return_highestLanePriority = DefaultLanePriority;
 
 function getHighestPriorityLanes(lanes) {
   switch (getHighestPriorityLane(lanes)) {
     case SyncLane:
-      return_highestLanePriority = SyncLanePriority;
       return SyncLane;
 
-    case SyncBatchedLane:
-      return_highestLanePriority = SyncBatchedLanePriority;
-      return SyncBatchedLane;
-
-    case InputDiscreteHydrationLane:
-      return_highestLanePriority = InputDiscreteHydrationLanePriority;
-      return InputDiscreteHydrationLane;
-
-    case InputDiscreteLane:
-      return_highestLanePriority = InputDiscreteLanePriority;
-      return InputDiscreteLane;
-
     case InputContinuousHydrationLane:
-      return_highestLanePriority = InputContinuousHydrationLanePriority;
       return InputContinuousHydrationLane;
 
     case InputContinuousLane:
-      return_highestLanePriority = InputContinuousLanePriority;
       return InputContinuousLane;
 
     case DefaultHydrationLane:
-      return_highestLanePriority = DefaultHydrationLanePriority;
       return DefaultHydrationLane;
 
     case DefaultLane:
-      return_highestLanePriority = DefaultLanePriority;
       return DefaultLane;
 
     case TransitionHydrationLane:
-      return_highestLanePriority = TransitionHydrationPriority;
       return TransitionHydrationLane;
 
     case TransitionLane1:
@@ -4427,30 +4243,27 @@ function getHighestPriorityLanes(lanes) {
     case TransitionLane12:
     case TransitionLane13:
     case TransitionLane14:
-      return_highestLanePriority = TransitionPriority;
+    case TransitionLane15:
+    case TransitionLane16:
       return lanes & TransitionLanes;
 
     case RetryLane1:
     case RetryLane2:
     case RetryLane3:
     case RetryLane4:
-      return_highestLanePriority = RetryLanePriority;
+    case RetryLane5:
       return lanes & RetryLanes;
 
     case SelectiveHydrationLane:
-      return_highestLanePriority = SelectiveHydrationLanePriority;
       return SelectiveHydrationLane;
 
     case IdleHydrationLane:
-      return_highestLanePriority = IdleHydrationLanePriority;
       return IdleHydrationLane;
 
     case IdleLane:
-      return_highestLanePriority = IdleLanePriority;
       return IdleLane;
 
     case OffscreenLane:
-      return_highestLanePriority = OffscreenLanePriority;
       return OffscreenLane;
 
     default:
@@ -4458,96 +4271,46 @@ function getHighestPriorityLanes(lanes) {
         error("Should have found matching lanes. This is a bug in React.");
       } // This shouldn't be reachable, but as a fallback, return the entire bitmask.
 
-      return_highestLanePriority = DefaultLanePriority;
       return lanes;
   }
 }
 
-function lanePriorityToSchedulerPriority(lanePriority) {
-  switch (lanePriority) {
-    case SyncLanePriority:
-    case SyncBatchedLanePriority:
-      return ImmediatePriority;
-
-    case InputDiscreteHydrationLanePriority:
-    case InputDiscreteLanePriority:
-    case InputContinuousHydrationLanePriority:
-    case InputContinuousLanePriority:
-      return UserBlockingPriority;
-
-    case DefaultHydrationLanePriority:
-    case DefaultLanePriority:
-    case TransitionHydrationPriority:
-    case TransitionPriority:
-    case SelectiveHydrationLanePriority:
-    case RetryLanePriority:
-      return NormalPriority;
-
-    case IdleHydrationLanePriority:
-    case IdleLanePriority:
-    case OffscreenLanePriority:
-      return IdlePriority;
-
-    case NoLanePriority:
-      return NoPriority;
-
-    default: {
-      throw Error(
-        "Invalid update priority: " + lanePriority + ". This is a bug in React."
-      );
-    }
-  }
-}
 function getNextLanes(root, wipLanes) {
   // Early bailout if there's no pending work left.
   var pendingLanes = root.pendingLanes;
 
   if (pendingLanes === NoLanes) {
-    return_highestLanePriority = NoLanePriority;
     return NoLanes;
   }
 
   var nextLanes = NoLanes;
-  var nextLanePriority = NoLanePriority;
-  var expiredLanes = root.expiredLanes;
   var suspendedLanes = root.suspendedLanes;
-  var pingedLanes = root.pingedLanes; // Check if any work has expired.
+  var pingedLanes = root.pingedLanes; // Do not work on any idle work until all the non-idle work has finished,
+  // even if the work is suspended.
 
-  if (expiredLanes !== NoLanes) {
-    // TODO: Should entangle with SyncLane
-    nextLanes = expiredLanes;
-    nextLanePriority = return_highestLanePriority = SyncLanePriority;
-  } else {
-    // Do not work on any idle work until all the non-idle work has finished,
-    // even if the work is suspended.
-    var nonIdlePendingLanes = pendingLanes & NonIdleLanes;
+  var nonIdlePendingLanes = pendingLanes & NonIdleLanes;
 
-    if (nonIdlePendingLanes !== NoLanes) {
-      var nonIdleUnblockedLanes = nonIdlePendingLanes & ~suspendedLanes;
+  if (nonIdlePendingLanes !== NoLanes) {
+    var nonIdleUnblockedLanes = nonIdlePendingLanes & ~suspendedLanes;
 
-      if (nonIdleUnblockedLanes !== NoLanes) {
-        nextLanes = getHighestPriorityLanes(nonIdleUnblockedLanes);
-        nextLanePriority = return_highestLanePriority;
-      } else {
-        var nonIdlePingedLanes = nonIdlePendingLanes & pingedLanes;
-
-        if (nonIdlePingedLanes !== NoLanes) {
-          nextLanes = getHighestPriorityLanes(nonIdlePingedLanes);
-          nextLanePriority = return_highestLanePriority;
-        }
-      }
+    if (nonIdleUnblockedLanes !== NoLanes) {
+      nextLanes = getHighestPriorityLanes(nonIdleUnblockedLanes);
     } else {
-      // The only remaining work is Idle.
-      var unblockedLanes = pendingLanes & ~suspendedLanes;
+      var nonIdlePingedLanes = nonIdlePendingLanes & pingedLanes;
 
-      if (unblockedLanes !== NoLanes) {
-        nextLanes = getHighestPriorityLanes(unblockedLanes);
-        nextLanePriority = return_highestLanePriority;
-      } else {
-        if (pingedLanes !== NoLanes) {
-          nextLanes = getHighestPriorityLanes(pingedLanes);
-          nextLanePriority = return_highestLanePriority;
-        }
+      if (nonIdlePingedLanes !== NoLanes) {
+        nextLanes = getHighestPriorityLanes(nonIdlePingedLanes);
+      }
+    }
+  } else {
+    // The only remaining work is Idle.
+    var unblockedLanes = pendingLanes & ~suspendedLanes;
+
+    if (unblockedLanes !== NoLanes) {
+      nextLanes = getHighestPriorityLanes(unblockedLanes);
+    } else {
+      if (pingedLanes !== NoLanes) {
+        nextLanes = getHighestPriorityLanes(pingedLanes);
       }
     }
   }
@@ -4566,20 +4329,19 @@ function getNextLanes(root, wipLanes) {
     // bother waiting until the root is complete.
     (wipLanes & suspendedLanes) === NoLanes
   ) {
-    getHighestPriorityLanes(wipLanes);
-    var wipLanePriority = return_highestLanePriority;
+    var nextLane = getHighestPriorityLane(nextLanes);
+    var wipLane = getHighestPriorityLane(wipLanes);
 
     if (
-      nextLanePriority <= wipLanePriority || // Default priority updates should not interrupt transition updates. The
+      // Tests whether the next lane is equal or lower priority than the wip
+      // one. This works because the bits decrease in priority as you go left.
+      nextLane >= wipLane || // Default priority updates should not interrupt transition updates. The
       // only difference between default updates and transition updates is that
       // default updates do not support refresh transitions.
-      (nextLanePriority === DefaultLanePriority &&
-        wipLanePriority === TransitionPriority)
+      (nextLane === DefaultLane && (wipLane & TransitionLanes) !== NoLanes)
     ) {
       // Keep working on the existing in-progress tree. Do not interrupt.
       return wipLanes;
-    } else {
-      return_highestLanePriority = nextLanePriority;
     }
   } // Check for entangled lanes and add them to the batch.
   //
@@ -4640,32 +4402,60 @@ function getMostRecentEventTime(root, lanes) {
 }
 
 function computeExpirationTime(lane, currentTime) {
-  // TODO: Expiration heuristic is constant per lane, so could use a map.
-  getHighestPriorityLanes(lane);
-  var priority = return_highestLanePriority;
+  switch (lane) {
+    case SyncLane:
+    case InputContinuousHydrationLane:
+    case InputContinuousLane:
+      // User interactions should expire slightly more quickly.
+      //
+      // NOTE: This is set to the corresponding constant as in Scheduler.js.
+      // When we made it larger, a product metric in www regressed, suggesting
+      // there's a user interaction that's being starved by a series of
+      // synchronous updates. If that theory is correct, the proper solution is
+      // to fix the starvation. However, this scenario supports the idea that
+      // expiration times are an important safeguard when starvation
+      // does happen.
+      return currentTime + 250;
 
-  if (priority >= InputContinuousLanePriority) {
-    // User interactions should expire slightly more quickly.
-    //
-    // NOTE: This is set to the corresponding constant as in Scheduler.js. When
-    // we made it larger, a product metric in www regressed, suggesting there's
-    // a user interaction that's being starved by a series of synchronous
-    // updates. If that theory is correct, the proper solution is to fix the
-    // starvation. However, this scenario supports the idea that expiration
-    // times are an important safeguard when starvation does happen.
-    //
-    // Also note that, in the case of user input specifically, this will soon no
-    // longer be an issue because we plan to make user input synchronous by
-    // default (until you enter `startTransition`, of course.)
-    //
-    // If weren't planning to make these updates synchronous soon anyway, I
-    // would probably make this number a configurable parameter.
-    return currentTime + 250;
-  } else if (priority >= TransitionPriority) {
-    return currentTime + 5000;
-  } else {
-    // Anything idle priority or lower should never expire.
-    return NoTimestamp;
+    case DefaultHydrationLane:
+    case DefaultLane:
+    case TransitionHydrationLane:
+    case TransitionLane1:
+    case TransitionLane2:
+    case TransitionLane3:
+    case TransitionLane4:
+    case TransitionLane5:
+    case TransitionLane6:
+    case TransitionLane7:
+    case TransitionLane8:
+    case TransitionLane9:
+    case TransitionLane10:
+    case TransitionLane11:
+    case TransitionLane12:
+    case TransitionLane13:
+    case TransitionLane14:
+    case TransitionLane15:
+    case TransitionLane16:
+    case RetryLane1:
+    case RetryLane2:
+    case RetryLane3:
+    case RetryLane4:
+    case RetryLane5:
+      return currentTime + 5000;
+
+    case SelectiveHydrationLane:
+    case IdleHydrationLane:
+    case IdleLane:
+    case OffscreenLane:
+      // Anything idle priority or lower should never expire.
+      return NoTimestamp;
+
+    default:
+      {
+        error("Should have found matching lanes. This is a bug in React.");
+      }
+
+      return NoTimestamp;
   }
 }
 
@@ -4681,6 +4471,7 @@ function markStarvedLanesAsExpired(root, currentTime) {
   // it as expired to force it to finish.
 
   var lanes = pendingLanes;
+  var expiredLanes = 0;
 
   while (lanes > 0) {
     var index = pickArbitraryLaneIndex(lanes);
@@ -4700,10 +4491,14 @@ function markStarvedLanesAsExpired(root, currentTime) {
       }
     } else if (expirationTime <= currentTime) {
       // This lane expired
-      root.expiredLanes |= lane;
+      expiredLanes |= lane;
     }
 
     lanes &= ~lane;
+  }
+
+  if (expiredLanes !== 0) {
+    markRootExpired(root, expiredLanes);
   }
 } // This returns the highest priority pending lanes regardless of whether they
 function getLanesToRetrySynchronouslyOnError(root) {
@@ -4719,9 +4514,6 @@ function getLanesToRetrySynchronouslyOnError(root) {
 
   return NoLanes;
 }
-function returnNextLanesPriority() {
-  return return_highestLanePriority;
-}
 function includesNonIdleWork(lanes) {
   return (lanes & NonIdleLanes) !== NoLanes;
 }
@@ -4733,44 +4525,6 @@ function includesOnlyTransitions(lanes) {
 }
 function isTransitionLane(lane) {
   return (lane & TransitionLanes) !== 0;
-} // To ensure consistency across multiple updates in the same event, this should
-// be a pure function, so that it always returns the same lane for given inputs.
-
-function findUpdateLane(lanePriority) {
-  switch (lanePriority) {
-    case NoLanePriority:
-      break;
-
-    case SyncLanePriority:
-      return SyncLane;
-
-    case SyncBatchedLanePriority:
-      return SyncBatchedLane;
-
-    case InputDiscreteLanePriority:
-      return SyncLane;
-
-    case InputContinuousLanePriority:
-      return InputContinuousLane;
-
-    case DefaultLanePriority:
-      return DefaultLane;
-
-    case TransitionPriority: // Should be handled by findTransitionLane instead
-
-    case RetryLanePriority:
-      // Should be handled by findRetryLane instead
-      break;
-
-    case IdleLanePriority:
-      return IdleLane;
-  }
-
-  {
-    throw Error(
-      "Invalid update priority: " + lanePriority + ". This is a bug in React."
-    );
-  }
 }
 function claimNextTransitionLane() {
   // Cycle through the lanes, assigning each new transition to the next lane.
@@ -4795,11 +4549,9 @@ function claimNextRetryLane() {
 
   return lane;
 }
-
 function getHighestPriorityLane(lanes) {
   return lanes & -lanes;
 }
-
 function pickArbitraryLane(lanes) {
   // This wrapper function gets inlined. Only exists so to communicate that it
   // doesn't matter which bit is selected; you can pick any bit without
@@ -4835,9 +4587,6 @@ function intersectLanes(a, b) {
 
 function laneToLanes(lane) {
   return lane;
-}
-function higherLanePriority(a, b) {
-  return a !== NoLanePriority && a > b ? a : b;
 }
 function createLaneMap(initial) {
   // Intentionally pushing one by one.
@@ -4893,7 +4642,16 @@ function markRootPinged(root, pingedLanes, eventTime) {
   root.pingedLanes |= root.suspendedLanes & pingedLanes;
 }
 function markRootExpired(root, expiredLanes) {
-  root.expiredLanes |= expiredLanes & root.pendingLanes;
+  var entanglements = root.entanglements;
+  var SyncLaneIndex = 0;
+  entanglements[SyncLaneIndex] |= expiredLanes;
+  root.entangledLanes |= SyncLane;
+  root.pendingLanes |= SyncLane;
+}
+function areLanesExpired(root, lanes) {
+  var SyncLaneIndex = 0;
+  var entanglements = root.entanglements;
+  return (entanglements[SyncLaneIndex] & lanes) !== NoLanes;
 }
 function markRootMutableRead(root, updateLane) {
   root.mutableReadLanes |= updateLane & root.pendingLanes;
@@ -4904,7 +4662,6 @@ function markRootFinished(root, remainingLanes) {
 
   root.suspendedLanes = 0;
   root.pingedLanes = 0;
-  root.expiredLanes &= remainingLanes;
   root.mutableReadLanes &= remainingLanes;
   root.entangledLanes &= remainingLanes;
 
@@ -4969,25 +4726,40 @@ function clz32Fallback(lanes) {
   return (31 - ((log(lanes) / LN2) | 0)) | 0;
 }
 
-// Intentionally not named imports because Rollup would use dynamic dispatch for
-var Scheduler_now$1 = Scheduler.unstable_now;
-
-{
-  // Provide explicit error message when production+profiling bundle of e.g.
-  // react-dom is used with production (non-profiling) bundle of
-  // scheduler/tracing
-  if (
-    !(
-      tracing.__interactionsRef != null &&
-      tracing.__interactionsRef.current != null
-    )
-  ) {
-    throw Error(
-      "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `scheduler/tracing` module with `scheduler/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at https://reactjs.org/link/profiling"
-    );
-  }
+var DiscreteEventPriority = SyncLane;
+var ContinuousEventPriority = InputContinuousLane;
+var DefaultEventPriority = DefaultLane;
+var IdleEventPriority = IdleLane;
+var currentUpdatePriority = NoLane;
+function getCurrentUpdatePriority() {
+  return currentUpdatePriority;
 }
-var initialTimeMs$1 = Scheduler_now$1(); // If the initial timestamp is reasonably small, use Scheduler's `now` directly.
+function setCurrentUpdatePriority(newPriority) {
+  currentUpdatePriority = newPriority;
+}
+function higherEventPriority(a, b) {
+  return a !== 0 && a < b ? a : b;
+}
+function isHigherEventPriority(a, b) {
+  return a !== 0 && a < b;
+}
+function lanesToEventPriority(lanes) {
+  var lane = getHighestPriorityLane(lanes);
+
+  if (!isHigherEventPriority(DiscreteEventPriority, lane)) {
+    return DiscreteEventPriority;
+  }
+
+  if (!isHigherEventPriority(ContinuousEventPriority, lane)) {
+    return ContinuousEventPriority;
+  }
+
+  if (includesNonIdleWork(lane)) {
+    return DefaultEventPriority;
+  }
+
+  return IdleEventPriority;
+}
 
 // can re-export everything from this module.
 
@@ -5003,7 +4775,6 @@ var isSuspenseInstanceFallback = shim;
 var hydrateTextInstance = shim;
 var errorHydratingContainer = shim;
 
-var DefaultLanePriority$1 = DefaultLanePriority;
 var getViewConfigForType =
   ReactNativePrivateInterface.ReactNativeViewConfigRegistry.get;
 var UPDATE_SIGNAL = {};
@@ -5180,7 +4951,7 @@ function shouldSetTextContent(type, props) {
   return false;
 }
 function getCurrentEventPriority() {
-  return DefaultLanePriority$1;
+  return DefaultEventPriority;
 } // -------------------
 function appendChild(parentInstance, child) {
   var childTag = typeof child === "number" ? child : child._nativeTag;
@@ -6011,6 +5782,33 @@ function findCurrentUnmaskedContext(fiber) {
 var LegacyRoot = 0;
 var ConcurrentRoot = 1;
 
+// This module only exists as an ESM wrapper around the external CommonJS
+var scheduleCallback = Scheduler.unstable_scheduleCallback;
+var cancelCallback = Scheduler.unstable_cancelCallback;
+var shouldYield = Scheduler.unstable_shouldYield;
+var requestPaint = Scheduler.unstable_requestPaint;
+var now = Scheduler.unstable_now;
+var ImmediatePriority = Scheduler.unstable_ImmediatePriority;
+var UserBlockingPriority = Scheduler.unstable_UserBlockingPriority;
+var NormalPriority = Scheduler.unstable_NormalPriority;
+var IdlePriority = Scheduler.unstable_IdlePriority;
+
+{
+  // Provide explicit error message when production+profiling bundle of e.g.
+  // react-dom is used with production (non-profiling) bundle of
+  // scheduler/tracing
+  if (
+    !(
+      tracing.__interactionsRef != null &&
+      tracing.__interactionsRef.current != null
+    )
+  ) {
+    throw Error(
+      "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `scheduler/tracing` module with `scheduler/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at https://reactjs.org/link/profiling"
+    );
+  }
+}
+
 var rendererID = null;
 var injectedHook = null;
 var hasLoggedError = false;
@@ -6073,16 +5871,36 @@ function onScheduleRoot(root, children) {
     }
   }
 }
-function onCommitRoot(root, priorityLevel) {
+function onCommitRoot(root, eventPriority) {
   if (injectedHook && typeof injectedHook.onCommitFiberRoot === "function") {
     try {
       var didError = (root.current.flags & DidCapture) === DidCapture;
 
       if (enableProfilerTimer) {
-        var schedulerPriority =
-          priorityLevel === NoLanePriority
-            ? NormalPriority
-            : lanePriorityToSchedulerPriority(priorityLevel);
+        var schedulerPriority;
+
+        switch (eventPriority) {
+          case DiscreteEventPriority:
+            schedulerPriority = ImmediatePriority;
+            break;
+
+          case ContinuousEventPriority:
+            schedulerPriority = UserBlockingPriority;
+            break;
+
+          case DefaultEventPriority:
+            schedulerPriority = NormalPriority;
+            break;
+
+          case IdleEventPriority:
+            schedulerPriority = IdlePriority;
+            break;
+
+          default:
+            schedulerPriority = NormalPriority;
+            break;
+        }
+
         injectedHook.onCommitFiberRoot(
           rendererID,
           root,
@@ -6119,6 +5937,59 @@ function onCommitUnmount(fiber) {
   }
 }
 
+var syncQueue = null;
+var isFlushingSyncQueue = false;
+function scheduleSyncCallback(callback) {
+  // Push this callback into an internal queue. We'll flush these either in
+  // the next tick, or earlier if something calls `flushSyncCallbackQueue`.
+  if (syncQueue === null) {
+    syncQueue = [callback];
+  } else {
+    // Push onto existing queue. Don't need to schedule a callback because
+    // we already scheduled one when we created the queue.
+    syncQueue.push(callback);
+  }
+}
+function flushSyncCallbackQueue() {
+  if (!isFlushingSyncQueue && syncQueue !== null) {
+    // Prevent re-entrancy.
+    isFlushingSyncQueue = true;
+    var i = 0;
+    var previousUpdatePriority = getCurrentUpdatePriority();
+
+    try {
+      var isSync = true;
+      var queue = syncQueue; // TODO: Is this necessary anymore? The only user code that runs in this
+      // queue is in the render or commit phases.
+
+      setCurrentUpdatePriority(DiscreteEventPriority);
+
+      for (; i < queue.length; i++) {
+        var callback = queue[i];
+
+        do {
+          callback = callback(isSync);
+        } while (callback !== null);
+      }
+
+      syncQueue = null;
+    } catch (error) {
+      // If something throws, leave the remaining callbacks on the queue.
+      if (syncQueue !== null) {
+        syncQueue = syncQueue.slice(i + 1);
+      } // Resume flushing in the next tick
+
+      scheduleCallback(ImmediatePriority, flushSyncCallbackQueue);
+      throw error;
+    } finally {
+      setCurrentUpdatePriority(previousUpdatePriority);
+      isFlushingSyncQueue = false;
+    }
+  }
+
+  return null;
+}
+
 var NoFlags$1 =
   /*  */
   0; // Represents whether effect should fire.
@@ -6136,10 +6007,10 @@ var Passive$1 =
 
 // TODO: this is special because it gets imported during build.
 //
-// TODO: 17.0.2 has not been released to NPM;
+// TODO: 17.0.3 has not been released to NPM;
 // It exists as a placeholder so that DevTools can support work tag changes between releases.
-// When we next publish a release (either 17.0.2 or 17.1.0), update the matching TODO in backend/renderer.js
-var ReactVersion = "17.0.2";
+// When we next publish a release (either 17.0.3 or 17.1.0), update the matching TODO in backend/renderer.js
+var ReactVersion = "17.0.3";
 
 var NoMode =
   /*            */
@@ -11571,15 +11442,11 @@ function rerenderDeferredValue(value) {
 }
 
 function startTransition(setPending, callback) {
-  var previousLanePriority = getCurrentUpdateLanePriority();
-  setCurrentUpdateLanePriority(
-    higherLanePriority(previousLanePriority, InputContinuousLanePriority)
+  var previousPriority = getCurrentUpdatePriority();
+  setCurrentUpdatePriority(
+    higherEventPriority(previousPriority, ContinuousEventPriority)
   );
-  setPending(true); // TODO: Can remove this. Was only necessary because we used to give
-  // different behavior to transitions without a config object. Now they are
-  // all treated the same.
-
-  setCurrentUpdateLanePriority(DefaultLanePriority);
+  setPending(true);
   var prevTransition = ReactCurrentBatchConfig$1.transition;
   ReactCurrentBatchConfig$1.transition = 1;
 
@@ -11587,7 +11454,7 @@ function startTransition(setPending, callback) {
     setPending(false);
     callback();
   } finally {
-    setCurrentUpdateLanePriority(previousLanePriority);
+    setCurrentUpdatePriority(previousPriority);
     ReactCurrentBatchConfig$1.transition = prevTransition;
   }
 }
@@ -17600,12 +17467,7 @@ function commitDetachRef(current) {
 // deletion, so don't let them throw. Host-originating errors should
 // interrupt deletion, so it's okay
 
-function commitUnmount(
-  finishedRoot,
-  current,
-  nearestMountedAncestor,
-  renderPriorityLevel
-) {
+function commitUnmount(finishedRoot, current, nearestMountedAncestor) {
   onCommitUnmount(current);
 
   switch (current.tag) {
@@ -17684,12 +17546,7 @@ function commitUnmount(
   }
 }
 
-function commitNestedUnmounts(
-  finishedRoot,
-  root,
-  nearestMountedAncestor,
-  renderPriorityLevel
-) {
+function commitNestedUnmounts(finishedRoot, root, nearestMountedAncestor) {
   // While we're inside a removed host node we don't want to call
   // removeChild on the inner nodes because they're removed by the top
   // call anyway. We also want to call componentWillUnmount on all
@@ -17745,25 +17602,39 @@ function detachFiberMutation(fiber) {
   // Don't reset the alternate yet, either. We need that so we can detach the
   // alternate's fields in the passive phase. Clearing the return pointer is
   // sufficient for findDOMNode semantics.
+  var alternate = fiber.alternate;
+
+  if (alternate !== null) {
+    alternate.return = null;
+  }
+
   fiber.return = null;
 }
 
 function detachFiberAfterEffects(fiber) {
-  // Null out fields to improve GC for references that may be lingering (e.g. DevTools).
-  // Note that we already cleared the return pointer in detachFiberMutation().
-  fiber.alternate = null;
-  fiber.child = null;
-  fiber.deletions = null;
-  fiber.dependencies = null;
-  fiber.memoizedProps = null;
-  fiber.memoizedState = null;
-  fiber.pendingProps = null;
-  fiber.sibling = null;
-  fiber.stateNode = null;
-  fiber.updateQueue = null;
+  var alternate = fiber.alternate;
+
+  if (alternate !== null) {
+    fiber.alternate = null;
+    detachFiberAfterEffects(alternate);
+  } // Note: Defensively using negation instead of < in case
+  // `deletedTreeCleanUpLevel` is undefined.
 
   {
-    fiber._debugOwner = null;
+    // This is the default branch (level 0).
+    fiber.child = null;
+    fiber.deletions = null;
+    fiber.dependencies = null;
+    fiber.memoizedProps = null;
+    fiber.memoizedState = null;
+    fiber.pendingProps = null;
+    fiber.sibling = null;
+    fiber.stateNode = null;
+    fiber.updateQueue = null;
+
+    {
+      fiber._debugOwner = null;
+    }
   }
 }
 
@@ -17944,12 +17815,7 @@ function insertOrAppendPlacementNode(node, before, parent) {
   }
 }
 
-function unmountHostComponents(
-  finishedRoot,
-  current,
-  nearestMountedAncestor,
-  renderPriorityLevel
-) {
+function unmountHostComponents(finishedRoot, current, nearestMountedAncestor) {
   // We only have the top Fiber that was deleted but we need to recurse down its
   // children to find all the terminal nodes.
   var node = current; // Each iteration, currentParent is populated with node's host parent if not
@@ -18049,24 +17915,14 @@ function unmountHostComponents(
   }
 }
 
-function commitDeletion(
-  finishedRoot,
-  current,
-  nearestMountedAncestor,
-  renderPriorityLevel
-) {
+function commitDeletion(finishedRoot, current, nearestMountedAncestor) {
   {
     // Recursively delete all host nodes from the parent.
     // Detach refs and call componentWillUnmount() on the whole subtree.
     unmountHostComponents(finishedRoot, current, nearestMountedAncestor);
   }
 
-  var alternate = current.alternate;
   detachFiberMutation(current);
-
-  if (alternate !== null) {
-    detachFiberMutation(alternate);
-  }
 }
 
 function commitWork(current, finishedWork) {
@@ -18251,12 +18107,12 @@ function commitResetTextContent(current) {
   resetTextContent(current.stateNode);
 }
 
-function commitMutationEffects(root, renderPriorityLevel, firstChild) {
+function commitMutationEffects(root, firstChild) {
   nextEffect = firstChild;
-  commitMutationEffects_begin(root, renderPriorityLevel);
+  commitMutationEffects_begin(root);
 }
 
-function commitMutationEffects_begin(root, renderPriorityLevel) {
+function commitMutationEffects_begin(root) {
   while (nextEffect !== null) {
     var fiber = nextEffect; // TODO: Should wrap this in flags check, too, as optimization
 
@@ -18273,8 +18129,7 @@ function commitMutationEffects_begin(root, renderPriorityLevel) {
             null,
             root,
             childToDelete,
-            fiber,
-            renderPriorityLevel
+            fiber
           );
 
           if (hasCaughtError()) {
@@ -18291,12 +18146,12 @@ function commitMutationEffects_begin(root, renderPriorityLevel) {
       ensureCorrectReturnPointer(child, fiber);
       nextEffect = child;
     } else {
-      commitMutationEffects_complete(root, renderPriorityLevel);
+      commitMutationEffects_complete(root);
     }
   }
 }
 
-function commitMutationEffects_complete(root, renderPriorityLevel) {
+function commitMutationEffects_complete(root) {
   while (nextEffect !== null) {
     var fiber = nextEffect;
 
@@ -18307,8 +18162,7 @@ function commitMutationEffects_complete(root, renderPriorityLevel) {
         commitMutationEffectsOnFiber,
         null,
         fiber,
-        root,
-        renderPriorityLevel
+        root
       );
 
       if (hasCaughtError()) {
@@ -18331,7 +18185,7 @@ function commitMutationEffects_complete(root, renderPriorityLevel) {
   }
 }
 
-function commitMutationEffectsOnFiber(finishedWork, root, renderPriorityLevel) {
+function commitMutationEffectsOnFiber(finishedWork, root) {
   var flags = finishedWork.flags;
 
   if (flags & ContentReset) {
@@ -18553,13 +18407,35 @@ function commitPassiveUnmountEffects_begin() {
           commitPassiveUnmountEffectsInsideOfDeletedTree_begin(
             fiberToDelete,
             fiber
-          ); // Now that passive effects have been processed, it's safe to detach lingering pointers.
+          );
+        }
 
-          var alternate = fiberToDelete.alternate;
-          detachFiberAfterEffects(fiberToDelete);
+        {
+          // A fiber was deleted from this parent fiber, but it's still part of
+          // the previous (alternate) parent fiber's list of children. Because
+          // children are a linked list, an earlier sibling that's still alive
+          // will be connected to the deleted fiber via its `alternate`:
+          //
+          //   live fiber
+          //   --alternate--> previous live fiber
+          //   --sibling--> deleted fiber
+          //
+          // We can't disconnect `alternate` on nodes that haven't been deleted
+          // yet, but we can disconnect the `sibling` and `child` pointers.
+          var previousFiber = fiber.alternate;
 
-          if (alternate !== null) {
-            detachFiberAfterEffects(alternate);
+          if (previousFiber !== null) {
+            var detachedChild = previousFiber.child;
+
+            if (detachedChild !== null) {
+              previousFiber.child = null;
+
+              do {
+                var detachedSibling = detachedChild.sibling;
+                detachedChild.sibling = null;
+                detachedChild = detachedSibling;
+              } while (detachedChild !== null);
+            }
           }
         }
 
@@ -18627,7 +18503,8 @@ function commitPassiveUnmountEffectsInsideOfDeletedTree_begin(
     setCurrentFiber(fiber);
     commitPassiveUnmountInsideDeletedTreeOnFiber(fiber, nearestMountedAncestor);
     resetCurrentFiber();
-    var child = fiber.child; // TODO: Only traverse subtree if it has a PassiveStatic flag
+    var child = fiber.child; // TODO: Only traverse subtree if it has a PassiveStatic flag. (But, if we
+    // do this, still need to handle `deletedTreeCleanUpLevel` correctly.)
 
     if (child !== null) {
       ensureCorrectReturnPointer(child, fiber);
@@ -18645,21 +18522,26 @@ function commitPassiveUnmountEffectsInsideOfDeletedTree_complete(
 ) {
   while (nextEffect !== null) {
     var fiber = nextEffect;
+    var sibling = fiber.sibling;
+    var returnFiber = fiber.return;
 
-    if (fiber === deletedSubtreeRoot) {
-      nextEffect = null;
-      return;
+    {
+      // This is the default branch (level 0). We do not recursively clear all
+      // the fiber fields. Only the root of the deleted subtree.
+      if (fiber === deletedSubtreeRoot) {
+        detachFiberAfterEffects(fiber);
+        nextEffect = null;
+        return;
+      }
     }
 
-    var sibling = fiber.sibling;
-
     if (sibling !== null) {
-      ensureCorrectReturnPointer(sibling, fiber.return);
+      ensureCorrectReturnPointer(sibling, returnFiber);
       nextEffect = sibling;
       return;
     }
 
-    nextEffect = fiber.return;
+    nextEffect = returnFiber;
   }
 }
 
@@ -18797,7 +18679,6 @@ var firstUncaughtError = null;
 var legacyErrorBoundariesThatAlreadyFailed = null; // Only used when enableProfilerNestedUpdateScheduledHook is true;
 var rootDoesHavePassiveEffects = false;
 var rootWithPendingPassiveEffects = null;
-var pendingPassiveEffectsRenderPriority = NoLanePriority;
 var pendingPassiveEffectsLanes = NoLanes;
 
 var NESTED_UPDATE_LIMIT = 50;
@@ -18842,32 +18723,44 @@ function requestUpdateLane(fiber) {
 
   if ((mode & ConcurrentMode) === NoMode) {
     return SyncLane;
-  } else if ((mode & ConcurrentMode) === NoMode) {
-    return getCurrentUpdateLanePriority() === SyncLanePriority
-      ? SyncLane
-      : SyncBatchedLane;
-  } // The algorithm for assigning an update to a lane should be stable for all
+  }
 
   var isTransition = requestCurrentTransition() !== NoTransition;
 
   if (isTransition) {
+    // The algorithm for assigning an update to a lane should be stable for all
+    // updates at the same priority within the same event. To do this, the
+    // inputs to the algorithm must be the same.
+    //
+    // The trick we use is to cache the first of each of these inputs within an
+    // event. Then reset the cached values once we can be sure the event is
+    // over. Our heuristic for that is whenever we enter a concurrent work loop.
     if (currentEventTransitionLane === NoLane) {
+      // All transitions within the same event are assigned the same lane.
       currentEventTransitionLane = claimNextTransitionLane();
     }
 
     return currentEventTransitionLane;
   } // Updates originating inside certain React methods, like flushSync, have
   // their priority set by tracking it with a context variable.
+  //
+  // The opaque type returned by the host config is internally a lane, so we can
+  // use that directly.
+  // TODO: Move this type conversion to the event priority module.
 
-  var updateLanePriority = getCurrentUpdateLanePriority();
+  var updateLane = getCurrentUpdatePriority();
 
-  if (updateLanePriority !== NoLanePriority) {
-    return findUpdateLane(updateLanePriority);
+  if (updateLane !== NoLane) {
+    return updateLane;
   } // This update originated outside React. Ask the host environement for an
   // appropriate priority, based on the type of event.
+  //
+  // The opaque type returned by the host config is internally a lane, so we can
+  // use that directly.
+  // TODO: Move this type conversion to the event priority module.
 
-  var eventLanePriority = getCurrentEventPriority();
-  return findUpdateLane(eventLanePriority);
+  var eventLane = getCurrentEventPriority();
+  return eventLane;
 }
 
 function requestRetryLane(fiber) {
@@ -18879,11 +18772,7 @@ function requestRetryLane(fiber) {
 
   if ((mode & ConcurrentMode) === NoMode) {
     return SyncLane;
-  } else if ((mode & ConcurrentMode) === NoMode) {
-    return getCurrentUpdateLanePriority() === SyncLanePriority
-      ? SyncLane
-      : SyncBatchedLane;
-  } // See `requestUpdateLane` for explanation of `currentEventWipLanes`
+  }
 
   return claimNextRetryLane();
 }
@@ -19039,9 +18928,7 @@ function ensureRootIsScheduled(root, currentTime) {
   var nextLanes = getNextLanes(
     root,
     root === workInProgressRoot ? workInProgressRootRenderLanes : NoLanes
-  ); // This returns the priority level computed during the `getNextLanes` call.
-
-  var newCallbackPriority = returnNextLanesPriority();
+  );
 
   if (nextLanes === NoLanes) {
     // Special case: There's nothing to work on.
@@ -19050,9 +18937,11 @@ function ensureRootIsScheduled(root, currentTime) {
     }
 
     root.callbackNode = null;
-    root.callbackPriority = NoLanePriority;
+    root.callbackPriority = NoLane;
     return;
-  } // Check if there's an existing task. We may be able to reuse it.
+  } // We use the highest priority lane to represent the priority of the callback.
+
+  var newCallbackPriority = getHighestPriorityLane(nextLanes); // Check if there's an existing task. We may be able to reuse it.
 
   var existingCallbackPriority = root.callbackPriority;
 
@@ -19063,8 +18952,7 @@ function ensureRootIsScheduled(root, currentTime) {
       // TODO: Temporary until we confirm this warning is not fired.
       if (
         existingCallbackNode == null &&
-        existingCallbackPriority !== InputDiscreteLanePriority &&
-        existingCallbackPriority !== SyncLanePriority
+        existingCallbackPriority !== SyncLane
       ) {
         error(
           "Expected scheduled callback to exist. This error is likely caused by a bug in React. Please file an issue."
@@ -19082,7 +18970,7 @@ function ensureRootIsScheduled(root, currentTime) {
 
   var newCallbackNode;
 
-  if (newCallbackPriority === SyncLanePriority) {
+  if (newCallbackPriority === SyncLane) {
     // Special case: Sync React callbacks are scheduled on a special
     // internal queue
     scheduleSyncCallback(performSyncWorkOnRoot.bind(null, root));
@@ -19093,15 +18981,31 @@ function ensureRootIsScheduled(root, currentTime) {
     }
 
     newCallbackNode = null;
-  } else if (newCallbackPriority === SyncBatchedLanePriority) {
-    newCallbackNode = scheduleCallback(
-      ImmediatePriority,
-      performSyncWorkOnRoot.bind(null, root)
-    );
   } else {
-    var schedulerPriorityLevel = lanePriorityToSchedulerPriority(
-      newCallbackPriority
-    );
+    var schedulerPriorityLevel;
+
+    switch (lanesToEventPriority(nextLanes)) {
+      case DiscreteEventPriority:
+        schedulerPriorityLevel = ImmediatePriority;
+        break;
+
+      case ContinuousEventPriority:
+        schedulerPriorityLevel = UserBlockingPriority;
+        break;
+
+      case DefaultEventPriority:
+        schedulerPriorityLevel = NormalPriority;
+        break;
+
+      case IdleEventPriority:
+        schedulerPriorityLevel = IdlePriority;
+        break;
+
+      default:
+        schedulerPriorityLevel = NormalPriority;
+        break;
+    }
+
     newCallbackNode = scheduleCallback(
       schedulerPriorityLevel,
       performConcurrentWorkOnRoot.bind(null, root)
@@ -19353,15 +19257,14 @@ function performSyncWorkOnRoot(root) {
 
   if (
     root === workInProgressRoot &&
-    includesSomeLane(root.expiredLanes, workInProgressRootRenderLanes)
+    areLanesExpired(root, workInProgressRootRenderLanes)
   ) {
     // There's a partial tree, and at least one of its lanes has expired. Finish
     // rendering it before rendering the rest of the expired work.
     lanes = workInProgressRootRenderLanes;
     exitStatus = renderRootSync(root, lanes);
   } else {
-    lanes = getNextLanes(root, NoLanes); // Because we don't cancel synchronous tasks, sometimes more than one
-
+    lanes = getNextLanes(root, NoLanes);
     exitStatus = renderRootSync(root, lanes);
   }
 
@@ -19406,7 +19309,7 @@ function performSyncWorkOnRoot(root) {
 
   ensureRootIsScheduled(root, now());
   return null;
-}
+} // TODO: Do we still need this API? I think we can delete it. Was only used
 function batchedUpdates$1(fn, a) {
   var prevExecutionContext = executionContext;
   executionContext |= BatchedContext;
@@ -19425,24 +19328,11 @@ function batchedUpdates$1(fn, a) {
 }
 function flushSync(fn, a) {
   var prevExecutionContext = executionContext;
-
-  if ((prevExecutionContext & (RenderContext | CommitContext)) !== NoContext) {
-    {
-      error(
-        "flushSync was called from inside a lifecycle method. React cannot " +
-          "flush when React is already rendering. Consider moving this call to " +
-          "a scheduler task or micro task."
-      );
-    }
-
-    return fn(a);
-  }
-
   executionContext |= BatchedContext;
-  var previousLanePriority = getCurrentUpdateLanePriority();
+  var previousPriority = getCurrentUpdatePriority();
 
   try {
-    setCurrentUpdateLanePriority(SyncLanePriority);
+    setCurrentUpdatePriority(DiscreteEventPriority);
 
     if (fn) {
       return fn(a);
@@ -19450,12 +19340,22 @@ function flushSync(fn, a) {
       return undefined;
     }
   } finally {
-    setCurrentUpdateLanePriority(previousLanePriority);
+    setCurrentUpdatePriority(previousPriority);
     executionContext = prevExecutionContext; // Flush the immediate callbacks that were scheduled during this batch.
     // Note that this will happen even if batchedUpdates is higher up
     // the stack.
 
-    flushSyncCallbackQueue();
+    if ((executionContext & (RenderContext | CommitContext)) === NoContext) {
+      flushSyncCallbackQueue();
+    } else {
+      {
+        error(
+          "flushSync was called from inside a lifecycle method. React cannot " +
+            "flush when React is already rendering. Consider moving this call to " +
+            "a scheduler task or micro task."
+        );
+      }
+    }
   }
 }
 function pushRenderLanes(fiber, lanes) {
@@ -19883,13 +19783,15 @@ function completeUnitOfWork(unitOfWork) {
 }
 
 function commitRoot(root) {
-  var previousUpdateLanePriority = getCurrentUpdateLanePriority();
+  // TODO: This no longer makes any sense. We already wrap the mutation and
+  // layout phases. Should be able to remove.
+  var previousUpdateLanePriority = getCurrentUpdatePriority();
 
   try {
-    setCurrentUpdateLanePriority(SyncLanePriority);
+    setCurrentUpdatePriority(DiscreteEventPriority);
     commitRootImpl(root, previousUpdateLanePriority);
   } finally {
-    setCurrentUpdateLanePriority(previousUpdateLanePriority);
+    setCurrentUpdatePriority(previousUpdateLanePriority);
   }
 
   return null;
@@ -19930,7 +19832,7 @@ function commitRootImpl(root, renderPriorityLevel) {
   // So we can clear these now to allow a new callback to be scheduled.
 
   root.callbackNode = null;
-  root.callbackPriority = NoLanePriority; // Update the first and last pending times on this root. The new first
+  root.callbackPriority = NoLane; // Update the first and last pending times on this root. The new first
   // pending time is whatever is left on the root fiber.
 
   var remainingLanes = mergeLanes(finishedWork.lanes, finishedWork.childLanes);
@@ -19974,8 +19876,8 @@ function commitRootImpl(root, renderPriorityLevel) {
     NoFlags;
 
   if (subtreeHasEffects || rootHasEffect) {
-    var previousLanePriority = getCurrentUpdateLanePriority();
-    setCurrentUpdateLanePriority(SyncLanePriority);
+    var previousPriority = getCurrentUpdatePriority();
+    setCurrentUpdatePriority(DiscreteEventPriority);
     var prevExecutionContext = executionContext;
     executionContext |= CommitContext;
     var prevInteractions = pushInteractions(root); // Reset this to null before calling lifecycles
@@ -19998,7 +19900,7 @@ function commitRootImpl(root, renderPriorityLevel) {
       recordCommitTime();
     }
 
-    commitMutationEffects(root, renderPriorityLevel, finishedWork);
+    commitMutationEffects(root, finishedWork);
 
     resetAfterCommit(root.containerInfo); // The work-in-progress tree is now the current tree. This must come after
     // the mutation phase, so that the previous tree is still current during
@@ -20016,12 +19918,9 @@ function commitRootImpl(root, renderPriorityLevel) {
       popInteractions(prevInteractions);
     }
 
-    executionContext = prevExecutionContext;
+    executionContext = prevExecutionContext; // Reset the priority to the previous non-sync value.
 
-    if (previousLanePriority != null) {
-      // Reset the priority to the previous non-sync value.
-      setCurrentUpdateLanePriority(previousLanePriority);
-    }
+    setCurrentUpdatePriority(previousPriority);
   } else {
     // No effects.
     root.current = finishedWork; // Measure these anyway so the flamegraph explicitly shows that there were
@@ -20041,10 +19940,6 @@ function commitRootImpl(root, renderPriorityLevel) {
     rootDoesHavePassiveEffects = false;
     rootWithPendingPassiveEffects = root;
     pendingPassiveEffectsLanes = lanes;
-    pendingPassiveEffectsRenderPriority =
-      renderPriorityLevel === NoLanePriority
-        ? DefaultLanePriority
-        : renderPriorityLevel;
   } // Read this again, since an effect might have updated it
 
   remainingLanes = root.pendingLanes; // Check if there's remaining work on this root
@@ -20122,19 +20017,18 @@ function commitRootImpl(root, renderPriorityLevel) {
 
 function flushPassiveEffects() {
   // Returns whether passive effects were flushed.
-  if (pendingPassiveEffectsRenderPriority !== NoLanePriority) {
-    var priorityLevel =
-      pendingPassiveEffectsRenderPriority > DefaultLanePriority
-        ? DefaultLanePriority
-        : pendingPassiveEffectsRenderPriority;
-    pendingPassiveEffectsRenderPriority = NoLanePriority;
-    var previousLanePriority = getCurrentUpdateLanePriority();
+  if (pendingPassiveEffectsLanes !== NoLanes) {
+    var priority = higherEventPriority(
+      DefaultEventPriority,
+      lanesToEventPriority(pendingPassiveEffectsLanes)
+    );
+    var previousPriority = getCurrentUpdatePriority();
 
     try {
-      setCurrentUpdateLanePriority(priorityLevel);
+      setCurrentUpdatePriority(priority);
       return flushPassiveEffectsImpl();
     } finally {
-      setCurrentUpdateLanePriority(previousLanePriority);
+      setCurrentUpdatePriority(previousPriority);
     }
   }
 
@@ -22046,13 +21940,12 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   this.pendingContext = null;
   this.hydrate = hydrate;
   this.callbackNode = null;
-  this.callbackPriority = NoLanePriority;
+  this.callbackPriority = NoLane;
   this.eventTimes = createLaneMap(NoLanes);
   this.expirationTimes = createLaneMap(NoTimestamp);
   this.pendingLanes = NoLanes;
   this.suspendedLanes = NoLanes;
   this.pingedLanes = NoLanes;
-  this.expiredLanes = NoLanes;
   this.mutableReadLanes = NoLanes;
   this.finishedLanes = NoLanes;
   this.entangledLanes = NoLanes;
@@ -22758,23 +22651,25 @@ var getInspectorDataForViewAtPoint;
           }
 
           closestInstance =
-            internalInstanceHandle.stateNode.canonical._internalInstanceHandle;
+            internalInstanceHandle.stateNode.canonical._internalInstanceHandle; // Note: this is deprecated and we want to remove it ASAP. Keeping it here for React DevTools compatibility for now.
+
+          var nativeViewTag =
+            internalInstanceHandle.stateNode.canonical._nativeTag;
           nativeFabricUIManager.measure(
             internalInstanceHandle.stateNode.node,
             function(x, y, width, height, pageX, pageY) {
+              var inspectorData = getInspectorDataForInstance(closestInstance);
               callback(
-                Object.assign(
-                  {
-                    pointerY: locationY,
-                    frame: {
-                      left: pageX,
-                      top: pageY,
-                      width: width,
-                      height: height
-                    }
+                Object.assign({}, inspectorData, {
+                  pointerY: locationY,
+                  frame: {
+                    left: pageX,
+                    top: pageY,
+                    width: width,
+                    height: height
                   },
-                  getInspectorDataForInstance(closestInstance)
-                )
+                  touchedViewTag: nativeViewTag
+                })
               );
             }
           );
