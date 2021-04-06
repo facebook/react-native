@@ -102,7 +102,7 @@
     "event-target-shim": "^5.0.1",
     "hermes-engine": "~0.7.0",
     "invariant": "^2.2.4",
-    "jsc-android": "^245459.0.0",
+    "jsc-android": "^250230.2.1",
     "metro-babel-register": "0.65.2",
     "metro-react-native-babel-transformer": "0.65.2",
     "metro-runtime": "0.65.2",
