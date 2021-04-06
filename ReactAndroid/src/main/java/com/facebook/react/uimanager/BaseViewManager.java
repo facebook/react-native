@@ -167,7 +167,17 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       return;
     }
     if (accessibilityState.hasKey("selected")) {
-      view.setSelected(accessibilityState.getBoolean("selected"));
+      boolean prevSelected = view.isSelected();
+      boolean nextSelected = accessibilityState.getBoolean("selected");
+      view.setSelected(nextSelected);
+
+      // For some reason, Android does not announce "unselected" when state changes.
+      // This is inconsistent with other platforms, but also with the "checked" state.
+      // So manually announce this.
+      if (view.isAccessibilityFocused() && prevSelected && !nextSelected) {
+        view.announceForAccessibility(
+            view.getContext().getString(R.string.state_unselected_description));
+      }
     } else {
       view.setSelected(false);
     }
