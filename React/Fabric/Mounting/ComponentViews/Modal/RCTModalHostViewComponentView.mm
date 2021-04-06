@@ -241,9 +241,9 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   self.viewController.supportedInterfaceOrientations = supportedOrientationsMask(newProps.supportedOrientations);
 #endif
 
-  std::tuple<BOOL, UIModalTransitionStyle> result = animationConfiguration(newProps.animationType);
-  _shouldAnimatePresentation = std::get<0>(result);
-  self.viewController.modalTransitionStyle = std::get<1>(result);
+  auto const [shouldAnimate, transitionStyle] = animationConfiguration(newProps.animationType);
+  _shouldAnimatePresentation = shouldAnimate;
+  self.viewController.modalTransitionStyle = transitionStyle;
 
   self.viewController.modalPresentationStyle = presentationConfiguration(newProps);
 
