@@ -9,9 +9,9 @@ package com.facebook.react.turbomodule.core.interfaces;
 
 /** All turbo modules should inherit from this interface */
 public interface TurboModule {
-  /**
-   * When CatalystInstance is destroyed, this method will be called. All implementing TurboModules
-   * can perform cleanup here.
-   */
+  /** Initialize the TurboModule. */
+  void initialize();
+
+  /** Called before React Native is torn down. Clean up after the TurboModule. */
   void invalidate();
 }

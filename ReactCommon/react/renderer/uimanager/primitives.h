@@ -10,11 +10,11 @@
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/EventHandler.h>
 #include <react/renderer/core/ShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using BackgroundExecutor =
     std::function<void(std::function<void()> &&callback)>;
@@ -110,6 +110,7 @@ inline static SharedEventTarget eventTargetFromValue(
     jsi::Runtime &runtime,
     jsi::Value const &eventTargetValue,
     jsi::Value const &tagValue) {
+  react_native_assert(!eventTargetValue.isNull());
   if (eventTargetValue.isNull()) {
     return nullptr;
   }
@@ -135,5 +136,4 @@ inline static folly::dynamic commandArgsFromValue(
   return jsi::dynamicFromValue(runtime, value);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

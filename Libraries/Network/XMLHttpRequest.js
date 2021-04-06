@@ -32,7 +32,7 @@ export type ResponseType =
   | 'text';
 export type Response = ?Object | string;
 
-type XHRInterceptor = {
+type XHRInterceptor = interface {
   requestSent(id: number, url: string, method: string, headers: Object): void,
   responseReceived(
     id: number,
@@ -43,7 +43,6 @@ type XHRInterceptor = {
   dataReceived(id: number, data: string): void,
   loadingFinished(id: number, encodedDataLength: number): void,
   loadingFailed(id: number, error: string): void,
-  ...
 };
 
 // The native blob module is optional so inject it here if available.

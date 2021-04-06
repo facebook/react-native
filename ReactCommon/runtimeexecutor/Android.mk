@@ -14,6 +14,6 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/ReactCommon/*.cpp)
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/ReactCommon
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_STATIC_LIBRARY)

@@ -24,6 +24,12 @@ function legacySendAccessibilityEvent(
       UIManager.getConstants().AccessibilityEventTypes.typeViewFocused,
     );
   }
+  if (eventType === 'click') {
+    UIManager.sendAccessibilityEvent(
+      reactTag,
+      UIManager.getConstants().AccessibilityEventTypes.typeViewClicked,
+    );
+  }
 }
 
 module.exports = legacySendAccessibilityEvent;

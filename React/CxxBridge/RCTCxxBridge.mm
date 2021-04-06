@@ -194,6 +194,7 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge;
 - (void)partialBatchDidFlush;
 - (void)batchDidComplete;
+- (void)forceGarbageCollection;
 
 @end
 
@@ -340,6 +341,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 - (void)handleMemoryWarning
+{
+  [self forceGarbageCollection];
+}
+
+- (void)forceGarbageCollection
 {
   // We only want to run garbage collector when the loading is finished
   // and the instance is valid.

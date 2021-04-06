@@ -129,7 +129,8 @@ void YogaLayoutableShadowNode::appendYogaChild(ShadowNode const &childNode) {
   auto &layoutableChildNode =
       traitCast<YogaLayoutableShadowNode const &>(childNode);
   yogaNode_.insertChild(
-      &layoutableChildNode.yogaNode_, yogaNode_.getChildren().size());
+      &layoutableChildNode.yogaNode_,
+      static_cast<uint32_t>(yogaNode_.getChildren().size()));
 
   ensureYogaChildrenLookFine();
 }
@@ -178,10 +179,11 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     layoutableClonedChildNode.yogaNode_.setOwner(&yogaNode_);
 
     // Replace the child node with a newly cloned one in the children list.
-    replaceChild(childNode, clonedChildNode, index);
+    replaceChild(childNode, clonedChildNode, static_cast<int>(index));
 
     // Replace the Yoga node inside the Yoga node children list.
-    yogaNode_.replaceChild(&layoutableClonedChildNode.yogaNode_, index);
+    yogaNode_.replaceChild(
+        &layoutableClonedChildNode.yogaNode_, static_cast<int>(index));
   }
 
   ensureYogaChildrenLookFine();

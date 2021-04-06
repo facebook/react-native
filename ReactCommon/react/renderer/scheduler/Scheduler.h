@@ -20,7 +20,6 @@
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
-#include <react/renderer/scheduler/SurfaceManager.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
@@ -50,35 +49,9 @@ class Scheduler final : public UIManagerDelegate {
   void registerSurface(SurfaceHandler const &surfaceHandler) const noexcept;
   void unregisterSurface(SurfaceHandler const &surfaceHandler) const noexcept;
 
-  void startSurface(
-      SurfaceId surfaceId,
-      const std::string &moduleName,
-      const folly::dynamic &initialProps,
-      const LayoutConstraints &layoutConstraints = {},
-      const LayoutContext &layoutContext = {}) const;
-
   void renderTemplateToSurface(
       SurfaceId surfaceId,
       const std::string &uiTemplate);
-
-  void stopSurface(SurfaceId surfaceId) const;
-
-  Size measureSurface(
-      SurfaceId surfaceId,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
-
-  /*
-   * Applies given `layoutConstraints` and `layoutContext` to a Surface.
-   * The user interface will be relaid out as a result. The operation will be
-   * performed synchronously (including mounting) if the method is called
-   * on the main thread.
-   * Can be called from any thread.
-   */
-  void constraintSurfaceLayout(
-      SurfaceId surfaceId,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
 
   /*
    * This is broken. Please do not use.
@@ -88,9 +61,6 @@ class Scheduler final : public UIManagerDelegate {
   ComponentDescriptor const *
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
       ComponentHandle handle) const;
-
-  MountingCoordinator::Shared findMountingCoordinator(
-      SurfaceId surfaceId) const;
 
 #pragma mark - Delegate
 
@@ -124,12 +94,12 @@ class Scheduler final : public UIManagerDelegate {
       std::string const &eventType) override;
   void uiManagerDidSetIsJSResponder(
       ShadowNode::Shared const &shadowView,
-      bool isJSResponder) override;
+      bool isJSResponder,
+      bool blockNativeResponder) override;
 
  private:
   friend class SurfaceHandler;
 
-  SurfaceManager surfaceManager_;
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   RuntimeExecutor runtimeExecutor_;
@@ -151,8 +121,6 @@ class Scheduler final : public UIManagerDelegate {
    * Temporary flags.
    */
   bool removeOutstandingSurfacesOnDestruction_{false};
-
-  bool enableSurfaceManager_{false};
 };
 
 } // namespace react

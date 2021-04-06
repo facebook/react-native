@@ -265,6 +265,10 @@ class TouchableOpacity extends React.Component<Props, State> {
   }
 }
 
-module.exports = (React.forwardRef((props, ref) => (
+const Touchable = (React.forwardRef((props, ref) => (
   <TouchableOpacity {...props} hostRef={ref} />
 )): React.AbstractComponent<Props, React.ElementRef<typeof Animated.View>>);
+
+Touchable.displayName = 'TouchableOpacity';
+
+module.exports = Touchable;

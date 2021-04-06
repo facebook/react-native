@@ -6,7 +6,10 @@
  *
  * @format
  * @flow strict-local
+ * @generated SignedSource<<745b7b5c173d0bc75b6d97938c98728d>>
  */
+
+'use strict';
 
 import {ReactNativeViewConfigRegistry} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 import {type ViewConfig} from './ReactNativeTypes';

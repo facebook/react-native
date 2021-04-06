@@ -135,6 +135,7 @@ class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
     return (
       <View>
         <Switch
+          testID="initial-false-switch"
           onValueChange={value => this.setState({colorFalseSwitchIsOn: value})}
           style={{marginBottom: 10}}
           thumbColor="#0000ff"
@@ -145,6 +146,7 @@ class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
           value={this.state.colorFalseSwitchIsOn}
         />
         <Switch
+          testID="initial-true-switch"
           onValueChange={value => this.setState({colorTrueSwitchIsOn: value})}
           thumbColor="#0000ff"
           trackColor={{
@@ -169,19 +171,24 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
       <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
         <View>
           <Switch
+            testID="event-switch-top"
             onValueChange={value => this.setState({eventSwitchIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn}
           />
           <Switch
+            testID="event-switch-bottom"
             onValueChange={value => this.setState({eventSwitchIsOn: value})}
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn}
           />
-          <Text>{this.state.eventSwitchIsOn ? 'On' : 'Off'}</Text>
+          <Text testID="event-switch-indicator">
+            {this.state.eventSwitchIsOn ? 'On' : 'Off'}
+          </Text>
         </View>
         <View>
           <Switch
+            testID="event-switch-regression-top"
             onValueChange={value =>
               this.setState({eventSwitchRegressionIsOn: value})
             }
@@ -189,13 +196,16 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
             value={this.state.eventSwitchRegressionIsOn}
           />
           <Switch
+            testID="event-switch-regression-bottom"
             onValueChange={value =>
               this.setState({eventSwitchRegressionIsOn: value})
             }
             style={{marginBottom: 10}}
             value={this.state.eventSwitchRegressionIsOn}
           />
-          <Text>{this.state.eventSwitchRegressionIsOn ? 'On' : 'Off'}</Text>
+          <Text testID="event-switch-regression-indicator">
+            {this.state.eventSwitchRegressionIsOn ? 'On' : 'Off'}
+          </Text>
         </View>
       </View>
     );
@@ -210,30 +220,35 @@ exports.description = 'Native boolean input';
 exports.examples = [
   {
     title: 'Switches can be set to true or false',
+    name: 'basic',
     render(): React.Element<any> {
       return <BasicSwitchExample />;
     },
   },
   {
     title: 'Switches can be disabled',
+    name: 'disabled',
     render(): React.Element<any> {
       return <DisabledSwitchExample />;
     },
   },
   {
     title: 'Change events can be detected',
+    name: 'events',
     render(): React.Element<any> {
       return <EventSwitchExample />;
     },
   },
   {
     title: 'Switches are controlled components',
+    name: 'controlled',
     render(): React.Element<any> {
-      return <Switch />;
+      return <Switch testID="controlled-switch" />;
     },
   },
   {
     title: 'Custom colors can be provided',
+    name: 'custom-colors',
     render(): React.Element<any> {
       return <ColorSwitchExample />;
     },

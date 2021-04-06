@@ -2,7 +2,7 @@ load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "get_android_inspector_flags", "get_apple_compiler_flags", "get_apple_inspector_flags", "get_preprocessor_flags_for_build_mode", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
-    "-std=c++14",
+    "-std=c++17",
     "-Wall",
 ]
 
