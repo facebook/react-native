@@ -88,19 +88,6 @@ const AccessibilityInfo = {
     });
   },
 
-  /**
-   * Deprecated
-   *
-   * Same as `isScreenReaderEnabled`
-   */
-  // $FlowFixMe[unsafe-getters-setters]
-  get fetch(): () => Promise<boolean> {
-    console.warn(
-      'AccessibilityInfo.fetch is deprecated, call AccessibilityInfo.isScreenReaderEnabled instead',
-    );
-    return this.isScreenReaderEnabled;
-  },
-
   addEventListener: function<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
     handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,

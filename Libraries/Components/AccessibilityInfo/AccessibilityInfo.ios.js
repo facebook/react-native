@@ -169,19 +169,6 @@ const AccessibilityInfo = {
   },
 
   /**
-   * Deprecated
-   *
-   * Same as `isScreenReaderEnabled`
-   */
-  // $FlowFixMe[unsafe-getters-setters]
-  get fetch(): $FlowFixMe {
-    console.warn(
-      'AccessibilityInfo.fetch is deprecated, call AccessibilityInfo.isScreenReaderEnabled instead',
-    );
-    return this.isScreenReaderEnabled;
-  },
-
-  /**
    * Add an event handler. Supported events:
    *
    * - `boldTextChanged`: iOS-only event. Fires when the state of the bold text toggle changes.
