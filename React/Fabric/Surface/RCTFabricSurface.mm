@@ -93,13 +93,15 @@ using namespace facebook::react;
     return NO;
   }
 
-  _surfaceHandler->start();
-  [self _propagateStageChange];
-
-  RCTExecuteOnMainQueue(^{
+  // We need to register a root view component here synchronously because right after
+  // we start a surface, it can initiate an update that can query the root component.
+  RCTUnsafeExecuteOnMainQueueSync(^{
     [self->_surfacePresenter.mountingManager attachSurfaceToView:self.view
                                                        surfaceId:self->_surfaceHandler->getSurfaceId()];
   });
+
+  _surfaceHandler->start();
+  [self _propagateStageChange];
 
   [_surfacePresenter setupAnimationDriverWithSurfaceHandler:*_surfaceHandler];
   return YES;
@@ -168,6 +170,8 @@ using namespace facebook::react;
 - (void)_updateLayoutContext
 {
   auto layoutConstraints = _surfaceHandler->getLayoutConstraints();
+  layoutConstraints.layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL]);
+
   auto layoutContext = _surfaceHandler->getLayoutContext();
 
   layoutContext.pointScaleFactor = RCTScreenScale();

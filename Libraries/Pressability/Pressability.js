@@ -18,6 +18,8 @@ import type {
   PressEvent,
   MouseEvent,
 } from '../Types/CoreEventTypes';
+import PressabilityPerformanceEventEmitter from './PressabilityPerformanceEventEmitter.js';
+import {type PressabilityTouchSignal as TouchSignal} from './PressabilityTypes.js';
 import Platform from '../Utilities/Platform';
 import UIManager from '../ReactNative/UIManager';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
@@ -173,15 +175,6 @@ type TouchState =
   | 'RESPONDER_ACTIVE_LONG_PRESS_IN'
   | 'RESPONDER_ACTIVE_LONG_PRESS_OUT'
   | 'ERROR';
-
-type TouchSignal =
-  | 'DELAY'
-  | 'RESPONDER_GRANT'
-  | 'RESPONDER_RELEASE'
-  | 'RESPONDER_TERMINATED'
-  | 'ENTER_PRESS_RECT'
-  | 'LEAVE_PRESS_RECT'
-  | 'LONG_PRESS_DETECTED';
 
 const Transitions = Object.freeze({
   NOT_RESPONDER: {
@@ -630,6 +623,19 @@ export default class Pressability {
         : '<<host component>>',
     );
     if (prevState !== nextState) {
+      // Especially on iOS, not all events have timestamps associated.
+      // For telemetry purposes, this doesn't matter too much, as long as *some* do.
+      // Since the native timestamp is integral for logging telemetry, just skip
+      // events if they don't have a timestamp attached.
+      if (event.nativeEvent.timestamp != null) {
+        PressabilityPerformanceEventEmitter.emitEvent(() => {
+          return {
+            signal,
+            touchDelayMs: Date.now() - event.nativeEvent.timestamp,
+          };
+        });
+      }
+
       this._performTransitionSideEffects(prevState, nextState, signal, event);
       this._touchState = nextState;
     }

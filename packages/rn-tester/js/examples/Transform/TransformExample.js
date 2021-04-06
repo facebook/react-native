@@ -38,9 +38,9 @@ function AnimateTansformSingleProp() {
               {
                 rotate: theta.interpolate({
                   inputRange: [0, 100],
-                  /* $FlowFixMe(>=0.38.0) - Flow error detected during the
-                   * deployment of v0.38.0. To see the error, remove this
-                   * comment and run flow */
+                  /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
+                   * detected during the deployment of v0.38.0. To see the
+                   * error, remove this comment and run flow */
                   outputRange: ['0deg', '360deg'],
                 }),
               },
@@ -79,9 +79,9 @@ function Flip() {
               {
                 rotateX: theta.interpolate({
                   inputRange: [0, 180],
-                  /* $FlowFixMe(>=0.38.0) - Flow error detected during the
-                   * deployment of v0.38.0. To see the error, remove this
-                   * comment and run flow */
+                  /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
+                   * detected during the deployment of v0.38.0. To see the
+                   * error, remove this comment and run flow */
                   outputRange: ['0deg', '180deg'],
                 }),
               },
@@ -100,9 +100,9 @@ function Flip() {
               {
                 rotateX: theta.interpolate({
                   inputRange: [0, 180],
-                  /* $FlowFixMe(>=0.38.0) - Flow error detected during the
-                   * deployment of v0.38.0. To see the error, remove this
-                   * comment and run flow */
+                  /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
+                   * detected during the deployment of v0.38.0. To see the
+                   * error, remove this comment and run flow */
                   outputRange: ['180deg', '360deg'],
                 }),
               },

@@ -298,6 +298,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
 exports.examples = [
   {
     title: 'Modal Presentation',
+    name: 'basic',
     description: 'Modals can be presented with or without animation',
     render: (): React.Node => <ModalExample />,
   },

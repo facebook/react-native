@@ -131,6 +131,7 @@ class SurfaceHandler final {
 #pragma mark - Accessors
 
   SurfaceId getSurfaceId() const noexcept;
+  void setSurfaceId(SurfaceId surfaceId) const noexcept;
   std::string getModuleName() const noexcept;
 
   /*

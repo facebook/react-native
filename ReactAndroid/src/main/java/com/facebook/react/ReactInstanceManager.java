@@ -95,6 +95,8 @@ import com.facebook.react.surface.ReactStage;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
+import com.facebook.react.uimanager.ComponentNameResolver;
+import com.facebook.react.uimanager.ComponentNameResolverManager;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -159,6 +161,7 @@ public class ReactInstanceManager {
   private final List<ReactPackage> mPackages;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
+  private @Nullable ComponentNameResolverManager mComponentNameResolverManager;
   private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private final Object mReactContextLock = new Object();
   private @Nullable volatile ReactContext mCurrentReactContext;
@@ -515,7 +518,7 @@ public class ReactInstanceManager {
 
   private void toggleElementInspector() {
     ReactContext currentContext = getCurrentReactContext();
-    if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
+    if (currentContext != null && currentContext.hasActiveReactInstance()) {
       currentContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit("toggleElementInspector", null);
@@ -715,6 +718,7 @@ public class ReactInstanceManager {
     synchronized (mPackages) {
       mViewManagerNames = null;
     }
+    mComponentNameResolverManager = null;
     FLog.d(ReactConstants.TAG, "ReactInstanceManager has been destroyed");
   }
 
@@ -855,7 +859,7 @@ public class ReactInstanceManager {
       if (mAttachedReactRoots.contains(reactRoot)) {
         ReactContext currentContext = getCurrentReactContext();
         mAttachedReactRoots.remove(reactRoot);
-        if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
+        if (currentContext != null && currentContext.hasActiveReactInstance()) {
           detachViewFromInstance(reactRoot, currentContext.getCatalystInstance());
         }
       }
@@ -890,7 +894,7 @@ public class ReactInstanceManager {
     ReactApplicationContext context;
     synchronized (mReactContextLock) {
       context = (ReactApplicationContext) getCurrentReactContext();
-      if (context == null || !context.hasActiveCatalystInstance()) {
+      if (context == null || !context.hasActiveReactInstance()) {
         return null;
       }
     }
@@ -916,7 +920,7 @@ public class ReactInstanceManager {
       ReactApplicationContext context;
       synchronized (mReactContextLock) {
         context = (ReactApplicationContext) getCurrentReactContext();
-        if (context == null || !context.hasActiveCatalystInstance()) {
+        if (context == null || !context.hasActiveReactInstance()) {
           return null;
         }
       }
@@ -1331,6 +1335,15 @@ public class ReactInstanceManager {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
     if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
+      mComponentNameResolverManager =
+          new ComponentNameResolverManager(
+              catalystInstance.getRuntimeExecutor(),
+              new ComponentNameResolver() {
+                @Override
+                public String[] getComponentNames() {
+                  return getViewManagerNames().toArray(new String[0]);
+                }
+              });
       catalystInstance.setGlobalVariable("__fbStaticViewConfig", "true");
     }
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);

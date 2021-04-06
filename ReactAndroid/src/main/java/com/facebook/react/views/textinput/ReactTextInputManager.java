@@ -1210,7 +1210,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
 
-    ReadableNativeMap state = stateWrapper.getState();
+    if (stateWrapper == null) {
+      return null;
+    }
+
+    ReadableNativeMap state = stateWrapper.getStateData();
+
+    if (state == null) {
+      return null;
+    }
 
     if (!state.hasKey("attributedString")) {
       return null;

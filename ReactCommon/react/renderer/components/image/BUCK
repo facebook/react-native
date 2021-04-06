@@ -32,8 +32,11 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
+    ],
+    fbandroid_deps = [
+        react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
@@ -66,7 +69,7 @@ fb_xplat_cxx_test(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],

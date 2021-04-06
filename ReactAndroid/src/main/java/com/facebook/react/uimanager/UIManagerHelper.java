@@ -72,7 +72,7 @@ public class UIManagerHelper {
     }
     // TODO T60461551: add tests to verify emission of events when the ReactContext is being turn
     // down.
-    if (!context.hasActiveCatalystInstance()) {
+    if (!context.hasActiveReactInstance()) {
       ReactSoftException.logSoftException(
           "UIManagerHelper",
           new ReactNoCrashSoftException(

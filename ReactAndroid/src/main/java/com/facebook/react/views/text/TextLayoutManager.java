@@ -70,11 +70,11 @@ public class TextLayoutManager {
 
   public static boolean isRTL(ReadableMap attributedString) {
     ReadableArray fragments = attributedString.getArray("fragments");
-    for (int i = 0, length = fragments.size(); i < length; i++) {
+    for (int i = 0; i < fragments.size(); i++) {
       ReadableMap fragment = fragments.getMap(i);
-      ReactStylesDiffMap map = new ReactStylesDiffMap(fragment.getMap("textAttributes"));
-      TextAttributeProps textAttributes = new TextAttributeProps(map);
-      return textAttributes.mLayoutDirection == LayoutDirection.RTL;
+      ReadableMap map = fragment.getMap("textAttributes");
+      return TextAttributeProps.getLayoutDirection(map.getString(ViewProps.LAYOUT_DIRECTION))
+          == LayoutDirection.RTL;
     }
     return false;
   }
@@ -105,7 +105,8 @@ public class TextLayoutManager {
 
       // ReactRawText
       TextAttributeProps textAttributes =
-          new TextAttributeProps(new ReactStylesDiffMap(fragment.getMap("textAttributes")));
+          TextAttributeProps.fromReadableMap(
+              new ReactStylesDiffMap(fragment.getMap("textAttributes")));
 
       sb.append(TextTransform.apply(fragment.getString("string"), textAttributes.mTextTransform));
 

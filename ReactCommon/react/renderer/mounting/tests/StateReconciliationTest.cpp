@@ -77,11 +77,14 @@ TEST(StateReconciliationTest, testStateReconciliation) {
             .reference(shadowNodeAB)
             .children({
               Element<ViewShadowNode>()
-                .reference(shadowNodeABA),
-              Element<ViewShadowNode>()
-                .reference(shadowNodeABB),
-              Element<ViewShadowNode>()
-                .reference(shadowNodeABC)
+              .children({
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABA),
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABB),
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABC)
+              })
             })
         });
   // clang-format on
