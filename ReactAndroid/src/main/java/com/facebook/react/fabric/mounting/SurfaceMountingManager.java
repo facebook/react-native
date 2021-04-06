@@ -26,6 +26,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactRoot;
@@ -39,6 +40,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nullable;
 
 public class SurfaceMountingManager {
@@ -47,15 +49,18 @@ public class SurfaceMountingManager {
   private static final boolean SHOW_CHANGED_VIEW_HIERARCHIES = ReactBuildConfig.DEBUG && false;
 
   private volatile boolean mIsStopped = false;
+  private volatile boolean mRootViewAttached = false;
 
   @Nullable private ThemedReactContext mThemedReactContext;
 
   // These are all non-null, until StopSurface is called
   private ConcurrentHashMap<Integer, ViewState> mTagToViewState =
       new ConcurrentHashMap<>(); // any thread
+  private ConcurrentLinkedQueue<MountItem> mOnViewAttachItems = new ConcurrentLinkedQueue<>();
   private JSResponderHandler mJSResponderHandler;
   private ViewManagerRegistry mViewManagerRegistry;
   private RootViewManager mRootViewManager;
+  private MountingManager mMountingManager;
 
   // This is null *until* StopSurface is called.
   private Set<Integer> mTagSetForStoppedSurface;
@@ -67,12 +72,14 @@ public class SurfaceMountingManager {
       int surfaceId,
       @NonNull JSResponderHandler jsResponderHandler,
       @NonNull ViewManagerRegistry viewManagerRegistry,
-      @NonNull RootViewManager rootViewManager) {
+      @NonNull RootViewManager rootViewManager,
+      @NonNull MountingManager mountingManager) {
     mSurfaceId = surfaceId;
 
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
     mRootViewManager = rootViewManager;
+    mMountingManager = mountingManager;
   }
 
   public boolean isStopped() {
@@ -82,6 +89,14 @@ public class SurfaceMountingManager {
   public void attachRootView(View rootView, ThemedReactContext themedReactContext) {
     mThemedReactContext = themedReactContext;
     addRootView(rootView);
+  }
+
+  public int getSurfaceId() {
+    return mSurfaceId;
+  }
+
+  public boolean isRootViewAttached() {
+    return mRootViewAttached;
   }
 
   @Nullable
@@ -134,6 +149,11 @@ public class SurfaceMountingManager {
   }
 
   @AnyThread
+  public void executeOnViewAttach(MountItem item) {
+    mOnViewAttachItems.add(item);
+  }
+
+  @AnyThread
   private void addRootView(@NonNull final View rootView) {
     if (isStopped()) {
       return;
@@ -174,6 +194,9 @@ public class SurfaceMountingManager {
             if (rootView instanceof ReactRoot) {
               ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
             }
+            mRootViewAttached = true;
+
+            executeViewAttachMountItems();
           }
         };
 
@@ -181,6 +204,14 @@ public class SurfaceMountingManager {
       runnable.run();
     } else {
       UiThreadUtil.runOnUiThread(runnable);
+    }
+  }
+
+  @UiThread
+  private void executeViewAttachMountItems() {
+    while (!mOnViewAttachItems.isEmpty()) {
+      MountItem item = mOnViewAttachItems.poll();
+      item.execute(mMountingManager);
     }
   }
 
@@ -232,6 +263,8 @@ public class SurfaceMountingManager {
             mTagToViewState = null;
             mJSResponderHandler = null;
             mRootViewManager = null;
+            mMountingManager = null;
+            mOnViewAttachItems.clear();
           }
         };
 

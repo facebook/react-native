@@ -26,7 +26,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
-import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -40,7 +39,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class responsible for actually dispatching view updates enqueued via {@link
- * FabricUIManager#scheduleMountItems(int, MountItem[])} on the UI thread.
+ * FabricUIManager#scheduleMountItem} on the UI thread.
  */
 public class MountingManager {
   public static final String TAG = MountingManager.class.getSimpleName();
@@ -53,13 +52,11 @@ public class MountingManager {
   private final CopyOnWriteArrayList<Integer> mStoppedSurfaceIds = new CopyOnWriteArrayList<>();
 
   @Nullable private SurfaceMountingManager mMostRecentSurfaceMountingManager;
+  @Nullable private SurfaceMountingManager mLastQueriedSurfaceMountingManager;
 
   @NonNull private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
   @NonNull private final RootViewManager mRootViewManager = new RootViewManager();
-
-  private volatile int mStoppedSurfaceCacheLastId = View.NO_ID;
-  private volatile boolean mStoppedSurfaceCacheLastResult = false;
 
   public MountingManager(@NonNull ViewManagerRegistry viewManagerRegistry) {
     mViewManagerRegistry = viewManagerRegistry;
@@ -81,7 +78,7 @@ public class MountingManager {
   public SurfaceMountingManager startSurface(final int surfaceId) {
     SurfaceMountingManager surfaceMountingManager =
         new SurfaceMountingManager(
-            surfaceId, mJSResponderHandler, mViewManagerRegistry, mRootViewManager);
+            surfaceId, mJSResponderHandler, mViewManagerRegistry, mRootViewManager, this);
 
     // There could technically be a race condition here if addRootView is called twice from
     // different threads, though this is (probably) extremely unlikely, and likely an error.
@@ -117,8 +114,6 @@ public class MountingManager {
 
   @AnyThread
   public void stopSurface(final int surfaceId) {
-    mStoppedSurfaceCacheLastId = View.NO_ID;
-
     SurfaceMountingManager surfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
     if (surfaceMountingManager != null) {
       // Maximum number of stopped surfaces to keep track of
@@ -145,6 +140,15 @@ public class MountingManager {
 
   @Nullable
   public SurfaceMountingManager getSurfaceManager(int surfaceId) {
+    if (mLastQueriedSurfaceMountingManager != null
+        && mLastQueriedSurfaceMountingManager.getSurfaceId() == surfaceId) {
+      return mLastQueriedSurfaceMountingManager;
+    }
+
+    if (mMostRecentSurfaceMountingManager != null
+        && mMostRecentSurfaceMountingManager.getSurfaceId() == surfaceId) {
+      return mMostRecentSurfaceMountingManager;
+    }
     return mSurfaceIdToManager.get(surfaceId);
   }
 
@@ -164,30 +168,29 @@ public class MountingManager {
   }
 
   public boolean surfaceIsStopped(int surfaceId) {
-    if (surfaceId == View.NO_ID) {
-      return false;
-    }
-    if (surfaceId == mStoppedSurfaceCacheLastId) {
-      return mStoppedSurfaceCacheLastResult;
-    }
-
-    boolean res = surfaceIsStoppedImpl(surfaceId);
-    mStoppedSurfaceCacheLastResult = res;
-    mStoppedSurfaceCacheLastId = surfaceId;
-    return res;
-  }
-
-  private boolean surfaceIsStoppedImpl(int surfaceId) {
     if (mStoppedSurfaceIds.contains(surfaceId)) {
       return true;
     }
 
-    SurfaceMountingManager surfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+    SurfaceMountingManager surfaceMountingManager = getSurfaceManager(surfaceId);
     if (surfaceMountingManager != null && surfaceMountingManager.isStopped()) {
       return true;
     }
 
     return false;
+  }
+
+  public boolean isWaitingForViewAttach(int surfaceId) {
+    SurfaceMountingManager mountingManager = getSurfaceManager(surfaceId);
+    if (mountingManager == null) {
+      return false;
+    }
+
+    if (mountingManager.isStopped()) {
+      return false;
+    }
+
+    return !mountingManager.isRootViewAttached();
   }
 
   /**
