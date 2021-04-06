@@ -9,6 +9,7 @@
  */
 
 import type {TurboModule} from '../../TurboModule/RCTExport';
+import type {AccessibilityServiceInfo} from './AccessibilityInfoTypes';
 import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
@@ -20,6 +21,11 @@ export interface Spec extends TurboModule {
   ) => void;
   +setAccessibilityFocus: (reactTag: number) => void;
   +announceForAccessibility: (announcement: string) => void;
+  +getInstalledAccessibilityServiceList: (
+    onSuccess: (
+      accessibilityServiceInfo: Array<AccessibilityServiceInfo>,
+    ) => void,
+  ) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('AccessibilityInfo'): ?Spec);

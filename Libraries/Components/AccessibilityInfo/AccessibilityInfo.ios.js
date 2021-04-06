@@ -258,6 +258,13 @@ const AccessibilityInfo = {
   },
 
   /**
+   * Android only
+   */
+  getInstalledAccessibilityServiceList: function(): Promise<null> {
+    return Promise.resolve(null);
+  },
+
+  /**
    * Remove an event handler.
    *
    * See https://reactnative.dev/docs/accessibilityinfo.html#removeeventlistener

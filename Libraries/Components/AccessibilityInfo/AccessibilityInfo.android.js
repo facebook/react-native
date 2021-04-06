@@ -14,7 +14,8 @@ import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/Even
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import {sendAccessibilityEvent} from '../../Renderer/shims/ReactNative';
 import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
-import {type ElementRef} from 'react';
+import type {ElementRef} from 'react';
+import type {AccessibilityServiceInfo} from './AccessibilityInfoTypes';
 
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
@@ -166,6 +167,19 @@ const AccessibilityInfo = {
     if (NativeAccessibilityInfo) {
       NativeAccessibilityInfo.announceForAccessibility(announcement);
     }
+  },
+
+  /**
+   * Returns the AccessibilityServiceInfos of the installed accessibility services.
+   */
+  getInstalledAccessibilityServiceList: function(): Promise<Array<AccessibilityServiceInfo> | null> {
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityInfo) {
+        NativeAccessibilityInfo.getInstalledAccessibilityServiceList(resolve);
+      } else {
+        reject(null);
+      }
+    });
   },
 };
 
