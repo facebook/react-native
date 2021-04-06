@@ -67,9 +67,11 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   private final ContentResolver mContentResolver;
   private boolean mReduceMotionEnabled = false;
   private boolean mTouchExplorationEnabled = false;
+  private boolean mInvertColorsEnabled = false;
 
   private static final String REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange";
   private static final String TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange";
+  private static final String INVERT_COLORS_EVENT_NAME = "invertColorsDidChange";
 
   public AccessibilityInfoModule(ReactApplicationContext context) {
     super(context);
@@ -79,6 +81,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     mContentResolver = getReactApplicationContext().getContentResolver();
     mTouchExplorationEnabled = mAccessibilityManager.isTouchExplorationEnabled();
     mReduceMotionEnabled = this.getIsReduceMotionEnabledValue();
+    mInvertColorsEnabled = this.getIsInvertColorsEnabled();
     mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
   }
 
@@ -95,6 +98,15 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     return value != null && value.equals("0.0");
   }
 
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private boolean getIsInvertColorsEnabled() {
+    String value =
+        Settings.Secure.getString(
+            mContentResolver, Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED);
+
+    return value != null && value.equals("1");
+  }
+
   @Override
   public void isReduceMotionEnabled(Callback successCallback) {
     successCallback.invoke(mReduceMotionEnabled);
@@ -103,6 +115,11 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   @Override
   public void isTouchExplorationEnabled(Callback successCallback) {
     successCallback.invoke(mTouchExplorationEnabled);
+  }
+
+  @Override
+  public void isInvertColorsEnabled(Callback successCallback) {
+    successCallback.invoke(mInvertColorsEnabled);
   }
 
   private void updateAndSendReduceMotionChangeEvent() {
@@ -129,6 +146,21 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
         getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
             .emit(TOUCH_EXPLORATION_EVENT_NAME, mTouchExplorationEnabled);
+      }
+    }
+  }
+
+  private void updateAndSendInvertColorsChangeEvent() {
+    boolean isInvertColorsEnabled = this.getIsInvertColorsEnabled();
+
+    if (mInvertColorsEnabled != isInvertColorsEnabled) {
+      mInvertColorsEnabled = isInvertColorsEnabled;
+
+      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+      if (reactApplicationContext != null) {
+        reactApplicationContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(INVERT_COLORS_EVENT_NAME, mInvertColorsEnabled);
       }
     }
   }
@@ -160,6 +192,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     getReactApplicationContext().addLifecycleEventListener(this);
     updateAndSendTouchExplorationChangeEvent(mAccessibilityManager.isTouchExplorationEnabled());
     updateAndSendReduceMotionChangeEvent();
+    updateAndSendInvertColorsChangeEvent();
   }
 
   @Override

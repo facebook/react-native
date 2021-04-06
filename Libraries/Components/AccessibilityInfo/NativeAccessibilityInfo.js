@@ -15,6 +15,9 @@ export interface Spec extends TurboModule {
   +isReduceMotionEnabled: (
     onSuccess: (isReduceMotionEnabled: boolean) => void,
   ) => void;
+  +isInvertColorsEnabled: (
+    onSuccess: (isInvertColorsEnabled: boolean) => void,
+  ) => void;
   +isTouchExplorationEnabled: (
     onSuccess: (isScreenReaderEnabled: boolean) => void,
   ) => void;
