@@ -275,6 +275,15 @@ const AccessibilityInfo = {
     // $FlowFixMe[escaped-generic]
     _subscriptions.delete(handler);
   },
+
+  /**
+   * Android only
+   */
+  getRecommendedTimeoutMillis: function(
+    originalTimeout: number,
+  ): Promise<number> {
+    return Promise.resolve(originalTimeout);
+  },
 };
 
 module.exports = AccessibilityInfo;

@@ -167,6 +167,29 @@ const AccessibilityInfo = {
       NativeAccessibilityInfo.announceForAccessibility(announcement);
     }
   },
+
+  /**
+   * Get the recommended timeout for changes to the UI needed by this user.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo.html#getRecommendedTimeoutMillis
+   */
+  getRecommendedTimeoutMillis: function(
+    originalTimeout: number,
+  ): Promise<number> {
+    return new Promise((resolve, reject) => {
+      if (
+        NativeAccessibilityInfo &&
+        NativeAccessibilityInfo.getRecommendedTimeoutMillis
+      ) {
+        NativeAccessibilityInfo.getRecommendedTimeoutMillis(
+          originalTimeout,
+          resolve,
+        );
+      } else {
+        resolve(originalTimeout);
+      }
+    });
+  },
 };
 
 module.exports = AccessibilityInfo;
