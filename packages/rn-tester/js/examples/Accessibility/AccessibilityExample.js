@@ -20,6 +20,7 @@ const {
   TouchableWithoutFeedback,
   Alert,
   StyleSheet,
+  Slider,
   Platform,
 } = require('react-native');
 
@@ -604,6 +605,25 @@ class AccessibilityActionsExample extends React.Component {
               <Text>Click me</Text>
             </View>
           </TouchableWithoutFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Fake slider example">
+          <View
+            accessible={true}
+            accessibilityRole="adjustable"
+            accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'increment':
+                  Alert.alert('Alert', 'increment action success');
+                  break;
+                case 'decrement':
+                  Alert.alert('Alert', 'decrement action success');
+                  break;
+              }
+            }}>
+            <Text>Slider</Text>
+          </View>
         </RNTesterBlock>
       </View>
     );
