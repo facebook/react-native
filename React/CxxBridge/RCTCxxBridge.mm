@@ -294,10 +294,6 @@ struct RCTInstanceCallback : public InstanceCallback {
                                              selector:@selector(handleMemoryWarning)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleApplicationDidEnterBackgroundNotification)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
   }
   return self;
 }
@@ -358,26 +354,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   auto reactInstance = _reactInstance;
   if (reactInstance) {
     reactInstance->handleMemoryPressure(15 /* TRIM_MEMORY_RUNNING_CRITICAL */);
-  }
-}
-
-- (void)handleApplicationDidEnterBackgroundNotification
-{
-  if (!RCTExperimentGetReleaseResourcesWhenBackgrounded()) {
-    return;
-  }
-
-  // We only want to run garbage collector when the loading is finished
-  // and the instance is valid.
-  if (!_valid || _loading) {
-    return;
-  }
-
-  // We need to hold a local retaining pointer to react instance
-  // in case if some other tread resets it.
-  auto reactInstance = _reactInstance;
-  if (reactInstance) {
-    reactInstance->handleMemoryPressure(40 /* TRIM_MEMORY_BACKGROUND */);
   }
 }
 
