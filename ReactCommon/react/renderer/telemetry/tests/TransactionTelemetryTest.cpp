@@ -15,9 +15,6 @@
 
 using namespace facebook::react;
 
-#define EXPECT_EQ_WITH_THRESHOLD(a, b, threshold) \
-  EXPECT_TRUE((a >= b - threshold) && (a <= b + threshold))
-
 template <typename ClockT>
 void sleep(double durationInSeconds) {
   auto timepoint = ClockT::now() +
@@ -35,7 +32,7 @@ TEST(TransactionTelemetryTest, timepoints) {
 
   auto duration = telemetryDurationToMilliseconds(timepointB - timepointA);
 
-  EXPECT_EQ_WITH_THRESHOLD(duration, 100, threshold);
+  EXPECT_NEAR(duration, 100, threshold);
 }
 
 TEST(TransactionTelemetryTest, normalUseCase) {
@@ -82,12 +79,12 @@ TEST(TransactionTelemetryTest, normalUseCase) {
   auto mountDuration = telemetryDurationToMilliseconds(
       telemetry.getMountEndTime() - telemetry.getMountStartTime());
 
-  EXPECT_EQ_WITH_THRESHOLD(commitDuration, 1000, threshold);
-  EXPECT_EQ_WITH_THRESHOLD(layoutDuration, 800, threshold);
-  EXPECT_EQ_WITH_THRESHOLD(mountDuration, 100, threshold);
+  EXPECT_NEAR(commitDuration, 1000, threshold);
+  EXPECT_NEAR(layoutDuration, 800, threshold);
+  EXPECT_NEAR(mountDuration, 100, threshold);
 
   EXPECT_EQ(telemetry.getNumberOfTextMeasurements(), 3);
-  EXPECT_EQ_WITH_THRESHOLD(
+  EXPECT_NEAR(
       telemetryDurationToMilliseconds(telemetry.getTextMeasureTime()),
       600,
       threshold);
