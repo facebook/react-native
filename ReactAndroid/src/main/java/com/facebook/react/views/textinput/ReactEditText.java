@@ -734,8 +734,9 @@ public class ReactEditText extends AppCompatEditText
     // wrapper 100% of the time.
     // Since the LocalData object is constructed by getting values from the underlying EditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
-    if (!mFabricViewStateManager.hasStateWrapper()) {
-      ReactContext reactContext = getReactContext(this);
+    ReactContext reactContext = getReactContext(this);
+
+    if (!mFabricViewStateManager.hasStateWrapper() && !reactContext.isBridgeless()) {
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
       if (uiManager != null) {

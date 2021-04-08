@@ -393,7 +393,8 @@ module.exports = {
   assertNativeAnimatedModule,
   shouldUseNativeDriver,
   transformDataType,
-  // $FlowExpectedError - unsafe getter lint suppresion
+  // $FlowExpectedError[unsafe-getters-setters] - unsafe getter lint suppresion
+  // $FlowExpectedError[missing-type-arg] - unsafe getter lint suppresion
   get nativeEventEmitter(): NativeEventEmitter {
     if (!nativeEventEmitter) {
       nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);

@@ -67,7 +67,7 @@ public class UIImplementation {
 
   public UIImplementation(
       ReactApplicationContext reactContext,
-      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      ViewManagerResolver viewManagerResolver,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     this(
@@ -787,9 +787,7 @@ public class UIImplementation {
   public void onHostDestroy() {}
 
   public void onCatalystInstanceDestroyed() {
-    if (ReactFeatureFlags.disableNonFabricViewOperationsOnCatalystDestroy) {
-      mViewOperationsEnabled = false;
-    }
+    mViewOperationsEnabled = false;
   }
 
   public void setViewHierarchyUpdateDebugListener(

@@ -167,7 +167,9 @@ RCT_EXPORT_MODULE()
   _componentDataByName = [NSMutableDictionary new];
   for (Class moduleClass in _bridge.moduleClasses) {
     if ([moduleClass isSubclassOfClass:[RCTViewManager class]]) {
-      RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:_bridge];
+      RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass
+                                                                                bridge:_bridge
+                                                                       eventDispatcher:_bridge.eventDispatcher];
       _componentDataByName[componentData.name] = componentData;
     }
   }
@@ -1577,7 +1579,9 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView : (NSString *)name)
     return @{};
   }
 
-  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class] bridge:self.bridge];
+  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class]
+                                                                            bridge:self.bridge
+                                                                   eventDispatcher:self.bridge.eventDispatcher];
   _componentDataByName[componentData.name] = componentData;
   NSMutableDictionary *directEvents = [NSMutableDictionary new];
   NSMutableDictionary *bubblingEvents = [NSMutableDictionary new];

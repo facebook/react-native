@@ -18,9 +18,9 @@ const Text = require('../Text/Text');
 const TouchableNativeFeedback = require('./Touchable/TouchableNativeFeedback');
 const TouchableOpacity = require('./Touchable/TouchableOpacity');
 const View = require('./View/View');
-
 const invariant = require('invariant');
 
+import type {AccessibilityState} from './View/ViewAccessibility';
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
 
@@ -134,6 +134,11 @@ type ButtonProps = $ReadOnly<{|
     Used to locate this view in end-to-end tests.
    */
   testID?: ?string,
+
+  /**
+   * Accessibility props.
+   */
+  accessibilityState?: ?AccessibilityState,
 |}>;
 
 /**
@@ -261,7 +266,6 @@ class Button extends React.Component<ButtonProps> {
       nextFocusLeft,
       nextFocusRight,
       nextFocusUp,
-      disabled,
       testID,
     } = this.props;
     const buttonStyles = [styles.button];
@@ -273,12 +277,22 @@ class Button extends React.Component<ButtonProps> {
         buttonStyles.push({backgroundColor: color});
       }
     }
-    const accessibilityState = {};
+
+    const disabled =
+      this.props.disabled != null
+        ? this.props.disabled
+        : this.props.accessibilityState?.disabled;
+
+    const accessibilityState =
+      disabled !== this.props.accessibilityState?.disabled
+        ? {...this.props.accessibilityState, disabled}
+        : this.props.accessibilityState;
+
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
-      accessibilityState.disabled = true;
     }
+
     invariant(
       typeof title === 'string',
       'The title prop of a Button must be a string',
@@ -287,6 +301,7 @@ class Button extends React.Component<ButtonProps> {
       Platform.OS === 'android' ? title.toUpperCase() : title;
     const Touchable =
       Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
+
     return (
       <Touchable
         accessibilityLabel={accessibilityLabel}

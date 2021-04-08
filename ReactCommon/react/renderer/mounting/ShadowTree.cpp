@@ -7,6 +7,7 @@
 
 #include "ShadowTree.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -14,7 +15,7 @@
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 
 #include "ShadowTreeDelegate.h"
 
@@ -305,7 +306,7 @@ CommitStatus ShadowTree::commit(
 
     // After multiple attempts, we failed to commit the transaction.
     // Something internally went terribly wrong.
-    assert(attempts < 1024);
+    react_native_assert(attempts < 1024);
   }
 }
 
@@ -385,7 +386,7 @@ CommitStatus ShadowTree::tryCommit(
     }
 
     telemetry.didCommit();
-    telemetry.setRevisionNumber(newRevisionNumber);
+    telemetry.setRevisionNumber(static_cast<int>(newRevisionNumber));
 
     newRevision =
         ShadowTreeRevision{newRootShadowNode, newRevisionNumber, telemetry};

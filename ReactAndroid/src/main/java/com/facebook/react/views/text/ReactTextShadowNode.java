@@ -111,7 +111,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                     text, layout, sTextPaintInstance, themedReactContext);
             WritableMap event = Arguments.createMap();
             event.putArray("lines", lines);
-            if (themedReactContext.hasActiveCatalystInstance()) {
+            if (themedReactContext.hasActiveReactInstance()) {
               themedReactContext
                   .getJSModule(RCTEventEmitter.class)
                   .receiveEvent(getReactTag(), "topTextLayout", event);

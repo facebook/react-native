@@ -25,6 +25,7 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 #include <glog/logging.h>
+#include <react/debug/react_native_assert.h>
 
 namespace facebook {
 namespace react {
@@ -43,9 +44,6 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
     int incompleteAnimations = 0;
     for (auto &keyframe : animation.keyFrames) {
-      if (keyframe.type == AnimationConfigurationType::Noop) {
-        continue;
-      }
       if (keyframe.invalidated) {
         continue;
       }
@@ -79,8 +77,8 @@ void LayoutAnimationDriver::animationMutationsForFrame(
       // All generated Update mutations must have an "old" and "new"
       // ShadowView. Checking for nonzero tag doesn't guarantee that the views
       // are valid/correct, just that something is there.
-      assert(updateMutation.oldChildShadowView.tag != 0);
-      assert(updateMutation.newChildShadowView.tag != 0);
+      react_native_assert(updateMutation.oldChildShadowView.tag > 0);
+      react_native_assert(updateMutation.newChildShadowView.tag > 0);
 
       mutationsList.push_back(updateMutation);
       PrintMutationInstruction("Animation Progress:", updateMutation);
@@ -110,42 +108,11 @@ void LayoutAnimationDriver::animationMutationsForFrame(
         if (keyframe.invalidated) {
           continue;
         }
-        if (keyframe.finalMutationForKeyFrame.hasValue()) {
-          auto const &finalMutationForKeyFrame =
-              *keyframe.finalMutationForKeyFrame;
-          PrintMutationInstruction(
-              "Animation Complete: Queuing up Final Mutation:",
-              finalMutationForKeyFrame);
-
-          // Copy so that if something else mutates the inflight animations, it
-          // won't change this mutation after this point.
-          auto mutation = ShadowViewMutation{
-              finalMutationForKeyFrame.type,
-              finalMutationForKeyFrame.parentShadowView,
-              keyframe.viewPrev,
-              finalMutationForKeyFrame.newChildShadowView,
-              finalMutationForKeyFrame.index};
-          assert(mutation.oldChildShadowView.tag != 0);
-          assert(
-              mutation.newChildShadowView.tag != 0 ||
-              finalMutationForKeyFrame.type == ShadowViewMutation::Remove ||
-              finalMutationForKeyFrame.type == ShadowViewMutation::Delete);
-          mutationsList.push_back(mutation);
-        } else {
-          // Issue a final UPDATE so that the final props object sent to the
-          // mounting layer is the same as the one on the ShadowTree. This is
-          // mostly to make the MountingCoordinator StubViewTree assertions
-          // pass.
-          auto mutation = ShadowViewMutation{
-              ShadowViewMutation::Type::Update,
-              keyframe.parentView,
-              keyframe.viewPrev,
-              keyframe.viewEnd,
-              -1};
-          assert(mutation.oldChildShadowView.tag != 0);
-          assert(mutation.newChildShadowView.tag != 0);
-          mutationsList.push_back(mutation);
-        }
+        queueFinalMutationsForCompletedKeyFrame(
+            keyframe,
+            mutationsList,
+            false,
+            "LayoutAnimationDriver: Animation Completed");
       }
 
       it = inflightAnimations_.erase(it);

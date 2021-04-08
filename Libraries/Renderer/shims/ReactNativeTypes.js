@@ -6,14 +6,10 @@
  *
  * @format
  * @flow strict
+ * @generated SignedSource<<e82e40c72e74c0f37676a3cae5cde60b>>
  */
 
-import type {
-  ElementRef,
-  ElementType,
-  MixedElement,
-  AbstractComponent,
-} from 'react';
+import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
 
 export type MeasureOnSuccessCallback = (
   x: number,
@@ -49,7 +45,7 @@ type AttributeType<T, V> =
 // or we allow them to define specific types and use this hack
 type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
 
-type AttributeConfiguration = $ReadOnly<{
+export type AttributeConfiguration = $ReadOnly<{
   [propName: string]: AnyAttributeType,
   style: $ReadOnly<{
     [propName: string]: AnyAttributeType,
@@ -99,7 +95,7 @@ export type PartialViewConfig = $ReadOnly<{
   validAttributes?: PartialAttributeConfiguration,
 }>;
 
-export type NativeMethods = {
+export type NativeMethods = $ReadOnly<{|
   blur(): void,
   focus(): void,
   measure(callback: MeasureOnSuccessCallback): void,
@@ -110,8 +106,7 @@ export type NativeMethods = {
     onFail?: () => void,
   ): void,
   setNativeProps(nativeProps: {...}): void,
-  ...
-};
+|}>;
 
 export type HostComponent<T> = AbstractComponent<T, $ReadOnly<NativeMethods>>;
 
@@ -185,7 +180,7 @@ export type ReactNativeType = {
     eventType: string,
   ): void,
   render(
-    element: MixedElement,
+    element: Element<ElementType>,
     containerTag: number,
     callback: ?() => void,
   ): ?ElementRef<ElementType>,
@@ -213,7 +208,7 @@ export type ReactFabricType = {
     eventType: string,
   ): void,
   render(
-    element: MixedElement,
+    element: Element<ElementType>,
     containerTag: number,
     callback: ?() => void,
   ): ?ElementRef<ElementType>,

@@ -11,8 +11,7 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Abstract class for UIManager's delegate.
@@ -52,20 +51,14 @@ class UIManagerDelegate {
       std::string const &eventType) = 0;
 
   /*
-   * Set JS responder for a view
+   * Set JS responder for a view.
    */
-  virtual void uiManagerDidSetJSResponder(
-      SurfaceId surfaceId,
-      ShadowNode::Shared const &shadowView,
+  virtual void uiManagerDidSetIsJSResponder(
+      ShadowNode::Shared const &shadowNode,
+      bool isJSResponder,
       bool blockNativeResponder) = 0;
-
-  /*
-   * Clear the JSResponder for a view
-   */
-  virtual void uiManagerDidClearJSResponder() = 0;
 
   virtual ~UIManagerDelegate() noexcept = default;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

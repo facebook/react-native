@@ -12,6 +12,7 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/core/EventBeat.h>
+#include <react/renderer/leakchecker/LeakChecker.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
@@ -63,6 +64,12 @@ struct SchedulerToolbox final {
    * the call back synchronously if the executor is invoked on the main thread.
    */
   BackgroundExecutor backgroundExecutor;
+
+  /*
+   * Triggers garbage collection. Used when checking if all Fabric's HostObjects
+   * have been properly cleaned up from JavaScript.
+   */
+  GarbageCollectionTrigger garbageCollectionTrigger;
 
   /*
    * A list of `UIManagerCommitHook`s that should be registered in `UIManager`.

@@ -194,6 +194,7 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge;
 - (void)partialBatchDidFlush;
 - (void)batchDidComplete;
+- (void)forceGarbageCollection;
 
 @end
 
@@ -293,10 +294,6 @@ struct RCTInstanceCallback : public InstanceCallback {
                                              selector:@selector(handleMemoryWarning)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleApplicationDidEnterBackgroundNotification)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
   }
   return self;
 }
@@ -341,6 +338,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)handleMemoryWarning
 {
+  [self forceGarbageCollection];
+}
+
+- (void)forceGarbageCollection
+{
   // We only want to run garbage collector when the loading is finished
   // and the instance is valid.
   if (!_valid || _loading) {
@@ -352,26 +354,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   auto reactInstance = _reactInstance;
   if (reactInstance) {
     reactInstance->handleMemoryPressure(15 /* TRIM_MEMORY_RUNNING_CRITICAL */);
-  }
-}
-
-- (void)handleApplicationDidEnterBackgroundNotification
-{
-  if (!RCTExperimentGetReleaseResourcesWhenBackgrounded()) {
-    return;
-  }
-
-  // We only want to run garbage collector when the loading is finished
-  // and the instance is valid.
-  if (!_valid || _loading) {
-    return;
-  }
-
-  // We need to hold a local retaining pointer to react instance
-  // in case if some other tread resets it.
-  auto reactInstance = _reactInstance;
-  if (reactInstance) {
-    reactInstance->handleMemoryPressure(40 /* TRIM_MEMORY_BACKGROUND */);
   }
 }
 
@@ -799,11 +781,20 @@ struct RCTInstanceCallback : public InstanceCallback {
 {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge initModulesWithDispatchGroup:] extraModules", nil);
 
-  NSArray<id<RCTBridgeModule>> *extraModules = nil;
+  NSArray<id<RCTBridgeModule>> *appExtraModules = nil;
   if ([self.delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
-    extraModules = [self.delegate extraModulesForBridge:_parentBridge];
+    appExtraModules = [self.delegate extraModulesForBridge:_parentBridge];
   } else if (self.moduleProvider) {
-    extraModules = self.moduleProvider();
+    appExtraModules = self.moduleProvider();
+  }
+
+  NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray new];
+
+  // Prevent TurboModules from appearing the the NativeModule system
+  for (id<RCTBridgeModule> module in appExtraModules) {
+    if (!(RCTTurboModuleEnabled() && [module conformsToProtocol:@protocol(RCTTurboModule)])) {
+      [extraModules addObject:module];
+    }
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");

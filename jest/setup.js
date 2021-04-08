@@ -128,6 +128,7 @@ jest
     removeEventListener: jest.fn(),
     setAccessibilityFocus: jest.fn(),
     sendAccessibilityEvent_unstable: jest.fn(),
+    getRecommendedTimeoutMillis: jest.fn(),
   }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(
@@ -160,8 +161,9 @@ jest
     ),
   )
   .mock('../Libraries/AppState/AppState', () => ({
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
+    addEventListener: jest.fn(() => ({
+      remove: jest.fn(),
+    })),
   }))
   .mock('../Libraries/Linking/Linking', () => ({
     openURL: jest.fn(),

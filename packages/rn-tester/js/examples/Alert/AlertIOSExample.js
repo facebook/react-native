@@ -32,7 +32,8 @@ class PromptOptions extends React.Component<Props, State> {
   constructor(props) {
     super(props);
 
-    // $FlowFixMe this seems to be a Flow bug, `saveResponse` is defined below
+    /* $FlowFixMe[cannot-write] this seems to be a Flow bug, `saveResponse` is
+     * defined below */
     this.saveResponse = this.saveResponse.bind(this);
 
     this.customButtons = [

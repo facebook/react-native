@@ -26,7 +26,7 @@ type AccessibilityEventDefinitions = {
   change: [boolean],
 };
 
-type AccessibilityEventTypes = 'focus';
+type AccessibilityEventTypes = 'focus' | 'click';
 
 const _subscriptions = new Map();
 
@@ -89,19 +89,6 @@ const AccessibilityInfo = {
     });
   },
 
-  /**
-   * Deprecated
-   *
-   * Same as `isScreenReaderEnabled`
-   */
-  // $FlowFixMe[unsafe-getters-setters]
-  get fetch(): () => Promise<boolean> {
-    console.warn(
-      'AccessibilityInfo.fetch is deprecated, call AccessibilityInfo.isScreenReaderEnabled instead',
-    );
-    return this.isScreenReaderEnabled;
-  },
-
   addEventListener: function<K: $Keys<AccessibilityEventDefinitions>>(
     eventName: K,
     handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
@@ -162,7 +149,12 @@ const AccessibilityInfo = {
     eventType: AccessibilityEventTypes,
   ) {
     // route through React renderer to distinguish between Fabric and non-Fabric handles
-    sendAccessibilityEvent(handle, eventType);
+    // iOS only supports 'focus' event types
+    if (eventType === 'focus') {
+      sendAccessibilityEvent(handle, eventType);
+    } else if (eventType === 'click') {
+      // Do nothing!
+    }
   },
 
   /**
@@ -174,6 +166,29 @@ const AccessibilityInfo = {
     if (NativeAccessibilityInfo) {
       NativeAccessibilityInfo.announceForAccessibility(announcement);
     }
+  },
+
+  /**
+   * Get the recommended timeout for changes to the UI needed by this user.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo.html#getRecommendedTimeoutMillis
+   */
+  getRecommendedTimeoutMillis: function(
+    originalTimeout: number,
+  ): Promise<number> {
+    return new Promise((resolve, reject) => {
+      if (
+        NativeAccessibilityInfo &&
+        NativeAccessibilityInfo.getRecommendedTimeoutMillis
+      ) {
+        NativeAccessibilityInfo.getRecommendedTimeoutMillis(
+          originalTimeout,
+          resolve,
+        );
+      } else {
+        resolve(originalTimeout);
+      }
+    });
   },
 };
 

@@ -43,18 +43,18 @@ class SurfaceHandler final {
      * Newly created, moved-from, or already-unregistered instances. The only
      * state in which the object can be safely deallocated.
      */
-    Unregistered,
+    Unregistered = 0,
 
     /*
      * Registered instances that have an internal reference to a `UIManager`
      * instance and ready to start a surface.
      */
-    Registered,
+    Registered = 1,
 
     /*
      * Registered and running instances.
      */
-    Running,
+    Running = 2,
   };
 
   /*
@@ -66,7 +66,7 @@ class SurfaceHandler final {
      * The surface is running normally. All visual side-effects will be rendered
      * on the screen.
      */
-    Visible,
+    Visible = 0,
 
     /*
      * The surface is `Suspended`. All new (committed after switching to the
@@ -77,7 +77,7 @@ class SurfaceHandler final {
      * The surface will be prepared without spending computing resources
      * on mounting, and then can be instantly mounted if needed.
      */
-    Suspended,
+    Suspended = 1,
 
     /*
      * The surface is `Hidden`. All previously mounted visual side-effects
@@ -88,7 +88,7 @@ class SurfaceHandler final {
      * The mode can be used for temporarily freeing computing resources of
      * off-the-screen surfaces.
      */
-    Hidden,
+    Hidden = 2,
   };
 
   /*
@@ -131,6 +131,7 @@ class SurfaceHandler final {
 #pragma mark - Accessors
 
   SurfaceId getSurfaceId() const noexcept;
+  void setSurfaceId(SurfaceId surfaceId) const noexcept;
   std::string getModuleName() const noexcept;
 
   /*
