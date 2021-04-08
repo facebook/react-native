@@ -10,9 +10,9 @@
 
 'use strict';
 
-const Platform = require('../Utilities/Platform');
-const React = require('react');
-const VirtualizedSectionList = require('./VirtualizedSectionList');
+import Platform from '../Utilities/Platform';
+import * as React from 'react';
+import VirtualizedSectionList from './VirtualizedSectionList';
 
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {
@@ -171,10 +171,9 @@ export type Props<SectionT> = {|
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
-  Props<SectionT>,
-  void,
-> {
+export default class SectionList<
+  SectionT: SectionBase<any>,
+> extends React.PureComponent<Props<SectionT>, void> {
   props: Props<SectionT>;
 
   /**
@@ -260,5 +259,3 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     this._wrapperListRef = ref;
   };
 }
-
-module.exports = SectionList;

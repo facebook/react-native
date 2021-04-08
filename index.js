@@ -218,7 +218,7 @@ module.exports = {
     return require('./Libraries/Components/ScrollView/ScrollView');
   },
   get SectionList(): SectionList {
-    return require('./Libraries/Lists/SectionList');
+    return require('./Libraries/Lists/SectionList').default;
   },
   // $FlowFixMe[value-as-type]
   get SegmentedControlIOS(): SegmentedControlIOS {
