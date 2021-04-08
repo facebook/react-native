@@ -278,9 +278,11 @@ void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
 }
 
 SurfaceHandler::~SurfaceHandler() noexcept {
-  react_native_assert(
-      link_.status == Status::Unregistered &&
-      "`SurfaceHandler` must be unregistered (or moved-from) before deallocation.");
+  // TODO(T88046056): Fix Android memory leak before uncommenting changes
+  //  react_native_assert(
+  //      link_.status == Status::Unregistered &&
+  //      "`SurfaceHandler` must be unregistered (or moved-from) before
+  //      deallocation.");
 }
 
 } // namespace react
