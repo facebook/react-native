@@ -86,6 +86,8 @@ const Text: React.AbstractComponent<
       pressRetentionOffset,
       onLongPress,
       onPress,
+      onPressIn,
+      onPressOut,
       onResponderTerminationRequest,
       onStartShouldSetResponder,
       suppressHighlighting,
