@@ -17,6 +17,7 @@
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/templateprocessor/UITemplateProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -86,9 +87,20 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
+#ifdef ANDROID
+  auto enableRuntimeScheduler = reactNativeConfig_->getBool(
+      "react_fabric:enable_runtime_scheduler_android");
+#else
+  auto enableRuntimeScheduler =
+      reactNativeConfig_->getBool("react_fabric:enable_runtime_scheduler_ios");
+#endif
+
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
     uiManagerBinding->attach(uiManager);
+    if (enableRuntimeScheduler) {
+      RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime);
+    }
   });
 
   auto componentDescriptorRegistryKey =
