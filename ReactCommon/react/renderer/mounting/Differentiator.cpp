@@ -17,9 +17,25 @@
 
 #ifdef DEBUG_LOGS_DIFFER
 #include <glog/logging.h>
+#define DEBUG_LOGS_BREADCRUMBS 1
 #define DEBUG_LOGS(code) code
 #else
 #define DEBUG_LOGS(code)
+#endif
+
+#ifdef DEBUG_LOGS_BREADCRUMBS
+#define BREADCRUMB_TYPE std::string
+#define DIFF_BREADCRUMB(X) (breadcrumb + std::string(X))
+#define CREATE_DIFF_BREADCRUMB(X) std::to_string(X)
+#else
+
+enum class NoBreadcrumb {};
+
+#define BREADCRUMB_TYPE NoBreadcrumb const &
+#define DIFF_BREADCRUMB(X) \
+  {}
+#define CREATE_DIFF_BREADCRUMB(X) \
+  {}
 #endif
 
 namespace facebook {
@@ -288,6 +304,7 @@ static_assert(
 
 // Forward declaration
 static void calculateShadowViewMutationsV2(
+    BREADCRUMB_TYPE breadcrumb,
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
     ShadowViewNodePair::List &&oldChildPairs,
@@ -304,6 +321,7 @@ struct OrderedMutationInstructionContainer {
 };
 
 static void calculateShadowViewMutationsFlattener(
+    BREADCRUMB_TYPE breadcrumb,
     ReparentMode reparentMode,
     OrderedMutationInstructionContainer &mutationInstructionContainer,
     ShadowView const &parentShadowView,
@@ -348,6 +366,7 @@ static void calculateShadowViewMutationsFlattener(
  *    **after this function is called**, by the caller.
  */
 static void calculateShadowViewMutationsFlattener(
+    BREADCRUMB_TYPE breadcrumb,
     ReparentMode reparentMode,
     OrderedMutationInstructionContainer &mutationInstructionContainer,
     ShadowView const &parentShadowView,
@@ -490,6 +509,9 @@ static void calculateShadowViewMutationsFlattener(
       if (!oldTreeNodePair.flattened && !newTreeNodePair.flattened) {
         if (oldTreeNodePair.shadowNode != newTreeNodePair.shadowNode) {
           calculateShadowViewMutationsV2(
+              DIFF_BREADCRUMB(
+                  "(Un)Flattener trivial update of " +
+                  std::to_string(newTreeNodePair.shadowView.tag)),
               mutationInstructionContainer.downwardMutations,
               newTreeNodePair.shadowView,
               sliceChildShadowNodeViewPairsV2(*oldTreeNodePair.shadowNode),
@@ -506,6 +528,17 @@ static void calculateShadowViewMutationsFlattener(
         // This is a flatten-flatten, or unflatten-unflatten.
         if (childReparentMode == reparentMode) {
           calculateShadowViewMutationsFlattener(
+              DIFF_BREADCRUMB(
+                  std::string(
+                      reparentMode == ReparentMode::Flatten
+                          ? "Flatten-Flatten"
+                          : "Unflatten-Unflatten") +
+                  " new:" +
+                  std::to_string(
+                      reparentMode == ReparentMode::Flatten
+                          ? parentShadowView.tag
+                          : newTreeNodePair.shadowView.tag) +
+                  " old:" + std::to_string(treeChildPair.shadowView.tag)),
               childReparentMode,
               mutationInstructionContainer,
               (reparentMode == ReparentMode::Flatten
@@ -543,6 +576,13 @@ static void calculateShadowViewMutationsFlattener(
             // At the end of this loop we still want to know which of these
             // children are visited, so we reuse the `newRemainingPairs` map.
             calculateShadowViewMutationsFlattener(
+                DIFF_BREADCRUMB(
+                    std::string("Flatten old tree into new list; new:") +
+                    std::to_string(
+                        reparentMode == ReparentMode::Flatten
+                            ? parentShadowView.tag
+                            : newTreeNodePair.shadowView.tag) +
+                    " old:" + std::to_string(oldTreeNodePair.shadowView.tag)),
                 ReparentMode::Flatten,
                 mutationInstructionContainer,
                 (reparentMode == ReparentMode::Flatten
@@ -593,6 +633,13 @@ static void calculateShadowViewMutationsFlattener(
 
             // Unflatten old list into new tree
             calculateShadowViewMutationsFlattener(
+                DIFF_BREADCRUMB(
+                    "Unflatten old list into new tree; old:" +
+                    std::to_string(
+                        reparentMode == ReparentMode::Flatten
+                            ? parentShadowView.tag
+                            : newTreeNodePair.shadowView.tag) +
+                    " new:" + std::to_string(newTreeNodePair.shadowView.tag)),
                 ReparentMode::Unflatten,
                 mutationInstructionContainer,
                 (reparentMode == ReparentMode::Flatten
@@ -638,6 +685,9 @@ static void calculateShadowViewMutationsFlattener(
                             oldFlattenedNode.shadowView));
 
                     calculateShadowViewMutationsV2(
+                        DIFF_BREADCRUMB(
+                            "Destroy " +
+                            std::to_string(oldFlattenedNode.shadowView.tag)),
                         mutationInstructionContainer
                             .destructiveDownwardMutations,
                         oldFlattenedNode.shadowView,
@@ -732,6 +782,9 @@ static void calculateShadowViewMutationsFlattener(
 
       if (!treeChildPair.flattened) {
         calculateShadowViewMutationsV2(
+            DIFF_BREADCRUMB(
+                "Recursively delete tree child pair (flatten case): " +
+                std::to_string(treeChildPair.shadowView.tag)),
             mutationInstructionContainer.destructiveDownwardMutations,
             treeChildPair.shadowView,
             sliceChildShadowNodeViewPairsV2(*treeChildPair.shadowNode),
@@ -743,6 +796,9 @@ static void calculateShadowViewMutationsFlattener(
 
       if (!treeChildPair.flattened) {
         calculateShadowViewMutationsV2(
+            DIFF_BREADCRUMB(
+                "Recursively delete tree child pair (unflatten case): " +
+                std::to_string(treeChildPair.shadowView.tag)),
             mutationInstructionContainer.downwardMutations,
             treeChildPair.shadowView,
             {},
@@ -753,6 +809,7 @@ static void calculateShadowViewMutationsFlattener(
 }
 
 static void calculateShadowViewMutationsV2(
+    BREADCRUMB_TYPE breadcrumb,
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
     ShadowViewNodePair::List &&oldChildPairs,
@@ -855,6 +912,9 @@ static void calculateShadowViewMutationsV2(
       auto newGrandChildPairs =
           sliceChildShadowNodeViewPairsV2(*newChildPair.shadowNode);
       calculateShadowViewMutationsV2(
+          DIFF_BREADCRUMB(
+              "Stage 1: Recurse on " +
+              std::to_string(oldChildPair.shadowView.tag)),
           *(newGrandChildPairs.size() ? &downwardMutations
                                       : &destructiveDownwardMutations),
           oldChildPair.shadowView,
@@ -891,6 +951,8 @@ static void calculateShadowViewMutationsV2(
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
       calculateShadowViewMutationsV2(
+          DIFF_BREADCRUMB(
+              "Trivial delete " + std::to_string(oldChildPair.shadowView.tag)),
           destructiveDownwardMutations,
           oldChildPair.shadowView,
           sliceChildShadowNodeViewPairsV2(*oldChildPair.shadowNode),
@@ -920,6 +982,8 @@ static void calculateShadowViewMutationsV2(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
       calculateShadowViewMutationsV2(
+          DIFF_BREADCRUMB(
+              "Trivial create " + std::to_string(newChildPair.shadowView.tag)),
           downwardMutations,
           newChildPair.shadowView,
           {},
@@ -1024,6 +1088,10 @@ static void calculateShadowViewMutationsV2(
               // At the end of this loop we still want to know which of these
               // children are visited, so we reuse the `newRemainingPairs` map.
               calculateShadowViewMutationsFlattener(
+                  DIFF_BREADCRUMB(
+                      "Flatten tree " + std::to_string(parentShadowView.tag) +
+                      " into list " +
+                      std::to_string(oldChildPair.shadowView.tag)),
                   ReparentMode::Flatten,
                   mutationInstructionContainer,
                   parentShadowView,
@@ -1056,6 +1124,10 @@ static void calculateShadowViewMutationsV2(
 
               // Unflatten old list into new tree
               calculateShadowViewMutationsFlattener(
+                  DIFF_BREADCRUMB(
+                      "Unflatten old list " +
+                      std::to_string(parentShadowView.tag) + " into new tree " +
+                      std::to_string(newChildPair.shadowView.tag)),
                   ReparentMode::Unflatten,
                   mutationInstructionContainer,
                   parentShadowView,
@@ -1093,6 +1165,9 @@ static void calculateShadowViewMutationsV2(
             auto newGrandChildPairs =
                 sliceChildShadowNodeViewPairsV2(*newChildPair.shadowNode);
             calculateShadowViewMutationsV2(
+                DIFF_BREADCRUMB(
+                    "Non-trivial update " +
+                    std::to_string(oldChildPair.shadowView.tag)),
                 *(newGrandChildPairs.size() ? &downwardMutations
                                             : &destructiveDownwardMutations),
                 oldChildPair.shadowView,
@@ -1145,6 +1220,8 @@ static void calculateShadowViewMutationsV2(
               // At the end of this loop we still want to know which of these
               // children are visited, so we reuse the `newRemainingPairs` map.
               calculateShadowViewMutationsFlattener(
+                  DIFF_BREADCRUMB(
+                      "Flatten2 " + std::to_string(parentShadowView.tag)),
                   ReparentMode::Flatten,
                   mutationInstructionContainer,
                   parentShadowView,
@@ -1177,6 +1254,8 @@ static void calculateShadowViewMutationsV2(
 
               // Unflatten old list into new tree
               calculateShadowViewMutationsFlattener(
+                  DIFF_BREADCRUMB(
+                      "Unflatten2 " + std::to_string(parentShadowView.tag)),
                   ReparentMode::Unflatten,
                   mutationInstructionContainer,
                   parentShadowView,
@@ -1246,6 +1325,9 @@ static void calculateShadowViewMutationsV2(
             auto newGrandChildPairs =
                 sliceChildShadowNodeViewPairsV2(*newChildPair.shadowNode);
             calculateShadowViewMutationsV2(
+                DIFF_BREADCRUMB(
+                    "Non-trivial update3 " +
+                    std::to_string(oldChildPair.shadowView.tag)),
                 *(newGrandChildPairs.size() ? &downwardMutations
                                             : &destructiveDownwardMutations),
                 oldChildPair.shadowView,
@@ -1350,6 +1432,9 @@ static void calculateShadowViewMutationsV2(
         // We also have to call the algorithm recursively to clean up the
         // entire subtree starting from the removed view.
         calculateShadowViewMutationsV2(
+            DIFF_BREADCRUMB(
+                "Non-trivial delete " +
+                std::to_string(oldChildPair.shadowView.tag)),
             destructiveDownwardMutations,
             oldChildPair.shadowView,
             sliceChildShadowNodeViewPairsV2(*oldChildPair.shadowNode),
@@ -1392,6 +1477,9 @@ static void calculateShadowViewMutationsV2(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
       calculateShadowViewMutationsV2(
+          DIFF_BREADCRUMB(
+              "Non-trivial create " +
+              std::to_string(newChildPair.shadowView.tag)),
           downwardMutations,
           newChildPair.shadowView,
           {},
@@ -1509,6 +1597,7 @@ ShadowViewMutation::List calculateShadowViewMutations(
   }
 
   calculateShadowViewMutationsV2(
+      CREATE_DIFF_BREADCRUMB(oldRootShadowView.tag),
       mutations,
       ShadowView(oldRootShadowNode),
       sliceChildShadowNodeViewPairsV2(oldRootShadowNode),
