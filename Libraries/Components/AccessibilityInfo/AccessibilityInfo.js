@@ -33,6 +33,7 @@ type AccessibilityEventDefinitions = {
   change: [boolean], // screenReaderChanged
   reduceMotionChanged: [boolean],
   screenReaderChanged: [boolean],
+  accessibilityStateChanged: [boolean],
 };
 
 type AccessibilityEventTypes = 'click' | 'focus';
@@ -44,6 +45,7 @@ const EventNames: Map<$Keys<AccessibilityEventDefinitions>, string> =
         ['change', 'touchExplorationDidChange'],
         ['reduceMotionChanged', 'reduceMotionDidChange'],
         ['screenReaderChanged', 'touchExplorationDidChange'],
+        ['accessibilityStateChanged', 'accessibilityStateDidChange'],
       ])
     : new Map([
         ['announcementFinished', 'announcementFinished'],
@@ -220,6 +222,28 @@ const AccessibilityInfo = {
         } else {
           reject(null);
         }
+      }
+    });
+  },
+
+  /**
+   * Query whether Accessibility Service is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when any service is enabled and `false` otherwise.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo.html#isAccessibilityStateEnabled
+   */
+  isAccessibilityStateEnabled(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Platform.OS === 'android') {
+        if (NativeAccessibilityInfoAndroid != null) {
+          NativeAccessibilityInfoAndroid.isAccessibilityStateEnabled(resolve);
+        } else {
+          reject(null);
+        }
+      } else {
+        resolve(false);
       }
     });
   },
