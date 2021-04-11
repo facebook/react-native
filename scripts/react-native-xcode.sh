@@ -175,7 +175,6 @@ else
 fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
-  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2
-  echo "React Native, please report it here: https://github.com/facebook/react-native/issues"
+  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with React Native, please report it here: https://github.com/facebook/react-native/issues" >&2
   exit 2
 fi
