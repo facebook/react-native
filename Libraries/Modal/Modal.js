@@ -10,6 +10,7 @@
 
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
+import ModalInjection from './ModalInjection';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeModalManager from './NativeModalManager';
 const Platform = require('../Utilities/Platform');
@@ -290,4 +291,8 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = Modal;
+const ExportedModal: React.AbstractComponent<
+  React.ElementConfig<typeof Modal>,
+> = ModalInjection.unstable_Modal ?? Modal;
+
+module.exports = ExportedModal;
