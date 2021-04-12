@@ -6,6 +6,7 @@
  *
  * @format
  * @flow
+ * @generate-docs
  */
 
 const Keyboard = require('./Keyboard');
@@ -28,24 +29,32 @@ type Props = $ReadOnly<{|
   ...ViewProps,
 
   /**
-   * Specify how to react to the presence of the keyboard.
+    Specify how to react to the presence of the keyboard.
+
+    > Android and iOS both interact with this prop differently. On both iOS and
+    > Android, setting `behavior` is recommended.
    */
   behavior?: ?('height' | 'position' | 'padding'),
 
   /**
-   * Style of the content container when `behavior` is 'position'.
+    The style of the content container(View) when behavior is 'position'.
+
+    @type View.style
    */
   contentContainerStyle?: ?ViewStyleProp,
 
   /**
-   * Controls whether this `KeyboardAvoidingView` instance should take effect.
-   * This is useful when more than one is on the screen. Defaults to true.
+    Enabled or disabled KeyboardAvoidingView.
+
+    @default true
    */
   enabled: ?boolean,
 
   /**
-   * Distance between the top of the user screen and the React Native view. This
-   * may be non-zero in some cases. Defaults to 0.
+    This is the distance between the top of the user screen and the react native
+    view, may be non-zero in some use cases.
+
+    @default 0
    */
   keyboardVerticalOffset: number,
 |}>;
@@ -55,8 +64,60 @@ type State = {|
 |};
 
 /**
- * View that moves out of the way when the keyboard appears by automatically
- * adjusting its height, position, or bottom padding.
+  It is a component to solve the common problem of views that need to move out
+  of the way of the virtual keyboard. It can automatically adjust either its
+  height, position, or bottom padding based on the keyboard height.
+
+  ```SnackPlayer name=KeyboardAvoidingView&supportedPlatforms=android,ios
+  import React from 'react';
+  import { View, KeyboardAvoidingView, TextInput, StyleSheet, Text, Platform, TouchableWithoutFeedback, Button, Keyboard  } from 'react-native';
+
+  const KeyboardAvoidingComponent = () => {
+    return (
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.inner}>
+            <Text style={styles.header}>Header</Text>
+            <TextInput placeholder="Username" style={styles.textInput} />
+            <View style={styles.btnContainer}>
+              <Button title="Submit" onPress={() => null} />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    );
+  };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1
+    },
+    inner: {
+      padding: 24,
+      flex: 1,
+      justifyContent: "space-around"
+    },
+    header: {
+      fontSize: 36,
+      marginBottom: 48
+    },
+    textInput: {
+      height: 40,
+      borderColor: "#000000",
+      borderBottomWidth: 1,
+      marginBottom: 36
+    },
+    btnContainer: {
+      backgroundColor: "white",
+      marginTop: 12
+    }
+  });
+
+  export default KeyboardAvoidingComponent;
+  ```
  */
 class KeyboardAvoidingView extends React.Component<Props, State> {
   static defaultProps: {|enabled: boolean, keyboardVerticalOffset: number|} = {
