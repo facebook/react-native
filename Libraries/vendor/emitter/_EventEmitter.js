@@ -46,17 +46,16 @@ export interface IEventEmitter<EventDefinitions: {...}> {
  */
 class EventEmitter<EventDefinitions: {...}>
   implements IEventEmitter<EventDefinitions> {
-  _subscriber: EventSubscriptionVendor<EventDefinitions>;
+  _subscriber: EventSubscriptionVendor<EventDefinitions> = new EventSubscriptionVendor<EventDefinitions>();
 
   /**
    * @constructor
-   *
-   * @param {EventSubscriptionVendor} subscriber - Optional subscriber instance
-   *   to use. If omitted, a new subscriber will be created for the emitter.
    */
   constructor(subscriber: ?EventSubscriptionVendor<EventDefinitions>) {
-    this._subscriber =
-      subscriber || new EventSubscriptionVendor<EventDefinitions>();
+    if (subscriber != null) {
+      console.warn('EventEmitter(...): Constructor argument is deprecated.');
+      this._subscriber = subscriber;
+    }
   }
 
   /**
