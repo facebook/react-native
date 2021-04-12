@@ -125,6 +125,8 @@ inline static SurfaceId surfaceIdFromValue(
 }
 
 inline static int displayModeToInt(DisplayMode const value) {
+  // the result of this method should be in sync with
+  // Libraries/ReactNative/DisplayMode.js
   switch (value) {
     case DisplayMode::Visible:
       return 1;

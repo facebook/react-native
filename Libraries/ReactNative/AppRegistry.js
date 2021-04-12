@@ -18,6 +18,7 @@ const invariant = require('invariant');
 const renderApplication = require('./renderApplication');
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
+import {coerceDisplayMode} from './DisplayMode';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
@@ -111,7 +112,7 @@ const AppRegistry = {
     let scopedPerformanceLogger = createPerformanceLogger();
     runnables[appKey] = {
       componentProvider,
-      run: appParameters => {
+      run: (appParameters, displayMode) => {
         renderApplication(
           componentProviderInstrumentationHook(
             componentProvider,
@@ -125,6 +126,7 @@ const AppRegistry = {
           scopedPerformanceLogger,
           appKey === 'LogBox',
           appKey,
+          coerceDisplayMode(displayMode),
         );
       },
     };
@@ -179,7 +181,11 @@ const AppRegistry = {
    *
    * See https://reactnative.dev/docs/appregistry.html#runapplication
    */
-  runApplication(appKey: string, appParameters: any): void {
+  runApplication(
+    appKey: string,
+    appParameters: any,
+    displayMode?: number,
+  ): void {
     if (appKey !== 'LogBox') {
       const msg =
         'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
@@ -198,13 +204,17 @@ const AppRegistry = {
     );
 
     SceneTracker.setActiveScene({name: appKey});
-    runnables[appKey].run(appParameters);
+    runnables[appKey].run(appParameters, displayMode);
   },
 
   /**
    * Update initial props for a surface that's already rendered
    */
-  setSurfaceProps(appKey: string, appParameters: any): void {
+  setSurfaceProps(
+    appKey: string,
+    appParameters: any,
+    displayMode?: number,
+  ): void {
     if (appKey !== 'LogBox') {
       const msg =
         'Updating props for Surface "' +
@@ -225,7 +235,7 @@ const AppRegistry = {
         "* A module failed to load due to an error and `AppRegistry.registerComponent` wasn't called.",
     );
 
-    runnables[appKey].run(appParameters);
+    runnables[appKey].run(appParameters, displayMode);
   },
 
   /**
