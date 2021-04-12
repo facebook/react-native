@@ -50,6 +50,8 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
 
   void setProps(NativeMap *props);
 
+  SurfaceHandler const &getSurfaceHandler();
+
  private:
   mutable better::shared_mutex lifecycleMutex_;
   const SurfaceHandler surfaceHandler_;

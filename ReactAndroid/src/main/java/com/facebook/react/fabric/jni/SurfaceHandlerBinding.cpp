@@ -65,16 +65,6 @@ SurfaceHandlerBinding::initHybrid(
   return makeCxxInstance(surfaceId, moduleNameValue);
 }
 
-void SurfaceHandlerBinding::registerScheduler(
-    std::shared_ptr<Scheduler> scheduler) {
-  scheduler->registerSurface(surfaceHandler_);
-}
-
-void SurfaceHandlerBinding::unregisterScheduler(
-    std::shared_ptr<Scheduler> scheduler) {
-  scheduler->unregisterSurface(surfaceHandler_);
-}
-
 void SurfaceHandlerBinding::setLayoutConstraints(
     jfloat minWidth,
     jfloat maxWidth,
@@ -101,6 +91,10 @@ void SurfaceHandlerBinding::setLayoutConstraints(
 
 void SurfaceHandlerBinding::setProps(NativeMap *props) {
   surfaceHandler_.setProps(props->consume());
+}
+
+SurfaceHandler const &SurfaceHandlerBinding::getSurfaceHandler() {
+  return surfaceHandler_;
 }
 
 void SurfaceHandlerBinding::registerNatives() {
