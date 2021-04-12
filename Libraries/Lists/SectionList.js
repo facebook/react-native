@@ -10,9 +10,9 @@
 
 'use strict';
 
-const Platform = require('../Utilities/Platform');
-const React = require('react');
-const VirtualizedSectionList = require('./VirtualizedSectionList');
+import Platform from '../Utilities/Platform';
+import * as React from 'react';
+import VirtualizedSectionList from './VirtualizedSectionList';
 
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {
@@ -116,12 +116,6 @@ export type Props<SectionT> = {|
   ...OptionalProps<SectionT>,
 |};
 
-const defaultProps = {
-  stickySectionHeadersEnabled: Platform.OS === 'ios',
-};
-
-type DefaultProps = typeof defaultProps;
-
 /**
  * A performant interface for rendering sectioned lists, supporting the most handy features:
  *
@@ -177,12 +171,10 @@ type DefaultProps = typeof defaultProps;
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
-  Props<SectionT>,
-  void,
-> {
+export default class SectionList<
+  SectionT: SectionBase<any>,
+> extends React.PureComponent<Props<SectionT>, void> {
   props: Props<SectionT>;
-  static defaultProps: DefaultProps = defaultProps;
 
   /**
    * Scrolls to the item at the specified `sectionIndex` and `itemIndex` (within the section)
@@ -245,9 +237,16 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   }
 
   render(): React.Node {
+    const {
+      stickySectionHeadersEnabled: _stickySectionHeadersEnabled,
+      ...restProps
+    } = this.props;
+    const stickySectionHeadersEnabled =
+      _stickySectionHeadersEnabled ?? Platform.OS === 'ios';
     return (
       <VirtualizedSectionList
-        {...this.props}
+        {...restProps}
+        stickySectionHeadersEnabled={stickySectionHeadersEnabled}
         ref={this._captureRef}
         getItemCount={items => items.length}
         getItem={(items, index) => items[index]}
@@ -257,11 +256,6 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
 
   _wrapperListRef: ?React.ElementRef<typeof VirtualizedSectionList>;
   _captureRef = ref => {
-    /* $FlowFixMe(>=0.99.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.99 was deployed. To see the error, delete this
-     * comment and run Flow. */
     this._wrapperListRef = ref;
   };
 }
-
-module.exports = SectionList;

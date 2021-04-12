@@ -89,7 +89,7 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
     int type = ViewUtil.getUIManagerType(reactTag);
     assert type == UIManagerType.DEFAULT;
     if (mRCTEventEmitter == null) {
-      if (mReactContext.hasActiveCatalystInstance()) {
+      if (mReactContext.hasActiveReactInstance()) {
         mRCTEventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
       } else {
         ReactSoftException.logSoftException(

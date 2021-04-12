@@ -26,7 +26,6 @@ import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import invariant from 'invariant';
 import processDecelerationRate from './processDecelerationRate';
-import resolveAssetSource from '../../Image/resolveAssetSource';
 import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
 import setAndForwardRef from '../../Utilities/setAndForwardRef';
 
@@ -428,22 +427,6 @@ type AndroidProps = $ReadOnly<{|
   fadingEdgeLength?: ?number,
 |}>;
 
-type VRProps = $ReadOnly<{|
-  /**
-   * Optionally an image can be used for the scroll bar thumb. This will
-   * override the color. While the image is loading or the image fails to
-   * load the color will be used instead. Use an alpha of 0 in the color
-   * to avoid seeing it while the image is loading.
-   *
-   * - `uri` - a string representing the resource identifier for the image, which
-   * should be either a local file path or the name of a static image resource
-   * - `number` - Opaque type returned by something like
-   * `import IMAGE from './image.jpg'`.
-   * @platform vr
-   */
-  scrollBarThumbImage?: ?($ReadOnly<{||}> | number), // Opaque type returned by import IMAGE from './image.jpg'
-|}>;
-
 type StickyHeaderComponentType = React.AbstractComponent<
   ScrollViewStickyHeaderProps,
   $ReadOnly<interface {setNextHeaderY: number => void}>,
@@ -453,7 +436,6 @@ export type Props = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
   ...AndroidProps,
-  ...VRProps,
 
   /**
    * These styles will be applied to the scroll view content container which
@@ -657,7 +639,8 @@ export type Props = $ReadOnly<{|
    *
    * See [RefreshControl](docs/refreshcontrol.html).
    */
-  // $FlowFixMe - how to handle generic type without existential operator?
+  /* $FlowFixMe[unclear-type] - how to handle generic type without existential
+   * operator? */
   refreshControl?: ?React.Element<any>,
   children?: React.Node,
   /**
@@ -873,7 +856,7 @@ class ScrollView extends React.Component<Props, State> {
    * to the underlying scroll responder's methods.
    */
   getScrollResponder: () => ScrollResponderType = () => {
-    // $FlowFixMe
+    // $FlowFixMe[unclear-type]
     return ((this: any): ScrollResponderType);
   };
 
@@ -1724,7 +1707,6 @@ class ScrollView extends React.Component<Props, State> {
       onTouchStart: this._handleTouchStart,
       onTouchCancel: this._handleTouchCancel,
       onScroll: this._handleScroll,
-      scrollBarThumbImage: resolveAssetSource(this.props.scrollBarThumbImage),
       scrollEventThrottle: hasStickyHeaders
         ? 1
         : this.props.scrollEventThrottle,
@@ -1818,7 +1800,7 @@ function Wrapper(props, ref) {
 Wrapper.displayName = 'ScrollView';
 const ForwardedScrollView = React.forwardRef(Wrapper);
 
-// $FlowFixMe Add static context to ForwardedScrollView
+// $FlowFixMe[prop-missing] Add static context to ForwardedScrollView
 ForwardedScrollView.Context = ScrollViewContext;
 
 ForwardedScrollView.displayName = 'ScrollView';

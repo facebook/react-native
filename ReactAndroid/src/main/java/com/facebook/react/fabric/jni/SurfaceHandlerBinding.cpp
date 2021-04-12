@@ -16,10 +16,14 @@ SurfaceHandlerBinding::SurfaceHandlerBinding(
     std::string const &moduleName)
     : surfaceHandler_(moduleName, surfaceId) {}
 
+void SurfaceHandlerBinding::setDisplayMode(jint mode) {
+  surfaceHandler_.setDisplayMode(static_cast<DisplayMode>(mode));
+}
+
 void SurfaceHandlerBinding::start() {
   std::unique_lock<better::shared_mutex> lock(lifecycleMutex_);
 
-  surfaceHandler_.setDisplayMode(SurfaceHandler::DisplayMode::Visible);
+  surfaceHandler_.setDisplayMode(DisplayMode::Visible);
   if (surfaceHandler_.getStatus() != SurfaceHandler::Status::Running) {
     surfaceHandler_.start();
   }
@@ -116,6 +120,8 @@ void SurfaceHandlerBinding::registerNatives() {
           "setLayoutConstraintsNative",
           SurfaceHandlerBinding::setLayoutConstraints),
       makeNativeMethod("setPropsNative", SurfaceHandlerBinding::setProps),
+      makeNativeMethod(
+          "setDisplayModeNative", SurfaceHandlerBinding::setDisplayMode),
   });
 }
 

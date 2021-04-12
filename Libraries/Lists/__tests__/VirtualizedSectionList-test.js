@@ -207,7 +207,7 @@ describe('VirtualizedSectionList', () => {
 
       const viewOffset = 25;
 
-      // $FlowFixMe scrollToLocation isn't on instance
+      // $FlowFixMe[prop-missing] scrollToLocation isn't on instance
       instance?.scrollToLocation({
         sectionIndex: 0,
         itemIndex: 1,

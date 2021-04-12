@@ -291,23 +291,6 @@ static Class getFallbackClassFromName(const char *name)
     nativeInvoker = [_bridge decorateNativeCallInvoker:nativeInvoker];
   }
 
-  ObjCTurboModule::InitParams params = {
-      .moduleName = moduleName,
-      .instance = module,
-      .jsInvoker = _jsInvoker,
-      .nativeInvoker = nativeInvoker,
-      .isSyncModule = methodQueue == RCTJSThread,
-  };
-
-  // If RCTTurboModule supports creating its own C++ TurboModule object,
-  // allow it to do so.
-  if ([module respondsToSelector:@selector(getTurboModule:)]) {
-    auto turboModule = [module getTurboModule:params];
-    assert(turboModule != nullptr);
-    _turboModuleCache.insert({moduleName, turboModule});
-    return turboModule;
-  }
-
   /**
    * Step 2d: If the moduleClass is a legacy CxxModule, return a TurboCxxModule instance that
    * wraps CxxModule.
@@ -320,13 +303,22 @@ static Class getFallbackClassFromName(const char *name)
     return turboModule;
   }
 
+  ObjCTurboModule::InitParams params = {
+      .moduleName = moduleName,
+      .instance = module,
+      .jsInvoker = _jsInvoker,
+      .nativeInvoker = nativeInvoker,
+      .isSyncModule = methodQueue == RCTJSThread,
+  };
+
   /**
    * Step 2e: Return an exact sub-class of ObjC TurboModule
    */
-  auto turboModule = [_delegate getTurboModule:moduleName initParams:params];
-  if (turboModule != nullptr) {
-    _turboModuleCache.insert({moduleName, turboModule});
+  auto turboModule = [module getTurboModule:params];
+  if (turboModule == nullptr) {
+    RCTLogError(@"TurboModule \"%@\"'s getTurboModule: method returned nil.", moduleClass);
   }
+  _turboModuleCache.insert({moduleName, turboModule});
   return turboModule;
 }
 

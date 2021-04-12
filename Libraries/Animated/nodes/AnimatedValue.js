@@ -46,9 +46,9 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
 function _flush(rootNode: AnimatedValue): void {
   const animatedStyles = new Set();
   function findAnimatedStyles(node) {
-    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.68 was deployed. To see the error delete this
-     * comment and run Flow. */
+    /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
+     * suppresses an error found when Flow v0.68 was deployed. To see the error
+     * delete this comment and run Flow. */
     if (typeof node.update === 'function') {
       animatedStyles.add(node);
     } else {
@@ -56,7 +56,7 @@ function _flush(rootNode: AnimatedValue): void {
     }
   }
   findAnimatedStyles(rootNode);
-  /* $FlowFixMe */
+  // $FlowFixMe[prop-missing]
   animatedStyles.forEach(animatedStyle => animatedStyle.update());
 }
 

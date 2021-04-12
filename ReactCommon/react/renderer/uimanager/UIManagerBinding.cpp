@@ -12,9 +12,9 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value getModule(
     jsi::Runtime &runtime,
@@ -117,7 +117,7 @@ void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
   }
 }
 
-static void callMethodOfModule(
+static jsi::Value callMethodOfModule(
     jsi::Runtime &runtime,
     std::string const &moduleName,
     std::string const &methodName,
@@ -129,20 +129,23 @@ static void callMethodOfModule(
       react_native_assert(object.hasProperty(runtime, methodName.c_str()));
       if (object.hasProperty(runtime, methodName.c_str())) {
         auto method = object.getPropertyAsFunction(runtime, methodName.c_str());
-        method.callWithThis(runtime, object, args);
+        return method.callWithThis(runtime, object, args);
       } else {
         LOG(ERROR) << "getPropertyAsFunction: property '" << methodName
                    << "' is undefined, expected a Function";
       }
     }
   }
+
+  return jsi::Value::undefined();
 }
 
 void UIManagerBinding::startSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
     std::string const &moduleName,
-    folly::dynamic const &initalProps) const {
+    folly::dynamic const &initalProps,
+    DisplayMode displayMode) const {
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
@@ -157,14 +160,49 @@ void UIManagerBinding::startSurface(
     method.call(
         runtime,
         {jsi::String::createFromUtf8(runtime, moduleName),
-         jsi::valueFromDynamic(runtime, parameters)});
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
   } else {
     callMethodOfModule(
         runtime,
         "AppRegistry",
         "runApplication",
         {jsi::String::createFromUtf8(runtime, moduleName),
-         jsi::valueFromDynamic(runtime, parameters)});
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
+  }
+}
+
+void UIManagerBinding::setSurfaceProps(
+    jsi::Runtime &runtime,
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &initalProps,
+    DisplayMode displayMode) const {
+  folly::dynamic parameters = folly::dynamic::object();
+  parameters["rootTag"] = surfaceId;
+  parameters["initialProps"] = initalProps;
+  parameters["fabric"] = true;
+
+  if (moduleName.compare("LogBox") != 0 &&
+      runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
+    auto registry =
+        runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+    auto method = registry.getPropertyAsFunction(runtime, "setSurfaceProps");
+
+    method.call(
+        runtime,
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
+  } else {
+    callMethodOfModule(
+        runtime,
+        "AppRegistry",
+        "setSurfaceProps",
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
   }
 }
 
@@ -751,5 +789,4 @@ jsi::Value UIManagerBinding::get(
   return jsi::Value::undefined();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

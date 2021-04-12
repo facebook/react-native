@@ -170,7 +170,19 @@ public class ReactContext extends ContextWrapper {
     return Assertions.assertNotNull(mCatalystInstance);
   }
 
+  /**
+   * This API has been deprecated due to naming consideration, please use hasActiveReactInstance()
+   * instead
+   *
+   * @return
+   */
+  @Deprecated
   public boolean hasActiveCatalystInstance() {
+    return hasActiveReactInstance();
+  }
+
+  /** @return true if there is an non-null, alive react native instance */
+  public boolean hasActiveReactInstance() {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
 
@@ -184,7 +196,7 @@ public class ReactContext extends ContextWrapper {
 
   public void addLifecycleEventListener(final LifecycleEventListener listener) {
     mLifecycleEventListeners.add(listener);
-    if (hasActiveCatalystInstance() || isBridgeless()) {
+    if (hasActiveReactInstance() || isBridgeless()) {
       switch (mLifecycleState) {
         case BEFORE_CREATE:
         case BEFORE_RESUME:
@@ -452,7 +464,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   public @Nullable JSIModule getJSIModule(JSIModuleType moduleType) {
-    if (!hasActiveCatalystInstance()) {
+    if (!hasActiveReactInstance()) {
       throw new IllegalStateException(
           "Unable to retrieve a JSIModule if CatalystInstance is not active.");
     }

@@ -47,7 +47,7 @@ class SnapshotViewIOS extends React.Component<Props> {
     const testIdentifier = this.props.testIdentifier || 'test';
     const onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
     return (
-      // $FlowFixMe - Typing ReactNativeComponent revealed errors
+      // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
       <RCTSnapshot
         style={style.snapshot}
         {...this.props}

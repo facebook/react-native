@@ -12,6 +12,7 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import logError from '../Utilities/logError';
 import NativeAppState from './NativeAppState';
+import Platform from '../Utilities/Platform';
 
 export type AppStateValues = 'inactive' | 'background' | 'active';
 
@@ -47,7 +48,9 @@ class AppState {
       this.isAvailable = true;
 
       const emitter: NativeEventEmitter<NativeAppStateEventDefinitions> = new NativeEventEmitter(
-        NativeAppState,
+        // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+        // If you want to use the native module on other platforms, please remove this condition and test its behavior
+        Platform.OS !== 'ios' ? null : NativeAppState,
       );
       this._emitter = emitter;
 
@@ -144,7 +147,6 @@ class AppState {
         return;
       case 'memoryWarning':
         // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
-        // $FlowIssue[incompatible-call]
         emitter.removeListener('memoryWarning', listener);
         return;
       case 'blur':
