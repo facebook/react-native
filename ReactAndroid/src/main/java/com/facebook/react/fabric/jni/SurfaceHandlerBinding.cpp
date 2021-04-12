@@ -23,7 +23,6 @@ void SurfaceHandlerBinding::setDisplayMode(jint mode) {
 void SurfaceHandlerBinding::start() {
   std::unique_lock<better::shared_mutex> lock(lifecycleMutex_);
 
-  surfaceHandler_.setDisplayMode(DisplayMode::Visible);
   if (surfaceHandler_.getStatus() != SurfaceHandler::Status::Running) {
     surfaceHandler_.start();
   }

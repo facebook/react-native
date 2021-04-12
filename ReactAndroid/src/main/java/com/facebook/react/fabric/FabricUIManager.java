@@ -255,7 +255,26 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
-  public void startSurface(final View rootView, SurfaceHandler surfaceHandler) {
+  public void startSurface(final SurfaceHandler surfaceHandler) {
+    int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    mMountingManager.startSurface(rootTag);
+
+    startSurfaceWithId(surfaceHandler, rootTag, false);
+  }
+
+  public void attachRootView(final View rootView, final SurfaceHandler surfaceHandler) {
+    ThemedReactContext reactContext =
+        new ThemedReactContext(
+            mReactApplicationContext,
+            rootView.getContext(),
+            surfaceHandler.getModuleName(),
+            surfaceHandler.getSurfaceId());
+    mMountingManager.attachRootView(surfaceHandler.getSurfaceId(), rootView, reactContext);
+
+    surfaceHandler.setMountable(true);
+  }
+
+  public void startSurfaceWithView(final View rootView, final SurfaceHandler surfaceHandler) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
 
     Context context = rootView.getContext();
@@ -264,14 +283,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
     mMountingManager.startSurface(rootTag, rootView, reactContext);
 
+    startSurfaceWithId(surfaceHandler, rootTag, true);
+  }
+
+  private void startSurfaceWithId(SurfaceHandler surfaceHandler, int rootTag, boolean isMountable) {
     surfaceHandler.setSurfaceId(rootTag);
     if (surfaceHandler instanceof SurfaceHandlerBinding) {
       mBinding.registerSurface((SurfaceHandlerBinding) surfaceHandler);
     }
+    surfaceHandler.setMountable(isMountable);
     surfaceHandler.start();
   }
 
-  public void stopSurface(SurfaceHandler surfaceHandler) {
+  public void stopSurface(final SurfaceHandler surfaceHandler) {
     if (!surfaceHandler.isRunning()) {
       ReactSoftException.logSoftException(
           FabricUIManager.TAG,
