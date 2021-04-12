@@ -121,6 +121,9 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
       return;
     }
 
+    link_.uiManager->setSurfaceProps(
+        parameters_.surfaceId, parameters_.moduleName, parameters_.props);
+
     applyDisplayMode(displayMode);
   }
 }
