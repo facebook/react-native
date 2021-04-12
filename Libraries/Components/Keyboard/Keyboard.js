@@ -11,6 +11,7 @@
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
+import Platform from '../../Utilities/Platform';
 import NativeKeyboardObserver from './NativeKeyboardObserver';
 import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 
@@ -103,7 +104,9 @@ type KeyboardEventDefinitions = {
 
 class Keyboard {
   _emitter: NativeEventEmitter<KeyboardEventDefinitions> = new NativeEventEmitter(
-    NativeKeyboardObserver,
+    // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+    // If you want to use the native module on other platforms, please remove this condition and test its behavior
+    Platform.OS !== 'ios' ? null : NativeKeyboardObserver,
   );
 
   /**
