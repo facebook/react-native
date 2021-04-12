@@ -164,6 +164,22 @@ void UIManager::startSurface(
   });
 }
 
+void UIManager::setSurfaceProps(
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &props) const {
+  SystraceSection s("UIManager::setSurfaceProps");
+
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (!uiManagerBinding) {
+      return;
+    }
+
+    uiManagerBinding->setSurfaceProps(runtime, surfaceId, moduleName, props);
+  });
+}
+
 ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("UIManager::stopSurface");
 

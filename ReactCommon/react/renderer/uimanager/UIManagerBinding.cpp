@@ -169,6 +169,36 @@ void UIManagerBinding::startSurface(
   }
 }
 
+void UIManagerBinding::setSurfaceProps(
+    jsi::Runtime &runtime,
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &initalProps) const {
+  folly::dynamic parameters = folly::dynamic::object();
+  parameters["rootTag"] = surfaceId;
+  parameters["initialProps"] = initalProps;
+  parameters["fabric"] = true;
+
+  if (moduleName.compare("LogBox") != 0 &&
+      runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
+    auto registry =
+        runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+    auto method = registry.getPropertyAsFunction(runtime, "setSurfaceProps");
+
+    method.call(
+        runtime,
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters)});
+  } else {
+    callMethodOfModule(
+        runtime,
+        "AppRegistry",
+        "setSurfaceProps",
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters)});
+  }
+}
+
 void UIManagerBinding::stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId)
     const {
   auto global = runtime.global();
