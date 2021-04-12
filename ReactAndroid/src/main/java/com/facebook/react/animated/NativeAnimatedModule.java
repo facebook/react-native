@@ -118,6 +118,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private boolean mBatchingControlledByJS = false; // TODO T71377544: delete
   private volatile long mCurrentFrameNumber; // TODO T71377544: delete
   private volatile long mCurrentBatchNumber;
+  private volatile boolean mIsInBatch = false;
 
   private boolean mInitializedForFabric = false;
   private boolean mInitializedForNonFabric = false;
@@ -173,7 +174,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   private void addOperation(UIThreadOperation operation) {
-    operation.setBatchNumber(mCurrentBatchNumber);
+    operation.setBatchNumber(mIsInBatch ? mCurrentBatchNumber : -1);
     mOperations.add(operation);
   }
 
@@ -183,7 +184,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   private void addPreOperation(UIThreadOperation operation) {
-    operation.setBatchNumber(mCurrentBatchNumber);
+    operation.setBatchNumber(mIsInBatch ? mCurrentBatchNumber : -1);
     mPreOperations.add(operation);
   }
 
@@ -426,12 +427,14 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void startOperationBatch() {
     mBatchingControlledByJS = true;
+    mIsInBatch = true;
     mCurrentBatchNumber++;
   }
 
   @Override
   public void finishOperationBatch() {
     mBatchingControlledByJS = true;
+    mIsInBatch = false;
     mCurrentBatchNumber++;
   }
 
