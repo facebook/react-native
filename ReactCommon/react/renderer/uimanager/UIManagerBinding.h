@@ -53,7 +53,8 @@ class UIManagerBinding : public jsi::HostObject {
       jsi::Runtime &runtime,
       SurfaceId surfaceId,
       std::string const &moduleName,
-      folly::dynamic const &initalProps) const;
+      folly::dynamic const &initalProps,
+      DisplayMode displayMode) const;
 
   /*
    * Updates the React Native Surface identified with surfaceId and moduleName
@@ -64,7 +65,8 @@ class UIManagerBinding : public jsi::HostObject {
       jsi::Runtime &runtime,
       SurfaceId surfaceId,
       std::string const &moduleName,
-      folly::dynamic const &props) const;
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
 
   /*
    * Stops React Native Surface with given id.

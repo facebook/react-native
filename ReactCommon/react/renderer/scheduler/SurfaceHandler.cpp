@@ -76,7 +76,10 @@ void SurfaceHandler::start() const noexcept {
     link_.shadowTree = shadowTree.get();
 
     link_.uiManager->startSurface(
-        std::move(shadowTree), parameters.moduleName, parameters.props);
+        std::move(shadowTree),
+        parameters.moduleName,
+        parameters.props,
+        parameters_.displayMode);
 
     link_.status = Status::Running;
 
@@ -121,7 +124,10 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
     }
 
     link_.uiManager->setSurfaceProps(
-        parameters_.surfaceId, parameters_.moduleName, parameters_.props);
+        parameters_.surfaceId,
+        parameters_.moduleName,
+        parameters_.props,
+        parameters_.displayMode);
 
     applyDisplayMode(displayMode);
   }

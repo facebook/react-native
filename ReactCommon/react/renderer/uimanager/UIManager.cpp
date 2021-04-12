@@ -148,7 +148,8 @@ void UIManager::setIsJSResponder(
 void UIManager::startSurface(
     ShadowTree::Unique &&shadowTree,
     std::string const &moduleName,
-    folly::dynamic const &props) const {
+    folly::dynamic const &props,
+    DisplayMode displayMode) const {
   SystraceSection s("UIManager::startSurface");
 
   auto surfaceId = shadowTree->getSurfaceId();
@@ -160,14 +161,16 @@ void UIManager::startSurface(
       return;
     }
 
-    uiManagerBinding->startSurface(runtime, surfaceId, moduleName, props);
+    uiManagerBinding->startSurface(
+        runtime, surfaceId, moduleName, props, displayMode);
   });
 }
 
 void UIManager::setSurfaceProps(
     SurfaceId surfaceId,
     std::string const &moduleName,
-    folly::dynamic const &props) const {
+    folly::dynamic const &props,
+    DisplayMode displayMode) const {
   SystraceSection s("UIManager::setSurfaceProps");
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
@@ -176,7 +179,8 @@ void UIManager::setSurfaceProps(
       return;
     }
 
-    uiManagerBinding->setSurfaceProps(runtime, surfaceId, moduleName, props);
+    uiManagerBinding->setSurfaceProps(
+        runtime, surfaceId, moduleName, props, displayMode);
   });
 }
 

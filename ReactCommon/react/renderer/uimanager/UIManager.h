@@ -87,12 +87,14 @@ class UIManager final : public ShadowTreeDelegate {
   void startSurface(
       ShadowTree::Unique &&shadowTree,
       std::string const &moduleName,
-      folly::dynamic const &props) const;
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
 
   void setSurfaceProps(
       SurfaceId surfaceId,
       std::string const &moduleName,
-      folly::dynamic const &props) const;
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
 
   ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
