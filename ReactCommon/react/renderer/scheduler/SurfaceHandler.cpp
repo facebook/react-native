@@ -15,7 +15,6 @@ namespace facebook {
 namespace react {
 
 using Status = SurfaceHandler::Status;
-using DisplayMode = SurfaceHandler::DisplayMode;
 
 SurfaceHandler::SurfaceHandler(
     std::string const &moduleName,
