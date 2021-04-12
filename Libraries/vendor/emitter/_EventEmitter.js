@@ -83,6 +83,19 @@ class EventEmitter<EventDefinitions: {...}> {
   removeSubscription<K: $Keys<EventDefinitions>>(
     subscription: EmitterSubscription<EventDefinitions, K>,
   ): void {
+    console.warn(
+      'EventEmitter.removeSubscription(...): Method has been deprecated. ' +
+        'Please instead use `remove()` on the subscription itself.',
+    );
+    this.__removeSubscription(subscription);
+  }
+
+  /**
+   * Called by `EmitterSubscription` to bypass the above deprecation warning.
+   */
+  __removeSubscription<K: $Keys<EventDefinitions>>(
+    subscription: EmitterSubscription<EventDefinitions, K>,
+  ): void {
     invariant(
       subscription.emitter === this,
       'Subscription does not belong to this emitter.',
@@ -147,7 +160,7 @@ class EventEmitter<EventDefinitions: {...}> {
     // FIXME: listeners should return void instead of mixed to prevent issues
     listener: (...$ElementType<EventDefinitions, K>) => mixed,
   ): void {
-    console.error(
+    console.warn(
       `EventEmitter.removeListener('${eventType}', ...): Method has been ` +
         'deprecated. Please instead use `remove()` on the subscription ' +
         'returned by `EventEmitter.addListener`.',
