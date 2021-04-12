@@ -202,6 +202,33 @@ const AppRegistry = {
   },
 
   /**
+   * Update initial props for a surface that's already rendered
+   */
+  setSurfaceProps(appKey: string, appParameters: any): void {
+    if (appKey !== 'LogBox') {
+      const msg =
+        'Updating props for Surface "' +
+        appKey +
+        '" with ' +
+        JSON.stringify(appParameters);
+      infoLog(msg);
+      BugReporting.addSource(
+        'AppRegistry.setSurfaceProps' + runCount++,
+        () => msg,
+      );
+    }
+    invariant(
+      runnables[appKey] && runnables[appKey].run,
+      `"${appKey}" has not been registered. This can happen if:\n` +
+        '* Metro (the local dev server) is run from the wrong folder. ' +
+        'Check if Metro is running, stop it and restart it in the current project.\n' +
+        "* A module failed to load due to an error and `AppRegistry.registerComponent` wasn't called.",
+    );
+
+    runnables[appKey].run(appParameters);
+  },
+
+  /**
    * Stops an application when a view should be destroyed.
    *
    * See https://reactnative.dev/docs/appregistry.html#unmountapplicationcomponentatroottag
