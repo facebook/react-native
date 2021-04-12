@@ -18,12 +18,10 @@ import Platform from '../Utilities/Platform';
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
 import invariant from 'invariant';
 
-type NativeModule = $ReadOnly<
-  interface {
-    addListener: (eventType: string) => void,
-    removeListeners: (count: number) => void,
-  },
->;
+interface NativeModule {
+  addListener(eventType: string): void;
+  removeListeners(count: number): void;
+}
 
 export type {EventSubscription};
 
@@ -47,8 +45,8 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
         nativeModule != null,
         '`new NativeEventEmitter()` requires a non-null argument.',
       );
-      this._nativeModule = nativeModule;
     }
+    this._nativeModule = nativeModule;
   }
 
   addListener<TEvent: $Keys<TEventToArgsMap>>(
