@@ -204,13 +204,6 @@
   return facebook::react::RNTesterTurboModuleProvider(name, jsInvoker);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                     initParams:
-                                                         (const facebook::react::ObjCTurboModule::InitParams &)params
-{
-  return facebook::react::RNTesterTurboModuleProvider(name, params);
-}
-
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   if (moduleClass == RCTImageLoader.class) {

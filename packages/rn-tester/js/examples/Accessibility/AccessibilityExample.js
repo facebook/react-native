@@ -837,7 +837,7 @@ class EnabledExample extends React.Component<{}> {
   };
 
   componentDidMount() {
-    AccessibilityInfo.addEventListener(
+    this._subscription = AccessibilityInfo.addEventListener(
       this.props.eventListener,
       this._handleToggled,
     );
@@ -853,10 +853,7 @@ class EnabledExample extends React.Component<{}> {
   }
 
   componentWillUnmount() {
-    AccessibilityInfo.removeEventListener(
-      this.props.eventListener,
-      this._handleToggled,
-    );
+    this._subscription?.remove();
   }
 
   _handleToggled = isEnabled => {

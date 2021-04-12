@@ -10,9 +10,12 @@ package com.facebook.react.fabric;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMaxSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
 
+import androidx.annotation.IntDef;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public class SurfaceHandlerBinding implements SurfaceHandler {
   static {
@@ -20,6 +23,15 @@ public class SurfaceHandlerBinding implements SurfaceHandler {
   }
 
   private static final int NO_SURFACE_ID = 0;
+
+  /* Keep in sync with SurfaceHandler.cpp */
+  public static final int DISPLAY_MODE_VISIBLE = 0;
+  public static final int DISPLAY_MODE_SUSPENDED = 1;
+  public static final int DISPLAY_MODE_HIDDEN = 2;
+
+  @Retention(RetentionPolicy.SOURCE)
+  @IntDef({DISPLAY_MODE_VISIBLE, DISPLAY_MODE_SUSPENDED, DISPLAY_MODE_HIDDEN})
+  public @interface DisplayModeTypeDef {}
 
   @DoNotStrip private final HybridData mHybridData;
 
@@ -109,4 +121,11 @@ public class SurfaceHandlerBinding implements SurfaceHandler {
   }
 
   private native void setPropsNative(NativeMap props);
+
+  @Override
+  public void setMountable(boolean mountable) {
+    setDisplayModeNative(mountable ? DISPLAY_MODE_VISIBLE : DISPLAY_MODE_SUSPENDED);
+  }
+
+  private native void setDisplayModeNative(@DisplayModeTypeDef int mode);
 }

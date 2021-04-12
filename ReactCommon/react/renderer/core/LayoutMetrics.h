@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <folly/Hash.h>
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/graphics/Geometry.h>
 
@@ -65,3 +66,22 @@ static LayoutMetrics const EmptyLayoutMetrics = {
 
 } // namespace react
 } // namespace facebook
+
+namespace std {
+
+template <>
+struct hash<facebook::react::LayoutMetrics> {
+  size_t operator()(const facebook::react::LayoutMetrics &layoutMetrics) const {
+    return folly::hash::hash_combine(
+        0,
+        layoutMetrics.frame,
+        layoutMetrics.contentInsets,
+        layoutMetrics.borderWidth,
+        layoutMetrics.displayType,
+        layoutMetrics.layoutDirection,
+        layoutMetrics.pointScaleFactor,
+        layoutMetrics.overflowInset);
+  }
+};
+
+} // namespace std

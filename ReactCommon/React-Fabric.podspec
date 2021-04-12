@@ -336,6 +336,15 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
+  s.subspec "runtimescheduler" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/runtimescheduler/**/*.{cpp,h}"
+    ss.exclude_files        = "react/renderer/runtimescheduler/tests"
+    ss.header_dir           = "react/renderer/runtimescheduler"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
   s.subspec "utils" do |ss|
     ss.source_files         = "react/utils/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/utils"

@@ -28,9 +28,3 @@ RCT_EXTERN void RCTExperimentSetOptimizedHitTesting(BOOL value);
  */
 RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);
 RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);
-
-/*
- * Release resources when app enters background
- */
-RCT_EXTERN BOOL RCTExperimentGetReleaseResourcesWhenBackgrounded(void);
-RCT_EXTERN void RCTExperimentSetReleaseResourcesWhenBackgrounded(BOOL value);

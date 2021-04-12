@@ -12,6 +12,7 @@ const AppContainer = require('./AppContainer');
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
+import type {DisplayModeType} from './DisplayMode';
 const React = require('react');
 
 const invariant = require('invariant');
@@ -29,6 +30,7 @@ function renderApplication<Props: Object>(
   scopedPerformanceLogger?: IPerformanceLogger,
   isLogBox?: boolean,
   debugName?: string,
+  displayMode?: ?DisplayModeType,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
