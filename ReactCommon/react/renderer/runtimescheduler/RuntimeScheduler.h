@@ -7,10 +7,26 @@
 
 #pragma once
 
-namespace facebook {
-namespace react {
+#include <ReactCommon/RuntimeExecutor.h>
+#include <react/renderer/runtimescheduler/Task.h>
+#include <memory>
+#include <queue>
 
-class RuntimeScheduler final {};
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+class RuntimeScheduler final {
+ public:
+  RuntimeScheduler(RuntimeExecutor const &runtimeExecutor);
+
+  void scheduleTask(std::shared_ptr<Task> const &task);
+
+ private:
+  mutable std::priority_queue<
+      std::shared_ptr<Task>,
+      std::vector<std::shared_ptr<Task>>,
+      TaskPriorityComparer>
+      taskQueue_;
+  RuntimeExecutor const runtimeExecutor_;
+};
+
+} // namespace facebook::react

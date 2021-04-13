@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
+
 namespace facebook::react {
 
 enum class SchedulerPriority : int {
@@ -21,6 +23,24 @@ static constexpr std::underlying_type<SchedulerPriority>::type serialize(
     SchedulerPriority schedulerPriority) {
   return static_cast<std::underlying_type<SchedulerPriority>::type>(
       schedulerPriority);
+}
+
+static inline SchedulerPriority fromRawValue(double value) {
+  switch ((int)value) {
+    case 1:
+      return SchedulerPriority::ImmediatePriority;
+    case 2:
+      return SchedulerPriority::UserBlockingPriority;
+    case 3:
+      return SchedulerPriority::NormalPriority;
+    case 4:
+      return SchedulerPriority::LowPriority;
+    case 5:
+      return SchedulerPriority::IdlePriority;
+    default:
+      react_native_assert(false && "Unsupported SchedulerPriority value");
+      return SchedulerPriority::NormalPriority;
+  }
 }
 
 } // namespace facebook::react

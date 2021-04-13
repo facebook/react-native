@@ -99,7 +99,8 @@ Scheduler::Scheduler(
     auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
     uiManagerBinding->attach(uiManager);
     if (enableRuntimeScheduler) {
-      RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime);
+      RuntimeSchedulerBinding::createAndInstallIfNeeded(
+          runtime, runtimeExecutor_);
     }
   });
 
