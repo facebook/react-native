@@ -6,6 +6,7 @@
  */
 
 #include "RuntimeSchedulerBinding.h"
+#include "SchedulerPriority.h"
 
 #include <memory>
 
@@ -37,8 +38,29 @@ RuntimeSchedulerBinding::createAndInstallIfNeeded(jsi::Runtime &runtime) {
 jsi::Value RuntimeSchedulerBinding::get(
     jsi::Runtime &runtime,
     jsi::PropNameID const &name) {
-  (void)runtime;
-  (void)name;
+  auto propertyName = name.utf8(runtime);
+
+  if (propertyName == "unstable_ImmediatePriority") {
+    return jsi::Value(runtime, serialize(SchedulerPriority::ImmediatePriority));
+  }
+
+  if (propertyName == "unstable_UserBlockingPriority") {
+    return jsi::Value(
+        runtime, serialize(SchedulerPriority::UserBlockingPriority));
+  }
+
+  if (propertyName == "unstable_NormalPriority") {
+    return jsi::Value(runtime, serialize(SchedulerPriority::NormalPriority));
+  }
+
+  if (propertyName == "unstable_LowPriority") {
+    return jsi::Value(runtime, serialize(SchedulerPriority::LowPriority));
+  }
+
+  if (propertyName == "unstable_IdlePriority") {
+    return jsi::Value(runtime, serialize(SchedulerPriority::IdlePriority));
+  }
+
   return jsi::Value::undefined();
 }
 
