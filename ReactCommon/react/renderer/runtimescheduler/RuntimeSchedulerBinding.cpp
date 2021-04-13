@@ -7,6 +7,7 @@
 
 #include "RuntimeSchedulerBinding.h"
 #include "SchedulerPriority.h"
+#include "primitives.h"
 
 #include <react/debug/react_native_assert.h>
 #include <memory>
@@ -65,8 +66,7 @@ jsi::Value RuntimeSchedulerBinding::get(
           auto task = std::make_shared<Task>(priority, std::move(callback));
           runtimeScheduler_.scheduleTask(task);
 
-          // TODO: return reference to the task.
-          return jsi::Value::undefined();
+          return valueFromTask(runtime, task);
         });
   }
 
