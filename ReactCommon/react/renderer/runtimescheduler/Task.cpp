@@ -16,8 +16,18 @@ SchedulerPriority Task::getPriority() const {
   return priority_;
 }
 
+void Task::cancel() {
+  // Null out the callback to indicate the task has been canceled. (Can't
+  // remove from the priority_queue because you can't remove arbitrary nodes
+  // from an array based heap, only the first one.)
+  callback_.reset();
+}
+
 void Task::operator()(jsi::Runtime &runtime) const {
-  callback_.call(runtime, {});
+  if (callback_) {
+    // Cancelled task doesn't have a callback.
+    callback_.value().call(runtime, {});
+  }
 }
 
 } // namespace facebook::react

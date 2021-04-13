@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/optional.h>
 #include <jsi/jsi.h>
 #include <react/renderer/runtimescheduler/SchedulerPriority.h>
 
@@ -16,12 +17,14 @@ class Task final {
  public:
   Task(SchedulerPriority priority, jsi::Function callback);
 
-  SchedulerPriority priority_;
-  jsi::Function callback_;
-
   SchedulerPriority getPriority() const;
+  void cancel();
 
   void operator()(jsi::Runtime &runtime) const;
+
+ private:
+  SchedulerPriority priority_;
+  better::optional<jsi::Function> callback_;
 };
 
 class TaskPriorityComparer {

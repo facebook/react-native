@@ -70,6 +70,20 @@ jsi::Value RuntimeSchedulerBinding::get(
         });
   }
 
+  if (propertyName == "unstable_cancelCallback") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [this](
+            jsi::Runtime &runtime,
+            jsi::Value const &,
+            jsi::Value const *arguments,
+            size_t) noexcept -> jsi::Value {
+          runtimeScheduler_.cancelTask(taskFromValue(runtime, arguments[0]));
+          return jsi::Value::undefined();
+        });
+  }
   if (propertyName == "unstable_ImmediatePriority") {
     return jsi::Value(runtime, serialize(SchedulerPriority::ImmediatePriority));
   }
@@ -91,6 +105,7 @@ jsi::Value RuntimeSchedulerBinding::get(
     return jsi::Value(runtime, serialize(SchedulerPriority::IdlePriority));
   }
 
+  react_native_assert(false && "undefined property");
   return jsi::Value::undefined();
 }
 

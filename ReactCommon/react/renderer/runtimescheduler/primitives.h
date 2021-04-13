@@ -26,4 +26,14 @@ inline static jsi::Value valueFromTask(
       runtime, std::make_shared<TaskWrapper>(task));
 }
 
+inline static std::shared_ptr<Task> taskFromValue(
+    jsi::Runtime &runtime,
+    jsi::Value const &value) {
+  if (value.isNull()) {
+    return nullptr;
+  }
+
+  return value.getObject(runtime).getHostObject<TaskWrapper>(runtime)->task;
+}
+
 } // namespace facebook::react

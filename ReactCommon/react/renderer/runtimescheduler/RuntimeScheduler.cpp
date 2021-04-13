@@ -22,4 +22,8 @@ void RuntimeScheduler::scheduleTask(std::shared_ptr<Task> const &task) {
   });
 }
 
+void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
+  task->cancel();
+}
+
 } // namespace facebook::react

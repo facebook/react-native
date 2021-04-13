@@ -20,6 +20,8 @@ class RuntimeScheduler final {
 
   void scheduleTask(std::shared_ptr<Task> const &task);
 
+  void cancelTask(std::shared_ptr<Task> const &task);
+
  private:
   mutable std::priority_queue<
       std::shared_ptr<Task>,
