@@ -100,6 +100,21 @@ jsi::Value RuntimeSchedulerBinding::get(
           return jsi::Value(shouldYield);
         });
   }
+
+  if (propertyName == "unstable_requestPaint") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [](jsi::Runtime &,
+           jsi::Value const &,
+           jsi::Value const *,
+           size_t) noexcept -> jsi::Value {
+          // RequestPaint is left empty by design.
+          return jsi::Value::undefined();
+        });
+  }
+
   if (propertyName == "unstable_ImmediatePriority") {
     return jsi::Value(runtime, serialize(SchedulerPriority::ImmediatePriority));
   }
