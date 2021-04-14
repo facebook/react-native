@@ -12,6 +12,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/uimanager/primitives.h>
 
 namespace facebook::react {
 
@@ -143,7 +144,8 @@ void UIManagerBinding::startSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
     std::string const &moduleName,
-    folly::dynamic const &initalProps) const {
+    folly::dynamic const &initalProps,
+    DisplayMode displayMode) const {
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
@@ -158,14 +160,49 @@ void UIManagerBinding::startSurface(
     method.call(
         runtime,
         {jsi::String::createFromUtf8(runtime, moduleName),
-         jsi::valueFromDynamic(runtime, parameters)});
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
   } else {
     callMethodOfModule(
         runtime,
         "AppRegistry",
         "runApplication",
         {jsi::String::createFromUtf8(runtime, moduleName),
-         jsi::valueFromDynamic(runtime, parameters)});
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
+  }
+}
+
+void UIManagerBinding::setSurfaceProps(
+    jsi::Runtime &runtime,
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &initalProps,
+    DisplayMode displayMode) const {
+  folly::dynamic parameters = folly::dynamic::object();
+  parameters["rootTag"] = surfaceId;
+  parameters["initialProps"] = initalProps;
+  parameters["fabric"] = true;
+
+  if (moduleName.compare("LogBox") != 0 &&
+      runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
+    auto registry =
+        runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+    auto method = registry.getPropertyAsFunction(runtime, "setSurfaceProps");
+
+    method.call(
+        runtime,
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
+  } else {
+    callMethodOfModule(
+        runtime,
+        "AppRegistry",
+        "setSurfaceProps",
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
   }
 }
 

@@ -18,6 +18,7 @@ const invariant = require('invariant');
 const renderApplication = require('./renderApplication');
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
+import {coerceDisplayMode} from './DisplayMode';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
@@ -111,7 +112,7 @@ const AppRegistry = {
     let scopedPerformanceLogger = createPerformanceLogger();
     runnables[appKey] = {
       componentProvider,
-      run: appParameters => {
+      run: (appParameters, displayMode) => {
         renderApplication(
           componentProviderInstrumentationHook(
             componentProvider,
@@ -125,6 +126,7 @@ const AppRegistry = {
           scopedPerformanceLogger,
           appKey === 'LogBox',
           appKey,
+          coerceDisplayMode(displayMode),
         );
       },
     };
@@ -179,7 +181,11 @@ const AppRegistry = {
    *
    * See https://reactnative.dev/docs/appregistry.html#runapplication
    */
-  runApplication(appKey: string, appParameters: any): void {
+  runApplication(
+    appKey: string,
+    appParameters: any,
+    displayMode?: number,
+  ): void {
     if (appKey !== 'LogBox') {
       const msg =
         'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
@@ -198,7 +204,38 @@ const AppRegistry = {
     );
 
     SceneTracker.setActiveScene({name: appKey});
-    runnables[appKey].run(appParameters);
+    runnables[appKey].run(appParameters, displayMode);
+  },
+
+  /**
+   * Update initial props for a surface that's already rendered
+   */
+  setSurfaceProps(
+    appKey: string,
+    appParameters: any,
+    displayMode?: number,
+  ): void {
+    if (appKey !== 'LogBox') {
+      const msg =
+        'Updating props for Surface "' +
+        appKey +
+        '" with ' +
+        JSON.stringify(appParameters);
+      infoLog(msg);
+      BugReporting.addSource(
+        'AppRegistry.setSurfaceProps' + runCount++,
+        () => msg,
+      );
+    }
+    invariant(
+      runnables[appKey] && runnables[appKey].run,
+      `"${appKey}" has not been registered. This can happen if:\n` +
+        '* Metro (the local dev server) is run from the wrong folder. ' +
+        'Check if Metro is running, stop it and restart it in the current project.\n' +
+        "* A module failed to load due to an error and `AppRegistry.registerComponent` wasn't called.",
+    );
+
+    runnables[appKey].run(appParameters, displayMode);
   },
 
   /**

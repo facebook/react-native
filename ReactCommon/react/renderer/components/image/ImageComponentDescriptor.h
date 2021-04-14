@@ -26,7 +26,7 @@ class ImageComponentDescriptor final
       : ConcreteComponentDescriptor(parameters),
         imageManager_(std::make_shared<ImageManager>(contextContainer_)){};
 
-  void adopt(UnsharedShadowNode shadowNode) const override {
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
     react_native_assert(std::dynamic_pointer_cast<ImageShadowNode>(shadowNode));

@@ -17,6 +17,7 @@
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/templateprocessor/UITemplateProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -86,9 +87,21 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
+#ifdef ANDROID
+  auto enableRuntimeScheduler = reactNativeConfig_->getBool(
+      "react_fabric:enable_runtime_scheduler_android");
+#else
+  auto enableRuntimeScheduler =
+      reactNativeConfig_->getBool("react_fabric:enable_runtime_scheduler_ios");
+#endif
+
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
     uiManagerBinding->attach(uiManager);
+    if (enableRuntimeScheduler) {
+      RuntimeSchedulerBinding::createAndInstallIfNeeded(
+          runtime, runtimeExecutor_);
+    }
   });
 
   auto componentDescriptorRegistryKey =
@@ -150,9 +163,10 @@ Scheduler::~Scheduler() {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
-  react_native_assert(
-      surfaceIds.empty() &&
-      "Scheduler was destroyed with outstanding Surfaces.");
+  // TODO(T88046056): Fix Android memory leak before uncommenting changes
+  //  react_native_assert(
+  //      surfaceIds.empty() &&
+  //      "Scheduler was destroyed with outstanding Surfaces.");
 
   if (surfaceIds.empty()) {
     return;

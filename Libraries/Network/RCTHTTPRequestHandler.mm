@@ -174,6 +174,12 @@ didReceiveResponse:(NSURLResponse *)response
   [delegate URLRequest:task didCompleteWithError:error];
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
+}
+
 @end
 
 Class RCTHTTPRequestHandlerCls(void) {

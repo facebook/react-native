@@ -124,6 +124,8 @@ class ShadowTree final {
   MountingCoordinator::Shared getMountingCoordinator() const;
 
  private:
+  constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
+
   void mount(ShadowTreeRevision const &revision) const;
 
   void emitLayoutEvents(

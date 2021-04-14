@@ -93,6 +93,10 @@
     translatable="false"
     >collapsed</string>
   <string
+    name="state_unselected_description"
+    translatable="false"
+    >unselected</string>
+  <string
     name="state_on_description"
     translatable="false"
     >on</string>

@@ -92,10 +92,12 @@ struct hash<facebook::react::ShadowView> {
   size_t operator()(const facebook::react::ShadowView &shadowView) const {
     return folly::hash::hash_combine(
         0,
+        shadowView.surfaceId,
         shadowView.componentHandle,
         shadowView.tag,
         shadowView.props,
         shadowView.eventEmitter,
+        shadowView.layoutMetrics,
         shadowView.state);
   }
 };
