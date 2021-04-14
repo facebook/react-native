@@ -56,6 +56,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mAdjustsFontSizeToFit = false;
   private int mLinkifyMaskType = 0;
   private boolean mNotifyOnInlineViewLayout;
+  private int mPrevTextViewLeft;
+  private int mPrevTextViewTop;
+  private int mPrevTextViewRight;
+  private int mPrevTextViewBottom;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -98,6 +102,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   @Override
   protected void onLayout(
       boolean changed, int textViewLeft, int textViewTop, int textViewRight, int textViewBottom) {
+
+    mPrevTextViewLeft = textViewLeft;
+    mPrevTextViewTop = textViewTop;
+    mPrevTextViewRight = textViewRight;
+    mPrevTextViewBottom = textViewBottom;
+
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
     int reactTag = getId();
     if (!(getText() instanceof Spanned)
@@ -314,7 +324,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     // Ensure onLayout is called so the inline views can be repositioned.
-    requestLayout();
+    if (this.getLayout() != null) {
+      this.onLayout(true, mPrevTextViewLeft, mPrevTextViewTop,
+                      mPrevTextViewRight, mPrevTextViewBottom);
+    }
   }
 
   @Override
