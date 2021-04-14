@@ -209,8 +209,11 @@ void UIManagerBinding::setSurfaceProps(
 void UIManagerBinding::stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId)
     const {
   auto global = runtime.global();
-  if (global.hasProperty(runtime, "RN$Bridgeless") &&
-      global.hasProperty(runtime, "RN$stopSurface")) {
+  if (global.hasProperty(runtime, "RN$Bridgeless")) {
+    if (!global.hasProperty(runtime, "RN$stopSurface")) {
+      // ReactFabric module has not been loaded yet; there's no surface to stop.
+      return;
+    }
     // Bridgeless mode uses a custom JSI binding instead of callable module.
     global.getPropertyAsFunction(runtime, "RN$stopSurface")
         .call(runtime, {jsi::Value{surfaceId}});
