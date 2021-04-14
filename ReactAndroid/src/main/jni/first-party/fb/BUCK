@@ -28,4 +28,8 @@ oss_cxx_library(
     deps = [
         JNI_TARGET,
     ],
+    linker_flags = [
+        "-llog",
+    ],
+    preferred_linkage  = "static",
 )

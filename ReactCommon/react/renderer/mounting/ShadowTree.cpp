@@ -248,7 +248,7 @@ ShadowTree::ShadowTree(
           family));
 
   currentRevision_ = ShadowTreeRevision{
-      rootShadowNode, ShadowTreeRevision::Number{0}, TransactionTelemetry{}};
+      rootShadowNode, INITIAL_REVISION, TransactionTelemetry{}};
 
   mountingCoordinator_ =
       std::make_shared<MountingCoordinator const>(currentRevision_);
@@ -275,7 +275,9 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
     revision = currentRevision_;
   }
 
-  if (commitMode == CommitMode::Normal) {
+  // initial revision never contains any commits so mounting it here is
+  // incorrect
+  if (commitMode == CommitMode::Normal && revision.number != INITIAL_REVISION) {
     mount(revision);
   }
 }

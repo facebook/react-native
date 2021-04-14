@@ -10,6 +10,7 @@
 
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
+import ModalInjection from './ModalInjection';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeModalManager from './NativeModalManager';
 const Platform = require('../Utilities/Platform');
@@ -33,7 +34,11 @@ type ModalEventDefinitions = {
 
 const ModalEventEmitter =
   Platform.OS === 'ios' && NativeModalManager != null
-    ? new NativeEventEmitter<ModalEventDefinitions>(NativeModalManager)
+    ? new NativeEventEmitter<ModalEventDefinitions>(
+        // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+        // If you want to use the native module on other platforms, please remove this condition and test its behavior
+        Platform.OS !== 'ios' ? null : NativeModalManager,
+      )
     : null;
 
 /**
@@ -286,4 +291,8 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = Modal;
+const ExportedModal: React.AbstractComponent<
+  React.ElementConfig<typeof Modal>,
+> = ModalInjection.unstable_Modal ?? Modal;
+
+module.exports = ExportedModal;
