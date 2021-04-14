@@ -26,4 +26,8 @@ void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
   task->cancel();
 }
 
+bool RuntimeScheduler::getShouldYield() const {
+  return shouldYield_;
+}
+
 } // namespace facebook::react

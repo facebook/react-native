@@ -25,8 +25,9 @@ RuntimeSchedulerBinding::createAndInstallIfNeeded(
   if (runtimeSchedulerValue.isUndefined()) {
     // The global namespace does not have an instance of the binding;
     // we need to create, install and return it.
-    auto runtimeSchedulerBinding = std::make_shared<RuntimeSchedulerBinding>(
-        RuntimeScheduler(runtimeExecutor));
+    auto runtimeScheduler = std::make_unique<RuntimeScheduler>(runtimeExecutor);
+    auto runtimeSchedulerBinding =
+        std::make_shared<RuntimeSchedulerBinding>(std::move(runtimeScheduler));
     auto object =
         jsi::Object::createFromHostObject(runtime, runtimeSchedulerBinding);
     runtime.global().setProperty(
@@ -41,7 +42,7 @@ RuntimeSchedulerBinding::createAndInstallIfNeeded(
 }
 
 RuntimeSchedulerBinding::RuntimeSchedulerBinding(
-    RuntimeScheduler runtimeScheduler)
+    std::unique_ptr<RuntimeScheduler> runtimeScheduler)
     : runtimeScheduler_(std::move(runtimeScheduler)) {}
 
 jsi::Value RuntimeSchedulerBinding::get(
@@ -64,7 +65,7 @@ jsi::Value RuntimeSchedulerBinding::get(
           react_native_assert(arguments[2].isUndefined());
 
           auto task = std::make_shared<Task>(priority, std::move(callback));
-          runtimeScheduler_.scheduleTask(task);
+          runtimeScheduler_->scheduleTask(task);
 
           return valueFromTask(runtime, task);
         });
@@ -80,8 +81,23 @@ jsi::Value RuntimeSchedulerBinding::get(
             jsi::Value const &,
             jsi::Value const *arguments,
             size_t) noexcept -> jsi::Value {
-          runtimeScheduler_.cancelTask(taskFromValue(runtime, arguments[0]));
+          runtimeScheduler_->cancelTask(taskFromValue(runtime, arguments[0]));
           return jsi::Value::undefined();
+        });
+  }
+
+  if (propertyName == "unstable_shouldYield") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [this](
+            jsi::Runtime &,
+            jsi::Value const &,
+            jsi::Value const *,
+            size_t) noexcept -> jsi::Value {
+          auto shouldYield = runtimeScheduler_->getShouldYield();
+          return jsi::Value(shouldYield);
         });
   }
   if (propertyName == "unstable_ImmediatePriority") {

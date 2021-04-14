@@ -9,6 +9,7 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/runtimescheduler/Task.h>
+#include <atomic>
 #include <memory>
 #include <queue>
 
@@ -22,6 +23,8 @@ class RuntimeScheduler final {
 
   void cancelTask(std::shared_ptr<Task> const &task);
 
+  bool getShouldYield() const;
+
  private:
   mutable std::priority_queue<
       std::shared_ptr<Task>,
@@ -29,6 +32,7 @@ class RuntimeScheduler final {
       TaskPriorityComparer>
       taskQueue_;
   RuntimeExecutor const runtimeExecutor_;
+  std::atomic_bool shouldYield_{false};
 };
 
 } // namespace facebook::react

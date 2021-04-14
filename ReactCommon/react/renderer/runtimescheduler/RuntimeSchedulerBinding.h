@@ -17,7 +17,7 @@ namespace facebook::react {
  */
 class RuntimeSchedulerBinding : public jsi::HostObject {
  public:
-  RuntimeSchedulerBinding(RuntimeScheduler runtimeScheduler);
+  RuntimeSchedulerBinding(std::unique_ptr<RuntimeScheduler> runtimeScheduler);
 
   /*
    * Installs RuntimeSchedulerBinding into JavaScript runtime if needed.
@@ -35,7 +35,7 @@ class RuntimeSchedulerBinding : public jsi::HostObject {
   jsi::Value get(jsi::Runtime &runtime, jsi::PropNameID const &name) override;
 
  private:
-  RuntimeScheduler runtimeScheduler_;
+  std::unique_ptr<RuntimeScheduler> runtimeScheduler_;
 };
 
 } // namespace facebook::react
