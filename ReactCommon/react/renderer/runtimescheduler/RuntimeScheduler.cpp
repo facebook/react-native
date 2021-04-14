@@ -12,7 +12,12 @@ namespace facebook::react {
 RuntimeScheduler::RuntimeScheduler(RuntimeExecutor const &runtimeExecutor)
     : runtimeExecutor_(runtimeExecutor) {}
 
-void RuntimeScheduler::scheduleTask(std::shared_ptr<Task> const &task) {
+std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
+    SchedulerPriority priority,
+    jsi::Function callback) {
+  auto expirationTime = now() + timeoutForSchedulerPriority(priority);
+  auto task =
+      std::make_shared<Task>(priority, std::move(callback), expirationTime);
   taskQueue_.push(task);
 
   runtimeExecutor_([this](jsi::Runtime &runtime) {
@@ -20,6 +25,7 @@ void RuntimeScheduler::scheduleTask(std::shared_ptr<Task> const &task) {
     taskQueue_.pop();
     (*topPriority)(runtime);
   });
+  return task;
 }
 
 void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/debug/react_native_assert.h>
+#include <chrono>
 
 namespace facebook::react {
 
@@ -40,6 +41,22 @@ static inline SchedulerPriority fromRawValue(double value) {
     default:
       react_native_assert(false && "Unsupported SchedulerPriority value");
       return SchedulerPriority::NormalPriority;
+  }
+}
+
+static inline std::chrono::milliseconds timeoutForSchedulerPriority(
+    SchedulerPriority schedulerPriority) {
+  switch (schedulerPriority) {
+    case SchedulerPriority::ImmediatePriority:
+      return std::chrono::milliseconds(-1);
+    case SchedulerPriority::UserBlockingPriority:
+      return std::chrono::milliseconds(250);
+    case SchedulerPriority::NormalPriority:
+      return std::chrono::milliseconds(5000);
+    case SchedulerPriority::LowPriority:
+      return std::chrono::milliseconds(10'000);
+    case SchedulerPriority::IdlePriority:
+      return std::chrono::milliseconds(500);
   }
 }
 

@@ -63,10 +63,9 @@ jsi::Value RuntimeSchedulerBinding::get(
             size_t) noexcept -> jsi::Value {
           SchedulerPriority priority = fromRawValue(arguments[0].getNumber());
           auto callback = arguments[1].getObject(runtime).getFunction(runtime);
-          react_native_assert(arguments[2].isUndefined());
 
-          auto task = std::make_shared<Task>(priority, std::move(callback));
-          runtimeScheduler_->scheduleTask(task);
+          auto task =
+              runtimeScheduler_->scheduleTask(priority, std::move(callback));
 
           return valueFromTask(runtime, task);
         });

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/Task.h>
 #include <atomic>
 #include <chrono>
@@ -16,16 +17,13 @@
 
 namespace facebook::react {
 
-/*
- * Represents a monotonic clock suitable for measuring intervals.
- */
-using RuntimeSchedulerClock = std::chrono::steady_clock;
-
 class RuntimeScheduler final {
  public:
   RuntimeScheduler(RuntimeExecutor const &runtimeExecutor);
 
-  void scheduleTask(std::shared_ptr<Task> const &task);
+  std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      jsi::Function callback);
 
   void cancelTask(std::shared_ptr<Task> const &task);
 
