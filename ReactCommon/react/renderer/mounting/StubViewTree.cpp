@@ -70,6 +70,22 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         /* Disable this assert until T76057501 is resolved.
         react_native_assert(registry.find(tag) != registry.end());
         auto stubView = registry[tag];
+        if ((ShadowView)(*stubView) != mutation.oldChildShadowView) {
+          LOG(ERROR)
+              << "StubView: ASSERT FAILURE: DELETE mutation assertion failure:
+oldChildShadowView doesn't match stubView: ["
+              << mutation.oldChildShadowView.tag << "] stub hash: ##"
+              << std::hash<ShadowView>{}((ShadowView)*stubView)
+              << " old mutation hash: ##"
+              << std::hash<ShadowView>{}(mutation.oldChildShadowView);
+#ifdef RN_DEBUG_STRING_CONVERTIBLE
+          LOG(ERROR) << "StubView: "
+                     << getDebugPropsDescription((ShadowView)*stubView, {});
+          LOG(ERROR) << "OldChildShadowView: "
+                     << getDebugPropsDescription(
+                            mutation.oldChildShadowView, {});
+#endif
+        }
         react_native_assert(
             (ShadowView)(*stubView) == mutation.oldChildShadowView);
         */

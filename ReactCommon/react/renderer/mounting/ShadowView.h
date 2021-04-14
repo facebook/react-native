@@ -14,6 +14,7 @@
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/debug/flags.h>
 
 namespace facebook {
 namespace react {
