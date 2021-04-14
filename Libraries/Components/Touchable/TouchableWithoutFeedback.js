@@ -76,7 +76,6 @@ const PASSTHROUGH_PROPS = [
   'accessibilityLabel',
   'accessibilityLiveRegion',
   'accessibilityRole',
-  'accessibilityState',
   'accessibilityValue',
   'accessibilityViewIsModal',
   'hitSlop',

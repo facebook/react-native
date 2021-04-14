@@ -37,7 +37,11 @@ exports[`TouchableWithoutFeedback with disabled state should be disabled when di
 
 exports[`TouchableWithoutFeedback with disabled state should be disabled when disabled is true and accessibilityState is empty 1`] = `
 <View
-  accessibilityState={Object {}}
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
   accessible={true}
   focusable={false}
   onClick={[Function]}
@@ -74,6 +78,7 @@ exports[`TouchableWithoutFeedback with disabled state should keep accessibilityS
   accessibilityState={
     Object {
       "checked": true,
+      "disabled": true,
     }
   }
   accessible={true}
@@ -92,7 +97,7 @@ exports[`TouchableWithoutFeedback with disabled state should overwrite accessibi
 <View
   accessibilityState={
     Object {
-      "disabled": false,
+      "disabled": true,
     }
   }
   accessible={true}
