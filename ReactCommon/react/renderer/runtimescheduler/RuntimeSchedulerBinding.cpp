@@ -10,6 +10,7 @@
 #include "primitives.h"
 
 #include <react/debug/react_native_assert.h>
+#include <chrono>
 #include <memory>
 
 namespace facebook::react {
@@ -112,6 +113,24 @@ jsi::Value RuntimeSchedulerBinding::get(
            size_t) noexcept -> jsi::Value {
           // RequestPaint is left empty by design.
           return jsi::Value::undefined();
+        });
+  }
+
+  if (propertyName == "unstable_now") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [this](
+            jsi::Runtime &,
+            jsi::Value const &,
+            jsi::Value const *,
+            size_t) noexcept -> jsi::Value {
+          auto now = runtimeScheduler_->now();
+          auto asDouble =
+              std::chrono::duration<double, std::milli>(now.time_since_epoch())
+                  .count();
+          return jsi::Value(asDouble);
         });
   }
 

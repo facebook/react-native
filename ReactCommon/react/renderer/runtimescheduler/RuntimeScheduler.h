@@ -10,10 +10,16 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/runtimescheduler/Task.h>
 #include <atomic>
+#include <chrono>
 #include <memory>
 #include <queue>
 
 namespace facebook::react {
+
+/*
+ * Represents a monotonic clock suitable for measuring intervals.
+ */
+using RuntimeSchedulerClock = std::chrono::steady_clock;
 
 class RuntimeScheduler final {
  public:
@@ -24,6 +30,8 @@ class RuntimeScheduler final {
   void cancelTask(std::shared_ptr<Task> const &task);
 
   bool getShouldYield() const;
+
+  RuntimeSchedulerClock::time_point now() const;
 
  private:
   mutable std::priority_queue<

@@ -30,4 +30,8 @@ bool RuntimeScheduler::getShouldYield() const {
   return shouldYield_;
 }
 
+RuntimeSchedulerClock::time_point RuntimeScheduler::now() const {
+  return RuntimeSchedulerClock::now();
+}
+
 } // namespace facebook::react
