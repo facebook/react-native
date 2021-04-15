@@ -241,8 +241,16 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
     bool isConcreteView = shadowNodeIsConcrete(childShadowNode);
     bool areChildrenFlattened = !childShadowNode.getTraits().check(
         ShadowNodeTraits::Trait::FormsStackingContext);
+    Point storedOrigin = {};
+    if (areChildrenFlattened) {
+      storedOrigin = origin;
+    }
     scope.push_back(
-        {shadowView, &childShadowNode, areChildrenFlattened, isConcreteView});
+        {shadowView,
+         &childShadowNode,
+         areChildrenFlattened,
+         isConcreteView,
+         storedOrigin});
     pairList.push_back(&scope.back());
 
     if (areChildrenFlattened) {
@@ -255,7 +263,8 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
 ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
     ShadowNode const &shadowNode,
     ViewNodePairScope &scope,
-    bool allowFlattened) {
+    bool allowFlattened,
+    Point layoutOffset) {
   auto pairList = ShadowViewNodePair::NonOwningList{};
 
   if (!shadowNode.getTraits().check(
@@ -266,7 +275,7 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
   }
 
   sliceChildShadowNodeViewPairsRecursivelyV2(
-      pairList, scope, {0, 0}, shadowNode);
+      pairList, scope, layoutOffset, shadowNode);
 
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(pairList);
@@ -291,7 +300,10 @@ sliceChildShadowNodeViewPairsFromViewNodePair(
     ViewNodePairScope &scope,
     bool allowFlattened = false) {
   return sliceChildShadowNodeViewPairsV2(
-      *shadowViewNodePair.shadowNode, scope, allowFlattened);
+      *shadowViewNodePair.shadowNode,
+      scope,
+      allowFlattened,
+      shadowViewNodePair.contextOrigin);
 }
 
 /*

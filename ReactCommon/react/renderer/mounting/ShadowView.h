@@ -73,6 +73,7 @@ struct ShadowViewNodePair final {
   ShadowNode const *shadowNode;
   bool flattened{false};
   bool isConcreteView{true};
+  Point contextOrigin{0, 0};
 
   size_t mountIndex{0};
 

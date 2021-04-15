@@ -58,7 +58,8 @@ ShadowViewMutation::List calculateShadowViewMutations(
 ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
     ShadowNode const &shadowNode,
     ViewNodePairScope &viewNodePairScope,
-    bool allowFlattened = false);
+    bool allowFlattened = false,
+    Point layoutOffset = {0, 0});
 
 /*
  * Generates a list of `ShadowViewNodePair`s that represents a layer of a
