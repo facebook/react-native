@@ -72,7 +72,8 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         auto stubView = registry[tag];
         if ((ShadowView)(*stubView) != mutation.oldChildShadowView) {
           LOG(ERROR)
-              << "StubView: ASSERT FAILURE: DELETE mutation assertion failure: oldChildShadowView does not match stubView: ["
+              << "StubView: ASSERT FAILURE: DELETE mutation assertion failure:
+oldChildShadowView does not match stubView: ["
               << mutation.oldChildShadowView.tag << "] stub hash: ##"
               << std::hash<ShadowView>{}((ShadowView)*stubView)
               << " old mutation hash: ##"
