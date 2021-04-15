@@ -33,12 +33,9 @@ MapBufferBuilder::MapBufferBuilder(uint16_t initialSize) {
 
 void MapBufferBuilder::ensureKeyValueSpace() {
   int oldKeyValuesSize = keyValuesSize_;
-  if (keyValuesSize_ >= std::numeric_limits<uint16_t>::max() / 2) {
-    LOG(ERROR)
-        << "Error: trying to assign a value beyond the capacity of uint16_t"
-        << static_cast<uint32_t>(keyValuesSize_) * 2;
-    abort();
-  }
+  react_native_assert(
+      (keyValuesSize_ >= std::numeric_limits<uint16_t>::max() / 2) &&
+      "Error trying to assign a value beyond the capacity of uint16_t");
   keyValuesSize_ *= 2;
   uint8_t *newKeyValues = new Byte[keyValuesSize_];
   uint8_t *oldKeyValues = keyValues_;

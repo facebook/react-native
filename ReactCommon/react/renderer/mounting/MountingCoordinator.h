@@ -71,6 +71,8 @@ class MountingCoordinator final {
 
   TelemetryController const &getTelemetryController() const;
 
+  void setEnableNewDiffer(bool enabled) const;
+
   /*
    * Methods from this section are meant to be used by
    * `MountingOverrideDelegate` only.
@@ -111,6 +113,8 @@ class MountingCoordinator final {
       mountingOverrideDelegate_;
 
   TelemetryController telemetryController_;
+
+  mutable bool enableNewDiffer_{false};
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   mutable StubViewTree stubViewTree_; // Protected by `mutex_`.

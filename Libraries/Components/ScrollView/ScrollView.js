@@ -1065,23 +1065,38 @@ class ScrollView extends React.Component<Props, State> {
     height: number,
   ) => void = (left: number, top: number, width: number, height: number) => {
     let keyboardScreenY = Dimensions.get('window').height;
-    if (this._keyboardWillOpenTo != null) {
-      keyboardScreenY = this._keyboardWillOpenTo.endCoordinates.screenY;
-    }
-    let scrollOffsetY =
-      top - keyboardScreenY + height + this._additionalScrollOffset;
 
-    // By default, this can scroll with negative offset, pulling the content
-    // down so that the target component's bottom meets the keyboard's top.
-    // If requested otherwise, cap the offset at 0 minimum to avoid content
-    // shifting down.
-    if (this._preventNegativeScrollOffset === true) {
-      scrollOffsetY = Math.max(0, scrollOffsetY);
-    }
-    this.scrollTo({x: 0, y: scrollOffsetY, animated: true});
+    const scrollTextInputIntoVisibleRect = () => {
+      if (this._keyboardWillOpenTo != null) {
+        keyboardScreenY = this._keyboardWillOpenTo.endCoordinates.screenY;
+      }
+      let scrollOffsetY =
+        top - keyboardScreenY + height + this._additionalScrollOffset;
 
-    this._additionalScrollOffset = 0;
-    this._preventNegativeScrollOffset = false;
+      // By default, this can scroll with negative offset, pulling the content
+      // down so that the target component's bottom meets the keyboard's top.
+      // If requested otherwise, cap the offset at 0 minimum to avoid content
+      // shifting down.
+      if (this._preventNegativeScrollOffset === true) {
+        scrollOffsetY = Math.max(0, scrollOffsetY);
+      }
+      this.scrollTo({x: 0, y: scrollOffsetY, animated: true});
+
+      this._additionalScrollOffset = 0;
+      this._preventNegativeScrollOffset = false;
+    };
+
+    if (this._keyboardWillOpenTo == null) {
+      // `_keyboardWillOpenTo` is set inside `scrollResponderKeyboardWillShow` which
+      // is not guaranteed to be called before `_inputMeasureAndScrollToKeyboard` but native has already scheduled it.
+      // In case it was not called before `_inputMeasureAndScrollToKeyboard`, we postpone scrolling to
+      // text input.
+      setTimeout(() => {
+        scrollTextInputIntoVisibleRect();
+      }, 0);
+    } else {
+      scrollTextInputIntoVisibleRect();
+    }
   };
 
   _getKeyForIndex(index, childArray) {

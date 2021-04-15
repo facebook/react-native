@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-const Keyboard = require('./Keyboard');
-const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
+import Keyboard from './Keyboard';
+import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
 
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
@@ -67,7 +67,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   _frame: ?ViewLayout = null;
   _keyboardEvent: ?KeyboardEvent = null;
   _subscriptions: Array<EventSubscription> = [];
-  viewRef: {current: React.ElementRef<any> | null, ...};
+  viewRef: {current: React.ElementRef<typeof View> | null, ...};
   _initialFrameHeight: number = 0;
 
   constructor(props: Props) {
@@ -162,7 +162,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       style,
       ...props
     } = this.props;
-    const bottomHeight = enabled ? this.state.bottom : 0;
+    const bottomHeight = enabled === true ? this.state.bottom : 0;
     switch (behavior) {
       case 'height':
         let heightStyle;
