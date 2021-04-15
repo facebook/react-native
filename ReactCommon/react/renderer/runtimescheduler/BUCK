@@ -70,6 +70,7 @@ fb_xplat_cxx_test(
     platforms = (ANDROID, APPLE, CXX),
     deps = [
         react_native_xplat_target("react/renderer/runtimescheduler:runtimescheduler"),
+        "//xplat/hermes/API:HermesAPI",
         "//xplat/third-party/gmock:gtest",
     ],
 )

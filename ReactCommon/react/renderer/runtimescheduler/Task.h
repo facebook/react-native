@@ -40,7 +40,7 @@ class TaskPriorityComparer {
   inline bool operator()(
       std::shared_ptr<Task> const &lhs,
       std::shared_ptr<Task> const &rhs) {
-    return lhs->getExpirationTime() < rhs->getExpirationTime();
+    return lhs->getExpirationTime() > rhs->getExpirationTime();
   }
 };
 
