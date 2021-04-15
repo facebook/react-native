@@ -230,3 +230,29 @@ RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
 {
   return RCTCurrentFatalExceptionHandler;
 }
+
+// New architecture section.
+static BOOL newArchitectureViolationReporting = NO;
+
+void RCTEnableNewArchitectureViolationReporting(BOOL enabled)
+{
+  newArchitectureViolationReporting = enabled;
+}
+
+BOOL RCTNewArchitectureViolationReportingEnabled(void)
+{
+  return newArchitectureViolationReporting;
+}
+
+void RCTAssertAndTrackNewArchitectureViolation(NSString *violation)
+{
+  if (!RCTNewArchitectureViolationReportingEnabled()) {
+    return;
+  }
+
+#if RCT_NEW_ARCHITECTURE
+  RCTAssert(0, @"New architecture violation assertion: %@", violation);
+#endif
+
+  // TODO: Actually track violations in a global space (separate from assertion).
+}
