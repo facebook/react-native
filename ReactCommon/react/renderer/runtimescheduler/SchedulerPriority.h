@@ -56,7 +56,7 @@ static inline std::chrono::milliseconds timeoutForSchedulerPriority(
     case SchedulerPriority::LowPriority:
       return std::chrono::milliseconds(10'000);
     case SchedulerPriority::IdlePriority:
-      return std::chrono::milliseconds(500);
+      return std::chrono::milliseconds::max();
   }
 }
 
