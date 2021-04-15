@@ -162,4 +162,23 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
+TEST_F(RuntimeSchedulerTest, cancelTask) {
+  bool didRunTask = false;
+  auto callback =
+      createHostFunctionFromLambda([&didRunTask]() { didRunTask = true; });
+
+  auto task = runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  runtimeScheduler_->cancelTask(task);
+
+  stubQueue_->tick();
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
 } // namespace facebook::react
