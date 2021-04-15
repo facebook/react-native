@@ -67,13 +67,11 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         react_native_assert(mutation.parentShadowView == ShadowView{});
         react_native_assert(mutation.newChildShadowView == ShadowView{});
         auto tag = mutation.oldChildShadowView.tag;
-        /* Disable this assert until T76057501 is resolved.
         react_native_assert(registry.find(tag) != registry.end());
         auto stubView = registry[tag];
         if ((ShadowView)(*stubView) != mutation.oldChildShadowView) {
           LOG(ERROR)
-              << "StubView: ASSERT FAILURE: DELETE mutation assertion failure:
-oldChildShadowView does not match stubView: ["
+              << "StubView: ASSERT FAILURE: DELETE mutation assertion failure: oldChildShadowView does not match stubView: ["
               << mutation.oldChildShadowView.tag << "] stub hash: ##"
               << std::hash<ShadowView>{}((ShadowView)*stubView)
               << " old mutation hash: ##"
@@ -88,7 +86,6 @@ oldChildShadowView does not match stubView: ["
         }
         react_native_assert(
             (ShadowView)(*stubView) == mutation.oldChildShadowView);
-        */
         registry.erase(tag);
         break;
       }
