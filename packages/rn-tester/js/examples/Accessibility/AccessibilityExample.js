@@ -608,22 +608,12 @@ class AccessibilityActionsExample extends React.Component {
         </RNTesterBlock>
 
         <RNTesterBlock title="Fake slider example">
-          <View
-            accessible={true}
-            accessibilityRole="adjustable"
-            accessibilityActions={[{name: 'increment'}, {name: 'decrement'}]}
-            onAccessibilityAction={event => {
-              switch (event.nativeEvent.actionName) {
-                case 'increment':
-                  Alert.alert('Alert', 'increment action success');
-                  break;
-                case 'decrement':
-                  Alert.alert('Alert', 'decrement action success');
-                  break;
-              }
-            }}>
+          <SliderNativeComponent
+           maximumValue={maximumValue}
+           minimumValue={minimumValue}
+           onPress={() => Alert.alert('Alert has been moved')}
+          />
             <Text>Slider</Text>
-          </View>
         </RNTesterBlock>
       </View>
     );
