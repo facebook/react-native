@@ -111,13 +111,13 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
           auto parentStubView = registry[parentTag];
           react_native_assert(registry.find(childTag) != registry.end());
           auto childStubView = registry[childTag];
-          react_native_assert(childStubView->parentTag == NO_VIEW_TAG);
           childStubView->update(mutation.newChildShadowView);
           STUB_VIEW_LOG({
             LOG(ERROR) << "StubView: Insert [" << childTag << "] into ["
                        << parentTag << "] @" << mutation.index << "("
                        << parentStubView->children.size() << " children)";
           });
+          react_native_assert(childStubView->parentTag == NO_VIEW_TAG);
           react_native_assert(
               parentStubView->children.size() >= mutation.index);
           childStubView->parentTag = parentTag;
