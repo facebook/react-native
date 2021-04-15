@@ -36,16 +36,9 @@ ShadowViewMutationList calculateShadowViewMutations(
  * flattened view hierarchy. The V2 version preserves nodes even if they do
  * not form views and their children are flattened.
  */
-ShadowViewNodePair::List sliceChildShadowNodeViewPairsV2(
+ShadowViewNodePairLegacy::OwningList sliceChildShadowNodeViewPairsV2(
     ShadowNode const &shadowNode,
     bool allowFlattened = false);
-
-/*
- * Generates a list of `ShadowViewNodePair`s that represents a layer of a
- * flattened view hierarchy. This is *only* used by unit tests currently.
- */
-ShadowViewNodePair::List sliceChildShadowNodeViewPairsLegacy(
-    ShadowNode const &shadowNode);
 
 } // namespace DifferOld
 } // namespace react

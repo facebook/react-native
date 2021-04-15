@@ -64,8 +64,46 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
  *
  */
 struct ShadowViewNodePair final {
-  using List = better::
+  using NonOwningList = better::
+      small_vector<ShadowViewNodePair *, kShadowNodeChildrenSmallVectorSize>;
+  using OwningList = better::
       small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
+
+  ShadowView shadowView;
+  ShadowNode const *shadowNode;
+  bool flattened{false};
+  bool isConcreteView{true};
+
+  size_t mountIndex{0};
+
+  /**
+   * This is nullptr unless `inOtherTree` is set to true.
+   * We rely on this only for marginal cases. TODO: could we
+   * rely on this more heavily to simplify the diffing algorithm
+   * overall?
+   */
+  ShadowViewNodePair const *otherTreePair{nullptr};
+
+  /*
+   * The stored pointer to `ShadowNode` represents an identity of the pair.
+   */
+  bool operator==(const ShadowViewNodePair &rhs) const;
+  bool operator!=(const ShadowViewNodePair &rhs) const;
+
+  bool inOtherTree() const {
+    return this->otherTreePair != nullptr;
+  }
+};
+
+/*
+ * Describes pair of a `ShadowView` and a `ShadowNode`.
+ * This is not exposed to the mounting layer.
+ *
+ */
+struct ShadowViewNodePairLegacy final {
+  using OwningList = better::small_vector<
+      ShadowViewNodePairLegacy,
+      kShadowNodeChildrenSmallVectorSize>;
 
   ShadowView shadowView;
   ShadowNode const *shadowNode;
@@ -76,19 +114,11 @@ struct ShadowViewNodePair final {
 
   bool inOtherTree{false};
 
-  /**
-   * This is nullptr unless `inOtherTree` is set to true.
-   * We rely on this only for marginal cases. TODO: could we
-   * rely on this more heavily to simplify the diffing algorithm
-   * overall?
-   */
-  ShadowNode const *otherTreeShadowNode{nullptr};
-
   /*
    * The stored pointer to `ShadowNode` represents an identity of the pair.
    */
-  bool operator==(const ShadowViewNodePair &rhs) const;
-  bool operator!=(const ShadowViewNodePair &rhs) const;
+  bool operator==(const ShadowViewNodePairLegacy &rhs) const;
+  bool operator!=(const ShadowViewNodePairLegacy &rhs) const;
 };
 
 } // namespace react
