@@ -89,9 +89,9 @@ main() {
 
   describe "Copying output to final directory"
   mkdir -p "$CODEGEN_COMPONENTS_OUTPUT_DIR" "$CODEGEN_MODULES_OUTPUT_DIR"
-  cp -R "$TEMP_OUTPUT_DIR/$CODEGEN_MODULES_LIBRARY_NAME.h" "$TEMP_OUTPUT_DIR/$CODEGEN_MODULES_LIBRARY_NAME-generated.mm" "$CODEGEN_MODULES_OUTPUT_DIR" || exit 1
+  cp -v -R "$TEMP_OUTPUT_DIR/$CODEGEN_MODULES_LIBRARY_NAME.h" "$TEMP_OUTPUT_DIR/$CODEGEN_MODULES_LIBRARY_NAME-generated.mm" "$CODEGEN_MODULES_OUTPUT_DIR" || exit 1
   find "$TEMP_OUTPUT_DIR" -type f | xargs sed -i.bak "s/$CODEGEN_MODULES_LIBRARY_NAME/$CODEGEN_COMPONENTS_LIBRARY_NAME/g" || exit 1
-  find "$TEMP_OUTPUT_DIR" -type f -not -iname "$CODEGEN_MODULES_LIBRARY_NAME*" -exec cp '{}' "$CODEGEN_COMPONENTS_OUTPUT_DIR/" ';' || exit 1
+  find "$TEMP_OUTPUT_DIR" -type f -not -iname "$CODEGEN_MODULES_LIBRARY_NAME*" -exec cp -v '{}' "$CODEGEN_COMPONENTS_OUTPUT_DIR/" ';' || exit 1
 
   echo >&2 'Done.'
 }
