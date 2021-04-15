@@ -25,7 +25,7 @@
 
 #ifdef DEBUG_LOGS_BREADCRUMBS
 #define BREADCRUMB_TYPE std::string
-#define DIFF_BREADCRUMB(X) (breadcrumb + std::string(X))
+#define DIFF_BREADCRUMB(X) (breadcrumb + " - " + std::string(X))
 #define CREATE_DIFF_BREADCRUMB(X) std::to_string(X)
 #else
 
@@ -680,6 +680,9 @@ static void calculateShadowViewMutationsFlattener(
                     // testing on lots of randomized and pathologically
                     // constructed trees) but I'm leaving this here out of an
                     // abundance of caution.
+                    // In theory, this path should never be hit. If we don't see
+                    // this in dev after a few months, let's delete this path.
+                    react_native_assert(false);
                     mutationInstructionContainer.deleteMutations.push_back(
                         ShadowViewMutation::DeleteMutation(
                             oldFlattenedNode.shadowView));
@@ -1351,7 +1354,9 @@ static void calculateShadowViewMutationsV2(
                 << oldIndex << ": [" << oldChildPair.shadowView.tag << "]"
                 << (oldChildPair.flattened ? " (flattened)" : "")
                 << (oldChildPair.isConcreteView ? " (concrete)" : "")
-                << " with parent: [" << parentShadowView.tag << "]";
+                << " with parent: [" << parentShadowView.tag << "] "
+                << "node is in other tree? "
+                << (oldChildPair.inOtherTree ? "yes" : "no");
           });
 
           if (oldChildPair.isConcreteView) {
