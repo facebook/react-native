@@ -72,8 +72,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
         auto stubView = registry[tag];
         if ((ShadowView)(*stubView) != mutation.oldChildShadowView) {
           LOG(ERROR)
-              << "StubView: ASSERT FAILURE: DELETE mutation assertion failure:
-oldChildShadowView doesn't match stubView: ["
+              << "StubView: ASSERT FAILURE: DELETE mutation assertion failure: oldChildShadowView doesn't match stubView: ["
               << mutation.oldChildShadowView.tag << "] stub hash: ##"
               << std::hash<ShadowView>{}((ShadowView)*stubView)
               << " old mutation hash: ##"
@@ -103,6 +102,11 @@ oldChildShadowView doesn't match stubView: ["
                 << "StubView: ASSERT FAILURE: INSERT mutation assertion failure: parentTag not found: ["
                 << parentTag << "] inserting child: [" << childTag << "]";
           }
+          if (registry.find(childTag) == registry.end()) {
+            LOG(ERROR)
+                << "StubView: ASSERT FAILURE: INSERT mutation assertion failure: childTag not found: ["
+                << parentTag << "] inserting child: [" << childTag << "]";
+          }
           react_native_assert(registry.find(parentTag) != registry.end());
           auto parentStubView = registry[parentTag];
           react_native_assert(registry.find(childTag) != registry.end());
@@ -121,6 +125,7 @@ oldChildShadowView doesn't match stubView: ["
               parentStubView->children.begin() + mutation.index, childStubView);
         } else {
           auto childTag = mutation.newChildShadowView.tag;
+          react_native_assert(registry.find(childTag) != registry.end());
           auto childStubView = registry[childTag];
           childStubView->update(mutation.newChildShadowView);
         }
@@ -147,6 +152,24 @@ oldChildShadowView doesn't match stubView: ["
           react_native_assert(parentStubView->children.size() > mutation.index);
           react_native_assert(registry.find(childTag) != registry.end());
           auto childStubView = registry[childTag];
+          if ((ShadowView)(*childStubView) != mutation.oldChildShadowView) {
+            LOG(ERROR)
+                << "StubView: ASSERT FAILURE: REMOVE mutation assertion failure: oldChildShadowView doesn't match oldStubView: ["
+                << mutation.oldChildShadowView.tag << "] stub hash: ##"
+                << std::hash<ShadowView>{}((ShadowView)*childStubView)
+                << " old mutation hash: ##"
+                << std::hash<ShadowView>{}(mutation.oldChildShadowView);
+#ifdef RN_DEBUG_STRING_CONVERTIBLE
+            LOG(ERROR) << "ChildStubView: "
+                       << getDebugPropsDescription(
+                              (ShadowView)*childStubView, {});
+            LOG(ERROR) << "OldChildShadowView: "
+                       << getDebugPropsDescription(
+                              mutation.oldChildShadowView, {});
+#endif
+          }
+          react_native_assert(
+              (ShadowView)(*childStubView) == mutation.oldChildShadowView);
           react_native_assert(childStubView->parentTag == parentTag);
           STUB_VIEW_LOG({
             std::string strChildList = "";
@@ -189,18 +212,23 @@ oldChildShadowView doesn't match stubView: ["
             registry.find(mutation.newChildShadowView.tag) != registry.end());
         auto oldStubView = registry[mutation.newChildShadowView.tag];
         react_native_assert(oldStubView->tag != 0);
-        if (!mutation.mutatedViewIsVirtual()) {
-          if ((ShadowView)(*oldStubView) != mutation.oldChildShadowView) {
-            LOG(ERROR)
-                << "StubView: ASSERT FAILURE: UPDATE mutation assertion failure: oldChildShadowView doesn't match oldStubView: ["
-                << mutation.oldChildShadowView.tag << "] old stub hash: ##"
-                << std::hash<ShadowView>{}((ShadowView)*oldStubView)
-                << " old mutation hash: ##"
-                << std::hash<ShadowView>{}(mutation.oldChildShadowView);
-          }
-          react_native_assert(
-              (ShadowView)(*oldStubView) == mutation.oldChildShadowView);
+        if ((ShadowView)(*oldStubView) != mutation.oldChildShadowView) {
+          LOG(ERROR)
+              << "StubView: ASSERT FAILURE: UPDATE mutation assertion failure: oldChildShadowView doesn't match oldStubView: ["
+              << mutation.oldChildShadowView.tag << "] old stub hash: ##"
+              << std::hash<ShadowView>{}((ShadowView)*oldStubView)
+              << " old mutation hash: ##"
+              << std::hash<ShadowView>{}(mutation.oldChildShadowView);
+#ifdef RN_DEBUG_STRING_CONVERTIBLE
+          LOG(ERROR) << "OldStubView: "
+                     << getDebugPropsDescription((ShadowView)*oldStubView, {});
+          LOG(ERROR) << "OldChildShadowView: "
+                     << getDebugPropsDescription(
+                            mutation.oldChildShadowView, {});
+#endif
         }
+        react_native_assert(
+            (ShadowView)(*oldStubView) == mutation.oldChildShadowView);
         oldStubView->update(mutation.newChildShadowView);
 
         // Hash for stub view and the ShadowView should be identical - this
