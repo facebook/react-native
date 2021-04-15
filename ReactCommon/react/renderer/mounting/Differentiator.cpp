@@ -207,6 +207,10 @@ static void reorderInPlaceIfNeeded(ShadowViewNodePair::List &pairs) noexcept {
       pairs.begin(), pairs.end(), &shouldFirstPairComesBeforeSecondOne);
 }
 
+static inline bool shadowNodeIsConcrete(ShadowNode const &shadowNode) {
+  return shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView);
+}
+
 static void sliceChildShadowNodeViewPairsRecursivelyV2(
     ShadowViewNodePair::List &pairList,
     Point layoutOffset,
@@ -232,8 +236,7 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
     // This might not be a FormsView, or a FormsStackingContext. We let the
     // differ handle removal of flattened views from the Mounting layer and
     // shuffling their children around.
-    bool isConcreteView =
-        childShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView);
+    bool isConcreteView = shadowNodeIsConcrete(childShadowNode);
     bool areChildrenFlattened = !childShadowNode.getTraits().check(
         ShadowNodeTraits::Trait::FormsStackingContext);
     pairList.push_back(
@@ -430,28 +433,7 @@ static void calculateShadowViewMutationsFlattener(
   for (size_t index = 0;
        index < treeChildren.size() && index < treeChildren.size();
        index++) {
-    // First, remove all children of the tree being flattened, or insert
-    // children into parent tree if they're being unflattened. Then, look up
-    // each node in the "unvisited" list and update the nodes and subtrees if
-    // appropriate.
     auto &treeChildPair = treeChildren[index];
-
-    //  Caller will take care of the corresponding action in the other tree.
-    if (treeChildPair.isConcreteView) {
-      if (reparentMode == ReparentMode::Flatten) {
-        mutationInstructionContainer.removeMutations.push_back(
-            ShadowViewMutation::RemoveMutation(
-                node.shadowView,
-                treeChildPair.shadowView,
-                static_cast<int>(treeChildPair.mountIndex)));
-      } else {
-        mutationInstructionContainer.insertMutations.push_back(
-            ShadowViewMutation::InsertMutation(
-                node.shadowView,
-                treeChildPair.shadowView,
-                static_cast<int>(treeChildPair.mountIndex)));
-      }
-    }
 
     // Try to find node in other tree
     auto unvisitedIt = unvisitedOtherNodes.find(treeChildPair.shadowView.tag);
@@ -464,10 +446,57 @@ static void calculateShadowViewMutationsFlattener(
              ? subVisitedOldMap->find(treeChildPair.shadowView.tag)
              : subVisitedOldMap->end());
 
-    // Find in other tree
-    if (unvisitedIt != unvisitedOtherNodes.end() ||
+    bool existsInOtherTree = unvisitedIt != unvisitedOtherNodes.end() ||
         subVisitedOtherNewIt != subVisitedNewMap->end() ||
-        subVisitedOtherOldIt != subVisitedOldMap->end()) {
+        subVisitedOtherOldIt != subVisitedOldMap->end();
+
+    auto otherTreeNodePairPtr =
+        (existsInOtherTree
+             ? (unvisitedIt != unvisitedOtherNodes.end()
+                    ? unvisitedIt->second
+                    : (subVisitedOtherNewIt != subVisitedNewMap->end()
+                           ? subVisitedOtherNewIt->second
+                           : subVisitedOtherOldIt->second))
+             : nullptr);
+
+    // Remove all children (non-recursively) of tree being flattened, or insert
+    // children into parent tree if they're being unflattened.
+    //  Caller will take care of the corresponding action in the other tree
+    //  (caller will handle DELETE case if we REMOVE here; caller will handle
+    //  CREATE case if we INSERT here).
+    if (treeChildPair.isConcreteView) {
+      if (reparentMode == ReparentMode::Flatten) {
+        // treeChildPair.shadowView represents the "old" view in this case.
+        // If there's a "new" view, an UPDATE new -> old will be generated
+        // and will be executed before the REMOVE. Thus, we must actually
+        // perform a REMOVE (new view) FROM (old index) in this case so that
+        // we don't hit asserts in StubViewTree's REMOVE path.
+        if (otherTreeNodePairPtr != nullptr) {
+          mutationInstructionContainer.removeMutations.push_back(
+              ShadowViewMutation::RemoveMutation(
+                  node.shadowView,
+                  (*otherTreeNodePairPtr).shadowView,
+                  static_cast<int>(treeChildPair.mountIndex)));
+        } else {
+          mutationInstructionContainer.removeMutations.push_back(
+              ShadowViewMutation::RemoveMutation(
+                  node.shadowView,
+                  treeChildPair.shadowView,
+                  static_cast<int>(treeChildPair.mountIndex)));
+        }
+      } else {
+        // treeChildParent represents the "new" version of the node, so
+        // we can safely insert it
+        mutationInstructionContainer.insertMutations.push_back(
+            ShadowViewMutation::InsertMutation(
+                node.shadowView,
+                treeChildPair.shadowView,
+                static_cast<int>(treeChildPair.mountIndex)));
+      }
+    }
+
+    // Find in other tree
+    if (existsInOtherTree) {
       // If we've already done updates on this node, don't repeat.
       if (reparentMode == ReparentMode::Flatten &&
           unvisitedIt == unvisitedOtherNodes.end() &&
@@ -480,12 +509,8 @@ static void calculateShadowViewMutationsFlattener(
         continue;
       }
 
-      auto &otherTreeNodePair =
-          *(unvisitedIt != unvisitedOtherNodes.end()
-                ? unvisitedIt->second
-                : (subVisitedOtherNewIt != subVisitedNewMap->end()
-                       ? subVisitedOtherNewIt->second
-                       : subVisitedOtherOldIt->second));
+      react_native_assert(otherTreeNodePairPtr != nullptr);
+      auto &otherTreeNodePair = *otherTreeNodePairPtr;
 
       // If we've already done updates, don't repeat it.
       if (treeChildPair.inOtherTree || otherTreeNodePair.inOtherTree) {
@@ -504,6 +529,9 @@ static void calculateShadowViewMutationsFlattener(
         mutationInstructionContainer.updateMutations.push_back(
             ShadowViewMutation::UpdateMutation(
                 oldTreeNodePair.shadowView, newTreeNodePair.shadowView));
+
+        newTreeNodePair.otherTreeShadowNode = oldTreeNodePair.shadowNode;
+        oldTreeNodePair.otherTreeShadowNode = newTreeNodePair.shadowNode;
       }
 
       // Update children if appropriate.
@@ -736,8 +764,8 @@ static void calculateShadowViewMutationsFlattener(
         }
       }
 
-      treeChildPair.inOtherTree = true;
-      otherTreeNodePair.inOtherTree = true;
+      newTreeNodePair.inOtherTree = true;
+      oldTreeNodePair.inOtherTree = true;
 
       if (parentSubVisitedOtherNewNodes != nullptr) {
         parentSubVisitedOtherNewNodes->insert(
@@ -1349,6 +1377,16 @@ static void calculateShadowViewMutationsV2(
         // generate remove+delete for this node and its subtree.
         auto const newIt = newRemainingPairs.find(oldTag);
         if (newIt == newRemainingPairs.end()) {
+          oldIndex++;
+
+          if (!oldChildPair.isConcreteView) {
+            continue;
+          }
+
+          // From here, we know the oldChildPair is concrete.
+          // We *probably* need to generate a REMOVE mutation (see edge-case
+          // notes below).
+
           DEBUG_LOGS({
             LOG(ERROR)
                 << "Differ Branch 9: Removing tag that was not reinserted: "
@@ -1360,17 +1398,38 @@ static void calculateShadowViewMutationsV2(
                 << (oldChildPair.inOtherTree ? "yes" : "no");
           });
 
-          if (oldChildPair.isConcreteView) {
-            removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-                parentShadowView,
-                oldChildPair.shadowView,
-                static_cast<int>(oldChildPair.mountIndex)));
-
-            deletionCandidatePairs.insert(
-                {oldChildPair.shadowView.tag, &oldChildPair});
+          // Edge case: node is not found in `newRemainingPairs`, due to complex
+          // (un)flattening cases, but exists in other tree *and* is concrete.
+          if (oldChildPair.inOtherTree &&
+              oldChildPair.otherTreeShadowNode != nullptr) {
+            if (shadowNodeIsConcrete(*oldChildPair.otherTreeShadowNode)) {
+              ShadowView otherTreeView =
+                  ShadowView(*oldChildPair.otherTreeShadowNode);
+              // Remove, but remove using the *new* node, since we know
+              // an UPDATE mutation from old -> new has been generated.
+              // Practically this shouldn't matter for most mounting layer
+              // implementations, but helps adhere to the invariant that
+              // for all mutation instructions, "oldViewShadowNode" == "current
+              // node on mounting layer / stubView".
+              // Here we do *not" need to generate a potential DELETE mutation
+              // because we know the view is concrete, and still in the new
+              // hierarchy.
+              removeMutations.push_back(ShadowViewMutation::RemoveMutation(
+                  parentShadowView,
+                  otherTreeView,
+                  static_cast<int>(oldChildPair.mountIndex)));
+              continue;
+            }
           }
 
-          oldIndex++;
+          removeMutations.push_back(ShadowViewMutation::RemoveMutation(
+              parentShadowView,
+              oldChildPair.shadowView,
+              static_cast<int>(oldChildPair.mountIndex)));
+
+          deletionCandidatePairs.insert(
+              {oldChildPair.shadowView.tag, &oldChildPair});
+
           continue;
         }
       }

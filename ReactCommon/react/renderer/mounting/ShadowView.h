@@ -76,6 +76,14 @@ struct ShadowViewNodePair final {
 
   bool inOtherTree{false};
 
+  /**
+   * This is nullptr unless `inOtherTree` is set to true.
+   * We rely on this only for marginal cases. TODO: could we
+   * rely on this more heavily to simplify the diffing algorithm
+   * overall?
+   */
+  ShadowNode const *otherTreeShadowNode{nullptr};
+
   /*
    * The stored pointer to `ShadowNode` represents an identity of the pair.
    */
