@@ -11,7 +11,6 @@
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/Task.h>
 #include <atomic>
-#include <chrono>
 #include <memory>
 #include <queue>
 
@@ -20,6 +19,9 @@ namespace facebook::react {
 class RuntimeScheduler final {
  public:
   RuntimeScheduler(RuntimeExecutor const &runtimeExecutor);
+  RuntimeScheduler(
+      RuntimeExecutor const &runtimeExecutor,
+      std::function<RuntimeSchedulerTimePoint()> now);
 
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
@@ -29,7 +31,7 @@ class RuntimeScheduler final {
 
   bool getShouldYield() const;
 
-  RuntimeSchedulerClock::time_point now() const;
+  RuntimeSchedulerTimePoint now() const;
 
  private:
   mutable std::priority_queue<
@@ -39,6 +41,7 @@ class RuntimeScheduler final {
       taskQueue_;
   RuntimeExecutor const runtimeExecutor_;
   std::atomic_bool shouldYield_{false};
+  std::function<RuntimeSchedulerTimePoint()> now_;
 };
 
 } // namespace facebook::react

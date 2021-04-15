@@ -16,4 +16,7 @@ namespace facebook::react {
  */
 using RuntimeSchedulerClock = std::chrono::steady_clock;
 
+using RuntimeSchedulerTimePoint = RuntimeSchedulerClock::time_point;
+using RuntimeSchedulerDuration = RuntimeSchedulerClock::duration;
+
 } // namespace facebook::react

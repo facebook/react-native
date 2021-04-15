@@ -10,7 +10,12 @@
 namespace facebook::react {
 
 RuntimeScheduler::RuntimeScheduler(RuntimeExecutor const &runtimeExecutor)
-    : runtimeExecutor_(runtimeExecutor) {}
+    : RuntimeScheduler(runtimeExecutor, RuntimeSchedulerClock::now) {}
+
+RuntimeScheduler::RuntimeScheduler(
+    RuntimeExecutor const &runtimeExecutor,
+    std::function<RuntimeSchedulerTimePoint()> now)
+    : runtimeExecutor_(runtimeExecutor), now_(now) {}
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
@@ -36,8 +41,8 @@ bool RuntimeScheduler::getShouldYield() const {
   return shouldYield_;
 }
 
-RuntimeSchedulerClock::time_point RuntimeScheduler::now() const {
-  return RuntimeSchedulerClock::now();
+RuntimeSchedulerTimePoint RuntimeScheduler::now() const {
+  return now_();
 }
 
 } // namespace facebook::react
