@@ -7,12 +7,18 @@
 
 #pragma once
 
+// This file exists as an experimental baseline against which
+// we can compare changes in Differentiator.
+// Once changes in Differentiator have been verified safe,
+// this file will be deleted.
+
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/flags.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {
+namespace DifferOld {
 
 enum class ReparentMode { Flatten, Unflatten };
 
@@ -23,8 +29,7 @@ enum class ReparentMode { Flatten, Unflatten };
  */
 ShadowViewMutationList calculateShadowViewMutations(
     ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode,
-    bool useNewDiffer);
+    ShadowNode const &newRootShadowNode);
 
 /**
  * Generates a list of `ShadowViewNodePair`s that represents a layer of a
@@ -42,5 +47,6 @@ ShadowViewNodePair::List sliceChildShadowNodeViewPairsV2(
 ShadowViewNodePair::List sliceChildShadowNodeViewPairsLegacy(
     ShadowNode const &shadowNode);
 
+} // namespace DifferOld
 } // namespace react
 } // namespace facebook

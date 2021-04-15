@@ -90,7 +90,9 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     telemetry.willDiff();
 
     auto mutations = calculateShadowViewMutations(
-        *baseRevision_.rootShadowNode, *lastRevision_->rootShadowNode);
+        *baseRevision_.rootShadowNode,
+        *lastRevision_->rootShadowNode,
+        enableNewDiffer_);
 
     telemetry.didDiff();
 
@@ -184,6 +186,10 @@ void MountingCoordinator::setMountingOverrideDelegate(
     std::weak_ptr<MountingOverrideDelegate const> delegate) const {
   std::lock_guard<std::mutex> lock(mutex_);
   mountingOverrideDelegate_ = delegate;
+}
+
+void MountingCoordinator::setEnableNewDiffer(bool enabled) const {
+  enableNewDiffer_ = enabled;
 }
 
 } // namespace react

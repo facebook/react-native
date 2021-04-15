@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "Differentiator.h"
 #include "DifferentiatorFlatteningClassic.h"
 
 #include <better/map.h>
@@ -41,6 +40,7 @@ enum class NoBreadcrumb {};
 
 namespace facebook {
 namespace react {
+namespace DifferOld {
 
 /*
  * Extremely simple and naive implementation of a map.
@@ -1584,13 +1584,7 @@ ShadowViewNodePair::List sliceChildShadowNodeViewPairsLegacy(
 
 ShadowViewMutation::List calculateShadowViewMutations(
     ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode,
-    bool useNewDiffer) {
-  if (!useNewDiffer) {
-    return DifferOld::calculateShadowViewMutations(
-        oldRootShadowNode, newRootShadowNode);
-  }
-
+    ShadowNode const &newRootShadowNode) {
   SystraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.
@@ -1618,5 +1612,6 @@ ShadowViewMutation::List calculateShadowViewMutations(
   return mutations;
 }
 
+} // namespace DifferOld
 } // namespace react
 } // namespace facebook

@@ -88,7 +88,7 @@ StubViewTree buildStubViewTreeUsingDifferentiator(
       ShadowNode::emptySharedShadowNodeSharedList()});
 
   auto mutations =
-      calculateShadowViewMutations(*emptyRootShadowNode, rootShadowNode);
+      calculateShadowViewMutations(*emptyRootShadowNode, rootShadowNode, true);
 
   auto stubViewTree = StubViewTree(ShadowView(*emptyRootShadowNode));
   stubViewTree.mutate(mutations);
