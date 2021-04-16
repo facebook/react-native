@@ -115,7 +115,7 @@ fb_xplat_cxx_library(
     # no JNI_Onload.
     fbandroid_allow_jni_merging = False,
     fbandroid_deps = [
-        "//fbandroid/native/fb:fb",
+        "//fbandroid/libraries/fbjni:fbjni",
     ],
     fbobjc_header_path_prefix = "hermes/inspector/detail",
     labels = ["supermodule:xplat/default/public.hermes"],
