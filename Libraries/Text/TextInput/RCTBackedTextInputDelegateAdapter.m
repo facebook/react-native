@@ -107,6 +107,12 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textFieldDidChange
 {
+  UITextRange *markedTextRange = _backedTextInputView.markedTextRange;
+
+  if (markedTextRange != nil && !markedTextRange.isEmpty) {
+      return;
+  }
+
   _textDidChangeIsComing = NO;
   [_backedTextInputView.textInputDelegate textInputDidChange];
 
