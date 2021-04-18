@@ -213,7 +213,7 @@ module.exports = {
     return require('./Libraries/Components/RefreshControl/RefreshControl');
   },
   get SafeAreaView(): SafeAreaView {
-    return require('./Libraries/Components/SafeAreaView/SafeAreaView');
+    return require('./Libraries/Components/SafeAreaView/SafeAreaView').default;
   },
   get ScrollView(): ScrollView {
     return require('./Libraries/Components/ScrollView/ScrollView');

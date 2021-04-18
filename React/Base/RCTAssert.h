@@ -169,3 +169,11 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
   } while (0)
 
 #endif
+
+/**
+ * Controls for ensuring the new architecture runtime assumption holds.
+ * Note: this is work in progress.
+ */
+__attribute__((used)) RCT_EXTERN void RCTEnableNewArchitectureViolationReporting(BOOL enabled);
+__attribute__((used)) RCT_EXTERN BOOL RCTNewArchitectureViolationReportingEnabled(void);
+__attribute__((used)) RCT_EXTERN void RCTAssertAndTrackNewArchitectureViolation(NSString *violation);

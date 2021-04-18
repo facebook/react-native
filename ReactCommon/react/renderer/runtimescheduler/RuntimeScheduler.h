@@ -7,10 +7,47 @@
 
 #pragma once
 
-namespace facebook {
-namespace react {
+#include <ReactCommon/RuntimeExecutor.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
+#include <react/renderer/runtimescheduler/Task.h>
+#include <atomic>
+#include <memory>
+#include <queue>
 
-class RuntimeScheduler final {};
+namespace facebook::react {
 
-} // namespace react
-} // namespace facebook
+class RuntimeScheduler final {
+ public:
+  RuntimeScheduler(RuntimeExecutor const &runtimeExecutor);
+  RuntimeScheduler(
+      RuntimeExecutor const &runtimeExecutor,
+      std::function<RuntimeSchedulerTimePoint()> now);
+
+  std::shared_ptr<Task> scheduleTask(
+      SchedulerPriority priority,
+      jsi::Function callback);
+
+  void cancelTask(std::shared_ptr<Task> const &task);
+
+  bool getShouldYield() const;
+
+  RuntimeSchedulerTimePoint now() const;
+
+ private:
+  mutable std::priority_queue<
+      std::shared_ptr<Task>,
+      std::vector<std::shared_ptr<Task>>,
+      TaskPriorityComparer>
+      taskQueue_;
+  RuntimeExecutor const runtimeExecutor_;
+  std::atomic_bool shouldYield_{false};
+  std::function<RuntimeSchedulerTimePoint()> now_;
+
+  /*
+   * Flag indicating if callback on JavaScript queue has been
+   * scheduled.
+   */
+  std::atomic_bool isCallbackScheduled_{false};
+};
+
+} // namespace facebook::react
