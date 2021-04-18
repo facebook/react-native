@@ -814,10 +814,10 @@ class EnabledExamples extends React.Component<{}> {
         ) : null}
 
         {Platform.OS === 'android' ? (
-          <RNTesterBlock title="isAccessibilityStateEnabled()">
+          <RNTesterBlock title="isAccessibilityServiceEnabled()">
             <EnabledExample
-              test="accessibility state"
-              eventListener="accessibilityStateChanged"
+              test="any accessibility service"
+              eventListener="accessibilityServiceChanged"
             />
           </RNTesterBlock>
         ) : null}
@@ -856,8 +856,8 @@ class EnabledExample extends React.Component<{}> {
         return AccessibilityInfo.isReduceMotionEnabled().then(state => {
           this.setState({isEnabled: state});
         });
-      case 'accessibilityStateChanged':
-        return AccessibilityInfo.isAccessibilityStateEnabled().then(state => {
+      case 'accessibilityServiceChanged':
+        return AccessibilityInfo.isAccessibilityServiceEnabled().then(state => {
           this.setState({isEnabled: state});
         });
       default:

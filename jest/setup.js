@@ -120,7 +120,7 @@ jest
     default: {
       addEventListener: jest.fn(),
       announceForAccessibility: jest.fn(),
-      isAccessibilityStateEnabled: jest.fn(),
+      isAccessibilityServiceEnabled: jest.fn(),
       isBoldTextEnabled: jest.fn(),
       isGrayscaleEnabled: jest.fn(),
       isInvertColorsEnabled: jest.fn(),
