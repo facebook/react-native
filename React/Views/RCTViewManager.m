@@ -21,6 +21,10 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
+#if TARGET_OS_OSX  // TODO(macOS GH#774)
+#import "RCTCursor.h"
+#endif  // TODO(macOS GH774)
+
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 @implementation RCTConvert (UIAccessibilityTraits)
 

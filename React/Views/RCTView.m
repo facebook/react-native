@@ -742,16 +742,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   // the mouseExited: event does not get called on the view where mouseEntered: was previously called.
   // This creates an unnatural pairing of mouse enter and exit events and can cause problems.
   // We therefore explicitly check for this here and handle them by calling the appropriate callbacks.
-  
+
   if (!_hasMouseOver && self.onMouseEnter)
   {
     NSPoint locationInWindow = [[self window] mouseLocationOutsideOfEventStream];
     NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
-    
+
     if (NSPointInRect(locationInView, [self bounds]))
     {
       _hasMouseOver = YES;
-      
+
       [self sendMouseEventWithBlock:self.onMouseEnter
                        locationInfo:[self locationInfoFromDraggingLocation:locationInWindow]
                       modifierFlags:0
@@ -762,11 +762,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   {
     NSPoint locationInWindow = [[self window] mouseLocationOutsideOfEventStream];
     NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
-    
+
     if (!NSPointInRect(locationInView, [self bounds]))
     {
       _hasMouseOver = NO;
-      
+
       [self sendMouseEventWithBlock:self.onMouseLeave
                        locationInfo:[self locationInfoFromDraggingLocation:locationInWindow]
                       modifierFlags:0
@@ -1367,67 +1367,8 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 #if TARGET_OS_OSX
 - (void)resetCursorRects
 {
-  NSCursor *cursor;
-
-  switch (self.cursor) {
-    case RCTCursorArrow:
-      cursor = [NSCursor arrowCursor];
-      break;
-    case RCTCursorClosedHand:
-      cursor = [NSCursor closedHandCursor];
-      break;
-    case RCTCursorContextualMenu:
-      cursor = [NSCursor contextualMenuCursor];
-      break;
-    case RCTCursorCrosshair:
-      cursor = [NSCursor crosshairCursor];
-      break;
-    case RCTCursorDisappearingItem:
-      cursor = [NSCursor disappearingItemCursor];
-      break;
-    case RCTCursorDragCopy:
-      cursor = [NSCursor dragCopyCursor];
-      break;
-    case RCTCursorDragLink:
-      cursor = [NSCursor dragLinkCursor];
-      break;
-    case RCTCursorIBeam:
-      cursor = [NSCursor IBeamCursor];
-      break;
-    case RCTCursorIBeamCursorForVerticalLayout:
-      cursor = [NSCursor IBeamCursorForVerticalLayout];
-      break;
-    case RCTCursorOpenHand:
-      cursor = [NSCursor openHandCursor];
-      break;
-    case RCTCursorOperationNotAllowed:
-      cursor = [NSCursor operationNotAllowedCursor];
-      break;
-    case RCTCursorPointingHand:
-      cursor = [NSCursor pointingHandCursor];
-      break;
-    case RCTCursorResizeDown:
-      cursor = [NSCursor resizeDownCursor];
-      break;
-    case RCTCursorResizeLeft:
-      cursor = [NSCursor resizeLeftCursor];
-      break;
-    case RCTCursorResizeLeftRight:
-      cursor = [NSCursor resizeLeftRightCursor];
-      break;
-    case RCTCursorResizeRight:
-      cursor = [NSCursor resizeRightCursor];
-      break;
-    case RCTCursorResizeUp:
-      cursor = [NSCursor resizeUpCursor];
-      break;
-    case RCTCursorResizeUpDown:
-      cursor = [NSCursor resizeUpDownCursor];
-      break;
-  }
-
   [self discardCursorRects];
-
+  NSCursor *cursor = [RCTConvert NSCursor:self.cursor];
   if (cursor) {
     [self addCursorRect:self.bounds cursor:cursor];
   }
@@ -1460,7 +1401,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   if (_trackingArea) {
     [self removeTrackingArea:_trackingArea];
   }
-  
+
   if (self.onMouseEnter || self.onMouseLeave) {
     _trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds
                                                  options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited
@@ -1468,7 +1409,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
                                                 userInfo:nil];
     [self addTrackingArea:_trackingArea];
   }
-  
+
   [super updateTrackingAreas];
 }
 
@@ -1494,7 +1435,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 {
   NSPoint locationInWindow = event.locationInWindow;
   NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
-  
+
   return @{@"screenX": @(locationInWindow.x),
            @"screenY": @(locationInWindow.y),
            @"clientX": @(locationInView.x),
@@ -1525,15 +1466,15 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   if (modifierFlags & NSEventModifierFlagCommand) {
     body[@"metaKey"] = @YES;
   }
-  
+
   if (locationInfo) {
     [body addEntriesFromDictionary:locationInfo];
   }
-  
+
   if (additionalData) {
     [body addEntriesFromDictionary:additionalData];
   }
-  
+
   block(body);
 }
 
@@ -1563,7 +1504,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
           MIMETypeString = (__bridge_transfer NSString *)MIMEType;
         }
       }
-      
+
       NSNumber *fileSizeValue = nil;
       NSError *fileSizeError = nil;
       BOOL success = [fileURL getResourceValue:&fileSizeValue
@@ -1575,11 +1516,11 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
                          @"uri": RCTNullIfNil(fileURL.absoluteString),
                          @"size": success ? fileSizeValue : (id)kCFNull
                          }];
-      
+
       [items addObject:@{@"kind": @"file",
                          @"type": RCTNullIfNil(MIMETypeString),
                          }];
-      
+
       [types addObject:RCTNullIfNil(MIMETypeString)];
     }
   }
@@ -1592,7 +1533,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 - (NSDictionary*)locationInfoFromDraggingLocation:(NSPoint)locationInWindow
 {
   NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
-  
+
   return @{@"screenX": @(locationInWindow.x),
            @"screenY": @(locationInWindow.y),
            @"clientX": @(locationInView.x),
@@ -1604,7 +1545,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 {
   NSPasteboard *pboard = sender.draggingPasteboard;
   NSDragOperation sourceDragMask = sender.draggingSourceOperationMask;
-  
+
   [self sendMouseEventWithBlock:self.onDragEnter
                    locationInfo:[self locationInfoFromDraggingLocation:sender.draggingLocation]
                   modifierFlags:0
