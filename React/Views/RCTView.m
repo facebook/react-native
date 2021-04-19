@@ -1380,6 +1380,14 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 #pragma mark - macOS Event Handler
 
 #if TARGET_OS_OSX
+- (void)resetCursorRects
+{
+  if (self.focusable || self.cursor != nil) {
+    NSString *cursorKey = self.cursor != nil ? [self.cursor stringByAppendingString:@"Cursor"] : @"pointingHandCursor";
+    [self addCursorRect:self.bounds cursor:[NSCursor valueForKey:cursorKey]];
+  }
+}
+
 - (void)setOnDoubleClick:(RCTDirectEventBlock)block
 {
   if (_onDoubleClick != block) {

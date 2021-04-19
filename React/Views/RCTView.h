@@ -128,6 +128,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * macOS Properties
  */
+@property (nonatomic, copy) NSString *cursor;
 @property (nonatomic, copy) RCTDirectEventBlock onDoubleClick;
 @property (nonatomic, copy) RCTDirectEventBlock onClick;
 @property (nonatomic, copy) RCTDirectEventBlock onMouseEnter;
@@ -139,8 +140,8 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 // Keyboarding events
 @property (nonatomic, copy) RCTDirectEventBlock onKeyDown;
 @property (nonatomic, copy) RCTDirectEventBlock onKeyUp;
-@property (nonatomic, copy) NSArray<NSString*> *validKeysDown;
-@property (nonatomic, copy) NSArray<NSString*> *validKeysUp;
+@property (nonatomic, copy) NSArray<NSString *> *validKeysDown;
+@property (nonatomic, copy) NSArray<NSString *> *validKeysUp;
 #endif // ]TODO(macOS ISS#2323203)
 
 /**
