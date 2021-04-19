@@ -42,6 +42,12 @@ class RuntimeScheduler final {
   RuntimeExecutor const runtimeExecutor_;
   std::atomic_bool shouldYield_{false};
   std::function<RuntimeSchedulerTimePoint()> now_;
+
+  /*
+   * Flag indicating if callback on JavaScript queue has been
+   * scheduled.
+   */
+  std::atomic_bool isCallbackScheduled_{false};
 };
 
 } // namespace facebook::react

@@ -25,11 +25,19 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
   taskQueue_.push(task);
 
-  runtimeExecutor_([this](jsi::Runtime &runtime) {
-    auto topPriority = taskQueue_.top();
-    taskQueue_.pop();
-    (*topPriority)(runtime);
-  });
+  if (!isCallbackScheduled_) {
+    isCallbackScheduled_ = true;
+    runtimeExecutor_([this](jsi::Runtime &runtime) {
+      isCallbackScheduled_ = false;
+
+      while (!taskQueue_.empty()) {
+        auto topPriority = taskQueue_.top();
+        taskQueue_.pop();
+        (*topPriority)(runtime);
+      }
+    });
+  }
+
   return task;
 }
 

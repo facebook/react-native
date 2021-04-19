@@ -20,6 +20,7 @@ using namespace std::chrono_literals;
 class RuntimeSchedulerTest : public testing::Test {
  protected:
   void SetUp() override {
+    hostFunctionCallCount_ = 0;
     runtime_ = facebook::hermes::makeHermesRuntime();
     stubQueue_ = std::make_unique<StubQueue>();
 
@@ -46,15 +47,18 @@ class RuntimeSchedulerTest : public testing::Test {
         *runtime_,
         jsi::PropNameID::forUtf8(*runtime_, ""),
         3,
-        [callback = std::move(callback)](
+        [this, callback = std::move(callback)](
             jsi::Runtime &,
             jsi::Value const &,
             jsi::Value const *,
             size_t) noexcept -> jsi::Value {
+          ++hostFunctionCallCount_;
           callback();
           return jsi::Value::undefined();
         });
   }
+
+  uint hostFunctionCallCount_;
 
   std::unique_ptr<facebook::hermes::HermesRuntime> runtime_;
   std::unique_ptr<StubClock> stubClock_;
@@ -99,67 +103,65 @@ TEST_F(RuntimeSchedulerTest, scheduleSingleTask) {
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
-  bool didRunFirstTask = false;
-  auto callbackOne = createHostFunctionFromLambda(
-      [&didRunFirstTask]() { didRunFirstTask = true; });
+  uint firstTaskCallOrder;
+  auto callbackOne =
+      createHostFunctionFromLambda([this, &firstTaskCallOrder]() {
+        firstTaskCallOrder = hostFunctionCallCount_;
+      });
 
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callbackOne));
 
-  bool didRunSecondTask = false;
-  auto callbackTwo = createHostFunctionFromLambda(
-      [&didRunSecondTask]() { didRunSecondTask = true; });
+  uint secondTaskCallOrder;
+  auto callbackTwo =
+      createHostFunctionFromLambda([this, &secondTaskCallOrder]() {
+        secondTaskCallOrder = hostFunctionCallCount_;
+      });
 
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callbackTwo));
 
-  EXPECT_FALSE(didRunFirstTask);
-  EXPECT_FALSE(didRunSecondTask);
-  EXPECT_EQ(stubQueue_->size(), 2);
-
-  stubQueue_->tick();
-
-  EXPECT_TRUE(didRunFirstTask);
-  EXPECT_FALSE(didRunSecondTask);
+  EXPECT_EQ(firstTaskCallOrder, 0);
+  EXPECT_EQ(secondTaskCallOrder, 0);
   EXPECT_EQ(stubQueue_->size(), 1);
 
   stubQueue_->tick();
 
-  EXPECT_TRUE(didRunSecondTask);
+  EXPECT_EQ(firstTaskCallOrder, 1);
+  EXPECT_EQ(secondTaskCallOrder, 2);
   EXPECT_EQ(stubQueue_->size(), 0);
+  EXPECT_EQ(hostFunctionCallCount_, 2);
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
-  bool didRunLowPriorityTask = false;
-  auto callbackOne = createHostFunctionFromLambda(
-      [&didRunLowPriorityTask]() { didRunLowPriorityTask = true; });
+  uint lowPriorityTaskCallOrder;
+  auto callbackOne =
+      createHostFunctionFromLambda([this, &lowPriorityTaskCallOrder]() {
+        lowPriorityTaskCallOrder = hostFunctionCallCount_;
+      });
 
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::LowPriority, std::move(callbackOne));
 
-  bool didRunUserBLockingPriorityTask = false;
-  auto callbackTwo =
-      createHostFunctionFromLambda([&didRunUserBLockingPriorityTask]() {
-        didRunUserBLockingPriorityTask = true;
+  uint userBlockingPriorityTaskCallOrder;
+  auto callbackTwo = createHostFunctionFromLambda(
+      [this, &userBlockingPriorityTaskCallOrder]() {
+        userBlockingPriorityTaskCallOrder = hostFunctionCallCount_;
       });
 
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::UserBlockingPriority, std::move(callbackTwo));
 
-  EXPECT_FALSE(didRunLowPriorityTask);
-  EXPECT_FALSE(didRunUserBLockingPriorityTask);
-  EXPECT_EQ(stubQueue_->size(), 2);
-
-  stubQueue_->tick();
-
-  EXPECT_FALSE(didRunLowPriorityTask);
-  EXPECT_TRUE(didRunUserBLockingPriorityTask);
+  EXPECT_EQ(lowPriorityTaskCallOrder, 0);
+  EXPECT_EQ(userBlockingPriorityTaskCallOrder, 0);
   EXPECT_EQ(stubQueue_->size(), 1);
 
   stubQueue_->tick();
 
-  EXPECT_TRUE(didRunLowPriorityTask);
+  EXPECT_EQ(lowPriorityTaskCallOrder, 2);
+  EXPECT_EQ(userBlockingPriorityTaskCallOrder, 1);
   EXPECT_EQ(stubQueue_->size(), 0);
+  EXPECT_EQ(hostFunctionCallCount_, 2);
 }
 
 TEST_F(RuntimeSchedulerTest, cancelTask) {
