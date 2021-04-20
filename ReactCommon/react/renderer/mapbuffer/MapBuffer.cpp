@@ -130,9 +130,8 @@ uint16_t MapBuffer::getCount() const {
 
   memcpy(
       reinterpret_cast<uint16_t *>(&size),
-      reinterpret_cast<const uint16_t *>(
-          data_ + UINT16_SIZE), // TODO refactor this: + UINT16_SIZE describes
-                                // the position in the header
+      reinterpret_cast<const uint16_t *>(data_ + HEADER_COUNT_OFFSET),
+
       UINT16_SIZE);
 
   return size;
