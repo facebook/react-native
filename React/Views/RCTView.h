@@ -164,8 +164,8 @@ typedef NS_ENUM(NSInteger, RCTCursor) {
 // Keyboarding events
 @property (nonatomic, copy) RCTDirectEventBlock onKeyDown;
 @property (nonatomic, copy) RCTDirectEventBlock onKeyUp;
-@property (nonatomic, copy) NSArray<NSString *> *validKeysDown;
-@property (nonatomic, copy) NSArray<NSString *> *validKeysUp;
+@property (nonatomic, copy) NSArray<NSString*> *validKeysDown;
+@property (nonatomic, copy) NSArray<NSString*> *validKeysUp;
 #endif // ]TODO(macOS ISS#2323203)
 
 /**
