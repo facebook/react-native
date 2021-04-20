@@ -43,7 +43,7 @@ class RuntimeSchedulerTest : public testing::Test {
   }
 
   jsi::Function createHostFunctionFromLambda(
-      std::function<void(bool)> callback) {
+      std::function<jsi::Value(bool)> callback) {
     return jsi::Function::createFromHostFunction(
         *runtime_,
         jsi::PropNameID::forUtf8(*runtime_, ""),
@@ -55,8 +55,7 @@ class RuntimeSchedulerTest : public testing::Test {
             size_t) noexcept -> jsi::Value {
           ++hostFunctionCallCount_;
           auto didUserCallbackTimeout = arguments[0].getBool();
-          callback(didUserCallbackTimeout);
-          return jsi::Value::undefined();
+          return callback(didUserCallbackTimeout);
         });
   }
 
@@ -93,6 +92,7 @@ TEST_F(RuntimeSchedulerTest, scheduleSingleTask) {
       createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
         didRunTask = true;
         EXPECT_FALSE(didUserCallbackTimeout);
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -113,6 +113,7 @@ TEST_F(RuntimeSchedulerTest, scheduleImmediatePriorityTask) {
       createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
         didRunTask = true;
         EXPECT_FALSE(didUserCallbackTimeout);
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -135,6 +136,7 @@ TEST_F(RuntimeSchedulerTest, taskExpiration) {
         // Task has timed out but the parameter is deprecated and `false` is
         // hardcoded.
         EXPECT_FALSE(didUserCallbackTimeout);
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -157,6 +159,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
   auto callbackOne =
       createHostFunctionFromLambda([this, &firstTaskCallOrder](bool) {
         firstTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -166,6 +169,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
   auto callbackTwo =
       createHostFunctionFromLambda([this, &secondTaskCallOrder](bool) {
         secondTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -188,6 +192,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   auto callbackOne =
       createHostFunctionFromLambda([this, &lowPriorityTaskCallOrder](bool) {
         lowPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -197,6 +202,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   auto callbackTwo = createHostFunctionFromLambda(
       [this, &userBlockingPriorityTaskCallOrder](bool) {
         userBlockingPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -216,8 +222,10 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
 
 TEST_F(RuntimeSchedulerTest, cancelTask) {
   bool didRunTask = false;
-  auto callback =
-      createHostFunctionFromLambda([&didRunTask](bool) { didRunTask = true; });
+  auto callback = createHostFunctionFromLambda([&didRunTask](bool) {
+    didRunTask = true;
+    return jsi::Value::undefined();
+  });
 
   auto task = runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));
@@ -230,6 +238,38 @@ TEST_F(RuntimeSchedulerTest, cancelTask) {
   stubQueue_->tick();
 
   EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, continuationTask) {
+  bool didRunTask = false;
+  bool didContinuationTask = false;
+
+  auto callback = createHostFunctionFromLambda([&](bool) {
+    didRunTask = true;
+    return jsi::Function::createFromHostFunction(
+        *runtime_,
+        jsi::PropNameID::forUtf8(*runtime_, ""),
+        1,
+        [&](jsi::Runtime &runtime,
+            jsi::Value const &,
+            jsi::Value const *arguments,
+            size_t) noexcept -> jsi::Value {
+          didContinuationTask = true;
+          return jsi::Value::undefined();
+        });
+  });
+
+  auto task = runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunTask);
+  EXPECT_TRUE(didContinuationTask);
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 

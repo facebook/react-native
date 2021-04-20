@@ -32,8 +32,23 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
 
       while (!taskQueue_.empty()) {
         auto topPriority = taskQueue_.top();
-        taskQueue_.pop();
-        (*topPriority)(runtime);
+        auto now = now_();
+        auto didUserCallbackTimeout = topPriority->expirationTime <= now;
+
+        if (!didUserCallbackTimeout && shouldYield_) {
+          // This task hasn't expired and we need to yield.
+          break;
+        }
+
+        auto result = topPriority->execute(runtime);
+
+        if (result.isObject() &&
+            result.getObject(runtime).isFunction(runtime)) {
+          topPriority->callback =
+              result.getObject(runtime).getFunction(runtime);
+        } else {
+          taskQueue_.pop();
+        }
       }
     });
   }
@@ -42,7 +57,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
 }
 
 void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
-  task->cancel();
+  task->callback.reset();
 }
 
 bool RuntimeScheduler::getShouldYield() const {
