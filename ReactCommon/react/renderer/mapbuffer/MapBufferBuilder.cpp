@@ -182,8 +182,9 @@ MapBuffer MapBufferBuilder::build() {
   // TODO: we should invalidate the class once the build() method is
   // called.
 
-  // Reset internal data
-  delete[] keyValues_;
+  if (keyValues_ != nullptr) {
+    delete[] keyValues_;
+  }
   keyValues_ = nullptr;
   keyValuesSize_ = 0;
   keyValuesOffset_ = 0;
@@ -194,6 +195,7 @@ MapBuffer MapBufferBuilder::build() {
   }
   dynamicDataSize_ = 0;
   dynamicDataOffset_ = 0;
+  _header = {ALIGNMENT, 0, 0};
 
   return map;
 }
@@ -205,6 +207,12 @@ MapBufferBuilder::~MapBufferBuilder() {
   if (dynamicDataValues_ != nullptr) {
     delete[] dynamicDataValues_;
   }
+  _header = {ALIGNMENT, 0, 0};
+  keyValuesSize_ = 0;
+  keyValuesOffset_ = 0;
+  dynamicDataSize_ = 0;
+  dynamicDataOffset_ = 0;
+  minKeyToStore_ = 0;
 }
 
 } // namespace react
