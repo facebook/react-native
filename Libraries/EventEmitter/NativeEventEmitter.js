@@ -54,7 +54,7 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
 
     if (nativeModule && hasAddListener && hasRemoveListeners) {
       this._nativeModule = nativeModule;
-    } else {
+    } else if (nativeModule != null) {
       if (!hasAddListener) {
         console.warn(
           '`new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.',
