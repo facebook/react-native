@@ -58,12 +58,12 @@ class MapBuffer {
 
   std::string getString(Key key) const;
 
-  // TODO: review this declaration
+  // TODO T83483191: review this declaration
   MapBuffer getMapBuffer(Key key) const;
 
   uint16_t getBufferSize() const;
 
-  // TODO: review parameters of copy method
+  // TODO T83483191: review parameters of copy method
   void copy(uint8_t *output) const;
 
   bool isNull(Key key) const;

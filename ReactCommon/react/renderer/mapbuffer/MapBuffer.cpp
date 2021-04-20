@@ -25,7 +25,8 @@ MapBuffer::MapBuffer(uint8_t *const data, uint16_t dataSize) {
       reinterpret_cast<const uint8_t *>(data_ + HEADER_COUNT_OFFSET),
       UINT16_SIZE);
 
-  // TODO: extract memcpy calls into an inline function to simplify the code
+  // TODO T83483191: extract memcpy calls into an inline function to simplify
+  // the code
   dataSize_ = 0;
   memcpy(
       reinterpret_cast<uint8_t *>(&dataSize_),
@@ -53,8 +54,8 @@ bool MapBuffer::getBool(Key key) const {
 }
 
 double MapBuffer::getDouble(Key key) const {
-  // TODO: extract this code into a "template method" and reuse it for other
-  // types
+  // TODO T83483191: extract this code into a "template method" and reuse it for
+  // other types
   double value = 0;
   memcpy(
       reinterpret_cast<uint8_t *>(&value),
@@ -70,8 +71,8 @@ int MapBuffer::getDynamicDataOffset() const {
 }
 
 std::string MapBuffer::getString(Key key) const {
-  // TODO Add checks to verify that offsets are under the boundaries of the map
-  // buffer
+  // TODO T83483191:Add checks to verify that offsets are under the boundaries
+  // of the map buffer
   int dynamicDataOffset = getDynamicDataOffset();
   int stringLength = 0;
   memcpy(
@@ -92,8 +93,8 @@ std::string MapBuffer::getString(Key key) const {
 }
 
 MapBuffer MapBuffer::getMapBuffer(Key key) const {
-  // TODO Add checks to verify that offsets are under the boundaries of the map
-  // buffer
+  // TODO T83483191: Add checks to verify that offsets are under the boundaries
+  // of the map buffer
   int dynamicDataOffset = getDynamicDataOffset();
 
   uint16_t mapBufferLength = 0;

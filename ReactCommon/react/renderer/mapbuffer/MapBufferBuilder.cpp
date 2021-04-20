@@ -12,6 +12,7 @@ using namespace facebook::react;
 namespace facebook {
 namespace react {
 
+// TODO T83483191: Add asserts to check overflowing on additions
 MapBufferBuilder::MapBufferBuilder()
     : MapBufferBuilder::MapBufferBuilder(INITIAL_KEY_VALUE_SIZE) {}
 
@@ -54,8 +55,8 @@ void MapBufferBuilder::storeKeyValue(Key key, uint8_t *value, int valueSize) {
                << valueSize;
     abort();
   }
-  // TODO: header.count points to the next index
-  // TODO: add test to verify storage of sparse keys
+  // TODO T83483191: header.count points to the next index
+  // TODO T83483191: add test to verify storage of sparse keys
   int keyOffset = getKeyOffset(_header.count);
   int valueOffset = keyOffset + KEY_SIZE;
 
@@ -123,8 +124,8 @@ void MapBufferBuilder::putString(Key key, std::string value) {
 
   // format [lenght of string (int)] + [Array of Characters in the string]
   int sizeOfLength = INT_SIZE;
-  // TODO : review if map.getBufferSize() should be an int or long instead of an
-  // int16 (because strings can be longer than int16);
+  // TODO T83483191: review if map.getBufferSize() should be an int or long
+  // instead of an int16 (because strings can be longer than int16);
 
   int sizeOfDynamicData = sizeOfLength + strLength;
   ensureDynamicDataSpace(sizeOfDynamicData);
@@ -180,10 +181,10 @@ MapBuffer MapBufferBuilder::build() {
     memcpy(buffer + keyValuesOffset_, dynamicDataValues_, dynamicDataOffset_);
   }
 
-  // TODO: should we use std::move here?
+  // TODO T83483191: should we use std::move here?
   auto map = MapBuffer(buffer, bufferSize);
 
-  // TODO: we should invalidate the class once the build() method is
+  // TODO T83483191: we should invalidate the class once the build() method is
   // called.
 
   if (keyValues_ != nullptr) {

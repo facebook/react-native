@@ -70,7 +70,7 @@ TEST(MapBufferTest, testNullEntries) {
   EXPECT_EQ(map.getCount(), 2);
   EXPECT_EQ(map.isNull(0), true);
   EXPECT_EQ(map.isNull(1), false);
-  // TODO: serialize null values to be distinguishable from '0' values
+  // TODO T83483191: serialize null values to be distinguishable from '0' values
   // EXPECT_EQ(map.isNull(1),  false);
   // EXPECT_EQ(map.getBool(1),  false);
 }
