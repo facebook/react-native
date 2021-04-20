@@ -1382,9 +1382,65 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 #if TARGET_OS_OSX
 - (void)resetCursorRects
 {
-  if (self.focusable || self.cursor != nil) {
-    NSString *cursorKey = self.cursor != nil ? [self.cursor stringByAppendingString:@"Cursor"] : @"pointingHandCursor";
-    [self addCursorRect:self.bounds cursor:[NSCursor valueForKey:cursorKey]];
+  switch (self.cursor) {
+    case RCTCursorAuto:
+      if (self.focusable) {
+        [self addCursorRect:self.bounds cursor:[NSCursor pointingHandCursor]];
+      }
+      break;
+    case RCTCursorClosedHand:
+      [self addCursorRect:self.bounds cursor:[NSCursor closedHandCursor]];
+      break;
+    case RCTCursorContextualMenu:
+      [self addCursorRect:self.bounds cursor:[NSCursor contextualMenuCursor]];
+      break;
+    case RCTCursorCrosshair:
+      [self addCursorRect:self.bounds cursor:[NSCursor crosshairCursor]];
+      break;
+    case RCTCursorDisappearingItem:
+      [self addCursorRect:self.bounds cursor:[NSCursor disappearingItemCursor]];
+      break;
+    case RCTCursorDragCopy:
+      [self addCursorRect:self.bounds cursor:[NSCursor dragCopyCursor]];
+      break;
+    case RCTCursorDragLink:
+      [self addCursorRect:self.bounds cursor:[NSCursor dragLinkCursor]];
+      break;
+    case RCTCursorIBeam:
+      [self addCursorRect:self.bounds cursor:[NSCursor IBeamCursor]];
+      break;
+    case RCTCursorIBeamCursorForVerticalLayout:
+      [self addCursorRect:self.bounds cursor:[NSCursor IBeamCursorForVerticalLayout]];
+      break;
+    case RCTCursorOpenHand:
+      [self addCursorRect:self.bounds cursor:[NSCursor openHandCursor]];
+      break;
+    case RCTCursorOperationNotAllowed:
+      [self addCursorRect:self.bounds cursor:[NSCursor operationNotAllowedCursor]];
+      break;
+    case RCTCursorPointingHand:
+      [self addCursorRect:self.bounds cursor:[NSCursor pointingHandCursor]];
+      break;
+    case RCTCursorResizeDown:
+      [self addCursorRect:self.bounds cursor:[NSCursor resizeDownCursor]];
+      break;
+    case RCTCursorResizeLeft:
+      [self addCursorRect:self.bounds cursor:[NSCursor resizeLeftCursor]];
+      break;
+    case RCTCursorResizeLeftRight:
+      [self addCursorRect:self.bounds cursor:[NSCursor resizeLeftRightCursor]];
+      break;
+    case RCTCursorResizeRight:
+      [self addCursorRect:self.bounds cursor:[NSCursor resizeRightCursor]];
+      break;
+    case RCTCursorResizeUp:
+      [self addCursorRect:self.bounds cursor:[NSCursor resizeUpCursor]];
+      break;
+    case RCTCursorResizeUpDown:
+      [self addCursorRect:self.bounds cursor:[NSCursor resizeUpDownCursor]];
+      break;
+    default:
+      [self addCursorRect:self.bounds cursor:[NSCursor arrowCursor]];
   }
 }
 

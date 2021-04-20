@@ -24,6 +24,58 @@
 #import "RCTTVView.h"
 #endif
 
+#if TARGET_OS_OSX
+@implementation RCTConvert (UIView)
+
+RCT_ENUM_CONVERTER(
+    RCTCursor,
+    (@{
+      // CSS cursor names
+      @"auto" : @(RCTCursorAuto),
+      @"default" : @(RCTCursorArrow),
+      @"contextMenu" : @(RCTCursorContextualMenu),
+      @"pointer" : @(RCTCursorPointingHand),
+      @"text" : @(RCTCursorIBeam),
+      @"verticalText" : @(RCTCursorIBeamCursorForVerticalLayout),
+      @"alias" : @(RCTCursorDragLink),
+      @"copy" : @(RCTCursorDragCopy),
+      @"noDrop" : @(RCTCursorOperationNotAllowed),
+      @"notAllowed" : @(RCTCursorOperationNotAllowed),
+      @"grab" : @(RCTCursorOpenHand),
+      @"grabbing" : @(RCTCursorClosedHand),
+      @"colResize" : @(RCTCursorResizeLeftRight),
+      @"rowResize" : @(RCTCursorResizeUpDown),
+      @"nResize" : @(RCTCursorResizeUp),
+      @"eResize" : @(RCTCursorResizeRight),
+      @"sResize" : @(RCTCursorResizeDown),
+      @"wResize" : @(RCTCursorResizeLeft),
+
+      // macOS cursor names
+      @"arrow" : @(RCTCursorArrow),
+      @"iBeam" : @(RCTCursorIBeam),
+      @"crosshair" : @(RCTCursorCrosshair),
+      @"closedHand" : @(RCTCursorClosedHand),
+      @"openHand" : @(RCTCursorOpenHand),
+      @"pointingHand" : @(RCTCursorPointingHand),
+      @"resizeLeft" : @(RCTCursorResizeLeft),
+      @"resizeRight" : @(RCTCursorResizeRight),
+      @"resizeLeftRight" : @(RCTCursorResizeLeftRight),
+      @"resizeUp" : @(RCTCursorResizeUp),
+      @"resizeDown" : @(RCTCursorResizeDown),
+      @"resizeUpDown" : @(RCTCursorResizeUpDown),
+      @"disappearingItem" : @(RCTCursorDisappearingItem),
+      @"iBeamCursorForVerticalLayout" : @(RCTCursorIBeamCursorForVerticalLayout),
+      @"operationNotAllowed" : @(RCTCursorOperationNotAllowed),
+      @"dragLink" : @(RCTCursorDragLink),
+      @"dragCopy" : @(RCTCursorDragCopy),
+      @"contextualMenu" : @(RCTCursorContextualMenu),
+    }),
+    RCTCursorAuto,
+    integerValue)
+
+@end
+#endif
+
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @implementation RCTConvert (UIAccessibilityTraits)
 
@@ -474,7 +526,7 @@ RCT_EXPORT_VIEW_PROPERTY(onBlur, RCTBubblingEventBlock)
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 #pragma mark - macOS properties
 
-RCT_EXPORT_VIEW_PROPERTY(cursor, NSString)
+RCT_EXPORT_VIEW_PROPERTY(cursor, RCTCursor)
 RCT_EXPORT_VIEW_PROPERTY(onDoubleClick, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onClick, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMouseEnter, RCTDirectEventBlock)

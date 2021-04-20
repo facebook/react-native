@@ -16,6 +16,30 @@
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 #endif // TODO(macOS ISS#2323203)
 
+#if TARGET_OS_OSX
+typedef NS_ENUM(NSInteger, RCTCursor) {
+  RCTCursorAuto,
+  RCTCursorArrow,
+  RCTCursorIBeam,
+  RCTCursorCrosshair,
+  RCTCursorClosedHand,
+  RCTCursorOpenHand,
+  RCTCursorPointingHand,
+  RCTCursorResizeLeft,
+  RCTCursorResizeRight,
+  RCTCursorResizeLeftRight,
+  RCTCursorResizeUp,
+  RCTCursorResizeDown,
+  RCTCursorResizeUpDown,
+  RCTCursorDisappearingItem,
+  RCTCursorIBeamCursorForVerticalLayout,
+  RCTCursorOperationNotAllowed,
+  RCTCursorDragLink,
+  RCTCursorDragCopy,
+  RCTCursorContextualMenu,
+};
+#endif
+
 @protocol RCTAutoInsetsProtocol;
 
 @class RCTView;
@@ -128,7 +152,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * macOS Properties
  */
-@property (nonatomic, copy) NSString *cursor;
+@property (nonatomic, assign) RCTCursor cursor;
 @property (nonatomic, copy) RCTDirectEventBlock onDoubleClick;
 @property (nonatomic, copy) RCTDirectEventBlock onClick;
 @property (nonatomic, copy) RCTDirectEventBlock onMouseEnter;
