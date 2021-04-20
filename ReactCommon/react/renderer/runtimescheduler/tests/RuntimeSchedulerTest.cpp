@@ -42,7 +42,8 @@ class RuntimeSchedulerTest : public testing::Test {
         std::make_unique<RuntimeScheduler>(runtimeExecutor, stubNow);
   }
 
-  jsi::Function createHostFunctionFromLambda(std::function<void()> callback) {
+  jsi::Function createHostFunctionFromLambda(
+      std::function<void(bool)> callback) {
     return jsi::Function::createFromHostFunction(
         *runtime_,
         jsi::PropNameID::forUtf8(*runtime_, ""),
@@ -50,10 +51,11 @@ class RuntimeSchedulerTest : public testing::Test {
         [this, callback = std::move(callback)](
             jsi::Runtime &,
             jsi::Value const &,
-            jsi::Value const *,
+            jsi::Value const *arguments,
             size_t) noexcept -> jsi::Value {
           ++hostFunctionCallCount_;
-          callback();
+          auto didUserCallbackTimeout = arguments[0].getBool();
+          callback(didUserCallbackTimeout);
           return jsi::Value::undefined();
         });
   }
@@ -88,7 +90,10 @@ TEST_F(RuntimeSchedulerTest, getShouldYield) {
 TEST_F(RuntimeSchedulerTest, scheduleSingleTask) {
   bool didRunTask = false;
   auto callback =
-      createHostFunctionFromLambda([&didRunTask]() { didRunTask = true; });
+      createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
+        didRunTask = true;
+        EXPECT_FALSE(didUserCallbackTimeout);
+      });
 
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));
@@ -102,10 +107,55 @@ TEST_F(RuntimeSchedulerTest, scheduleSingleTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
+TEST_F(RuntimeSchedulerTest, scheduleImmediatePriorityTask) {
+  bool didRunTask = false;
+  auto callback =
+      createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
+        didRunTask = true;
+        EXPECT_FALSE(didUserCallbackTimeout);
+      });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::ImmediatePriority, std::move(callback));
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, taskExpiration) {
+  bool didRunTask = false;
+  auto callback =
+      createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
+        didRunTask = true;
+        // Task has timed out but the parameter is deprecated and `false` is
+        // hardcoded.
+        EXPECT_FALSE(didUserCallbackTimeout);
+      });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  // Task with normal priority has 5s timeout.
+  stubClock_->advanceTimeBy(6s);
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
 TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
   uint firstTaskCallOrder;
   auto callbackOne =
-      createHostFunctionFromLambda([this, &firstTaskCallOrder]() {
+      createHostFunctionFromLambda([this, &firstTaskCallOrder](bool) {
         firstTaskCallOrder = hostFunctionCallCount_;
       });
 
@@ -114,7 +164,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
 
   uint secondTaskCallOrder;
   auto callbackTwo =
-      createHostFunctionFromLambda([this, &secondTaskCallOrder]() {
+      createHostFunctionFromLambda([this, &secondTaskCallOrder](bool) {
         secondTaskCallOrder = hostFunctionCallCount_;
       });
 
@@ -136,7 +186,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
 TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   uint lowPriorityTaskCallOrder;
   auto callbackOne =
-      createHostFunctionFromLambda([this, &lowPriorityTaskCallOrder]() {
+      createHostFunctionFromLambda([this, &lowPriorityTaskCallOrder](bool) {
         lowPriorityTaskCallOrder = hostFunctionCallCount_;
       });
 
@@ -145,7 +195,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
 
   uint userBlockingPriorityTaskCallOrder;
   auto callbackTwo = createHostFunctionFromLambda(
-      [this, &userBlockingPriorityTaskCallOrder]() {
+      [this, &userBlockingPriorityTaskCallOrder](bool) {
         userBlockingPriorityTaskCallOrder = hostFunctionCallCount_;
       });
 
@@ -167,7 +217,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
 TEST_F(RuntimeSchedulerTest, cancelTask) {
   bool didRunTask = false;
   auto callback =
-      createHostFunctionFromLambda([&didRunTask]() { didRunTask = true; });
+      createHostFunctionFromLambda([&didRunTask](bool) { didRunTask = true; });
 
   auto task = runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));

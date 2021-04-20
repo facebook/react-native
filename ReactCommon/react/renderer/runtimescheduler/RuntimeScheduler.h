@@ -41,6 +41,11 @@ class RuntimeScheduler final {
       taskQueue_;
   RuntimeExecutor const runtimeExecutor_;
   std::atomic_bool shouldYield_{false};
+
+  /*
+   * Returns a time point representing the current point in time. May be called
+   * from multiple threads.
+   */
   std::function<RuntimeSchedulerTimePoint()> now_;
 
   /*

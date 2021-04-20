@@ -33,9 +33,12 @@ void Task::cancel() {
 }
 
 void Task::operator()(jsi::Runtime &runtime) const {
+  // Cancelled task doesn't have a callback.
   if (callback_) {
-    // Cancelled task doesn't have a callback.
-    callback_.value().call(runtime, {});
+    // Callback in JavaScript is expecting a single bool parameter.
+    // React team plans to remove it and it is safe to pass in
+    // hardcoded false value.
+    callback_.value().call(runtime, {false});
   }
 }
 
