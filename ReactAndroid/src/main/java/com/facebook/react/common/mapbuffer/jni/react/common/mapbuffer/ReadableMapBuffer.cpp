@@ -26,7 +26,10 @@ ReadableMapBuffer::importByteBufferAllocateDirect() {
   // steps:
   // - Validate perf of this method vs importByteBuffer
   // - Validate that there's no leaking of memory
-  return jni::JByteBuffer::allocateDirect(_serializedDataSize);
+  auto ret = jni::JByteBuffer::allocateDirect(_serializedDataSize);
+  std::memcpy(
+      ret->getDirectBytes(), (void *)_serializedData, _serializedDataSize);
+  return ret;
 }
 
 jni::JByteBuffer::javaobject ReadableMapBuffer::importByteBuffer() {
