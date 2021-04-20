@@ -160,6 +160,10 @@ void MapBufferBuilder::putMapBuffer(Key key, MapBuffer &map) {
 }
 
 MapBuffer MapBufferBuilder::build() {
+  react_native_assert(
+      (keyValues_ != nullptr) &&
+      "Error when building mapbuffer with invalid datastructures.");
+
   // Create buffer: [header] + [key, values] + [dynamic data]
   int bufferSize = keyValuesOffset_ + dynamicDataOffset_;
 
