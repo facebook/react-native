@@ -33,13 +33,13 @@ namespace react {
 class MapBuffer {
  private:
   // Buffer and its size
-  const uint8_t *data_;
+  const uint8_t *data_ = nullptr;
 
   // amount of bytes in the MapBuffer
-  uint16_t dataSize_;
+  uint16_t dataSize_ = 0;
 
   // amount of items in the MapBuffer
-  uint16_t count_;
+  uint16_t count_ = 0;
 
   // returns the relative offset of the first byte of dynamic data
   int getDynamicDataOffset() const;
