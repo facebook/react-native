@@ -13,6 +13,9 @@ namespace facebook {
 namespace react {
 
 MapBuffer::MapBuffer(uint8_t *const data, uint16_t dataSize) {
+  react_native_assert(
+      (data != nullptr) && "Error trying to build an invalid MapBuffer");
+
   // Should we move the memory here or document it?
   data_ = data;
 

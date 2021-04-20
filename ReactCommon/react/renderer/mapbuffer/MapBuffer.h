@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/mapbuffer/primitives.h>
 
 #include <stdlib.h>
