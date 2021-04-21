@@ -104,6 +104,28 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('renders empty list after batch', () => {
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[]}
+        renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+
+    ReactTestRenderer.act(() => {
+      simulateLayout(component, {
+        viewport: {width: 10, height: 50},
+        content: {width: 10, height: 200},
+      });
+
+      performAllBatches();
+    });
+
+    expect(component).toMatchSnapshot();
+  });
+
   it('renders null list', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
@@ -370,7 +392,7 @@ describe('VirtualizedList', () => {
     // onLayout, which can cause https://github.com/facebook/react-native/issues/16067
     instance._onContentSizeChange(300, initialContentHeight);
     instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
-    jest.runAllTimers();
+    performAllBatches();
 
     expect(onEndReached).not.toHaveBeenCalled();
 
@@ -384,7 +406,7 @@ describe('VirtualizedList', () => {
         contentInset: {right: 0, top: 0, left: 0, bottom: 0},
       },
     });
-    jest.runAllTimers();
+    performAllBatches();
 
     expect(onEndReached).toHaveBeenCalled();
   });
@@ -506,28 +528,30 @@ describe('VirtualizedList', () => {
   });
 
   it('forwards correct stickyHeaderIndices when all in initial render window', () => {
-    const items = Array(10)
-      .fill()
-      .map((_, i) => (i % 3 === 0 ? {key: i, sticky: true} : {key: i}));
-    const stickyIndices = items
-      .filter(item => item.sticky)
-      .map(item => item.key);
-
+    const items = generateItemsStickyEveryN(10, 3);
     const ITEM_HEIGHT = 10;
 
     const component = ReactTestRenderer.create(
       <VirtualizedList
-        data={items}
-        stickyHeaderIndices={stickyIndices}
         initialNumToRender={10}
-        renderItem={({item}) => <item value={item.key} sticky={item.sticky} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-        getItemLayout={(_, index) => ({
-          length: ITEM_HEIGHT,
-          offset: ITEM_HEIGHT * index,
-          index,
-        })}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+
+    expect(component).toMatchSnapshot();
+  });
+
+  it('forwards correct stickyHeaderIndices when ListHeaderComponent present', () => {
+    const items = generateItemsStickyEveryN(10, 3);
+    const ITEM_HEIGHT = 10;
+
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        ListHeaderComponent={() => React.createElement('Header')}
+        initialNumToRender={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
       />,
     );
 
@@ -535,132 +559,838 @@ describe('VirtualizedList', () => {
   });
 
   it('forwards correct stickyHeaderIndices when partially in initial render window', () => {
-    const items = Array(10)
-      .fill()
-      .map((_, i) => (i % 3 === 0 ? {key: i, sticky: true} : {key: i}));
-    const stickyIndices = items
-      .filter(item => item.sticky)
-      .map(item => item.key);
+    const items = generateItemsStickyEveryN(10, 3);
 
     const ITEM_HEIGHT = 10;
 
     const component = ReactTestRenderer.create(
       <VirtualizedList
-        data={items}
-        stickyHeaderIndices={stickyIndices}
         initialNumToRender={5}
-        renderItem={({item}) => <item value={item.key} sticky={item.sticky} />}
-        getItem={(data, index) => data[index]}
-        getItemCount={data => data.length}
-        getItemLayout={(_, index) => ({
-          length: ITEM_HEIGHT,
-          offset: ITEM_HEIGHT * index,
-          index,
-        })}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
       />,
     );
 
     expect(component).toMatchSnapshot();
   });
 
-  it('realizes sticky headers in viewport on batched render', () => {
-    const items = Array(10)
-      .fill()
-      .map((_, i) => (i % 3 === 0 ? {key: i, sticky: true} : {key: i}));
-    const stickyIndices = items
-      .filter(item => item.sticky)
-      .map(item => item.key);
-
+  it('renders sticky headers in viewport on batched render', () => {
+    const items = generateItemsStickyEveryN(10, 3);
     const ITEM_HEIGHT = 10;
 
-    const virtualizedListProps = {
-      data: items,
-      stickyHeaderIndices: stickyIndices,
-      initialNumToRender: 1,
-      windowSize: 1,
-      renderItem: ({item}) => <item value={item.key} sticky={item.sticky} />,
-      getItem: (data, index) => data[index],
-      getItemCount: data => data.length,
-      getItemLayout: (_, index) => ({
-        length: ITEM_HEIGHT,
-        offset: ITEM_HEIGHT * index,
-        index,
-      }),
-    };
-
     let component;
-
     ReactTestRenderer.act(() => {
       component = ReactTestRenderer.create(
-        <VirtualizedList key={'A'} {...virtualizedListProps} />,
+        <VirtualizedList
+          initialNumToRender={1}
+          windowSize={1}
+          {...baseItemProps(items)}
+          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        />,
       );
     });
 
     ReactTestRenderer.act(() => {
-      component
-        .getInstance()
-        ._onLayout({nativeEvent: {layout: {width: 10, height: 50}}});
-      component.getInstance()._onContentSizeChange(10, 100);
-      jest.runAllTimers();
+      simulateLayout(component, {
+        viewport: {width: 10, height: 50},
+        content: {width: 10, height: 200},
+      });
+      performAllBatches();
     });
 
     expect(component).toMatchSnapshot();
   });
 
-  it('keeps sticky headers realized after scrolled out of viewport', () => {
-    const items = Array(20)
-      .fill()
-      .map((_, i) =>
-        i % 3 === 0 ? {key: i, sticky: true} : {key: i, sticky: false},
-      );
-    const stickyIndices = items
-      .filter(item => item.sticky)
-      .map(item => item.key);
-
+  it('keeps sticky headers above viewport visualized', () => {
+    const items = generateItemsStickyEveryN(20, 3);
     const ITEM_HEIGHT = 10;
 
-    const virtualizedListProps = {
-      data: items,
-      stickyHeaderIndices: stickyIndices,
-      initialNumToRender: 1,
-      windowSize: 1,
-      renderItem: ({item}) => <item value={item.key} sticky={item.sticky} />,
-      getItem: (data, index) => data[index],
-      getItemCount: data => data.length,
-      getItemLayout: (_, index) => ({
-        length: ITEM_HEIGHT,
-        offset: ITEM_HEIGHT * index,
-        index,
-      }),
-    };
-
     let component;
-
     ReactTestRenderer.act(() => {
       component = ReactTestRenderer.create(
-        <VirtualizedList key={'A'} {...virtualizedListProps} />,
+        <VirtualizedList
+          initialNumToRender={1}
+          window={1}
+          {...baseItemProps(items)}
+          {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        />,
       );
     });
 
     ReactTestRenderer.act(() => {
-      component
-        .getInstance()
-        ._onLayout({nativeEvent: {layout: {width: 10, height: 50}}});
-      component.getInstance()._onContentSizeChange(10, 200);
-      jest.runAllTimers();
+      simulateLayout(component, {
+        viewport: {width: 10, height: 50},
+        content: {width: 10, height: 200},
+      });
+      performAllBatches();
     });
 
     ReactTestRenderer.act(() => {
-      component.getInstance()._onScroll({
-        nativeEvent: {
-          contentOffset: {x: 0, y: 150},
-          contentSize: {width: 10, height: 200},
-          layoutMeasurement: {width: 10, height: 50},
-        },
-      });
-      jest.runAllTimers();
+      simulateScroll(component, {x: 0, y: 150});
+      performAllBatches();
     });
 
     expect(component).toMatchSnapshot();
   });
 });
+
+it('unmounts sticky headers moved below viewport', () => {
+  const items = generateItemsStickyEveryN(20, 3);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={1}
+        window={1}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateScroll(component, {x: 0, y: 150});
+    performAllBatches();
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateScroll(component, {x: 0, y: 0});
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders offset cells in initial render when initialScrollIndex set', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialScrollIndex={4}
+      initialNumToRender={4}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  expect(component).toMatchSnapshot();
+});
+
+it('does not over-render when there is less than initialNumToRender cells', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialScrollIndex={4}
+      initialNumToRender={20}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  expect(component).toMatchSnapshot();
+});
+
+it('retains intitial render if initialScrollIndex == 0', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={0}
+        windowSize={1}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateScroll(component, {x: 0, y: 150});
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('discards intitial render if initialScrollIndex != 0', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialScrollIndex={5}
+        initialNumToRender={5}
+        windowSize={1}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  ReactTestRenderer.act(() => {
+    component.getInstance()._onScroll({
+      nativeEvent: {
+        contentOffset: {x: 0, y: 150},
+        contentSize: {width: 10, height: 200},
+        layoutMeasurement: {width: 10, height: 50},
+      },
+    });
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('expands render area by maxToRenderPerBatch on tick', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  const props = {
+    initialNumToRender: 5,
+    maxToRenderPerBatch: 2,
+  };
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        {...props}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performNextBatch();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('does not adjust render area until content area layed out', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        windowSize={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateViewportLayout(component, {width: 10, height: 50});
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('does not adjust render area with non-zero initialScrollIndex until scrolled', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={10}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('adjusts render area with non-zero initialScrollIndex after scrolled', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={10}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+
+    simulateScroll(component, {x: 0, y: 150});
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders initialNumToRender cells when virtualization disabled', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      initialNumToRender={5}
+      initialScrollIndex={1}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders items before initialScrollIndex on first batch tick when virtualization disabled', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={1}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
+    });
+    performNextBatch();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('eventually renders all items when virtualization disabled', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={5}
+        initialScrollIndex={1}
+        windowSize={1}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('retains initial render region when an item is appended', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={3}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={3}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        data={generateItems(11)}
+      />,
+    );
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('retains batch render region when an item is appended', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={1}
+        maxToRenderPerBatch={1}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  ReactTestRenderer.act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={1}
+        maxToRenderPerBatch={1}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        data={generateItems(11)}
+      />,
+    );
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('constrains batch render region when an item is removed', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={1}
+        maxToRenderPerBatch={1}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  ReactTestRenderer.act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={1}
+        maxToRenderPerBatch={1}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+        data={generateItems(5)}
+      />,
+    );
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders a zero-height tail spacer on initial render if getItemLayout not defined', () => {
+  const items = generateItems(10);
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList initialNumToRender={3} {...baseItemProps(items)} />,
+  );
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders zero-height tail spacer on batch render if cells not yet measured and getItemLayout not defined', () => {
+  const items = generateItems(10);
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={3}
+        maxToRenderPerBatch={1}
+        windowSize={1}
+        {...baseItemProps(items)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+    performNextBatch();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders tail spacer up to last measured index if getItemLayout not defined', () => {
+  const items = generateItems(10);
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={3}
+        maxToRenderPerBatch={1}
+        windowSize={1}
+        {...baseItemProps(items)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    const LAST_MEASURED_CELL = 6;
+    for (let i = 0; i <= LAST_MEASURED_CELL; ++i) {
+      simulateCellLayout(component, items, i, {
+        width: 10,
+        height: 10,
+        x: 0,
+        y: 10 * i,
+      });
+    }
+
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 30},
+    });
+    performNextBatch();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders full tail spacer if all cells measured', () => {
+  const items = generateItems(10);
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={3}
+        maxToRenderPerBatch={1}
+        windowSize={1}
+        {...baseItemProps(items)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    const LAST_MEASURED_CELL = 9;
+    for (let i = 0; i <= LAST_MEASURED_CELL; ++i) {
+      simulateCellLayout(component, items, i, {
+        width: 10,
+        height: 10,
+        x: 0,
+        y: 10 * i,
+      });
+    }
+
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 30},
+    });
+    performNextBatch();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders tail spacer using frame average when getItemLayout undefined', () => {
+  const items = generateItems(10);
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={3}
+        maxToRenderPerBatch={1}
+        windowSize={1}
+        {...baseItemProps(items)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    const LAST_MEASURED_CELL = 6;
+    for (let i = 0; i <= LAST_MEASURED_CELL; ++i) {
+      simulateCellLayout(component, items, i, {
+        width: 10,
+        height: i,
+        x: 0,
+        y: 10 * i,
+      });
+    }
+
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 30},
+    });
+    performNextBatch();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders windowSize derived region at top', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={1}
+        maxToRenderPerBatch={1}
+        windowSize={3}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 20},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders windowSize derived region in middle', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={1}
+        maxToRenderPerBatch={1}
+        windowSize={3}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 20},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateScroll(component, {x: 0, y: 50});
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders windowSize derived region at bottom', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={1}
+        maxToRenderPerBatch={1}
+        windowSize={3}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 20},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateScroll(component, {x: 0, y: 80});
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+function generateItems(count) {
+  return Array(count)
+    .fill()
+    .map((_, i) => ({key: i}));
+}
+
+function generateItemsStickyEveryN(count, n) {
+  return Array(count)
+    .fill()
+    .map((_, i) => (i % n === 0 ? {key: i, sticky: true} : {key: i}));
+}
+
+function baseItemProps(items) {
+  return {
+    data: items,
+    renderItem: ({item}) =>
+      React.createElement('MockCellItem', {value: item.key, ...item}),
+    getItem: (data, index) => data[index],
+    getItemCount: data => data.length,
+    stickyHeaderIndices: stickyHeaderIndices(items),
+  };
+}
+
+function stickyHeaderIndices(items) {
+  return items.filter(item => item.sticky).map(item => item.key);
+}
+
+function fixedHeightItemLayoutProps(height) {
+  return {
+    getItemLayout: (_, index) => ({
+      length: height,
+      offset: height * index,
+      index,
+    }),
+  };
+}
+
+let lastViewportLayout;
+let lastContentLayout;
+
+function simulateLayout(component, args) {
+  simulateViewportLayout(component, args.viewport);
+  simulateContentLayout(component, args.content);
+}
+
+function simulateViewportLayout(component, dimensions) {
+  lastViewportLayout = dimensions;
+  component.getInstance()._onLayout({nativeEvent: {layout: dimensions}});
+}
+
+function simulateContentLayout(component, dimensions) {
+  lastContentLayout = dimensions;
+  component
+    .getInstance()
+    ._onContentSizeChange(dimensions.width, dimensions.height);
+}
+
+function simulateCellLayout(component, items, itemIndex, dimensions) {
+  const instance = component.getInstance();
+  const cellKey = instance._keyExtractor(items[itemIndex], itemIndex);
+  instance._onCellLayout(
+    {nativeEvent: {layout: dimensions}},
+    cellKey,
+    itemIndex,
+  );
+}
+
+function simulateScroll(component, position) {
+  component.getInstance()._onScroll({
+    nativeEvent: {
+      contentOffset: position,
+      contentSize: lastContentLayout,
+      layoutMeasurement: lastViewportLayout,
+    },
+  });
+}
+
+function performAllBatches() {
+  jest.runAllTimers();
+}
+
+function performNextBatch() {
+  jest.runOnlyPendingTimers();
+}
