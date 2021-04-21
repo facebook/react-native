@@ -45,6 +45,7 @@ import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.CustomLineHeightSpan;
 import com.facebook.react.views.text.CustomStyleSpan;
@@ -119,6 +120,7 @@ public class ReactEditText extends AppCompatEditText
   protected boolean mIsSettingTextFromState = false;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
+  private @Nullable EventDispatcher mEventDispatcher;
 
   public ReactEditText(Context context) {
     super(context);
@@ -247,7 +249,8 @@ public class ReactEditText extends AppCompatEditText
     InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
     if (inputConnection != null && mOnKeyPress) {
       inputConnection =
-          new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
+          new ReactEditTextInputConnectionWrapper(
+              inputConnection, reactContext, this, mEventDispatcher);
     }
 
     if (isMultiline() && getBlurOnSubmit()) {
@@ -731,8 +734,9 @@ public class ReactEditText extends AppCompatEditText
     // wrapper 100% of the time.
     // Since the LocalData object is constructed by getting values from the underlying EditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
-    if (!mFabricViewStateManager.hasStateWrapper()) {
-      ReactContext reactContext = getReactContext(this);
+    ReactContext reactContext = getReactContext(this);
+
+    if (!mFabricViewStateManager.hasStateWrapper() && !reactContext.isBridgeless()) {
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
       if (uiManager != null) {
@@ -1041,6 +1045,10 @@ public class ReactEditText extends AppCompatEditText
     }
 
     TextLayoutManager.setCachedSpannabledForTag(getId(), sb);
+  }
+
+  void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {
+    mEventDispatcher = eventDispatcher;
   }
 
   /**

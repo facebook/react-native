@@ -8,8 +8,6 @@
  * @flow strict
  */
 
-'use strict';
-
 import typeof {enable} from 'promise/setimmediate/rejection-tracking';
 
 type ExtractOptionsType = <P>((options?: ?P) => void) => P;

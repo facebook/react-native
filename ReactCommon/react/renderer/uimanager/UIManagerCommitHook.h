@@ -9,8 +9,7 @@
 
 #include <react/renderer/components/root/RootShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ShadowTree;
 class UIManager;
@@ -23,10 +22,10 @@ class UIManagerCommitHook {
   /*
    * Called right after the commit hook is registered or unregistered.
    */
-  virtual void commitHookWasRegistered(UIManager const &uiManager) const
-      noexcept = 0;
-  virtual void commitHookWasUnregistered(UIManager const &uiManager) const
-      noexcept = 0;
+  virtual void commitHookWasRegistered(
+      UIManager const &uiManager) const noexcept = 0;
+  virtual void commitHookWasUnregistered(
+      UIManager const &uiManager) const noexcept = 0;
 
   /*
    * Called right before a `ShadowTree` commits a new tree.
@@ -41,5 +40,4 @@ class UIManagerCommitHook {
   virtual ~UIManagerCommitHook() noexcept = default;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -115,7 +115,9 @@ public enum ReactMarkerConstants {
   FABRIC_BATCH_EXECUTION_END,
   FABRIC_UPDATE_UI_MAIN_THREAD_START,
   FABRIC_UPDATE_UI_MAIN_THREAD_END,
-  // New markers used by bridgeless RN below this line
-  REACT_INSTANCE_INIT_START,
-  REACT_INSTANCE_INIT_END
+  // New markers used by bridge and bridgeless loading below this line
+  REACT_BRIDGE_LOADING_START,
+  REACT_BRIDGE_LOADING_END,
+  REACT_BRIDGELESS_LOADING_START,
+  REACT_BRIDGELESS_LOADING_END
 }

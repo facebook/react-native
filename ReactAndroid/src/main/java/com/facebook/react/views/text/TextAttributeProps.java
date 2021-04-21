@@ -10,24 +10,52 @@ package com.facebook.react.views.text;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
+import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
-import com.facebook.yoga.YogaDirection;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
 // TextAttributeProps (e.g. TextAlign)
 public class TextAttributeProps {
 
-  private static final String INLINE_IMAGE_PLACEHOLDER = "I";
+  // constants for Text Attributes serialization
+  public static final short TA_KEY_FOREGROUND_COLOR = 0;
+  public static final short TA_KEY_BACKGROUND_COLOR = 1;
+  public static final short TA_KEY_OPACITY = 2;
+  public static final short TA_KEY_FONT_FAMILY = 3;
+  public static final short TA_KEY_FONT_SIZE = 4;
+  public static final short TA_KEY_FONT_SIZE_MULTIPLIER = 5;
+  public static final short TA_KEY_FONT_WEIGHT = 6;
+  public static final short TA_KEY_FONT_STYLE = 7;
+  public static final short TA_KEY_FONT_VARIANT = 8;
+  public static final short TA_KEY_ALLOW_FONT_SCALING = 9;
+  public static final short TA_KEY_LETTER_SPACING = 10;
+  public static final short TA_KEY_LINE_HEIGHT = 11;
+  public static final short TA_KEY_ALIGNMENT = 12;
+  public static final short TA_KEY_BEST_WRITING_DIRECTION = 13;
+  public static final short TA_KEY_TEXT_DECORATION_COLOR = 14;
+  public static final short TA_KEY_TEXT_DECORATION_LINE = 15;
+  public static final short TA_KEY_TEXT_DECORATION_LINE_STYLE = 16;
+  public static final short TA_KEY_TEXT_DECORATION_LINE_PATTERN = 17;
+  public static final short TA_KEY_TEXT_SHADOW_RAIDUS = 18;
+  public static final short TA_KEY_TEXT_SHADOW_COLOR = 19;
+  public static final short TA_KEY_IS_HIGHLIGHTED = 20;
+  public static final short TA_KEY_LAYOUT_DIRECTION = 21;
+  public static final short TA_KEY_ACCESSIBILITY_ROLE = 22;
+
   public static final int UNSET = -1;
 
   private static final String PROP_SHADOW_OFFSET = "textShadowOffset";
@@ -62,7 +90,7 @@ public class TextAttributeProps {
   // `UNSET` is -1 and is the same as `LayoutDirection.UNDEFINED` but the symbol isn't available.
   protected int mLayoutDirection = UNSET;
 
-  protected TextTransform mTextTransform = TextTransform.UNSET;
+  protected TextTransform mTextTransform = TextTransform.NONE;
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
@@ -112,33 +140,123 @@ public class TextAttributeProps {
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
 
-  private final ReactStylesDiffMap mProps;
+  private TextAttributeProps() {}
 
-  public TextAttributeProps(ReactStylesDiffMap props) {
-    mProps = props;
-    setNumberOfLines(getIntProp(ViewProps.NUMBER_OF_LINES, UNSET));
-    setLineHeight(getFloatProp(ViewProps.LINE_HEIGHT, UNSET));
-    setLetterSpacing(getFloatProp(ViewProps.LETTER_SPACING, Float.NaN));
-    setAllowFontScaling(getBooleanProp(ViewProps.ALLOW_FONT_SCALING, true));
-    setFontSize(getFloatProp(ViewProps.FONT_SIZE, UNSET));
-    setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
-    setColor(props.hasKey("foregroundColor") ? props.getInt("foregroundColor", 0) : null);
-    setBackgroundColor(
+  /**
+   * Build a TextAttributeProps using data from the {@link ReadableMapBuffer} received as a
+   * parameter.
+   */
+  public static TextAttributeProps fromReadableMapBuffer(ReadableMapBuffer props) {
+    TextAttributeProps result = new TextAttributeProps();
+
+    // TODO T83483191: Review constants that are not being set!
+    Iterator<ReadableMapBuffer.MapBufferEntry> iterator = props.iterator();
+    while (iterator.hasNext()) {
+      ReadableMapBuffer.MapBufferEntry entry = iterator.next();
+      switch (entry.getKey()) {
+        case TA_KEY_FOREGROUND_COLOR:
+          result.setColor(entry.getInt(0));
+          break;
+        case TA_KEY_BACKGROUND_COLOR:
+          result.setBackgroundColor(entry.getInt(0));
+          break;
+        case TA_KEY_OPACITY:
+          break;
+        case TA_KEY_FONT_FAMILY:
+          result.setFontFamily(entry.getString());
+          break;
+        case TA_KEY_FONT_SIZE:
+          result.setFontSize((float) entry.getDouble(UNSET));
+          break;
+        case TA_KEY_FONT_SIZE_MULTIPLIER:
+          break;
+        case TA_KEY_FONT_WEIGHT:
+          result.setFontWeight(entry.getString());
+          break;
+        case TA_KEY_FONT_STYLE:
+          result.setFontStyle(entry.getString());
+          break;
+        case TA_KEY_FONT_VARIANT:
+          result.setFontVariant(entry.getReadableMapBuffer());
+          break;
+        case TA_KEY_ALLOW_FONT_SCALING:
+          result.setAllowFontScaling(entry.getBoolean(true));
+          break;
+        case TA_KEY_LETTER_SPACING:
+          result.setLetterSpacing((float) entry.getDouble(Float.NaN));
+          break;
+        case TA_KEY_LINE_HEIGHT:
+          result.setLineHeight((float) entry.getDouble(UNSET));
+          break;
+        case TA_KEY_ALIGNMENT:
+          break;
+        case TA_KEY_BEST_WRITING_DIRECTION:
+          break;
+        case TA_KEY_TEXT_DECORATION_COLOR:
+          break;
+        case TA_KEY_TEXT_DECORATION_LINE:
+          result.setTextDecorationLine(entry.getString());
+          break;
+        case TA_KEY_TEXT_DECORATION_LINE_STYLE:
+          break;
+        case TA_KEY_TEXT_DECORATION_LINE_PATTERN:
+          break;
+        case TA_KEY_TEXT_SHADOW_RAIDUS:
+          result.setTextShadowRadius(entry.getInt(1));
+          break;
+        case TA_KEY_TEXT_SHADOW_COLOR:
+          result.setTextShadowColor(entry.getInt(DEFAULT_TEXT_SHADOW_COLOR));
+          break;
+        case TA_KEY_IS_HIGHLIGHTED:
+          break;
+        case TA_KEY_LAYOUT_DIRECTION:
+          result.setLayoutDirection(entry.getString());
+          break;
+        case TA_KEY_ACCESSIBILITY_ROLE:
+          result.setAccessibilityRole(entry.getString());
+          break;
+      }
+    }
+
+    // TODO T83483191: Review why the following props are not serialized:
+    // setNumberOfLines
+    // setColor
+    // setIncludeFontPadding
+    // setTextShadowOffset
+    // setTextTransform
+    return result;
+  }
+
+  public static TextAttributeProps fromReadableMap(ReactStylesDiffMap props) {
+    TextAttributeProps result = new TextAttributeProps();
+    result.setNumberOfLines(getIntProp(props, ViewProps.NUMBER_OF_LINES, UNSET));
+    result.setLineHeight(getFloatProp(props, ViewProps.LINE_HEIGHT, UNSET));
+    result.setLetterSpacing(getFloatProp(props, ViewProps.LETTER_SPACING, Float.NaN));
+    result.setAllowFontScaling(getBooleanProp(props, ViewProps.ALLOW_FONT_SCALING, true));
+    result.setFontSize(getFloatProp(props, ViewProps.FONT_SIZE, UNSET));
+    result.setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
+    result.setColor(
+        props.hasKey(ViewProps.FOREGROUND_COLOR)
+            ? props.getInt(ViewProps.FOREGROUND_COLOR, 0)
+            : null);
+    result.setBackgroundColor(
         props.hasKey(ViewProps.BACKGROUND_COLOR)
             ? props.getInt(ViewProps.BACKGROUND_COLOR, 0)
             : null);
-    setFontFamily(getStringProp(ViewProps.FONT_FAMILY));
-    setFontWeight(getStringProp(ViewProps.FONT_WEIGHT));
-    setFontStyle(getStringProp(ViewProps.FONT_STYLE));
-    setFontVariant(getArrayProp(ViewProps.FONT_VARIANT));
-    setIncludeFontPadding(getBooleanProp(ViewProps.INCLUDE_FONT_PADDING, true));
-    setTextDecorationLine(getStringProp(ViewProps.TEXT_DECORATION_LINE));
-    setTextShadowOffset(props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
-    setTextShadowRadius(getIntProp(PROP_SHADOW_RADIUS, 1));
-    setTextShadowColor(getIntProp(PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
-    setTextTransform(getStringProp(PROP_TEXT_TRANSFORM));
-    setLayoutDirection(getStringProp(ViewProps.LAYOUT_DIRECTION));
-    setAccessibilityRole(getStringProp(ViewProps.ACCESSIBILITY_ROLE));
+    result.setFontFamily(getStringProp(props, ViewProps.FONT_FAMILY));
+    result.setFontWeight(getStringProp(props, ViewProps.FONT_WEIGHT));
+    result.setFontStyle(getStringProp(props, ViewProps.FONT_STYLE));
+    result.setFontVariant(getArrayProp(props, ViewProps.FONT_VARIANT));
+    result.setIncludeFontPadding(getBooleanProp(props, ViewProps.INCLUDE_FONT_PADDING, true));
+    result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE));
+    result.setTextShadowOffset(
+        props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
+    result.setTextShadowRadius(getIntProp(props, PROP_SHADOW_RADIUS, 1));
+    result.setTextShadowColor(getIntProp(props, PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
+    result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM));
+    result.setLayoutDirection(getStringProp(props, ViewProps.LAYOUT_DIRECTION));
+    result.setAccessibilityRole(getStringProp(props, ViewProps.ACCESSIBILITY_ROLE));
+    return result;
   }
 
   public static int getTextAlignment(ReactStylesDiffMap props, boolean isRTL) {
@@ -176,7 +294,8 @@ public class TextAttributeProps {
     return DEFAULT_JUSTIFICATION_MODE;
   }
 
-  private boolean getBooleanProp(String name, boolean defaultValue) {
+  private static boolean getBooleanProp(
+      ReactStylesDiffMap mProps, String name, boolean defaultValue) {
     if (mProps.hasKey(name)) {
       return mProps.getBoolean(name, defaultValue);
     } else {
@@ -184,7 +303,7 @@ public class TextAttributeProps {
     }
   }
 
-  private String getStringProp(String name) {
+  private static String getStringProp(ReactStylesDiffMap mProps, String name) {
     if (mProps.hasKey(name)) {
       return mProps.getString(name);
     } else {
@@ -192,7 +311,7 @@ public class TextAttributeProps {
     }
   }
 
-  private int getIntProp(String name, int defaultvalue) {
+  private static int getIntProp(ReactStylesDiffMap mProps, String name, int defaultvalue) {
     if (mProps.hasKey(name)) {
       return mProps.getInt(name, defaultvalue);
     } else {
@@ -200,7 +319,7 @@ public class TextAttributeProps {
     }
   }
 
-  private float getFloatProp(String name, float defaultvalue) {
+  private static float getFloatProp(ReactStylesDiffMap mProps, String name, float defaultvalue) {
     if (mProps.hasKey(name)) {
       return mProps.getFloat(name, defaultvalue);
     } else {
@@ -208,7 +327,7 @@ public class TextAttributeProps {
     }
   }
 
-  private @Nullable ReadableArray getArrayProp(String name) {
+  private static @Nullable ReadableArray getArrayProp(ReactStylesDiffMap mProps, String name) {
     if (mProps.hasKey(name)) {
       return mProps.getArray(name);
     } else {
@@ -226,11 +345,11 @@ public class TextAttributeProps {
     return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
   }
 
-  public void setNumberOfLines(int numberOfLines) {
+  private void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
   }
 
-  public void setLineHeight(float lineHeight) {
+  private void setLineHeight(float lineHeight) {
     mLineHeightInput = lineHeight;
     if (lineHeight == UNSET) {
       mLineHeight = Float.NaN;
@@ -242,7 +361,7 @@ public class TextAttributeProps {
     }
   }
 
-  public void setLetterSpacing(float letterSpacing) {
+  private void setLetterSpacing(float letterSpacing) {
     mLetterSpacingInput = letterSpacing;
   }
 
@@ -261,7 +380,7 @@ public class TextAttributeProps {
     return letterSpacingPixels / mFontSize;
   }
 
-  public void setAllowFontScaling(boolean allowFontScaling) {
+  private void setAllowFontScaling(boolean allowFontScaling) {
     if (allowFontScaling != mAllowFontScaling) {
       mAllowFontScaling = allowFontScaling;
       setFontSize(mFontSizeInput);
@@ -270,7 +389,7 @@ public class TextAttributeProps {
     }
   }
 
-  public void setFontSize(float fontSize) {
+  private void setFontSize(float fontSize) {
     mFontSizeInput = fontSize;
     if (fontSize != UNSET) {
       fontSize =
@@ -281,14 +400,14 @@ public class TextAttributeProps {
     mFontSize = (int) fontSize;
   }
 
-  public void setColor(@Nullable Integer color) {
+  private void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
     if (mIsColorSet) {
       mColor = color;
     }
   }
 
-  public void setBackgroundColor(Integer color) {
+  private void setBackgroundColor(Integer color) {
     // TODO: Don't apply background color to anchor TextView since it will be applied on the View
     // directly
     // if (!isVirtualAnchor()) {
@@ -299,19 +418,53 @@ public class TextAttributeProps {
     // }
   }
 
-  public void setFontFamily(@Nullable String fontFamily) {
+  private void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
   }
 
-  public void setFontVariant(@Nullable ReadableArray fontVariant) {
+  private void setFontVariant(@Nullable ReadableArray fontVariant) {
     mFontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariant);
+  }
+
+  private void setFontVariant(@Nullable ReadableMapBuffer fontVariant) {
+    if (fontVariant == null || fontVariant.getCount() == 0) {
+      mFontFeatureSettings = null;
+      return;
+    }
+
+    List<String> features = new ArrayList<>();
+    Iterator<ReadableMapBuffer.MapBufferEntry> iterator = fontVariant.iterator();
+    while (iterator.hasNext()) {
+      ReadableMapBuffer.MapBufferEntry entry = iterator.next();
+      String value = entry.getString();
+      if (value != null) {
+        switch (value) {
+          case "small-caps":
+            features.add("'smcp'");
+            break;
+          case "oldstyle-nums":
+            features.add("'onum'");
+            break;
+          case "lining-nums":
+            features.add("'lnum'");
+            break;
+          case "tabular-nums":
+            features.add("'tnum'");
+            break;
+          case "proportional-nums":
+            features.add("'pnum'");
+            break;
+        }
+      }
+    }
+    mFontFeatureSettings = TextUtils.join(", ", features);
   }
 
   /**
    * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
    * can both use
    */
-  public void setFontWeight(@Nullable String fontWeightString) {
+  private void setFontWeight(@Nullable String fontWeightString) {
     int fontWeightNumeric =
         fontWeightString != null ? parseNumericFontWeight(fontWeightString) : -1;
     int fontWeight = UNSET;
@@ -330,7 +483,7 @@ public class TextAttributeProps {
    * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
    * can both use
    */
-  public void setFontStyle(@Nullable String fontStyleString) {
+  private void setFontStyle(@Nullable String fontStyleString) {
     int fontStyle = UNSET;
     if ("italic".equals(fontStyleString)) {
       fontStyle = Typeface.ITALIC;
@@ -342,11 +495,11 @@ public class TextAttributeProps {
     }
   }
 
-  public void setIncludeFontPadding(boolean includepad) {
+  private void setIncludeFontPadding(boolean includepad) {
     mIncludeFontPadding = includepad;
   }
 
-  public void setTextDecorationLine(@Nullable String textDecorationLineString) {
+  private void setTextDecorationLine(@Nullable String textDecorationLineString) {
     mIsUnderlineTextDecorationSet = false;
     mIsLineThroughTextDecorationSet = false;
     if (textDecorationLineString != null) {
@@ -360,7 +513,7 @@ public class TextAttributeProps {
     }
   }
 
-  public void setTextShadowOffset(ReadableMap offsetMap) {
+  private void setTextShadowOffset(ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
     mTextShadowOffsetDy = 0;
 
@@ -378,32 +531,38 @@ public class TextAttributeProps {
     }
   }
 
-  public void setLayoutDirection(@Nullable String layoutDirection) {
+  public static int getLayoutDirection(@Nullable String layoutDirection) {
+    int androidLayoutDirection;
     if (layoutDirection == null || "undefined".equals(layoutDirection)) {
-      mLayoutDirection = UNSET;
+      androidLayoutDirection = UNSET;
     } else if ("rtl".equals(layoutDirection)) {
-      mLayoutDirection = LayoutDirection.RTL;
+      androidLayoutDirection = LayoutDirection.RTL;
     } else if ("ltr".equals(layoutDirection)) {
-      mLayoutDirection = LayoutDirection.LTR;
+      androidLayoutDirection = LayoutDirection.LTR;
     } else {
       throw new JSApplicationIllegalArgumentException(
           "Invalid layoutDirection: " + layoutDirection);
     }
+    return androidLayoutDirection;
   }
 
-  public void setTextShadowRadius(float textShadowRadius) {
+  private void setLayoutDirection(@Nullable String layoutDirection) {
+    mLayoutDirection = getLayoutDirection(layoutDirection);
+  }
+
+  private void setTextShadowRadius(float textShadowRadius) {
     if (textShadowRadius != mTextShadowRadius) {
       mTextShadowRadius = textShadowRadius;
     }
   }
 
-  public void setTextShadowColor(int textShadowColor) {
+  private void setTextShadowColor(int textShadowColor) {
     if (textShadowColor != mTextShadowColor) {
       mTextShadowColor = textShadowColor;
     }
   }
 
-  public void setTextTransform(@Nullable String textTransform) {
+  private void setTextTransform(@Nullable String textTransform) {
     if (textTransform == null || "none".equals(textTransform)) {
       mTextTransform = TextTransform.NONE;
     } else if ("uppercase".equals(textTransform)) {
@@ -417,7 +576,7 @@ public class TextAttributeProps {
     }
   }
 
-  public void setAccessibilityRole(@Nullable String accessibilityRole) {
+  private void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (accessibilityRole != null) {
       mIsAccessibilityRoleSet = accessibilityRole != null;
       mAccessibilityRole =
@@ -458,42 +617,5 @@ public class TextAttributeProps {
             && fontWeightString.charAt(0) >= '1'
         ? 100 * (fontWeightString.charAt(0) - '0')
         : -1;
-  }
-
-  // TODO T63645393 remove this from here and add support to RTL
-  private YogaDirection getLayoutDirection() {
-    return YogaDirection.LTR;
-  }
-
-  public float getBottomPadding() {
-    return getPaddingProp(ViewProps.PADDING_BOTTOM);
-  }
-
-  public float getLeftPadding() {
-    return getPaddingProp(ViewProps.PADDING_LEFT);
-  }
-
-  public float getStartPadding() {
-    return getPaddingProp(ViewProps.PADDING_START);
-  }
-
-  public float getEndPadding() {
-    return getPaddingProp(ViewProps.PADDING_END);
-  }
-
-  public float getTopPadding() {
-    return getPaddingProp(ViewProps.PADDING_TOP);
-  }
-
-  public float getRightPadding() {
-    return getPaddingProp(ViewProps.PADDING_RIGHT);
-  }
-
-  private float getPaddingProp(String paddingType) {
-    if (mProps.hasKey(ViewProps.PADDING)) {
-      return PixelUtil.toPixelFromDIP(getFloatProp(ViewProps.PADDING, 0f));
-    }
-
-    return PixelUtil.toPixelFromDIP(getFloatProp(paddingType, 0f));
   }
 }

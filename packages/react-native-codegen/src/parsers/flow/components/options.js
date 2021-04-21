@@ -12,7 +12,7 @@
 
 import type {OptionsShape} from '../../../CodegenSchema.js';
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type OptionsAST = Object;
 
 export type CommandOptions = $ReadOnly<{

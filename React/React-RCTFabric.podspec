@@ -11,7 +11,7 @@ version = package['version']
 source = { :git => 'https://github.com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
-  source[:commit] = `git rev-parse HEAD`.strip
+  source[:commit] = `git rev-parse HEAD`.strip if system("git rev-parse --git-dir > /dev/null 2>&1")
 else
   source[:tag] = "v#{version}"
 end
@@ -28,10 +28,9 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "10.0" }
+  s.platforms              = { :ios => "11.0" }
   s.source                 = source
-  s.source_files           = "Fabric/**/*.{c,h,m,mm,S,cpp}",
-                             "Tests/**/*.{mm}"
+  s.source_files           = "Fabric/**/*.{c,h,m,mm,S,cpp}"
   s.exclude_files          = "**/tests/*",
                              "**/android/*",
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
@@ -45,5 +44,10 @@ Pod::Spec.new do |s|
   s.dependency "React-Core", version
   s.dependency "React-Fabric", version
   s.dependency "React-RCTImage", version
-  s.dependency "Folly/Fabric", folly_version
+  s.dependency "RCT-Folly/Fabric", folly_version
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = "Tests/**/*.{mm}"
+    test_spec.framework = "XCTest"
+  end
 end

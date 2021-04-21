@@ -8,11 +8,9 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 
-const SectionList = require('../../Lists/SectionList');
+import SectionList from '../../Lists/SectionList';
 const createAnimatedComponent = require('../createAnimatedComponent');
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';

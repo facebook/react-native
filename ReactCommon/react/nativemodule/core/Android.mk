@@ -15,14 +15,14 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/ReactCommon/*.cpp) $(wildcard $(LOCA
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/platform/android/
 
-LOCAL_SHARED_LIBRARIES := libfbjni libfolly_json libreactnativejni
+LOCAL_SHARED_LIBRARIES := libfbjni libfolly_json libreactnativejni libreact_debug
 
 LOCAL_STATIC_LIBRARIES := libjsi libreactperflogger
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 

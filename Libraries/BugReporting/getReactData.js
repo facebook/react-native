@@ -162,7 +162,7 @@ function copyWithSetImpl(obj, path, idx, value) {
   }
   const key = path[idx];
   const updated = Array.isArray(obj) ? obj.slice() : {...obj};
-  // $FlowFixMe number or string is fine here
+  // $FlowFixMe[incompatible-use] number or string is fine here
   updated[key] = copyWithSetImpl(obj[key], path, idx + 1, value);
   return updated;
 }

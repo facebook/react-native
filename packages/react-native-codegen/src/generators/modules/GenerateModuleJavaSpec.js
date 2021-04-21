@@ -339,6 +339,7 @@ function buildGetConstantsMethod(
     return `  protected abstract Map<String, Object> getTypedExportedConstants();
 
   @Override
+  @DoNotStrip
   public final @Nullable Map<String, Object> getConstants() {
     Map<String, Object> constants = getTypedExportedConstants();
     if (ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD) {
@@ -367,14 +368,14 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
     packageName?: string,
   ): FilesOutput {
     const files = new Map();
-    const normalizedPackageName =
-      packageName != null ? packageName : 'com.facebook.fbreact.specs';
-    const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;
     const nativeModules = getModules(schema);
+
+    const normalizedPackageName =
+      packageName == null ? 'com.facebook.fbreact.specs' : packageName;
+    const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;
 
     Object.keys(nativeModules).forEach(hasteModuleName => {
       const {
@@ -395,6 +396,7 @@ module.exports = {
         'com.facebook.react.bridge.ReactMethod',
         'com.facebook.react.bridge.ReactModuleWithSpec',
         'com.facebook.react.turbomodule.core.interfaces.TurboModule',
+        'com.facebook.proguard.annotations.DoNotStrip',
       ]);
 
       const methods = properties.map(method => {
@@ -443,7 +445,7 @@ module.exports = {
 
         const methodJavaAnnotation = `@ReactMethod${
           isSyncMethod ? '(isBlockingSynchronousMethod = true)' : ''
-        }`;
+        }\n  @DoNotStrip`;
         const methodBody = method.optional
           ? getFalsyReturnStatementFromReturnType(
               methodTypeAnnotation.returnTypeAnnotation,

@@ -24,8 +24,11 @@ ParagraphProps::ParagraphProps(
       BaseTextProps(sourceProps, rawProps),
       paragraphAttributes(
           convertRawProp(rawProps, sourceProps.paragraphAttributes, {})),
-      isSelectable(
-          convertRawProp(rawProps, "selectable", sourceProps.isSelectable, {})),
+      isSelectable(convertRawProp(
+          rawProps,
+          "selectable",
+          sourceProps.isSelectable,
+          false)),
       onTextLayout(convertRawProp(
           rawProps,
           "onTextLayout",

@@ -10,8 +10,8 @@
 
 'use strict';
 
-const React = require('react');
-const SectionList = require('../SectionList');
+import * as React from 'react';
+import SectionList from '../SectionList';
 
 function renderMyListItem(info: {
   item: {title: string, ...},

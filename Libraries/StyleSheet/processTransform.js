@@ -173,9 +173,9 @@ function _validateTransform(key, value, transformation) {
         value.length === 9 || value.length === 16,
         'Matrix transform must have a length of 9 (2d) or 16 (3d). ' +
           'Provided matrix has a length of %s: %s',
-        /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.84 was deployed. To see the error, delete
-         * this comment and run Flow. */
+        /* $FlowFixMe[prop-missing] (>=0.84.0 site=react_native_fb) This
+         * comment suppresses an error found when Flow v0.84 was deployed. To
+         * see the error, delete this comment and run Flow. */
         value.length,
         stringifySafe(transformation),
       );
@@ -184,9 +184,9 @@ function _validateTransform(key, value, transformation) {
       invariant(
         value.length === 2 || value.length === 3,
         'Transform with key translate must be an array of length 2 or 3, found %s: %s',
-        /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.84 was deployed. To see the error, delete
-         * this comment and run Flow. */
+        /* $FlowFixMe[prop-missing] (>=0.84.0 site=react_native_fb) This
+         * comment suppresses an error found when Flow v0.84 was deployed. To
+         * see the error, delete this comment and run Flow. */
         value.length,
         stringifySafe(transformation),
       );

@@ -14,20 +14,27 @@ import com.facebook.react.fabric.mounting.MountingManager;
 
 public class DispatchIntCommandMountItem extends DispatchCommandMountItem {
 
+  private final int mSurfaceId;
   private final int mReactTag;
   private final int mCommandId;
   private final @Nullable ReadableArray mCommandArgs;
 
   public DispatchIntCommandMountItem(
-      int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+      int surfaceId, int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+    mSurfaceId = surfaceId;
     mReactTag = reactTag;
     mCommandId = commandId;
     mCommandArgs = commandArgs;
   }
 
   @Override
+  public int getSurfaceId() {
+    return mSurfaceId;
+  }
+
+  @Override
   public void execute(@NonNull MountingManager mountingManager) {
-    mountingManager.receiveCommand(mReactTag, mCommandId, mCommandArgs);
+    mountingManager.receiveCommand(mSurfaceId, mReactTag, mCommandId, mCommandArgs);
   }
 
   @Override

@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const React = require('react');
 
 const {
@@ -27,6 +25,7 @@ const {
 const nullthrows = require('nullthrows');
 
 import {useState, useCallback} from 'react';
+import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
@@ -35,8 +34,9 @@ exports.documentationURL = 'https://reactnative.dev/docs/scrollview';
 exports.category = 'Basic';
 exports.description =
   'Component that enables scrolling through child components';
-exports.examples = [
+exports.examples = ([
   {
+    name: 'scrollTo',
     title: '<ScrollView>\n',
     description:
       'To make content scrollable, wrap it within a <ScrollView> component',
@@ -53,7 +53,8 @@ exports.examples = [
               console.log('onScroll!');
             }}
             scrollEventThrottle={200}
-            style={styles.scrollView}>
+            style={styles.scrollView}
+            testID="scroll_vertical">
             {ITEMS.map(createItemRow)}
           </ScrollView>
           <Button
@@ -61,71 +62,48 @@ exports.examples = [
             onPress={() => {
               nullthrows(_scrollView).scrollTo({y: 0});
             }}
+            testID="scroll_to_top_button"
           />
           <Button
             label="Scroll to bottom"
             onPress={() => {
               nullthrows(_scrollView).scrollToEnd({animated: true});
             }}
+            testID="scroll_to_bottom_button"
           />
           <Button
             label="Flash scroll indicators"
             onPress={() => {
               nullthrows(_scrollView).flashScrollIndicators();
             }}
+            testID="flash_scroll_indicators_button"
           />
         </View>
       );
     },
   },
   {
+    name: 'horizontalScrollTo',
     title: '<ScrollView> (horizontal = true)\n',
     description:
       "You can display <ScrollView>'s child components horizontally rather than vertically",
     render: function(): React.Node {
-      function renderScrollView(
-        title: string,
-        additionalStyles: ViewStyleProp,
-      ) {
-        let _scrollView: ?React.ElementRef<typeof ScrollView>;
-        return (
-          <View style={additionalStyles}>
-            <Text style={styles.text}>{title}</Text>
-            <ScrollView
-              ref={scrollView => {
-                _scrollView = scrollView;
-              }}
-              automaticallyAdjustContentInsets={false}
-              horizontal={true}
-              style={[styles.scrollView, styles.horizontalScrollView]}>
-              {ITEMS.map(createItemRow)}
-            </ScrollView>
-            <Button
-              label="Scroll to start"
-              onPress={() => {
-                nullthrows(_scrollView).scrollTo({x: 0});
-              }}
-            />
-            <Button
-              label="Scroll to end"
-              onPress={() => {
-                nullthrows(_scrollView).scrollToEnd({animated: true});
-              }}
-            />
-            <Button
-              label="Flash scroll indicators"
-              onPress={() => {
-                nullthrows(_scrollView).flashScrollIndicators();
-              }}
-            />
-          </View>
-        );
-      }
-
       return (
         <View>
-          {renderScrollView('LTR layout', {direction: 'ltr'})}
-          {renderScrollView('RTL layout', {direction: 'rtl'})}
+          <HorizontalScrollView direction="ltr" />
+        </View>
+      );
+    },
+  },
+  {
+    name: 'horizontalScrollToRTL',
+    title: '<ScrollView> (horizontal = true) in RTL\n',
+    description:
+      "You can display <ScrollView>'s child components horizontally rather than vertically",
+    render: function(): React.Node {
+      return (
+        <View>
+          <HorizontalScrollView direction="rtl" />
         </View>
       );
     },
@@ -193,6 +171,7 @@ exports.examples = [
     },
   },
   {
+    name: 'invertStickyHeaders',
     title: '<ScrollView> Invert Sticky Headers\n',
     description:
       'If sticky headers should stick at the bottom instead of the top of the ScrollView. This is usually used with inverted ScrollViews.',
@@ -201,6 +180,16 @@ exports.examples = [
     },
   },
   {
+    name: 'multipleStickyHeaders',
+    title: '<ScrollView> Multiple Sticky Headers\n',
+    description:
+      'Scroll down to see 3 sticky headers stick when they get to the top.',
+    render: function(): React.Node {
+      return <MultipleStickyHeaders />;
+    },
+  },
+  {
+    name: 'keyboardShouldPersistTaps',
     title: '<ScrollView> Keyboard Options\n',
     description:
       'Toggle the keyboard using the search bar and determine keyboard behavior in response to drag and tap.',
@@ -261,7 +250,8 @@ exports.examples = [
       return <SnapToOptions />;
     },
   },
-];
+]: Array<RNTesterExampleModuleItem>);
+
 if (Platform.OS === 'ios') {
   exports.examples.push({
     title: '<ScrollView> smooth bi-directional content loading\n',
@@ -272,9 +262,6 @@ if (Platform.OS === 'ios') {
       let itemCount = 6;
       class AppendingList extends React.Component<{...}, *> {
         state = {
-          /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.85 was deployed. To see the error,
-           * delete this comment and run Flow. */
           items: [...Array(itemCount)].map((_, ii) => (
             <Item msg={`Item ${ii}`} />
           )),
@@ -489,6 +476,39 @@ const AndroidScrollBarOptions = () => {
       <Button
         label={'persistentScrollBar: ' + persistentScrollBar.toString()}
         onPress={() => setPersistentScrollBar(!persistentScrollBar)}
+      />
+    </View>
+  );
+};
+
+const HorizontalScrollView = (props: {direction: 'ltr' | 'rtl'}) => {
+  const {direction} = props;
+  const scrollRef = React.useRef<?React.ElementRef<typeof ScrollView>>();
+  const title = direction === 'ltr' ? 'LTR Layout' : 'RTL Layout';
+  return (
+    <View style={{direction}}>
+      <Text style={styles.text}>{title}</Text>
+      <ScrollView
+        ref={scrollRef}
+        automaticallyAdjustContentInsets={false}
+        horizontal={true}
+        style={[styles.scrollView, styles.horizontalScrollView]}
+        testID={'scroll_horizontal'}>
+        {ITEMS.map(createItemRow)}
+      </ScrollView>
+      <Button
+        label="Scroll to start"
+        onPress={() => {
+          nullthrows(scrollRef.current).scrollTo({x: 0});
+        }}
+        testID={'scroll_to_start_button'}
+      />
+      <Button
+        label="Scroll to end"
+        onPress={() => {
+          nullthrows(scrollRef.current).scrollToEnd({animated: true});
+        }}
+        testID={'scroll_to_end_button'}
       />
     </View>
   );
@@ -840,6 +860,7 @@ const KeyboardExample = () => {
   const [keyboardShouldPersistTaps, setKeyboardShouldPersistTaps] = useState(
     'never',
   );
+  const [textInputValue, setTextInputValue] = useState('Tap to open Keyboard');
   const dismissOptions =
     Platform.OS === 'ios'
       ? ['none', 'on-drag', 'interactive']
@@ -847,11 +868,20 @@ const KeyboardExample = () => {
   const persistOptions = ['never', 'always', 'handled'];
   return (
     <View>
+      <TextInput
+        style={styles.textInput}
+        value={textInputValue}
+        onChangeText={val => setTextInputValue(val)}
+      />
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         keyboardDismissMode={keyboardDismissMode}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         nestedScrollEnabled>
+        <Button
+          onPress={() => console.log('button pressed!')}
+          label={'Button'}
+        />
         {ITEMS.map(createItemRow)}
       </ScrollView>
       <Text style={styles.rowTitle}>Keyboard Dismiss Mode</Text>
@@ -888,19 +918,72 @@ const KeyboardExample = () => {
 
 const InvertStickyHeaders = () => {
   const [invertStickyHeaders, setInvertStickyHeaders] = useState(false);
+  const _scrollView = React.useRef<?React.ElementRef<typeof ScrollView>>(null);
   return (
     <View>
       <ScrollView
+        ref={_scrollView}
         style={[styles.scrollView, {height: 200}]}
         stickyHeaderIndices={[0]}
         invertStickyHeaders={invertStickyHeaders}
-        nestedScrollEnabled>
+        nestedScrollEnabled
+        testID="scroll_sticky_header">
         {<Text>STICKY HEADER</Text>}
         {ITEMS.map(createItemRow)}
       </ScrollView>
       <Button
         onPress={() => setInvertStickyHeaders(!invertStickyHeaders)}
         label={'invertStickyHeaders: ' + invertStickyHeaders.toString()}
+      />
+      <Button
+        label="Scroll to top"
+        onPress={() => {
+          nullthrows(_scrollView.current).scrollTo({y: 0});
+        }}
+        testID="scroll_to_top_button"
+      />
+      <Button
+        label="Scroll to bottom"
+        onPress={() => {
+          nullthrows(_scrollView.current).scrollToEnd({animated: true});
+        }}
+        testID="scroll_to_bottom_button"
+      />
+    </View>
+  );
+};
+
+const MultipleStickyHeaders = () => {
+  const _scrollView = React.useRef<?React.ElementRef<typeof ScrollView>>(null);
+  const stickyHeaderStyle = {backgroundColor: 'yellow'};
+  return (
+    <View>
+      <ScrollView
+        ref={_scrollView}
+        style={[styles.scrollView, {height: 200}]}
+        stickyHeaderIndices={[0, 13, 26]}
+        nestedScrollEnabled
+        testID="scroll_multiple_sticky_headers">
+        {<Item msg={'Sticky Header 1'} style={stickyHeaderStyle} />}
+        {ITEMS.map(createItemRow)}
+        {<Item msg={'Sticky Header 2'} style={stickyHeaderStyle} />}
+        {ITEMS.map(createItemRow)}
+        {<Item msg={'Sticky Header 3'} style={stickyHeaderStyle} />}
+        {ITEMS.map(createItemRow)}
+      </ScrollView>
+      <Button
+        label="Scroll to top"
+        onPress={() => {
+          nullthrows(_scrollView.current).scrollTo({y: 0});
+        }}
+        testID="scroll_to_top_button"
+      />
+      <Button
+        label="Scroll to bottom"
+        onPress={() => {
+          nullthrows(_scrollView.current).scrollToEnd({animated: true});
+        }}
+        testID="scroll_to_bottom_button"
       />
     </View>
   );
@@ -1140,9 +1223,16 @@ let ITEMS = [...Array(12)].map((_, i) => `Item ${i}`);
 
 const createItemRow = (msg, index) => <Item key={index} msg={msg} />;
 
-const Button = ({label, onPress}) => (
-  <TouchableOpacity style={styles.button} onPress={onPress}>
-    <Text>{label}</Text>
+const Button = (props: {
+  label: string,
+  onPress: () => void,
+  testID?: string,
+}) => (
+  <TouchableOpacity
+    style={styles.button}
+    onPress={props.onPress}
+    testID={props.testID}>
+    <Text>{props.label}</Text>
   </TouchableOpacity>
 );
 

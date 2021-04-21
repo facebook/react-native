@@ -7,6 +7,8 @@
 
 #include <functional>
 
+#include <react/debug/react_native_assert.h>
+
 namespace facebook {
 namespace react {
 
@@ -31,7 +33,7 @@ class CalledOnceMovableOnlyFunction {
   }
 
   ~CalledOnceMovableOnlyFunction() {
-    assert(
+    react_native_assert(
         (wasCalled_ || wasMovedFrom_) &&
         "`CalledOnceMovableOnlyFunction` is destroyed before being called.");
   }
@@ -57,7 +59,7 @@ class CalledOnceMovableOnlyFunction {
 
   CalledOnceMovableOnlyFunction &operator=(
       CalledOnceMovableOnlyFunction &&other) noexcept {
-    assert(
+    react_native_assert(
         (wasCalled_ || wasMovedFrom_) &&
         "`CalledOnceMovableOnlyFunction` is re-assigned before being called.");
     wasCalled_ = false;
@@ -71,10 +73,10 @@ class CalledOnceMovableOnlyFunction {
    * Callable.
    */
   ReturnT operator()(ArgumentT... args) {
-    assert(
+    react_native_assert(
         !wasMovedFrom_ &&
         "`CalledOnceMovableOnlyFunction` is called after being moved from.");
-    assert(
+    react_native_assert(
         !wasCalled_ &&
         "`CalledOnceMovableOnlyFunction` is called more than once.");
 

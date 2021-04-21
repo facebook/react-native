@@ -122,7 +122,7 @@ class JSI_EXPORT HostObject {
   virtual void set(Runtime&, const PropNameID& name, const Value& value);
 
   // When JS wants a list of property names for the HostObject, it will
-  // call this method. If it throws an exception, the call will thow a
+  // call this method. If it throws an exception, the call will throw a
   // JS \c Error object. The default implementation returns empty vector.
   virtual std::vector<PropNameID> getPropertyNames(Runtime& rt);
 };
@@ -995,8 +995,8 @@ class JSI_EXPORT Value {
     return runtime.createValueFromJsonUtf8(json, length);
   }
 
-  /// \return according to the SameValue algorithm see more here:
-  //  https://www.ecma-international.org/ecma-262/5.1/#sec-11.9.4
+  /// \return according to the Strict Equality Comparison algorithm, see:
+  /// https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
   static bool strictEquals(Runtime& runtime, const Value& a, const Value& b);
 
   Value& operator=(Value&& other) {

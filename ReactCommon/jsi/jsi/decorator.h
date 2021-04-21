@@ -348,6 +348,14 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().stopTrackingHeapObjectStackTraces();
   }
 
+  void startHeapSampling(size_t samplingInterval) override {
+    plain().instrumentation().startHeapSampling(samplingInterval);
+  }
+
+  void stopHeapSampling(std::ostream& os) override {
+    plain().instrumentation().stopHeapSampling(os);
+  }
+
   void createSnapshotToFile(const std::string& path) override {
     plain().instrumentation().createSnapshotToFile(path);
   }

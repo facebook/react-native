@@ -45,11 +45,11 @@ class TestShadowNode;
 
 using SharedTestShadowNode = std::shared_ptr<const TestShadowNode>;
 
-class TestShadowNode : public ConcreteViewShadowNode<
-                           TestComponentName,
-                           TestProps,
-                           ViewEventEmitter,
-                           TestState> {
+class TestShadowNode final : public ConcreteViewShadowNode<
+                                 TestComponentName,
+                                 TestProps,
+                                 ViewEventEmitter,
+                                 TestState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 

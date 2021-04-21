@@ -18,7 +18,7 @@ rn_xplat_cxx_library(
         "-O3",
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
         "-Werror",
         "-Wextra",
@@ -79,8 +79,6 @@ rn_xplat_cxx_library(
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
-    # TODO (T55502220): Remove when iOS 9.0 deprecation is complete everywhere.
-    fbobjc_target_sdk_version = "9.0",
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     platforms = APPLE,
     visibility = ["PUBLIC"],

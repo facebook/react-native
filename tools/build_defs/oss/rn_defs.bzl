@@ -24,11 +24,12 @@ def get_preprocessor_flags_for_build_mode():
 def get_static_library_ios_flags():
     return _APPLE_COMPILER_FLAGS
 
-OBJC_ARC_PREPROCESSOR_FLAGS = [
-    "-fobjc-arc",
-    "-fno-objc-arc-exceptions",
-    "-Qunused-arguments",
-]
+def get_objc_arc_preprocessor_flags():
+    return [
+        "-fobjc-arc",
+        "-fno-objc-arc-exceptions",
+        "-Qunused-arguments",
+    ]
 
 IS_OSS_BUILD = True
 
@@ -64,6 +65,11 @@ def get_apple_inspector_flags():
     return []
 
 def get_android_inspector_flags():
+    return []
+
+def get_react_native_preprocessor_flags():
+    # TODO: use this to define the compiler flag REACT_NATIVE_DEBUG in debug/dev mode builds only.
+    # This is a replacement for NDEBUG since NDEBUG is always defined in Buck on all Android builds.
     return []
 
 # Building is not supported in OSS right now
@@ -120,8 +126,12 @@ def react_native_xplat_dep(path):
 def rn_extra_build_flags():
     return []
 
+def _unique(li):
+    return list({x: () for x in li})
+
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
+    _ = kwargs.pop("autoglob", False)
     _ = kwargs.pop("is_androidx", False)
     if react_native_target(
         "java/com/facebook/react/uimanager/annotations:annotations",
@@ -132,7 +142,7 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
             ),
         ]
 
-        plugins = list(set(plugins + react_property_plugins))
+        plugins = _unique(plugins + react_property_plugins)
 
     if react_native_target(
         "java/com/facebook/react/module/annotations:annotations",
@@ -143,7 +153,7 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
             ),
         ]
 
-        plugins = list(set(plugins + react_module_plugins))
+        plugins = _unique(plugins + react_module_plugins)
 
     native.android_library(name = name, deps = deps, plugins = plugins, *args, **kwargs)
 
@@ -162,9 +172,10 @@ def rn_android_prebuilt_aar(*args, **kwargs):
 def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("link_whole", True)
     kwargs.setdefault("enable_exceptions", True)
-    kwargs.setdefault("target_sdk_version", "10.0")
+    kwargs.setdefault("target_sdk_version", "11.0")
 
     # Unsupported kwargs
+    _ = kwargs.pop("autoglob", False)
     _ = kwargs.pop("plugins_only", False)
     _ = kwargs.pop("enable_exceptions", False)
     _ = kwargs.pop("extension_api_only", False)
@@ -191,7 +202,8 @@ def rn_genrule(*args, **kwargs):
 def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     vm_args = vm_args or []
 
-    is_androidx = kwargs.pop("is_androidx", False)
+    _ = kwargs.pop("autoglob", False)
+    _ = kwargs.pop("is_androidx", False)
 
     kwargs["deps"] = kwargs.pop("deps", []) + [
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),

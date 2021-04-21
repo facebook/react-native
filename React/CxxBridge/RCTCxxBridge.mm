@@ -13,6 +13,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTCxxModule.h>
@@ -193,6 +194,7 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge;
 - (void)partialBatchDidFlush;
 - (void)batchDidComplete;
+- (void)forceGarbageCollection;
 
 @end
 
@@ -335,6 +337,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 - (void)handleMemoryWarning
+{
+  [self forceGarbageCollection];
+}
+
+- (void)forceGarbageCollection
 {
   // We only want to run garbage collector when the loading is finished
   // and the instance is valid.
@@ -774,11 +781,20 @@ struct RCTInstanceCallback : public InstanceCallback {
 {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge initModulesWithDispatchGroup:] extraModules", nil);
 
-  NSArray<id<RCTBridgeModule>> *extraModules = nil;
+  NSArray<id<RCTBridgeModule>> *appExtraModules = nil;
   if ([self.delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
-    extraModules = [self.delegate extraModulesForBridge:_parentBridge];
+    appExtraModules = [self.delegate extraModulesForBridge:_parentBridge];
   } else if (self.moduleProvider) {
-    extraModules = self.moduleProvider();
+    appExtraModules = self.moduleProvider();
+  }
+
+  NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray new];
+
+  // Prevent TurboModules from appearing the the NativeModule system
+  for (id<RCTBridgeModule> module in appExtraModules) {
+    if (!(RCTTurboModuleEnabled() && [module conformsToProtocol:@protocol(RCTTurboModule)])) {
+      [extraModules addObject:module];
+    }
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");

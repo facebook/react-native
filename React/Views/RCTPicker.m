@@ -82,11 +82,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
            reusingView:(UILabel *)label
 {
   if (!label) {
-    label = [[UILabel alloc] initWithFrame:(CGRect){CGPointZero,
-                                                    {
-                                                        [pickerView rowSizeForComponent:component].width,
-                                                        [pickerView rowSizeForComponent:component].height,
-                                                    }}];
+    label = [[UILabel alloc] initWithFrame:(CGRect){
+                                               CGPointZero,
+                                               {
+                                                   [pickerView rowSizeForComponent:component].width,
+                                                   [pickerView rowSizeForComponent:component].height,
+                                               }}];
   }
 
   label.font = _font;

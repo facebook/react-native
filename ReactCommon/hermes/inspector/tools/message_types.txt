@@ -22,6 +22,8 @@ HeapProfiler.reportHeapSnapshotProgress
 HeapProfiler.takeHeapSnapshot
 HeapProfiler.startTrackingHeapObjects
 HeapProfiler.stopTrackingHeapObjects
+HeapProfiler.startSampling
+HeapProfiler.stopSampling
 HeapProfiler.heapStatsUpdate
 HeapProfiler.lastSeenObjectId
 Runtime.consoleAPICalled

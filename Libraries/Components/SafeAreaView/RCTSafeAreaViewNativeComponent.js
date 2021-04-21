@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {WithDefault} from '../../Types/CodegenTypes';
 

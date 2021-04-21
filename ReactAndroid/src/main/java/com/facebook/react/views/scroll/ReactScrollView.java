@@ -221,7 +221,7 @@ public class ReactScrollView extends ScrollView
         pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
     int scrollToY =
         pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
-    reactScrollTo(scrollToX, scrollToY);
+    scrollTo(scrollToX, scrollToY);
     ReactScrollViewHelper.emitLayoutEvent(this);
   }
 
@@ -878,9 +878,13 @@ public class ReactScrollView extends ScrollView
    *
    * <p>`reactScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
    * scroll view and state. Calling raw `reactScrollTo` doesn't update state.
+   *
+   * <p>Note that while we can override scrollTo, we *cannot* override `smoothScrollTo` because it
+   * is final. See `reactSmoothScrollTo`.
    */
-  public void reactScrollTo(int x, int y) {
-    scrollTo(x, y);
+  @Override
+  public void scrollTo(int x, int y) {
+    super.scrollTo(x, y);
     updateStateOnScroll(x, y);
     setPendingContentOffsets(x, y);
   }
@@ -926,7 +930,7 @@ public class ReactScrollView extends ScrollView
     int currentScrollY = getScrollY();
     int maxScrollY = getMaxScrollY();
     if (currentScrollY > maxScrollY) {
-      reactScrollTo(getScrollX(), maxScrollY);
+      scrollTo(getScrollX(), maxScrollY);
     }
   }
 

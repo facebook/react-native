@@ -209,7 +209,7 @@ function translateParamTypeToJniType(
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
-      return !isRequired ? 'Ljava/lang/Boolean' : 'Z';
+      return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
     case 'NumberTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
@@ -261,7 +261,7 @@ function translateReturnTypeToJniType(
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
-      return nullable ? 'Ljava/lang/Boolean' : 'Z';
+      return nullable ? 'Ljava/lang/Boolean;' : 'Z';
     case 'NumberTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
@@ -357,7 +357,6 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
     packageName?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
@@ -451,12 +450,12 @@ module.exports = {
         },
       );
 
-    const fileName = `${moduleSpecName}-generated.cpp`;
+    const fileName = `${libraryName}-generated.cpp`;
     const replacedTemplate = FileTemplate({
       modules: modules,
       libraryName: libraryName.replace(/-/g, '_'),
       moduleLookups,
-      include: `"${moduleSpecName}.h"`,
+      include: `"${libraryName}.h"`,
     });
     return new Map([[`jni/${fileName}`, replacedTemplate]]);
   },

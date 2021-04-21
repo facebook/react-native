@@ -29,7 +29,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 - (instancetype)init
 {
   if (self = [super init]) {
-    _componentViewFactory = [RCTComponentViewFactory standardComponentViewFactory];
+    _componentViewFactory = [RCTComponentViewFactory currentComponentViewFactory];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleApplicationDidReceiveMemoryWarningNotification)

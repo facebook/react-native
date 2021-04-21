@@ -14,6 +14,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -30,6 +32,12 @@ import java.util.Map;
 public class ReactTextViewManager
     extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode>
     implements IViewManagerWithChildren {
+
+  private static final short TX_STATE_KEY_ATTRIBUTED_STRING = 0;
+  private static final short TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
+  // used for text input
+  private static final short TX_STATE_KEY_HASH = 2;
+  private static final short TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
 
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
 
@@ -83,7 +91,22 @@ public class ReactTextViewManager
   @Override
   public Object updateState(
       ReactTextView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    ReadableNativeMap state = stateWrapper.getState();
+    if (stateWrapper == null) {
+      return null;
+    }
+
+    if (ReactFeatureFlags.mapBufferSerializationEnabled) {
+      ReadableMapBuffer stateMapBuffer = stateWrapper.getStatDataMapBuffer();
+      if (stateMapBuffer != null) {
+        return getReactTextUpdate(view, props, stateMapBuffer);
+      }
+    }
+
+    ReadableNativeMap state = stateWrapper.getStateData();
+    if (state == null) {
+      return null;
+    }
+
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
     Spannable spanned =
@@ -99,6 +122,30 @@ public class ReactTextViewManager
         state.hasKey("mostRecentEventCount") ? state.getInt("mostRecentEventCount") : -1,
         false, // TODO add this into local Data
         TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
+        textBreakStrategy,
+        TextAttributeProps.getJustificationMode(props));
+  }
+
+  private Object getReactTextUpdate(
+      ReactTextView view, ReactStylesDiffMap props, ReadableMapBuffer state) {
+
+    ReadableMapBuffer attributedString = state.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING);
+    ReadableMapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
+    Spannable spanned =
+        TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
+            view.getContext(), attributedString, mReactTextViewManagerCallback);
+    view.setSpanned(spanned);
+
+    int textBreakStrategy =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
+
+    return new ReactTextUpdate(
+        spanned,
+        -1, // UNUSED FOR TEXT
+        false, // TODO add this into local Data
+        TextAttributeProps.getTextAlignment(
+            props, TextLayoutManagerMapBuffer.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props));
   }

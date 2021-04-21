@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (facebook::react::SharedProps)props;
 
+- (void)setIsJSResponder:(BOOL)isJSResponder;
+
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)props;
 - (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 

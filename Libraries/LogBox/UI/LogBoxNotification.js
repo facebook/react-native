@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 import Image from '../../Image/Image';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -59,8 +57,9 @@ function LogBoxLogNotification(props: Props): React.Node {
 function CountBadge(props) {
   return (
     <View style={countStyles.outside}>
-      {/* $FlowFixMe(>=0.114.0) This suppression was added when fixing the type
-       * of `StyleSheet.create`. Remove this comment to see the error. */}
+      {/* $FlowFixMe[incompatible-type] (>=0.114.0) This suppression was added
+       * when fixing the type of `StyleSheet.create`. Remove this comment to
+       * see the error. */}
       <View style={[countStyles.inside, countStyles[props.level]]}>
         <Text style={countStyles.text}>
           {props.count <= 1 ? '!' : props.count}

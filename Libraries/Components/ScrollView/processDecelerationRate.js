@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import Platform from '../../Utilities/Platform';
 
 function processDecelerationRate(

@@ -5,23 +5,25 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
 
 import type EventEmitter from './EventEmitter';
-import EventSubscription from './_EventSubscription';
+import _EventSubscription from './_EventSubscription';
 import type EventSubscriptionVendor from './_EventSubscriptionVendor';
+import {type EventSubscription} from './EventSubscription';
 
 /**
  * EmitterSubscription represents a subscription with listener and context data.
  */
-class EmitterSubscription extends EventSubscription {
-  // $FlowFixMe[value-as-type]
-  emitter: EventEmitter;
-  listener: Function;
-  context: ?Object;
+class EmitterSubscription<EventDefinitions: {...}, K: $Keys<EventDefinitions>>
+  extends _EventSubscription<EventDefinitions, K>
+  implements EventSubscription {
+  emitter: EventEmitter<EventDefinitions>;
+  listener: ?(...$ElementType<EventDefinitions, K>) => mixed;
+  context: ?$FlowFixMe;
 
   /**
    * @param {EventEmitter} emitter - The event emitter that registered this
@@ -34,11 +36,10 @@ class EmitterSubscription extends EventSubscription {
    *   listener
    */
   constructor(
-    // $FlowFixMe[value-as-type]
-    emitter: EventEmitter,
-    subscriber: EventSubscriptionVendor,
-    listener: Function,
-    context: ?Object,
+    emitter: EventEmitter<EventDefinitions>,
+    subscriber: EventSubscriptionVendor<EventDefinitions>,
+    listener: (...$ElementType<EventDefinitions, K>) => mixed,
+    context: ?$FlowFixMe,
   ) {
     super(subscriber);
     this.emitter = emitter;
@@ -48,12 +49,12 @@ class EmitterSubscription extends EventSubscription {
 
   /**
    * Removes this subscription from the emitter that registered it.
-   * Note: we're overriding the `remove()` method of EventSubscription here
+   * Note: we're overriding the `remove()` method of _EventSubscription here
    * but deliberately not calling `super.remove()` as the responsibility
    * for removing the subscription lies with the EventEmitter.
    */
-  remove() {
-    this.emitter.removeSubscription(this);
+  remove(): void {
+    this.emitter.__removeSubscription(this);
   }
 }
 

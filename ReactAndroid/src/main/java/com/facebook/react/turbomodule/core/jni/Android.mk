@@ -17,7 +17,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/ReactCommon
 # Header search path for modules that depend on this module
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_SHARED_LIBRARIES = libfb libfbjni libreactnativeutilsjni
 
@@ -48,7 +48,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/ReactCommon
 # Header search path for modules that depend on this module
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_SHARED_LIBRARIES = libfb libfbjni libreact_nativemodule_core
 

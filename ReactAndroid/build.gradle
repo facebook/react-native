@@ -242,26 +242,28 @@ def getNdkBuildName() {
 }
 
 def findNdkBuildFullPath() {
+    // android.ndkDirectory should return project.android.ndkVersion ndkDirectory
+    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
+    if (ndkDir) {
+        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+
     // we allow to provide full path to ndk-build tool
     if (hasProperty("ndk.command")) {
         return property("ndk.command")
     }
     // or just a path to the containing directory
     if (hasProperty("ndk.path")) {
-        def ndkDir = property("ndk.path")
+        ndkDir = property("ndk.path")
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
 
+    // @TODO ANDROID_NDK && ndk.dir is deprecated and will be removed in the future.
     if (System.getenv("ANDROID_NDK") != null) {
-        def ndkDir = System.getenv("ANDROID_NDK")
+        ndkDir = System.getenv("ANDROID_NDK")
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
 
-    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
-
-    if (ndkDir) {
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
     return null
 }
 
@@ -376,8 +378,8 @@ task extractJNIFiles {
 }
 
 android {
-    compileSdkVersion 29
-
+    compileSdkVersion 30
+    ndkVersion ANDROID_NDK_VERSION
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_1_8)
         targetCompatibility(JavaVersion.VERSION_1_8)
@@ -438,20 +440,21 @@ android {
 
 dependencies {
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
-    api("com.facebook.yoga:proguard-annotations:1.14.1")
+    api("com.facebook.yoga:proguard-annotations:1.17.0")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
     api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
+    api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
     api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
-    api("com.squareup.okio:okio:1.17.5")
-    api("com.facebook.fbjni:fbjni-java-only:0.0.3")
-    extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
-    extractJNI("com.facebook.fbjni:fbjni:0.0.2")
+    api("com.squareup.okio:okio:2.9.0")
+    api("com.facebook.fbjni:fbjni-java-only:0.2.2")
+    extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
+    extractJNI("com.facebook.fbjni:fbjni:0.2.2")
 
     javadocDeps("com.squareup:javapoet:1.13.0")
 

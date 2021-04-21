@@ -70,6 +70,16 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getObj
       .invokeObjCMethod(rt, ObjectKind, "getObject", @selector(getObject:), args, count);
 }
 
+static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getUnsafeObject(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count)
+{
+  return static_cast<ObjCTurboModule &>(turboModule)
+      .invokeObjCMethod(rt, ObjectKind, "getUnsafeObject", @selector(getUnsafeObject:), args, count);
+}
+
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getRootTag(
     facebook::jsi::Runtime &rt,
     TurboModule &turboModule,
@@ -130,6 +140,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboMo
   methodMap_["getString"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getString};
   methodMap_["getArray"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getArray};
   methodMap_["getObject"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObject};
+  methodMap_["getUnsafeObject"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getUnsafeObject};
   methodMap_["getRootTag"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getRootTag};
   methodMap_["getValue"] = MethodMetadata{3, __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
   methodMap_["getValueWithCallback"] =
