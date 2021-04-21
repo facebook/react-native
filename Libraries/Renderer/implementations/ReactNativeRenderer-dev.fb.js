@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<f957a77f67e26aca01d38a51d6e476bc>>
+ * @generated SignedSource<<5f437c4c1fcda37e2bb8dab0d04f1431>>
  */
 
 'use strict';
@@ -2554,7 +2554,6 @@ function batchedUpdates(fn, bookkeeping) {
 function setBatchingImplementation(
   _batchedUpdatesImpl,
   _discreteUpdatesImpl,
-  _flushDiscreteUpdatesImpl,
   _batchedEventUpdatesImpl
 ) {
   batchedUpdatesImpl = _batchedUpdatesImpl;
@@ -4621,12 +4620,19 @@ function computeExpirationTime(lane, currentTime) {
     case TransitionLane14:
     case TransitionLane15:
     case TransitionLane16:
+      return currentTime + 5000;
+
     case RetryLane1:
     case RetryLane2:
     case RetryLane3:
     case RetryLane4:
     case RetryLane5:
-      return currentTime + 5000;
+      // TODO: Retries should be allowed to expire if they are CPU bound for
+      // too long, but when I made this change it caused a spike in browser
+      // crashes. There must be some other underlying bug; not super urgent but
+      // ideally should figure out why and fix it. Unfortunately we don't have
+      // a repro for the crashes, only detected via production metrics.
+      return NoTimestamp;
 
     case SelectiveHydrationLane:
     case IdleHydrationLane:
@@ -4832,11 +4838,6 @@ function markRootExpired(root, expiredLanes) {
   entanglements[SyncLaneIndex] |= expiredLanes;
   root.entangledLanes |= SyncLane;
   root.pendingLanes |= SyncLane;
-}
-function areLanesExpired(root, lanes) {
-  var SyncLaneIndex = 0;
-  var entanglements = root.entanglements;
-  return (entanglements[SyncLaneIndex] & lanes) !== NoLanes;
 }
 function markRootMutableRead(root, updateLane) {
   root.mutableReadLanes |= updateLane & root.pendingLanes;
@@ -17380,7 +17381,9 @@ function hideOrUnhideAllChildren(finishedWork, isHidden) {
   // Suspense layout effects semantics don't change for legacy roots.
   var isModernRoot = (finishedWork.mode & ConcurrentMode) !== NoMode;
   var current = finishedWork.alternate;
-  var wasHidden = current !== null && current.memoizedState !== null;
+  var wasHidden = current !== null && current.memoizedState !== null; // Only hide or unhide the top-most host nodes.
+
+  var hostSubtreeRoot = null;
 
   {
     // We only have the top Fiber that was inserted but we need to recurse down its
@@ -17389,20 +17392,25 @@ function hideOrUnhideAllChildren(finishedWork, isHidden) {
 
     while (true) {
       if (node.tag === HostComponent) {
-        var instance = node.stateNode;
+        if (hostSubtreeRoot === null) {
+          hostSubtreeRoot = node;
+          var instance = node.stateNode;
 
-        if (isHidden) {
-          hideInstance(instance);
-        } else {
-          unhideInstance(node.stateNode, node.memoizedProps);
+          if (isHidden) {
+            hideInstance(instance);
+          } else {
+            unhideInstance(node.stateNode, node.memoizedProps);
+          }
         }
       } else if (node.tag === HostText) {
-        var _instance3 = node.stateNode;
+        if (hostSubtreeRoot === null) {
+          var _instance3 = node.stateNode;
 
-        if (isHidden) {
-          hideTextInstance();
-        } else {
-          unhideTextInstance(_instance3, node.memoizedProps);
+          if (isHidden) {
+            hideTextInstance();
+          } else {
+            unhideTextInstance(_instance3, node.memoizedProps);
+          }
         }
       } else if (
         (node.tag === OffscreenComponent ||
@@ -17425,7 +17433,15 @@ function hideOrUnhideAllChildren(finishedWork, isHidden) {
           return;
         }
 
+        if (hostSubtreeRoot === node) {
+          hostSubtreeRoot = null;
+        }
+
         node = node.return;
+      }
+
+      if (hostSubtreeRoot === node) {
+        hostSubtreeRoot = null;
       }
 
       node.sibling.return = node.return;
@@ -19112,10 +19128,11 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
       // all pending updates are included. If it still fails after the second
       // attempt, we'll give up and commit the resulting tree.
 
-      lanes = getLanesToRetrySynchronouslyOnError(root);
+      var errorRetryLanes = getLanesToRetrySynchronouslyOnError(root);
 
-      if (lanes !== NoLanes) {
-        exitStatus = renderRootSync(root, lanes);
+      if (errorRetryLanes !== NoLanes) {
+        lanes = errorRetryLanes;
+        exitStatus = renderRootSync(root, errorRetryLanes);
       }
     }
 
@@ -19280,21 +19297,24 @@ function performSyncWorkOnRoot(root) {
   }
 
   flushPassiveEffects();
-  var lanes;
-  var exitStatus;
+  var lanes = getNextLanes(root, NoLanes);
 
-  if (
-    root === workInProgressRoot &&
-    areLanesExpired(root, workInProgressRootRenderLanes)
-  ) {
-    // There's a partial tree, and at least one of its lanes has expired. Finish
-    // rendering it before rendering the rest of the expired work.
-    lanes = workInProgressRootRenderLanes;
-    exitStatus = renderRootSync(root, lanes);
+  if (includesSomeLane(lanes, SyncLane)) {
+    if (
+      root === workInProgressRoot &&
+      includesSomeLane(lanes, workInProgressRootRenderLanes)
+    ) {
+      // There's a partial tree, and at least one of its lanes has expired. Finish
+      // rendering it before rendering the rest of the expired work.
+      lanes = workInProgressRootRenderLanes;
+    }
   } else {
-    lanes = getNextLanes(root, NoLanes);
-    exitStatus = renderRootSync(root, lanes);
+    // There's no remaining sync work left.
+    ensureRootIsScheduled(root, now());
+    return null;
   }
+
+  var exitStatus = renderRootSync(root, lanes);
 
   if (root.tag !== LegacyRoot && exitStatus === RootErrored) {
     executionContext |= RetryAfterError; // If an error occurred during hydration,
@@ -19313,9 +19333,10 @@ function performSyncWorkOnRoot(root) {
     // all pending updates are included. If it still fails after the second
     // attempt, we'll give up and commit the resulting tree.
 
-    lanes = getLanesToRetrySynchronouslyOnError(root);
+    var errorRetryLanes = getLanesToRetrySynchronouslyOnError(root);
 
-    if (lanes !== NoLanes) {
+    if (errorRetryLanes !== NoLanes) {
+      lanes = errorRetryLanes;
       exitStatus = renderRootSync(root, lanes);
     }
   }
@@ -19856,6 +19877,15 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   if (finishedWork === null) {
     return null;
+  } else {
+    {
+      if (lanes === NoLanes) {
+        error(
+          "root.finishedLanes should not be empty during a commit. This is a " +
+            "bug in React."
+        );
+      }
+    }
   }
 
   root.finishedWork = null;
@@ -20037,9 +20067,9 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   if (hasUncaughtError) {
     hasUncaughtError = false;
-    var error = firstUncaughtError;
+    var error$1 = firstUncaughtError;
     firstUncaughtError = null;
-    throw error;
+    throw error$1;
   }
 
   if ((executionContext & LegacyUnbatchedContext) !== NoContext) {

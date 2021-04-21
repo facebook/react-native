@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<90d01c86a28a69abef2fe93114ca8dd8>>
+ * @generated SignedSource<<f41656c617fa40163bc178f355249017>>
  */
 
 "use strict";
@@ -930,7 +930,7 @@ eventPluginOrder = Array.prototype.slice.call([
   "ReactNativeBridgeEventPlugin"
 ]);
 recomputePluginOrdering();
-var injectedNamesToPlugins$jscomp$inline_215 = {
+var injectedNamesToPlugins$jscomp$inline_214 = {
     ResponderEventPlugin: ResponderEventPlugin,
     ReactNativeBridgeEventPlugin: {
       eventTypes: {},
@@ -965,34 +965,34 @@ var injectedNamesToPlugins$jscomp$inline_215 = {
       }
     }
   },
-  isOrderingDirty$jscomp$inline_216 = !1,
-  pluginName$jscomp$inline_217;
-for (pluginName$jscomp$inline_217 in injectedNamesToPlugins$jscomp$inline_215)
+  isOrderingDirty$jscomp$inline_215 = !1,
+  pluginName$jscomp$inline_216;
+for (pluginName$jscomp$inline_216 in injectedNamesToPlugins$jscomp$inline_214)
   if (
-    injectedNamesToPlugins$jscomp$inline_215.hasOwnProperty(
-      pluginName$jscomp$inline_217
+    injectedNamesToPlugins$jscomp$inline_214.hasOwnProperty(
+      pluginName$jscomp$inline_216
     )
   ) {
-    var pluginModule$jscomp$inline_218 =
-      injectedNamesToPlugins$jscomp$inline_215[pluginName$jscomp$inline_217];
+    var pluginModule$jscomp$inline_217 =
+      injectedNamesToPlugins$jscomp$inline_214[pluginName$jscomp$inline_216];
     if (
-      !namesToPlugins.hasOwnProperty(pluginName$jscomp$inline_217) ||
-      namesToPlugins[pluginName$jscomp$inline_217] !==
-        pluginModule$jscomp$inline_218
+      !namesToPlugins.hasOwnProperty(pluginName$jscomp$inline_216) ||
+      namesToPlugins[pluginName$jscomp$inline_216] !==
+        pluginModule$jscomp$inline_217
     ) {
-      if (namesToPlugins[pluginName$jscomp$inline_217])
+      if (namesToPlugins[pluginName$jscomp$inline_216])
         throw Error(
           "EventPluginRegistry: Cannot inject two different event plugins using the same name, `" +
-            pluginName$jscomp$inline_217 +
+            pluginName$jscomp$inline_216 +
             "`."
         );
       namesToPlugins[
-        pluginName$jscomp$inline_217
-      ] = pluginModule$jscomp$inline_218;
-      isOrderingDirty$jscomp$inline_216 = !0;
+        pluginName$jscomp$inline_216
+      ] = pluginModule$jscomp$inline_217;
+      isOrderingDirty$jscomp$inline_215 = !0;
     }
   }
-isOrderingDirty$jscomp$inline_216 && recomputePluginOrdering();
+isOrderingDirty$jscomp$inline_215 && recomputePluginOrdering();
 function getInstanceFromInstance(instanceHandle) {
   return instanceHandle;
 }
@@ -1730,12 +1730,13 @@ function computeExpirationTime(lane, currentTime) {
     case 524288:
     case 1048576:
     case 2097152:
+      return currentTime + 5e3;
     case 4194304:
     case 8388608:
     case 16777216:
     case 33554432:
     case 67108864:
-      return currentTime + 5e3;
+      return -1;
     case 134217728:
     case 268435456:
     case 536870912:
@@ -6138,8 +6139,10 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
     2 === didTimeout &&
       ((executionContext |= 32),
       root.hydrate && ((root.hydrate = !1), shim(root.containerInfo)),
-      (lanes = getLanesToRetrySynchronouslyOnError(root)),
-      0 !== lanes && (didTimeout = renderRootSync(root, lanes)));
+      (prevExecutionContext = getLanesToRetrySynchronouslyOnError(root)),
+      0 !== prevExecutionContext &&
+        ((lanes = prevExecutionContext),
+        (didTimeout = renderRootSync(root, prevExecutionContext))));
     if (1 === didTimeout)
       throw ((originalCallbackNode = workInProgressRootFatalError),
       prepareFreshStack(root, 0),
@@ -6241,17 +6244,20 @@ function performSyncWorkOnRoot(root) {
   if (0 !== (executionContext & 24))
     throw Error("Should not already be working.");
   flushPassiveEffects();
-  var lanes;
-  if ((lanes = root === workInProgressRoot))
-    lanes = 0 !== (root.entanglements[0] & workInProgressRootRenderLanes);
-  lanes = lanes ? workInProgressRootRenderLanes : getNextLanes(root, 0);
+  var lanes = getNextLanes(root, 0);
+  if (0 !== (lanes & 1))
+    root === workInProgressRoot &&
+      0 !== (lanes & workInProgressRootRenderLanes) &&
+      (lanes = workInProgressRootRenderLanes);
+  else return ensureRootIsScheduled(root, now()), null;
   var exitStatus = renderRootSync(root, lanes);
-  0 !== root.tag &&
-    2 === exitStatus &&
-    ((executionContext |= 32),
-    root.hydrate && ((root.hydrate = !1), shim(root.containerInfo)),
-    (lanes = getLanesToRetrySynchronouslyOnError(root)),
-    0 !== lanes && (exitStatus = renderRootSync(root, lanes)));
+  if (0 !== root.tag && 2 === exitStatus) {
+    executionContext |= 32;
+    root.hydrate && ((root.hydrate = !1), shim(root.containerInfo));
+    var errorRetryLanes = getLanesToRetrySynchronouslyOnError(root);
+    0 !== errorRetryLanes &&
+      ((lanes = errorRetryLanes), (exitStatus = renderRootSync(root, lanes)));
+  }
   if (1 === exitStatus)
     throw ((exitStatus = workInProgressRootFatalError),
     prepareFreshStack(root, 0),
@@ -7738,7 +7744,7 @@ batchedUpdatesImpl = function(fn, a) {
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_941 = {
+  devToolsConfig$jscomp$inline_934 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
     version: "17.0.3",
@@ -7756,11 +7762,11 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1175 = {
-  bundleType: devToolsConfig$jscomp$inline_941.bundleType,
-  version: devToolsConfig$jscomp$inline_941.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_941.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_941.rendererConfig,
+var internals$jscomp$inline_1168 = {
+  bundleType: devToolsConfig$jscomp$inline_934.bundleType,
+  version: devToolsConfig$jscomp$inline_934.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_934.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_934.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -7775,7 +7781,7 @@ var internals$jscomp$inline_1175 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_941.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_934.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
@@ -7785,16 +7791,16 @@ var internals$jscomp$inline_1175 = {
   reconcilerVersion: "17.0.3"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1176 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1169 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1176.isDisabled &&
-    hook$jscomp$inline_1176.supportsFiber
+    !hook$jscomp$inline_1169.isDisabled &&
+    hook$jscomp$inline_1169.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1176.inject(
-        internals$jscomp$inline_1175
+      (rendererID = hook$jscomp$inline_1169.inject(
+        internals$jscomp$inline_1168
       )),
-        (injectedHook = hook$jscomp$inline_1176);
+        (injectedHook = hook$jscomp$inline_1169);
     } catch (err) {}
 }
 exports.createPortal = function(children, containerTag) {

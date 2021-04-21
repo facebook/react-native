@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<67d6e303f1823e73e6e16508519f4668>>
+ * @generated SignedSource<<ea82815c6b2135bf145c1c5895967692>>
  */
 
 "use strict";
@@ -930,7 +930,7 @@ eventPluginOrder = Array.prototype.slice.call([
   "ReactNativeBridgeEventPlugin"
 ]);
 recomputePluginOrdering();
-var injectedNamesToPlugins$jscomp$inline_218 = {
+var injectedNamesToPlugins$jscomp$inline_217 = {
     ResponderEventPlugin: ResponderEventPlugin,
     ReactNativeBridgeEventPlugin: {
       eventTypes: {},
@@ -965,34 +965,34 @@ var injectedNamesToPlugins$jscomp$inline_218 = {
       }
     }
   },
-  isOrderingDirty$jscomp$inline_219 = !1,
-  pluginName$jscomp$inline_220;
-for (pluginName$jscomp$inline_220 in injectedNamesToPlugins$jscomp$inline_218)
+  isOrderingDirty$jscomp$inline_218 = !1,
+  pluginName$jscomp$inline_219;
+for (pluginName$jscomp$inline_219 in injectedNamesToPlugins$jscomp$inline_217)
   if (
-    injectedNamesToPlugins$jscomp$inline_218.hasOwnProperty(
-      pluginName$jscomp$inline_220
+    injectedNamesToPlugins$jscomp$inline_217.hasOwnProperty(
+      pluginName$jscomp$inline_219
     )
   ) {
-    var pluginModule$jscomp$inline_221 =
-      injectedNamesToPlugins$jscomp$inline_218[pluginName$jscomp$inline_220];
+    var pluginModule$jscomp$inline_220 =
+      injectedNamesToPlugins$jscomp$inline_217[pluginName$jscomp$inline_219];
     if (
-      !namesToPlugins.hasOwnProperty(pluginName$jscomp$inline_220) ||
-      namesToPlugins[pluginName$jscomp$inline_220] !==
-        pluginModule$jscomp$inline_221
+      !namesToPlugins.hasOwnProperty(pluginName$jscomp$inline_219) ||
+      namesToPlugins[pluginName$jscomp$inline_219] !==
+        pluginModule$jscomp$inline_220
     ) {
-      if (namesToPlugins[pluginName$jscomp$inline_220])
+      if (namesToPlugins[pluginName$jscomp$inline_219])
         throw Error(
           "EventPluginRegistry: Cannot inject two different event plugins using the same name, `" +
-            pluginName$jscomp$inline_220 +
+            pluginName$jscomp$inline_219 +
             "`."
         );
       namesToPlugins[
-        pluginName$jscomp$inline_220
-      ] = pluginModule$jscomp$inline_221;
-      isOrderingDirty$jscomp$inline_219 = !0;
+        pluginName$jscomp$inline_219
+      ] = pluginModule$jscomp$inline_220;
+      isOrderingDirty$jscomp$inline_218 = !0;
     }
   }
-isOrderingDirty$jscomp$inline_219 && recomputePluginOrdering();
+isOrderingDirty$jscomp$inline_218 && recomputePluginOrdering();
 var instanceCache = new Map(),
   instanceProps = new Map();
 function getInstanceFromTag(tag) {
@@ -1824,12 +1824,13 @@ function computeExpirationTime(lane, currentTime) {
     case 524288:
     case 1048576:
     case 2097152:
+      return currentTime + 5e3;
     case 4194304:
     case 8388608:
     case 16777216:
     case 33554432:
     case 67108864:
-      return currentTime + 5e3;
+      return -1;
     case 134217728:
     case 268435456:
     case 536870912:
@@ -5498,59 +5499,63 @@ function commitHookEffectListMount(tag, finishedWork) {
   }
 }
 function hideOrUnhideAllChildren(finishedWork, isHidden) {
-  for (var node = finishedWork; ; ) {
+  for (var hostSubtreeRoot = null, node = finishedWork; ; ) {
     if (5 === node.tag) {
-      var instance = node.stateNode;
-      if (isHidden) {
-        var viewConfig = instance.viewConfig;
-        var updatePayload = diffProperties(
-          null,
-          emptyObject,
-          { style: { display: "none" } },
-          viewConfig.validAttributes
-        );
-        ReactNativePrivateInterface.UIManager.updateView(
-          instance._nativeTag,
-          viewConfig.uiViewClassName,
-          updatePayload
-        );
-      } else {
-        instance = node.stateNode;
-        updatePayload = node.memoizedProps;
-        viewConfig = instance.viewConfig;
-        var prevProps = Object.assign({}, updatePayload, {
-          style: [updatePayload.style, { display: "none" }]
-        });
-        updatePayload = diffProperties(
-          null,
-          prevProps,
-          updatePayload,
-          viewConfig.validAttributes
-        );
-        ReactNativePrivateInterface.UIManager.updateView(
-          instance._nativeTag,
-          viewConfig.uiViewClassName,
-          updatePayload
-        );
+      if (null === hostSubtreeRoot) {
+        hostSubtreeRoot = node;
+        var instance = node.stateNode;
+        if (isHidden) {
+          var viewConfig = instance.viewConfig;
+          var updatePayload = diffProperties(
+            null,
+            emptyObject,
+            { style: { display: "none" } },
+            viewConfig.validAttributes
+          );
+          ReactNativePrivateInterface.UIManager.updateView(
+            instance._nativeTag,
+            viewConfig.uiViewClassName,
+            updatePayload
+          );
+        } else {
+          instance = node.stateNode;
+          updatePayload = node.memoizedProps;
+          viewConfig = instance.viewConfig;
+          var prevProps = Object.assign({}, updatePayload, {
+            style: [updatePayload.style, { display: "none" }]
+          });
+          updatePayload = diffProperties(
+            null,
+            prevProps,
+            updatePayload,
+            viewConfig.validAttributes
+          );
+          ReactNativePrivateInterface.UIManager.updateView(
+            instance._nativeTag,
+            viewConfig.uiViewClassName,
+            updatePayload
+          );
+        }
       }
-    } else {
-      if (6 === node.tag) throw Error("Not yet implemented.");
-      if (
-        ((22 !== node.tag && 23 !== node.tag) ||
-          null === node.memoizedState ||
-          node === finishedWork) &&
-        null !== node.child
-      ) {
-        node.child.return = node;
-        node = node.child;
-        continue;
-      }
+    } else if (6 === node.tag) {
+      if (null === hostSubtreeRoot) throw Error("Not yet implemented.");
+    } else if (
+      ((22 !== node.tag && 23 !== node.tag) ||
+        null === node.memoizedState ||
+        node === finishedWork) &&
+      null !== node.child
+    ) {
+      node.child.return = node;
+      node = node.child;
+      continue;
     }
     if (node === finishedWork) break;
     for (; null === node.sibling; ) {
       if (null === node.return || node.return === finishedWork) return;
+      hostSubtreeRoot === node && (hostSubtreeRoot = null);
       node = node.return;
     }
+    hostSubtreeRoot === node && (hostSubtreeRoot = null);
     node.sibling.return = node.return;
     node = node.sibling;
   }
@@ -6358,8 +6363,10 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
     2 === didTimeout &&
       ((executionContext |= 32),
       root.hydrate && (root.hydrate = !1),
-      (lanes = getLanesToRetrySynchronouslyOnError(root)),
-      0 !== lanes && (didTimeout = renderRootSync(root, lanes)));
+      (prevExecutionContext = getLanesToRetrySynchronouslyOnError(root)),
+      0 !== prevExecutionContext &&
+        ((lanes = prevExecutionContext),
+        (didTimeout = renderRootSync(root, prevExecutionContext))));
     if (1 === didTimeout)
       throw ((originalCallbackNode = workInProgressRootFatalError),
       prepareFreshStack(root, 0),
@@ -6461,17 +6468,20 @@ function performSyncWorkOnRoot(root) {
   if (0 !== (executionContext & 24))
     throw Error("Should not already be working.");
   flushPassiveEffects();
-  var lanes;
-  if ((lanes = root === workInProgressRoot))
-    lanes = 0 !== (root.entanglements[0] & workInProgressRootRenderLanes);
-  lanes = lanes ? workInProgressRootRenderLanes : getNextLanes(root, 0);
+  var lanes = getNextLanes(root, 0);
+  if (0 !== (lanes & 1))
+    root === workInProgressRoot &&
+      0 !== (lanes & workInProgressRootRenderLanes) &&
+      (lanes = workInProgressRootRenderLanes);
+  else return ensureRootIsScheduled(root, now()), null;
   var exitStatus = renderRootSync(root, lanes);
-  0 !== root.tag &&
-    2 === exitStatus &&
-    ((executionContext |= 32),
-    root.hydrate && (root.hydrate = !1),
-    (lanes = getLanesToRetrySynchronouslyOnError(root)),
-    0 !== lanes && (exitStatus = renderRootSync(root, lanes)));
+  if (0 !== root.tag && 2 === exitStatus) {
+    executionContext |= 32;
+    root.hydrate && (root.hydrate = !1);
+    var errorRetryLanes = getLanesToRetrySynchronouslyOnError(root);
+    0 !== errorRetryLanes &&
+      ((lanes = errorRetryLanes), (exitStatus = renderRootSync(root, lanes)));
+  }
   if (1 === exitStatus)
     throw ((exitStatus = workInProgressRootFatalError),
     prepareFreshStack(root, 0),
@@ -7965,7 +7975,7 @@ batchedUpdatesImpl = function(fn, a) {
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_985 = {
+  devToolsConfig$jscomp$inline_978 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
     version: "17.0.3",
@@ -7983,11 +7993,11 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1238 = {
-  bundleType: devToolsConfig$jscomp$inline_985.bundleType,
-  version: devToolsConfig$jscomp$inline_985.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_985.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_985.rendererConfig,
+var internals$jscomp$inline_1231 = {
+  bundleType: devToolsConfig$jscomp$inline_978.bundleType,
+  version: devToolsConfig$jscomp$inline_978.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_978.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_978.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -8002,7 +8012,7 @@ var internals$jscomp$inline_1238 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_985.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_978.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
@@ -8012,16 +8022,16 @@ var internals$jscomp$inline_1238 = {
   reconcilerVersion: "17.0.3"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1239 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1232 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1239.isDisabled &&
-    hook$jscomp$inline_1239.supportsFiber
+    !hook$jscomp$inline_1232.isDisabled &&
+    hook$jscomp$inline_1232.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1239.inject(
-        internals$jscomp$inline_1238
+      (rendererID = hook$jscomp$inline_1232.inject(
+        internals$jscomp$inline_1231
       )),
-        (injectedHook = hook$jscomp$inline_1239);
+        (injectedHook = hook$jscomp$inline_1232);
     } catch (err) {}
 }
 exports.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {
