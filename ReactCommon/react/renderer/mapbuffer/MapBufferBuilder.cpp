@@ -143,15 +143,15 @@ void MapBufferBuilder::putString(Key key, std::string value) {
 void MapBufferBuilder::putMapBuffer(Key key, MapBuffer &map) {
   int mapBufferSize = map.getBufferSize();
 
-  // format [lenght of buffer (short)] + [Array of Characters in the string]
-  int sizeOfDynamicData = mapBufferSize + UINT16_SIZE;
+  // format [lenght of buffer (int)] + [bytes of MapBuffer]
+  int sizeOfDynamicData = mapBufferSize + INT_SIZE;
 
   // format [Array of bytes of the mapBuffer]
   ensureDynamicDataSpace(sizeOfDynamicData);
 
-  memcpy(dynamicDataValues_ + dynamicDataOffset_, &mapBufferSize, UINT16_SIZE);
+  memcpy(dynamicDataValues_ + dynamicDataOffset_, &mapBufferSize, INT_SIZE);
   // Copy the content of the map into dynamicDataValues_
-  map.copy(dynamicDataValues_ + dynamicDataOffset_ + UINT16_SIZE);
+  map.copy(dynamicDataValues_ + dynamicDataOffset_ + INT_SIZE);
 
   // Store Key and pointer to the string
   putInt(key, dynamicDataOffset_);

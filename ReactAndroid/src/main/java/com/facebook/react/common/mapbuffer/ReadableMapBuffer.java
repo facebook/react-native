@@ -158,10 +158,10 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
   private ReadableMapBuffer readMapBufferValue(int position) {
     int offset = getOffsetForDynamicData() + mBuffer.getInt(position);
 
-    int sizeMapBuffer = mBuffer.getShort(offset);
+    int sizeMapBuffer = mBuffer.getInt(offset);
     byte[] buffer = new byte[sizeMapBuffer];
 
-    int bufferOffset = offset + SHORT_SIZE;
+    int bufferOffset = offset + INT_SIZE;
 
     mBuffer.position(bufferOffset);
     mBuffer.get(buffer, 0, sizeMapBuffer);

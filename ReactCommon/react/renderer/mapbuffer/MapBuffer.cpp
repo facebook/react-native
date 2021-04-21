@@ -99,21 +99,19 @@ MapBuffer MapBuffer::getMapBuffer(Key key) const {
   // of the map buffer
   int dynamicDataOffset = getDynamicDataOffset();
 
-  uint16_t mapBufferLength = 0;
-
+  int mapBufferLength = 0;
+  int offset = getInt(key);
   memcpy(
       reinterpret_cast<uint8_t *>(&mapBufferLength),
-      reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset),
-      UINT16_SIZE);
-
-  int valueOffset = getInt(key) + UINT16_SIZE;
+      reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset + offset),
+      INT_SIZE);
 
   uint8_t *value = new Byte[mapBufferLength];
 
   memcpy(
       reinterpret_cast<uint8_t *>(value),
       reinterpret_cast<const uint8_t *>(
-          data_ + dynamicDataOffset + valueOffset),
+          data_ + dynamicDataOffset + offset + INT_SIZE),
       mapBufferLength);
 
   return MapBuffer(value, mapBufferLength);
