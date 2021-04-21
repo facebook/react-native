@@ -26,7 +26,7 @@ static std::string normalizeEventType(const std::string &type) {
   auto prefixedType = type;
   if (type.find("top", 0) != 0) {
     prefixedType.insert(0, "top");
-    prefixedType[3] = toupper(prefixedType[3]);
+    prefixedType[3] = static_cast<char>(toupper(prefixedType[3]));
   }
   return prefixedType;
 }

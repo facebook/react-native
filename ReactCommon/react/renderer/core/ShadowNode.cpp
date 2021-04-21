@@ -213,7 +213,7 @@ void ShadowNode::replaceChild(
       *std::const_pointer_cast<ShadowNode::ListOfShared>(children_);
   auto size = children.size();
 
-  if (suggestedIndex != -1 && suggestedIndex < size) {
+  if (suggestedIndex != -1 && static_cast<size_t>(suggestedIndex) < size) {
     // If provided `suggestedIndex` is accurate,
     // replacing in place using the index.
     if (children.at(suggestedIndex).get() == &oldChild) {
@@ -222,7 +222,7 @@ void ShadowNode::replaceChild(
     }
   }
 
-  for (auto index = 0; index < size; index++) {
+  for (size_t index = 0; index < size; index++) {
     if (children.at(index).get() == &oldChild) {
       children[index] = newChild;
       return;

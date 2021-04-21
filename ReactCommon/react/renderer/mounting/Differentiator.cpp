@@ -170,8 +170,8 @@ class TinyMap final {
   }
 
   better::small_vector<Pair, DefaultSize> vector_;
-  int numErased_{0};
-  int erasedAtFront_{0};
+  size_t numErased_{0};
+  size_t erasedAtFront_{0};
 };
 
 /*

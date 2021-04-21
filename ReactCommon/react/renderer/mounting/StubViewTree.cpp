@@ -116,8 +116,8 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
                        << parentStubView->children.size() << " children)";
           });
           react_native_assert(childStubView->parentTag == NO_VIEW_TAG);
-          react_native_assert(
-              parentStubView->children.size() >= mutation.index);
+          react_native_assert(mutation.index < 0 || 
+              parentStubView->children.size() >= static_cast<size_t>(mutation.index));
           childStubView->parentTag = parentTag;
           parentStubView->children.insert(
               parentStubView->children.begin() + mutation.index, childStubView);
@@ -147,7 +147,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
                        << parentTag << "] @" << mutation.index << " with "
                        << parentStubView->children.size() << " children";
           });
-          react_native_assert(parentStubView->children.size() > mutation.index);
+          react_native_assert(mutation.index > 0 && parentStubView->children.size() > static_cast<size_t>(mutation.index));
           react_native_assert(registry.find(childTag) != registry.end());
           auto childStubView = registry[childTag];
           if ((ShadowView)(*childStubView) != mutation.oldChildShadowView) {
@@ -183,7 +183,8 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
                        << ": " << strChildList;
           });
           react_native_assert(
-              parentStubView->children.size() > mutation.index &&
+            mutation.index >= 0 &&
+              parentStubView->children.size() > static_cast<size_t>(mutation.index) &&
               parentStubView->children[mutation.index]->tag ==
                   childStubView->tag);
           childStubView->parentTag = NO_VIEW_TAG;
