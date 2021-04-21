@@ -26,9 +26,9 @@ ReadableMapBuffer::importByteBufferAllocateDirect() {
   // steps:
   // - Validate perf of this method vs importByteBuffer
   // - Validate that there's no leaking of memory
-  auto ret = jni::JByteBuffer::allocateDirect(_serializedDataSize);
+  auto ret = jni::JByteBuffer::allocateDirect(serializedDataSize_);
   std::memcpy(
-      ret->getDirectBytes(), (void *)_serializedData, _serializedDataSize);
+      ret->getDirectBytes(), (void *)serializedData_, serializedDataSize_);
   return ret;
 }
 
@@ -47,7 +47,7 @@ jni::JByteBuffer::javaobject ReadableMapBuffer::importByteBuffer() {
   // transfer data of multitple Maps
   return static_cast<jni::JByteBuffer::javaobject>(
       jni::Environment::current()->NewDirectByteBuffer(
-          (void *)_serializedData, _serializedDataSize));
+          (void *)serializedData_, serializedDataSize_));
 }
 
 jni::local_ref<ReadableMapBuffer::jhybridobject>
@@ -56,9 +56,11 @@ ReadableMapBuffer::createWithContents(MapBuffer &&map) {
 }
 
 ReadableMapBuffer::~ReadableMapBuffer() {
-  delete[] _serializedData;
-  _serializedData = nullptr;
-  _serializedDataSize = 0;
+  if (serializedData_ != nullptr) {
+    delete[] serializedData_;
+    serializedData_ = nullptr;
+  }
+  serializedDataSize_ = 0;
 }
 
 } // namespace react

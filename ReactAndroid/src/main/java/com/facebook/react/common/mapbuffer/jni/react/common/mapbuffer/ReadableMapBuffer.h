@@ -32,18 +32,18 @@ class ReadableMapBuffer : public jni::HybridClass<ReadableMapBuffer> {
   ~ReadableMapBuffer();
 
  private:
-  uint8_t *_serializedData = nullptr;
+  uint8_t *serializedData_ = nullptr;
 
-  int _serializedDataSize = 0;
+  int serializedDataSize_ = 0;
 
   friend HybridBase;
 
   explicit ReadableMapBuffer(MapBuffer &&map) {
-    _serializedDataSize = map.getBufferSize();
+    serializedDataSize_ = map.getBufferSize();
     react_native_assert(
-        (_serializedDataSize != 0) && "Error no content in map");
-    _serializedData = new Byte[_serializedDataSize];
-    map.copy(_serializedData);
+        (serializedDataSize_ != 0) && "Error no content in map");
+    serializedData_ = new Byte[serializedDataSize_];
+    map.copy(serializedData_);
   }
 };
 
