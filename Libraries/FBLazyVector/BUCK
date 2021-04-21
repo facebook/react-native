@@ -1,8 +1,10 @@
+load("@fbsource//tools/build_defs/apple:autoglob.bzl", "EXPORT_UNLESS_INTERNAL")
 load("//tools/build_defs/oss:rn_defs.bzl", "fb_apple_library")
 
 fb_apple_library(
     name = "FBLazyVector",
     autoglob = True,
+    autoglob_mode = EXPORT_UNLESS_INTERNAL,
     complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
     enable_exceptions = False,
