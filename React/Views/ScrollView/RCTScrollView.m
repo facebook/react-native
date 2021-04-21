@@ -326,27 +326,31 @@
   }
   _scrollView.scrollIndicatorInsets = scrollIndicatorInsets;
 
+
+
   CGFloat bottom = self.inverted ? -keyboardOverlap : (location.size.height + keyboardOverlap);
+  NSNumber *autoscrollThreshold = self->_maintainVisibleContentPosition[@"autoscrollToTopThreshold"];
+  BOOL shouldScrollToEnd = autoscrollThreshold == nil ? true : _scrollView.contentOffset.y <= [autoscrollThreshold intValue];
+  if (shouldScrollToEnd) {
+    UIViewAnimationCurve curve = (UIViewAnimationCurve)[[[notification userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
+    double duration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
 
+    UIViewAnimationOptions options;
+    switch (curve) {
+      case UIViewAnimationCurveEaseInOut:
+        options = UIViewAnimationOptionCurveEaseInOut;
+      case UIViewAnimationCurveEaseIn:
+        options = UIViewAnimationOptionCurveEaseIn;
+      case UIViewAnimationCurveEaseOut:
+        options = UIViewAnimationOptionCurveEaseOut;
+      case UIViewAnimationCurveLinear:
+        options =UIViewAnimationOptionCurveLinear;
+    }
 
-  UIViewAnimationCurve curve = (UIViewAnimationCurve)[[[notification userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
-  double duration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-
-  UIViewAnimationOptions options;
-  switch (curve) {
-    case UIViewAnimationCurveEaseInOut:
-      options = UIViewAnimationOptionCurveEaseInOut;
-    case UIViewAnimationCurveEaseIn:
-      options = UIViewAnimationOptionCurveEaseIn;
-    case UIViewAnimationCurveEaseOut:
-      options = UIViewAnimationOptionCurveEaseOut;
-    case UIViewAnimationCurveLinear:
-      options =UIViewAnimationOptionCurveLinear;
+    [UIView animateWithDuration:duration delay:0 options:options animations:^{
+      [self->_scrollView setContentOffset:CGPointMake(0, bottom) animated:false];
+    } completion:nil];
   }
-
-  [UIView animateWithDuration:duration delay:0 options:options animations:^{
-    [self->_scrollView setContentOffset:CGPointMake(0, bottom) animated:false];
-  } completion:nil];
 }
 
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
