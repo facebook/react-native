@@ -243,7 +243,7 @@ const AccessibilityInfo = {
           reject(null);
         }
       } else {
-        resolve(false);
+        reject(null);
       }
     });
   },
