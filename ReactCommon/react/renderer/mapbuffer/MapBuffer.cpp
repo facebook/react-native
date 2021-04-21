@@ -12,6 +12,8 @@ using namespace facebook::react;
 namespace facebook {
 namespace react {
 
+// TODO T83483191: Extend MapBuffer C++ implementation to support basic random
+// access
 MapBuffer::MapBuffer(uint8_t *const data, uint16_t dataSize) {
   react_native_assert(
       (data != nullptr) && "Error trying to build an invalid MapBuffer");
@@ -75,21 +77,21 @@ std::string MapBuffer::getString(Key key) const {
   // of the map buffer
   int dynamicDataOffset = getDynamicDataOffset();
   int stringLength = 0;
+  int offset = getInt(key);
   memcpy(
       reinterpret_cast<uint8_t *>(&stringLength),
-      reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset),
+      reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset + offset),
       INT_SIZE);
-
-  int valueOffset = getInt(key) + sizeof(stringLength);
 
   char *value = new char[stringLength];
 
   memcpy(
       reinterpret_cast<char *>(value),
-      reinterpret_cast<const char *>(data_ + dynamicDataOffset + valueOffset),
+      reinterpret_cast<const char *>(
+          data_ + dynamicDataOffset + offset + INT_SIZE),
       stringLength);
 
-  return std::string(value);
+  return std::string(value, 0, stringLength);
 }
 
 MapBuffer MapBuffer::getMapBuffer(Key key) const {
