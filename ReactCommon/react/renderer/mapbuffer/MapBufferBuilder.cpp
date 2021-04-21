@@ -55,6 +55,7 @@ void MapBufferBuilder::storeKeyValue(Key key, uint8_t *value, int valueSize) {
                << valueSize;
     abort();
   }
+
   // TODO T83483191: header.count points to the next index
   // TODO T83483191: add test to verify storage of sparse keys
   int keyOffset = getKeyOffset(_header.count);
@@ -95,7 +96,7 @@ void MapBufferBuilder::putInt(Key key, int value) {
 
 void MapBufferBuilder::ensureDynamicDataSpace(int size) {
   if (dynamicDataValues_ == nullptr) {
-    dynamicDataSize_ = std::max(INITIAL_DYNAMIC_DATA_SIZE, size);
+    dynamicDataSize_ = size;
     dynamicDataValues_ = new Byte[dynamicDataSize_];
     dynamicDataOffset_ = 0;
     return;
@@ -103,12 +104,17 @@ void MapBufferBuilder::ensureDynamicDataSpace(int size) {
 
   if (dynamicDataOffset_ + size >= dynamicDataSize_) {
     int oldDynamicDataSize = dynamicDataSize_;
-    if (dynamicDataSize_ >= std::numeric_limits<int>::max() / 2) {
-      LOG(ERROR) << "Error: trying to assign a value beyond the capacity of int"
-                 << static_cast<uint32_t>(dynamicDataSize_) * 2;
-      abort();
-    }
-    dynamicDataSize_ *= 2;
+    react_native_assert(
+        (dynamicDataSize_ < std::numeric_limits<int>::max() / 2) &&
+        "Error: trying to assign a value beyond the capacity of int");
+    dynamicDataSize_ *= dynamicDataSize_;
+
+    react_native_assert(
+        (dynamicDataSize_ < std::numeric_limits<int>::max() - size) &&
+        "Error: trying to assign a value beyond the capacity of int");
+
+    // sum size to ensure that the size always fit into newDynamicDataValues
+    dynamicDataSize_ += size;
     uint8_t *newDynamicDataValues = new Byte[dynamicDataSize_];
     uint8_t *oldDynamicDataValues = dynamicDataValues_;
     memcpy(newDynamicDataValues, dynamicDataValues_, oldDynamicDataSize);
