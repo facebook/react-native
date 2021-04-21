@@ -95,6 +95,12 @@ type IOSProps = $ReadOnly<{|
    */
   automaticallyAdjustContentInsets?: ?boolean,
   /**
+   * Controls whether the ScrollView should automatically adjust it's contentInset
+   * and scrollViewInsets when the Keyboard changes it's size. The default value is false.
+   * @platform ios
+   */
+  automaticallyAdjustKeyboardInsets?: ?boolean,
+  /**
    * The amount by which the scroll view content is inset from the edges
    * of the scroll view. Defaults to `{top: 0, left: 0, bottom: 0, right: 0}`.
    * @platform ios

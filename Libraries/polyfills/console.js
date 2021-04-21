@@ -427,14 +427,14 @@ function getNativeLogFunction(level) {
       // (Note: Logic duplicated in ExceptionsManager.js.)
       logLevel = LOG_LEVELS.warn;
     }
-    if (global.__inspectorLog) {
-      global.__inspectorLog(
-        INSPECTOR_LEVELS[logLevel],
-        str,
-        [].slice.call(arguments),
-        INSPECTOR_FRAMES_TO_SKIP,
-      );
-    }
+    // if (global.__inspectorLog) {
+    //   global.__inspectorLog(
+    //     INSPECTOR_LEVELS[logLevel],
+    //     str,
+    //     [].slice.call(arguments),
+    //     INSPECTOR_FRAMES_TO_SKIP,
+    //   );
+    // }
     if (groupStack.length) {
       str = groupFormat('', str);
     }

@@ -26,6 +26,7 @@ export type ScrollViewNativeProps = $ReadOnly<{
   alwaysBounceHorizontal?: ?boolean,
   alwaysBounceVertical?: ?boolean,
   automaticallyAdjustContentInsets?: ?boolean,
+  automaticallyAdjustKeyboardInsets?: ?boolean,
   bounces?: ?boolean,
   bouncesZoom?: ?boolean,
   canCancelContentTouches?: ?boolean,

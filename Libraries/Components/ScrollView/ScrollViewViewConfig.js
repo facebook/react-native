@@ -24,6 +24,7 @@ const ScrollViewViewConfig = {
     alwaysBounceHorizontal: true,
     alwaysBounceVertical: true,
     automaticallyAdjustContentInsets: true,
+    automaticallyAdjustKeyboardInsets: false,
     bounces: true,
     bouncesZoom: true,
     canCancelContentTouches: true,

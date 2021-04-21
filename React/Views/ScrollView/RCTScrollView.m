@@ -274,11 +274,67 @@
   NSHashTable *_scrollListeners;
 }
 
+- (void)registerKeyboardListener
+{
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(keyboardWillChangeFrame:)
+                                               name:UIKeyboardWillChangeFrameNotification
+                                             object:nil];
+}
+
+- (void)unregisterKeyboardListener
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:UIKeyboardWillChangeFrameNotification
+                                                object:nil];
+}
+
+- (void)keyboardWillChangeFrame:(NSNotification*)notification
+{
+  if (![self automaticallyAdjustKeyboardInsets]) {
+    return;
+  }
+  if ([self isHorizontal:_scrollView]) {
+    return;
+  }
+
+  CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+  CGRect location = [self convertRect:self.bounds toView:nil];
+  CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+
+  CGFloat keyboardOverlap = (location.origin.y + location.size.height) - (screenHeight - keyboardSize.height);
+
+  if (keyboardOverlap <= 0) {
+    // Keyboard does not overlap the ScrollView.
+    return;
+  }
+
+  UIEdgeInsets contentInsets = _scrollView.contentInset;
+  if (self.inverted) {
+    contentInsets.top = keyboardOverlap;
+  } else {
+    contentInsets.bottom = keyboardOverlap;
+  }
+  _scrollView.contentInset = contentInsets;
+
+  UIEdgeInsets scrollIndicatorInsets = _scrollView.scrollIndicatorInsets;
+  if (self.inverted) {
+    scrollIndicatorInsets.top = keyboardOverlap;
+  } else {
+    scrollIndicatorInsets.bottom = keyboardOverlap;
+  }
+  _scrollView.scrollIndicatorInsets = scrollIndicatorInsets;
+
+  CGFloat bottom = self.inverted ? -keyboardOverlap : (location.size.height + keyboardOverlap);
+  [_scrollView setContentOffset:CGPointMake(0, bottom) animated:YES];
+}
+
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   RCTAssertParam(eventDispatcher);
 
   if ((self = [super initWithFrame:CGRectZero])) {
+    [self registerKeyboardListener];
     _eventDispatcher = eventDispatcher;
 
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
@@ -410,6 +466,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 {
   _scrollView.delegate = nil;
   [_eventDispatcher.bridge.uiManager.observerCoordinator removeObserver:self];
+  [self unregisterKeyboardListener];
 }
 
 - (void)layoutSubviews
