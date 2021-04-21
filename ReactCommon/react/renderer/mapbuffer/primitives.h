@@ -28,7 +28,7 @@ namespace react {
 struct Header {
   uint16_t alignment; // alignment of serialization
   uint16_t count; // amount of items in the map
-  uint16_t bufferSize; // Amount of bytes used to store the map in memory
+  int bufferSize; // Amount of bytes used to store the map in memory
 };
 
 constexpr static int KEY_SIZE = sizeof(Key);

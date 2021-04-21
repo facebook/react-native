@@ -16,8 +16,8 @@ namespace facebook {
 namespace react {
 
 // Default initial size for _keyValues array
-// 106 = 10 entries = 10*10 + 6 sizeof(header)
-constexpr uint16_t INITIAL_KEY_VALUE_SIZE = 106;
+// 108 = 10 entries = 10*10 + 8 sizeof(header)
+constexpr uint16_t INITIAL_KEY_VALUE_SIZE = 108;
 
 // Default initial size for _dynamicDataValues array
 constexpr int INITIAL_DYNAMIC_DATA_SIZE = 200;

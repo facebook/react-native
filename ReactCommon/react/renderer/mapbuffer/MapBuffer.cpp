@@ -14,7 +14,7 @@ namespace react {
 
 // TODO T83483191: Extend MapBuffer C++ implementation to support basic random
 // access
-MapBuffer::MapBuffer(uint8_t *const data, uint16_t dataSize) {
+MapBuffer::MapBuffer(uint8_t *const data, int dataSize) {
   react_native_assert(
       (data != nullptr) && "Error trying to build an invalid MapBuffer");
 
@@ -33,7 +33,7 @@ MapBuffer::MapBuffer(uint8_t *const data, uint16_t dataSize) {
   memcpy(
       reinterpret_cast<uint8_t *>(&dataSize_),
       reinterpret_cast<const uint8_t *>(data_ + HEADER_BUFFER_SIZE_OFFSET),
-      UINT16_SIZE);
+      INT_SIZE);
 
   if (dataSize != dataSize_) {
     LOG(ERROR) << "Error: Data size does not match, expected " << dataSize
@@ -123,7 +123,7 @@ bool MapBuffer::isNull(Key key) const {
   return getInt(key) == NULL_VALUE;
 }
 
-uint16_t MapBuffer::getBufferSize() const {
+int MapBuffer::getBufferSize() const {
   return dataSize_;
 }
 

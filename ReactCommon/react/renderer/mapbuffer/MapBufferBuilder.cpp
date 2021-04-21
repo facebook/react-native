@@ -141,7 +141,7 @@ void MapBufferBuilder::putString(Key key, std::string value) {
 }
 
 void MapBufferBuilder::putMapBuffer(Key key, MapBuffer &map) {
-  uint16_t mapBufferSize = map.getBufferSize();
+  int mapBufferSize = map.getBufferSize();
 
   // format [lenght of buffer (short)] + [Array of Characters in the string]
   int sizeOfDynamicData = mapBufferSize + UINT16_SIZE;
