@@ -7,7 +7,6 @@
 
 package com.facebook.react.uiapp;
 
-import static com.facebook.react.uiapp.RNTesterApplication.IS_FABRIC_ENABLED;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactActivity;
