@@ -81,8 +81,8 @@ public class AppearanceModule extends NativeAppearanceSpec {
     Activity activity = getCurrentActivity();
 
     mColorScheme =
-      colorSchemeForCurrentConfiguration(
-          activity != null ? activity : getReactApplicationContext());
+        colorSchemeForCurrentConfiguration(
+            activity != null ? activity : getReactApplicationContext());
 
     return mColorScheme;
   }
