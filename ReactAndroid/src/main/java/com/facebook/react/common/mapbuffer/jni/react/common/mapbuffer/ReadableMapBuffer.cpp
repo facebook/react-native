@@ -21,19 +21,29 @@ void ReadableMapBuffer::registerNatives() {
 
 jni::local_ref<jni::JByteBuffer>
 ReadableMapBuffer::importByteBufferAllocateDirect() {
-  // TODO: Using this method is safer than "importByteBuffer" because ByteBuffer
-  // memory will be deallocated once the "Java ByteBuffer" is deallocated. Next
-  // steps:
+  // TODO T83483191: Using this method is safer than "importByteBuffer" because
+  // ByteBuffer memory will be deallocated once the "Java ByteBuffer" is
+  // deallocated. Next steps:
   // - Validate perf of this method vs importByteBuffer
   // - Validate that there's no leaking of memory
+  react_native_assert(
+      (serializedData_ != nullptr && serializedDataSize_ != 0) &&
+      "Error serializedData_ is not initialized");
   auto ret = jni::JByteBuffer::allocateDirect(serializedDataSize_);
+  // TODO T83483191: avoid allocating serializedData_ when using
+  // JByteBuffer::allocateDirect
   std::memcpy(
       ret->getDirectBytes(), (void *)serializedData_, serializedDataSize_);
+
+  // Deallocate serializedData_ since it's not necessary anymore
+  delete[] serializedData_;
+  serializedData_ = nullptr;
+  serializedDataSize_ = 0;
   return ret;
 }
 
 jni::JByteBuffer::javaobject ReadableMapBuffer::importByteBuffer() {
-  // TODO: Reevaluate what's the best approach here (allocateDirect vs
+  // TODO T83483191: Reevaluate what's the best approach here (allocateDirect vs
   // DirectByteBuffer).
   //
   // On this method we should:
@@ -60,7 +70,6 @@ ReadableMapBuffer::~ReadableMapBuffer() {
     delete[] serializedData_;
     serializedData_ = nullptr;
   }
-  serializedDataSize_ = 0;
 }
 
 } // namespace react
