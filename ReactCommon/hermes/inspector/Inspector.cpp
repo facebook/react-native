@@ -85,7 +85,7 @@ namespace debugger = ::facebook::hermes::debugger;
  */
 
 // TODO: read this out of an env variable or config
-static constexpr bool kShouldLog = true;
+static constexpr bool kShouldLog = false;
 
 // Logging state transitions is done outside of transition() in a macro so that
 // function and line numbers in the log will be accurate.
@@ -132,7 +132,6 @@ Inspector::Inspector(
 }
 
 Inspector::~Inspector() {
-  // TODO: think about expected detach flow
   debugger_.setEventObserver(nullptr);
 }
 
@@ -186,7 +185,7 @@ void Inspector::installConsoleFunction(
                 auto obj = val.getObject(runtime);
                 if (obj.isFunction(runtime)) {
                   auto func = obj.getFunction(runtime);
-                  func.call(runtime, args, count);
+                  func.callWithThis(runtime, *originalConsole, args, count);
                 }
               }
             }
@@ -351,6 +350,9 @@ folly::Future<debugger::BreakpointInfo> Inspector::setBreakpoint(
     debugger::SourceLocation loc,
     folly::Optional<std::string> condition) {
   auto promise = std::make_shared<folly::Promise<debugger::BreakpointInfo>>();
+  // Automatically re-enable breakpoints since the user presumably wants this
+  // to start triggering.
+  breakpointsActive_ = true;
 
   executor_->add([this, loc, condition, promise] {
     setBreakpointOnExecutor(loc, condition, promise);
@@ -449,6 +451,14 @@ folly::Future<folly::Unit> Inspector::setPauseOnLoads(
   // Return a future anyways for consistency.
   auto promise = std::make_shared<folly::Promise<Unit>>();
   pauseOnLoadMode_ = mode;
+  promise->setValue();
+  return promise->getFuture();
+};
+
+folly::Future<folly::Unit> Inspector::setBreakpointsActive(bool active) {
+  // Same logic as setPauseOnLoads.
+  auto promise = std::make_shared<folly::Promise<Unit>>();
+  breakpointsActive_ = active;
   promise->setValue();
   return promise->getFuture();
 };

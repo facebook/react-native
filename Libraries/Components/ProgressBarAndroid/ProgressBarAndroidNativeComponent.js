@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {Double, WithDefault} from '../../Types/CodegenTypes';
@@ -30,6 +28,6 @@ type NativeProps = $ReadOnly<{|
   testID?: WithDefault<string, ''>,
 |}>;
 
-export default (codegenNativeComponent<NativeProps>(
-  'AndroidProgressBar',
-): HostComponent<NativeProps>);
+export default (codegenNativeComponent<NativeProps>('AndroidProgressBar', {
+  interfaceOnly: true,
+}): HostComponent<NativeProps>);

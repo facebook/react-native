@@ -1,0 +1,61 @@
+require_relative '../../scripts/react_native_pods'
+
+source 'https://cdn.cocoapods.org/'
+platform :ios, '11.0'
+
+USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
+
+if USE_FRAMEWORKS
+  puts "Installing pods with use_frameworks!"
+  use_frameworks!
+end
+
+if ENV['USE_HERMES'] == '1'
+  puts "Using Hermes engine"
+end
+
+def pods()
+  project 'RNTesterPods.xcodeproj'
+
+  fabric_enabled = false
+
+  # To use fabric: set the environment variable `USE_FABRIC` to 1, like below
+  #   $ USE_FABRIC=1 bundle exec pod install
+  # or
+  #   $ export USE_FABRIC=1
+  #   $ bundle exec pod install
+  if ENV['USE_FABRIC'] == '1'
+    puts "Building RNTester with Fabric enabled."
+    fabric_enabled = true
+  end
+
+  prefix_path = "../.."
+  use_react_native!(path: prefix_path, fabric_enabled: fabric_enabled, hermes_enabled: ENV['USE_HERMES'] == '1')
+  pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
+
+  # Additional Pods which aren't included in the default Podfile
+  pod 'React-RCTPushNotification', :path => "#{prefix_path}/Libraries/PushNotificationIOS"
+  pod 'Yoga', :path => "#{prefix_path}/ReactCommon/yoga", :modular_headers => true
+  # Additional Pods which are classed as unstable
+end
+
+target 'RNTester' do
+  pods()
+  if !USE_FRAMEWORKS
+    use_flipper!
+  end
+end
+
+target 'RNTesterUnitTests' do
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+end
+
+target 'RNTesterIntegrationTests' do
+  pods()
+  pod 'React-RCTTest', :path => "./RCTTest"
+end
+
+post_install do |installer|
+  react_native_post_install(installer)
+end

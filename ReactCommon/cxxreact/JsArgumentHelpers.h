@@ -39,12 +39,12 @@ template <typename R, typename... T>
 R jsArg(
     const folly::dynamic &arg,
     R (folly::dynamic::*asFoo)() const,
-    const T &... desc);
+    const T &...desc);
 template <typename R, typename... T>
 R jsArg(
     const folly::dynamic &arg,
     R (folly::dynamic::*asFoo)() const &,
-    const T &... desc);
+    const T &...desc);
 
 // This is like jsArg, but a operates on a dynamic representing an array of
 // arguments.  The argument n is used both to index the array and build the

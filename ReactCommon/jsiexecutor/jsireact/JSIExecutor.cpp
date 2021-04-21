@@ -344,7 +344,7 @@ void JSIExecutor::handleMemoryPressure(int pressureLevel) {
       // collections.
       LOG(INFO) << "Memory warning (pressure level: " << levelName
                 << ") received by JS VM, running a GC";
-      runtime_->instrumentation().collectGarbage();
+      runtime_->instrumentation().collectGarbage(levelName);
       break;
     default:
       // Use the raw number instead of the name here since the name is
@@ -360,7 +360,7 @@ void JSIExecutor::bindBridge() {
     SystraceSection s("JSIExecutor::bindBridge (once)");
     Value batchedBridgeValue =
         runtime_->global().getProperty(*runtime_, "__fbBatchedBridge");
-    if (batchedBridgeValue.isUndefined()) {
+    if (batchedBridgeValue.isUndefined() || !batchedBridgeValue.isObject()) {
       throw JSINativeException(
           "Could not get BatchedBridge, make sure your bundle is packaged correctly");
     }
@@ -439,7 +439,7 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
     throw std::invalid_argument("nativeCallSyncHook arg count must be 3");
   }
 
-  if (!args[2].asObject(*runtime_).isArray(*runtime_)) {
+  if (!args[2].isObject() || !args[2].asObject(*runtime_).isArray(*runtime_)) {
     throw std::invalid_argument(
         folly::to<std::string>("method parameters should be array"));
   }

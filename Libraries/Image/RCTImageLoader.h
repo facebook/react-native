@@ -15,8 +15,9 @@
 #import <React/RCTImageURLLoader.h>
 #import <React/RCTImageCache.h>
 #import <React/RCTImageLoaderProtocol.h>
+#import <React/RCTImageLoaderLoggable.h>
 
-@interface RCTImageLoader : NSObject <RCTBridgeModule, RCTImageLoaderProtocol>
+@interface RCTImageLoader : NSObject <RCTBridgeModule, RCTImageLoaderProtocol, RCTImageLoaderLoggableProtocol>
 - (instancetype)init;
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate

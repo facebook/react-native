@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import {useMemo} from 'react';
 import {useSubscription} from 'use-subscription';
 import Appearance from './Appearance';
@@ -20,8 +18,10 @@ export default function useColorScheme(): ?ColorSchemeName {
     () => ({
       getCurrentValue: () => Appearance.getColorScheme(),
       subscribe: callback => {
-        Appearance.addChangeListener(callback);
-        return () => Appearance.removeChangeListener(callback);
+        const appearanceSubscription = Appearance.addChangeListener(callback);
+        return () => {
+          appearanceSubscription.remove();
+        };
       },
     }),
     [],

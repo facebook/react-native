@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
-
-'use strict';
 
 const DevSettings = require('./DevSettings');
 const invariant = require('invariant');
-const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
+const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const Platform = require('./Platform');
 const prettyFormat = require('pretty-format');
 
@@ -271,7 +269,7 @@ function setHMRUnavailableReason(reason) {
 }
 
 function registerBundleEntryPoints(client) {
-  if (hmrUnavailableReason) {
+  if (hmrUnavailableReason != null) {
     DevSettings.reload('Bundle Splitting – Metro disconnected');
     return;
   }

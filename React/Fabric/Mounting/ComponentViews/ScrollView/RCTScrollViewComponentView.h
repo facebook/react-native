@@ -13,12 +13,6 @@
 #import <React/RCTScrollableProtocol.h>
 #import <React/RCTViewComponentView.h>
 
-/*
- * Allows to enable or disable on-demand view mounting feature of ScrollView.
- * It's an experimental feature that improves performance and memory footprint of huge lists inside ScrollView.
- */
-RCT_EXTERN void RCTSetEnableOnDemandViewMounting(BOOL value);
-
 NS_ASSUME_NONNULL_BEGIN
 
 /*

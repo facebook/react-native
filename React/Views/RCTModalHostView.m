@@ -16,9 +16,6 @@
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
-#if TARGET_OS_TV
-#import "RCTTVRemoteHandler.h"
-#endif
 
 @implementation RCTModalHostView {
   __weak RCTBridge *_bridge;
@@ -26,11 +23,7 @@
   RCTModalHostViewController *_modalViewController;
   RCTTouchHandler *_touchHandler;
   UIView *_reactSubview;
-#if TARGET_OS_TV
-  UITapGestureRecognizer *_menuButtonGestureRecognizer;
-#else
   UIInterfaceOrientation _lastKnownOrientation;
-#endif
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
@@ -41,19 +34,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   if ((self = [super initWithFrame:CGRectZero])) {
     _bridge = bridge;
     _modalViewController = [RCTModalHostViewController new];
-    if (@available(iOS 13.0, *)) {
-      _modalViewController.presentationController.delegate = self;
-    }
     UIView *containerView = [UIView new];
     containerView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _modalViewController.view = containerView;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
-#if TARGET_OS_TV
-    _menuButtonGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                           action:@selector(menuButtonPressed:)];
-    _menuButtonGestureRecognizer.allowedPressTypes = @[ @(UIPressTypeMenu) ];
-    self.tvRemoteHandler = [RCTTVRemoteHandler new];
-#endif
     _isPresented = NO;
 
     __weak typeof(self) weakSelf = self;
@@ -63,45 +47,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   }
 
   return self;
-}
-
-- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller traitCollection:(UITraitCollection *)traitCollection
-{
-  if (self.presentationStyle == UIModalPresentationFullScreen && self.isTransparent) {
-    return UIModalPresentationOverFullScreen;
-  }
-  return self.presentationStyle;
-}
-
-- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController *)controller
-{
-  if (self.presentationStyle == UIModalPresentationFullScreen && self.isTransparent) {
-    return UIModalPresentationOverFullScreen;
-  }
-  return self.presentationStyle;
-}
-
-#if TARGET_OS_TV
-- (void)menuButtonPressed:(__unused UIGestureRecognizer *)gestureRecognizer
-{
-  if (_onRequestClose) {
-    _onRequestClose(nil);
-  }
-}
-#endif
-
-- (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
-{
-  _onRequestClose = onRequestClose;
-  #if TARGET_OS_TV
-  if (_reactSubview) {
-    if (_onRequestClose && _menuButtonGestureRecognizer) {
-      [_reactSubview addGestureRecognizer:_menuButtonGestureRecognizer];
-    } else {
-      [_reactSubview removeGestureRecognizer:_menuButtonGestureRecognizer];
-    }
-  }
-  #endif
 }
 
 - (void)notifyForBoundsChange:(CGRect)newBounds
@@ -114,7 +59,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 
 - (void)notifyForOrientationChange
 {
-#if !TARGET_OS_TV
   if (!_onOrientationChange) {
     return;
   }
@@ -131,7 +75,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     @"orientation" : isPortrait ? @"portrait" : @"landscape",
   };
   _onOrientationChange(eventPayload);
-#endif
 }
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
@@ -139,16 +82,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   RCTAssert(_reactSubview == nil, @"Modal view can only have one subview");
   [super insertReactSubview:subview atIndex:atIndex];
   [_touchHandler attachToView:subview];
-#if TARGET_OS_TV
-  for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
-    if (![key isEqualToString:RCTTVRemoteEventMenu]) {
-      [subview addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
-    }
-  }
-  if (_onRequestClose) {
-    [subview addGestureRecognizer:_menuButtonGestureRecognizer];
-  }
-#endif
 
   [_modalViewController.view insertSubview:subview atIndex:0];
   _reactSubview = subview;
@@ -160,27 +93,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   // Superclass (category) removes the `subview` from actual `superview`.
   [super removeReactSubview:subview];
   [_touchHandler detachFromView:subview];
-#if TARGET_OS_TV
-  if (_menuButtonGestureRecognizer) {
-    [subview removeGestureRecognizer:_menuButtonGestureRecognizer];
-  }
-  for (UIGestureRecognizer *gr in self.tvRemoteHandler.tvRemoteGestureRecognizers) {
-    [subview removeGestureRecognizer:gr];
-  }
-#endif
   _reactSubview = nil;
 }
 
 - (void)didUpdateReactSubviews
 {
   // Do nothing, as subview (singular) is managed by `insertReactSubview:atIndex:`
-}
-
-- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
-{
-  if (_onRequestClose) {
-    _onRequestClose(nil);
-  }
 }
 
 - (void)dismissModalViewController
@@ -204,9 +122,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   if (!_isPresented && self.window) {
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
 
-#if !TARGET_OS_TV
     _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
-#endif
+
     if ([self.animationType isEqualToString:@"fade"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     } else if ([self.animationType isEqualToString:@"slide"]) {
@@ -215,7 +132,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     if (self.presentationStyle != UIModalPresentationNone) {
       _modalViewController.modalPresentationStyle = self.presentationStyle;
     }
-    _modalViewController.modalInPresentation = self.presentationStyle != UIModalPresentationFormSheet && self.presentationStyle != UIModalPresentationPageSheet;
     [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;
   }
@@ -257,7 +173,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
       transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
 }
 
-#if !TARGET_OS_TV
 - (UIInterfaceOrientationMask)supportedOrientationsMask
 {
   if (_supportedOrientations.count == 0) {
@@ -284,6 +199,5 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   }
   return supportedOrientations;
 }
-#endif
 
 @end

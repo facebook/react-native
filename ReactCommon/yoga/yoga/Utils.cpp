@@ -6,6 +6,7 @@
  */
 
 #include "Utils.h"
+#include <stdexcept>
 
 using namespace facebook;
 
@@ -54,7 +55,7 @@ bool YGFloatsEqual(const float a, const float b) {
 
 bool YGDoubleEqual(const double a, const double b) {
   if (!yoga::isUndefined(a) && !yoga::isUndefined(b)) {
-    return fabs(a - b) < 0.0001f;
+    return fabs(a - b) < 0.0001;
   }
   return yoga::isUndefined(a) && yoga::isUndefined(b);
 }

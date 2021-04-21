@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const React = require('react');
 
 import ProgressBarAndroidNativeComponent from './ProgressBarAndroidNativeComponent';
@@ -81,22 +79,26 @@ export type ProgressBarAndroidProps = $ReadOnly<{|
  * ```
  */
 const ProgressBarAndroid = (
-  props: ProgressBarAndroidProps,
+  {
+    styleAttr = 'Normal',
+    indeterminate = true,
+    animating = true,
+    ...restProps
+  }: ProgressBarAndroidProps,
   forwardedRef: ?React.Ref<typeof ProgressBarAndroidNativeComponent>,
 ) => {
-  return <ProgressBarAndroidNativeComponent {...props} ref={forwardedRef} />;
+  return (
+    <ProgressBarAndroidNativeComponent
+      styleAttr={styleAttr}
+      indeterminate={indeterminate}
+      animating={animating}
+      {...restProps}
+      ref={forwardedRef}
+    />
+  );
 };
 
 const ProgressBarAndroidToExport = React.forwardRef(ProgressBarAndroid);
-
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
-ProgressBarAndroidToExport.defaultProps = {
-  styleAttr: 'Normal',
-  indeterminate: true,
-  animating: true,
-};
 
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this

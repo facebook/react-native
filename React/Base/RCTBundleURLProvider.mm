@@ -10,19 +10,11 @@
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 
-#if __has_include("hermes.h") || __has_include(<hermes/hermes.h>)
-#import <hermes/hermes.h>
-#define HAS_BYTECODE_VERSION
-#endif
-
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
 
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
-// This option is no longer exposed in the dev menu UI.
-// It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
-static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload_LEGACY";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 
@@ -40,7 +32,6 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 - (NSDictionary *)defaults
 {
   return @{
-    kRCTEnableLiveReloadKey : @NO,
     kRCTEnableDevKey : @YES,
     kRCTEnableMinificationKey : @NO,
   };
@@ -76,9 +67,9 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 }
 
 #if RCT_DEV_MENU
-+ (BOOL)isPackagerRunning:(NSString *)host
++ (BOOL)isPackagerRunning:(NSString *)hostPort
 {
-  NSURL *url = [serverRootWithHostPort(host) URLByAppendingPathComponent:@"status"];
+  NSURL *url = [serverRootWithHostPort(hostPort) URLByAppendingPathComponent:@"status"];
 
   NSURLSession *session = [NSURLSession sharedSession];
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
@@ -116,7 +107,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   return nil;
 }
 #else
-+ (BOOL)isPackagerRunning:(NSString *)host
++ (BOOL)isPackagerRunning:(NSString *)hostPort
 {
   return false;
 }
@@ -124,9 +115,21 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 
 - (NSString *)packagerServerHost
 {
+  NSString *location = [self packagerServerHostPort];
+  if (location) {
+    NSInteger index = [location rangeOfString:@":"].location;
+    if (index != NSNotFound) {
+      location = [location substringToIndex:index];
+    }
+  }
+  return location;
+}
+
+- (NSString *)packagerServerHostPort
+{
   NSString *location = [self jsLocation];
 #if RCT_DEV_MENU
-  if (![RCTBundleURLProvider isPackagerRunning:location]) {
+  if ([location length] && ![RCTBundleURLProvider isPackagerRunning:location]) {
     location = nil;
   }
 #endif
@@ -144,12 +147,12 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackURLProvider:(NSURL * (^)(void))fallbackURLProvider
 {
-  NSString *packagerServerHost = [self packagerServerHost];
-  if (!packagerServerHost) {
+  NSString *packagerServerHostPort = [self packagerServerHostPort];
+  if (!packagerServerHostPort) {
     return fallbackURLProvider();
   } else {
     return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
-                                             packagerHost:packagerServerHost
+                                             packagerHost:packagerServerHostPort
                                                 enableDev:[self enableDev]
                                        enableMinification:[self enableMinification]];
   }
@@ -158,7 +161,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 - (NSURL *)jsBundleURLForSplitBundleRoot:(NSString *)bundleRoot
 {
   return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
-                                           packagerHost:[self packagerServerHost]
+                                           packagerHost:[self packagerServerHostPort]
                                               enableDev:[self enableDev]
                                      enableMinification:[self enableMinification]
                                             modulesOnly:YES
@@ -192,14 +195,14 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
                     resourceExtension:(NSString *)extension
                         offlineBundle:(NSBundle *)offlineBundle
 {
-  NSString *packagerServerHost = [self packagerServerHost];
-  if (!packagerServerHost) {
+  NSString *packagerServerHostPort = [self packagerServerHostPort];
+  if (!packagerServerHostPort) {
     // Serve offline bundle (local file)
     NSBundle *bundle = offlineBundle ?: [NSBundle mainBundle];
     return [bundle URLForResource:name withExtension:extension];
   }
   NSString *path = [NSString stringWithFormat:@"/%@/%@.%@", root, name, extension];
-  return [[self class] resourceURLForResourcePath:path packagerHost:packagerServerHost query:nil];
+  return [[self class] resourceURLForResourcePath:path packagerHost:packagerServerHostPort query:nil];
 }
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
@@ -224,9 +227,8 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
                           runModule:(BOOL)runModule
 {
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
-#ifdef HAS_BYTECODE_VERSION
-  NSString *runtimeBytecodeVersion =
-      [NSString stringWithFormat:@"&runtimeBytecodeVersion=%u", facebook::hermes::HermesRuntime::getBytecodeVersion()];
+#ifdef HERMES_BYTECODE_VERSION
+  NSString *runtimeBytecodeVersion = [NSString stringWithFormat:@"&runtimeBytecodeVersion=%u", HERMES_BYTECODE_VERSION];
 #else
   NSString *runtimeBytecodeVersion = @"";
 #endif
@@ -269,11 +271,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableDevKey];
 }
 
-- (BOOL)enableLiveReload
-{
-  return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableLiveReloadKey];
-}
-
 - (BOOL)enableMinification
 {
   return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableMinificationKey];
@@ -287,11 +284,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 - (void)setEnableDev:(BOOL)enableDev
 {
   [self updateValue:@(enableDev) forKey:kRCTEnableDevKey];
-}
-
-- (void)setEnableLiveReload:(BOOL)enableLiveReload
-{
-  [self updateValue:@(enableLiveReload) forKey:kRCTEnableLiveReloadKey];
 }
 
 - (void)setJsLocation:(NSString *)jsLocation

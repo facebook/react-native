@@ -8,7 +8,6 @@
 #import "RCTSliderManager.h"
 
 #import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
 #import "RCTSlider.h"
 #import "UIView+React.h"
 

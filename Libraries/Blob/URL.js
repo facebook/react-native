@@ -7,8 +7,6 @@
  * @format
  */
 
-'use strict';
-
 const Blob = require('./Blob');
 
 import NativeBlobModule from './NativeBlobModule';
@@ -67,27 +65,27 @@ export class URLSearchParams {
   }
 
   delete(name) {
-    throw new Error('not implemented');
+    throw new Error('URLSearchParams.delete is not implemented');
   }
 
   get(name) {
-    throw new Error('not implemented');
+    throw new Error('URLSearchParams.get is not implemented');
   }
 
   getAll(name) {
-    throw new Error('not implemented');
+    throw new Error('URLSearchParams.getAll is not implemented');
   }
 
   has(name) {
-    throw new Error('not implemented');
+    throw new Error('URLSearchParams.has is not implemented');
   }
 
   set(name, value) {
-    throw new Error('not implemented');
+    throw new Error('URLSearchParams.set is not implemented');
   }
 
   sort() {
-    throw new Error('not implemented');
+    throw new Error('URLSearchParams.sort is not implemented');
   }
 
   [Symbol.iterator]() {
@@ -156,15 +154,15 @@ export class URL {
   }
 
   get hash() {
-    throw new Error('not implemented');
+    throw new Error('URL.hash is not implemented');
   }
 
   get host() {
-    throw new Error('not implemented');
+    throw new Error('URL.host is not implemented');
   }
 
   get hostname() {
-    throw new Error('not implemented');
+    throw new Error('URL.hostname is not implemented');
   }
 
   get href(): string {
@@ -172,27 +170,27 @@ export class URL {
   }
 
   get origin() {
-    throw new Error('not implemented');
+    throw new Error('URL.origin is not implemented');
   }
 
   get password() {
-    throw new Error('not implemented');
+    throw new Error('URL.password is not implemented');
   }
 
   get pathname() {
-    throw new Error('not implemented');
+    throw new Error('URL.pathname not implemented');
   }
 
   get port() {
-    throw new Error('not implemented');
+    throw new Error('URL.port is not implemented');
   }
 
   get protocol() {
-    throw new Error('not implemented');
+    throw new Error('URL.protocol is not implemented');
   }
 
   get search() {
-    throw new Error('not implemented');
+    throw new Error('URL.search is not implemented');
   }
 
   get searchParams(): URLSearchParams {
@@ -215,6 +213,6 @@ export class URL {
   }
 
   get username() {
-    throw new Error('not implemented');
+    throw new Error('URL.username is not implemented');
   }
 }

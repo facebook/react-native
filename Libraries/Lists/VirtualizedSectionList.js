@@ -17,6 +17,8 @@ const VirtualizedList = require('./VirtualizedList');
 const invariant = require('invariant');
 
 import type {ViewToken} from './ViewabilityHelper';
+import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
+import VirtualizedSectionListInjection from './VirtualizedSectionListInjection';
 
 type Item = any;
 
@@ -99,14 +101,18 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
   onEndReached?: ?({distanceFromEnd: number, ...}) => void,
 |};
 
-type VirtualizedListProps = React.ElementProps<typeof VirtualizedList>;
+type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
 export type Props<SectionT> = {|
   ...RequiredProps<SectionT>,
   ...OptionalProps<SectionT>,
   ...$Diff<
     VirtualizedListProps,
-    {renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>, ...},
+    {
+      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
+      data: $PropertyType<VirtualizedListProps, 'data'>,
+      ...
+    },
   >,
 |};
 export type ScrollToLocationParamsType = {|
@@ -115,11 +121,6 @@ export type ScrollToLocationParamsType = {|
   sectionIndex: number,
   viewOffset?: number,
   viewPosition?: number,
-|};
-
-type DefaultProps = {|
-  ...typeof VirtualizedList.defaultProps,
-  data: $ReadOnlyArray<Item>,
 |};
 
 type State = {childProps: VirtualizedListProps, ...};
@@ -132,19 +133,17 @@ type State = {childProps: VirtualizedListProps, ...};
 class VirtualizedSectionList<
   SectionT: SectionBase<any>,
 > extends React.PureComponent<Props<SectionT>, State> {
-  static defaultProps: DefaultProps = {
-    ...VirtualizedList.defaultProps,
-    data: [],
-  };
-
   scrollToLocation(params: ScrollToLocationParamsType) {
     let index = params.itemIndex;
     for (let i = 0; i < params.sectionIndex; i++) {
       index += this.props.getItemCount(this.props.sections[i].data) + 2;
     }
     let viewOffset = params.viewOffset || 0;
+    if (this._listRef == null) {
+      return;
+    }
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
-      // $FlowFixMe Cannot access private property
+      // $FlowFixMe[prop-missing] Cannot access private property
       const frame = this._listRef._getFrameMetricsApprox(
         index - params.itemIndex,
       );
@@ -158,70 +157,67 @@ class VirtualizedSectionList<
     this._listRef.scrollToIndex(toIndexParams);
   }
 
-  getListRef(): VirtualizedList {
+  getListRef(): ?React.ElementRef<typeof VirtualizedList> {
     return this._listRef;
   }
 
-  constructor(props: Props<SectionT>, context: Object) {
-    super(props, context);
-    this.state = this._computeState(props);
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps: Props<SectionT>) {
-    this.setState(this._computeState(nextProps));
-  }
-
-  _computeState(props: Props<SectionT>): State {
-    const offset = props.ListHeaderComponent ? 1 : 0;
-    const stickyHeaderIndices = [];
-    const itemCount = props.sections
-      ? props.sections.reduce((v, section) => {
-          stickyHeaderIndices.push(v + offset);
-          return v + props.getItemCount(section.data) + 2; // Add two for the section header and footer.
-        }, 0)
-      : 0;
-
+  render(): React.Node {
     const {
+      ItemSeparatorComponent, // don't pass through, rendered with renderItem
       SectionSeparatorComponent,
-      renderItem,
+      renderItem: _renderItem,
       renderSectionFooter,
       renderSectionHeader,
       sections: _sections,
       stickySectionHeadersEnabled,
-      ...restProps
-    } = props;
+      ...passThroughProps
+    } = this.props;
 
-    return {
-      childProps: {
-        ...restProps,
-        renderItem: this._renderItem,
-        ItemSeparatorComponent: undefined, // Rendered with renderItem
-        data: props.sections,
-        getItemCount: () => itemCount,
-        // $FlowFixMe
-        getItem: (sections, index) => this._getItem(props, sections, index),
-        keyExtractor: this._keyExtractor,
-        onViewableItemsChanged: props.onViewableItemsChanged
-          ? this._onViewableItemsChanged
-          : undefined,
-        stickyHeaderIndices: props.stickySectionHeadersEnabled
-          ? stickyHeaderIndices
-          : undefined,
-      },
-    };
-  }
+    const listHeaderOffset = this.props.ListHeaderComponent ? 1 : 0;
 
-  render(): React.Node {
+    const stickyHeaderIndices = this.props.stickySectionHeadersEnabled
+      ? []
+      : undefined;
+
+    let itemCount = 0;
+    for (const section of this.props.sections) {
+      // Track the section header indices
+      if (stickyHeaderIndices != null) {
+        stickyHeaderIndices.push(itemCount + listHeaderOffset);
+      }
+
+      // Add two for the section header and footer.
+      itemCount += 2;
+      itemCount += this.props.getItemCount(section.data);
+    }
+    const renderItem = this._renderItem(itemCount);
+
     return (
-      <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
+      <VirtualizedList
+        {...passThroughProps}
+        keyExtractor={this._keyExtractor}
+        stickyHeaderIndices={stickyHeaderIndices}
+        renderItem={renderItem}
+        data={this.props.sections}
+        getItem={(sections, index) =>
+          this._getItem(this.props, sections, index)
+        }
+        getItemCount={() => itemCount}
+        onViewableItemsChanged={
+          this.props.onViewableItemsChanged
+            ? this._onViewableItemsChanged
+            : undefined
+        }
+        ref={this._captureRef}
+      />
     );
   }
 
-  _getItem = (
+  _getItem(
     props: Props<SectionT>,
     sections: ?$ReadOnlyArray<Item>,
     index: number,
-  ): ?Item => {
+  ): ?Item {
     if (!sections) {
       return null;
     }
@@ -243,7 +239,7 @@ class VirtualizedSectionList<
       }
     }
     return null;
-  };
+  }
 
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
@@ -292,7 +288,8 @@ class VirtualizedSectionList<
           trailingSection: sections[i + 1],
         };
       } else {
-        const extractor = section.keyExtractor || keyExtractor;
+        const extractor =
+          section.keyExtractor || keyExtractor || defaultKeyExtractor;
         return {
           section,
           key:
@@ -313,14 +310,18 @@ class VirtualizedSectionList<
     if (!info) {
       return null;
     }
-    const keyExtractor = info.section.keyExtractor || this.props.keyExtractor;
+    const keyExtractorWithNullableIndex = info.section.keyExtractor;
+    const keyExtractorWithNonNullableIndex =
+      this.props.keyExtractor || defaultKeyExtractor;
+    const key =
+      keyExtractorWithNullableIndex != null
+        ? keyExtractorWithNullableIndex(viewable.item, info.index)
+        : keyExtractorWithNonNullableIndex(viewable.item, info.index ?? 0);
+
     return {
       ...viewable,
       index: info.index,
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
-      key: keyExtractor(viewable.item, info.index),
+      key,
       section: info.section,
     };
   };
@@ -344,7 +345,14 @@ class VirtualizedSectionList<
     }
   };
 
-  _renderItem = ({item, index}: {item: Item, index: number, ...}) => {
+  _renderItem = (listItemCount: number) => ({
+    item,
+    index,
+  }: {
+    item: Item,
+    index: number,
+    ...
+  }) => {
     const info = this._subExtractor(index);
     if (!info) {
       return null;
@@ -361,7 +369,11 @@ class VirtualizedSectionList<
       }
     } else {
       const renderItem = info.section.renderItem || this.props.renderItem;
-      const SeparatorComponent = this._getSeparatorComponent(index, info);
+      const SeparatorComponent = this._getSeparatorComponent(
+        index,
+        info,
+        listItemCount,
+      );
       invariant(renderItem, 'no renderItem!');
       return (
         <ItemWithSeparator
@@ -397,6 +409,7 @@ class VirtualizedSectionList<
   _getSeparatorComponent(
     index: number,
     info?: ?Object,
+    listItemCount: number,
   ): ?React.ComponentType<any> {
     info = info || this._subExtractor(index);
     if (!info) {
@@ -405,7 +418,7 @@ class VirtualizedSectionList<
     const ItemSeparatorComponent =
       info.section.ItemSeparatorComponent || this.props.ItemSeparatorComponent;
     const {SectionSeparatorComponent} = this.props;
-    const isLastItemInList = index === this.state.childProps.getItemCount() - 1;
+    const isLastItemInList = index === listItemCount - 1;
     const isLastItemInSection =
       info.index === this.props.getItemCount(info.section.data) - 1;
     if (SectionSeparatorComponent && isLastItemInSection) {
@@ -418,11 +431,8 @@ class VirtualizedSectionList<
   }
 
   _cellRefs = {};
-  _listRef: VirtualizedList;
+  _listRef: ?React.ElementRef<typeof VirtualizedList>;
   _captureRef = ref => {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
     this._listRef = ref;
   };
 }
@@ -554,20 +564,17 @@ class ItemWithSeparator extends React.Component<
       section,
       separators: this._separators,
     });
-    const leadingSeparator = LeadingSeparatorComponent && (
+    const leadingSeparator = LeadingSeparatorComponent != null && (
       <LeadingSeparatorComponent {...this.state.leadingSeparatorProps} />
     );
-    const separator = SeparatorComponent && (
+    const separator = SeparatorComponent != null && (
       <SeparatorComponent {...this.state.separatorProps} />
     );
     return leadingSeparator || separator ? (
-      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.89 was deployed. To see the error, delete
-       * this comment and run Flow. */
       <View>
-        {!inverted ? leadingSeparator : separator}
+        {inverted === false ? leadingSeparator : separator}
         {element}
-        {!inverted ? separator : leadingSeparator}
+        {inverted === false ? separator : leadingSeparator}
       </View>
     ) : (
       element
@@ -575,4 +582,12 @@ class ItemWithSeparator extends React.Component<
   }
 }
 
-module.exports = VirtualizedSectionList;
+const VSLToExport: React.AbstractComponent<
+  React.ElementConfig<typeof VirtualizedSectionList>,
+  $ReadOnly<{
+    getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
+    scrollToLocation: (params: ScrollToLocationParamsType) => void,
+    ...
+  }>,
+> = VirtualizedSectionListInjection.unstable_VSL ?? VirtualizedSectionList;
+module.exports = VSLToExport;

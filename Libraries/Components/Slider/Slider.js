@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const Platform = require('../../Utilities/Platform');
 import SliderNativeComponent from './SliderNativeComponent';
 const React = require('react');

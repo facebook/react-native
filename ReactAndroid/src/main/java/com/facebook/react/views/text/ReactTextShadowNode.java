@@ -111,7 +111,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                     text, layout, sTextPaintInstance, themedReactContext);
             WritableMap event = Arguments.createMap();
             event.putArray("lines", lines);
-            if (themedReactContext.hasActiveCatalystInstance()) {
+            if (themedReactContext.hasActiveReactInstance()) {
               themedReactContext
                   .getJSModule(RCTEventEmitter.class)
                   .receiveEvent(getReactTag(), "topTextLayout", event);
@@ -144,6 +144,9 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             }
           }
 
+          if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
+            layoutWidth = (float) Math.ceil(layoutWidth);
+          }
           float layoutHeight = height;
           if (heightMode != YogaMeasureMode.EXACTLY) {
             layoutHeight = layout.getLineBottom(lineCount - 1);

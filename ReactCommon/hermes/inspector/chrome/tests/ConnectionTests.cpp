@@ -44,8 +44,8 @@ namespace {
 // the already-deallocated connection.
 class TestContext {
  public:
-  TestContext(bool waitForDebugger = false)
-      : conn_(runtime_.runtime(), waitForDebugger) {}
+  TestContext(bool waitForDebugger = false, bool veryLazy = false)
+      : runtime_(veryLazy), conn_(runtime_.runtime(), waitForDebugger) {}
   ~TestContext() {
     runtime_.wait();
   }
@@ -197,6 +197,12 @@ ResponseType send(SyncConnection &conn, int id) {
   conn.send(req.toJson());
 
   return expectResponse<ResponseType>(conn, id);
+}
+
+template <typename RequestType, typename ResponseType = m::OkResponse>
+ResponseType send(SyncConnection &conn, RequestType req) {
+  conn.send(req.toJson());
+  return expectResponse<ResponseType>(conn, req.id);
 }
 
 void sendRuntimeEvalRequest(
@@ -750,6 +756,70 @@ TEST(ConnectionTests, testSetBreakpointById) {
   expectNotification<m::debugger::ResumedNotification>(conn);
 }
 
+TEST(ConnectionTests, testActivateBreakpoints) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync(R"(
+    debugger;      // line 1
+    x=100          //      2
+    debugger;      //      3
+    x=101;         //      4
+  )");
+
+  send<m::debugger::EnableRequest>(conn, ++msgId);
+  expectExecutionContextCreated(conn);
+  auto script = expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  expectPaused(conn, "other", {{"global", 1, 1}});
+
+  // Set breakpoint #1
+  m::debugger::SetBreakpointRequest req;
+  req.id = ++msgId;
+  req.location.scriptId = script.scriptId;
+  req.location.lineNumber = 2;
+  conn.send(req.toJson());
+  expectResponse<m::debugger::SetBreakpointResponse>(conn, req.id);
+
+  // Set breakpoint #2
+  req.id = ++msgId;
+  req.location.scriptId = script.scriptId;
+  req.location.lineNumber = 4;
+  conn.send(req.toJson());
+  expectResponse<m::debugger::SetBreakpointResponse>(conn, req.id);
+
+  // Disable breakpoints
+  m::debugger::SetBreakpointsActiveRequest activeReq;
+  activeReq.id = ++msgId;
+  activeReq.active = false;
+  conn.send(activeReq.toJson());
+  expectResponse<m::OkResponse>(conn, activeReq.id);
+
+  // Resume
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+
+  // Expect first breakpoint to be skipped, now hitting line #3
+  expectPaused(conn, "other", {{"global", 3, 1}});
+
+  // Re-enable breakpoints
+  activeReq.id = ++msgId;
+  activeReq.active = true;
+  conn.send(activeReq.toJson());
+  expectResponse<m::OkResponse>(conn, activeReq.id);
+
+  // Resume and expect breakpoints to trigger again
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+  expectPaused(conn, "other", {{"global", 4, 1}});
+
+  // Continue and exit
+  send<m::debugger::ResumeRequest>(conn, ++msgId);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
 TEST(ConnectionTests, testSetBreakpointByIdWithColumnInIndenting) {
   TestContext context;
   AsyncHermesRuntime &asyncRuntime = context.runtime();
@@ -796,9 +866,6 @@ TEST(ConnectionTests, testSetLazyBreakpoint) {
   SyncConnection &conn = context.conn();
   int msgId = 1;
 
-  facebook::hermes::HermesRuntime::DebugFlags flags{};
-  flags.lazy = true;
-
   asyncRuntime.executeScriptAsync(
       R"(
     var a = 1 + 2;
@@ -815,8 +882,7 @@ TEST(ConnectionTests, testSetLazyBreakpoint) {
 
     foo();
   )",
-      "url",
-      flags);
+      "url");
 
   send<m::debugger::EnableRequest>(conn, msgId++);
   expectExecutionContextCreated(conn);
@@ -2385,6 +2451,63 @@ TEST(ConnectionTests, runIfWaitingForDebugger) {
   expectEvalResponse(conn, msgId, true);
 
   // Finally explicitly continue and exit
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, heapProfilerSampling) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+
+  asyncRuntime.executeScriptAsync(R"(
+      debugger;
+      function allocator() {
+        // Do some allocation.
+        return new Object;
+      }
+      (function main() {
+        var a = [];
+        for (var i = 0; i < 100; i++) {
+          a[i] = allocator();
+        }
+      })();
+      debugger;
+    )");
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // We should get a pause before the first statement.
+  expectNotification<m::debugger::PausedNotification>(conn);
+
+  {
+    m::heapProfiler::StartSamplingRequest req;
+    req.id = msgId++;
+    // Sample every 256 bytes to ensure there are some samples. The default is
+    // 32768, which is too high for a small example. Note that sampling is a
+    // random process, so there's no guarantee there will be any samples in any
+    // finite number of allocations. In practice the likelihood is so high that
+    // there shouldn't be any issues.
+    req.samplingInterval = 256;
+    send(conn, req);
+  }
+  // Resume, run the allocations, and once it's paused again, stop them.
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+  expectNotification<m::debugger::PausedNotification>(conn);
+  // Send the stop sampling request, expect the value coming back to be JSON.
+  auto resp = send<
+      m::heapProfiler::StopSamplingRequest,
+      m::heapProfiler::StopSamplingResponse>(conn, msgId++);
+  // Make sure there were some samples.
+  EXPECT_NE(resp.profile.samples.size(), 0);
+  // Don't test the content of the JSON, that is tested via the
+  // SamplingHeapProfilerTest.
+
+  // Resume and exit
   send<m::debugger::ResumeRequest>(conn, msgId++);
   expectNotification<m::debugger::ResumedNotification>(conn);
 }
