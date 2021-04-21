@@ -331,11 +331,22 @@
 
   UIViewAnimationCurve curve = (UIViewAnimationCurve)[[[notification userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
   double duration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-  [UIView animateWithDuration:duration delay:0 options:curve animations:^{
-    [self->_scrollView setContentOffset:CGPointMake(0, bottom)];
-  } completion:^(BOOL finished) {
-    // ..
-  }];
+
+  UIViewAnimationOptions options;
+  switch (curve) {
+    case UIViewAnimationCurveEaseInOut:
+      options = UIViewAnimationOptionCurveEaseInOut;
+    case UIViewAnimationCurveEaseIn:
+      options = UIViewAnimationOptionCurveEaseIn;
+    case UIViewAnimationCurveEaseOut:
+      options = UIViewAnimationOptionCurveEaseOut;
+    case UIViewAnimationCurveLinear:
+      options =UIViewAnimationOptionCurveLinear;
+  }
+
+  [UIView animateWithDuration:duration delay:0 options:options animations:^{
+    [self->_scrollView setContentOffset:CGPointMake(0, bottom) animated:false];
+  } completion:nil];
 }
 
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
