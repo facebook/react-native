@@ -132,7 +132,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     if (self.presentationStyle != UIModalPresentationNone) {
       _modalViewController.modalPresentationStyle = self.presentationStyle;
     }
-    _modalViewController.modalInPresentation = self.presentationStyle != UIModalPresentationFormSheet && self.presentationStyle != UIModalPresentationPageSheet;
     [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;
   }
