@@ -103,10 +103,9 @@ void MapBufferBuilder::ensureDynamicDataSpace(int size) {
 
   if (dynamicDataOffset_ + size >= dynamicDataSize_) {
     int oldDynamicDataSize = dynamicDataSize_;
-    if (dynamicDataSize_ >= std::numeric_limits<uint16_t>::max() / 2) {
-      LOG(ERROR)
-          << "Error: trying to assign a value beyond the capacity of uint16_t"
-          << static_cast<uint32_t>(dynamicDataSize_) * 2;
+    if (dynamicDataSize_ >= std::numeric_limits<int>::max() / 2) {
+      LOG(ERROR) << "Error: trying to assign a value beyond the capacity of int"
+                 << static_cast<uint32_t>(dynamicDataSize_) * 2;
       abort();
     }
     dynamicDataSize_ *= 2;
@@ -212,12 +211,6 @@ MapBufferBuilder::~MapBufferBuilder() {
   if (dynamicDataValues_ != nullptr) {
     delete[] dynamicDataValues_;
   }
-  _header = {ALIGNMENT, 0, 0};
-  keyValuesSize_ = 0;
-  keyValuesOffset_ = 0;
-  dynamicDataSize_ = 0;
-  dynamicDataOffset_ = 0;
-  minKeyToStore_ = 0;
 }
 
 } // namespace react

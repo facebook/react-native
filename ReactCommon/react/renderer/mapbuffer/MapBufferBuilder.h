@@ -54,7 +54,7 @@ class MapBufferBuilder {
   uint8_t *dynamicDataValues_ = nullptr;
 
   // Amount of bytes allocated on _dynamicDataValues
-  uint16_t dynamicDataSize_ = 0;
+  int dynamicDataSize_ = 0;
 
   // Relative offset on the _dynamicDataValues array.
   // This represents the first byte that can be written in _dynamicDataValues
