@@ -46,7 +46,9 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     }
   }
 
-  // Android can listen for accessibility service enable with `accessibilityStateChange`, but `accessibilityState` conflicts with React Native props and confuses developers. Therefore, the name `accessibilityServiceChange` is used here instead.
+  // Android can listen for accessibility service enable with `accessibilityStateChange`, but
+  // `accessibilityState` conflicts with React Native props and confuses developers. Therefore, the
+  // name `accessibilityServiceChange` is used here instead.
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private class ReactAccessibilityServiceChangeListener
       implements AccessibilityManager.AccessibilityStateChangeListener {
@@ -173,8 +175,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   public void onHostResume() {
     mAccessibilityManager.addTouchExplorationStateChangeListener(
         mTouchExplorationStateChangeListener);
-    mAccessibilityManager.addAccessibilityStateChangeListener(
-        mAccessibilityServiceChangeListener);
+    mAccessibilityManager.addAccessibilityStateChangeListener(mAccessibilityServiceChangeListener);
 
     Uri transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE);
     mContentResolver.registerContentObserver(transitionUri, false, animationScaleObserver);
