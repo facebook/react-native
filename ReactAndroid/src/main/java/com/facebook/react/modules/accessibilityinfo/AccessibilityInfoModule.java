@@ -84,7 +84,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   private static final String REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange";
   private static final String TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange";
-  private static final String ACCESSIBILITY_STATE_EVENT_NAME = "accessibilityServiceDidChange";
+  private static final String ACCESSIBILITY_SERVICE_EVENT_NAME = "accessibilityServiceDidChange";
 
   public AccessibilityInfoModule(ReactApplicationContext context) {
     super(context);
@@ -163,7 +163,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
       if (reactApplicationContext != null) {
         getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(ACCESSIBILITY_STATE_EVENT_NAME, mAccessibilityServiceEnabled);
+            .emit(ACCESSIBILITY_SERVICE_EVENT_NAME, mAccessibilityServiceEnabled);
       }
     }
   }
