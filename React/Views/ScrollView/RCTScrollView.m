@@ -290,6 +290,14 @@
                                                 object:nil];
 }
 
+static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCurve curve)
+{
+  // UIViewAnimationCurve #7 is used for keyboard and therefore private - so we can't use switch/case here.
+  // source: https://stackoverflow.com/a/7327374/5281431
+  RCTAssert(UIViewAnimationCurveLinear << 16 == UIViewAnimationOptionCurveLinear, @"Unexpected implementation of UIViewAnimationCurve");
+  return curve << 16;
+}
+
 - (void)keyboardWillChangeFrame:(NSNotification*)notification
 {
   if (![self automaticallyAdjustKeyboardInsets]) {
@@ -299,58 +307,34 @@
     return;
   }
 
-  CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-  CGRect location = [self convertRect:self.bounds toView:nil];
-  CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+  double duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+  UIViewAnimationCurve curve = (UIViewAnimationCurve)[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
+  CGRect beginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+  CGRect endFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
 
-  CGFloat keyboardOverlap = (location.origin.y + location.size.height) - (screenHeight - keyboardSize.height);
-
-  if (keyboardOverlap <= 0) {
-    // Keyboard does not overlap the ScrollView.
-    return;
-  }
-
-  UIEdgeInsets contentInsets = _scrollView.contentInset;
+  UIEdgeInsets newEdgeInsets = _scrollView.contentInset;
+  CGFloat inset = endFrame.size.height;
   if (self.inverted) {
-    contentInsets.top = keyboardOverlap;
+    newEdgeInsets.top = inset;
   } else {
-    contentInsets.bottom = keyboardOverlap;
+    newEdgeInsets.bottom = inset;
   }
-  _scrollView.contentInset = contentInsets;
-
-  UIEdgeInsets scrollIndicatorInsets = _scrollView.scrollIndicatorInsets;
+  CGPoint newContentOffset = _scrollView.contentOffset;
+  CGFloat contentDiff = endFrame.origin.y - beginFrame.origin.y;
   if (self.inverted) {
-    scrollIndicatorInsets.top = keyboardOverlap;
+    newContentOffset.y += contentDiff;
   } else {
-    scrollIndicatorInsets.bottom = keyboardOverlap;
+    newContentOffset.y -= contentDiff;
   }
-  _scrollView.scrollIndicatorInsets = scrollIndicatorInsets;
 
-
-
-  CGFloat bottom = self.inverted ? -keyboardOverlap : (location.size.height + keyboardOverlap);
-  NSNumber *autoscrollThreshold = self->_maintainVisibleContentPosition[@"autoscrollToTopThreshold"];
-  BOOL shouldScrollToEnd = autoscrollThreshold == nil ? true : _scrollView.contentOffset.y <= [autoscrollThreshold intValue];
-  if (shouldScrollToEnd) {
-    UIViewAnimationCurve curve = (UIViewAnimationCurve)[[[notification userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
-    double duration = [[[notification userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-
-    UIViewAnimationOptions options;
-    switch (curve) {
-      case UIViewAnimationCurveEaseInOut:
-        options = UIViewAnimationOptionCurveEaseInOut;
-      case UIViewAnimationCurveEaseIn:
-        options = UIViewAnimationOptionCurveEaseIn;
-      case UIViewAnimationCurveEaseOut:
-        options = UIViewAnimationOptionCurveEaseOut;
-      case UIViewAnimationCurveLinear:
-        options =UIViewAnimationOptionCurveLinear;
-    }
-
-    [UIView animateWithDuration:duration delay:0 options:options animations:^{
-      [self->_scrollView setContentOffset:CGPointMake(0, bottom) animated:false];
-    } completion:nil];
-  }
+  [UIView animateWithDuration:duration
+                        delay:0.0
+                      options:animationOptionsWithCurve(curve)
+                   animations:^{
+    self->_scrollView.contentInset = newEdgeInsets;
+    self->_scrollView.scrollIndicatorInsets = newEdgeInsets;
+    self->_scrollView.contentOffset = newContentOffset;
+  } completion:nil];
 }
 
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
