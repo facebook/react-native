@@ -56,8 +56,8 @@ exports.examples = [
           <View cursor="default" style={{padding: 10}}>
             <Text style={{fontSize: 11}}>default</Text>
           </View>
-          <View cursor="contextMenu" style={{padding: 10}}>
-            <Text style={{fontSize: 11}}>contextMenu</Text>
+          <View cursor="context-menu" style={{padding: 10}}>
+            <Text style={{fontSize: 11}}>context-menu</Text>
           </View>
           <View cursor="pointer" style={{padding: 10}}>
             <Text style={{fontSize: 11}}>pointer</Text>
@@ -65,8 +65,8 @@ exports.examples = [
           <View cursor="text" style={{padding: 10}}>
             <Text style={{fontSize: 11}}>text</Text>
           </View>
-          <View cursor="verticalText" style={{padding: 10}}>
-            <Text style={{fontSize: 11}}>verticalText</Text>
+          <View cursor="vertical-text" style={{padding: 10}}>
+            <Text style={{fontSize: 11}}>vertical-text</Text>
           </View>
           <View cursor="alias" style={{padding: 10}}>
             <Text style={{fontSize: 11}}>alias</Text>
@@ -74,8 +74,8 @@ exports.examples = [
           <View cursor="copy" style={{padding: 10}}>
             <Text style={{fontSize: 11}}>copy</Text>
           </View>
-          <View cursor="notAllowed" style={{padding: 10}}>
-            <Text style={{fontSize: 11}}>notAllowed</Text>
+          <View cursor="not-allowed" style={{padding: 10}}>
+            <Text style={{fontSize: 11}}>not-allowed</Text>
           </View>
           <View cursor="grab" style={{padding: 10}}>
             <Text style={{fontSize: 11}}>grab</Text>
@@ -83,23 +83,23 @@ exports.examples = [
           <View cursor="grabbing" style={{padding: 10}}>
             <Text style={{fontSize: 11}}>grabbing</Text>
           </View>
-          <View cursor="colResize" style={{padding: 10}}>
-            <Text style={{fontSize: 11}}>colResize</Text>
+          <View cursor="col-resize" style={{padding: 10}}>
+            <Text style={{fontSize: 11}}>col-resize</Text>
           </View>
-          <View cursor="rowResize" style={{padding: 10}}>
-            <Text style={{fontSize: 11}}>rowResize</Text>
+          <View cursor="row-resize" style={{padding: 10}}>
+            <Text style={{fontSize: 11}}>row-resize</Text>
           </View>
-          <View cursor="nResize" style={{padding: 10}}>
-            <Text style={{fontSize: 11}}>nResize</Text>
+          <View cursor="n-resize" style={{padding: 10}}>
+            <Text style={{fontSize: 11}}>n-resize</Text>
           </View>
-          <View cursor="eResize" style={{padding: 10}}>
-            <Text style={{fontSize: 11}}>eResize</Text>
+          <View cursor="e-resize" style={{padding: 10}}>
+            <Text style={{fontSize: 11}}>e-resize</Text>
           </View>
-          <View cursor="sResize" style={{padding: 10}}>
-            <Text style={{fontSize: 11}}>sResize</Text>
+          <View cursor="s-resize" style={{padding: 10}}>
+            <Text style={{fontSize: 11}}>s-resize</Text>
           </View>
-          <View cursor="wResize" style={{padding: 10}}>
-            <Text style={{fontSize: 11}}>wResize</Text>
+          <View cursor="w-resize" style={{padding: 10}}>
+            <Text style={{fontSize: 11}}>w-resize</Text>
           </View>
         </>
       );
