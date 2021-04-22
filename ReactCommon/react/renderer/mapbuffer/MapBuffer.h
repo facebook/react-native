@@ -37,20 +37,20 @@ class MapBuffer {
   const uint8_t *data_ = nullptr;
 
   // amount of bytes in the MapBuffer
-  int dataSize_ = 0;
+  int32_t dataSize_ = 0;
 
   // amount of items in the MapBuffer
   uint16_t count_ = 0;
 
   // returns the relative offset of the first byte of dynamic data
-  int getDynamicDataOffset() const;
+  int32_t getDynamicDataOffset() const;
 
  public:
-  MapBuffer(uint8_t *const data, int dataSize);
+  MapBuffer(uint8_t *const data, int32_t dataSize);
 
   ~MapBuffer();
 
-  int getInt(Key key) const;
+  int32_t getInt(Key key) const;
 
   bool getBool(Key key) const;
 
@@ -61,7 +61,7 @@ class MapBuffer {
   // TODO T83483191: review this declaration
   MapBuffer getMapBuffer(Key key) const;
 
-  int getBufferSize() const;
+  int32_t getBufferSize() const;
 
   // TODO T83483191: review parameters of copy method
   void copy(uint8_t *output) const;
