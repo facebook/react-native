@@ -10,12 +10,13 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 
 #import <React/RCTBridge.h>
+#import <React/RCTBundleHolderModule.h>
 
 #import "CoreModulesPlugins.h"
 
 using namespace facebook::react;
 
-@interface RCTSourceCode () <NativeSourceCodeSpec>
+@interface RCTSourceCode () <NativeSourceCodeSpec, RCTBundleHolderModule>
 @end
 
 @implementation RCTSourceCode
@@ -23,6 +24,7 @@ using namespace facebook::react;
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
+@synthesize bundleURL = _bundleURL;
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -36,8 +38,13 @@ RCT_EXPORT_MODULE()
 
 - (NSDictionary<NSString *, id> *)getConstants
 {
+  if (_bridge) {
+    return @{
+      @"scriptURL" : self.bridge.bundleURL.absoluteString ?: @"",
+    };
+  }
   return @{
-    @"scriptURL" : self.bridge.bundleURL.absoluteString ?: @"",
+    @"scriptURL" : _bundleURL.absoluteString ?: @"",
   };
 }
 
