@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<2ebb47c89a60a8b3e667fdf7431261b6>>
+ * @generated SignedSource<<85633cd599819668a18b16a0756284c2>>
  */
 
 'use strict';
@@ -11173,7 +11173,7 @@ function mountTransition() {
   var start = startTransition.bind(null, setPending);
   var hook = mountWorkInProgressHook();
   hook.memoizedState = start;
-  return [start, isPending];
+  return [isPending, start];
 }
 
 function updateTransition() {
@@ -11182,7 +11182,7 @@ function updateTransition() {
 
   var hook = updateWorkInProgressHook();
   var start = hook.memoizedState;
-  return [start, isPending];
+  return [isPending, start];
 }
 
 function rerenderTransition() {
@@ -11191,7 +11191,7 @@ function rerenderTransition() {
 
   var hook = updateWorkInProgressHook();
   var start = hook.memoizedState;
-  return [start, isPending];
+  return [isPending, start];
 }
 
 var isUpdatingOpaqueValueInRenderPhase = false;

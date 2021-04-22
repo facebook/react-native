@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<f3ba739eb1c9f66a84cff47bff41d5c4>>
+ * @generated SignedSource<<feadd8235d80907d50c4c6a1249e0c85>>
  */
 
 "use strict";
@@ -3959,7 +3959,7 @@ var ContextOnlyDispatcher = {
         isPending = _mountState2[0];
       _mountState2 = startTransition.bind(null, _mountState2[1]);
       mountWorkInProgressHook().memoizedState = _mountState2;
-      return [_mountState2, isPending];
+      return [isPending, _mountState2];
     },
     useMutableSource: function(source, getSnapshot, subscribe) {
       var hook = mountWorkInProgressHook();
@@ -4008,8 +4008,9 @@ var ContextOnlyDispatcher = {
       return prevValue;
     },
     useTransition: function() {
-      var isPending = updateReducer(basicStateReducer)[0];
-      return [updateWorkInProgressHook().memoizedState, isPending];
+      var isPending = updateReducer(basicStateReducer)[0],
+        start = updateWorkInProgressHook().memoizedState;
+      return [isPending, start];
     },
     useMutableSource: updateMutableSource,
     useOpaqueIdentifier: function() {
@@ -4050,8 +4051,9 @@ var ContextOnlyDispatcher = {
       return prevValue;
     },
     useTransition: function() {
-      var isPending = rerenderReducer(basicStateReducer)[0];
-      return [updateWorkInProgressHook().memoizedState, isPending];
+      var isPending = rerenderReducer(basicStateReducer)[0],
+        start = updateWorkInProgressHook().memoizedState;
+      return [isPending, start];
     },
     useMutableSource: updateMutableSource,
     useOpaqueIdentifier: function() {
