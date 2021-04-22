@@ -51,7 +51,7 @@ RCT_ENUM_CONVERTER(
       @"vertical-text" : @(RCTCursorIBeamCursorForVerticalLayout),
       @"w-resize" : @(RCTCursorResizeLeft),
     }),
-    RCTCursorAuto,
+    RCTCursorArrow,
     integerValue)
 
 @end
