@@ -333,7 +333,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
                    animations:^{
     self->_scrollView.contentInset = newEdgeInsets;
     self->_scrollView.scrollIndicatorInsets = newEdgeInsets;
-    self->_scrollView.contentOffset = newContentOffset;
+    [self scrollToOffset:newContentOffset animated:NO];
   } completion:nil];
 }
 
@@ -912,8 +912,10 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
           // Find the first entirely visible view. This must be done after we update the content offset
           // or it will tend to grab rows that were made visible by the shift in position
           UIView *subview = self->_contentView.subviews[ii];
+          CGFloat bottomInset = self.inverted ? self->_scrollView.contentInset.top : self->_scrollView.contentInset.bottom;
+          CGFloat y = self->_scrollView.contentOffset.y + bottomInset;
           if ((horz ? subview.frame.origin.x >= self->_scrollView.contentOffset.x
-                    : subview.frame.origin.y >= self->_scrollView.contentOffset.y) ||
+                    : subview.frame.origin.y >= y) ||
               ii == self->_contentView.subviews.count - 1) {
             self->_prevFirstVisibleFrame = subview.frame;
             self->_firstVisibleView = subview;
@@ -943,12 +945,14 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
       CGRect newFrame = self->_firstVisibleView.frame;
       CGFloat deltaY = newFrame.origin.y - self->_prevFirstVisibleFrame.origin.y;
       if (ABS(deltaY) > 0.1) {
+        CGFloat bottomInset = self.inverted ? self->_scrollView.contentInset.top : self->_scrollView.contentInset.bottom;
+        CGFloat y = self->_scrollView.contentOffset.y + bottomInset;
         self->_scrollView.contentOffset =
             CGPointMake(self->_scrollView.contentOffset.x, self->_scrollView.contentOffset.y + deltaY);
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
-          if (self->_scrollView.contentOffset.y - deltaY <= [autoscrollThreshold integerValue]) {
-            [self scrollToOffset:CGPointMake(self->_scrollView.contentOffset.x, 0) animated:YES];
+          if (y - deltaY <= [autoscrollThreshold integerValue]) {
+            [self scrollToOffset:CGPointMake(self->_scrollView.contentOffset.x, -bottomInset) animated:YES];
           }
         }
       }
