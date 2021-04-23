@@ -101,6 +101,11 @@ type Props = $ReadOnly<{|
    * instance, to show times in Pacific Standard Time, pass -7 * 60.
    */
   timeZoneOffsetInMinutes?: ?number,
+
+  /**
+   * The date picker style
+   */
+  pickerStyle?: ?('default' | 'compact' | 'spinner' | 'inline'),
 |}>;
 
 /**
@@ -172,6 +177,7 @@ class DatePickerIOS extends React.Component<Props> {
           onChange={this._onChange}
           onStartShouldSetResponder={() => true}
           onResponderTerminationRequest={() => false}
+          pickerStyle={props.pickerStyle}
         />
       </View>
     );
