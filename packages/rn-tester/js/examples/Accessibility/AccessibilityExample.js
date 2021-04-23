@@ -261,7 +261,9 @@ class SelectionExample extends React.Component<
     super(props);
     this.selectableElement = createRef();
   }
-  selectableElement: {current: React.ElementRef<any> | null};
+  selectableElement: {
+    current: React.ElementRef<typeof TouchableOpacity> | null,
+  };
 
   state = {
     isSelected: true,
@@ -677,14 +679,12 @@ class AccessibilityActionsExample extends React.Component<{}> {
   }
 }
 
-class FakeSliderExample extends React.Component<
-  {},
-  {
-    current: number,
-    textualValue: 'center' | 'right' | 'left',
-  },
-> {
-  state: {current: number, textualValue: 'center' | 'left' | 'right'} = {
+type FakeSliderExampleState = {
+  current: number,
+  textualValue: 'center' | 'left' | 'right',
+};
+class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
+  state: FakeSliderExampleState = {
     current: 50,
     textualValue: 'center',
   };
@@ -880,7 +880,7 @@ class EnabledExample extends React.Component<
     test: string,
   },
   {
-    isEnabled: void | boolean,
+    isEnabled: boolean,
   },
 > {
   state = {
@@ -907,7 +907,7 @@ class EnabledExample extends React.Component<
     this._subscription?.remove();
   }
 
-  _handleToggled = () => {
+  _handleToggled = isEnabled => {
     if (!this.state.isEnabled) {
       this.setState({isEnabled: true});
     } else {
