@@ -2545,6 +2545,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       },
     ]
   }
+  disableVirtualization={true}
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
@@ -2607,12 +2608,33 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       />
     </View>
     <View
-      style={
-        Object {
-          "height": 40,
-        }
-      }
-    />
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={9}
+      />
+    </View>
   </View>
 </RCTScrollView>
 `;
@@ -2986,6 +3008,7 @@ exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
       },
     ]
   }
+  disableVirtualization={true}
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
@@ -3045,13 +3068,6 @@ exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
         value={5}
       />
     </View>
-    <View
-      style={
-        Object {
-          "height": 40,
-        }
-      }
-    />
   </View>
 </RCTScrollView>
 `;
@@ -3092,11 +3108,12 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
       },
     ]
   }
+  disableVirtualization={true}
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
-  initialNumToRender={5}
-  initialScrollIndex={1}
+  initialNumToRender={1}
+  initialScrollIndex={4}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
@@ -3154,12 +3171,33 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
       />
     </View>
     <View
-      style={
-        Object {
-          "height": 40,
-        }
-      }
-    />
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={9}
+      />
+    </View>
   </View>
 </RCTScrollView>
 `;
