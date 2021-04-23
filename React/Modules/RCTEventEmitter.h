@@ -28,6 +28,11 @@
 - (NSArray<NSString *> *)supportedEvents;
 
 /**
+ * get `eventName` registered when `addListener` was succeeded.
+ */
+- (NSString *)eventName;
+
+/**
  * Send an event that does not relate to a specific view, e.g. a navigation
  * or data update notification.
  */
