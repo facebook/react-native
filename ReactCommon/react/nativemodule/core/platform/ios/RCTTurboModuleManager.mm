@@ -277,6 +277,9 @@ static Class getFallbackClassFromName(const char *name)
   Class moduleClass = [module class];
 
   dispatch_queue_t methodQueue = (dispatch_queue_t)objc_getAssociatedObject(module, &kAssociatedMethodQueueKey);
+  if (methodQueue == nil) {
+    RCTLogError(@"TurboModule \"%@\" was not associated with a method queue.", moduleClass);
+  }
 
   /**
    * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
