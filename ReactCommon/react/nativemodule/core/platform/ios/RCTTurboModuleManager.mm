@@ -884,31 +884,31 @@ static Class getFallbackClassFromName(const char *name)
                                                shouldPerfLog:NO];
 
     if ([module respondsToSelector:@selector(invalidate)]) {
-      if ([module respondsToSelector:@selector(methodQueue)]) {
-        dispatch_queue_t methodQueue = [module performSelector:@selector(methodQueue)];
+      dispatch_queue_t methodQueue = (dispatch_queue_t)objc_getAssociatedObject(module, &kAssociatedMethodQueueKey);
 
-        if (methodQueue) {
-          dispatch_group_enter(moduleInvalidationGroup);
-          dispatch_block_t invalidateModule = ^{
-            [((id<RCTInvalidating>)module) invalidate];
-            dispatch_group_leave(moduleInvalidationGroup);
-          };
-
-          if (_bridge) {
-            [_bridge dispatchBlock:invalidateModule queue:methodQueue];
-          } else {
-            // Bridgeless mode
-            if (methodQueue == RCTJSThread) {
-              invalidateModule();
-            } else {
-              dispatch_async(methodQueue, invalidateModule);
-            }
-          }
-          continue;
-        }
+      if (methodQueue == nil) {
+        RCTLogError(
+            @"TurboModuleManager: Couldn't invalidate TurboModule \"%@\", because its method queue is nil.",
+            [module class]);
+        continue;
       }
 
-      [((id<RCTInvalidating>)module) invalidate];
+      dispatch_group_enter(moduleInvalidationGroup);
+      dispatch_block_t invalidateModule = ^{
+        [((id<RCTInvalidating>)module) invalidate];
+        dispatch_group_leave(moduleInvalidationGroup);
+      };
+
+      if (_bridge) {
+        [_bridge dispatchBlock:invalidateModule queue:methodQueue];
+      } else {
+        // Bridgeless mode
+        if (methodQueue == RCTJSThread) {
+          invalidateModule();
+        } else {
+          dispatch_async(methodQueue, invalidateModule);
+        }
+      }
     }
   }
 
