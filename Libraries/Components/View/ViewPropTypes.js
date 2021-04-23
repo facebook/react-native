@@ -626,4 +626,30 @@ export type ViewProps = $ReadOnly<{|
    * @platform macos
    */
   draggedTypes?: ?DraggedTypesType, // TODO(macOS ISS#2323203)
+  
+  /*
+   * Sets the type of mouse cursor, to show when the mouse pointer is over the view.
+   */
+  cursor?: ?(
+    | 'alias'
+    | 'auto'
+    | 'col-resize'
+    | 'context-menu'
+    | 'copy'
+    | 'crosshair'
+    | 'default'
+    | 'disappearing-item'
+    | 'e-resize'
+    | 'grab'
+    | 'grabbing'
+    | 'n-resize'
+    | 'no-drop'
+    | 'not-allowed'
+    | 'pointer'
+    | 'row-resize'
+    | 's-resize'
+    | 'text'
+    | 'vertical-text'
+    | 'w-resize'
+  ),
 |}>;
