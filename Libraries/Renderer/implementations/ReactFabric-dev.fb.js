@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<7d94bdf10150fe93a2e9fa8bbf998840>>
+ * @generated SignedSource<<85633cd599819668a18b16a0756284c2>>
  */
 
 'use strict';
@@ -380,6 +380,12 @@ function clearCaughtError() {
   }
 }
 
+var isArrayImpl = Array.isArray; // eslint-disable-next-line no-redeclare
+
+function isArray(a) {
+  return isArrayImpl(a);
+}
+
 var getFiberCurrentPropsFromNode = null;
 var getInstanceFromNode = null;
 var getNodeFromInstance = null;
@@ -407,13 +413,13 @@ var validateEventDispatches;
   validateEventDispatches = function(event) {
     var dispatchListeners = event._dispatchListeners;
     var dispatchInstances = event._dispatchInstances;
-    var listenersIsArr = Array.isArray(dispatchListeners);
+    var listenersIsArr = isArray(dispatchListeners);
     var listenersLen = listenersIsArr
       ? dispatchListeners.length
       : dispatchListeners
       ? 1
       : 0;
-    var instancesIsArr = Array.isArray(dispatchInstances);
+    var instancesIsArr = isArray(dispatchInstances);
     var instancesLen = instancesIsArr
       ? dispatchInstances.length
       : dispatchInstances
@@ -450,7 +456,7 @@ function executeDispatchesInOrder(event) {
     validateEventDispatches(event);
   }
 
-  if (Array.isArray(dispatchListeners)) {
+  if (isArray(dispatchListeners)) {
     for (var i = 0; i < dispatchListeners.length; i++) {
       if (event.isPropagationStopped()) {
         break;
@@ -481,7 +487,7 @@ function executeDispatchesInOrderStopAtTrueImpl(event) {
     validateEventDispatches(event);
   }
 
-  if (Array.isArray(dispatchListeners)) {
+  if (isArray(dispatchListeners)) {
     for (var i = 0; i < dispatchListeners.length; i++) {
       if (event.isPropagationStopped()) {
         break;
@@ -527,7 +533,7 @@ function executeDirectDispatch(event) {
   var dispatchListener = event._dispatchListeners;
   var dispatchInstance = event._dispatchInstances;
 
-  if (!!Array.isArray(dispatchListener)) {
+  if (!!isArray(dispatchListener)) {
     throw Error("executeDirectDispatch(...): Invalid `event`.");
   }
 
@@ -1154,11 +1160,11 @@ function accumulate(current, next) {
   } // Both are not empty. Warning: Never call x.concat(y) when you are not
   // certain that x is an Array (x could be a string with concat method).
 
-  if (Array.isArray(current)) {
+  if (isArray(current)) {
     return current.concat(next);
   }
 
-  if (Array.isArray(next)) {
+  if (isArray(next)) {
     return [current].concat(next);
   }
 
@@ -1190,8 +1196,8 @@ function accumulateInto(current, next) {
   } // Both are not empty. Warning: Never call x.concat(y) when you are not
   // certain that x is an Array (x could be a string with concat method).
 
-  if (Array.isArray(current)) {
-    if (Array.isArray(next)) {
+  if (isArray(current)) {
+    if (isArray(next)) {
       current.push.apply(current, next);
       return current;
     }
@@ -1200,7 +1206,7 @@ function accumulateInto(current, next) {
     return current;
   }
 
-  if (Array.isArray(next)) {
+  if (isArray(next)) {
     // A bit too dangerous to mutate `next`.
     return [current].concat(next);
   }
@@ -2505,7 +2511,10 @@ function getFiberCurrentPropsFromNode$1(inst) {
 var ReactFabricGlobalResponderHandler = {
   onChange: function(from, to, blockNativeResponder) {
     var fromOrTo = from || to;
-    var isFabric = !!fromOrTo.stateNode.canonical._internalInstanceHandle;
+    var fromOrToStateNode = fromOrTo && fromOrTo.stateNode;
+    var isFabric = !!(
+      fromOrToStateNode && fromOrToStateNode.canonical._internalInstanceHandle
+    );
 
     if (isFabric);
     else {
@@ -2809,7 +2818,7 @@ var enableLazyElements = false;
 var warnAboutStringRefs = false;
 var enableNewReconciler = false;
 var deferRenderPhaseUpdateToNextBatch = true;
-var enableLazyContextPropagation = false; // Flow magic to verify the exports of this file match the original version.
+var enableLazyContextPropagation = false;
 
 // Don't change these two values. They're used by React Dev Tools.
 var NoFlags =
@@ -2878,9 +2887,15 @@ var ForceUpdateForLegacySuspense =
 // since we can defer traversing the tree during layout to look for Passive effects,
 // and instead rely on the static flag as a signal that there may be cleanup work.
 
+var RefStatic =
+  /*                    */
+  262144;
+var LayoutStatic =
+  /*                 */
+  524288;
 var PassiveStatic =
   /*                */
-  262144; // These flags allow us to traverse to fibers that have effects on mount
+  1048576; // These flags allow us to traverse to fibers that have effects on mount
 // don't contain effects, by checking subtreeFlags.
 
 var BeforeMutationMask = // TODO: Remove Update flag from before mutation phase by re-landing Visiblity
@@ -2900,7 +2915,7 @@ var PassiveMask = Passive | ChildDeletion; // Union of tags that don't get reset
 // This allows certain concepts to persist without recalculting them,
 // e.g. whether a subtree contains passive effects or portals.
 
-var StaticMask = PassiveStatic;
+var StaticMask = LayoutStatic | PassiveStatic | RefStatic;
 
 var ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 function getNearestMountedFiber(fiber) {
@@ -3248,7 +3263,7 @@ function restoreDeletedValuesInNestedArray(
   node,
   validAttributes
 ) {
-  if (Array.isArray(node)) {
+  if (isArray(node)) {
     var i = node.length;
 
     while (i-- && removedKeyCount > 0) {
@@ -3373,12 +3388,12 @@ function diffNestedProperty(
     return updatePayload;
   }
 
-  if (!Array.isArray(prevProp) && !Array.isArray(nextProp)) {
+  if (!isArray(prevProp) && !isArray(nextProp)) {
     // Both are leaves, we can diff the leaves.
     return diffProperties(updatePayload, prevProp, nextProp, validAttributes);
   }
 
-  if (Array.isArray(prevProp) && Array.isArray(nextProp)) {
+  if (isArray(prevProp) && isArray(nextProp)) {
     // Both are arrays, we can diff the arrays.
     return diffNestedArrayProperty(
       updatePayload,
@@ -3388,7 +3403,7 @@ function diffNestedProperty(
     );
   }
 
-  if (Array.isArray(prevProp)) {
+  if (isArray(prevProp)) {
     return diffProperties(
       updatePayload, // $FlowFixMe - We know that this is always an object when the input is.
       ReactNativePrivateInterface.flattenStyle(prevProp), // $FlowFixMe - We know that this isn't an array because of above flow.
@@ -3415,7 +3430,7 @@ function addNestedProperty(updatePayload, nextProp, validAttributes) {
     return updatePayload;
   }
 
-  if (!Array.isArray(nextProp)) {
+  if (!isArray(nextProp)) {
     // Add each property of the leaf.
     return addProperties(updatePayload, nextProp, validAttributes);
   }
@@ -3441,7 +3456,7 @@ function clearNestedProperty(updatePayload, prevProp, validAttributes) {
     return updatePayload;
   }
 
-  if (!Array.isArray(prevProp)) {
+  if (!isArray(prevProp)) {
     // Add each property of the leaf.
     return clearProperties(updatePayload, prevProp, validAttributes);
   }
@@ -3696,7 +3711,6 @@ function batchedUpdates(fn, bookkeeping) {
 function setBatchingImplementation(
   _batchedUpdatesImpl,
   _discreteUpdatesImpl,
-  _flushDiscreteUpdatesImpl,
   _batchedEventUpdatesImpl
 ) {
   batchedUpdatesImpl = _batchedUpdatesImpl;
@@ -3830,6 +3844,179 @@ function dispatchEvent(target, topLevelType, nativeEvent) {
   // where it would do it.
 }
 
+// This module only exists as an ESM wrapper around the external CommonJS
+var scheduleCallback = Scheduler.unstable_scheduleCallback;
+var cancelCallback = Scheduler.unstable_cancelCallback;
+var shouldYield = Scheduler.unstable_shouldYield;
+var requestPaint = Scheduler.unstable_requestPaint;
+var now = Scheduler.unstable_now;
+var ImmediatePriority = Scheduler.unstable_ImmediatePriority;
+var UserBlockingPriority = Scheduler.unstable_UserBlockingPriority;
+var NormalPriority = Scheduler.unstable_NormalPriority;
+var IdlePriority = Scheduler.unstable_IdlePriority;
+
+{
+  // Provide explicit error message when production+profiling bundle of e.g.
+  // react-dom is used with production (non-profiling) bundle of
+  // scheduler/tracing
+  if (
+    !(
+      tracing.__interactionsRef != null &&
+      tracing.__interactionsRef.current != null
+    )
+  ) {
+    throw Error(
+      "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `scheduler/tracing` module with `scheduler/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at https://reactjs.org/link/profiling"
+    );
+  }
+}
+
+var rendererID = null;
+var injectedHook = null;
+var hasLoggedError = false;
+var isDevToolsPresent = typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined";
+function injectInternals(internals) {
+  if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ === "undefined") {
+    // No DevTools
+    return false;
+  }
+
+  var hook = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+
+  if (hook.isDisabled) {
+    // This isn't a real property on the hook, but it can be set to opt out
+    // of DevTools integration and associated warnings and logs.
+    // https://github.com/facebook/react/issues/3877
+    return true;
+  }
+
+  if (!hook.supportsFiber) {
+    {
+      error(
+        "The installed version of React DevTools is too old and will not work " +
+          "with the current version of React. Please update React DevTools. " +
+          "https://reactjs.org/link/react-devtools"
+      );
+    } // DevTools exists, even though it doesn't support Fiber.
+
+    return true;
+  }
+
+  try {
+    rendererID = hook.inject(internals); // We have successfully injected, so now it is safe to set up hooks.
+
+    injectedHook = hook;
+  } catch (err) {
+    // Catch all errors because it is unsafe to throw during initialization.
+    {
+      error("React instrumentation encountered an error: %s.", err);
+    }
+  } // DevTools exists
+
+  return true;
+}
+function onScheduleRoot(root, children) {
+  {
+    if (
+      injectedHook &&
+      typeof injectedHook.onScheduleFiberRoot === "function"
+    ) {
+      try {
+        injectedHook.onScheduleFiberRoot(rendererID, root, children);
+      } catch (err) {
+        if (!hasLoggedError) {
+          hasLoggedError = true;
+
+          error("React instrumentation encountered an error: %s", err);
+        }
+      }
+    }
+  }
+}
+function onCommitRoot(root, eventPriority) {
+  if (injectedHook && typeof injectedHook.onCommitFiberRoot === "function") {
+    try {
+      var didError = (root.current.flags & DidCapture) === DidCapture;
+
+      if (enableProfilerTimer) {
+        var schedulerPriority;
+
+        switch (eventPriority) {
+          case DiscreteEventPriority:
+            schedulerPriority = ImmediatePriority;
+            break;
+
+          case ContinuousEventPriority:
+            schedulerPriority = UserBlockingPriority;
+            break;
+
+          case DefaultEventPriority:
+            schedulerPriority = NormalPriority;
+            break;
+
+          case IdleEventPriority:
+            schedulerPriority = IdlePriority;
+            break;
+
+          default:
+            schedulerPriority = NormalPriority;
+            break;
+        }
+
+        injectedHook.onCommitFiberRoot(
+          rendererID,
+          root,
+          schedulerPriority,
+          didError
+        );
+      } else {
+        injectedHook.onCommitFiberRoot(rendererID, root, undefined, didError);
+      }
+    } catch (err) {
+      {
+        if (!hasLoggedError) {
+          hasLoggedError = true;
+
+          error("React instrumentation encountered an error: %s", err);
+        }
+      }
+    }
+  }
+}
+function onPostCommitRoot(root) {
+  if (
+    injectedHook &&
+    typeof injectedHook.onPostCommitFiberRoot === "function"
+  ) {
+    try {
+      injectedHook.onPostCommitFiberRoot(rendererID, root);
+    } catch (err) {
+      {
+        if (!hasLoggedError) {
+          hasLoggedError = true;
+
+          error("React instrumentation encountered an error: %s", err);
+        }
+      }
+    }
+  }
+}
+function onCommitUnmount(fiber) {
+  if (injectedHook && typeof injectedHook.onCommitFiberUnmount === "function") {
+    try {
+      injectedHook.onCommitFiberUnmount(rendererID, fiber);
+    } catch (err) {
+      {
+        if (!hasLoggedError) {
+          hasLoggedError = true;
+
+          error("React instrumentation encountered an error: %s", err);
+        }
+      }
+    }
+  }
+}
+
 // If those values are changed that package should be rebuilt and redeployed.
 
 var TotalLanes = 31;
@@ -3843,7 +4030,7 @@ var SyncLane =
   /*                        */
   1;
 var InputContinuousHydrationLane =
-  /*           */
+  /*    */
   2;
 var InputContinuousLane =
   /*            */
@@ -4173,12 +4360,19 @@ function computeExpirationTime(lane, currentTime) {
     case TransitionLane14:
     case TransitionLane15:
     case TransitionLane16:
+      return currentTime + 5000;
+
     case RetryLane1:
     case RetryLane2:
     case RetryLane3:
     case RetryLane4:
     case RetryLane5:
-      return currentTime + 5000;
+      // TODO: Retries should be allowed to expire if they are CPU bound for
+      // too long, but when I made this change it caused a spike in browser
+      // crashes. There must be some other underlying bug; not super urgent but
+      // ideally should figure out why and fix it. Unfortunately we don't have
+      // a repro for the crashes, only detected via production metrics.
+      return NoTimestamp;
 
     case SelectiveHydrationLane:
     case IdleHydrationLane:
@@ -4385,11 +4579,6 @@ function markRootExpired(root, expiredLanes) {
   root.entangledLanes |= SyncLane;
   root.pendingLanes |= SyncLane;
 }
-function areLanesExpired(root, lanes) {
-  var SyncLaneIndex = 0;
-  var entanglements = root.entanglements;
-  return (entanglements[SyncLaneIndex] & lanes) !== NoLanes;
-}
 function markRootMutableRead(root, updateLane) {
   root.mutableReadLanes |= updateLane & root.pendingLanes;
 }
@@ -4476,6 +4665,9 @@ function setCurrentUpdatePriority(newPriority) {
 }
 function higherEventPriority(a, b) {
   return a !== 0 && a < b ? a : b;
+}
+function lowerEventPriority(a, b) {
+  return a === 0 || a > b ? a : b;
 }
 function isHigherEventPriority(a, b) {
   return a !== 0 && a < b;
@@ -5052,6 +5244,8 @@ function describeUnknownElementTypeFrameInDEV(type, source, ownerFn) {
   return "";
 }
 
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
 var loggedTypeFailures = {};
 var ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
 
@@ -5074,7 +5268,7 @@ function setCurrentlyValidatingElement(element) {
 function checkPropTypes(typeSpecs, values, location, componentName, element) {
   {
     // $FlowFixMe This is okay but Flow doesn't know it.
-    var has = Function.call.bind(Object.prototype.hasOwnProperty);
+    var has = Function.call.bind(hasOwnProperty);
 
     for (var typeSpecName in typeSpecs) {
       if (has(typeSpecs, typeSpecName)) {
@@ -5474,161 +5668,6 @@ function findCurrentUnmaskedContext(fiber) {
 var LegacyRoot = 0;
 var ConcurrentRoot = 1;
 
-// This module only exists as an ESM wrapper around the external CommonJS
-var scheduleCallback = Scheduler.unstable_scheduleCallback;
-var cancelCallback = Scheduler.unstable_cancelCallback;
-var shouldYield = Scheduler.unstable_shouldYield;
-var requestPaint = Scheduler.unstable_requestPaint;
-var now = Scheduler.unstable_now;
-var ImmediatePriority = Scheduler.unstable_ImmediatePriority;
-var UserBlockingPriority = Scheduler.unstable_UserBlockingPriority;
-var NormalPriority = Scheduler.unstable_NormalPriority;
-var IdlePriority = Scheduler.unstable_IdlePriority;
-
-{
-  // Provide explicit error message when production+profiling bundle of e.g.
-  // react-dom is used with production (non-profiling) bundle of
-  // scheduler/tracing
-  if (
-    !(
-      tracing.__interactionsRef != null &&
-      tracing.__interactionsRef.current != null
-    )
-  ) {
-    throw Error(
-      "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `scheduler/tracing` module with `scheduler/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at https://reactjs.org/link/profiling"
-    );
-  }
-}
-
-var rendererID = null;
-var injectedHook = null;
-var hasLoggedError = false;
-var isDevToolsPresent = typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined";
-function injectInternals(internals) {
-  if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ === "undefined") {
-    // No DevTools
-    return false;
-  }
-
-  var hook = __REACT_DEVTOOLS_GLOBAL_HOOK__;
-
-  if (hook.isDisabled) {
-    // This isn't a real property on the hook, but it can be set to opt out
-    // of DevTools integration and associated warnings and logs.
-    // https://github.com/facebook/react/issues/3877
-    return true;
-  }
-
-  if (!hook.supportsFiber) {
-    {
-      error(
-        "The installed version of React DevTools is too old and will not work " +
-          "with the current version of React. Please update React DevTools. " +
-          "https://reactjs.org/link/react-devtools"
-      );
-    } // DevTools exists, even though it doesn't support Fiber.
-
-    return true;
-  }
-
-  try {
-    rendererID = hook.inject(internals); // We have successfully injected, so now it is safe to set up hooks.
-
-    injectedHook = hook;
-  } catch (err) {
-    // Catch all errors because it is unsafe to throw during initialization.
-    {
-      error("React instrumentation encountered an error: %s.", err);
-    }
-  } // DevTools exists
-
-  return true;
-}
-function onScheduleRoot(root, children) {
-  {
-    if (
-      injectedHook &&
-      typeof injectedHook.onScheduleFiberRoot === "function"
-    ) {
-      try {
-        injectedHook.onScheduleFiberRoot(rendererID, root, children);
-      } catch (err) {
-        if (!hasLoggedError) {
-          hasLoggedError = true;
-
-          error("React instrumentation encountered an error: %s", err);
-        }
-      }
-    }
-  }
-}
-function onCommitRoot(root, eventPriority) {
-  if (injectedHook && typeof injectedHook.onCommitFiberRoot === "function") {
-    try {
-      var didError = (root.current.flags & DidCapture) === DidCapture;
-
-      if (enableProfilerTimer) {
-        var schedulerPriority;
-
-        switch (eventPriority) {
-          case DiscreteEventPriority:
-            schedulerPriority = ImmediatePriority;
-            break;
-
-          case ContinuousEventPriority:
-            schedulerPriority = UserBlockingPriority;
-            break;
-
-          case DefaultEventPriority:
-            schedulerPriority = NormalPriority;
-            break;
-
-          case IdleEventPriority:
-            schedulerPriority = IdlePriority;
-            break;
-
-          default:
-            schedulerPriority = NormalPriority;
-            break;
-        }
-
-        injectedHook.onCommitFiberRoot(
-          rendererID,
-          root,
-          schedulerPriority,
-          didError
-        );
-      } else {
-        injectedHook.onCommitFiberRoot(rendererID, root, undefined, didError);
-      }
-    } catch (err) {
-      {
-        if (!hasLoggedError) {
-          hasLoggedError = true;
-
-          error("React instrumentation encountered an error: %s", err);
-        }
-      }
-    }
-  }
-}
-function onCommitUnmount(fiber) {
-  if (injectedHook && typeof injectedHook.onCommitFiberUnmount === "function") {
-    try {
-      injectedHook.onCommitFiberUnmount(rendererID, fiber);
-    } catch (err) {
-      {
-        if (!hasLoggedError) {
-          hasLoggedError = true;
-
-          error("React instrumentation encountered an error: %s", err);
-        }
-      }
-    }
-  }
-}
-
 var syncQueue = null;
 var isFlushingSyncQueue = false;
 function scheduleSyncCallback(callback) {
@@ -5739,7 +5778,6 @@ function is(x, y) {
 
 var objectIs = typeof Object.is === "function" ? Object.is : is;
 
-var hasOwnProperty = Object.prototype.hasOwnProperty;
 /**
  * Performs equality by iterating through keys on an object and returning false
  * when any key has values which are not strictly equal between the arguments.
@@ -7097,8 +7135,7 @@ function commitUpdateQueue(finishedWork, finishedQueue, instance) {
   }
 }
 
-var fakeInternalInstance = {};
-var isArray = Array.isArray; // React.Component uses a shared frozen object by default.
+var fakeInternalInstance = {}; // React.Component uses a shared frozen object by default.
 // We'll use it to determine whether we need to initialize legacy refs.
 
 var emptyRefsObject = new React.Component().refs;
@@ -7216,6 +7253,7 @@ function applyDerivedStateFromProps(
     updateQueue.baseState = memoizedState;
   }
 }
+
 var classComponentUpdater = {
   isMounted: isMounted,
   enqueueSetState: function(inst, payload, callback) {
@@ -7865,7 +7903,6 @@ function mountClassInstance(workInProgress, ctor, newProps, renderLanes) {
     }
   }
 
-  processUpdateQueue(workInProgress, newProps, instance, renderLanes);
   instance.state = workInProgress.memoizedState;
   var getDerivedStateFromProps = ctor.getDerivedStateFromProps;
 
@@ -7894,9 +7931,9 @@ function mountClassInstance(workInProgress, ctor, newProps, renderLanes) {
   }
 
   if (typeof instance.componentDidMount === "function") {
-    {
-      workInProgress.flags |= Update;
-    }
+    var fiberFlags = Update;
+
+    workInProgress.flags |= fiberFlags;
   }
 }
 
@@ -7958,9 +7995,9 @@ function resumeMountClassInstance(workInProgress, ctor, newProps, renderLanes) {
     // If an update was already in progress, we should schedule an Update
     // effect even though we're bailing out, so that cWU/cDU are called.
     if (typeof instance.componentDidMount === "function") {
-      {
-        workInProgress.flags |= Update;
-      }
+      var fiberFlags = Update;
+
+      workInProgress.flags |= fiberFlags;
     }
 
     return false;
@@ -8006,17 +8043,17 @@ function resumeMountClassInstance(workInProgress, ctor, newProps, renderLanes) {
     }
 
     if (typeof instance.componentDidMount === "function") {
-      {
-        workInProgress.flags |= Update;
-      }
+      var _fiberFlags = Update;
+
+      workInProgress.flags |= _fiberFlags;
     }
   } else {
     // If an update was already in progress, we should schedule an Update
     // effect even though we're bailing out, so that cWU/cDU are called.
     if (typeof instance.componentDidMount === "function") {
-      {
-        workInProgress.flags |= Update;
-      }
+      var _fiberFlags2 = Update;
+
+      workInProgress.flags |= _fiberFlags2;
     } // If shouldComponentUpdate returned false, we should still update the
     // memoized state to indicate that this work can be reused.
 
@@ -8257,8 +8294,6 @@ var warnForMissingKey = function(child, returnFiber) {};
   };
 }
 
-var isArray$1 = Array.isArray;
-
 function coerceRef(returnFiber, current, element) {
   var mixedRef = element.ref;
 
@@ -8373,18 +8408,16 @@ function coerceRef(returnFiber, current, element) {
 }
 
 function throwOnInvalidObjectType(returnFiber, newChild) {
-  if (returnFiber.type !== "textarea") {
-    var childString = Object.prototype.toString.call(newChild);
+  var childString = Object.prototype.toString.call(newChild);
 
-    {
-      throw Error(
-        "Objects are not valid as a React child (found: " +
-          (childString === "[object Object]"
-            ? "object with keys {" + Object.keys(newChild).join(", ") + "}"
-            : childString) +
-          "). If you meant to render a collection of children, use an array instead."
-      );
-    }
+  {
+    throw Error(
+      "Objects are not valid as a React child (found: " +
+        (childString === "[object Object]"
+          ? "object with keys {" + Object.keys(newChild).join(", ") + "}"
+          : childString) +
+        "). If you meant to render a collection of children, use an array instead."
+    );
   }
 }
 
@@ -8640,7 +8673,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         }
       }
 
-      if (isArray$1(newChild) || getIteratorFn(newChild)) {
+      if (isArray(newChild) || getIteratorFn(newChild)) {
         var _created3 = createFiberFromFragment(
           newChild,
           returnFiber.mode,
@@ -8698,7 +8731,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         }
       }
 
-      if (isArray$1(newChild) || getIteratorFn(newChild)) {
+      if (isArray(newChild) || getIteratorFn(newChild)) {
         if (key !== null) {
           return null;
         }
@@ -8753,7 +8786,7 @@ function ChildReconciler(shouldTrackSideEffects) {
         }
       }
 
-      if (isArray$1(newChild) || getIteratorFn(newChild)) {
+      if (isArray(newChild) || getIteratorFn(newChild)) {
         var _matchedFiber3 = existingChildren.get(newIdx) || null;
 
         return updateFragment(
@@ -9363,9 +9396,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       newChild = newChild.props.children;
     } // Handle object types
 
-    var isObject = typeof newChild === "object" && newChild !== null;
-
-    if (isObject) {
+    if (typeof newChild === "object" && newChild !== null) {
       switch (newChild.$$typeof) {
         case REACT_ELEMENT_TYPE:
           return placeSingleChild(
@@ -9387,6 +9418,26 @@ function ChildReconciler(shouldTrackSideEffects) {
             )
           );
       }
+
+      if (isArray(newChild)) {
+        return reconcileChildrenArray(
+          returnFiber,
+          currentFirstChild,
+          newChild,
+          lanes
+        );
+      }
+
+      if (getIteratorFn(newChild)) {
+        return reconcileChildrenIterator(
+          returnFiber,
+          currentFirstChild,
+          newChild,
+          lanes
+        );
+      }
+
+      throwOnInvalidObjectType(returnFiber, newChild);
     }
 
     if (typeof newChild === "string" || typeof newChild === "number") {
@@ -9398,28 +9449,6 @@ function ChildReconciler(shouldTrackSideEffects) {
           lanes
         )
       );
-    }
-
-    if (isArray$1(newChild)) {
-      return reconcileChildrenArray(
-        returnFiber,
-        currentFirstChild,
-        newChild,
-        lanes
-      );
-    }
-
-    if (getIteratorFn(newChild)) {
-      return reconcileChildrenIterator(
-        returnFiber,
-        currentFirstChild,
-        newChild,
-        lanes
-      );
-    }
-
-    if (isObject) {
-      throwOnInvalidObjectType(returnFiber, newChild);
     }
 
     {
@@ -9873,7 +9902,7 @@ function updateHookTypesDev() {
 
 function checkDepsAreArrayDev(deps) {
   {
-    if (deps !== undefined && deps !== null && !Array.isArray(deps)) {
+    if (deps !== undefined && deps !== null && !isArray(deps)) {
       // Verify deps, but only on mount to avoid extra checks.
       // It's unlikely their type would change as usually you define them inline.
       error(
@@ -10093,7 +10122,7 @@ function renderWithHooks(
 
     if (
       current !== null &&
-      (current.flags & PassiveStatic) !== (workInProgress.flags & PassiveStatic)
+      (current.flags & StaticMask) !== (workInProgress.flags & StaticMask)
     ) {
       error(
         "Internal React error: Expected static flag was missing. Please " +
@@ -10907,9 +10936,9 @@ function updateEffect(create, deps) {
 }
 
 function mountLayoutEffect(create, deps) {
-  {
-    return mountEffectImpl(Update, Layout, create, deps);
-  }
+  var fiberFlags = Update;
+
+  return mountEffectImpl(fiberFlags, Layout, create, deps);
 }
 
 function updateLayoutEffect(create, deps) {
@@ -10961,15 +10990,14 @@ function mountImperativeHandle(ref, create, deps) {
 
   var effectDeps =
     deps !== null && deps !== undefined ? deps.concat([ref]) : null;
+  var fiberFlags = Update;
 
-  {
-    return mountEffectImpl(
-      Update,
-      Layout,
-      imperativeHandleEffect.bind(null, create, ref),
-      effectDeps
-    );
-  }
+  return mountEffectImpl(
+    fiberFlags,
+    Layout,
+    imperativeHandleEffect.bind(null, create, ref),
+    effectDeps
+  );
 }
 
 function updateImperativeHandle(ref, create, deps) {
@@ -11145,7 +11173,7 @@ function mountTransition() {
   var start = startTransition.bind(null, setPending);
   var hook = mountWorkInProgressHook();
   hook.memoizedState = start;
-  return [start, isPending];
+  return [isPending, start];
 }
 
 function updateTransition() {
@@ -11154,7 +11182,7 @@ function updateTransition() {
 
   var hook = updateWorkInProgressHook();
   var start = hook.memoizedState;
-  return [start, isPending];
+  return [isPending, start];
 }
 
 function rerenderTransition() {
@@ -11163,7 +11191,7 @@ function rerenderTransition() {
 
   var hook = updateWorkInProgressHook();
   var start = hook.memoizedState;
-  return [start, isPending];
+  return [isPending, start];
 }
 
 var isUpdatingOpaqueValueInRenderPhase = false;
@@ -13341,17 +13369,6 @@ function mountIndeterminateComponent(
     workInProgress.memoizedState =
       value.state !== null && value.state !== undefined ? value.state : null;
     initializeUpdateQueue(workInProgress);
-    var getDerivedStateFromProps = Component.getDerivedStateFromProps;
-
-    if (typeof getDerivedStateFromProps === "function") {
-      applyDerivedStateFromProps(
-        workInProgress,
-        Component,
-        getDerivedStateFromProps,
-        props
-      );
-    }
-
     adoptClassInstance(workInProgress, value);
     mountClassInstance(workInProgress, Component, props, renderLanes);
     return finishClassComponent(
@@ -14111,11 +14128,12 @@ function validateTailOptions(tailMode, revealOrder) {
 
 function validateSuspenseListNestedChild(childSlot, index) {
   {
-    var isArray = Array.isArray(childSlot);
-    var isIterable = !isArray && typeof getIteratorFn(childSlot) === "function";
+    var isAnArray = isArray(childSlot);
+    var isIterable =
+      !isAnArray && typeof getIteratorFn(childSlot) === "function";
 
-    if (isArray || isIterable) {
-      var type = isArray ? "array" : "iterable";
+    if (isAnArray || isIterable) {
+      var type = isAnArray ? "array" : "iterable";
 
       error(
         "A nested %s was passed to row #%s in <SuspenseList />. Wrap it in " +
@@ -14143,7 +14161,7 @@ function validateSuspenseListChildren(children, revealOrder) {
       children !== null &&
       children !== false
     ) {
-      if (Array.isArray(children)) {
+      if (isArray(children)) {
         for (var i = 0; i < children.length; i++) {
           if (!validateSuspenseListNestedChild(children[i], i)) {
             return;
@@ -15750,7 +15768,7 @@ function completeWork(current, workInProgress, renderLanes) {
             var _primaryChildFragment2 = workInProgress.child;
 
             if (_primaryChildFragment2 !== null) {
-              // $FlowFixMe Flow doens't support type casting in combiation with the -= operator
+              // $FlowFixMe Flow doesn't support type casting in combination with the -= operator
               workInProgress.treeBaseDuration -=
                 _primaryChildFragment2.treeBaseDuration;
             }
@@ -16418,6 +16436,7 @@ function attachPingListener(root, wakeable, lanes) {
     // Memoize using the thread ID to prevent redundant listeners.
     threadIDs.add(lanes);
     var ping = pingSuspendedRoot.bind(null, root, wakeable, lanes);
+
     wakeable.then(ping, ping);
   }
 }
@@ -16651,10 +16670,9 @@ var didWarnAboutUndefinedSnapshotBeforeUpdate = null;
 
 {
   didWarnAboutUndefinedSnapshotBeforeUpdate = new Set();
-}
-
+} // Used during the commit phase to track the state of the Offscreen component stack.
 var PossiblyWeakSet = typeof WeakSet === "function" ? WeakSet : Set;
-var nextEffect = null;
+var nextEffect = null; // Used for Profiling builds to track updaters.
 
 var callComponentWillUnmountWithTimer = function(current, instance) {
   instance.props = current.memoizedProps;
@@ -16663,7 +16681,7 @@ var callComponentWillUnmountWithTimer = function(current, instance) {
   {
     instance.componentWillUnmount();
   }
-}; // Capture errors so they don't interrupt unmounting.
+}; // Capture errors so they don't interrupt mounting.
 
 function safelyCallComponentWillUnmount(
   current,
@@ -16684,7 +16702,7 @@ function safelyCallComponentWillUnmount(
       captureCommitPhaseError(current, nearestMountedAncestor, unmountError);
     }
   }
-}
+} // Capture errors so they don't interrupt mounting.
 
 function safelyDetachRef(current, nearestMountedAncestor) {
   var ref = current.ref;
@@ -17603,6 +17621,7 @@ function attachSuspenseRetryListeners(finishedWork) {
         }
 
         retryCache.add(wakeable);
+
         wakeable.then(retry, retry);
       }
     });
@@ -17624,7 +17643,7 @@ function isSuspenseBoundaryBeingHidden(current, finishedWork) {
   return false;
 }
 
-function commitMutationEffects(root, firstChild) {
+function commitMutationEffects(root, firstChild, committedLanes) {
   nextEffect = firstChild;
   commitMutationEffects_begin(root);
 }
@@ -17765,6 +17784,9 @@ function commitLayoutEffects(finishedWork, root, committedLanes) {
 }
 
 function commitLayoutEffects_begin(subtreeRoot, root, committedLanes) {
+  // Suspense layout effects semantics don't change for legacy roots.
+  var isModernRoot = (subtreeRoot.mode & ConcurrentMode) !== NoMode;
+
   while (nextEffect !== null) {
     var fiber = nextEffect;
     var firstChild = fiber.child;
@@ -17779,6 +17801,9 @@ function commitLayoutEffects_begin(subtreeRoot, root, committedLanes) {
 }
 
 function commitLayoutMountEffects_complete(subtreeRoot, root, committedLanes) {
+  // Suspense layout effects semantics don't change for legacy roots.
+  var isModernRoot = (subtreeRoot.mode & ConcurrentMode) !== NoMode;
+
   while (nextEffect !== null) {
     var fiber = nextEffect;
 
@@ -18107,6 +18132,7 @@ if (typeof Symbol === "function" && Symbol.for) {
 var ceil = Math.ceil;
 var ReactCurrentDispatcher$2 = ReactSharedInternals.ReactCurrentDispatcher,
   ReactCurrentOwner$2 = ReactSharedInternals.ReactCurrentOwner,
+  ReactCurrentBatchConfig$2 = ReactSharedInternals.ReactCurrentBatchConfig,
   IsSomeRendererActing = ReactSharedInternals.IsSomeRendererActing;
 var NoContext =
   /*             */
@@ -18270,6 +18296,7 @@ function requestUpdateLane(fiber) {
   // TODO: Move this type conversion to the event priority module.
 
   var eventLane = getCurrentEventPriority();
+
   return eventLane;
 }
 
@@ -18295,7 +18322,7 @@ function scheduleUpdateOnFiber(fiber, lane, eventTime) {
   if (root === null) {
     warnAboutUpdateOnUnmountedFiberInDEV(fiber);
     return null;
-  } // Mark that the root has a pending update.
+  }
 
   markRootUpdated(root, lane, eventTime);
 
@@ -18594,10 +18621,11 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
       // all pending updates are included. If it still fails after the second
       // attempt, we'll give up and commit the resulting tree.
 
-      lanes = getLanesToRetrySynchronouslyOnError(root);
+      var errorRetryLanes = getLanesToRetrySynchronouslyOnError(root);
 
-      if (lanes !== NoLanes) {
-        exitStatus = renderRootSync(root, lanes);
+      if (errorRetryLanes !== NoLanes) {
+        lanes = errorRetryLanes;
+        exitStatus = renderRootSync(root, errorRetryLanes);
       }
     }
 
@@ -18762,21 +18790,24 @@ function performSyncWorkOnRoot(root) {
   }
 
   flushPassiveEffects();
-  var lanes;
-  var exitStatus;
+  var lanes = getNextLanes(root, NoLanes);
 
-  if (
-    root === workInProgressRoot &&
-    areLanesExpired(root, workInProgressRootRenderLanes)
-  ) {
-    // There's a partial tree, and at least one of its lanes has expired. Finish
-    // rendering it before rendering the rest of the expired work.
-    lanes = workInProgressRootRenderLanes;
-    exitStatus = renderRootSync(root, lanes);
+  if (includesSomeLane(lanes, SyncLane)) {
+    if (
+      root === workInProgressRoot &&
+      includesSomeLane(lanes, workInProgressRootRenderLanes)
+    ) {
+      // There's a partial tree, and at least one of its lanes has expired. Finish
+      // rendering it before rendering the rest of the expired work.
+      lanes = workInProgressRootRenderLanes;
+    }
   } else {
-    lanes = getNextLanes(root, NoLanes);
-    exitStatus = renderRootSync(root, lanes);
+    // There's no remaining sync work left.
+    ensureRootIsScheduled(root, now());
+    return null;
   }
+
+  var exitStatus = renderRootSync(root, lanes);
 
   if (root.tag !== LegacyRoot && exitStatus === RootErrored) {
     executionContext |= RetryAfterError; // If an error occurred during hydration,
@@ -18795,9 +18826,10 @@ function performSyncWorkOnRoot(root) {
     // all pending updates are included. If it still fails after the second
     // attempt, we'll give up and commit the resulting tree.
 
-    lanes = getLanesToRetrySynchronouslyOnError(root);
+    var errorRetryLanes = getLanesToRetrySynchronouslyOnError(root);
 
-    if (lanes !== NoLanes) {
+    if (errorRetryLanes !== NoLanes) {
+      lanes = errorRetryLanes;
       exitStatus = renderRootSync(root, lanes);
     }
   }
@@ -18814,7 +18846,10 @@ function performSyncWorkOnRoot(root) {
   var finishedWork = root.current.alternate;
   root.finishedWork = finishedWork;
   root.finishedLanes = lanes;
-  commitRoot(root); // Before exiting, make sure there's a callback scheduled for the next
+
+  {
+    commitRoot(root);
+  } // Before exiting, make sure there's a callback scheduled for the next
   // pending level.
 
   ensureRootIsScheduled(root, now());
@@ -18839,9 +18874,11 @@ function batchedUpdates$1(fn, a) {
 function flushSync(fn, a) {
   var prevExecutionContext = executionContext;
   executionContext |= BatchedContext;
+  var prevTransition = ReactCurrentBatchConfig$2.transition;
   var previousPriority = getCurrentUpdatePriority();
 
   try {
+    ReactCurrentBatchConfig$2.transition = 0;
     setCurrentUpdatePriority(DiscreteEventPriority);
 
     if (fn) {
@@ -18851,6 +18888,7 @@ function flushSync(fn, a) {
     }
   } finally {
     setCurrentUpdatePriority(previousPriority);
+    ReactCurrentBatchConfig$2.transition = prevTransition;
     executionContext = prevExecutionContext; // Flush the immediate callbacks that were scheduled during this batch.
     // Note that this will happen even if batchedUpdates is higher up
     // the stack.
@@ -19296,11 +19334,14 @@ function commitRoot(root) {
   // TODO: This no longer makes any sense. We already wrap the mutation and
   // layout phases. Should be able to remove.
   var previousUpdateLanePriority = getCurrentUpdatePriority();
+  var prevTransition = ReactCurrentBatchConfig$2.transition;
 
   try {
+    ReactCurrentBatchConfig$2.transition = 0;
     setCurrentUpdatePriority(DiscreteEventPriority);
     commitRootImpl(root, previousUpdateLanePriority);
   } finally {
+    ReactCurrentBatchConfig$2.transition = prevTransition;
     setCurrentUpdatePriority(previousUpdateLanePriority);
   }
 
@@ -19329,6 +19370,15 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   if (finishedWork === null) {
     return null;
+  } else {
+    {
+      if (lanes === NoLanes) {
+        error(
+          "root.finishedLanes should not be empty during a commit. This is a " +
+            "bug in React."
+        );
+      }
+    }
   }
 
   root.finishedWork = null;
@@ -19386,6 +19436,8 @@ function commitRootImpl(root, renderPriorityLevel) {
     NoFlags;
 
   if (subtreeHasEffects || rootHasEffect) {
+    var prevTransition = ReactCurrentBatchConfig$2.transition;
+    ReactCurrentBatchConfig$2.transition = 0;
     var previousPriority = getCurrentUpdatePriority();
     setCurrentUpdatePriority(DiscreteEventPriority);
     var prevExecutionContext = executionContext;
@@ -19431,6 +19483,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     executionContext = prevExecutionContext; // Reset the priority to the previous non-sync value.
 
     setCurrentUpdatePriority(previousPriority);
+    ReactCurrentBatchConfig$2.transition = prevTransition;
   } else {
     // No effects.
     root.current = finishedWork; // Measure these anyway so the flamegraph explicitly shows that there were
@@ -19507,9 +19560,9 @@ function commitRootImpl(root, renderPriorityLevel) {
 
   if (hasUncaughtError) {
     hasUncaughtError = false;
-    var error = firstUncaughtError;
+    var error$1 = firstUncaughtError;
     firstUncaughtError = null;
-    throw error;
+    throw error$1;
   }
 
   if ((executionContext & LegacyUnbatchedContext) !== NoContext) {
@@ -19518,6 +19571,20 @@ function commitRootImpl(root, renderPriorityLevel) {
     // of the batch.
 
     return null;
+  } // If the passive effects are the result of a discrete render, flush them
+  // synchronously at the end of the current task so that the result is
+  // immediately observable. Otherwise, we assume that they are not
+  // order-dependent and do not need to be observed by external systems, so we
+  // can wait until after paint.
+  // TODO: We can optimize this by not scheduling the callback earlier. Since we
+  // currently schedule the callback in multiple places, will wait until those
+  // are consolidated.
+
+  if (
+    includesSomeLane(pendingPassiveEffectsLanes, SyncLane) &&
+    root.tag !== LegacyRoot
+  ) {
+    flushPassiveEffects();
   } // If layout work was scheduled, flush it now.
 
   flushSyncCallbackQueue();
@@ -19527,18 +19594,24 @@ function commitRootImpl(root, renderPriorityLevel) {
 
 function flushPassiveEffects() {
   // Returns whether passive effects were flushed.
-  if (pendingPassiveEffectsLanes !== NoLanes) {
-    var priority = higherEventPriority(
-      DefaultEventPriority,
-      lanesToEventPriority(pendingPassiveEffectsLanes)
-    );
+  // TODO: Combine this check with the one in flushPassiveEFfectsImpl. We should
+  // probably just combine the two functions. I believe they were only separate
+  // in the first place because we used to wrap it with
+  // `Scheduler.runWithPriority`, which accepts a function. But now we track the
+  // priority within React itself, so we can mutate the variable directly.
+  if (rootWithPendingPassiveEffects !== null) {
+    var renderPriority = lanesToEventPriority(pendingPassiveEffectsLanes);
+    var priority = lowerEventPriority(DefaultEventPriority, renderPriority);
+    var prevTransition = ReactCurrentBatchConfig$2.transition;
     var previousPriority = getCurrentUpdatePriority();
 
     try {
+      ReactCurrentBatchConfig$2.transition = 0;
       setCurrentUpdatePriority(priority);
       return flushPassiveEffectsImpl();
     } finally {
       setCurrentUpdatePriority(previousPriority);
+      ReactCurrentBatchConfig$2.transition = prevTransition;
     }
   }
 
@@ -19552,7 +19625,10 @@ function flushPassiveEffectsImpl() {
 
   var root = rootWithPendingPassiveEffects;
   var lanes = pendingPassiveEffectsLanes;
-  rootWithPendingPassiveEffects = null;
+  rootWithPendingPassiveEffects = null; // TODO: This is sometimes out of sync with rootWithPendingPassiveEffects.
+  // Figure out why and fix it. It's not causing any known issues (probably
+  // because it's only used for profiling), but it's a refactor hazard.
+
   pendingPassiveEffectsLanes = NoLanes;
 
   if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
@@ -19583,7 +19659,10 @@ function flushPassiveEffectsImpl() {
   // exceeds the limit, we'll fire a warning.
 
   nestedPassiveUpdateCount =
-    rootWithPendingPassiveEffects === null ? 0 : nestedPassiveUpdateCount + 1;
+    rootWithPendingPassiveEffects === null ? 0 : nestedPassiveUpdateCount + 1; // TODO: Move to commitPassiveMountEffects
+
+  onPostCommitRoot(root);
+
   return true;
 }
 
@@ -21228,7 +21307,10 @@ function createFiberFromFragment(elements, mode, lanes, key) {
 function createFiberFromProfiler(pendingProps, mode, lanes, key) {
   {
     if (typeof pendingProps.id !== "string") {
-      error('Profiler must specify an "id" as a prop');
+      error(
+        'Profiler must specify an "id" of type `string` as a prop. Received the type `%s` instead.',
+        typeof pendingProps.id
+      );
     }
   }
 
@@ -21642,10 +21724,10 @@ var setSuspenseHandler = null;
 {
   var copyWithDeleteImpl = function(obj, path, index) {
     var key = path[index];
-    var updated = Array.isArray(obj) ? obj.slice() : Object.assign({}, obj);
+    var updated = isArray(obj) ? obj.slice() : Object.assign({}, obj);
 
     if (index + 1 === path.length) {
-      if (Array.isArray(updated)) {
+      if (isArray(updated)) {
         updated.splice(key, 1);
       } else {
         delete updated[key];
@@ -21664,14 +21746,14 @@ var setSuspenseHandler = null;
 
   var copyWithRenameImpl = function(obj, oldPath, newPath, index) {
     var oldKey = oldPath[index];
-    var updated = Array.isArray(obj) ? obj.slice() : Object.assign({}, obj);
+    var updated = isArray(obj) ? obj.slice() : Object.assign({}, obj);
 
     if (index + 1 === oldPath.length) {
       var newKey = newPath[index]; // $FlowFixMe number or string is fine here
 
       updated[newKey] = updated[oldKey];
 
-      if (Array.isArray(updated)) {
+      if (isArray(updated)) {
         updated.splice(oldKey, 1);
       } else {
         delete updated[oldKey];
@@ -21716,7 +21798,7 @@ var setSuspenseHandler = null;
     }
 
     var key = path[index];
-    var updated = Array.isArray(obj) ? obj.slice() : Object.assign({}, obj); // $FlowFixMe number or string is fine here
+    var updated = isArray(obj) ? obj.slice() : Object.assign({}, obj); // $FlowFixMe number or string is fine here
 
     updated[key] = copyWithSetImpl(obj[key], path, index + 1, value);
     return updated;
@@ -21873,7 +21955,10 @@ function injectIntoDevTools(devToolsConfig) {
     scheduleRoot: scheduleRoot,
     setRefreshHandler: setRefreshHandler,
     // Enables DevTools to append owner stacks to error messages in DEV mode.
-    getCurrentFiber: getCurrentFiberForDevTools
+    getCurrentFiber: getCurrentFiberForDevTools,
+    // Enables DevTools to detect reconciler version rather than renderer version
+    // which may not match for third party renderers.
+    reconcilerVersion: ReactVersion
   });
 }
 

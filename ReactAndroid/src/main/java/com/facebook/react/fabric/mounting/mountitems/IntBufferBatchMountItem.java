@@ -193,7 +193,7 @@ public class IntBufferBatchMountItem implements MountItem {
   public String toString() {
     try {
       StringBuilder s = new StringBuilder();
-      s.append("IntBufferBatchMountItem:");
+      s.append(String.format("IntBufferBatchMountItem [surface:%d]:\n", mSurfaceId));
       int i = 0, j = 0;
       while (i < mIntBufferLen) {
         int rawType = mIntBuffer[i++];

@@ -3,54 +3,22 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:rn_codegen_defs.bzl",
-    "rn_codegen_components",
-    "rn_codegen_modules",
-)
-load(
-    "//tools/build_defs/oss:rn_defs.bzl",
-    "react_native_root_target",
+    "rn_codegen",
 )
 
-fb_native.genrule(
-    # The schema name must have the following format: "{name}-codegen-modules-schema"
-    # Why: Internally, we have build scripts that find all NativeModule schemas in the
-    # dependencies of an app, and build TurboModuleManager delegates. Those scripts assume
-    # that all schema targets have the aforementioned naming scheme.
-    name = "FBReactNativeSpec-codegen-modules-schema",
-    srcs = glob(
-        [
-            "**/*.js",
-        ],
-        exclude = [
-            "**/__tests__/**/*",
-        ],
-    ),
-    cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
-    out = "schema.json",
-    labels = [
-        "codegen_rule",
-        "react_native_schema_target",
-    ],
-)
-
-rn_codegen_modules(
+rn_codegen(
     name = "FBReactNativeSpec",
     android_package_name = "com.facebook.fbreact.specs",
+    codegen_modules = True,
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
-    schema_target = ":FBReactNativeSpec-codegen-modules-schema",
+    native_module_spec_name = "FBReactNativeSpec",
 )
 
-rn_codegen_components(
+# TODO: Merge this into FBReactNativeSpec
+rn_codegen(
     name = "FBReactNativeComponentSpec",
+    codegen_components = True,
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
-    # Why does FBReactNativeComponentSpec depend on -codegen-modules-schema?
-    # The module codegen schema also contains components. We cannot change the name
-    # of the schema target, because internally, we have infra that depends on how
-    # it's named.
-    #
-    # TODO(T83341482): Clean up how OSS NativeModule codegen is declared
-    schema_target = ":FBReactNativeSpec-codegen-modules-schema",
 )

@@ -9,10 +9,19 @@
 
 #import "RCTConvert.h"
 #import "RCTDefines.h"
+#import "RCTLog.h"
 
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
+
+#if RCT_DEV_MENU
+static BOOL kRCTAllowPackagerAccess = YES;
+void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed)
+{
+  kRCTAllowPackagerAccess = allowed;
+}
+#endif
 
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
@@ -127,6 +136,12 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 
 - (NSString *)packagerServerHostPort
 {
+#if RCT_DEV_MENU
+  if (!kRCTAllowPackagerAccess) {
+    RCTLogInfo(@"Packager server access is disabled in this environment");
+    return nil;
+  }
+#endif
   NSString *location = [self jsLocation];
 #if RCT_DEV_MENU
   if ([location length] && ![RCTBundleURLProvider isPackagerRunning:location]) {

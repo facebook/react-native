@@ -142,3 +142,13 @@
     @throw _RCTNotImplementedException(_cmd, [self class]);                                             \
   }                                                                                                     \
   _Pragma("clang diagnostic pop")
+
+/**
+ * Controls for activating the new architecture without the legacy system.
+ * Note: this is work in progress.
+ */
+#ifdef REACT_NATIVE_FORCE_NEW_ARCHITECTURE
+#define RCT_NEW_ARCHITECTURE 1
+#else
+#define RCT_NEW_ARCHITECTURE 0
+#endif

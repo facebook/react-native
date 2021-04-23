@@ -53,7 +53,20 @@ class UIManagerBinding : public jsi::HostObject {
       jsi::Runtime &runtime,
       SurfaceId surfaceId,
       std::string const &moduleName,
-      folly::dynamic const &initalProps) const;
+      folly::dynamic const &initalProps,
+      DisplayMode displayMode) const;
+
+  /*
+   * Updates the React Native Surface identified with surfaceId and moduleName
+   * with the given props.
+   * Thread synchronization must be enforced externally.
+   */
+  void setSurfaceProps(
+      jsi::Runtime &runtime,
+      SurfaceId surfaceId,
+      std::string const &moduleName,
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
 
   /*
    * Stops React Native Surface with given id.
