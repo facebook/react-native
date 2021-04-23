@@ -919,7 +919,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
           CGFloat bottomInset = self.inverted ? self->_scrollView.contentInset.top : self->_scrollView.contentInset.bottom;
           CGFloat y = self->_scrollView.contentOffset.y + bottomInset;
           if ((horz ? subview.frame.origin.x >= self->_scrollView.contentOffset.x
-                    : subview.frame.origin.y >= y) ||
+                    : subview.frame.origin.y > y) ||
               ii == self->_contentView.subviews.count - 1) {
             self->_prevFirstVisibleFrame = subview.frame;
             self->_firstVisibleView = subview;
