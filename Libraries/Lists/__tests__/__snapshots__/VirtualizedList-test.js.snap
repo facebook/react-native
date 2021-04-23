@@ -3694,25 +3694,9 @@ exports[`renders tail spacer using frame average when getItemLayout undefined 1`
       />
     </View>
     <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <MockCellItem
-        value={4}
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <MockCellItem
-        value={5}
-      />
-    </View>
-    <View
       style={
         Object {
-          "height": 11,
+          "height": 18,
         }
       }
     />

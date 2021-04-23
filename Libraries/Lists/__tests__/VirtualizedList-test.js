@@ -1243,13 +1243,16 @@ it('renders tail spacer using frame average when getItemLayout undefined', () =>
 
   ReactTestRenderer.act(() => {
     const LAST_MEASURED_CELL = 6;
+
+    let currentY = 0;
     for (let i = 0; i <= LAST_MEASURED_CELL; ++i) {
       simulateCellLayout(component, items, i, {
         width: 10,
         height: i,
         x: 0,
-        y: 10 * i,
+        y: currentY + i,
       });
+      currentY += i;
     }
 
     simulateLayout(component, {
