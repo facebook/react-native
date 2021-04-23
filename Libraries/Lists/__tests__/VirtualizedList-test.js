@@ -908,6 +908,49 @@ it('renders initialNumToRender cells when virtualization disabled', () => {
   expect(component).toMatchSnapshot();
 });
 
+it('renders no spacers up to initialScrollIndex on first render when virtualization disabled', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={2}
+        initialScrollIndex={4}
+        windowSize={1}
+        maxToRenderPerBatch={1}
+        disableVirtualization
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('expands first in viewport to render up to maxToRenderPerBatch on initial render', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={2}
+        initialScrollIndex={4}
+        windowSize={1}
+        maxToRenderPerBatch={10}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
 it('renders items before initialScrollIndex on first batch tick when virtualization disabled', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
