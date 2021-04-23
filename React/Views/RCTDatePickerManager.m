@@ -27,17 +27,14 @@ RCT_ENUM_CONVERTER(
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability-new"
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_4
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 
 RCT_ENUM_CONVERTER(
     UIDatePickerStyle,
     (@{
-      @"default" : @(UIDatePickerStyleAutomatic),
       @"compact" : @(UIDatePickerStyleCompact),
       @"spinner" : @(UIDatePickerStyleWheels),
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
       @"inline" : @(UIDatePickerStyleInline),
-#endif
     }),
     UIDatePickerStyleAutomatic,
     integerValue)
@@ -84,17 +81,16 @@ RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *
   }];
 }
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_4
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 RCT_CUSTOM_VIEW_PROPERTY(pickerStyle, UIDatePickerStyle, RCTDatePicker)
 {
-  if (@available(iOS 13.4, *)) {
+  if (@available(iOS 14, *)) {
     if (json) {
       view.preferredDatePickerStyle = [RCTConvert UIDatePickerStyle:json];
     } else {
-      view.preferredDatePickerStyle = UIDatePickerStyleAutomatic;
+      view.preferredDatePickerStyle = UIDatePickerStyleWheels;
     }
   }
 }
 #endif
-
 @end

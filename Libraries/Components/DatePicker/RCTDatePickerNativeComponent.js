@@ -37,10 +37,7 @@ type NativeProps = $ReadOnly<{|
   mode?: WithDefault<'date' | 'time' | 'datetime', 'date'>,
   onChange?: ?BubblingEventHandler<Event>,
   timeZoneOffsetInMinutes?: ?Float,
-  pickerStyle?: WithDefault<
-    'default' | 'compact' | 'spinner' | 'inline',
-    'default',
-  >,
+  pickerStyle?: WithDefault<'compact' | 'spinner' | 'inline', 'spinner'>,
 |}>;
 
 type ComponentType = HostComponent<NativeProps>;
