@@ -60,18 +60,7 @@ describe('<ImageBackground />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}', () => {
-    const instance = render.create(
-      <ImageBackground
-        importantForAccessibility={'no-hide-descendants'}
-        style={{width: 150, height: 50}}
-        source={{uri: 'foo-bar.jpg'}}
-      />,
-    );
-    expect(instance).toMatchSnapshot();
-  });
-
-  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}', () => {
+  it('should be set importantForAccessibility={no} when importantForAccessibility={no}', () => {
     const instance = render.create(
       <ImageBackground
         importantForAccessibility={'no'}

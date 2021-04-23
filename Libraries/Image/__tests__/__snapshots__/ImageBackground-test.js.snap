@@ -1,9 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<ImageBackground /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no} 1`] = `
+exports[`<ImageBackground /> should be set importantForAccessibility={no} when importantForAccessibility={no} 1`] = `
 <View
   accessibilityIgnoresInvertColors={true}
-  importantForAccessibility="no-hide-descendants"
   style={
     Object {
       "height": 50,
@@ -13,44 +12,6 @@ exports[`<ImageBackground /> should be set importantForAccessibility={no-hide-de
 >
   <Image
     importantForAccessibility="no"
-    source={
-      Object {
-        "uri": "foo-bar.jpg",
-      }
-    }
-    style={
-      Array [
-        Object {
-          "bottom": 0,
-          "left": 0,
-          "position": "absolute",
-          "right": 0,
-          "top": 0,
-        },
-        Object {
-          "height": 50,
-          "width": 150,
-        },
-        undefined,
-      ]
-    }
-  />
-</View>
-`;
-
-exports[`<ImageBackground /> should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants} 1`] = `
-<View
-  accessibilityIgnoresInvertColors={true}
-  importantForAccessibility="no-hide-descendants"
-  style={
-    Object {
-      "height": 50,
-      "width": 150,
-    }
-  }
->
-  <Image
-    importantForAccessibility="no-hide-descendants"
     source={
       Object {
         "uri": "foo-bar.jpg",
