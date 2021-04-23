@@ -312,13 +312,17 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   CGRect beginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
   CGRect endFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
 
+  CGPoint absoluteViewOrigin = [self convertPoint:self.bounds.origin toView:nil];
+  CGFloat scrollViewLowerY = self.inverted ? absoluteViewOrigin.y : absoluteViewOrigin.y + self.bounds.size.height;
+
   UIEdgeInsets newEdgeInsets = _scrollView.contentInset;
-  CGFloat inset = endFrame.size.height;
+  CGFloat inset = MAX(scrollViewLowerY - endFrame.origin.y, 0);
   if (self.inverted) {
     newEdgeInsets.top = inset;
   } else {
     newEdgeInsets.bottom = inset;
   }
+
   CGPoint newContentOffset = _scrollView.contentOffset;
   CGFloat contentDiff = endFrame.origin.y - beginFrame.origin.y;
   if (self.inverted) {
