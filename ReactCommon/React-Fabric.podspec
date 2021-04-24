@@ -11,7 +11,7 @@ version = package['version']
 source = { :git => 'https://github.com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
-  source[:commit] = `git rev-parse HEAD`.strip
+  source[:commit] = `git rev-parse HEAD`.strip if system("git rev-parse --git-dir > /dev/null 2>&1")
 else
   source[:tag] = "v#{version}"
 end
@@ -333,6 +333,15 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/leakchecker/**/*.{cpp,h}"
     ss.exclude_files        = "react/renderer/leakchecker/tests"
     ss.header_dir           = "react/renderer/leakchecker"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
+  s.subspec "runtimescheduler" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/runtimescheduler/**/*.{cpp,h}"
+    ss.exclude_files        = "react/renderer/runtimescheduler/tests"
+    ss.header_dir           = "react/renderer/runtimescheduler"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 

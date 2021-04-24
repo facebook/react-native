@@ -12,6 +12,7 @@
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
+import SwitchInjection from './SwitchInjection';
 
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,
@@ -254,4 +255,5 @@ class Switch extends React.Component<Props> {
 const returnsFalse = () => false;
 const returnsTrue = () => true;
 
-module.exports = Switch;
+module.exports = (SwitchInjection.unstable_Switch ??
+  Switch: React.AbstractComponent<React.ElementConfig<typeof Switch>>);

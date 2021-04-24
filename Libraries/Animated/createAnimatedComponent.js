@@ -121,19 +121,15 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     };
 
     _waitForUpdate = (): void => {
-      if (this._isFabric()) {
-        NativeAnimatedHelper.API.setWaitingForIdentifier(
-          this._animatedComponentId,
-        );
-      }
+      NativeAnimatedHelper.API.setWaitingForIdentifier(
+        this._animatedComponentId,
+      );
     };
 
     _markUpdateComplete = (): void => {
-      if (this._isFabric()) {
-        NativeAnimatedHelper.API.unsetWaitingForIdentifier(
-          this._animatedComponentId,
-        );
-      }
+      NativeAnimatedHelper.API.unsetWaitingForIdentifier(
+        this._animatedComponentId,
+      );
     };
 
     // The system is best designed when setNativeProps is implemented. It is

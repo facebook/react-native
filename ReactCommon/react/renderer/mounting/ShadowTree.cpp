@@ -223,7 +223,8 @@ ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext,
-    ShadowTreeDelegate const &delegate)
+    ShadowTreeDelegate const &delegate,
+    bool enableNewDiffer)
     : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
@@ -248,10 +249,11 @@ ShadowTree::ShadowTree(
           family));
 
   currentRevision_ = ShadowTreeRevision{
-      rootShadowNode, ShadowTreeRevision::Number{0}, TransactionTelemetry{}};
+      rootShadowNode, INITIAL_REVISION, TransactionTelemetry{}};
 
   mountingCoordinator_ =
       std::make_shared<MountingCoordinator const>(currentRevision_);
+  mountingCoordinator_->setEnableNewDiffer(enableNewDiffer);
 }
 
 ShadowTree::~ShadowTree() {
@@ -275,7 +277,9 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
     revision = currentRevision_;
   }
 
-  if (commitMode == CommitMode::Normal) {
+  // initial revision never contains any commits so mounting it here is
+  // incorrect
+  if (commitMode == CommitMode::Normal && revision.number != INITIAL_REVISION) {
     mount(revision);
   }
 }

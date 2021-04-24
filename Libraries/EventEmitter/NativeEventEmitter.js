@@ -18,12 +18,10 @@ import Platform from '../Utilities/Platform';
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
 import invariant from 'invariant';
 
-type NativeModule = $ReadOnly<
-  interface {
-    addListener: (eventType: string) => void,
-    removeListeners: (count: number) => void,
-  },
->;
+interface NativeModule {
+  addListener(eventType: string): void;
+  removeListeners(count: number): void;
+}
 
 export type {EventSubscription};
 
@@ -47,7 +45,26 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
         nativeModule != null,
         '`new NativeEventEmitter()` requires a non-null argument.',
       );
+    }
+
+    const hasAddListener =
+      !!nativeModule && typeof nativeModule.addListener === 'function';
+    const hasRemoveListeners =
+      !!nativeModule && typeof nativeModule.removeListeners === 'function';
+
+    if (nativeModule && hasAddListener && hasRemoveListeners) {
       this._nativeModule = nativeModule;
+    } else if (nativeModule != null) {
+      if (!hasAddListener) {
+        console.warn(
+          '`new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.',
+        );
+      }
+      if (!hasRemoveListeners) {
+        console.warn(
+          '`new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.',
+        );
+      }
     }
   }
 

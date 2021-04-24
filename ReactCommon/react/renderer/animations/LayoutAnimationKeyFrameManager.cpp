@@ -1250,7 +1250,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
               LOG(ERROR)
                   << "Due to conflict, replacing 'viewStart' of animated keyframe: ["
-                  << conflictingKeyFrame.viewPrev.tag << "]";
+                  << conflictingKeyFrame.viewPrev.tag << "] with ##"
+                  << std::hash<ShadowView>{}(conflictingKeyFrame.viewPrev);
 #endif
               // Pick a Prop or layout property, depending on the current
               // animation configuration. Figure out how much progress we've
@@ -1737,7 +1738,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     ShadowView prev = keyframe.viewPrev;
     for (auto const &finalMutation : keyframe.finalMutationsForKeyFrame) {
       PrintMutationInstruction(
-          logPrefix + "Queuing up Final Mutation:", finalMutation);
+          logPrefix + ": Queuing up Final Mutation:", finalMutation);
       // Copy so that if something else mutates the inflight animations,
       // it won't change this mutation after this point.
       auto mutation = ShadowViewMutation{

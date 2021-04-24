@@ -376,12 +376,14 @@ void Binding::stopSurface(jint surfaceId) {
   }
 }
 
-void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandler) {
-  surfaceHandler->registerScheduler(getScheduler());
+void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
+  auto scheduler = getScheduler();
+  scheduler->registerSurface(surfaceHandlerBinding->getSurfaceHandler());
 }
 
-void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandler) {
-  surfaceHandler->unregisterScheduler(getScheduler());
+void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
+  auto scheduler = getScheduler();
+  scheduler->unregisterSurface(surfaceHandlerBinding->getSurfaceHandler());
 }
 
 static inline float scale(Float value, Float pointScaleFactor) {

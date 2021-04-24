@@ -11,14 +11,9 @@
 import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
 
-jest.mock('../../BatchedBridge/NativeModules', () => ({
-  NativeAnimatedModule: {},
-  PlatformConstants: {
-    getConstants() {
-      return {};
-    },
-  },
-}));
+jest.mock('../NativeAnimatedHelper', () => {
+  return jest.requireActual('../NativeAnimatedHelper');
+});
 
 let Animated = require('../Animated');
 describe('Animated tests', () => {
