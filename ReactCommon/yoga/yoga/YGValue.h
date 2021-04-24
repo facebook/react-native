@@ -23,7 +23,7 @@ YG_EXTERN_C_BEGIN
 // Not defined in MSVC++
 #ifndef NAN
 static const uint32_t __nan = 0x7fc00000;
-#define NAN (*(const float*) __nan)
+#define NAN (*(const float *)__nan)
 #endif
 
 #define YGUndefined NAN
@@ -45,7 +45,7 @@ YG_EXTERN_C_END
 
 #ifdef __cplusplus
 
-inline bool operator==(const YGValue& lhs, const YGValue& rhs) {
+inline bool operator==(const YGValue &lhs, const YGValue &rhs) {
   if (lhs.unit != rhs.unit) {
     return false;
   }
@@ -62,11 +62,11 @@ inline bool operator==(const YGValue& lhs, const YGValue& rhs) {
   return false;
 }
 
-inline bool operator!=(const YGValue& lhs, const YGValue& rhs) {
+inline bool operator!=(const YGValue &lhs, const YGValue &rhs) {
   return !(lhs == rhs);
 }
 
-inline YGValue operator-(const YGValue& value) {
+inline YGValue operator-(const YGValue &value) {
   return {-value.value, value.unit};
 }
 

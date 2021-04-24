@@ -14,11 +14,12 @@
 
 namespace facebook {
 namespace react {
-  template<typename T>
-  using LazyVector = FB::LazyVector<T, id>;
-}}
+template <typename T>
+using LazyVector = FB::LazyVector<T, id>;
+}
+}
 
-template<typename ContainerT>
+template <typename ContainerT>
 NSArray *RCTConvertVecToArray(const ContainerT &vec, id (^convertor)(typename ContainerT::value_type element))
 {
   NSMutableArray *array = [NSMutableArray new];
@@ -28,22 +29,31 @@ NSArray *RCTConvertVecToArray(const ContainerT &vec, id (^convertor)(typename Co
   }
   return array;
 }
-template<typename ContainerT>
+template <typename ContainerT>
 NSArray *RCTConvertVecToArray(const ContainerT &vec)
 {
-  return RCTConvertVecToArray(vec, ^id(typename ContainerT::value_type element) { return element; });
+  return RCTConvertVecToArray(vec, ^id(typename ContainerT::value_type element) {
+    return element;
+  });
 }
 
-template<typename ContainerT>
-NSArray *RCTConvertOptionalVecToArray(const folly::Optional<ContainerT> &vec, id (^convertor)(typename ContainerT::value_type element))
+template <typename ContainerT>
+NSArray *RCTConvertOptionalVecToArray(
+    const folly::Optional<ContainerT> &vec,
+    id (^convertor)(typename ContainerT::value_type element))
 {
   return vec.hasValue() ? RCTConvertVecToArray(vec.value(), convertor) : nil;
 }
 
-template<typename ContainerT>
+template <typename ContainerT>
 NSArray *RCTConvertOptionalVecToArray(const folly::Optional<ContainerT> &vec)
 {
-  return vec.hasValue() ? RCTConvertVecToArray(vec.value(), ^id(typename ContainerT::value_type element) { return element; }) : nil;
+  return vec.hasValue() ? RCTConvertVecToArray(
+                              vec.value(),
+                              ^id(typename ContainerT::value_type element) {
+                                return element;
+                              })
+                        : nil;
 }
 
 bool RCTBridgingToBool(id value);
@@ -54,7 +64,7 @@ folly::Optional<double> RCTBridgingToOptionalDouble(id value);
 double RCTBridgingToDouble(id value);
 NSArray *RCTBridgingToArray(id value);
 
-template<typename T>
+template <typename T>
 facebook::react::LazyVector<T> RCTBridgingToVec(id value, T (^ctor)(id element))
 {
   NSArray *array = RCTBridgingToArray(value);
@@ -63,7 +73,7 @@ facebook::react::LazyVector<T> RCTBridgingToVec(id value, T (^ctor)(id element))
   return facebook::react::LazyVector<T>::fromUnsafeRawValue(array, size, ctor);
 }
 
-template<typename T>
+template <typename T>
 folly::Optional<facebook::react::LazyVector<T>> RCTBridgingToOptionalVec(id value, T (^ctor)(id element))
 {
   if (value == nil || value == (id)kCFNull) {

@@ -204,7 +204,7 @@ static inline RefPtr<T> adoptRef(T *ptr) {
 }
 
 template <typename T, typename... Args>
-static inline RefPtr<T> createNew(Args &&...arguments) {
+static inline RefPtr<T> createNew(Args &&... arguments) {
   return RefPtr<T>::adoptRef(new T(std::forward<Args>(arguments)...));
 }
 

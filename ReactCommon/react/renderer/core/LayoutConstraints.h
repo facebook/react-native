@@ -21,9 +21,8 @@ namespace react {
  */
 struct LayoutConstraints {
   Size minimumSize{0, 0};
-  Size maximumSize{
-      std::numeric_limits<Float>::infinity(),
-      std::numeric_limits<Float>::infinity()};
+  Size maximumSize{std::numeric_limits<Float>::infinity(),
+                   std::numeric_limits<Float>::infinity()};
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
 
   /*

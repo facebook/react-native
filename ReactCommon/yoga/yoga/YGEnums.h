@@ -31,7 +31,7 @@ constexpr int n() {
 
 #define YG_ENUM_DECL(NAME, ...)                               \
   typedef YG_ENUM_BEGIN(NAME){__VA_ARGS__} YG_ENUM_END(NAME); \
-  WIN_EXPORT const char* NAME##ToString(NAME);
+  WIN_EXPORT const char *NAME##ToString(NAME);
 
 #ifdef __cplusplus
 #define YG_ENUM_SEQ_DECL(NAME, ...)  \

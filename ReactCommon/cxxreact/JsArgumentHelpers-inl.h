@@ -14,7 +14,7 @@ namespace xplat {
 namespace detail {
 
 template <typename R, typename M, typename... T>
-R jsArg1(const folly::dynamic &arg, M asFoo, const T &...desc) {
+R jsArg1(const folly::dynamic &arg, M asFoo, const T &... desc) {
   try {
     return (arg.*asFoo)();
   } catch (const folly::TypeError &ex) {
@@ -35,7 +35,7 @@ template <typename R, typename... T>
 R jsArg(
     const folly::dynamic &arg,
     R (folly::dynamic::*asFoo)() const,
-    const T &...desc) {
+    const T &... desc) {
   return detail::jsArg1<R>(arg, asFoo, desc...);
 }
 
@@ -43,7 +43,7 @@ template <typename R, typename... T>
 R jsArg(
     const folly::dynamic &arg,
     R (folly::dynamic::*asFoo)() const &,
-    const T &...desc) {
+    const T &... desc) {
   return detail::jsArg1<R>(arg, asFoo, desc...);
 }
 

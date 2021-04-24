@@ -28,26 +28,26 @@ namespace vanillajni {
  * that is passed to the "on load" JNI hook.
  * @return an integer value to return from the "on load" hook.
  */
-jint ensureInitialized(JNIEnv** env, JavaVM* vm);
+jint ensureInitialized(JNIEnv **env, JavaVM *vm);
 
 /**
  * Returns a JNIEnv* suitable for the current thread. If the current thread is
  * not attached to the Java VM, this method aborts execution.
  */
-JNIEnv* getCurrentEnv();
+JNIEnv *getCurrentEnv();
 
 /**
  * Logs an error message and aborts the current process.
  */
-void logErrorMessageAndDie(const char* message);
+void logErrorMessageAndDie(const char *message);
 
 /**
  * Checks whether there is a pending JNI exception. If so, it logs an error
  * message and aborts the current process. Otherwise it does nothing.
  */
-void assertNoPendingJniException(JNIEnv* env);
+void assertNoPendingJniException(JNIEnv *env);
 
-void assertNoPendingJniExceptionIf(JNIEnv* env, bool condition);
+void assertNoPendingJniExceptionIf(JNIEnv *env, bool condition);
 
 } // namespace vanillajni
 } // namespace yoga

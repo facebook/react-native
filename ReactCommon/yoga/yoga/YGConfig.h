@@ -14,16 +14,16 @@ struct YOGA_EXPORT YGConfig {
       YGConfigRef config,
       YGNodeRef node,
       YGLogLevel level,
-      void* context,
-      const char* format,
+      void *context,
+      const char *format,
       va_list args);
   using CloneWithContextFn = YGNodeRef (*)(
       YGNodeRef node,
       YGNodeRef owner,
       int childIndex,
-      void* cloneContext);
+      void *cloneContext);
 
-private:
+ private:
   union {
     CloneWithContextFn withContext;
     YGCloneNodeFunc noContext;
@@ -35,7 +35,7 @@ private:
   bool cloneNodeUsesContext_;
   bool loggerUsesContext_;
 
-public:
+ public:
   bool useWebDefaults = false;
   bool useLegacyStretchBehaviour = false;
   bool shouldDiffLayoutWithoutLegacyStretchBehaviour = false;
@@ -43,10 +43,10 @@ public:
   float pointScaleFactor = 1.0f;
   std::array<bool, facebook::yoga::enums::count<YGExperimentalFeature>()>
       experimentalFeatures = {};
-  void* context = nullptr;
+  void *context = nullptr;
 
   YGConfig(YGLogger logger);
-  void log(YGConfig*, YGNode*, YGLogLevel, void*, const char*, va_list);
+  void log(YGConfig *, YGNode *, YGLogLevel, void *, const char *, va_list);
   void setLogger(YGLogger logger) {
     logger_.noContext = logger;
     loggerUsesContext_ = false;
@@ -55,13 +55,15 @@ public:
     logger_.withContext = logger;
     loggerUsesContext_ = true;
   }
-  void setLogger(std::nullptr_t) { setLogger(YGLogger{nullptr}); }
+  void setLogger(std::nullptr_t) {
+    setLogger(YGLogger{nullptr});
+  }
 
   YGNodeRef cloneNode(
       YGNodeRef node,
       YGNodeRef owner,
       int childIndex,
-      void* cloneContext);
+      void *cloneContext);
   void setCloneNodeCallback(YGCloneNodeFunc cloneNode) {
     cloneNodeCallback_.noContext = cloneNode;
     cloneNodeUsesContext_ = false;

@@ -49,14 +49,14 @@ class SurfaceManager final {
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext) const noexcept;
 
-  MountingCoordinator::Shared findMountingCoordinator(
-      SurfaceId surfaceId) const noexcept;
+  MountingCoordinator::Shared findMountingCoordinator(SurfaceId surfaceId) const
+      noexcept;
 
  private:
   void visit(
       SurfaceId surfaceId,
-      std::function<void(SurfaceHandler const &surfaceHandler)> callback)
-      const noexcept;
+      std::function<void(SurfaceHandler const &surfaceHandler)> callback) const
+      noexcept;
 
   Scheduler const &scheduler_;
   mutable better::shared_mutex mutex_; // Protects `registry_`.

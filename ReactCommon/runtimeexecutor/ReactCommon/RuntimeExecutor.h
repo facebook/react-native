@@ -41,7 +41,8 @@ inline static void executeAsynchronously(
     std::function<void(jsi::Runtime &runtime)> &&callback) noexcept {
   std::thread([callback = std::move(callback), runtimeExecutor]() mutable {
     runtimeExecutor(std::move(callback));
-  }).detach();
+  })
+      .detach();
 }
 
 /*

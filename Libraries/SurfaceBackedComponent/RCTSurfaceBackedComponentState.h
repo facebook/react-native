@@ -9,7 +9,7 @@
 
 @class RCTSurface;
 
-@interface RCTSurfaceBackedComponentState: NSObject
+@interface RCTSurfaceBackedComponentState : NSObject
 
 @property (atomic, readonly, strong) RCTSurface *surface;
 

@@ -13,33 +13,32 @@
 #define FB_REFERENCE_IMAGE_DIR ""
 #endif
 
-#define RCT_RUN_RUNLOOP_WHILE(CONDITION)                                                          \
-{                                                                                                 \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:30];                                      \
-  NSRunLoop *runloop = [NSRunLoop mainRunLoop];                                                   \
-  while ((CONDITION)) {                                                                           \
-    [runloop runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]]; \
-    if ([timeout timeIntervalSinceNow] <= 0) {                                                    \
-      XCTFail(@"Runloop timed out before condition was met");                                     \
-      break;                                                                                      \
-    }                                                                                             \
-  }                                                                                               \
-}
+#define RCT_RUN_RUNLOOP_WHILE(CONDITION)                                                            \
+  {                                                                                                 \
+    NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:30];                                     \
+    NSRunLoop *runloop = [NSRunLoop mainRunLoop];                                                   \
+    while ((CONDITION)) {                                                                           \
+      [runloop runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]]; \
+      if ([timeout timeIntervalSinceNow] <= 0) {                                                    \
+        XCTFail(@"Runloop timed out before condition was met");                                     \
+        break;                                                                                      \
+      }                                                                                             \
+    }                                                                                               \
+  }
 
 /**
  * Use the RCTInitRunnerForApp macro for typical usage. See FBSnapshotTestCase.h for more information
  * on how to configure the snapshotting system.
  */
 #define RCTInitRunnerForApp(app__, moduleProvider__, scriptURL__) \
-[[RCTTestRunner alloc] initWithApp:(app__) \
-                referenceDirectory:@FB_REFERENCE_IMAGE_DIR \
-                    moduleProvider:(moduleProvider__) \
-                         scriptURL: scriptURL__]
+  [[RCTTestRunner alloc] initWithApp:(app__)                      \
+                  referenceDirectory:@FB_REFERENCE_IMAGE_DIR      \
+                      moduleProvider:(moduleProvider__)scriptURL:scriptURL__]
 
 #define RCTInitRunnerForAppWithDelegate(app__, bridgeDelegate__) \
-[[RCTTestRunner alloc] initWithApp:(app__) \
-                referenceDirectory:@FB_REFERENCE_IMAGE_DIR \
-                    bridgeDelegate:(bridgeDelegate__)]
+  [[RCTTestRunner alloc] initWithApp:(app__)                     \
+                  referenceDirectory:@FB_REFERENCE_IMAGE_DIR     \
+                      bridgeDelegate:(bridgeDelegate__)]
 
 @protocol RCTBridgeModule;
 @class RCTBridge;
@@ -113,11 +112,13 @@
  * @param test Selector of the test, usually just `_cmd`.
  * @param moduleName Name of the JS component as registered by `AppRegistry.registerComponent` in JS.
  * @param initialProps props that are passed into the component when rendered.
- * @param configurationBlock A block that takes the hosting root view and performs arbitrary manipulation after its creation.
+ * @param configurationBlock A block that takes the hosting root view and performs arbitrary manipulation after its
+ * creation.
  */
-- (void)runTest:(SEL)test module:(NSString *)moduleName
-   initialProps:(NSDictionary<NSString *, id> *)initialProps
-configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock;
+- (void)runTest:(SEL)test
+                module:(NSString *)moduleName
+          initialProps:(NSDictionary<NSString *, id> *)initialProps
+    configurationBlock:(void (^)(RCTRootView *rootView))configurationBlock;
 
 /**
  * Same as runTest:, but allows for passing initialProps for providing mock data
@@ -127,13 +128,15 @@ configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock;
  * @param test Selector of the test, usually just `_cmd`.
  * @param moduleName Name of the JS component as registered by `AppRegistry.registerComponent` in JS.
  * @param initialProps props that are passed into the component when rendered.
- * @param configurationBlock A block that takes the hosting root view and performs arbitrary manipulation after its creation.
+ * @param configurationBlock A block that takes the hosting root view and performs arbitrary manipulation after its
+ * creation.
  * @param expectErrorRegex A regex that must match the error thrown.  If no error is thrown, the test fails.
  */
-- (void)runTest:(SEL)test module:(NSString *)moduleName
-   initialProps:(NSDictionary<NSString *, id> *)initialProps
-configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
-expectErrorRegex:(NSString *)expectErrorRegex;
+- (void)runTest:(SEL)test
+                module:(NSString *)moduleName
+          initialProps:(NSDictionary<NSString *, id> *)initialProps
+    configurationBlock:(void (^)(RCTRootView *rootView))configurationBlock
+      expectErrorRegex:(NSString *)expectErrorRegex;
 
 /**
  * Same as runTest:, but allows for passing initialProps for providing mock data
@@ -144,12 +147,14 @@ expectErrorRegex:(NSString *)expectErrorRegex;
  * @param test Selector of the test, usually just `_cmd`.
  * @param moduleName Name of the JS component as registered by `AppRegistry.registerComponent` in JS.
  * @param initialProps props that are passed into the component when rendered.
- * @param configurationBlock A block that takes the hosting root view and performs arbitrary manipulation after its creation.
+ * @param configurationBlock A block that takes the hosting root view and performs arbitrary manipulation after its
+ * creation.
  * @param expectErrorBlock A block that takes the error message and returns NO to fail the test.
  */
-- (void)runTest:(SEL)test module:(NSString *)moduleName
-   initialProps:(NSDictionary<NSString *, id> *)initialProps
-configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
-expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock;
+- (void)runTest:(SEL)test
+                module:(NSString *)moduleName
+          initialProps:(NSDictionary<NSString *, id> *)initialProps
+    configurationBlock:(void (^)(RCTRootView *rootView))configurationBlock
+      expectErrorBlock:(BOOL (^)(NSString *error))expectErrorBlock;
 
 @end

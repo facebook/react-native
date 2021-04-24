@@ -112,8 +112,8 @@ class SurfaceHandler final {
    * Can be not be called when the status is `Unregistered`.
    * The returning value cannot be `nullptr`.
    */
-  std::shared_ptr<MountingCoordinator const> getMountingCoordinator()
-      const noexcept;
+  std::shared_ptr<MountingCoordinator const> getMountingCoordinator() const
+      noexcept;
 
 #pragma mark - Layout
 

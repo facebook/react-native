@@ -8,7 +8,13 @@
 #import <React/RCTImageLoader.h>
 
 typedef BOOL (^RCTImageURLLoaderCanLoadImageURLHandler)(NSURL *requestURL);
-typedef RCTImageLoaderCancellationBlock (^RCTImageURLLoaderLoadImageURLHandler)(NSURL *imageURL, CGSize size, CGFloat scale, RCTResizeMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler);
+typedef RCTImageLoaderCancellationBlock (^RCTImageURLLoaderLoadImageURLHandler)(
+    NSURL *imageURL,
+    CGSize size,
+    CGFloat scale,
+    RCTResizeMode resizeMode,
+    RCTImageLoaderProgressBlock progressHandler,
+    RCTImageLoaderCompletionBlock completionHandler);
 
 @interface RCTConcreteImageURLLoader : NSObject <RCTImageURLLoader>
 
@@ -19,7 +25,12 @@ typedef RCTImageLoaderCancellationBlock (^RCTImageURLLoaderLoadImageURLHandler)(
 @end
 
 typedef BOOL (^RCTImageDataDecoderCanDecodeImageDataHandler)(NSData *imageData);
-typedef RCTImageLoaderCancellationBlock (^RCTImageDataDecoderDecodeImageDataHandler)(NSData *imageData, CGSize size, CGFloat scale, RCTResizeMode resizeMode, RCTImageLoaderCompletionBlock completionHandler);
+typedef RCTImageLoaderCancellationBlock (^RCTImageDataDecoderDecodeImageDataHandler)(
+    NSData *imageData,
+    CGSize size,
+    CGFloat scale,
+    RCTResizeMode resizeMode,
+    RCTImageLoaderCompletionBlock completionHandler);
 
 @interface RCTConcreteImageDecoder : NSObject <RCTImageDataDecoder>
 
@@ -30,11 +41,11 @@ typedef RCTImageLoaderCancellationBlock (^RCTImageDataDecoderDecodeImageDataHand
 @end
 
 #define _RCTDefineImageHandler(SUPERCLASS, CLASS_NAME) \
-@interface CLASS_NAME : SUPERCLASS @end \
-@implementation CLASS_NAME RCT_EXPORT_MODULE() @end
+  @interface CLASS_NAME : SUPERCLASS                   \
+  @end                                                 \
+  @implementation CLASS_NAME                           \
+  RCT_EXPORT_MODULE() @end
 
-#define RCTDefineImageURLLoader(CLASS_NAME) \
-_RCTDefineImageHandler(RCTConcreteImageURLLoader, CLASS_NAME)
+#define RCTDefineImageURLLoader(CLASS_NAME) _RCTDefineImageHandler(RCTConcreteImageURLLoader, CLASS_NAME)
 
-#define RCTDefineImageDecoder(CLASS_NAME) \
-_RCTDefineImageHandler(RCTConcreteImageDecoder, CLASS_NAME)
+#define RCTDefineImageDecoder(CLASS_NAME) _RCTDefineImageHandler(RCTConcreteImageDecoder, CLASS_NAME)

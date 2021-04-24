@@ -18,16 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
  * calculates the rectangle to draw the image into so that it will be sized and
  * positioned correctly according to the specified resizeMode.
  */
-RCT_EXTERN CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
-                                CGFloat destScale, RCTResizeMode resizeMode);
+RCT_EXTERN CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode);
 
 /**
  * This function takes a source size (typically from an image), a target rect
  * that it will be drawn into (typically relative to a CGContext), and works out
  * the transform needed to draw the image at the correct scale and position.
  */
-RCT_EXTERN CGAffineTransform RCTTransformFromTargetRect(CGSize sourceSize,
-                                                        CGRect targetRect);
+RCT_EXTERN CGAffineTransform RCTTransformFromTargetRect(CGSize sourceSize, CGRect targetRect);
 
 /**
  * This function takes an input content size & scale (typically from an image),
@@ -35,18 +33,25 @@ RCT_EXTERN CGAffineTransform RCTTransformFromTargetRect(CGSize sourceSize,
  * UIImageView) and then calculates the optimal size at which to redraw the
  * image so that it will be displayed correctly with the specified resizeMode.
  */
-RCT_EXTERN CGSize RCTTargetSize(CGSize sourceSize, CGFloat sourceScale,
-                                CGSize destSize, CGFloat destScale,
-                                RCTResizeMode resizeMode, BOOL allowUpscaling);
+RCT_EXTERN CGSize RCTTargetSize(
+    CGSize sourceSize,
+    CGFloat sourceScale,
+    CGSize destSize,
+    CGFloat destScale,
+    RCTResizeMode resizeMode,
+    BOOL allowUpscaling);
 
 /**
  * This function takes an input content size & scale (typically from an image),
  * a target size & scale that it will be displayed at, and determines if the
  * source will need to be upscaled to fit (which may result in pixelization).
  */
-RCT_EXTERN BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
-                                     CGSize destSize, CGFloat destScale,
-                                     RCTResizeMode resizeMode);
+RCT_EXTERN BOOL RCTUpscalingRequired(
+    CGSize sourceSize,
+    CGFloat sourceScale,
+    CGSize destSize,
+    CGFloat destScale,
+    RCTResizeMode resizeMode);
 
 /**
  * This function takes the source data for an image and decodes it at the
@@ -55,10 +60,8 @@ RCT_EXTERN BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
  * width/height of the returned image is guaranteed to be >= destSize.
  * Pass a destSize of CGSizeZero to decode the image at its original size.
  */
-RCT_EXTERN UIImage *__nullable RCTDecodeImageWithData(NSData *data,
-                                                      CGSize destSize,
-                                                      CGFloat destScale,
-                                                      RCTResizeMode resizeMode);
+RCT_EXTERN UIImage *__nullable
+RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode);
 
 /**
  * This function takes the source data for an image and decodes just the
@@ -80,10 +83,8 @@ RCT_EXTERN NSData *__nullable RCTGetImageData(UIImage *image, float quality);
  * and `destScale` is its scale. The `transform` argument controls how the
  * source image will be mapped to the destination image.
  */
-RCT_EXTERN UIImage *__nullable RCTTransformImage(UIImage *image,
-                                                 CGSize destSize,
-                                                 CGFloat destScale,
-                                                 CGAffineTransform transform);
+RCT_EXTERN UIImage *__nullable
+RCTTransformImage(UIImage *image, CGSize destSize, CGFloat destScale, CGAffineTransform transform);
 
 /*
  * Return YES if image has an alpha component
