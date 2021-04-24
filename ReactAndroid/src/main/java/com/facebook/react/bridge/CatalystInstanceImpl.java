@@ -551,7 +551,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public RuntimeExecutor getRuntimeExecutor() {
-    return getRuntimeExecutor(false);
+    return getRuntimeExecutor(ReactFeatureFlags.enableRuntimeExecutorFlushing());
   }
 
   public native RuntimeExecutor getRuntimeExecutor(boolean shouldFlush);
