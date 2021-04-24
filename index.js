@@ -478,12 +478,6 @@ module.exports = {
   get unstable_RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;
   },
-  get unstable_enableLogBox(): () => void {
-    return () =>
-      console.warn(
-        'LogBox is enabled by default so there is no need to call unstable_enableLogBox() anymore. This is a no op and will be removed in the next version.',
-      );
-  },
   // Prop Types
   // $FlowFixMe[value-as-type]
   get ColorPropType(): DeprecatedColorPropType {
