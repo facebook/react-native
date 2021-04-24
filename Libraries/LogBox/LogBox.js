@@ -62,24 +62,6 @@ if (__DEV__) {
         registerWarning(...args);
       };
 
-      if ((console: any).disableYellowBox === true) {
-        LogBoxData.setDisabled(true);
-        console.warn(
-          'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
-        );
-      }
-
-      (Object.defineProperty: any)(console, 'disableYellowBox', {
-        configurable: true,
-        get: () => LogBoxData.isDisabled(),
-        set: value => {
-          LogBoxData.setDisabled(value);
-          console.warn(
-            'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
-          );
-        },
-      });
-
       if (Platform.isTesting) {
         LogBoxData.setDisabled(true);
       }
