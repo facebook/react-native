@@ -246,20 +246,23 @@ std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
   return std::static_pointer_cast<CallInvoker>(jsCallInvoker_);
 }
 
-// TODO: Unify with JS CallInvoker
-RuntimeExecutor Instance::getRuntimeExecutor() {
+RuntimeExecutor Instance::getRuntimeExecutor(bool shouldFlush) {
   std::weak_ptr<NativeToJsBridge> weakNativeToJsBridge = nativeToJsBridge_;
 
   auto runtimeExecutor =
-      [weakNativeToJsBridge](
-          std::function<void(jsi::Runtime & runtime)> &&callback) {
+      [weakNativeToJsBridge,
+       shouldFlush](std::function<void(jsi::Runtime & runtime)> &&callback) {
         if (auto strongNativeToJsBridge = weakNativeToJsBridge.lock()) {
           strongNativeToJsBridge->runOnExecutorQueue(
-              [callback = std::move(callback)](JSExecutor *executor) {
+              [callback = std::move(callback),
+               shouldFlush](JSExecutor *executor) {
                 jsi::Runtime *runtime =
                     (jsi::Runtime *)executor->getJavaScriptContext();
                 try {
                   callback(*runtime);
+                  if (shouldFlush) {
+                    executor->flush();
+                  }
                 } catch (jsi::JSError &originalError) {
                   handleJSError(*runtime, originalError, true);
                 }
