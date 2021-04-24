@@ -1190,43 +1190,7 @@ it('renders tail spacer up to last measured index if getItemLayout not defined',
   expect(component).toMatchSnapshot();
 });
 
-it('renders full tail spacer if all cells measured', () => {
-  const items = generateItems(10);
-
-  let component;
-  ReactTestRenderer.act(() => {
-    component = ReactTestRenderer.create(
-      <VirtualizedList
-        initialNumToRender={3}
-        maxToRenderPerBatch={1}
-        windowSize={1}
-        {...baseItemProps(items)}
-      />,
-    );
-  });
-
-  ReactTestRenderer.act(() => {
-    const LAST_MEASURED_CELL = 9;
-    for (let i = 0; i <= LAST_MEASURED_CELL; ++i) {
-      simulateCellLayout(component, items, i, {
-        width: 10,
-        height: 10,
-        x: 0,
-        y: 10 * i,
-      });
-    }
-
-    simulateLayout(component, {
-      viewport: {width: 10, height: 50},
-      content: {width: 10, height: 30},
-    });
-    performNextBatch();
-  });
-
-  expect(component).toMatchSnapshot();
-});
-
-it('renders tail spacer using frame average when getItemLayout undefined', () => {
+it('renders tail spacer up to last measured with irregular layout when getItemLayout undefined', () => {
   const items = generateItems(10);
 
   let component;
@@ -1253,6 +1217,42 @@ it('renders tail spacer using frame average when getItemLayout undefined', () =>
         y: currentY + i,
       });
       currentY += i;
+    }
+
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 30},
+    });
+    performNextBatch();
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
+it('renders full tail spacer if all cells measured', () => {
+  const items = generateItems(10);
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={3}
+        maxToRenderPerBatch={1}
+        windowSize={1}
+        {...baseItemProps(items)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    const LAST_MEASURED_CELL = 9;
+    for (let i = 0; i <= LAST_MEASURED_CELL; ++i) {
+      simulateCellLayout(component, items, i, {
+        width: 10,
+        height: 10,
+        x: 0,
+        y: 10 * i,
+      });
     }
 
     simulateLayout(component, {

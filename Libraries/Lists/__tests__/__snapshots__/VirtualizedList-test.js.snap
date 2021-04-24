@@ -3608,7 +3608,7 @@ exports[`renders tail spacer up to last measured index if getItemLayout not defi
 </RCTScrollView>
 `;
 
-exports[`renders tail spacer using frame average when getItemLayout undefined 1`] = `
+exports[`renders tail spacer up to last measured with irregular layout when getItemLayout undefined 1`] = `
 <RCTScrollView
   data={
     Array [
