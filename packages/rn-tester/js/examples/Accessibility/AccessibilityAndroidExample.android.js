@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict-local
  */
 
 'use strict';
@@ -27,8 +28,17 @@ const importantForAccessibilityValues = [
   'no-hide-descendants',
 ];
 
-class AccessibilityAndroidExample extends React.Component {
-  state = {
+type AccessibilityAndroidExampleState = {
+  count: number,
+  backgroundImportantForAcc: number,
+  forgroundImportantForAcc: number,
+};
+
+class AccessibilityAndroidExample extends React.Component<
+  {},
+  AccessibilityAndroidExampleState,
+> {
+  state: AccessibilityAndroidExampleState = {
     count: 0,
     backgroundImportantForAcc: 0,
     forgroundImportantForAcc: 0,
@@ -52,7 +62,7 @@ class AccessibilityAndroidExample extends React.Component {
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <RNTesterPage title={'Accessibility Android APIs'}>
         <RNTesterBlock title="LiveRegion">
@@ -151,19 +161,6 @@ class AccessibilityAndroidExample extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  embedded: {
-    backgroundColor: 'yellow',
-    padding: 10,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    padding: 10,
-    height: 150,
-  },
-});
 
 exports.title = 'AccessibilityAndroid';
 exports.description = 'Android specific Accessibility APIs.';
