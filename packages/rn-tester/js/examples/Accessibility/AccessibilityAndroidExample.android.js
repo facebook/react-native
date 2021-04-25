@@ -181,7 +181,7 @@ exports.description = 'Android specific Accessibility APIs.';
 exports.examples = [
   {
     title: 'Accessibility elements',
-    render(): React.Node {
+    render(): React.Element<typeof AccessibilityAndroidExample> {
       return <AccessibilityAndroidExample />;
     },
   },
