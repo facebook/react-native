@@ -45,19 +45,19 @@ class AccessibilityAndroidExample extends React.Component<
     forgroundImportantForAcc: 0,
   };
 
-  _addOne: (event: any) => void = (event: any) => {
+  _addOne = () => {
     this.setState({
       count: ++this.state.count,
     });
   };
 
-  _changeBackgroundImportantForAcc: (event: any) => void = (event: any) => {
+  _changeBackgroundImportantForAcc = () => {
     this.setState({
       backgroundImportantForAcc: (this.state.backgroundImportantForAcc + 1) % 4,
     });
   };
 
-  _changeForgroundImportantForAcc: (event: any) => void = (event: any) => {
+  _changeForgroundImportantForAcc = () => {
     this.setState({
       forgroundImportantForAcc: (this.state.forgroundImportantForAcc + 1) % 4,
     });
@@ -181,7 +181,7 @@ exports.description = 'Android specific Accessibility APIs.';
 exports.examples = [
   {
     title: 'Accessibility elements',
-    render(): React.Element<typeof AccessibilityAndroidExample> {
+    render(): React.Node {
       return <AccessibilityAndroidExample />;
     },
   },
