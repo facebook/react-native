@@ -32,10 +32,11 @@ type AccessibilityAndroidExampleState = {
   count: number,
   backgroundImportantForAcc: number,
   forgroundImportantForAcc: number,
+  ...
 };
 
 class AccessibilityAndroidExample extends React.Component<
-  {},
+  {...},
   AccessibilityAndroidExampleState,
 > {
   state: AccessibilityAndroidExampleState = {
@@ -44,19 +45,19 @@ class AccessibilityAndroidExample extends React.Component<
     forgroundImportantForAcc: 0,
   };
 
-  _addOne = () => {
+  _addOne: (event: any) => void = (event: any) => {
     this.setState({
       count: ++this.state.count,
     });
   };
 
-  _changeBackgroundImportantForAcc = () => {
+  _changeBackgroundImportantForAcc: (event: any) => void = (event: any) => {
     this.setState({
       backgroundImportantForAcc: (this.state.backgroundImportantForAcc + 1) % 4,
     });
   };
 
-  _changeForgroundImportantForAcc = () => {
+  _changeForgroundImportantForAcc: (event: any) => void = (event: any) => {
     this.setState({
       forgroundImportantForAcc: (this.state.forgroundImportantForAcc + 1) % 4,
     });
@@ -161,6 +162,19 @@ class AccessibilityAndroidExample extends React.Component<
     );
   }
 }
+
+const styles = StyleSheet.create({
+  embedded: {
+    backgroundColor: 'yellow',
+    padding: 10,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    padding: 10,
+    height: 150,
+  },
+});
 
 exports.title = 'AccessibilityAndroid';
 exports.description = 'Android specific Accessibility APIs.';
