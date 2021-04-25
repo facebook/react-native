@@ -17,9 +17,9 @@ const {
   View,
   TouchableWithoutFeedback,
 } = require('react-native');
-
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 const importantForAccessibilityValues = [
   'auto',
@@ -32,11 +32,15 @@ type AccessibilityAndroidExampleState = {
   count: number,
   backgroundImportantForAcc: number,
   forgroundImportantForAcc: number,
-  ...
 };
 
+type Props = $ReadOnly<{|
+  style?: ?ViewStyleProp,
+  accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
+|}>;
+
 class AccessibilityAndroidExample extends React.Component<
-  {...},
+  Props,
   AccessibilityAndroidExampleState,
 > {
   state: AccessibilityAndroidExampleState = {
@@ -72,7 +76,7 @@ class AccessibilityAndroidExample extends React.Component<
               <Text>Click me</Text>
             </View>
           </TouchableWithoutFeedback>
-          <Text accessibilityLiveRegion="polite">
+          <Text {...Props} accessibilityLiveRegion="polite">
             Clicked {this.state.count} times
           </Text>
         </RNTesterBlock>
@@ -80,14 +84,6 @@ class AccessibilityAndroidExample extends React.Component<
         <RNTesterBlock title="Overlapping views and importantForAccessibility property">
           <View style={styles.container}>
             <TouchableWithoutFeedback
-              style={{
-                position: 'absolute',
-                left: 10,
-                top: 10,
-                right: 10,
-                height: 100,
-                backgroundColor: 'green',
-              }}
               accessible={true}
               accessibilityLabel="First layout"
               importantForAccessibility={
