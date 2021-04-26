@@ -915,6 +915,8 @@ static void calculateShadowViewMutationsFlattener(
                       [&tag](ShadowViewNodePair *nodePair) {
                         return nodePair->shadowView.tag == tag;
                       });
+                  react_native_assert(
+                      oldRemainingChildInListIt != treeChildren.end());
                   if (oldRemainingChildInListIt != treeChildren.end()) {
                     auto deleteCreateIt = deletionCreationCandidatePairs.find(
                         oldFlattenedNode->shadowView.tag);
@@ -923,30 +925,6 @@ static void calculateShadowViewMutationsFlattener(
                       deletionCreationCandidatePairs.insert(
                           {tag, *oldRemainingChildInListIt});
                     }
-                  } else {
-                    // TODO: we might want to remove this block. It seems
-                    // impossible to hit this logically (and empirically,
-                    // after testing on lots of randomized and pathologically
-                    // constructed trees) but I'm leaving this here out of an
-                    // abundance of caution.
-                    // In theory, this path should never be hit. If we don't
-                    // see this in dev after a few months, let's delete this
-                    // path.
-                    react_native_assert(false);
-                    mutationContainer.deleteMutations.push_back(
-                        ShadowViewMutation::DeleteMutation(
-                            oldFlattenedNode->shadowView));
-
-                    calculateShadowViewMutationsV2(
-                        DIFF_BREADCRUMB(
-                            "Destroy " +
-                            std::to_string(oldFlattenedNode->shadowView.tag)),
-                        scope,
-                        mutationContainer.destructiveDownwardMutations,
-                        oldFlattenedNode->shadowView,
-                        sliceChildShadowNodeViewPairsFromViewNodePair(
-                            *oldFlattenedNode, scope),
-                        {});
                   }
                 }
               } else {
@@ -956,13 +934,6 @@ static void calculateShadowViewMutationsFlattener(
                     unvisitedOtherNodes.find(oldFlattenedNode->shadowView.tag);
                 if (newRemainingIt != unvisitedOtherNodes.end()) {
                   unvisitedOtherNodes.erase(newRemainingIt);
-                }
-
-                // We also remove it from delete/creation candidates
-                auto deleteCreateIt = deletionCreationCandidatePairs.find(
-                    oldFlattenedNode->shadowView.tag);
-                if (deleteCreateIt != deletionCreationCandidatePairs.end()) {
-                  deletionCreationCandidatePairs.erase(deleteCreateIt);
                 }
               }
             }
@@ -1016,7 +987,11 @@ static void calculateShadowViewMutationsFlattener(
     }
     auto &treeChildPair = *it->second;
 
-    // If node was visited during a flattening/unflattening recursion.
+    // If node was visited during a flattening/unflattening recursion,
+    // and the node in the other tree is concrete, that means it was
+    // already created/deleted and we don't need to do that here.
+    // It is always the responsibility of the matcher to update subtrees when
+    // nodes are matched.
     if (treeChildPair.inOtherTree()) {
       continue;
     }
@@ -1309,13 +1284,6 @@ static void calculateShadowViewMutationsV2(
               mutationContainer.updateMutations.push_back(
                   ShadowViewMutation::UpdateMutation(
                       oldChildPair.shadowView, newChildPair.shadowView));
-            }
-
-            // Remove from newRemainingPairs
-            // TODO: do we still need to do this?
-            auto newRemainingPairIt = newRemainingPairs.find(oldTag);
-            if (newRemainingPairIt != newRemainingPairs.end()) {
-              newRemainingPairs.erase(newRemainingPairIt);
             }
           }
 
