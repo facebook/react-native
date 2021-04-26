@@ -386,6 +386,17 @@ TEST(
       /* stages */ 32);
 }
 
+// failing test case found 4-25-2021
+TEST(
+    ShadowTreeLifecyleTest,
+    unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflattening_1167342011) {
+  testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
+      /* seed */ 1167342011,
+      /* size */ 32,
+      /* repeats */ 512,
+      /* stages */ 32);
+}
+
 // You may uncomment this - locally only! - to generate failing seeds.
 // TEST(
 //     ShadowTreeLifecyleTest,
