@@ -753,6 +753,10 @@ static void calculateShadowViewMutationsFlattener(
         continue;
       }
 
+      // TODO: compare ShadowNode pointer instead of ShadowView here?
+      // Or ShadowNode ptr comparison before comparing ShadowView, to allow for
+      // short-circuiting? ShadowView comparison is relatively expensive vs
+      // ShadowNode.
       if (newTreeNodePair.shadowView != oldTreeNodePair.shadowView &&
           newTreeNodePair.isConcreteView && oldTreeNodePair.isConcreteView) {
         mutationContainer.updateMutations.push_back(
