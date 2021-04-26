@@ -89,10 +89,10 @@ Scheduler::Scheduler(
 
 #ifdef ANDROID
   auto enableRuntimeScheduler = reactNativeConfig_->getBool(
-      "react_fabric:enable_runtime_scheduler_android");
+      "react_fabric:enable_runtimescheduler_android");
 #else
   auto enableRuntimeScheduler =
-      reactNativeConfig_->getBool("react_fabric:enable_runtime_scheduler_ios");
+      reactNativeConfig_->getBool("react_fabric:enable_runtimescheduler_ios");
 #endif
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {

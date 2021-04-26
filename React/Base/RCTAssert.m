@@ -231,28 +231,50 @@ RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
   return RCTCurrentFatalExceptionHandler;
 }
 
-// New architecture section.
+// -------------------------
+// New architecture section
+// -------------------------
+
+#if RCT_NEW_ARCHITECTURE
+static BOOL newArchitectureViolationReporting = YES;
+#else
 static BOOL newArchitectureViolationReporting = NO;
+#endif
 
 void RCTEnableNewArchitectureViolationReporting(BOOL enabled)
 {
   newArchitectureViolationReporting = enabled;
 }
 
-BOOL RCTNewArchitectureViolationReportingEnabled(void)
+static NSString *getNewArchitectureViolationMessage(id context, NSString *extra)
 {
-  return newArchitectureViolationReporting;
+  NSString *tag = @"uncategorized";
+  if ([context isKindOfClass:NSString.class]) {
+    tag = context;
+  } else if (context) {
+    Class klass = [context class];
+    if (klass) {
+      tag = NSStringFromClass(klass);
+    }
+  }
+  NSString *errorMessage = extra ?: @"Unexpectedly reached this code path.";
+  return [NSString stringWithFormat:@"[ReactNative Architecture][%@] %@", tag, errorMessage];
 }
 
-void RCTAssertAndTrackNewArchitectureViolation(NSString *violation)
+void RCTEnforceNotAllowedForNewArchitecture(id context, NSString *extra)
 {
-  if (!RCTNewArchitectureViolationReportingEnabled()) {
+  if (!newArchitectureViolationReporting) {
     return;
   }
 
-#if RCT_NEW_ARCHITECTURE
-  RCTAssert(0, @"New architecture violation assertion: %@", violation);
-#endif
+  RCTAssert(0, @"%@", getNewArchitectureViolationMessage(context, extra));
+}
 
-  // TODO: Actually track violations in a global space (separate from assertion).
+void RCTWarnNotAllowedForNewArchitecture(id context, NSString *extra)
+{
+  if (!newArchitectureViolationReporting) {
+    return;
+  }
+
+  RCTLogWarn(@"%@", getNewArchitectureViolationMessage(context, extra));
 }

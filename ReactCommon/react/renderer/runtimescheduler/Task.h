@@ -14,25 +14,24 @@
 
 namespace facebook::react {
 
-class Task final {
- public:
+class RuntimeScheduler;
+class TaskPriorityComparer;
+
+struct Task final {
   Task(
       SchedulerPriority priority,
       jsi::Function callback,
       std::chrono::steady_clock::time_point expirationTime);
 
-  SchedulerPriority getPriority() const;
-
-  RuntimeSchedulerClock::time_point getExpirationTime() const;
-
-  void cancel();
-
-  void operator()(jsi::Runtime &runtime) const;
-
  private:
-  SchedulerPriority priority_;
-  better::optional<jsi::Function> callback_;
-  RuntimeSchedulerClock::time_point expirationTime_;
+  friend RuntimeScheduler;
+  friend TaskPriorityComparer;
+
+  SchedulerPriority priority;
+  better::optional<jsi::Function> callback;
+  RuntimeSchedulerClock::time_point expirationTime;
+
+  jsi::Value execute(jsi::Runtime &runtime) const;
 };
 
 class TaskPriorityComparer {
@@ -40,7 +39,7 @@ class TaskPriorityComparer {
   inline bool operator()(
       std::shared_ptr<Task> const &lhs,
       std::shared_ptr<Task> const &rhs) {
-    return lhs->getExpirationTime() > rhs->getExpirationTime();
+    return lhs->expirationTime > rhs->expirationTime;
   }
 };
 

@@ -705,6 +705,7 @@ type ScrollViewComponentStatics = $ReadOnly<{|
  */
 class ScrollView extends React.Component<Props, State> {
   static Context: typeof ScrollViewContext = ScrollViewContext;
+
   constructor(props: Props) {
     super(props);
 
@@ -712,13 +713,9 @@ class ScrollView extends React.Component<Props, State> {
       this.props.contentOffset?.y ?? 0,
     );
     this._scrollAnimatedValue.setOffset(this.props.contentInset?.top ?? 0);
-    this._stickyHeaderRefs = new Map();
-    this._headerLayoutYs = new Map();
   }
 
-  _scrollAnimatedValue: AnimatedImplementation.Value = new AnimatedImplementation.Value(
-    0,
-  );
+  _scrollAnimatedValue: AnimatedImplementation.Value;
   _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
   _stickyHeaderRefs: Map<
     string,

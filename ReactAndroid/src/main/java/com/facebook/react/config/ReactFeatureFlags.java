@@ -72,4 +72,24 @@ public class ReactFeatureFlags {
 
   /** Enables MapBuffer Serialization */
   public static boolean mapBufferSerializationEnabled = false;
+
+  /** An interface used to compute flags on demand. */
+  public interface FlagProvider {
+    boolean get();
+  }
+
+  /** Should the RuntimeExecutor call JSIExecutor::flush()? */
+  private static FlagProvider enableRuntimeExecutorFlushingProvider = null;
+
+  public static void setEnableRuntimeExecutorFlushingFlagProvider(FlagProvider provider) {
+    enableRuntimeExecutorFlushingProvider = provider;
+  }
+
+  public static boolean enableRuntimeExecutorFlushing() {
+    if (enableRuntimeExecutorFlushingProvider != null) {
+      return enableRuntimeExecutorFlushingProvider.get();
+    }
+
+    return false;
+  }
 }

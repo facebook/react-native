@@ -154,6 +154,10 @@ jsi::Value RuntimeSchedulerBinding::get(
     return jsi::Value(runtime, serialize(SchedulerPriority::IdlePriority));
   }
 
+  if (propertyName == "$$typeof") {
+    return jsi::Value::undefined();
+  }
+
   react_native_assert(false && "undefined property");
   return jsi::Value::undefined();
 }
