@@ -121,7 +121,7 @@ static void testShadowNodeTreeLifeCycle(
                     mutation.newChildShadowView.tag) != deletedTags.end()) {
               LOG(ERROR) << "Deleted tag was recreated in mutations list: ["
                          << mutation.newChildShadowView.tag << "]";
-              FAIL();
+              react_native_assert(false);
             }
           }
         }
@@ -159,7 +159,7 @@ static void testShadowNodeTreeLifeCycle(
                    << getDebugDescription(mutations, {});
 #endif
 
-        FAIL();
+        react_native_assert(false);
       }
 
       currentRootNode = nextRootNode;
@@ -269,7 +269,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
                     mutation.newChildShadowView.tag) != deletedTags.end()) {
               LOG(ERROR) << "Deleted tag was recreated in mutations list: ["
                          << mutation.newChildShadowView.tag << "]";
-              FAIL();
+              react_native_assert(false);
             }
           }
         }
@@ -307,7 +307,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
                    << getDebugDescription(mutations, {});
 #endif
 
-        FAIL();
+        react_native_assert(false);
       }
 
       currentRootNode = nextRootNode;
