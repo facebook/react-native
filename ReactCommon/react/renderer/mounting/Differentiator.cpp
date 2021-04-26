@@ -346,20 +346,20 @@ static void calculateShadowViewMutationsV2(
     ShadowViewNodePair::NonOwningList &&newChildPairs);
 
 struct OrderedMutationInstructionContainer {
-  ShadowViewMutation::List &createMutations;
-  ShadowViewMutation::List &deleteMutations;
-  ShadowViewMutation::List &insertMutations;
-  ShadowViewMutation::List &removeMutations;
-  ShadowViewMutation::List &updateMutations;
-  ShadowViewMutation::List &downwardMutations;
-  ShadowViewMutation::List &destructiveDownwardMutations;
+  ShadowViewMutation::List createMutations{};
+  ShadowViewMutation::List deleteMutations{};
+  ShadowViewMutation::List insertMutations{};
+  ShadowViewMutation::List removeMutations{};
+  ShadowViewMutation::List updateMutations{};
+  ShadowViewMutation::List downwardMutations{};
+  ShadowViewMutation::List destructiveDownwardMutations{};
 };
 
 static void calculateShadowViewMutationsFlattener(
     BREADCRUMB_TYPE breadcrumb,
     ViewNodePairScope &scope,
     ReparentMode reparentMode,
-    OrderedMutationInstructionContainer &mutationInstructionContainer,
+    OrderedMutationInstructionContainer &mutationContainer,
     ShadowView const &parentShadowView,
     TinyMap<Tag, ShadowViewNodePair *> &unvisitedFlattenedNodes,
     ShadowViewNodePair const &node,
@@ -409,7 +409,7 @@ static void calculateShadowViewMutationsFlattener(
     BREADCRUMB_TYPE breadcrumb,
     ViewNodePairScope &scope,
     ReparentMode reparentMode,
-    OrderedMutationInstructionContainer &mutationInstructionContainer,
+    OrderedMutationInstructionContainer &mutationContainer,
     ShadowView const &parentShadowView,
     TinyMap<Tag, ShadowViewNodePair *> &unvisitedOtherNodes,
     ShadowViewNodePair const &node,
@@ -558,13 +558,13 @@ static void calculateShadowViewMutationsFlattener(
         react_native_assert(existsInOtherTree == treeChildPair.inOtherTree());
         if (treeChildPair.inOtherTree() &&
             treeChildPair.otherTreePair->isConcreteView) {
-          mutationInstructionContainer.removeMutations.push_back(
+          mutationContainer.removeMutations.push_back(
               ShadowViewMutation::RemoveMutation(
                   node.shadowView,
                   treeChildPair.otherTreePair->shadowView,
                   static_cast<int>(treeChildPair.mountIndex)));
         } else {
-          mutationInstructionContainer.removeMutations.push_back(
+          mutationContainer.removeMutations.push_back(
               ShadowViewMutation::RemoveMutation(
                   node.shadowView,
                   treeChildPair.shadowView,
@@ -572,8 +572,8 @@ static void calculateShadowViewMutationsFlattener(
         }
       } else {
         // treeChildParent represents the "new" version of the node, so
-        // we can safely insert it
-        mutationInstructionContainer.insertMutations.push_back(
+        // we can safely insert it without checking in the other tree
+        mutationContainer.insertMutations.push_back(
             ShadowViewMutation::InsertMutation(
                 node.shadowView,
                 treeChildPair.shadowView,
@@ -617,7 +617,7 @@ static void calculateShadowViewMutationsFlattener(
 
       if (newTreeNodePair.shadowView != oldTreeNodePair.shadowView &&
           newTreeNodePair.isConcreteView && oldTreeNodePair.isConcreteView) {
-        mutationInstructionContainer.updateMutations.push_back(
+        mutationContainer.updateMutations.push_back(
             ShadowViewMutation::UpdateMutation(
                 oldTreeNodePair.shadowView, newTreeNodePair.shadowView));
       }
@@ -631,7 +631,7 @@ static void calculateShadowViewMutationsFlattener(
                   "(Un)Flattener trivial update of " +
                   std::to_string(newTreeNodePair.shadowView.tag)),
               innerScope,
-              mutationInstructionContainer.downwardMutations,
+              mutationContainer.downwardMutations,
               newTreeNodePair.shadowView,
               sliceChildShadowNodeViewPairsFromViewNodePair(
                   oldTreeNodePair, innerScope),
@@ -662,7 +662,7 @@ static void calculateShadowViewMutationsFlattener(
                   " old:" + std::to_string(treeChildPair.shadowView.tag)),
               scope,
               childReparentMode,
-              mutationInstructionContainer,
+              mutationContainer,
               (reparentMode == ReparentMode::Flatten
                    ? parentShadowView
                    : newTreeNodePair.shadowView),
@@ -708,7 +708,7 @@ static void calculateShadowViewMutationsFlattener(
                     " old:" + std::to_string(oldTreeNodePair.shadowView.tag)),
                 scope,
                 ReparentMode::Flatten,
-                mutationInstructionContainer,
+                mutationContainer,
                 (reparentMode == ReparentMode::Flatten
                      ? parentShadowView
                      : newTreeNodePair.shadowView),
@@ -767,7 +767,7 @@ static void calculateShadowViewMutationsFlattener(
                     " new:" + std::to_string(newTreeNodePair.shadowView.tag)),
                 scope,
                 ReparentMode::Unflatten,
-                mutationInstructionContainer,
+                mutationContainer,
                 (reparentMode == ReparentMode::Flatten
                      ? parentShadowView
                      : newTreeNodePair.shadowView),
@@ -810,7 +810,7 @@ static void calculateShadowViewMutationsFlattener(
                     // see this in dev after a few months, let's delete this
                     // path.
                     react_native_assert(false);
-                    mutationInstructionContainer.deleteMutations.push_back(
+                    mutationContainer.deleteMutations.push_back(
                         ShadowViewMutation::DeleteMutation(
                             oldFlattenedNode->shadowView));
 
@@ -819,8 +819,7 @@ static void calculateShadowViewMutationsFlattener(
                             "Destroy " +
                             std::to_string(oldFlattenedNode->shadowView.tag)),
                         scope,
-                        mutationInstructionContainer
-                            .destructiveDownwardMutations,
+                        mutationContainer.destructiveDownwardMutations,
                         oldFlattenedNode->shadowView,
                         sliceChildShadowNodeViewPairsFromViewNodePair(
                             *oldFlattenedNode, scope),
@@ -854,10 +853,10 @@ static void calculateShadowViewMutationsFlattener(
       // delete/create if the Concreteness of the node has changed.
       if (newTreeNodePair.isConcreteView != oldTreeNodePair.isConcreteView) {
         if (newTreeNodePair.isConcreteView) {
-          mutationInstructionContainer.createMutations.push_back(
+          mutationContainer.createMutations.push_back(
               ShadowViewMutation::CreateMutation(newTreeNodePair.shadowView));
         } else {
-          mutationInstructionContainer.deleteMutations.push_back(
+          mutationContainer.deleteMutations.push_back(
               ShadowViewMutation::DeleteMutation(oldTreeNodePair.shadowView));
         }
       }
@@ -900,7 +899,7 @@ static void calculateShadowViewMutationsFlattener(
     }
 
     if (reparentMode == ReparentMode::Flatten) {
-      mutationInstructionContainer.deleteMutations.push_back(
+      mutationContainer.deleteMutations.push_back(
           ShadowViewMutation::DeleteMutation(treeChildPair.shadowView));
 
       if (!treeChildPair.flattened) {
@@ -910,14 +909,14 @@ static void calculateShadowViewMutationsFlattener(
                 "Recursively delete tree child pair (flatten case): " +
                 std::to_string(treeChildPair.shadowView.tag)),
             innerScope,
-            mutationInstructionContainer.destructiveDownwardMutations,
+            mutationContainer.destructiveDownwardMutations,
             treeChildPair.shadowView,
             sliceChildShadowNodeViewPairsFromViewNodePair(
                 treeChildPair, innerScope),
             {});
       }
     } else {
-      mutationInstructionContainer.createMutations.push_back(
+      mutationContainer.createMutations.push_back(
           ShadowViewMutation::CreateMutation(treeChildPair.shadowView));
 
       if (!treeChildPair.flattened) {
@@ -927,7 +926,7 @@ static void calculateShadowViewMutationsFlattener(
                 "Recursively delete tree child pair (unflatten case): " +
                 std::to_string(treeChildPair.shadowView.tag)),
             innerScope,
-            mutationInstructionContainer.downwardMutations,
+            mutationContainer.downwardMutations,
             treeChildPair.shadowView,
             {},
             sliceChildShadowNodeViewPairsFromViewNodePair(
@@ -951,21 +950,7 @@ static void calculateShadowViewMutationsV2(
   size_t index = 0;
 
   // Lists of mutations
-  auto createMutations = ShadowViewMutation::List{};
-  auto deleteMutations = ShadowViewMutation::List{};
-  auto insertMutations = ShadowViewMutation::List{};
-  auto removeMutations = ShadowViewMutation::List{};
-  auto updateMutations = ShadowViewMutation::List{};
-  auto downwardMutations = ShadowViewMutation::List{};
-  auto destructiveDownwardMutations = ShadowViewMutation::List{};
-  auto mutationInstructionContainer = OrderedMutationInstructionContainer{
-      createMutations,
-      deleteMutations,
-      insertMutations,
-      removeMutations,
-      updateMutations,
-      downwardMutations,
-      destructiveDownwardMutations};
+  auto mutationContainer = OrderedMutationInstructionContainer{};
 
   DEBUG_LOGS({
     LOG(ERROR) << "Differ Entry: Child Pairs of node: [" << parentShadowView.tag
@@ -1030,8 +1015,9 @@ static void calculateShadowViewMutationsV2(
 
     if (newChildPair.isConcreteView &&
         oldChildPair.shadowView != newChildPair.shadowView) {
-      updateMutations.push_back(ShadowViewMutation::UpdateMutation(
-          oldChildPair.shadowView, newChildPair.shadowView));
+      mutationContainer.updateMutations.push_back(
+          ShadowViewMutation::UpdateMutation(
+              oldChildPair.shadowView, newChildPair.shadowView));
     }
 
     // Recursively update tree if ShadowNode pointers are not equal
@@ -1047,8 +1033,9 @@ static void calculateShadowViewMutationsV2(
               "Stage 1: Recurse on " +
               std::to_string(oldChildPair.shadowView.tag)),
           innerScope,
-          *(newGrandChildPairs.size() ? &downwardMutations
-                                      : &destructiveDownwardMutations),
+          *(newGrandChildPairs.size()
+                ? &mutationContainer.downwardMutations
+                : &mutationContainer.destructiveDownwardMutations),
           oldChildPair.shadowView,
           std::move(oldGrandChildPairs),
           std::move(newGrandChildPairs));
@@ -1073,12 +1060,13 @@ static void calculateShadowViewMutationsV2(
         continue;
       }
 
-      deleteMutations.push_back(
+      mutationContainer.deleteMutations.push_back(
           ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
-      removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-          parentShadowView,
-          oldChildPair.shadowView,
-          static_cast<int>(oldChildPair.mountIndex)));
+      mutationContainer.removeMutations.push_back(
+          ShadowViewMutation::RemoveMutation(
+              parentShadowView,
+              oldChildPair.shadowView,
+              static_cast<int>(oldChildPair.mountIndex)));
 
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
@@ -1087,7 +1075,7 @@ static void calculateShadowViewMutationsV2(
           DIFF_BREADCRUMB(
               "Trivial delete " + std::to_string(oldChildPair.shadowView.tag)),
           innerScope,
-          destructiveDownwardMutations,
+          mutationContainer.destructiveDownwardMutations,
           oldChildPair.shadowView,
           sliceChildShadowNodeViewPairsFromViewNodePair(
               oldChildPair, innerScope),
@@ -1109,11 +1097,12 @@ static void calculateShadowViewMutationsV2(
         continue;
       }
 
-      insertMutations.push_back(ShadowViewMutation::InsertMutation(
-          parentShadowView,
-          newChildPair.shadowView,
-          static_cast<int>(newChildPair.mountIndex)));
-      createMutations.push_back(
+      mutationContainer.insertMutations.push_back(
+          ShadowViewMutation::InsertMutation(
+              parentShadowView,
+              newChildPair.shadowView,
+              static_cast<int>(newChildPair.mountIndex)));
+      mutationContainer.createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
       ViewNodePairScope innerScope{};
@@ -1121,7 +1110,7 @@ static void calculateShadowViewMutationsV2(
           DIFF_BREADCRUMB(
               "Trivial create " + std::to_string(newChildPair.shadowView.tag)),
           innerScope,
-          downwardMutations,
+          mutationContainer.downwardMutations,
           newChildPair.shadowView,
           {},
           sliceChildShadowNodeViewPairsFromViewNodePair(
@@ -1172,18 +1161,20 @@ static void calculateShadowViewMutationsV2(
           // Create/Delete and Insert/Remove if necessary
           if (oldChildPair.isConcreteView != newChildPair.isConcreteView) {
             if (newChildPair.isConcreteView) {
-              insertMutations.push_back(ShadowViewMutation::InsertMutation(
-                  parentShadowView,
-                  newChildPair.shadowView,
-                  static_cast<int>(newChildPair.mountIndex)));
-              createMutations.push_back(
+              mutationContainer.insertMutations.push_back(
+                  ShadowViewMutation::InsertMutation(
+                      parentShadowView,
+                      newChildPair.shadowView,
+                      static_cast<int>(newChildPair.mountIndex)));
+              mutationContainer.createMutations.push_back(
                   ShadowViewMutation::CreateMutation(newChildPair.shadowView));
             } else {
-              removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-                  parentShadowView,
-                  oldChildPair.shadowView,
-                  static_cast<int>(oldChildPair.mountIndex)));
-              deleteMutations.push_back(
+              mutationContainer.removeMutations.push_back(
+                  ShadowViewMutation::RemoveMutation(
+                      parentShadowView,
+                      oldChildPair.shadowView,
+                      static_cast<int>(oldChildPair.mountIndex)));
+              mutationContainer.deleteMutations.push_back(
                   ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
             }
           } else if (
@@ -1192,8 +1183,9 @@ static void calculateShadowViewMutationsV2(
             // concrete view. The case where they're different is handled
             // above.
             if (oldChildPair.shadowView != newChildPair.shadowView) {
-              updateMutations.push_back(ShadowViewMutation::UpdateMutation(
-                  oldChildPair.shadowView, newChildPair.shadowView));
+              mutationContainer.updateMutations.push_back(
+                  ShadowViewMutation::UpdateMutation(
+                      oldChildPair.shadowView, newChildPair.shadowView));
             }
 
             // Remove from newRemainingPairs
@@ -1234,7 +1226,7 @@ static void calculateShadowViewMutationsV2(
                       std::to_string(oldChildPair.shadowView.tag)),
                   scope,
                   ReparentMode::Flatten,
-                  mutationInstructionContainer,
+                  mutationContainer,
                   parentShadowView,
                   newRemainingPairs,
                   oldChildPair);
@@ -1272,7 +1264,7 @@ static void calculateShadowViewMutationsV2(
                       std::to_string(newChildPair.shadowView.tag)),
                   scope,
                   ReparentMode::Unflatten,
-                  mutationInstructionContainer,
+                  mutationContainer,
                   parentShadowView,
                   unvisitedOldChildPairs,
                   newChildPair);
@@ -1316,8 +1308,9 @@ static void calculateShadowViewMutationsV2(
                     "Non-trivial update " +
                     std::to_string(oldChildPair.shadowView.tag)),
                 innerScope,
-                *(newGrandChildPairs.size() ? &downwardMutations
-                                            : &destructiveDownwardMutations),
+                *(newGrandChildPairs.size()
+                      ? &mutationContainer.downwardMutations
+                      : &mutationContainer.destructiveDownwardMutations),
                 oldChildPair.shadowView,
                 std::move(oldGrandChildPairs),
                 std::move(newGrandChildPairs));
@@ -1373,7 +1366,7 @@ static void calculateShadowViewMutationsV2(
                       "Flatten2 " + std::to_string(parentShadowView.tag)),
                   scope,
                   ReparentMode::Flatten,
-                  mutationInstructionContainer,
+                  mutationContainer,
                   parentShadowView,
                   newRemainingPairs,
                   oldChildPair);
@@ -1409,7 +1402,7 @@ static void calculateShadowViewMutationsV2(
                       "Unflatten2 " + std::to_string(parentShadowView.tag)),
                   scope,
                   ReparentMode::Unflatten,
-                  mutationInstructionContainer,
+                  mutationContainer,
                   parentShadowView,
                   unvisitedOldChildPairs,
                   newChildPair);
@@ -1441,14 +1434,15 @@ static void calculateShadowViewMutationsV2(
           // loop, but not Remove
           if (oldChildPair.isConcreteView != newChildPair.isConcreteView) {
             if (newChildPair.isConcreteView) {
-              createMutations.push_back(
+              mutationContainer.createMutations.push_back(
                   ShadowViewMutation::CreateMutation(newChildPair.shadowView));
             } else {
-              removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-                  parentShadowView,
-                  oldChildPair.shadowView,
-                  static_cast<int>(oldChildPair.mountIndex)));
-              deleteMutations.push_back(
+              mutationContainer.removeMutations.push_back(
+                  ShadowViewMutation::RemoveMutation(
+                      parentShadowView,
+                      oldChildPair.shadowView,
+                      static_cast<int>(oldChildPair.mountIndex)));
+              mutationContainer.deleteMutations.push_back(
                   ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
             }
           }
@@ -1462,14 +1456,16 @@ static void calculateShadowViewMutationsV2(
             // removes/inserts in cases of (un)flattening + reorders?
             // If removing here, we must remove the newest version of the View
             // - which will always be in the "new" tree.
-            removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-                parentShadowView,
-                newChildPair.shadowView,
-                static_cast<int>(oldChildPair.mountIndex)));
+            mutationContainer.removeMutations.push_back(
+                ShadowViewMutation::RemoveMutation(
+                    parentShadowView,
+                    newChildPair.shadowView,
+                    static_cast<int>(oldChildPair.mountIndex)));
 
             if (oldChildPair.shadowView != newChildPair.shadowView) {
-              updateMutations.push_back(ShadowViewMutation::UpdateMutation(
-                  oldChildPair.shadowView, newChildPair.shadowView));
+              mutationContainer.updateMutations.push_back(
+                  ShadowViewMutation::UpdateMutation(
+                      oldChildPair.shadowView, newChildPair.shadowView));
             }
           }
 
@@ -1488,8 +1484,9 @@ static void calculateShadowViewMutationsV2(
                     "Non-trivial update3 " +
                     std::to_string(oldChildPair.shadowView.tag)),
                 innerScope,
-                *(newGrandChildPairs.size() ? &downwardMutations
-                                            : &destructiveDownwardMutations),
+                *(newGrandChildPairs.size()
+                      ? &mutationContainer.downwardMutations
+                      : &mutationContainer.destructiveDownwardMutations),
                 oldChildPair.shadowView,
                 std::move(oldGrandChildPairs),
                 std::move(newGrandChildPairs));
@@ -1543,17 +1540,19 @@ static void calculateShadowViewMutationsV2(
             // Here we do *not" need to generate a potential DELETE mutation
             // because we know the view is concrete, and still in the new
             // hierarchy.
-            removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-                parentShadowView,
-                otherTreeView,
-                static_cast<int>(oldChildPair.mountIndex)));
+            mutationContainer.removeMutations.push_back(
+                ShadowViewMutation::RemoveMutation(
+                    parentShadowView,
+                    otherTreeView,
+                    static_cast<int>(oldChildPair.mountIndex)));
             continue;
           }
 
-          removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-              parentShadowView,
-              oldChildPair.shadowView,
-              static_cast<int>(oldChildPair.mountIndex)));
+          mutationContainer.removeMutations.push_back(
+              ShadowViewMutation::RemoveMutation(
+                  parentShadowView,
+                  oldChildPair.shadowView,
+                  static_cast<int>(oldChildPair.mountIndex)));
 
           deletionCandidatePairs.insert(
               {oldChildPair.shadowView.tag, &oldChildPair});
@@ -1576,10 +1575,11 @@ static void calculateShadowViewMutationsV2(
             << " with parent: [" << parentShadowView.tag << "]";
       });
       if (newChildPair.isConcreteView) {
-        insertMutations.push_back(ShadowViewMutation::InsertMutation(
-            parentShadowView,
-            newChildPair.shadowView,
-            static_cast<int>(newChildPair.mountIndex)));
+        mutationContainer.insertMutations.push_back(
+            ShadowViewMutation::InsertMutation(
+                parentShadowView,
+                newChildPair.shadowView,
+                static_cast<int>(newChildPair.mountIndex)));
       }
 
       // `inOtherTree` is only set to true during flattening/unflattening of
@@ -1620,7 +1620,7 @@ static void calculateShadowViewMutationsV2(
 
       // This can happen when the parent is unflattened
       if (!oldChildPair.inOtherTree() && oldChildPair.isConcreteView) {
-        deleteMutations.push_back(
+        mutationContainer.deleteMutations.push_back(
             ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
 
         // We also have to call the algorithm recursively to clean up the
@@ -1631,7 +1631,7 @@ static void calculateShadowViewMutationsV2(
                 "Non-trivial delete " +
                 std::to_string(oldChildPair.shadowView.tag)),
             innerScope,
-            destructiveDownwardMutations,
+            mutationContainer.destructiveDownwardMutations,
             oldChildPair.shadowView,
             sliceChildShadowNodeViewPairsFromViewNodePair(
                 oldChildPair, innerScope),
@@ -1670,7 +1670,7 @@ static void calculateShadowViewMutationsV2(
         continue;
       }
 
-      createMutations.push_back(
+      mutationContainer.createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
       ViewNodePairScope innerScope{};
@@ -1679,7 +1679,7 @@ static void calculateShadowViewMutationsV2(
               "Non-trivial create " +
               std::to_string(newChildPair.shadowView.tag)),
           innerScope,
-          downwardMutations,
+          mutationContainer.downwardMutations,
           newChildPair.shadowView,
           {},
           sliceChildShadowNodeViewPairsFromViewNodePair(
@@ -1689,32 +1689,32 @@ static void calculateShadowViewMutationsV2(
 
   // All mutations in an optimal order:
   std::move(
-      destructiveDownwardMutations.begin(),
-      destructiveDownwardMutations.end(),
+      mutationContainer.destructiveDownwardMutations.begin(),
+      mutationContainer.destructiveDownwardMutations.end(),
       std::back_inserter(mutations));
   std::move(
-      updateMutations.begin(),
-      updateMutations.end(),
+      mutationContainer.updateMutations.begin(),
+      mutationContainer.updateMutations.end(),
       std::back_inserter(mutations));
   std::move(
-      removeMutations.rbegin(),
-      removeMutations.rend(),
+      mutationContainer.removeMutations.rbegin(),
+      mutationContainer.removeMutations.rend(),
       std::back_inserter(mutations));
   std::move(
-      deleteMutations.begin(),
-      deleteMutations.end(),
+      mutationContainer.deleteMutations.begin(),
+      mutationContainer.deleteMutations.end(),
       std::back_inserter(mutations));
   std::move(
-      createMutations.begin(),
-      createMutations.end(),
+      mutationContainer.createMutations.begin(),
+      mutationContainer.createMutations.end(),
       std::back_inserter(mutations));
   std::move(
-      downwardMutations.begin(),
-      downwardMutations.end(),
+      mutationContainer.downwardMutations.begin(),
+      mutationContainer.downwardMutations.end(),
       std::back_inserter(mutations));
   std::move(
-      insertMutations.begin(),
-      insertMutations.end(),
+      mutationContainer.insertMutations.begin(),
+      mutationContainer.insertMutations.end(),
       std::back_inserter(mutations));
 }
 
