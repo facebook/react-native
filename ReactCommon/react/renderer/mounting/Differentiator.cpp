@@ -406,9 +406,9 @@ static void updateMatchedPairSubtrees(
     DEBUG_LOGS({
       LOG(ERROR)
           << "Differ: flattening or unflattening in updateMatchedPairSubtrees: ["
-          << oldChildPair.shadowView.tag << "] [" << newChildPair.shadowView.tag
-          << "] " << oldChildPair.flattened << " " << newChildPair.flattened
-          << " with parent: [" << parentShadowView.tag << "]";
+          << oldPair.shadowView.tag << "] [" << newPair.shadowView.tag << "] "
+          << oldPair.flattened << " " << newPair.flattened << " with parent: ["
+          << parentShadowView.tag << "]";
     });
 
     // Flattening
@@ -453,7 +453,7 @@ static void updateMatchedPairSubtrees(
       calculateShadowViewMutationsFlattener(
           DIFF_BREADCRUMB(
               "Unflatten old list " + std::to_string(parentShadowView.tag) +
-              " into new tree " + std::to_string(newChildPair.shadowView.tag)),
+              " into new tree " + std::to_string(newPair.shadowView.tag)),
           scope,
           ReparentMode::Unflatten,
           mutationContainer,
