@@ -16,6 +16,10 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/stubs.h>
 
+// Uncomment when random test blocks are uncommented below.
+// #include <algorithm>
+// #include <random>
+
 #include "Entropy.h"
 #include "shadowTreeGeneration.h"
 
@@ -381,3 +385,20 @@ TEST(
       /* repeats */ 512,
       /* stages */ 32);
 }
+
+// You may uncomment this - locally only! - to generate failing seeds.
+// TEST(
+//     ShadowTreeLifecyleTest,
+//     unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflatteningManyRandom)
+//     {
+//   std::random_device device;
+//   for (int i = 0; i < 10; i++) {
+//     uint_fast32_t seed = device();
+//     LOG(ERROR) << "Seed: " << seed;
+//     testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
+//         /* seed */ seed,
+//         /* size */ 32,
+//         /* repeats */ 512,
+//         /* stages */ 32);
+//   }
+// }
