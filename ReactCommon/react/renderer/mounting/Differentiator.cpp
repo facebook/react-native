@@ -963,10 +963,6 @@ static void calculateShadowViewMutationsFlattener(
           {newTreeNodePair.shadowView.tag, &newTreeNodePair});
       subVisitedOldMap->insert(
           {oldTreeNodePair.shadowView.tag, &oldTreeNodePair});
-
-      if (unvisitedIt != unvisitedOtherNodes.end()) {
-        unvisitedOtherNodes.erase(unvisitedIt);
-      }
     } else {
       // Node does not in exist in other tree.
       if (treeChildPair.isConcreteView && !treeChildPair.inOtherTree()) {
