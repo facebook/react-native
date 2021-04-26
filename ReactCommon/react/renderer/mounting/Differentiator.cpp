@@ -854,21 +854,6 @@ static void calculateShadowViewMutationsFlattener(
                 oldTreeNodePair,
                 subVisitedNewMap,
                 subVisitedOldMap);
-
-            for (auto newFlattenedNode : newFlattenedNodes) {
-              auto unvisitedOldChildPairIt =
-                  unvisitedNewChildPairs.find(newFlattenedNode->shadowView.tag);
-
-              if (unvisitedOldChildPairIt == unvisitedNewChildPairs.end()) {
-                // Node was visited.
-
-                auto deleteCreateIt = deletionCreationCandidatePairs.find(
-                    newFlattenedNode->shadowView.tag);
-                if (deleteCreateIt != deletionCreationCandidatePairs.end()) {
-                  deletionCreationCandidatePairs.erase(deleteCreateIt);
-                }
-              }
-            }
           }
           // Flatten parent, unflatten child
           else {
