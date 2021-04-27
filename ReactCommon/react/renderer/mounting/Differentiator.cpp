@@ -887,30 +887,32 @@ static void calculateShadowViewMutationsFlattener(
               subVisitedNewMap,
               subVisitedOldMap);
         } else {
+          // Get flattened nodes from either new or old tree
+          auto flattenedNodes = sliceChildShadowNodeViewPairsFromViewNodePair(
+              (childReparentMode == ReparentMode::Flatten ? newTreeNodePair
+                                                          : oldTreeNodePair),
+              scope,
+              true);
+          // Construct unvisited nodes map
+          auto unvisitedRecursiveChildPairs =
+              TinyMap<Tag, ShadowViewNodePair *>{};
+          for (size_t i = 0; i < flattenedNodes.size(); i++) {
+            auto &newChild = *flattenedNodes[i];
+
+            auto unvisitedOtherNodesIt =
+                unvisitedOtherNodes.find(newChild.shadowView.tag);
+            if (unvisitedOtherNodesIt != unvisitedOtherNodes.end()) {
+              auto unvisitedItPair = *unvisitedOtherNodesIt->second;
+              unvisitedRecursiveChildPairs.insert(
+                  {unvisitedItPair.shadowView.tag, &unvisitedItPair});
+            } else {
+              unvisitedRecursiveChildPairs.insert(
+                  {newChild.shadowView.tag, &newChild});
+            }
+          }
+
           // Unflatten parent, flatten child
           if (childReparentMode == ReparentMode::Flatten) {
-            // Construct unvisited nodes map
-            auto unvisitedNewChildPairs = TinyMap<Tag, ShadowViewNodePair *>{};
-            // Memory note: these oldFlattenedNodes all disappear at the end
-            // of this "else" block, including any annotations we put on them.
-            auto newFlattenedNodes =
-                sliceChildShadowNodeViewPairsFromViewNodePair(
-                    newTreeNodePair, scope, true);
-            for (size_t i = 0; i < newFlattenedNodes.size(); i++) {
-              auto &newChild = *newFlattenedNodes[i];
-
-              auto unvisitedOtherNodesIt =
-                  unvisitedOtherNodes.find(newChild.shadowView.tag);
-              if (unvisitedOtherNodesIt != unvisitedOtherNodes.end()) {
-                auto unvisitedItPair = *unvisitedOtherNodesIt->second;
-                unvisitedNewChildPairs.insert(
-                    {unvisitedItPair.shadowView.tag, &unvisitedItPair});
-              } else {
-                unvisitedNewChildPairs.insert(
-                    {newChild.shadowView.tag, &newChild});
-              }
-            }
-
             // Flatten old tree into new list
             // At the end of this loop we still want to know which of these
             // children are visited, so we reuse the `newRemainingPairs` map.
@@ -928,33 +930,13 @@ static void calculateShadowViewMutationsFlattener(
                 (reparentMode == ReparentMode::Flatten
                      ? parentShadowView
                      : newTreeNodePair.shadowView),
-                unvisitedNewChildPairs,
+                unvisitedRecursiveChildPairs,
                 oldTreeNodePair,
                 subVisitedNewMap,
                 subVisitedOldMap);
           }
           // Flatten parent, unflatten child
           else {
-            // Construct unvisited nodes map
-            auto unvisitedOldChildPairs = TinyMap<Tag, ShadowViewNodePair *>{};
-            auto oldFlattenedNodes =
-                sliceChildShadowNodeViewPairsFromViewNodePair(
-                    oldTreeNodePair, scope, true);
-            for (size_t i = 0; i < oldFlattenedNodes.size(); i++) {
-              auto &oldChild = *oldFlattenedNodes[i];
-
-              auto unvisitedOtherNodesIt =
-                  unvisitedOtherNodes.find(oldChild.shadowView.tag);
-              if (unvisitedOtherNodesIt != unvisitedOtherNodes.end()) {
-                auto &unvisitedItPair = *unvisitedOtherNodesIt->second;
-                unvisitedOldChildPairs.insert(
-                    {unvisitedItPair.shadowView.tag, &unvisitedItPair});
-              } else {
-                unvisitedOldChildPairs.insert(
-                    {oldChild.shadowView.tag, &oldChild});
-              }
-            }
-
             // Unflatten old list into new tree
             calculateShadowViewMutationsFlattener(
                 DIFF_BREADCRUMB(
@@ -970,7 +952,7 @@ static void calculateShadowViewMutationsFlattener(
                 (reparentMode == ReparentMode::Flatten
                      ? parentShadowView
                      : newTreeNodePair.shadowView),
-                unvisitedOldChildPairs,
+                unvisitedRecursiveChildPairs,
                 newTreeNodePair,
                 subVisitedNewMap,
                 subVisitedOldMap);
@@ -978,8 +960,9 @@ static void calculateShadowViewMutationsFlattener(
             // If old nodes were not visited, we know that we can delete them
             // now. They will be removed from the hierarchy by the outermost
             // loop of this function.
-            for (auto unvisitedOldChildPairIt = unvisitedOldChildPairs.begin();
-                 unvisitedOldChildPairIt != unvisitedOldChildPairs.end();
+            for (auto unvisitedOldChildPairIt =
+                     unvisitedRecursiveChildPairs.begin();
+                 unvisitedOldChildPairIt != unvisitedRecursiveChildPairs.end();
                  unvisitedOldChildPairIt++) {
               if (unvisitedOldChildPairIt->first == 0) {
                 continue;
