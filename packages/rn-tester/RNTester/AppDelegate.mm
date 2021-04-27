@@ -215,7 +215,7 @@
           return @ [[RCTGIFImageDecoder new]];
         }];
   } else if (moduleClass == RCTNetworking.class) {
-    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> * {
+    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry * moduleRegistry) {
       return @[
         [RCTHTTPRequestHandler new],
         [RCTDataRequestHandler new],
