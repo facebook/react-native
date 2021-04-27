@@ -23,6 +23,7 @@ import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
 import ImageViewNativeComponent from './ImageViewNativeComponent';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 function getSize(
   uri: string,
@@ -60,13 +61,15 @@ function getSizeWithHeaders(
 function prefetchWithMetadata(
   url: string,
   queryRootName: string,
-  rootTag?: ?number,
+  rootTag?: ?RootTag,
 ): any {
   if (NativeImageLoaderIOS.prefetchImageWithMetadata) {
     // number params like rootTag cannot be nullable before TurboModules is available
     return NativeImageLoaderIOS.prefetchImageWithMetadata(
       url,
       queryRootName,
+      // NOTE: RootTag type
+      // $FlowFixMe[incompatible-call] RootTag: number is incompatible with RootTag
       rootTag ? rootTag : 0,
     );
   } else {

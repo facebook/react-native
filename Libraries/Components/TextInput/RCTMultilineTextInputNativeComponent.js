@@ -13,7 +13,7 @@ import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 import RCTTextInputViewConfig from './RCTTextInputViewConfig';
-const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
+import ReactNativeViewConfigRegistry from '../../Renderer/shims/ReactNativeViewConfigRegistry';
 
 type NativeType = HostComponent<mixed>;
 

@@ -16,6 +16,10 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/stubs.h>
 
+// Uncomment when random test blocks are uncommented below.
+// #include <algorithm>
+// #include <random>
+
 #include "Entropy.h"
 #include "shadowTreeGeneration.h"
 
@@ -121,7 +125,7 @@ static void testShadowNodeTreeLifeCycle(
                     mutation.newChildShadowView.tag) != deletedTags.end()) {
               LOG(ERROR) << "Deleted tag was recreated in mutations list: ["
                          << mutation.newChildShadowView.tag << "]";
-              FAIL();
+              react_native_assert(false);
             }
           }
         }
@@ -159,7 +163,7 @@ static void testShadowNodeTreeLifeCycle(
                    << getDebugDescription(mutations, {});
 #endif
 
-        FAIL();
+        react_native_assert(false);
       }
 
       currentRootNode = nextRootNode;
@@ -269,7 +273,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
                     mutation.newChildShadowView.tag) != deletedTags.end()) {
               LOG(ERROR) << "Deleted tag was recreated in mutations list: ["
                          << mutation.newChildShadowView.tag << "]";
-              FAIL();
+              react_native_assert(false);
             }
           }
         }
@@ -307,7 +311,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
                    << getDebugDescription(mutations, {});
 #endif
 
-        FAIL();
+        react_native_assert(false);
       }
 
       currentRootNode = nextRootNode;
@@ -381,3 +385,31 @@ TEST(
       /* repeats */ 512,
       /* stages */ 32);
 }
+
+// failing test case found 4-25-2021
+TEST(
+    ShadowTreeLifecyleTest,
+    unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflattening_1167342011) {
+  testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
+      /* seed */ 1167342011,
+      /* size */ 32,
+      /* repeats */ 512,
+      /* stages */ 32);
+}
+
+// You may uncomment this - locally only! - to generate failing seeds.
+// TEST(
+//     ShadowTreeLifecyleTest,
+//     unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflatteningManyRandom)
+//     {
+//   std::random_device device;
+//   for (int i = 0; i < 10; i++) {
+//     uint_fast32_t seed = device();
+//     LOG(ERROR) << "Seed: " << seed;
+//     testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
+//         /* seed */ seed,
+//         /* size */ 32,
+//         /* repeats */ 512,
+//         /* stages */ 32);
+//   }
+// }
