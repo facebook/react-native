@@ -937,8 +937,6 @@ static void calculateShadowViewMutationsFlattener(
           else {
             // Construct unvisited nodes map
             auto unvisitedOldChildPairs = TinyMap<Tag, ShadowViewNodePair *>{};
-            // Memory note: these oldFlattenedNodes all disappear at the end
-            // of this "else" block, including any annotations we put on them.
             auto oldFlattenedNodes =
                 sliceChildShadowNodeViewPairsFromViewNodePair(
                     oldTreeNodePair, scope, true);
