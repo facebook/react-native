@@ -208,10 +208,10 @@
 {
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
-        loadersProvider:^NSArray<id<RCTImageURLLoader>> * {
+        loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry * moduleRegistry) {
           return @ [[RCTLocalAssetImageLoader new]];
         }
-        decodersProvider:^NSArray<id<RCTImageDataDecoder>> * {
+        decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry * moduleRegistry) {
           return @ [[RCTGIFImageDecoder new]];
         }];
   } else if (moduleClass == RCTNetworking.class) {
