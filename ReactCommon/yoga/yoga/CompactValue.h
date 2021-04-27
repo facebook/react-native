@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "YGValue.h"
-#include "YGMacros.h"
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include "YGMacros.h"
+#include "YGValue.h"
 
 static_assert(
     std::numeric_limits<float>::is_iec559,
@@ -43,7 +43,7 @@ namespace detail {
 class YOGA_EXPORT CompactValue {
   friend constexpr bool operator==(CompactValue, CompactValue) noexcept;
 
-public:
+ public:
   static constexpr auto LOWER_BOUND = 1.08420217e-19f;
   static constexpr auto UPPER_BOUND_POINT = 36893485948395847680.0f;
   static constexpr auto UPPER_BOUND_PERCENT = 18446742974197923840.0f;
@@ -90,7 +90,7 @@ public:
   constexpr CompactValue() noexcept
       : payload_(std::numeric_limits<float>::quiet_NaN()) {}
 
-  CompactValue(const YGValue& x) noexcept : payload_(uint32_t{0}) {
+  CompactValue(const YGValue &x) noexcept : payload_(uint32_t{0}) {
     switch (x.unit) {
       case YGUnitUndefined:
         *this = ofUndefined();
@@ -125,8 +125,8 @@ public:
     data.repr &= ~PERCENT_BIT;
     data.repr += BIAS;
 
-    return YGValue{
-        data.value, payload_.repr & 0x40000000 ? YGUnitPercent : YGUnitPoint};
+    return YGValue{data.value,
+                   payload_.repr & 0x40000000 ? YGUnitPercent : YGUnitPoint};
   }
 
   bool isUndefined() const noexcept {
@@ -135,9 +135,11 @@ public:
         payload_.repr != ZERO_BITS_PERCENT && std::isnan(payload_.value));
   }
 
-  bool isAuto() const noexcept { return payload_.repr == AUTO_BITS; }
+  bool isAuto() const noexcept {
+    return payload_.repr == AUTO_BITS;
+  }
 
-private:
+ private:
   union Payload {
     float value;
     uint32_t repr;
@@ -159,7 +161,9 @@ private:
 
   Payload payload_;
 
-  VISIBLE_FOR_TESTING uint32_t repr() { return payload_.repr; }
+  VISIBLE_FOR_TESTING uint32_t repr() {
+    return payload_.repr;
+  }
 };
 
 template <>

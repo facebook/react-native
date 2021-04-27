@@ -63,11 +63,10 @@ ComponentDescriptorProvider concreteComponentDescriptorProvider() {
       std::is_base_of<ComponentDescriptor, ComponentDescriptorT>::value,
       "ComponentDescriptorT must be a descendant of ComponentDescriptor");
 
-  return {
-      ComponentDescriptorT::ConcreteShadowNode::Handle(),
-      ComponentDescriptorT::ConcreteShadowNode::Name(),
-      nullptr,
-      &concreteComponentDescriptorConstructor<ComponentDescriptorT>};
+  return {ComponentDescriptorT::ConcreteShadowNode::Handle(),
+          ComponentDescriptorT::ConcreteShadowNode::Name(),
+          nullptr,
+          &concreteComponentDescriptorConstructor<ComponentDescriptorT>};
 }
 
 } // namespace react

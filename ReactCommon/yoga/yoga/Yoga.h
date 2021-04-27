@@ -29,10 +29,10 @@ typedef struct YGSize {
   float height;
 } YGSize;
 
-typedef struct YGConfig* YGConfigRef;
+typedef struct YGConfig *YGConfigRef;
 
-typedef struct YGNode* YGNodeRef;
-typedef const struct YGNode* YGNodeConstRef;
+typedef struct YGNode *YGNodeRef;
+typedef const struct YGNode *YGNodeConstRef;
 
 typedef YGSize (*YGMeasureFunc)(
     YGNodeRef node,
@@ -48,7 +48,7 @@ typedef int (*YGLogger)(
     YGConfigRef config,
     YGNodeRef node,
     YGLogLevel level,
-    const char* format,
+    const char *format,
     va_list args);
 typedef YGNodeRef (
     *YGCloneNodeFunc)(YGNodeRef oldNode, YGNodeRef owner, int childIndex);
@@ -64,15 +64,11 @@ WIN_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
 WIN_EXPORT void YGNodeFreeRecursive(YGNodeRef node);
 WIN_EXPORT void YGNodeReset(YGNodeRef node);
 
-WIN_EXPORT void YGNodeInsertChild(
-    YGNodeRef node,
-    YGNodeRef child,
-    uint32_t index);
+WIN_EXPORT void
+YGNodeInsertChild(YGNodeRef node, YGNodeRef child, uint32_t index);
 
-WIN_EXPORT void YGNodeSwapChild(
-    YGNodeRef node,
-    YGNodeRef child,
-    uint32_t index);
+WIN_EXPORT void
+YGNodeSwapChild(YGNodeRef node, YGNodeRef child, uint32_t index);
 
 WIN_EXPORT void YGNodeRemoveChild(YGNodeRef node, YGNodeRef child);
 WIN_EXPORT void YGNodeRemoveAllChildren(YGNodeRef node);
@@ -80,10 +76,8 @@ WIN_EXPORT YGNodeRef YGNodeGetChild(YGNodeRef node, uint32_t index);
 WIN_EXPORT YGNodeRef YGNodeGetOwner(YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetParent(YGNodeRef node);
 WIN_EXPORT uint32_t YGNodeGetChildCount(YGNodeRef node);
-WIN_EXPORT void YGNodeSetChildren(
-    YGNodeRef owner,
-    const YGNodeRef children[],
-    uint32_t count);
+WIN_EXPORT void
+YGNodeSetChildren(YGNodeRef owner, const YGNodeRef children[], uint32_t count);
 
 WIN_EXPORT void YGNodeSetIsReferenceBaseline(
     YGNodeRef node,
@@ -132,8 +126,8 @@ WIN_EXPORT bool YGNodeCanUseCachedMeasurement(
 
 WIN_EXPORT void YGNodeCopyStyle(YGNodeRef dstNode, YGNodeRef srcNode);
 
-WIN_EXPORT void* YGNodeGetContext(YGNodeRef node);
-WIN_EXPORT void YGNodeSetContext(YGNodeRef node, void* context);
+WIN_EXPORT void *YGNodeGetContext(YGNodeRef node);
+WIN_EXPORT void YGNodeSetContext(YGNodeRef node, void *context);
 void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
 bool YGNodeHasMeasureFunc(YGNodeRef node);
 WIN_EXPORT void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
@@ -201,32 +195,22 @@ WIN_EXPORT void YGNodeStyleSetFlexBasisPercent(YGNodeRef node, float flexBasis);
 WIN_EXPORT void YGNodeStyleSetFlexBasisAuto(YGNodeRef node);
 WIN_EXPORT YGValue YGNodeStyleGetFlexBasis(YGNodeConstRef node);
 
-WIN_EXPORT void YGNodeStyleSetPosition(
-    YGNodeRef node,
-    YGEdge edge,
-    float position);
-WIN_EXPORT void YGNodeStyleSetPositionPercent(
-    YGNodeRef node,
-    YGEdge edge,
-    float position);
+WIN_EXPORT void
+YGNodeStyleSetPosition(YGNodeRef node, YGEdge edge, float position);
+WIN_EXPORT void
+YGNodeStyleSetPositionPercent(YGNodeRef node, YGEdge edge, float position);
 WIN_EXPORT YGValue YGNodeStyleGetPosition(YGNodeConstRef node, YGEdge edge);
 
 WIN_EXPORT void YGNodeStyleSetMargin(YGNodeRef node, YGEdge edge, float margin);
-WIN_EXPORT void YGNodeStyleSetMarginPercent(
-    YGNodeRef node,
-    YGEdge edge,
-    float margin);
+WIN_EXPORT void
+YGNodeStyleSetMarginPercent(YGNodeRef node, YGEdge edge, float margin);
 WIN_EXPORT void YGNodeStyleSetMarginAuto(YGNodeRef node, YGEdge edge);
 WIN_EXPORT YGValue YGNodeStyleGetMargin(YGNodeConstRef node, YGEdge edge);
 
-WIN_EXPORT void YGNodeStyleSetPadding(
-    YGNodeRef node,
-    YGEdge edge,
-    float padding);
-WIN_EXPORT void YGNodeStyleSetPaddingPercent(
-    YGNodeRef node,
-    YGEdge edge,
-    float padding);
+WIN_EXPORT void
+YGNodeStyleSetPadding(YGNodeRef node, YGEdge edge, float padding);
+WIN_EXPORT void
+YGNodeStyleSetPaddingPercent(YGNodeRef node, YGEdge edge, float padding);
 WIN_EXPORT YGValue YGNodeStyleGetPadding(YGNodeConstRef node, YGEdge edge);
 
 WIN_EXPORT void YGNodeStyleSetBorder(YGNodeRef node, YGEdge edge, float border);
@@ -295,15 +279,11 @@ WIN_EXPORT float YGNodeLayoutGetBorder(YGNodeRef node, YGEdge edge);
 WIN_EXPORT float YGNodeLayoutGetPadding(YGNodeRef node, YGEdge edge);
 
 WIN_EXPORT void YGConfigSetLogger(YGConfigRef config, YGLogger logger);
-WIN_EXPORT void YGAssert(bool condition, const char* message);
-WIN_EXPORT void YGAssertWithNode(
-    YGNodeRef node,
-    bool condition,
-    const char* message);
-WIN_EXPORT void YGAssertWithConfig(
-    YGConfigRef config,
-    bool condition,
-    const char* message);
+WIN_EXPORT void YGAssert(bool condition, const char *message);
+WIN_EXPORT void
+YGAssertWithNode(YGNodeRef node, bool condition, const char *message);
+WIN_EXPORT void
+YGAssertWithConfig(YGConfigRef config, bool condition, const char *message);
 // Set this to number of pixels in 1 point to round calculation results If you
 // want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(
@@ -348,8 +328,8 @@ WIN_EXPORT void YGConfigSetCloneNodeFunc(
 // Export only for C#
 WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
 
-WIN_EXPORT void YGConfigSetContext(YGConfigRef config, void* context);
-WIN_EXPORT void* YGConfigGetContext(YGConfigRef config);
+WIN_EXPORT void YGConfigSetContext(YGConfigRef config, void *context);
+WIN_EXPORT void *YGConfigGetContext(YGConfigRef config);
 
 WIN_EXPORT float YGRoundValueToPixelGrid(
     double value,
@@ -367,8 +347,8 @@ YG_EXTERN_C_END
 // Calls f on each node in the tree including the given node argument.
 void YGTraversePreOrder(
     YGNodeRef node,
-    std::function<void(YGNodeRef node)>&& f);
+    std::function<void(YGNodeRef node)> &&f);
 
-void YGNodeSetChildren(YGNodeRef owner, const std::vector<YGNodeRef>& children);
+void YGNodeSetChildren(YGNodeRef owner, const std::vector<YGNodeRef> &children);
 
 #endif

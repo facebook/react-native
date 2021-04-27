@@ -57,8 +57,8 @@ namespace std {
 
 template <typename T>
 struct hash<facebook::react::RectangleCorners<T>> {
-  size_t operator()(
-      facebook::react::RectangleCorners<T> const &corners) const noexcept {
+  size_t operator()(facebook::react::RectangleCorners<T> const &corners) const
+      noexcept {
     return folly::hash::hash_combine(
         0,
         corners.topLeft,

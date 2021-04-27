@@ -15,7 +15,7 @@ typedef NS_ENUM(NSInteger, RCTResizeMode) {
   RCTResizeModeRepeat = -1, // Use negative values to avoid conflicts with iOS enum values.
 };
 
-@interface RCTConvert(RCTResizeMode)
+@interface RCTConvert (RCTResizeMode)
 
 + (RCTResizeMode)RCTResizeMode:(id)json;
 

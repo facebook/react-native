@@ -22,10 +22,10 @@ class UIManagerCommitHook {
   /*
    * Called right after the commit hook is registered or unregistered.
    */
-  virtual void commitHookWasRegistered(
-      UIManager const &uiManager) const noexcept = 0;
-  virtual void commitHookWasUnregistered(
-      UIManager const &uiManager) const noexcept = 0;
+  virtual void commitHookWasRegistered(UIManager const &uiManager) const
+      noexcept = 0;
+  virtual void commitHookWasUnregistered(UIManager const &uiManager) const
+      noexcept = 0;
 
   /*
    * Called right before a `ShadowTree` commits a new tree.

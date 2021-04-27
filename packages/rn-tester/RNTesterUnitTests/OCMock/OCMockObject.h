@@ -22,15 +22,13 @@
 @class OCMInvocationMatcher;
 @class OCMInvocationExpectation;
 
-
-@interface OCMockObject : NSProxy
-{
-	BOOL			isNice;
-	BOOL			expectationOrderMatters;
-	NSMutableArray	*stubs;
-	NSMutableArray	*expectations;
-	NSMutableArray	*exceptions;
-    NSMutableArray  *invocations;
+@interface OCMockObject : NSProxy {
+  BOOL isNice;
+  BOOL expectationOrderMatters;
+  NSMutableArray *stubs;
+  NSMutableArray *expectations;
+  NSMutableArray *exceptions;
+  NSMutableArray *invocations;
 }
 
 + (id)mockForClass:(Class)aClass;
@@ -71,4 +69,3 @@
 - (void)verifyInvocation:(OCMInvocationMatcher *)matcher atLocation:(OCMLocation *)location;
 
 @end
-

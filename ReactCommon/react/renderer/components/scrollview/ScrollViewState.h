@@ -34,9 +34,8 @@ class ScrollViewState final {
 #ifdef ANDROID
   ScrollViewState() = default;
   ScrollViewState(ScrollViewState const &previousState, folly::dynamic data)
-      : contentOffset(
-            {(Float)data["contentOffsetLeft"].getDouble(),
-             (Float)data["contentOffsetTop"].getDouble()}),
+      : contentOffset({(Float)data["contentOffsetLeft"].getDouble(),
+                       (Float)data["contentOffsetTop"].getDouble()}),
         contentBoundingRect({}){};
 
   folly::dynamic getDynamic() const {

@@ -87,17 +87,17 @@ class JSI_EXPORT Instrumentation {
   /// Turns off the heap sampling profiler previously enabled via
   /// \c startHeapSampling. Writes the output of the sampling heap profiler to
   /// \p os. The output is a JSON formatted string.
-  virtual void stopHeapSampling(std::ostream& os) = 0;
+  virtual void stopHeapSampling(std::ostream &os) = 0;
 
   /// Captures the heap to a file
   ///
   /// \param path to save the heap capture
-  virtual void createSnapshotToFile(const std::string& path) = 0;
+  virtual void createSnapshotToFile(const std::string &path) = 0;
 
   /// Captures the heap to an output stream
   ///
   /// \param os output stream to write to.
-  virtual void createSnapshotToStream(std::ostream& os) = 0;
+  virtual void createSnapshotToStream(std::ostream &os) = 0;
 
   /// If the runtime has been created to trace to a temp file, flush
   /// any unwritten parts of the trace of bridge traffic to the file,
@@ -107,10 +107,10 @@ class JSI_EXPORT Instrumentation {
 
   /// Write basic block profile trace to the given file name.
   virtual void writeBasicBlockProfileTraceToFile(
-      const std::string& fileName) const = 0;
+      const std::string &fileName) const = 0;
 
   /// Dump external profiler symbols to the given file name.
-  virtual void dumpProfilerSymbolsToFile(const std::string& fileName) const = 0;
+  virtual void dumpProfilerSymbolsToFile(const std::string &fileName) const = 0;
 };
 
 } // namespace jsi

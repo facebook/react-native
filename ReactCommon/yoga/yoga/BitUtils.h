@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 #include "YGEnums.h"
 
 namespace facebook {
@@ -38,13 +38,13 @@ constexpr Enum getEnumData(int flags, size_t index) {
 }
 
 template <typename Enum>
-void setEnumData(uint32_t& flags, size_t index, int newValue) {
+void setEnumData(uint32_t &flags, size_t index, int newValue) {
   flags = (flags & ~mask(bitWidthFn<Enum>(), index)) |
       ((newValue << index) & (mask(bitWidthFn<Enum>(), index)));
 }
 
 template <typename Enum>
-void setEnumData(uint8_t& flags, size_t index, int newValue) {
+void setEnumData(uint8_t &flags, size_t index, int newValue) {
   flags = (flags & ~static_cast<uint8_t>(mask(bitWidthFn<Enum>(), index))) |
       ((newValue << index) &
        (static_cast<uint8_t>(mask(bitWidthFn<Enum>(), index))));
@@ -54,7 +54,7 @@ constexpr bool getBooleanData(int flags, size_t index) {
   return (flags >> index) & 1;
 }
 
-inline void setBooleanData(uint8_t& flags, size_t index, bool value) {
+inline void setBooleanData(uint8_t &flags, size_t index, bool value) {
   if (value) {
     flags |= 1 << index;
   } else {

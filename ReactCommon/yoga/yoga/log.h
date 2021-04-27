@@ -19,17 +19,17 @@ namespace detail {
 
 struct Log {
   static void log(
-      YGNode* node,
+      YGNode *node,
       YGLogLevel level,
-      void*,
-      const char* message,
+      void *,
+      const char *message,
       ...) noexcept;
 
   static void log(
-      YGConfig* config,
+      YGConfig *config,
       YGLogLevel level,
-      void*,
-      const char* format,
+      void *,
+      const char *format,
       ...) noexcept;
 };
 

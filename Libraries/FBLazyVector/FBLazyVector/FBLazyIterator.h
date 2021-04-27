@@ -27,7 +27,7 @@ class LazyIterator {
   LazyIterator() = default;
 
   LazyIterator(U vector, convert_type convert, size_type i)
-  : _v(vector), _i(i), _convert(std::move(convert)) {}
+      : _v(vector), _i(i), _convert(std::move(convert)) {}
 
   bool operator==(const LazyIterator &other) const {
     return _i == other._i && _v == other._v;
@@ -98,33 +98,30 @@ class LazyIterator {
 };
 
 template <typename T, typename U>
-LazyIterator<T, U> operator+(typename LazyIterator<T, U>::difference_type n,
-          const LazyIterator<T, U> &i) {
+LazyIterator<T, U> operator+(
+    typename LazyIterator<T, U>::difference_type n,
+    const LazyIterator<T, U> &i) {
   return i + n;
 }
 
 template <typename T, typename U>
-bool operator!=(const LazyIterator<T, U> &a,
-                const LazyIterator<T, U> &b) {
+bool operator!=(const LazyIterator<T, U> &a, const LazyIterator<T, U> &b) {
   return !(a == b);
 }
 
 template <typename T, typename U>
-bool operator<=(const LazyIterator<T, U> &a,
-                const LazyIterator<T, U> &b) {
+bool operator<=(const LazyIterator<T, U> &a, const LazyIterator<T, U> &b) {
   return a < b || a == b;
 }
 
 template <typename T, typename U>
-bool operator>(const LazyIterator<T, U> &a,
-               const LazyIterator<T, U> &b) {
+bool operator>(const LazyIterator<T, U> &a, const LazyIterator<T, U> &b) {
   return b < a;
 }
 
 template <typename T, typename U>
-bool operator>=(const LazyIterator<T, U> &a,
-                const LazyIterator<T, U> &b) {
+bool operator>=(const LazyIterator<T, U> &a, const LazyIterator<T, U> &b) {
   return a > b || a == b;
 }
 
-}
+} // namespace FB

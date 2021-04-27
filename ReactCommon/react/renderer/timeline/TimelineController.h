@@ -52,14 +52,14 @@ class TimelineController final : public UIManagerCommitHook {
   RootShadowNode::Unshared shadowTreeWillCommit(
       ShadowTree const &shadowTree,
       RootShadowNode::Shared const &oldRootShadowNode,
-      RootShadowNode::Unshared const &newRootShadowNode)
-      const noexcept override;
+      RootShadowNode::Unshared const &newRootShadowNode) const
+      noexcept override;
 
-  void commitHookWasRegistered(
-      UIManager const &uiManager) const noexcept override;
+  void commitHookWasRegistered(UIManager const &uiManager) const
+      noexcept override;
 
-  void commitHookWasUnregistered(
-      UIManager const &uiManager) const noexcept override;
+  void commitHookWasUnregistered(UIManager const &uiManager) const
+      noexcept override;
 
  private:
   /*
