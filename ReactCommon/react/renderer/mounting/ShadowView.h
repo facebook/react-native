@@ -83,7 +83,7 @@ struct ShadowViewNodePair final {
    * rely on this more heavily to simplify the diffing algorithm
    * overall?
    */
-  ShadowViewNodePair const *otherTreePair{nullptr};
+  mutable ShadowViewNodePair const *otherTreePair{nullptr};
 
   /*
    * The stored pointer to `ShadowNode` represents an identity of the pair.

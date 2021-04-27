@@ -365,6 +365,15 @@ static void updateMatchedPairSubtrees(
     ShadowViewNodePair const &oldPair,
     ShadowViewNodePair const &newPair);
 
+static void updateMatchedPair(
+    BREADCRUMB_TYPE breadcrumb,
+    OrderedMutationInstructionContainer &mutationContainer,
+    bool oldNodeFoundInOrder,
+    bool newNodeFoundInOrder,
+    ShadowView const &parentShadowView,
+    ShadowViewNodePair const &oldPair,
+    ShadowViewNodePair const &newPair);
+
 static void calculateShadowViewMutationsFlattener(
     BREADCRUMB_TYPE breadcrumb,
     ViewNodePairScope &scope,
@@ -502,6 +511,71 @@ static void updateMatchedPairSubtrees(
         oldPair.shadowView,
         std::move(oldGrandChildPairs),
         std::move(newGrandChildPairs));
+  }
+}
+
+/**
+ * Handle updates to a matched node pair, but NOT to their subtrees.
+ *
+ * Here we have (and need) knowledge of whether a node was found during
+ * in-order traversal, or out-of-order via a map lookup. Nodes are only REMOVEd
+ * or INSERTed when they are encountered via in-order-traversal, to ensure
+ * correct ordering of INSERT and REMOVE mutations.
+ */
+static void updateMatchedPair(
+    BREADCRUMB_TYPE breadcrumb,
+    OrderedMutationInstructionContainer &mutationContainer,
+    bool oldNodeFoundInOrder,
+    bool newNodeFoundInOrder,
+    ShadowView const &parentShadowView,
+    ShadowViewNodePair const &oldPair,
+    ShadowViewNodePair const &newPair) {
+  oldPair.otherTreePair = &newPair;
+  newPair.otherTreePair = &oldPair;
+
+  // Check concrete-ness of views
+  // Create/Delete and Insert/Remove if necessary
+  if (oldPair.isConcreteView != newPair.isConcreteView) {
+    if (newPair.isConcreteView) {
+      if (newNodeFoundInOrder) {
+        mutationContainer.insertMutations.push_back(
+            ShadowViewMutation::InsertMutation(
+                parentShadowView,
+                newPair.shadowView,
+                static_cast<int>(newPair.mountIndex)));
+      }
+      mutationContainer.createMutations.push_back(
+          ShadowViewMutation::CreateMutation(newPair.shadowView));
+    } else {
+      if (oldNodeFoundInOrder) {
+        mutationContainer.removeMutations.push_back(
+            ShadowViewMutation::RemoveMutation(
+                parentShadowView,
+                oldPair.shadowView,
+                static_cast<int>(oldPair.mountIndex)));
+      }
+      mutationContainer.deleteMutations.push_back(
+          ShadowViewMutation::DeleteMutation(oldPair.shadowView));
+    }
+  } else if (oldPair.isConcreteView && newPair.isConcreteView) {
+    // If we found the old node by traversing, but not the new node,
+    // it means that there's some reordering requiring a REMOVE mutation.
+    if (oldNodeFoundInOrder && !newNodeFoundInOrder) {
+      mutationContainer.removeMutations.push_back(
+          ShadowViewMutation::RemoveMutation(
+              parentShadowView,
+              newPair.shadowView,
+              static_cast<int>(oldPair.mountIndex)));
+    }
+
+    // Even if node's children are flattened, it might still be a
+    // concrete view. The case where they're different is handled
+    // above.
+    if (oldPair.shadowView != newPair.shadowView) {
+      mutationContainer.updateMutations.push_back(
+          ShadowViewMutation::UpdateMutation(
+              oldPair.shadowView, newPair.shadowView));
+    }
   }
 }
 
@@ -1255,37 +1329,16 @@ static void calculateShadowViewMutationsV2(
                        << " with parent: [" << parentShadowView.tag << "]";
           });
 
-          // Check concrete-ness of views
-          // Create/Delete and Insert/Remove if necessary
-          if (oldChildPair.isConcreteView != newChildPair.isConcreteView) {
-            if (newChildPair.isConcreteView) {
-              mutationContainer.insertMutations.push_back(
-                  ShadowViewMutation::InsertMutation(
-                      parentShadowView,
-                      newChildPair.shadowView,
-                      static_cast<int>(newChildPair.mountIndex)));
-              mutationContainer.createMutations.push_back(
-                  ShadowViewMutation::CreateMutation(newChildPair.shadowView));
-            } else {
-              mutationContainer.removeMutations.push_back(
-                  ShadowViewMutation::RemoveMutation(
-                      parentShadowView,
-                      oldChildPair.shadowView,
-                      static_cast<int>(oldChildPair.mountIndex)));
-              mutationContainer.deleteMutations.push_back(
-                  ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
-            }
-          } else if (
-              oldChildPair.isConcreteView && newChildPair.isConcreteView) {
-            // Even if node's children are flattened, it might still be a
-            // concrete view. The case where they're different is handled
-            // above.
-            if (oldChildPair.shadowView != newChildPair.shadowView) {
-              mutationContainer.updateMutations.push_back(
-                  ShadowViewMutation::UpdateMutation(
-                      oldChildPair.shadowView, newChildPair.shadowView));
-            }
-          }
+          updateMatchedPair(
+              DIFF_BREADCRUMB(
+                  "Update Matched Pairs (1): " +
+                  std::to_string(oldChildPair.shadowView.tag)),
+              mutationContainer,
+              true,
+              true,
+              parentShadowView,
+              oldChildPair,
+              newChildPair);
 
           updateMatchedPairSubtrees(
               DIFF_BREADCRUMB(
@@ -1321,6 +1374,17 @@ static void calculateShadowViewMutationsV2(
         if (insertedIt != newInsertedPairs.end()) {
           auto const &newChildPair = *insertedIt->second;
 
+          updateMatchedPair(
+              DIFF_BREADCRUMB(
+                  "Update Matched Pairs (2): " +
+                  std::to_string(oldChildPair.shadowView.tag)),
+              mutationContainer,
+              true,
+              false,
+              parentShadowView,
+              oldChildPair,
+              newChildPair);
+
           updateMatchedPairSubtrees(
               DIFF_BREADCRUMB(
                   "Update Matched Pair Subtrees (2): " +
@@ -1333,47 +1397,6 @@ static void calculateShadowViewMutationsV2(
               parentShadowView,
               oldChildPair,
               newChildPair);
-
-          // Check concrete-ness of views
-          // Create/Delete and Insert/Remove if necessary
-          // TODO: document: Insert should already be handled by outermost
-          // loop, but not Remove
-          if (oldChildPair.isConcreteView != newChildPair.isConcreteView) {
-            if (newChildPair.isConcreteView) {
-              mutationContainer.createMutations.push_back(
-                  ShadowViewMutation::CreateMutation(newChildPair.shadowView));
-            } else {
-              mutationContainer.removeMutations.push_back(
-                  ShadowViewMutation::RemoveMutation(
-                      parentShadowView,
-                      oldChildPair.shadowView,
-                      static_cast<int>(oldChildPair.mountIndex)));
-              mutationContainer.deleteMutations.push_back(
-                  ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
-            }
-          }
-
-          // old and new child pairs are both either flattened or unflattened
-          // at this point. If they're not views, we don't need to update
-          // subtrees.
-          if (oldChildPair.isConcreteView && newChildPair.isConcreteView) {
-            // TODO: do we always want to remove here? There are cases where
-            // we might be able to remove this to prevent unnecessary
-            // removes/inserts in cases of (un)flattening + reorders?
-            // If removing here, we must remove the newest version of the View
-            // - which will always be in the "new" tree.
-            mutationContainer.removeMutations.push_back(
-                ShadowViewMutation::RemoveMutation(
-                    parentShadowView,
-                    newChildPair.shadowView,
-                    static_cast<int>(oldChildPair.mountIndex)));
-
-            if (oldChildPair.shadowView != newChildPair.shadowView) {
-              mutationContainer.updateMutations.push_back(
-                  ShadowViewMutation::UpdateMutation(
-                      oldChildPair.shadowView, newChildPair.shadowView));
-            }
-          }
 
           newInsertedPairs.erase(insertedIt);
           oldIndex++;
