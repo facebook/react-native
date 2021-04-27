@@ -258,7 +258,9 @@ public class ViewProps {
         // Ignore if explicitly set to default opacity.
         return map.isNull(OPACITY) || map.getDouble(OPACITY) == 1d;
       case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
-        if (map.hasKey(BACKGROUND_COLOR) && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
+        if (map.hasKey(BACKGROUND_COLOR)
+            && !map.isNull(BACKGROUND_COLOR)
+            && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
           return false;
         }
         if (map.hasKey(BORDER_WIDTH)

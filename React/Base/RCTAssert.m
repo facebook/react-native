@@ -230,3 +230,51 @@ RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
 {
   return RCTCurrentFatalExceptionHandler;
 }
+
+// -------------------------
+// New architecture section
+// -------------------------
+
+#if RCT_NEW_ARCHITECTURE
+static BOOL newArchitectureViolationReporting = YES;
+#else
+static BOOL newArchitectureViolationReporting = NO;
+#endif
+
+void RCTEnableNewArchitectureViolationReporting(BOOL enabled)
+{
+  newArchitectureViolationReporting = enabled;
+}
+
+static NSString *getNewArchitectureViolationMessage(id context, NSString *extra)
+{
+  NSString *tag = @"uncategorized";
+  if ([context isKindOfClass:NSString.class]) {
+    tag = context;
+  } else if (context) {
+    Class klass = [context class];
+    if (klass) {
+      tag = NSStringFromClass(klass);
+    }
+  }
+  NSString *errorMessage = extra ?: @"Unexpectedly reached this code path.";
+  return [NSString stringWithFormat:@"[ReactNative Architecture][%@] %@", tag, errorMessage];
+}
+
+void RCTEnforceNotAllowedForNewArchitecture(id context, NSString *extra)
+{
+  if (!newArchitectureViolationReporting) {
+    return;
+  }
+
+  RCTAssert(0, @"%@", getNewArchitectureViolationMessage(context, extra));
+}
+
+void RCTWarnNotAllowedForNewArchitecture(id context, NSString *extra)
+{
+  if (!newArchitectureViolationReporting) {
+    return;
+  }
+
+  RCTLogWarn(@"%@", getNewArchitectureViolationMessage(context, extra));
+}

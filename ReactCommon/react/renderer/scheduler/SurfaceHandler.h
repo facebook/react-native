@@ -58,40 +58,6 @@ class SurfaceHandler final {
   };
 
   /*
-   * Defines how visual side effects (views, images, text, and so on) are
-   * mounted (on not) on the screen.
-   */
-  enum class DisplayMode {
-    /*
-     * The surface is `Hidden`. All previously mounted visual side-effects
-     * will be unmounted, and all new (committed after switching to the mode)
-     * visual side-effects will *not* be mounted on the screen until the mode is
-     * switched back to `normal`.
-     *
-     * The mode can be used for temporarily freeing computing resources of
-     * off-the-screen surfaces.
-     */
-    Hidden = 0,
-
-    /*
-     * The surface is running normally. All visual side-effects will be rendered
-     * on the screen.
-     */
-    Visible = 1,
-
-    /*
-     * The surface is `Suspended`. All new (committed after switching to the
-     * mode) visual side-effects will *not* be mounted on the screen (the screen
-     * will stop updating).
-     *
-     * The mode can be used for preparing a surface for possible future use.
-     * The surface will be prepared without spending computing resources
-     * on mounting, and then can be instantly mounted if needed.
-     */
-    Suspended = 2,
-  };
-
-  /*
    * Can be constructed anytime with a `moduleName` and a `surfaceId`.
    */
   SurfaceHandler(std::string const &moduleName, SurfaceId surfaceId) noexcept;
@@ -172,6 +138,9 @@ class SurfaceHandler final {
   LayoutConstraints getLayoutConstraints() const noexcept;
   LayoutContext getLayoutContext() const noexcept;
 
+#pragma mark - Feature Flags
+  void setEnableNewDiffer(bool enabled) const noexcept;
+
  private:
   friend class Scheduler;
 
@@ -229,6 +198,11 @@ class SurfaceHandler final {
    */
   mutable better::shared_mutex parametersMutex_;
   mutable Parameters parameters_;
+
+  /**
+   * Feature flags.
+   */
+  mutable bool enableNewDiffer_{false};
 };
 
 } // namespace react

@@ -31,6 +31,7 @@
 #import <react/renderer/core/LayoutConstraints.h>
 #import <react/renderer/core/LayoutContext.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
+#import <react/renderer/scheduler/AsynchronousEventBeatV2.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/renderer/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
@@ -264,10 +265,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:release_resources_when_backgrounded_ios")) {
-    RCTExperimentSetReleaseResourcesWhenBackgrounded(YES);
-  }
-
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
@@ -309,10 +306,18 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
   };
 
-  toolbox.asynchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+  auto enableV2AsynchronousEventBeat =
+      reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_asynchronous_event_beat_v2_ios");
+
+  toolbox.asynchronousEventBeatFactory = [runtimeExecutor, enableV2AsynchronousEventBeat](
+                                             EventBeat::SharedOwnerBox const &ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
         std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-    return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
+    if (enableV2AsynchronousEventBeat) {
+      return std::make_unique<AsynchronousEventBeatV2>(std::move(runLoopObserver), runtimeExecutor);
+    } else {
+      return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
+    }
   };
 
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];

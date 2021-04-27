@@ -117,7 +117,8 @@ const warnOnce = require('./Libraries/Utilities/warnOnce');
 module.exports = {
   // Components
   get AccessibilityInfo(): AccessibilityInfo {
-    return require('./Libraries/Components/AccessibilityInfo/AccessibilityInfo');
+    return require('./Libraries/Components/AccessibilityInfo/AccessibilityInfo')
+      .default;
   },
   get ActivityIndicator(): ActivityIndicator {
     return require('./Libraries/Components/ActivityIndicator/ActivityIndicator');
@@ -212,13 +213,13 @@ module.exports = {
     return require('./Libraries/Components/RefreshControl/RefreshControl');
   },
   get SafeAreaView(): SafeAreaView {
-    return require('./Libraries/Components/SafeAreaView/SafeAreaView');
+    return require('./Libraries/Components/SafeAreaView/SafeAreaView').default;
   },
   get ScrollView(): ScrollView {
     return require('./Libraries/Components/ScrollView/ScrollView');
   },
   get SectionList(): SectionList {
-    return require('./Libraries/Lists/SectionList');
+    return require('./Libraries/Lists/SectionList').default;
   },
   // $FlowFixMe[value-as-type]
   get SegmentedControlIOS(): SegmentedControlIOS {

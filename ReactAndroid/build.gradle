@@ -451,7 +451,7 @@ dependencies {
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
-    api("com.squareup.okio:okio:1.17.5")
+    api("com.squareup.okio:okio:2.9.0")
     api("com.facebook.fbjni:fbjni-java-only:0.2.2")
     extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
     extractJNI("com.facebook.fbjni:fbjni:0.2.2")

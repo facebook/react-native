@@ -278,6 +278,12 @@ RCT_EXPORT_MODULE()
   RCTAssert(!self.valid, @"-invalidate must be called before -dealloc");
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
+}
+
 @end
 
 #endif
