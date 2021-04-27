@@ -273,4 +273,43 @@ TEST_F(RuntimeSchedulerTest, continuationTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
+TEST_F(RuntimeSchedulerTest, getCurrentPriorityLevel) {
+  auto callback =
+      createHostFunctionFromLambda([this](bool didUserCallbackTimeout) {
+        EXPECT_EQ(
+            runtimeScheduler_->getCurrentPriorityLevel(),
+            SchedulerPriority::ImmediatePriority);
+        return jsi::Value::undefined();
+      });
+
+  EXPECT_EQ(
+      runtimeScheduler_->getCurrentPriorityLevel(),
+      SchedulerPriority::NormalPriority);
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::ImmediatePriority, std::move(callback));
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(
+      runtimeScheduler_->getCurrentPriorityLevel(),
+      SchedulerPriority::NormalPriority);
+
+  callback = createHostFunctionFromLambda([this](bool didUserCallbackTimeout) {
+    EXPECT_EQ(
+        runtimeScheduler_->getCurrentPriorityLevel(),
+        SchedulerPriority::IdlePriority);
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::IdlePriority, std::move(callback));
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(
+      runtimeScheduler_->getCurrentPriorityLevel(),
+      SchedulerPriority::NormalPriority);
+}
+
 } // namespace facebook::react

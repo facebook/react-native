@@ -133,6 +133,11 @@ jsi::Value RuntimeSchedulerBinding::get(
         });
   }
 
+  if (propertyName == "unstable_getCurrentPriorityLevel") {
+    auto currentPriorityLevel = runtimeScheduler_->getCurrentPriorityLevel();
+    return jsi::Value(runtime, serialize(currentPriorityLevel));
+  }
+
   if (propertyName == "unstable_ImmediatePriority") {
     return jsi::Value(runtime, serialize(SchedulerPriority::ImmediatePriority));
   }
