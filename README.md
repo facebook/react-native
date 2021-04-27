@@ -1,6 +1,6 @@
 <h1 align="center">
   <a href="https://reactnative.dev/">
-    React Native
+    React Native - test, do not merge
   </a>
 </h1>
 
