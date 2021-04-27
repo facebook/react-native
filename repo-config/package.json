@@ -14,7 +14,6 @@
     "@react-native-community/eslint-plugin": "*",
     "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
-    "babel-eslint": "^10.1.0",
     "clang-format": "^1.2.4",
     "connect": "^3.6.5",
     "coveralls": "^3.0.2",
