@@ -978,36 +978,29 @@ static void calculateShadowViewMutationsFlattener(
             // If old nodes were not visited, we know that we can delete them
             // now. They will be removed from the hierarchy by the outermost
             // loop of this function.
-            for (auto oldFlattenedNode : oldFlattenedNodes) {
-              auto unvisitedOldChildPairIt =
-                  unvisitedOldChildPairs.find(oldFlattenedNode->shadowView.tag);
-              if (unvisitedOldChildPairIt != unvisitedOldChildPairs.end()) {
-                // Node unvisited - mark the entire subtree for deletion
-                if (oldFlattenedNode->isConcreteView) {
-                  Tag tag = oldFlattenedNode->shadowView.tag;
-                  auto oldRemainingChildInListIt = std::find_if(
-                      treeChildren.begin(),
-                      treeChildren.end(),
-                      [&tag](ShadowViewNodePair *nodePair) {
-                        return nodePair->shadowView.tag == tag;
-                      });
-                  react_native_assert(
-                      oldRemainingChildInListIt != treeChildren.end());
-                  if (oldRemainingChildInListIt != treeChildren.end()) {
-                    auto deleteCreateIt = deletionCreationCandidatePairs.find(
-                        oldFlattenedNode->shadowView.tag);
-                    if (deleteCreateIt ==
-                        deletionCreationCandidatePairs.end()) {
-                      deletionCreationCandidatePairs.insert(
-                          {tag, *oldRemainingChildInListIt});
-                    }
-                  }
+            for (auto unvisitedOldChildPairIt = unvisitedOldChildPairs.begin();
+                 unvisitedOldChildPairIt != unvisitedOldChildPairs.end();
+                 unvisitedOldChildPairIt++) {
+              if (unvisitedOldChildPairIt->first == 0) {
+                continue;
+              }
+              auto &oldFlattenedNode = *unvisitedOldChildPairIt->second;
+
+              // Node unvisited - mark the entire subtree for deletion
+              if (oldFlattenedNode.isConcreteView &&
+                  !oldFlattenedNode.inOtherTree()) {
+                Tag tag = oldFlattenedNode.shadowView.tag;
+                auto deleteCreateIt = deletionCreationCandidatePairs.find(
+                    oldFlattenedNode.shadowView.tag);
+                if (deleteCreateIt == deletionCreationCandidatePairs.end()) {
+                  deletionCreationCandidatePairs.insert(
+                      {tag, &oldFlattenedNode});
                 }
               } else {
                 // Node was visited - make sure to remove it from
                 // "newRemainingPairs" map
                 auto newRemainingIt =
-                    unvisitedOtherNodes.find(oldFlattenedNode->shadowView.tag);
+                    unvisitedOtherNodes.find(oldFlattenedNode.shadowView.tag);
                 if (newRemainingIt != unvisitedOtherNodes.end()) {
                   unvisitedOtherNodes.erase(newRemainingIt);
                 }
