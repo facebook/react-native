@@ -482,6 +482,9 @@ module.exports = {
   get unstable_RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;
   },
+  get RootTagContext(): RootTagContext {
+    return require('./Libraries/ReactNative/RootTag').RootTagContext;
+  },
   get unstable_enableLogBox(): () => void {
     return () =>
       console.warn(
