@@ -76,7 +76,7 @@ class AccessibilityAndroidExample extends React.Component<
               <Text>Click me</Text>
             </View>
           </TouchableWithoutFeedback>
-          <Text {...Props} accessibilityLiveRegion="polite">
+          <Text accessibilityLiveRegion={this.props.accessibilityLiveRegion}>
             Clicked {this.state.count} times
           </Text>
         </RNTesterBlock>
