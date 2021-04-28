@@ -187,15 +187,12 @@ class UIManager final : public ShadowTreeDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
-  UIManagerBinding *uiManagerBinding_;
   RuntimeExecutor const runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor const backgroundExecutor_{};
 
   mutable better::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;
-
-  bool extractUIManagerBindingOnDemand_{};
 
   std::unique_ptr<LeakChecker> leakChecker_;
 };

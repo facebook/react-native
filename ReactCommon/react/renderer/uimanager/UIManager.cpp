@@ -364,19 +364,10 @@ UIManagerDelegate *UIManager::getDelegate() {
 void UIManager::visitBinding(
     std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
     jsi::Runtime &runtime) const {
-  if (extractUIManagerBindingOnDemand_) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (uiManagerBinding) {
-      callback(*uiManagerBinding_);
-    }
-    return;
+  auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+  if (uiManagerBinding) {
+    callback(*uiManagerBinding);
   }
-
-  if (!uiManagerBinding_) {
-    return;
-  }
-
-  callback(*uiManagerBinding_);
 }
 
 ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
