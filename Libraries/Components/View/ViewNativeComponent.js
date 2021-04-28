@@ -4,72 +4,35 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @flow
  */
 
-'use strict';
-
-const Platform = require('../../Utilities/Platform');
-const ReactNativeViewViewConfigAndroid = require('./ReactNativeViewViewConfigAndroid');
-
-const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
-import * as React from 'react';
-
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import Platform from '../../Utilities/Platform';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
-import type {ViewProps} from './ViewPropTypes';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
+import ViewInjection from './ViewInjection';
+import {type ViewProps as Props} from './ViewPropTypes';
+import * as React from 'react';
+import ReactNativeViewConfigRegistry from '../../Renderer/shims/ReactNativeViewConfigRegistry';
 
-export type ViewNativeComponentType = HostComponent<ViewProps>;
+const ViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+  'RCTView',
+  () =>
+    Platform.OS === 'android'
+      ? ReactNativeViewViewConfigAndroid
+      : {uiViewClassName: 'RCTView'},
+);
 
-let NativeViewComponent;
-let viewConfig:
-  | {...}
-  | {|
-      bubblingEventTypes?: $ReadOnly<{
-        [eventName: string]: $ReadOnly<{|
-          phasedRegistrationNames: $ReadOnly<{|
-            bubbled: string,
-            captured: string,
-          |}>,
-        |}>,
-        ...,
-      }>,
-      directEventTypes?: $ReadOnly<{
-        [eventName: string]: $ReadOnly<{|registrationName: string|}>,
-        ...,
-      }>,
-      uiViewClassName: string,
-      validAttributes?: {
-        [propName: string]:
-          | true
-          | $ReadOnly<{|
-              diff?: <T>(arg1: any, arg2: any) => boolean,
-              process?: (arg1: any) => any,
-            |}>,
-        ...,
-      },
-    |};
-
-if (__DEV__ || global.RN$Bridgeless) {
-  // On Android, View extends the base component with additional view-only props
-  // On iOS, the base component is View
-  if (Platform.OS === 'android') {
-    viewConfig = ReactNativeViewViewConfigAndroid;
-    registerGeneratedViewConfig('RCTView', ReactNativeViewViewConfigAndroid);
-  } else {
-    viewConfig = {};
-    registerGeneratedViewConfig('RCTView', {uiViewClassName: 'RCTView'});
+if (Platform.OS === 'ios') {
+  if (ViewInjection.unstable_enableCollapsable) {
+    const viewConfig = ReactNativeViewConfigRegistry.get('RCTView');
+    // $FlowFixMe - Yes, knowingly writing to a read-only property.
+    viewConfig.validAttributes.collapsable = true;
   }
-
-  NativeViewComponent = 'RCTView';
-} else {
-  NativeViewComponent = requireNativeComponent('RCTView');
 }
-
-export const __INTERNAL_VIEW_CONFIG = viewConfig;
 
 interface NativeCommands {
   +hotspotUpdate: (
@@ -87,4 +50,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate', 'setPressed'],
 });
 
-export default ((NativeViewComponent: any): ViewNativeComponentType);
+export default ViewNativeComponent;
+
+export type ViewNativeComponentType = HostComponent<Props>;

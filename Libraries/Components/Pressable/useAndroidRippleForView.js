@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import invariant from 'invariant';
 import {Commands} from '../View/ViewNativeComponent';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';

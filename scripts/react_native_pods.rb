@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 def use_react_native! (options={})
-  # The prefix to the react-native
+  # The prefix to react-native
   prefix = options[:path] ||= "../node_modules/react-native"
 
   # Include Fabric dependencies
@@ -18,7 +18,7 @@ def use_react_native! (options={})
 
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
-  pod 'FBReactNativeSpec', :path => "#{prefix}/Libraries/FBReactNativeSpec"
+  pod 'FBReactNativeSpec', :path => "#{prefix}/React/FBReactNativeSpec"
   pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
   pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety"
   pod 'React', :path => "#{prefix}/"
@@ -55,26 +55,26 @@ def use_react_native! (options={})
 
   if fabric_enabled
     pod 'React-Fabric', :path => "#{prefix}/ReactCommon"
-    pod 'React-graphics', :path => "#{prefix}/ReactCommon/fabric/graphics"
+    pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
     pod 'React-jsi/Fabric', :path => "#{prefix}/ReactCommon/jsi"
     pod 'React-RCTFabric', :path => "#{prefix}/React"
     pod 'RCT-Folly/Fabric', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
   end
 
   if hermes_enabled
-    pod 'React-Core/Hermes', :path => "#{prefix}/"
+    pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
     pod 'hermes-engine'
-    pod 'libevent', :podspec => "#{prefix}/third-party-podspecs/libevent.podspec"
+    pod 'libevent', '~> 2.1.12'
   end
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '~> 0.54.0'
+  versions['Flipper'] ||= '~> 0.75.1'
   versions['Flipper-DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.2'
+  versions['Flipper-Folly'] ||= '~> 2.5'
   versions['Flipper-Glog'] ||= '0.3.6'
   versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
-  versions['Flipper-RSocket'] ||= '~> 1.1'
+  versions['Flipper-RSocket'] ||= '~> 1.3'
   pod 'FlipperKit', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
@@ -98,6 +98,10 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
 end
 
+def has_pod(installer, name)
+  installer.pods_project.pod_group(name) != nil
+end
+
 # Post Install processing for Flipper
 def flipper_post_install(installer)
   installer.pods_project.targets.each do |target|
@@ -109,20 +113,86 @@ def flipper_post_install(installer)
   end
 end
 
-# Pre Install processing for Native Modules
-def codegen_pre_install(installer, options={})
-  # Path to React Native
-  prefix = options[:path] ||= "../node_modules/react-native"
+def exclude_architectures(installer)
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
 
-  # Path to react-native-codegen
-  codegen_path = options[:codegen_path] ||= "#{prefix}/../react-native-codegen"
+  arm_value = `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i
 
-  # Handle Core Modules
-  Dir.mktmpdir do |dir|
-    native_module_spec_name = "FBReactNativeSpec"
-    schema_file = dir + "/schema-#{native_module_spec_name}.json"
-    srcs_dir = "#{prefix}/Libraries"
-    schema_generated = system("node #{codegen_path}/lib/cli/combine/combine-js-to-schema-cli.js #{schema_file} #{srcs_dir}") or raise "Could not generate Native Module schema"
-    specs_generated = system("node #{prefix}/scripts/generate-native-modules-specs-cli.js ios #{schema_file} #{srcs_dir}/#{native_module_spec_name}/#{native_module_spec_name}") or raise "Could not generate code for #{native_module_spec_name}"
+  # Hermes does not support `i386` architecture
+  excluded_archs_default = has_pod(installer, 'hermes-engine') ? "i386" : ""
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      if arm_value == 1 then
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
+      else
+        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64 " + excluded_archs_default
+      end
+    end
+
+    project.save()
   end
+end
+
+def react_native_post_install(installer)
+  if has_pod(installer, 'Flipper')
+    flipper_post_install(installer)
+  end
+
+  exclude_architectures(installer)
+end
+
+def use_react_native_codegen!(spec, options={})
+  return if ENV['DISABLE_CODEGEN'] == '1'
+
+  # The path to react-native
+  prefix = options[:path] ||= "${PODS_TARGET_SRCROOT}/../.."
+
+  # The path to JavaScript files
+  js_srcs = options[:js_srcs_dir] ||= "#{prefix}/Libraries"
+
+  # Library name (e.g. FBReactNativeSpec)
+  modules_library_name = spec.name
+  modules_output_dir = "React/#{modules_library_name}/#{modules_library_name}"
+
+  # Run the codegen as part of the Xcode build pipeline.
+  env_vars = "SRCS_DIR=#{js_srcs}"
+  env_vars += " MODULES_OUTPUT_DIR=#{prefix}/#{modules_output_dir}"
+  env_vars += " MODULES_LIBRARY_NAME=#{modules_library_name}"
+
+  generated_dirs = [ modules_output_dir ]
+  generated_filenames = [ "#{modules_library_name}.h", "#{modules_library_name}-generated.mm" ]
+  generated_files = generated_filenames.map { |filename| "#{modules_output_dir}/#{filename}" }
+
+  if ENV['USE_FABRIC'] == '1'
+    # We use a different library name for components, as well as an additional set of files.
+    # Eventually, we want these to be part of the same library as #{modules_library_name} above.
+    components_output_dir = "ReactCommon/react/renderer/components/rncore/"
+    generated_dirs.push components_output_dir
+    env_vars += " COMPONENTS_OUTPUT_DIR=#{prefix}/#{components_output_dir}"
+    components_generated_filenames = [
+      "ComponentDescriptors.h",
+      "EventEmitters.cpp",
+      "EventEmitters.h",
+      "Props.cpp",
+      "Props.h",
+      "RCTComponentViewHelpers.h",
+      "ShadowNodes.cpp",
+      "ShadowNodes.h"
+    ]
+    generated_files = generated_files.concat(components_generated_filenames.map { |filename| "#{components_output_dir}/#{filename}" })
+  end
+
+  spec.script_phase = {
+    :name => 'Generate Specs',
+    :input_files => [js_srcs],
+    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{modules_library_name}.log"].concat(generated_files.map { |filename| "#{prefix}/#{filename}"} ),
+    :script => "set -o pipefail\n\nbash -l -c '#{env_vars} ${PODS_TARGET_SRCROOT}/../../scripts/generate-specs.sh' 2>&1 | tee \"${SCRIPT_OUTPUT_FILE_0}\"",
+    :execution_position => :before_compile,
+    :show_env_vars_in_log => true
+  }
+  spec.prepare_command = "mkdir -p #{generated_dirs.reduce("") { |str, dir| "#{str} ../../#{dir}" }} && touch #{generated_files.reduce("") { |str, filename| "#{str} ../../#{filename}" }}"
 end

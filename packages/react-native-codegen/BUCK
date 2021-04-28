@@ -9,22 +9,6 @@ SETUP_ENV_DEPS = [] if IS_OSS_BUILD else [
     "//xplat/js:setup_env",
 ]
 
-fb_native.sh_binary(
-    name = "codegen_rn_modules_tests",
-    main = "src/cli/verify_with_old_codegen.sh",
-    visibility = ["PUBLIC"],
-    resources = [
-        "src/cli/verify_with_old_codegen.js",
-        "src/cli/verify_with_old_codegen.sh",
-    ] + SETUP_ENV_DEPS,
-)
-
-fb_native.sh_test(
-    name = "verify_all_modules_with_old_codegen",
-    test = "src/cli/verify_all_modules_with_old_codegen.sh",
-    visibility = ["PUBLIC"],
-)
-
 fb_native.genrule(
     name = "codegen_tests_schema",
     srcs = glob(
@@ -43,8 +27,8 @@ rn_codegen_components(
 )
 
 rn_codegen_modules(
-    name = "codegen_tests",
-    native_module_spec_name = "FBReactNativeTestSpec",
+    name = "FBReactNativeTestSpec",
+    android_package_name = "com.facebook.fbreact.specs",
     schema_target = ":codegen_tests_schema",
 )
 
@@ -54,6 +38,7 @@ rn_android_library(
         ["**/*.java"],
         exclude = ["android/gradlePlugin-build/**/*"],
     ),
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],
@@ -73,7 +58,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     platforms = (ANDROID, APPLE),
@@ -97,7 +82,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     platforms = (APPLE),
@@ -109,8 +94,8 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        ":FBReactNativeTestSpec",
         ":generated_components-codegen_tests",
-        ":generated_objcpp_modules-codegen_tests",
     ],
 )
 

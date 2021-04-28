@@ -13,6 +13,7 @@
 #import <react/renderer/textlayoutmanager/RCTTextLayoutManager.h>
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
+#import "RCTAccessibilityElement.h"
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
 #import "RCTLocalizationProvider.h"
@@ -61,7 +62,8 @@ using namespace facebook::react;
     accessibilityLabel = RCTNSStringFromString(_attributedString.getString());
   }
   // add first element has the text for the whole textview in order to read out the whole text
-  UIAccessibilityElement *firstElement = [[UIAccessibilityElement alloc] initWithAccessibilityContainer:_view];
+  UIAccessibilityElement *firstElement =
+      [[RCTAccessibilityElement alloc] initWithAccessibilityContainer:_view.superview];
   firstElement.isAccessibilityElement = YES;
   firstElement.accessibilityTraits = UIAccessibilityTraitStaticText;
   firstElement.accessibilityLabel = accessibilityLabel;

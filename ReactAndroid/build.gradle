@@ -33,11 +33,6 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 //   - glog-0.3.5
 def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 
-// The 'USE_FABRIC' environment variable will build Fabric C++ code into the bundle
-// USE_FABRIC=0 will build RN excluding fabric
-// USE_FABRIC=1 will build RN including fabric
-def enableFabric = (System.getenv('USE_FABRIC') ?: '0').toBoolean()
-
 // The Boost library is a very large download (>100MB).
 // If Boost is already present on your system, define the REACT_NATIVE_BOOST_PATH env variable
 // and the build will use that.
@@ -247,26 +242,28 @@ def getNdkBuildName() {
 }
 
 def findNdkBuildFullPath() {
+    // android.ndkDirectory should return project.android.ndkVersion ndkDirectory
+    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
+    if (ndkDir) {
+        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+
     // we allow to provide full path to ndk-build tool
     if (hasProperty("ndk.command")) {
         return property("ndk.command")
     }
     // or just a path to the containing directory
     if (hasProperty("ndk.path")) {
-        def ndkDir = property("ndk.path")
+        ndkDir = property("ndk.path")
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
 
+    // @TODO ANDROID_NDK && ndk.dir is deprecated and will be removed in the future.
     if (System.getenv("ANDROID_NDK") != null) {
-        def ndkDir = System.getenv("ANDROID_NDK")
+        ndkDir = System.getenv("ANDROID_NDK")
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
 
-    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
-
-    if (ndkDir) {
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
     return null
 }
 
@@ -318,7 +315,6 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
-            "BUILD_FABRIC=$enableFabric",
             "-C", file("src/main/jni/react/jni").absolutePath,
             "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
     )
@@ -382,8 +378,8 @@ task extractJNIFiles {
 }
 
 android {
-    compileSdkVersion 29
-
+    compileSdkVersion 30
+    ndkVersion ANDROID_NDK_VERSION
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_1_8)
         targetCompatibility(JavaVersion.VERSION_1_8)
@@ -399,6 +395,7 @@ android {
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+        buildConfigField("int", "HERMES_BYTECODE_VERSION", "0")
 
         resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
         resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
@@ -443,20 +440,21 @@ android {
 
 dependencies {
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
-    api("com.facebook.yoga:proguard-annotations:1.14.1")
+    api("com.facebook.yoga:proguard-annotations:1.17.0")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
     api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
+    api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
     api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
-    api("com.squareup.okio:okio:1.17.5")
-    api("com.facebook.fbjni:fbjni-java-only:0.0.3")
-    extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
-    extractJNI("com.facebook.fbjni:fbjni:0.0.2")
+    api("com.squareup.okio:okio:2.9.0")
+    api("com.facebook.fbjni:fbjni-java-only:0.2.2")
+    extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
+    extractJNI("com.facebook.fbjni:fbjni:0.2.2")
 
     javadocDeps("com.squareup:javapoet:1.13.0")
 
@@ -477,6 +475,9 @@ dependencies {
 apply(from: "release.gradle")
 
 react {
+    // TODO: The library name is chosen for parity with Fabric components & iOS
+    // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
+    libraryName = "rncore"
     jsRootDir = file("../Libraries")
     reactNativeRootDir = file("$projectDir/..")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false

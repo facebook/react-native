@@ -1,0 +1,21 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
+
+rn_android_library(
+    name = "interfaces",
+    srcs = glob(["*.java"]),
+    autoglob = False,
+    is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    provided_deps = [
+        react_native_dep("third-party/android/androidx:annotation"),
+    ],
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        YOGA_TARGET,
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+    ],
+)

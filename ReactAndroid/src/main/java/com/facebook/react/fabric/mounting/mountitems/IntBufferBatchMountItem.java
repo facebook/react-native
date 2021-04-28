@@ -8,10 +8,10 @@
 package com.facebook.react.fabric.mounting.mountitems;
 
 import static com.facebook.react.fabric.FabricComponents.getFabricComponentName;
+import static com.facebook.react.fabric.FabricUIManager.ENABLE_FABRIC_LOGS;
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
@@ -19,8 +19,8 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
+import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.uimanager.StateWrapper;
-import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.systrace.Systrace;
 
 /**
@@ -50,10 +50,8 @@ public class IntBufferBatchMountItem implements MountItem {
   static final int INSTRUCTION_UPDATE_EVENT_EMITTER = 256;
   static final int INSTRUCTION_UPDATE_PADDING = 512;
 
-  private final int mRootTag;
+  private final int mSurfaceId;
   private final int mCommitNumber;
-
-  @NonNull private final ThemedReactContext mContext;
 
   @NonNull private final int[] mIntBuffer;
   @NonNull private final Object[] mObjBuffer;
@@ -61,15 +59,9 @@ public class IntBufferBatchMountItem implements MountItem {
   private final int mIntBufferLen;
   private final int mObjBufferLen;
 
-  public IntBufferBatchMountItem(
-      int rootTag,
-      @Nullable ThemedReactContext context,
-      int[] intBuf,
-      Object[] objBuf,
-      int commitNumber) {
-    mRootTag = rootTag;
+  public IntBufferBatchMountItem(int surfaceId, int[] intBuf, Object[] objBuf, int commitNumber) {
+    mSurfaceId = surfaceId;
     mCommitNumber = commitNumber;
-    mContext = context;
 
     mIntBuffer = intBuf;
     mObjBuffer = objBuf;
@@ -119,12 +111,20 @@ public class IntBufferBatchMountItem implements MountItem {
 
   @Override
   public void execute(@NonNull MountingManager mountingManager) {
-    if (mContext == null) {
+    SurfaceMountingManager surfaceMountingManager = mountingManager.getSurfaceManager(mSurfaceId);
+    if (surfaceMountingManager == null) {
       FLog.e(
           TAG,
-          "Cannot execute batch of %s MountItems; no context. Hopefully this is because StopSurface was called.",
-          TAG);
+          "Skipping batch of MountItems; no SurfaceMountingManager found for [%d].",
+          mSurfaceId);
       return;
+    }
+    if (surfaceMountingManager.isStopped()) {
+      FLog.e(TAG, "Skipping batch of MountItems; was stopped [%d].", mSurfaceId);
+      return;
+    }
+    if (ENABLE_FABRIC_LOGS) {
+      FLog.d(TAG, "Executing IntBufferBatchMountItem on surface [%d]", mSurfaceId);
     }
 
     beginMarkers("mountViews");
@@ -137,36 +137,39 @@ public class IntBufferBatchMountItem implements MountItem {
       for (int k = 0; k < numInstructions; k++) {
         if (type == INSTRUCTION_CREATE) {
           String componentName = getFabricComponentName((String) mObjBuffer[j++]);
-          mountingManager.createView(
-              mContext,
+          surfaceMountingManager.createView(
               componentName,
               mIntBuffer[i++],
               castToProps(mObjBuffer[j++]),
               castToState(mObjBuffer[j++]),
               mIntBuffer[i++] == 1);
         } else if (type == INSTRUCTION_DELETE) {
-          mountingManager.deleteView(mIntBuffer[i++]);
+          surfaceMountingManager.deleteView(mIntBuffer[i++]);
         } else if (type == INSTRUCTION_INSERT) {
           int tag = mIntBuffer[i++];
           int parentTag = mIntBuffer[i++];
-          mountingManager.addViewAt(parentTag, tag, mIntBuffer[i++]);
+          surfaceMountingManager.addViewAt(parentTag, tag, mIntBuffer[i++]);
         } else if (type == INSTRUCTION_REMOVE) {
-          mountingManager.removeViewAt(mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
+          surfaceMountingManager.removeViewAt(mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
         } else if (type == INSTRUCTION_UPDATE_PROPS) {
-          mountingManager.updateProps(mIntBuffer[i++], castToProps(mObjBuffer[j++]));
+          surfaceMountingManager.updateProps(mIntBuffer[i++], castToProps(mObjBuffer[j++]));
         } else if (type == INSTRUCTION_UPDATE_STATE) {
-          mountingManager.updateState(mIntBuffer[i++], castToState(mObjBuffer[j++]));
+          surfaceMountingManager.updateState(mIntBuffer[i++], castToState(mObjBuffer[j++]));
         } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
-          mountingManager.updateLayout(
-              mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
+          int reactTag = mIntBuffer[i++];
+          int x = mIntBuffer[i++];
+          int y = mIntBuffer[i++];
+          int width = mIntBuffer[i++];
+          int height = mIntBuffer[i++];
+          int displayType = mIntBuffer[i++];
+          surfaceMountingManager.updateLayout(reactTag, x, y, width, height, displayType);
 
-          // The final buffer, layoutDirection, seems unused?
-          i++;
         } else if (type == INSTRUCTION_UPDATE_PADDING) {
-          mountingManager.updatePadding(
+          surfaceMountingManager.updatePadding(
               mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
         } else if (type == INSTRUCTION_UPDATE_EVENT_EMITTER) {
-          mountingManager.updateEventEmitter(mIntBuffer[i++], castToEventEmitter(mObjBuffer[j++]));
+          surfaceMountingManager.updateEventEmitter(
+              mIntBuffer[i++], castToEventEmitter(mObjBuffer[j++]));
         } else {
           throw new IllegalArgumentException(
               "Invalid type argument to IntBufferBatchMountItem: " + type + " at index: " + i);
@@ -177,8 +180,9 @@ public class IntBufferBatchMountItem implements MountItem {
     endMarkers();
   }
 
-  public int getRootTag() {
-    return mRootTag;
+  @Override
+  public int getSurfaceId() {
+    return mSurfaceId;
   }
 
   public boolean shouldSchedule() {
@@ -189,7 +193,7 @@ public class IntBufferBatchMountItem implements MountItem {
   public String toString() {
     try {
       StringBuilder s = new StringBuilder();
-      s.append("IntBufferBatchMountItem:");
+      s.append(String.format("IntBufferBatchMountItem [surface:%d]:\n", mSurfaceId));
       int i = 0, j = 0;
       while (i < mIntBufferLen) {
         int rawType = mIntBuffer[i++];
@@ -226,7 +230,7 @@ public class IntBufferBatchMountItem implements MountItem {
           } else if (type == INSTRUCTION_UPDATE_LAYOUT) {
             s.append(
                 String.format(
-                    "UPDATE LAYOUT [%d]: x:%d y:%d w:%d h:%d layoutDirection:%d\n",
+                    "UPDATE LAYOUT [%d]: x:%d y:%d w:%d h:%d displayType:%d\n",
                     mIntBuffer[i++],
                     mIntBuffer[i++],
                     mIntBuffer[i++],

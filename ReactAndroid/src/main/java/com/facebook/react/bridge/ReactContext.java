@@ -23,6 +23,7 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -62,6 +63,7 @@ public class ReactContext extends ContextWrapper {
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private @Nullable NativeModuleCallExceptionHandler mExceptionHandlerWrapper;
   private @Nullable WeakReference<Activity> mCurrentActivity;
+  private boolean mIsInitialized = false;
 
   public ReactContext(Context base) {
     super(base);
@@ -100,6 +102,18 @@ public class ReactContext extends ContextWrapper {
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
+
+    /** TODO(T85807990): Fail fast if any of the threads is null. */
+    if (mUiMessageQueueThread == null) {
+      throw new IllegalStateException("UI thread is null");
+    }
+    if (mNativeModulesMessageQueueThread == null) {
+      throw new IllegalStateException("NativeModules thread is null");
+    }
+    if (mJSMessageQueueThread == null) {
+      throw new IllegalStateException("JavaScript thread is null");
+    }
+    mIsInitialized = true;
   }
 
   public void resetPerfStats() {
@@ -169,7 +183,19 @@ public class ReactContext extends ContextWrapper {
     return Assertions.assertNotNull(mCatalystInstance);
   }
 
+  /**
+   * This API has been deprecated due to naming consideration, please use hasActiveReactInstance()
+   * instead
+   *
+   * @return
+   */
+  @Deprecated
   public boolean hasActiveCatalystInstance() {
+    return hasActiveReactInstance();
+  }
+
+  /** @return true if there is an non-null, alive react native instance */
+  public boolean hasActiveReactInstance() {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
 
@@ -183,7 +209,7 @@ public class ReactContext extends ContextWrapper {
 
   public void addLifecycleEventListener(final LifecycleEventListener listener) {
     mLifecycleEventListeners.add(listener);
-    if (hasActiveCatalystInstance() || isBridgeless()) {
+    if (hasActiveReactInstance() || isBridgeless()) {
       switch (mLifecycleState) {
         case BEFORE_CREATE:
         case BEFORE_RESUME:
@@ -296,6 +322,11 @@ public class ReactContext extends ContextWrapper {
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
     }
+    if (ReactFeatureFlags.enableReactContextCleanupFix) {
+      mLifecycleEventListeners.clear();
+      mActivityEventListeners.clear();
+      mWindowFocusEventListeners.clear();
+    }
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onActivityResult} */
@@ -334,10 +365,20 @@ public class ReactContext extends ContextWrapper {
   }
 
   public void assertOnNativeModulesQueueThread() {
+    /** TODO(T85807990): Fail fast if the ReactContext isn't initialized */
+    if (!mIsInitialized) {
+      throw new IllegalStateException(
+          "Tried to call assertOnNativeModulesQueueThread() on an uninitialized ReactContext");
+    }
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread();
   }
 
   public void assertOnNativeModulesQueueThread(String message) {
+    /** TODO(T85807990): Fail fast if the ReactContext isn't initialized */
+    if (!mIsInitialized) {
+      throw new IllegalStateException(
+          "Tried to call assertOnNativeModulesQueueThread(message) on an uninitialized ReactContext");
+    }
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread(message);
   }
 
@@ -446,7 +487,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   public @Nullable JSIModule getJSIModule(JSIModuleType moduleType) {
-    if (!hasActiveCatalystInstance()) {
+    if (!hasActiveReactInstance()) {
       throw new IllegalStateException(
           "Unable to retrieve a JSIModule if CatalystInstance is not active.");
     }

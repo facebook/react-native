@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
@@ -74,6 +72,7 @@ const ImageViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.g
       defaultSrc: true,
       fadeDuration: true,
       headers: true,
+      internal_analyticTag: true,
       loadingIndicatorSrc: true,
       onError: true,
       onLoad: true,

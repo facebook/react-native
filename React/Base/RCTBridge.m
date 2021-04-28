@@ -58,6 +58,9 @@ NSArray<Class> *RCTGetModuleClasses(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
+  RCTWarnNotAllowedForNewArchitecture(
+      @"RCTRegisterModule()", [NSString stringWithFormat:@"'%@' was registered unexpectedly", moduleClass]);
+
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
@@ -135,26 +138,15 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
-static BOOL turboModuleBlockCopyEnabled = NO;
-BOOL RCTTurboModuleBlockCopyEnabled(void)
+static BOOL turboModuleBlockGuardEnabled = NO;
+BOOL RCTTurboModuleBlockGuardEnabled(void)
 {
-  return turboModuleBlockCopyEnabled;
+  return turboModuleBlockGuardEnabled;
 }
 
-void RCTEnableTurboModuleBlockCopy(BOOL enabled)
+void RCTEnableTurboModuleBlockGuard(BOOL enabled)
 {
-  turboModuleBlockCopyEnabled = enabled;
-}
-
-static BOOL turboModuleJSCodegenEnabled = NO;
-BOOL RCTTurboModuleJSCodegenEnabled(void)
-{
-  return turboModuleJSCodegenEnabled;
-}
-
-void RCTEnableTurboModuleJSCodegen(BOOL enabled)
-{
-  turboModuleJSCodegenEnabled = enabled;
+  turboModuleBlockGuardEnabled = enabled;
 }
 
 @interface RCTBridge () <RCTReloadListener>
@@ -211,6 +203,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
+    RCTEnforceNotAllowedForNewArchitecture(self, nil);
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;

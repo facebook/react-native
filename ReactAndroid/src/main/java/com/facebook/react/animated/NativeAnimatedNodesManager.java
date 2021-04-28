@@ -121,7 +121,7 @@ import java.util.Queue;
   public void createAnimatedNode(int tag, ReadableMap config) {
     if (mAnimatedNodes.get(tag) != null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " already exists");
+          "createAnimatedNode: Animated node [" + tag + "] already exists");
     }
     String type = config.getString("type");
     final AnimatedNode node;
@@ -168,7 +168,9 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
+          "startListeningToAnimatedNodeValue: Animated node ["
+              + tag
+              + "] does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).setValueListener(listener);
   }
@@ -178,7 +180,9 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
+          "startListeningToAnimatedNodeValue: Animated node ["
+              + tag
+              + "] does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).setValueListener(null);
   }
@@ -188,7 +192,9 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
+          "setAnimatedNodeValue: Animated node ["
+              + tag
+              + "] does not exist, or is not a 'value' node");
     }
     stopAnimationsForNode(node);
     ((ValueAnimatedNode) node).mValue = value;
@@ -200,7 +206,9 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
+          "setAnimatedNodeOffset: Animated node ["
+              + tag
+              + "] does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).mOffset = offset;
     mUpdatedNodes.put(tag, node);
@@ -211,7 +219,9 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
+          "flattenAnimatedNodeOffset: Animated node ["
+              + tag
+              + "] does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).flattenOffset();
   }
@@ -221,7 +231,9 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exist, or is not a 'value' node");
+          "extractAnimatedNodeOffset: Animated node ["
+              + tag
+              + "] does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).extractOffset();
   }
@@ -232,11 +244,14 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + animatedNodeTag + " does not exist");
+          "startAnimatingNode: Animated node [" + animatedNodeTag + "] does not exist");
     }
     if (!(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node should be of type " + ValueAnimatedNode.class.getName());
+          "startAnimatingNode: Animated node ["
+              + animatedNodeTag
+              + "] should be of type "
+              + ValueAnimatedNode.class.getName());
     }
 
     final AnimationDriver existingDriver = mActiveAnimations.get(animationId);
@@ -256,7 +271,8 @@ import java.util.Queue;
     } else if ("decay".equals(type)) {
       animation = new DecayAnimation(animationConfig);
     } else {
-      throw new JSApplicationIllegalArgumentException("Unsupported animation type: " + type);
+      throw new JSApplicationIllegalArgumentException(
+          "startAnimatingNode: Unsupported animation type [" + animatedNodeTag + "]: " + type);
     }
     animation.mId = animationId;
     animation.mEndCallback = endCallback;
@@ -315,12 +331,16 @@ import java.util.Queue;
     AnimatedNode parentNode = mAnimatedNodes.get(parentNodeTag);
     if (parentNode == null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + parentNodeTag + " does not exists");
+          "connectAnimatedNodes: Animated node with tag (parent) ["
+              + parentNodeTag
+              + "] does not exist");
     }
     AnimatedNode childNode = mAnimatedNodes.get(childNodeTag);
     if (childNode == null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + childNodeTag + " does not exists");
+          "connectAnimatedNodes: Animated node with tag (child) ["
+              + childNodeTag
+              + "] does not exist");
     }
     parentNode.addChild(childNode);
     mUpdatedNodes.put(childNodeTag, childNode);
@@ -330,12 +350,16 @@ import java.util.Queue;
     AnimatedNode parentNode = mAnimatedNodes.get(parentNodeTag);
     if (parentNode == null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + parentNodeTag + " does not exists");
+          "disconnectAnimatedNodes: Animated node with tag (parent) ["
+              + parentNodeTag
+              + "] does not exist");
     }
     AnimatedNode childNode = mAnimatedNodes.get(childNodeTag);
     if (childNode == null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + childNodeTag + " does not exists");
+          "disconnectAnimatedNodes: Animated node with tag (child) ["
+              + childNodeTag
+              + "] does not exist");
     }
     parentNode.removeChild(childNode);
     mUpdatedNodes.put(childNodeTag, childNode);
@@ -346,17 +370,21 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + animatedNodeTag + " does not exists");
+          "connectAnimatedNodeToView: Animated node with tag ["
+              + animatedNodeTag
+              + "] does not exist");
     }
     if (!(node instanceof PropsAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node connected to view should be"
-              + "of type "
+          "connectAnimatedNodeToView: Animated node connected to view ["
+              + viewTag
+              + "] should be of type "
               + PropsAnimatedNode.class.getName());
     }
     if (mReactApplicationContext == null) {
       throw new IllegalStateException(
-          "Animated node could not be connected, no ReactApplicationContext: " + viewTag);
+          "connectAnimatedNodeToView: Animated node could not be connected, no ReactApplicationContext: "
+              + viewTag);
     }
 
     @Nullable
@@ -366,7 +394,7 @@ import java.util.Queue;
       ReactSoftException.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
-              "Animated node could not be connected to UIManager - uiManager disappeared for tag: "
+              "connectAnimatedNodeToView: Animated node could not be connected to UIManager - uiManager disappeared for tag: "
                   + viewTag));
       return;
     }
@@ -381,12 +409,15 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + animatedNodeTag + " does not exists");
+          "disconnectAnimatedNodeFromView: Animated node with tag ["
+              + animatedNodeTag
+              + "] does not exist");
     }
     if (!(node instanceof PropsAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node connected to view should be"
-              + "of type "
+          "disconnectAnimatedNodeFromView: Animated node connected to view ["
+              + viewTag
+              + "] should be of type "
               + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
@@ -398,7 +429,7 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+          "getValue: Animated node with tag [" + tag + "] does not exist or is not a 'value' node");
     }
     callback.invoke(((ValueAnimatedNode) node).getValue());
   }
@@ -415,8 +446,7 @@ import java.util.Queue;
     }
     if (!(node instanceof PropsAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node connected to view should be"
-              + "of type "
+          "Animated node connected to view [?] should be of type "
               + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
@@ -429,12 +459,15 @@ import java.util.Queue;
     AnimatedNode node = mAnimatedNodes.get(nodeTag);
     if (node == null) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node with tag " + nodeTag + " does not exists");
+          "addAnimatedEventToView: Animated node with tag [" + nodeTag + "] does not exist");
     }
     if (!(node instanceof ValueAnimatedNode)) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node connected to event should be"
-              + "of type "
+          "addAnimatedEventToView: Animated node on view ["
+              + viewTag
+              + "] connected to event ("
+              + eventName
+              + ") should be of type "
               + ValueAnimatedNode.class.getName());
     }
 

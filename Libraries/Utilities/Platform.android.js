@@ -8,8 +8,6 @@
  * @flow strict
  */
 
-'use strict';
-
 import NativePlatformConstantsAndroid from './NativePlatformConstantsAndroid';
 
 export type PlatformSelectSpec<A, N, D> = {

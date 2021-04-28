@@ -9,9 +9,7 @@ package com.facebook.react.uimanager.events;
 
 import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_KEY;
 
-import android.util.SparseArray;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -21,11 +19,16 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 
-public class ReactEventEmitter implements RCTEventEmitter {
+public class ReactEventEmitter implements RCTModernEventEmitter {
 
   private static final String TAG = "ReactEventEmitter";
 
-  private final SparseArray<RCTEventEmitter> mEventEmitters = new SparseArray<>();
+  @Nullable
+  private RCTModernEventEmitter mFabricEventEmitter =
+      null; /* Corresponds to a Fabric EventEmitter */
+
+  @Nullable
+  private RCTEventEmitter mRCTEventEmitter = null; /* Corresponds to a Non-Fabric EventEmitter */
 
   private final ReactApplicationContext mReactContext;
 
@@ -33,46 +36,61 @@ public class ReactEventEmitter implements RCTEventEmitter {
     mReactContext = reactContext;
   }
 
+  public void register(@UIManagerType int uiManagerType, RCTModernEventEmitter eventEmitter) {
+    assert uiManagerType == UIManagerType.FABRIC;
+    mFabricEventEmitter = eventEmitter;
+  }
+
   public void register(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {
-    mEventEmitters.put(uiManagerType, eventEmitter);
+    assert uiManagerType == UIManagerType.DEFAULT;
+    mRCTEventEmitter = eventEmitter;
   }
 
   public void unregister(@UIManagerType int uiManagerType) {
-    mEventEmitters.remove(uiManagerType);
+    if (uiManagerType == UIManagerType.DEFAULT) {
+      mRCTEventEmitter = null;
+    } else {
+      mFabricEventEmitter = null;
+    }
   }
 
   @Override
   public void receiveEvent(int targetReactTag, String eventName, @Nullable WritableMap event) {
-    RCTEventEmitter eventEmitter = getEventEmitter(targetReactTag);
-    if (eventEmitter != null) {
-      eventEmitter.receiveEvent(targetReactTag, eventName, event);
-    }
+    receiveEvent(-1, targetReactTag, eventName, event);
   }
 
   @Override
   public void receiveTouches(
       String eventName, WritableArray touches, WritableArray changedIndices) {
-
     Assertions.assertCondition(touches.size() > 0);
 
     int reactTag = touches.getMap(0).getInt(TARGET_KEY);
-    RCTEventEmitter eventEmitter = getEventEmitter(reactTag);
-    if (eventEmitter != null) {
-      eventEmitter.receiveTouches(eventName, touches, changedIndices);
+    @UIManagerType int uiManagerType = ViewUtil.getUIManagerType(reactTag);
+    if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
+      mFabricEventEmitter.receiveTouches(eventName, touches, changedIndices);
+    } else if (uiManagerType == UIManagerType.DEFAULT && getEventEmitter(reactTag) != null) {
+      mRCTEventEmitter.receiveTouches(eventName, touches, changedIndices);
+    } else {
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Cannot find EventEmitter for receivedTouches: ReactTag["
+                  + reactTag
+                  + "] UIManagerType["
+                  + uiManagerType
+                  + "] EventName["
+                  + eventName
+                  + "]"));
     }
   }
 
   @Nullable
   private RCTEventEmitter getEventEmitter(int reactTag) {
     int type = ViewUtil.getUIManagerType(reactTag);
-    RCTEventEmitter eventEmitter = mEventEmitters.get(type);
-    if (eventEmitter == null) {
-      // TODO T54145494: Refactor RN Event Emitter system to make sure reactTags are always managed
-      // by RN
-      FLog.e(
-          TAG, "Unable to find event emitter for reactTag: %d - uiManagerType: %d", reactTag, type);
-      if (mReactContext.hasActiveCatalystInstance()) {
-        eventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
+    assert type == UIManagerType.DEFAULT;
+    if (mRCTEventEmitter == null) {
+      if (mReactContext.hasActiveReactInstance()) {
+        mRCTEventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
       } else {
         ReactSoftException.logSoftException(
             TAG,
@@ -84,6 +102,30 @@ public class ReactEventEmitter implements RCTEventEmitter {
                     + " - No active Catalyst instance!"));
       }
     }
-    return eventEmitter;
+    return mRCTEventEmitter;
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId, int targetReactTag, String eventName, @Nullable WritableMap event) {
+    @UIManagerType int uiManagerType = ViewUtil.getUIManagerType(targetReactTag);
+    if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
+      mFabricEventEmitter.receiveEvent(surfaceId, targetReactTag, eventName, event);
+    } else if (uiManagerType == UIManagerType.DEFAULT && getEventEmitter(targetReactTag) != null) {
+      mRCTEventEmitter.receiveEvent(targetReactTag, eventName, event);
+    } else {
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Cannot find EventEmitter for receiveEvent: SurfaceId["
+                  + surfaceId
+                  + "] ReactTag["
+                  + targetReactTag
+                  + "] UIManagerType["
+                  + uiManagerType
+                  + "] EventName["
+                  + eventName
+                  + "]"));
+    }
   }
 }

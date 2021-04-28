@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import {
   Text,
   View,

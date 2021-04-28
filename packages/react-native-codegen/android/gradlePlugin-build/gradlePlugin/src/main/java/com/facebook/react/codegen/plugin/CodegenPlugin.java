@@ -33,6 +33,8 @@ public class CodegenPlugin implements Plugin<Project> {
     final File generatedSchemaFile = new File(generatedSrcDir, "schema.json");
 
     // 2. Task: produce schema from JS files.
+    String os = System.getProperty("os.name").toLowerCase();
+
     project
         .getTasks()
         .register(
@@ -62,7 +64,7 @@ public class CodegenPlugin implements Plugin<Project> {
 
               ImmutableList<String> execCommands =
                   new ImmutableList.Builder<String>()
-                      .add("yarn")
+                      .add(os.contains("windows") ? "yarn.cmd" : "yarn")
                       .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
                       .add(extension.codegenGenerateSchemaCLI().getAbsolutePath())
                       .add(generatedSchemaFile.getAbsolutePath())
@@ -82,6 +84,7 @@ public class CodegenPlugin implements Plugin<Project> {
 
               task.getInputs()
                   .files(project.fileTree(ImmutableMap.of("dir", extension.codegenDir())));
+              task.getInputs().files(extension.codegenGenerateNativeModuleSpecsCLI());
               task.getInputs().files(generatedSchemaFile);
               task.getOutputs().dir(generatedSrcDir);
 
@@ -95,7 +98,7 @@ public class CodegenPlugin implements Plugin<Project> {
 
               ImmutableList<String> execCommands =
                   new ImmutableList.Builder<String>()
-                      .add("yarn")
+                      .add(os.contains("windows") ? "yarn.cmd" : "yarn")
                       .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
                       .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
                       .add("android")

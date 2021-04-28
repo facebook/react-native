@@ -9,11 +9,12 @@
 
 #include <cmath>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/graphics/rounding.h>
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 
 #include "ParagraphState.h"
 
@@ -102,19 +103,16 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
 
   auto &state = getStateData();
 
-  assert(textLayoutManager_);
-  assert(
-      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
-      "`StateData` refers to a different `TextLayoutManager`");
+  react_native_assert(textLayoutManager_);
 
-  if (state.attributedString == content.attributedString &&
-      state.layoutManager == textLayoutManager_) {
+  if (state.attributedString == content.attributedString) {
     return;
   }
 
-  setStateData(ParagraphState{content.attributedString,
-                              content.paragraphAttributes,
-                              textLayoutManager_});
+  setStateData(ParagraphState{
+      content.attributedString,
+      content.paragraphAttributes,
+      textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode
@@ -136,11 +134,6 @@ Size ParagraphShadowNode::measureContent(
     textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
     textAttributes.apply(getConcreteProps().textAttributes);
     attributedString.appendFragment({string, textAttributes, {}});
-  }
-
-  auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-  if (telemetry) {
-    telemetry->didMeasureText();
   }
 
   return textLayoutManager_
@@ -190,7 +183,8 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   // only to keep it in memory for a while.
   auto paragraphOwningShadowNode = ShadowNode::Unshared{};
 
-  assert(content.attachments.size() == measurement.attachments.size());
+  react_native_assert(
+      content.attachments.size() == measurement.attachments.size());
 
   for (auto i = 0; i < content.attachments.size(); i++) {
     auto &attachment = content.attachments.at(i);

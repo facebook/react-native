@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags", "react_native_target", "react_native_xplat_shared_library_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags", "react_native_target", "react_native_xplat_shared_library_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
     name = "core",
@@ -15,7 +15,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
         "-Wno-global-constructors",
     ],
@@ -39,7 +39,7 @@ rn_xplat_cxx_library(
         "-fobjc-arc-exceptions",
     ],
     fbobjc_inherited_buck_flags = get_static_library_ios_flags(),
-    fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_preprocessor_flags_for_build_mode(),
+    fbobjc_preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
     ios_deps = [
         "//xplat/FBBaseLite:FBBaseLite",
         "//xplat/js/react-native-github:RCTCxxModule",
@@ -79,6 +79,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
         react_native_xplat_target("callinvoker:callinvoker"),
+        react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
     ],
     exported_deps = [

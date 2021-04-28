@@ -30,7 +30,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PixelUtil;
@@ -222,7 +221,7 @@ public class ReactScrollView extends ScrollView
         pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
     int scrollToY =
         pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
-    reactScrollTo(scrollToX, scrollToY);
+    scrollTo(scrollToX, scrollToY);
     ReactScrollViewHelper.emitLayoutEvent(this);
   }
 
@@ -383,9 +382,7 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    return ReactFeatureFlags.clipChildRectsIfOverflowIsHidden
-        ? ReactClippingViewGroupHelper.getChildVisibleRectHelper(child, r, offset, this, mOverflow)
-        : super.getChildVisibleRect(child, r, offset);
+    return super.getChildVisibleRect(child, r, offset);
   }
 
   @Override
@@ -881,9 +878,13 @@ public class ReactScrollView extends ScrollView
    *
    * <p>`reactScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
    * scroll view and state. Calling raw `reactScrollTo` doesn't update state.
+   *
+   * <p>Note that while we can override scrollTo, we *cannot* override `smoothScrollTo` because it
+   * is final. See `reactSmoothScrollTo`.
    */
-  public void reactScrollTo(int x, int y) {
-    scrollTo(x, y);
+  @Override
+  public void scrollTo(int x, int y) {
+    super.scrollTo(x, y);
     updateStateOnScroll(x, y);
     setPendingContentOffsets(x, y);
   }
@@ -929,7 +930,7 @@ public class ReactScrollView extends ScrollView
     int currentScrollY = getScrollY();
     int maxScrollY = getMaxScrollY();
     if (currentScrollY > maxScrollY) {
-      reactScrollTo(getScrollX(), maxScrollY);
+      scrollTo(getScrollX(), maxScrollY);
     }
   }
 

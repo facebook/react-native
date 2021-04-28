@@ -8,8 +8,7 @@
  * @flow strict-local
  */
 
-'use strict';
-
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import InteractionManager from '../Interaction/InteractionManager';
 import Platform from '../Utilities/Platform';
@@ -18,13 +17,17 @@ import NativeIntentAndroid from './NativeIntentAndroid';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 
+type LinkingEventDefinitions = {
+  url: [{url: string}],
+};
+
 /**
  * `Linking` gives you a general interface to interact with both incoming
  * and outgoing app links.
  *
  * See https://reactnative.dev/docs/linking.html
  */
-class Linking extends NativeEventEmitter {
+class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor() {
     super(Platform.OS === 'ios' ? nullthrows(NativeLinkingManager) : undefined);
   }
@@ -35,17 +38,23 @@ class Linking extends NativeEventEmitter {
    *
    * See https://reactnative.dev/docs/linking.html#addeventlistener
    */
-  addEventListener<T>(type: string, handler: T) {
-    this.addListener(type, handler);
+  addEventListener<K: $Keys<LinkingEventDefinitions>>(
+    eventType: K,
+    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
+    context: $FlowFixMe,
+  ): EventSubscription {
+    return this.addListener(eventType, listener);
   }
 
   /**
-   * Remove a handler by passing the `url` event type and the handler.
-   *
-   * See https://reactnative.dev/docs/linking.html#removeeventlistener
+   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
    */
-  removeEventListener<T>(type: string, handler: T) {
-    this.removeListener(type, handler);
+  removeEventListener<K: $Keys<LinkingEventDefinitions>>(
+    eventType: K,
+    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
+  ): void {
+    // NOTE: This will report a deprecation notice via `console.error`.
+    this.removeListener(eventType, listener);
   }
 
   /**

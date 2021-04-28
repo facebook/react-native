@@ -10,21 +10,20 @@
 
 // This is a controlled component version of RCTPickerIOS.
 
-'use strict';
-
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
-
-const invariant = require('invariant');
-const processColor = require('../../StyleSheet/processColor');
+import * as React from 'react';
+import StyleSheet, {
+  type TextStyleProp,
+  type ColorValue,
+} from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
+import invariant from 'invariant';
+import processColor, {
+  type ProcessedColorValue,
+} from '../../StyleSheet/processColor';
 
 import RCTPickerNativeComponent, {
   Commands as PickerCommands,
 } from './RCTPickerNativeComponent';
-import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 

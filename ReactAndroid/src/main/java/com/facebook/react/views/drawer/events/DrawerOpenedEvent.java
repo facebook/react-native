@@ -8,15 +8,20 @@
 package com.facebook.react.views.drawer.events;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class DrawerOpenedEvent extends Event<DrawerOpenedEvent> {
 
   public static final String EVENT_NAME = "topDrawerOpen";
 
+  @Deprecated
   public DrawerOpenedEvent(int viewId) {
-    super(viewId);
+    this(-1, viewId);
+  }
+
+  public DrawerOpenedEvent(int surfaceId, int viewId) {
+    super(surfaceId, viewId);
   }
 
   @Override
@@ -25,13 +30,13 @@ public class DrawerOpenedEvent extends Event<DrawerOpenedEvent> {
   }
 
   @Override
-  public short getCoalescingKey() {
-    // All events for a given view can be coalesced.
-    return 0;
+  protected WritableMap getEventData() {
+    return Arguments.createMap();
   }
 
   @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), Arguments.createMap());
+  public short getCoalescingKey() {
+    // All events for a given view can be coalesced.
+    return 0;
   }
 }

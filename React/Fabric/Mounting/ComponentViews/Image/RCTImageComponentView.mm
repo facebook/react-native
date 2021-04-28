@@ -7,6 +7,7 @@
 
 #import "RCTImageComponentView.h"
 
+#import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
 #import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageResponseObserverProxy.h>
@@ -29,9 +30,9 @@ using namespace facebook::react;
     static auto const defaultProps = std::make_shared<ImageProps const>();
     _props = defaultProps;
 
-    _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
+    _imageView = [RCTUIImageViewAnimated new];
     _imageView.clipsToBounds = YES;
-    _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps->resizeMode);
+    _imageView.contentMode = RCTContentModeFromImageResizeMode(defaultProps->resizeMode);
     _imageView.layer.minificationFilter = kCAFilterTrilinear;
     _imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
@@ -57,13 +58,7 @@ using namespace facebook::react;
 
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {
-    if (newImageProps.resizeMode == ImageResizeMode::Repeat) {
-      // Repeat resize mode is handled by the UIImage. Use scale to fill
-      // so the repeated image fills the UIImageView.
-      _imageView.contentMode = UIViewContentModeScaleToFill;
-    } else {
-      _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(newImageProps.resizeMode);
-    }
+    _imageView.contentMode = RCTContentModeFromImageResizeMode(newImageProps.resizeMode);
   }
 
   // `tintColor`
@@ -76,6 +71,11 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
+  RCTAssert(state, @"`state` must not be null.");
+  RCTAssert(
+      std::dynamic_pointer_cast<ImageShadowNode::ConcreteState const>(state),
+      @"`state` must be a pointer to `ImageShadowNode::ConcreteState`.");
+
   auto oldImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(_state);
   auto newImageState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
 
@@ -83,7 +83,8 @@ using namespace facebook::react;
 
   bool havePreviousData = oldImageState && oldImageState->getData().getImageSource() != ImageSource{};
 
-  if (!havePreviousData || newImageState->getData().getImageSource() != oldImageState->getData().getImageSource()) {
+  if (!havePreviousData ||
+      (newImageState && newImageState->getData().getImageSource() != oldImageState->getData().getImageSource())) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();

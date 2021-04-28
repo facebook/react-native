@@ -41,7 +41,7 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   }, {});
 }
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 export type ASTNode = Object;
 
 const invariant = require('invariant');
@@ -137,9 +137,74 @@ function createParserErrorCapturer(): [
   return [errors, guard];
 }
 
+// TODO(T71778680): Flow-type ASTNodes.
+function visit(
+  astNode: $FlowFixMe,
+  visitor: {
+    [type: string]: (node: $FlowFixMe) => void,
+  },
+) {
+  const queue = [astNode];
+  while (queue.length !== 0) {
+    let item = queue.shift();
+
+    if (!(typeof item === 'object' && item != null)) {
+      continue;
+    }
+
+    if (
+      typeof item.type === 'string' &&
+      typeof visitor[item.type] === 'function'
+    ) {
+      // Don't visit any children
+      visitor[item.type](item);
+    } else if (Array.isArray(item)) {
+      queue.push(...item);
+    } else {
+      queue.push(...Object.values(item));
+    }
+  }
+}
+
+// TODO(T71778680): Flow-type ASTNodes.
+function isModuleRegistryCall(node: $FlowFixMe): boolean {
+  if (node.type !== 'CallExpression') {
+    return false;
+  }
+
+  const callExpression = node;
+
+  if (callExpression.callee.type !== 'MemberExpression') {
+    return false;
+  }
+
+  const memberExpression = callExpression.callee;
+  if (
+    !(
+      memberExpression.object.type === 'Identifier' &&
+      memberExpression.object.name === 'TurboModuleRegistry'
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    !(
+      memberExpression.property.type === 'Identifier' &&
+      (memberExpression.property.name === 'get' ||
+        memberExpression.property.name === 'getEnforcing')
+    )
+  ) {
+    return false;
+  }
+  return true;
+}
+
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
   createParserErrorCapturer,
   getTypes,
+  visit,
+  isModuleRegistryCall,
 };

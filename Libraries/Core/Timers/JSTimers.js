@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
 const Systrace = require('../../Performance/Systrace');
 
@@ -353,6 +351,7 @@ const JSTimers = {
     }
 
     if (errors) {
+      // $FlowFixMe[incompatible-use]
       const errorCount = errors.length;
       if (errorCount > 1) {
         // Throw all the other errors in a setTimeout, which will throw each
@@ -361,11 +360,13 @@ const JSTimers = {
           JSTimers.setTimeout(
             (error => {
               throw error;
+              // $FlowFixMe[incompatible-use]
             }).bind(null, errors[ii]),
             0,
           );
         }
       }
+      // $FlowFixMe[incompatible-use]
       throw errors[0];
     }
   },
@@ -468,7 +469,7 @@ let ExportedJSTimers: {|
 
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
-  // $FlowFixMe: we can assume timers are generally available
+  // $FlowFixMe[prop-missing] : we can assume timers are generally available
   ExportedJSTimers = ({
     callImmediates: JSTimers.callImmediates,
     setImmediate: JSTimers.setImmediate,

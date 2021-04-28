@@ -8,20 +8,16 @@
  * @flow
  */
 
-'use strict';
-
 import * as React from 'react';
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
-import requireNativeComponent from '../../ReactNative/requireNativeComponent';
-import registerGeneratedViewConfig from '../../Utilities/registerGeneratedViewConfig';
-import AndroidDialogPickerViewConfig from './AndroidDialogPickerViewConfig';
 
 import type {
   DirectEventHandler,
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
@@ -66,17 +62,22 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeSelectedPosition'],
 });
 
-let AndroidDialogPickerNativeComponent;
-if (global.RN$Bridgeless) {
-  registerGeneratedViewConfig(
-    'AndroidDialogPicker',
-    AndroidDialogPickerViewConfig,
-  );
-  AndroidDialogPickerNativeComponent = 'AndroidDialogPicker';
-} else {
-  AndroidDialogPickerNativeComponent = requireNativeComponent<NativeProps>(
-    'AndroidDialogPicker',
-  );
-}
+const AndroidDialogPickerNativeComponent: HostComponent<NativeProps> = NativeComponentRegistry.get<NativeProps>(
+  'AndroidDialogPicker',
+  () => ({
+    uiViewClassName: 'AndroidDialogPicker',
+    bubblingEventTypes: {},
+    directEventTypes: {},
+    validAttributes: {
+      color: {process: require('../../StyleSheet/processColor')},
+      backgroundColor: {process: require('../../StyleSheet/processColor')},
+      enabled: true,
+      items: true,
+      prompt: true,
+      selected: true,
+      onSelect: true,
+    },
+  }),
+);
 
 export default ((AndroidDialogPickerNativeComponent: any): NativeType);

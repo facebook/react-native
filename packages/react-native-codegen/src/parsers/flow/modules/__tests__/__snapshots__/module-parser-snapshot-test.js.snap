@@ -12,9 +12,9 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_REA
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_UNNAMED_PARAMS 1`] = `"Module NativeSampleTurboModule: All function parameters must be named."`;
 
-exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"File contains declarations of more than one module: Spec, Spec2. Please declare exactly one module in this file."`;
+exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"Module NativeSampleTurboModule: Every NativeModule spec file must declare exactly one NativeModule Flow interface. This file declares 2: 'Spec', and 'Spec2'. Please remove the extraneous Flow interface declarations."`;
 
-exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `"File neither contains a module declaration, nor a component declaration. For module declarations, please make sure your file has an InterfaceDeclaration extending TurboModule. For component declarations, please make sure your file has a default export calling the codegenNativeComponent<Props>(...) macro."`;
+exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `"Module NativeSampleTurboModule: No Flow interfaces extending TurboModule were detected in this NativeModule spec."`;
 
 exports[`RN Codegen Flow Parser can generate fixture ANDROID_ONLY_NATIVE_MODULE 1`] = `
 "{
@@ -1271,6 +1271,43 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_O
         'properties': [
           {
             'name': 'getObject',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'GenericObjectTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'o',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'GenericObjectTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleNames': [
+        'SampleTurboModule'
+      ]
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_OBJECT 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliases': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'getUnsafeObject',
             'optional': false,
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',

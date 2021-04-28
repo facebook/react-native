@@ -1,8 +1,9 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_root_target", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "modal",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
@@ -16,6 +17,8 @@ rn_android_library(
         YOGA_TARGET,
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
+        react_native_root_target("Libraries:generated_components_java-FBReactNativeComponentSpec"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
@@ -24,7 +27,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/views/common:common"),
         react_native_target("java/com/facebook/react/views/view:view"),
-        react_native_target("java/com/facebook/react/viewmanagers:viewmanagers"),
         react_native_target("res:modal"),
     ],
 )

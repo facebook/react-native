@@ -48,4 +48,20 @@ describe('<ScrollView />', () => {
       jest.fn().constructor,
     );
   });
+  it('getInnerViewRef for case where it returns a native view', () => {
+    jest.resetModules();
+    jest.unmock('../ScrollView');
+
+    const scrollViewRef = React.createRef(null);
+
+    ReactTestRenderer.create(<ScrollView ref={scrollViewRef} />);
+
+    const innerViewRef = scrollViewRef.current.getInnerViewRef();
+
+    // This is checking if the ref acts like a host component. If we had an
+    // `isHostComponent(ref)` method, that would be preferred.
+    expect(innerViewRef.measure).toBeInstanceOf(jest.fn().constructor);
+    expect(innerViewRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
+    expect(innerViewRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
+  });
 });

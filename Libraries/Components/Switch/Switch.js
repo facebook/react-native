@@ -9,11 +9,10 @@
  * @generate-docs
  */
 
-'use strict';
-
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
+import SwitchInjection from './SwitchInjection';
 
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,
@@ -212,25 +211,21 @@ class Switch extends React.Component<Props> {
     // This is necessary in case native updates the switch and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
-    const nativeProps = {};
     const value = this.props.value === true;
-
-    if (this._lastNativeValue !== value) {
-      nativeProps.value = value;
-    }
+    const nativeValue = this._lastNativeValue !== value ? value : null;
 
     if (
-      Object.keys(nativeProps).length > 0 &&
+      nativeValue != null &&
       this._nativeSwitchRef &&
       this._nativeSwitchRef.setNativeProps
     ) {
       if (Platform.OS === 'android') {
         AndroidSwitchCommands.setNativeValue(
           this._nativeSwitchRef,
-          nativeProps.value,
+          nativeValue,
         );
       } else {
-        SwitchCommands.setValue(this._nativeSwitchRef, nativeProps.value);
+        SwitchCommands.setValue(this._nativeSwitchRef, nativeValue);
       }
     }
   }
@@ -260,4 +255,5 @@ class Switch extends React.Component<Props> {
 const returnsFalse = () => false;
 const returnsTrue = () => true;
 
-module.exports = Switch;
+module.exports = (SwitchInjection.unstable_Switch ??
+  Switch: React.AbstractComponent<React.ElementConfig<typeof Switch>>);

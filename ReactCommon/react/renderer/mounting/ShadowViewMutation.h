@@ -55,10 +55,8 @@ struct ShadowViewMutation final {
    * Creates and returns an `Update` mutation.
    */
   static ShadowViewMutation UpdateMutation(
-      ShadowView parentShadowView,
       ShadowView oldChildShadowView,
-      ShadowView newChildShadowView,
-      int index);
+      ShadowView newChildShadowView);
 
 #pragma mark - Type
 
@@ -70,7 +68,15 @@ struct ShadowViewMutation final {
   ShadowView parentShadowView = {};
   ShadowView oldChildShadowView = {};
   ShadowView newChildShadowView = {};
-  int index = {};
+  int index = -1;
+
+ public:
+  // Some platforms can have the notion of virtual views - views that are in the
+  // ShadowTree hierarchy but never are on the platform. Generally this is used
+  // so notify the platform that a view exists so that we can keep EventEmitters
+  // around, to notify JS of something. This mechanism is DEPRECATED and it is
+  // highly recommended that you NOT make use of this in your platform!
+  bool mutatedViewIsVirtual() const;
 };
 
 using ShadowViewMutationList = std::vector<ShadowViewMutation>;

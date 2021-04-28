@@ -15,10 +15,10 @@ defaults: &defaults
   environment:
     - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
     # The public github tokens are publicly visible by design
-    - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
-    - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
-    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_token_a "78a72af35445ca3f8180"
-    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_token_b "b1a98e0bbd56ff1ccba1"
+    - PUBLIC_PULLBOT_GITHUB_TOKEN_A: &github_pullbot_token_a "a6edf8e8d40ce4e8b11a"
+    - PUBLIC_PULLBOT_GITHUB_TOKEN_B: &github_pullbot_token_b "150e1341f4dd9c944d2a"
+    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_analysisbot_token_a "312d354b5c36f082cfe9"
+    - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_analysisbot_token_b "07973d757026bdd9f196"
 
 # -------------------------
 #        EXECUTORS
@@ -35,7 +35,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:2.1
+      - image: reactnativecommunity/react-native-android:3.2
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -44,8 +44,10 @@ executors:
       - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
       - BUILD_THREADS: 2
       # Repeated here, as the environment key in this executor will overwrite the one in defaults
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_token_a
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_token_b
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_analysisbot_token_b
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: *github_pullbot_token_a
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: *github_pullbot_token_b
   reactnativeios:
     <<: *defaults
     macos:
@@ -75,7 +77,6 @@ commands:
       - restore_cache:
           keys:
             - v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
-            - v4-yarn-cache-{{ arch }}
       - run:
           name: "Yarn: Install Dependencies"
           command: |
@@ -94,7 +95,6 @@ commands:
       - restore_cache:
           keys:
             - v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-            - v3-buck-v2019.01.10.01-
       - run:
           name: Install BUCK
           command: |
@@ -151,20 +151,20 @@ commands:
           command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
       - restore_cache:
           keys:
-            - v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
-            - v3-pods-{{ .Environment.CIRCLE_JOB }}-
+            # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=0 so it could load an outdated cache if a change
+            # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
+            - v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - packages/rn-tester/Pods
-          key: v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
+          key: v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
 
   download_gradle_dependencies:
     steps:
       - restore_cache:
           keys:
             - v1-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
-            - v1-gradle-
       - run:
           name: Download Dependencies Using Gradle
           command: ./scripts/circleci/gradle_download_deps.sh
@@ -236,17 +236,20 @@ jobs:
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
-    executor: nodelts
+    executor: reactnativeandroid
     steps:
       - restore_cache_checkout:
-          checkout_type: node
+          checkout_type: android
       - run_yarn
 
       - install_github_bot_deps
 
+      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
           name: Install additional GitHub bot dependencies
-          command: sudo apt update && sudo apt install -y shellcheck jq
+          command: |
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            apt update && apt install -y shellcheck jq
 
       - run:
           name: Run linters against modified files (analysis-bot)
@@ -264,16 +267,21 @@ jobs:
   #    JOBS: Analyze Code
   # -------------------------
   analyze_code:
-    executor: nodelts
+    executor: reactnativeandroid
     steps:
       - restore_cache_checkout:
-          checkout_type: node
+          checkout_type: android
       - setup_artifacts
       - run_yarn
 
       - run:
           name: Lint code
           command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
+          when: always
+
+      - run:
+          name: Lint Java
+          command: scripts/circleci/exec_swallow_error.sh yarn lint-java --check
           when: always
 
       - run:
@@ -423,7 +431,7 @@ jobs:
           steps:
             - run:
                 name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && bundle exec pod install --verbose
+                command: cd packages/rn-tester && USE_FABRIC=1 bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -496,10 +504,12 @@ jobs:
           background: true
 
       # Keep configuring Android dependencies while AVD boots up
-
+      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
           name: Install rsync, zip
-          command: apt-get update -y && apt-get install rsync zip -y
+          command: |
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            apt-get update -y && apt-get install rsync zip -y
 
       # Install Buck
       - install_buck_tooling
@@ -606,11 +616,11 @@ jobs:
         default: false
     environment:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
-      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\19.2.5345600"
-      - ANDROID_BUILD_VERSION: 28
+      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
+      - ANDROID_BUILD_VERSION: 30
       - ANDROID_TOOLS_VERSION: 29.0.3
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
-      - NDK_VERSION: 19.2.5345600
+      - NDK_VERSION: 20.1.5948944
     steps:
       - checkout
 
@@ -626,7 +636,6 @@ jobs:
       - restore_cache:
           keys:
             - v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
-            - v1-win-yarn-cache-{{ arch }}-
       - run:
           name: "Yarn: Install Dependencies"
           command: yarn install --frozen-lockfile --non-interactive
@@ -635,9 +644,11 @@ jobs:
           paths:
             - C:\Users\circleci\AppData\Local\Yarn
 
+      # Try to install the SDK up to 3 times, since network flakiness can cause install failures
+      # Using a timeout of 9 mins, as circle ci will timeout if there is no output for 10 mins
       - run:
           name: Install Android SDK Tools
-          command: choco install android-sdk
+          command: choco install android-sdk --timeout 540; if (!$?) { choco install android-sdk --timeout 540 --force --forcedependencies}; if (!$?) { choco install android-sdk  --force --forcedependencies}
 
       - run:
           name: Setup Android SDKs
@@ -777,30 +788,34 @@ workflows:
           run_unit_tests: true
           requires:
             - setup_ios
-      - test_ios:
-          name: test_ios_unit_frameworks_jsc
-          use_frameworks: true
-          run_unit_tests: true
-          requires:
-            - setup_ios
+      # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
+      # - test_ios:
+      #     name: test_ios_unit_frameworks_jsc
+      #     use_frameworks: true
+      #     run_unit_tests: true
+      #     requires:
+      #       - setup_ios
       - test_ios:
           name: test_ios_unit_hermes
           use_hermes: true
           run_unit_tests: true
           requires:
             - setup_ios
-      - test_ios:
-          name: test_ios_unit_frameworks_hermes
-          use_hermes: true
-          use_frameworks: true
-          run_unit_tests: true
-          requires:
-            - setup_ios
+      # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
+      # - test_ios:
+      #     name: test_ios_unit_frameworks_hermes
+      #     use_hermes: true
+      #     use_frameworks: true
+      #     run_unit_tests: true
+      #     requires:
+      #       - setup_ios
+      # DISABLED: Detox tests need to be fixed
       # - test_ios:
       #     name: test_ios_detox
       #     run_detox_tests: true
       #     requires:
       #       - setup_ios
+      # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_detox_frameworks
       #     use_frameworks: true
@@ -850,11 +865,18 @@ workflows:
 
   analysis:
     jobs:
-      - setup
+      - setup:
+          name: setup_js
+
+      - setup:
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
+
       # Run lints on every commit other than those to the gh-pages branch
       - analyze_code:
           requires:
-            - setup
+            - setup_android
           filters:
             branches:
               ignore: gh-pages
@@ -862,7 +884,7 @@ workflows:
       # Run code checks on PRs from forks
       - analyze_pr:
           requires:
-            - setup
+            - setup_android
           filters:
             branches:
               only: /^pull\/.*$/
@@ -870,7 +892,7 @@ workflows:
       # Gather coverage
       - js_coverage:
           requires:
-            - setup
+            - setup_js
   nightly:
     triggers:
       - schedule:

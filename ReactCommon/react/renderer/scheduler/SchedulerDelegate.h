@@ -41,19 +41,17 @@ class SchedulerDelegate {
       std::string const &commandName,
       folly::dynamic const args) = 0;
 
+  virtual void schedulerDidSendAccessibilityEvent(
+      const ShadowView &shadowView,
+      std::string const &eventType) = 0;
+
   /*
    * Set JS responder for a view
    */
-  virtual void schedulerDidSetJSResponder(
-      SurfaceId surfaceId,
-      const ShadowView &shadowView,
-      const ShadowView &initialShadowView,
+  virtual void schedulerDidSetIsJSResponder(
+      ShadowView const &shadowView,
+      bool isJSResponder,
       bool blockNativeResponder) = 0;
-
-  /*
-   * Clear the JSResponder for a view
-   */
-  virtual void schedulerDidClearJSResponder() = 0;
 
   virtual ~SchedulerDelegate() noexcept = default;
 };

@@ -7,18 +7,23 @@
 
 package com.facebook.react.views.picker.events;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class PickerItemSelectEvent extends Event<PickerItemSelectEvent> {
   public static final String EVENT_NAME = "topSelect";
 
   private final int mPosition;
 
-  public PickerItemSelectEvent(int id, int position) {
-    super(id);
+  @Deprecated
+  public PickerItemSelectEvent(int reactTag, int position) {
+    this(-1, reactTag, position);
+  }
+
+  public PickerItemSelectEvent(int surfaceId, int reactTag, int position) {
+    super(surfaceId, reactTag);
     mPosition = position;
   }
 
@@ -27,12 +32,9 @@ public class PickerItemSelectEvent extends Event<PickerItemSelectEvent> {
     return EVENT_NAME;
   }
 
+  @Nullable
   @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
-  }
-
-  private WritableMap serializeEventData() {
+  protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putInt("position", mPosition);
     return eventData;

@@ -19,6 +19,7 @@
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
+#include <react/renderer/scheduler/SurfaceHandler.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
@@ -40,49 +41,26 @@ class Scheduler final : public UIManagerDelegate {
 
 #pragma mark - Surface Management
 
-  void startSurface(
-      SurfaceId surfaceId,
-      const std::string &moduleName,
-      const folly::dynamic &initialProps,
-      const LayoutConstraints &layoutConstraints = {},
-      const LayoutContext &layoutContext = {},
-      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate =
-          {}) const;
+  /*
+   * Registers and unregisters a `SurfaceHandler` object in the `Scheduler`.
+   * All registered `SurfaceHandler` objects must be unregistered
+   * (with the same `Scheduler`) before their deallocation.
+   */
+  void registerSurface(SurfaceHandler const &surfaceHandler) const noexcept;
+  void unregisterSurface(SurfaceHandler const &surfaceHandler) const noexcept;
 
   void renderTemplateToSurface(
       SurfaceId surfaceId,
       const std::string &uiTemplate);
 
-  void stopSurface(SurfaceId surfaceId) const;
-
-  Size measureSurface(
-      SurfaceId surfaceId,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
-
-  /*
-   * Applies given `layoutConstraints` and `layoutContext` to a Surface.
-   * The user interface will be relaid out as a result. The operation will be
-   * performed synchronously (including mounting) if the method is called
-   * on the main thread.
-   * Can be called from any thread.
-   */
-  void constraintSurfaceLayout(
-      SurfaceId surfaceId,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
-
   /*
    * This is broken. Please do not use.
    * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,
-   * there is no any garantees about their lifetime.
+   * there is no any guarantees about their lifetime.
    */
   ComponentDescriptor const *
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
       ComponentHandle handle) const;
-
-  MountingCoordinator::Shared findMountingCoordinator(
-      SurfaceId surfaceId) const;
 
 #pragma mark - Delegate
 
@@ -111,19 +89,24 @@ class Scheduler final : public UIManagerDelegate {
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) override;
-  void uiManagerDidSetJSResponder(
-      SurfaceId surfaceId,
-      const ShadowNode::Shared &shadowView,
+  void uiManagerDidSendAccessibilityEvent(
+      const ShadowNode::Shared &shadowNode,
+      std::string const &eventType) override;
+  void uiManagerDidSetIsJSResponder(
+      ShadowNode::Shared const &shadowView,
+      bool isJSResponder,
       bool blockNativeResponder) override;
-  void uiManagerDidClearJSResponder() override;
 
  private:
+  friend class SurfaceHandler;
+
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  std::unique_ptr<const RootComponentDescriptor> rootComponentDescriptor_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
+
+  std::vector<std::shared_ptr<UIManagerCommitHook const>> commitHooks_;
 
   /*
    * At some point, we have to have an owning shared pointer to something that
@@ -137,8 +120,8 @@ class Scheduler final : public UIManagerDelegate {
   /*
    * Temporary flags.
    */
-  bool enableReparentingDetection_{false};
   bool removeOutstandingSurfacesOnDestruction_{false};
+  bool enableNewDiffer_{false};
 };
 
 } // namespace react

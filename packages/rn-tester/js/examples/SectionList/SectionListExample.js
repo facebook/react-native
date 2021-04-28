@@ -33,15 +33,49 @@ const {
   StyleSheet,
   Text,
   View,
+  SectionList,
 } = require('react-native');
-
-import type {Item} from '../../components/ListExampleShared';
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
   viewAreaCoveragePercentThreshold: 100,
   waitForInteraction: true,
 };
+
+const CONSTANT_SECTION_EXAMPLES = [
+  {
+    key: 'empty section',
+    data: [],
+  },
+  {
+    renderItem: renderStackedItem,
+    key: 's1',
+    data: [
+      {
+        title: 'Item In Header Section',
+        text: 'Section s1',
+        key: 'header item',
+      },
+    ],
+  },
+  {
+    key: 's2',
+    data: [
+      {
+        noImage: true,
+        title: '1st item',
+        text: 'Section s2',
+        key: 'noimage0',
+      },
+      {
+        noImage: true,
+        title: '2nd item',
+        text: 'Section s2',
+        key: 'noimage1',
+      },
+    ],
+  },
+];
 
 const renderSectionHeader = ({section}) => (
   <View style={styles.header}>
@@ -67,167 +101,98 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
   </View>
 );
 
-class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
-  state:
-    | any
-    | {|
-        data: Array<Item>,
-        debug: boolean,
-        filterText: string,
-        inverted: boolean,
-        logViewable: boolean,
-        virtualized: boolean,
-      |} = {
-    data: genItemData(1000),
-    debug: false,
-    filterText: '',
-    logViewable: false,
-    virtualized: true,
-    inverted: false,
+const EmptySectionList = () => (
+  <View style={{alignItems: 'center'}}>
+    <Text style={{fontSize: 20}}>This is rendered when the list is empty</Text>
+  </View>
+);
+
+const renderItemComponent = setItemState => ({item, separators}) => {
+  if (isNaN(item.key)) {
+    return;
+  }
+  const onPress = () => {
+    const updatedItem = pressItem(item);
+    setItemState(updatedItem);
   };
 
-  _scrollPos = new Animated.Value(0);
-  _scrollSinkY = Animated.event(
-    [{nativeEvent: {contentOffset: {y: this._scrollPos}}}],
-    {useNativeDriver: true},
-  );
-
-  _sectionListRef: ?React.ElementRef<typeof Animated.SectionList> = null;
-  _captureRef = ref => {
-    this._sectionListRef = ref;
-  };
-
-  _scrollToLocation(sectionIndex: number, itemIndex: number) {
-    this._sectionListRef &&
-      this._sectionListRef.scrollToLocation({sectionIndex, itemIndex});
-  }
-
-  render(): React.Node {
-    const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = item =>
-      filterRegex.test(item.text) || filterRegex.test(item.title);
-    const filteredData = this.state.data.filter(filter);
-    const filteredSectionData = [];
-    let startIndex = 0;
-    const endIndex = filteredData.length - 1;
-    for (let ii = 10; ii <= endIndex + 10; ii += 10) {
-      filteredSectionData.push({
-        key: `${filteredData[startIndex].key} - ${
-          filteredData[Math.min(ii - 1, endIndex)].key
-        }`,
-        data: filteredData.slice(startIndex, ii),
-      });
-      startIndex = ii;
-    }
-    return (
-      <RNTesterPage noSpacer={true} noScroll={true}>
-        <View style={styles.searchRow}>
-          <PlainInput
-            onChangeText={filterText => {
-              this.setState(() => ({filterText}));
-            }}
-            placeholder="Search..."
-            value={this.state.filterText}
-          />
-          <View style={styles.optionSection}>
-            {renderSmallSwitchOption(this, 'virtualized')}
-            {renderSmallSwitchOption(this, 'logViewable')}
-            {renderSmallSwitchOption(this, 'debug')}
-            {renderSmallSwitchOption(this, 'inverted')}
-            <Spindicator value={this._scrollPos} />
-          </View>
-          <View style={styles.scrollToRow}>
-            <Text>scroll to:</Text>
-            <Button
-              title="Item A"
-              onPress={() => this._scrollToLocation(2, 1)}
-            />
-            <Button
-              title="Item B"
-              onPress={() => this._scrollToLocation(3, 6)}
-            />
-            <Button
-              title="Item C"
-              onPress={() => this._scrollToLocation(6, 3)}
-            />
-          </View>
-        </View>
-        <SeparatorComponent />
-        <Animated.SectionList
-          ref={this._captureRef}
-          ListHeaderComponent={HeaderComponent}
-          ListFooterComponent={FooterComponent}
-          SectionSeparatorComponent={info => (
-            <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
-          )}
-          ItemSeparatorComponent={info => (
-            <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
-          )}
-          debug={this.state.debug}
-          inverted={this.state.inverted}
-          disableVirtualization={!this.state.virtualized}
-          onRefresh={() => Alert.alert('onRefresh: nothing to refresh :P')}
-          onScroll={this._scrollSinkY}
-          onViewableItemsChanged={this._onViewableItemsChanged}
-          refreshing={false}
-          renderItem={this._renderItemComponent}
-          renderSectionHeader={renderSectionHeader}
-          renderSectionFooter={renderSectionFooter}
-          stickySectionHeadersEnabled
-          sections={[
-            {
-              key: 'empty section',
-              data: [],
-            },
-            {
-              renderItem: renderStackedItem,
-              key: 's1',
-              data: [
-                {
-                  title: 'Item In Header Section',
-                  text: 'Section s1',
-                  key: 'header item',
-                },
-              ],
-            },
-            {
-              key: 's2',
-              data: [
-                {
-                  noImage: true,
-                  title: '1st item',
-                  text: 'Section s2',
-                  key: 'noimage0',
-                },
-                {
-                  noImage: true,
-                  title: '2nd item',
-                  text: 'Section s2',
-                  key: 'noimage1',
-                },
-              ],
-            },
-            ...filteredSectionData,
-          ]}
-          style={styles.list}
-          viewabilityConfig={VIEWABILITY_CONFIG}
-        />
-      </RNTesterPage>
-    );
-  }
-
-  _renderItemComponent = ({item, separators}) => (
+  return (
     <ItemComponent
       item={item}
-      onPress={this._pressItem}
+      onPress={onPress}
       onHideUnderlay={separators.unhighlight}
       onShowUnderlay={separators.highlight}
     />
   );
+};
 
-  // This is called when items change viewability by scrolling into our out of
-  // the viewable area.
-  _onViewableItemsChanged = (info: {
+const onScrollToIndexFailed = (info: {
+  index: number,
+  c: number,
+  averageItemLength: number,
+}) => {
+  console.warn('onScrollToIndexFailed. See comment in callback', info);
+  /**
+   * scrollToLocation() can only scroll to viewable area.
+   * For any failure cases this callback will get triggered with `info` object
+   *
+   * The idea is to calculate a yPosition from `info` to call scrollResponder.scrollTo on.
+   *
+   * const scrollResponder = ref.current?.getScrollResponder();
+   * const positionY = some value we calculate from `info`;
+   * if (scrollResponder != null) {
+   *    scrollResponder.scrollTo({x, y:positionY, animated: true});
+   * }
+   */
+};
+
+function SectionListExample(Props: {...}): React.Element<typeof RNTesterPage> {
+  const scrollPos = new Animated.Value(0);
+  const scrollSinkY = Animated.event(
+    [{nativeEvent: {contentOffset: {y: scrollPos}}}],
+    {useNativeDriver: true},
+  );
+  const [filterText, setFilterText] = React.useState('');
+  const [virtualized, setVirtualized] = React.useState(true);
+  const [logViewable, setLogViewable] = React.useState(false);
+  const [debug, setDebug] = React.useState(false);
+  const [inverted, setInverted] = React.useState(false);
+  const [data, setData] = React.useState(genItemData(1000));
+
+  const filterRegex = new RegExp(String(filterText), 'i');
+  const filter = item =>
+    filterRegex.test(item.text) || filterRegex.test(item.title);
+  const filteredData = data.filter(filter);
+  const filteredSectionData = [...CONSTANT_SECTION_EXAMPLES];
+
+  let startIndex = 0;
+  const endIndex = filteredData.length - 1;
+  for (let ii = 10; ii <= endIndex + 10; ii += 10) {
+    filteredSectionData.push({
+      key: `${filteredData[startIndex].key} - ${
+        filteredData[Math.min(ii - 1, endIndex)].key
+      }`,
+      data: filteredData.slice(startIndex, ii),
+    });
+    startIndex = ii;
+  }
+
+  const setItemPress = item => {
+    if (isNaN(item.key)) {
+      return;
+    }
+    const index = Number(item.key);
+    setData([...data.slice(0, index), item, ...data.slice(index + 1)]);
+  };
+
+  const ref = React.useRef<?React.ElementRef<typeof SectionList>>(null);
+  const scrollToLocation = (sectionIndex, itemIndex) => {
+    if (ref != null && ref.current?.scrollToLocation != null) {
+      ref.current.scrollToLocation({sectionIndex, itemIndex});
+    }
+  };
+
+  const onViewableItemsChanged = (info: {
     changed: Array<{
       key: string,
       isViewable: boolean,
@@ -239,7 +204,7 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
     ...
   }) => {
     // Impressions can be logged here
-    if (this.state.logViewable) {
+    if (logViewable) {
       infoLog(
         'onViewableItemsChanged: ',
         info.changed.map((v: Object) => ({
@@ -251,12 +216,95 @@ class SectionListExample extends React.PureComponent<{...}, $FlowFixMeState> {
     }
   };
 
-  _pressItem = (key: string) => {
-    !isNaN(key) && pressItem(this, key);
-  };
+  return (
+    <RNTesterPage noSpacer={true} noScroll={true}>
+      <View style={styles.searchRow}>
+        <PlainInput
+          onChangeText={text => setFilterText(text)}
+          placeholder="Search..."
+          value={filterText}
+        />
+        <View style={styles.optionSection}>
+          {renderSmallSwitchOption('Virtualized', virtualized, setVirtualized)}
+          {renderSmallSwitchOption('Log Viewable', logViewable, setLogViewable)}
+          {renderSmallSwitchOption('Debug', debug, setDebug)}
+          {renderSmallSwitchOption('Inverted', inverted, setInverted)}
+          <Spindicator value={scrollPos} />
+        </View>
+        <View style={styles.scrollToColumn}>
+          <Text>scroll to:</Text>
+          <View style={styles.button}>
+            <Button
+              title="Top"
+              onPress={() => scrollToLocation(Math.max(0, 2), 0)}
+            />
+          </View>
+          <View style={styles.button}>
+            <Button
+              title="3rd Section"
+              onPress={() => scrollToLocation(Math.max(0, 3), 0)}
+            />
+          </View>
+          <View style={styles.button}>
+            <Button
+              title="6th Section"
+              onPress={() => scrollToLocation(Math.max(0, 6), 0)}
+            />
+          </View>
+          <View style={styles.button}>
+            <Button
+              title="Out of Viewable Area (See warning) "
+              onPress={() =>
+                scrollToLocation(filteredSectionData.length - 1, 0)
+              }
+            />
+          </View>
+        </View>
+      </View>
+      <SeparatorComponent />
+      <Animated.SectionList
+        ref={ref}
+        ListHeaderComponent={HeaderComponent}
+        ListFooterComponent={FooterComponent}
+        SectionSeparatorComponent={info => (
+          <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
+        )}
+        ItemSeparatorComponent={info => (
+          <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
+        )}
+        debug={debug}
+        inverted={inverted}
+        disableVirtualization={!virtualized}
+        onRefresh={() => Alert.alert('onRefresh: nothing to refresh :P')}
+        onScroll={scrollSinkY}
+        onViewableItemsChanged={onViewableItemsChanged}
+        onScrollToIndexFailed={onScrollToIndexFailed}
+        refreshing={false}
+        renderItem={renderItemComponent(setItemPress)}
+        renderSectionHeader={renderSectionHeader}
+        renderSectionFooter={renderSectionFooter}
+        stickySectionHeadersEnabled
+        initialNumToRender={10}
+        ListEmptyComponent={EmptySectionList}
+        onEndReached={() =>
+          Alert.alert(
+            'onEndReached called',
+            'You have reached the end of this list',
+          )
+        }
+        onEndReachedThreshold={0}
+        sections={filteredSectionData}
+        style={styles.list}
+        viewabilityConfig={VIEWABILITY_CONFIG}
+      />
+    </RNTesterPage>
+  );
 }
 
 const styles = StyleSheet.create({
+  button: {
+    marginTop: 5,
+  },
   customSeparator: {
     backgroundColor: 'rgb(200, 199, 204)',
   },
@@ -278,9 +326,8 @@ const styles = StyleSheet.create({
   searchRow: {
     paddingHorizontal: 10,
   },
-  scrollToRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  scrollToColumn: {
+    flexDirection: 'column',
     paddingHorizontal: 8,
   },
   separatorText: {

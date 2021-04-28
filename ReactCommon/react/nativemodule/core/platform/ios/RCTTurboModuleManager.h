@@ -15,15 +15,9 @@
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
-// TODO: Move to xplat codegen.
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                     initParams:
-                                                         (const facebook::react::ObjCTurboModule::InitParams &)params;
 @optional
 - (NSArray<NSString *> *)getEagerInitModuleNames;
 - (NSArray<NSString *> *)getEagerInitMainQueueModuleNames;
-
-@optional
 
 /**
  * Given a module name, return its actual class. If not provided, basic ObjC class lookup is performed.
@@ -51,6 +45,7 @@
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
 - (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
+- (void)setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider)bridgelessComponentViewProvider;
 
 - (void)invalidate;
 

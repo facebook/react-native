@@ -50,7 +50,7 @@ export type VoidTypeAnnotation = $ReadOnly<{
   type: 'VoidTypeAnnotation',
 }>;
 
-type ObjectTypeAnnotation<+T> = $ReadOnly<{
+export type ObjectTypeAnnotation<+T> = $ReadOnly<{
   type: 'ObjectTypeAnnotation',
   properties: $ReadOnlyArray<NamedShape<T>>,
 }>;
@@ -176,7 +176,7 @@ export type PropTypeAnnotation =
           }>,
     }>;
 
-type ReservedPropTypeAnnotation = $ReadOnly<{
+export type ReservedPropTypeAnnotation = $ReadOnly<{
   type: 'ReservedPropTypeAnnotation',
   name:
     | 'ColorPrimitive'
