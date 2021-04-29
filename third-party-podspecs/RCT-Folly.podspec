@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'RCT-Folly'
-  spec.version = '2020.01.13.00'
+  spec.version = '2021.04.26.00'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
@@ -17,6 +17,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'boost-for-react-native'
   spec.dependency 'DoubleConversion'
   spec.dependency 'glog'
+  spec.dependency 'fmt'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation'
   spec.source_files = 'folly/String.cpp',
                       'folly/Conv.cpp',
@@ -24,6 +25,7 @@ Pod::Spec.new do |spec|
                       'folly/FileUtil.cpp',
                       'folly/Format.cpp',
                       'folly/lang/SafeAssert.cpp',
+                      'folly/lang/ToAscii.cpp',
                       'folly/ScopeGuard.cpp',
                       'folly/Unicode.cpp',
                       'folly/dynamic.cpp',
@@ -38,6 +40,8 @@ Pod::Spec.new do |spec|
                       'folly/memory/detail/MallocImpl.cpp',
                       'folly/net/NetOps.cpp',
                       'folly/portability/SysUio.cpp',
+                      'folly/system/ThreadId.h',
+                      'folly/system/ThreadId.cpp',
                       'folly/*.h',
                       'folly/container/*.h',
                       'folly/container/detail/*.h',
@@ -84,6 +88,7 @@ Pod::Spec.new do |spec|
                           'folly/detail/Futex.cpp',
                           'folly/synchronization/ParkingLot.cpp',
                           'folly/portability/Malloc.cpp'
+
     fabric.preserve_paths = 'folly/concurrency/CacheLocality.h',
                             'folly/synchronization/ParkingLot.h',
                             'folly/synchronization/SanitizeThread.h',
