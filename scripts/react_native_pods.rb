@@ -71,7 +71,7 @@ end
 def use_flipper!(versions = {}, configurations: ['Debug'])
   versions['Flipper'] ||= '~> 0.75.1'
   versions['Flipper-DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.5'
+  versions['Flipper-Folly'] ||= '~> 2.5.3'
   versions['Flipper-Glog'] ||= '0.3.6'
   versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
   versions['Flipper-RSocket'] ||= '~> 1.3'
