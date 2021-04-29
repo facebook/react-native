@@ -479,7 +479,7 @@ module.exports = {
   ) => HostComponent<T> {
     return require('./Libraries/ReactNative/requireNativeComponent');
   },
-  get unstable_RootTagContext(): RootTagContext {
+  get RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;
   },
   get unstable_enableLogBox(): () => void {

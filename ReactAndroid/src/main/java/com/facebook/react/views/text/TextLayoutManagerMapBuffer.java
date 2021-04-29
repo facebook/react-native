@@ -24,6 +24,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
@@ -298,13 +300,19 @@ public class TextLayoutManagerMapBuffer {
       }
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
+      int boringLayoutWidth = boring.width;
+      if (boring.width < 0) {
+        ReactSoftException.logSoftException(
+            TAG, new ReactNoCrashSoftException("Text width is invalid: " + boring.width));
+        boringLayoutWidth = 0;
+      }
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout =
           BoringLayout.make(
               text,
               textPaint,
-              boring.width,
+              boringLayoutWidth,
               Layout.Alignment.ALIGN_NORMAL,
               1.f,
               0.f,

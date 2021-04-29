@@ -29,27 +29,28 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     isCallbackScheduled_ = true;
     runtimeExecutor_([this](jsi::Runtime &runtime) {
       isCallbackScheduled_ = false;
-
+      auto previousPriority = currentPriority_;
       while (!taskQueue_.empty()) {
-        auto topPriority = taskQueue_.top();
+        auto topPriorityTask = taskQueue_.top();
         auto now = now_();
-        auto didUserCallbackTimeout = topPriority->expirationTime <= now;
+        auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
 
         if (!didUserCallbackTimeout && shouldYield_) {
           // This task hasn't expired and we need to yield.
           break;
         }
-
-        auto result = topPriority->execute(runtime);
+        currentPriority_ = topPriorityTask->priority;
+        auto result = topPriorityTask->execute(runtime);
 
         if (result.isObject() &&
             result.getObject(runtime).isFunction(runtime)) {
-          topPriority->callback =
+          topPriorityTask->callback =
               result.getObject(runtime).getFunction(runtime);
         } else {
           taskQueue_.pop();
         }
       }
+      currentPriority_ = previousPriority;
     });
   }
 
@@ -62,6 +63,10 @@ void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
 
 bool RuntimeScheduler::getShouldYield() const {
   return shouldYield_;
+}
+
+SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const {
+  return currentPriority_;
 }
 
 RuntimeSchedulerTimePoint RuntimeScheduler::now() const {

@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<9877a9ca3ef854c84fe796f0864c7089>>
+ * @generated SignedSource<<735771ab42202f7510ef3c1af459aa07>>
  */
 
 "use strict";
@@ -930,7 +930,7 @@ eventPluginOrder = Array.prototype.slice.call([
   "ReactNativeBridgeEventPlugin"
 ]);
 recomputePluginOrdering();
-var injectedNamesToPlugins$jscomp$inline_214 = {
+var injectedNamesToPlugins$jscomp$inline_216 = {
     ResponderEventPlugin: ResponderEventPlugin,
     ReactNativeBridgeEventPlugin: {
       eventTypes: {},
@@ -965,34 +965,34 @@ var injectedNamesToPlugins$jscomp$inline_214 = {
       }
     }
   },
-  isOrderingDirty$jscomp$inline_215 = !1,
-  pluginName$jscomp$inline_216;
-for (pluginName$jscomp$inline_216 in injectedNamesToPlugins$jscomp$inline_214)
+  isOrderingDirty$jscomp$inline_217 = !1,
+  pluginName$jscomp$inline_218;
+for (pluginName$jscomp$inline_218 in injectedNamesToPlugins$jscomp$inline_216)
   if (
-    injectedNamesToPlugins$jscomp$inline_214.hasOwnProperty(
-      pluginName$jscomp$inline_216
+    injectedNamesToPlugins$jscomp$inline_216.hasOwnProperty(
+      pluginName$jscomp$inline_218
     )
   ) {
-    var pluginModule$jscomp$inline_217 =
-      injectedNamesToPlugins$jscomp$inline_214[pluginName$jscomp$inline_216];
+    var pluginModule$jscomp$inline_219 =
+      injectedNamesToPlugins$jscomp$inline_216[pluginName$jscomp$inline_218];
     if (
-      !namesToPlugins.hasOwnProperty(pluginName$jscomp$inline_216) ||
-      namesToPlugins[pluginName$jscomp$inline_216] !==
-        pluginModule$jscomp$inline_217
+      !namesToPlugins.hasOwnProperty(pluginName$jscomp$inline_218) ||
+      namesToPlugins[pluginName$jscomp$inline_218] !==
+        pluginModule$jscomp$inline_219
     ) {
-      if (namesToPlugins[pluginName$jscomp$inline_216])
+      if (namesToPlugins[pluginName$jscomp$inline_218])
         throw Error(
           "EventPluginRegistry: Cannot inject two different event plugins using the same name, `" +
-            pluginName$jscomp$inline_216 +
+            pluginName$jscomp$inline_218 +
             "`."
         );
       namesToPlugins[
-        pluginName$jscomp$inline_216
-      ] = pluginModule$jscomp$inline_217;
-      isOrderingDirty$jscomp$inline_215 = !0;
+        pluginName$jscomp$inline_218
+      ] = pluginModule$jscomp$inline_219;
+      isOrderingDirty$jscomp$inline_217 = !0;
     }
   }
-isOrderingDirty$jscomp$inline_215 && recomputePluginOrdering();
+isOrderingDirty$jscomp$inline_217 && recomputePluginOrdering();
 function getInstanceFromInstance(instanceHandle) {
   return instanceHandle;
 }
@@ -1762,16 +1762,12 @@ function markRootUpdated(root, updateLane, eventTime) {
   updateLane = 31 - clz32(updateLane);
   root[updateLane] = eventTime;
 }
-function markRootExpired(root, expiredLanes) {
-  root.entanglements[0] |= expiredLanes;
-  root.entangledLanes |= 1;
-  root.pendingLanes |= 1;
-}
 function markRootFinished(root, remainingLanes) {
   var noLongerPendingLanes = root.pendingLanes & ~remainingLanes;
   root.pendingLanes = remainingLanes;
   root.suspendedLanes = 0;
   root.pingedLanes = 0;
+  root.expiredLanes &= remainingLanes;
   root.mutableReadLanes &= remainingLanes;
   root.entangledLanes &= remainingLanes;
   remainingLanes = root.entanglements;
@@ -2028,8 +2024,9 @@ function invalidateContextProvider(workInProgress, type, didChange) {
   push(didPerformWorkStackCursor, didChange);
 }
 var syncQueue = null,
+  includesLegacySyncCallbacks = !1,
   isFlushingSyncQueue = !1;
-function flushSyncCallbackQueue() {
+function flushSyncCallbacks() {
   if (!isFlushingSyncQueue && null !== syncQueue) {
     isFlushingSyncQueue = !0;
     var i = 0,
@@ -2042,9 +2039,10 @@ function flushSyncCallbackQueue() {
         while (null !== callback);
       }
       syncQueue = null;
+      includesLegacySyncCallbacks = !1;
     } catch (error) {
       throw (null !== syncQueue && (syncQueue = syncQueue.slice(i + 1)),
-      scheduleCallback(ImmediatePriority, flushSyncCallbackQueue),
+      scheduleCallback(ImmediatePriority, flushSyncCallbacks),
       error);
     } finally {
       (currentUpdatePriority = previousUpdatePriority),
@@ -6010,7 +6008,7 @@ function scheduleUpdateOnFiber(fiber, lane, eventTime) {
         0 === executionContext &&
           0 === (fiber.mode & 1) &&
           ((workInProgressRootRenderTargetTime = now() + 500),
-          flushSyncCallbackQueue()))
+          includesLegacySyncCallbacks && flushSyncCallbacks()))
     : ensureRootIsScheduled(root, eventTime);
   return root;
 }
@@ -6033,8 +6031,7 @@ function ensureRootIsScheduled(root, currentTime) {
       suspendedLanes = root.suspendedLanes,
       pingedLanes = root.pingedLanes,
       expirationTimes = root.expirationTimes,
-      lanes = root.pendingLanes,
-      expiredLanes = 0;
+      lanes = root.pendingLanes;
     0 < lanes;
 
   ) {
@@ -6044,10 +6041,9 @@ function ensureRootIsScheduled(root, currentTime) {
     if (-1 === expirationTime) {
       if (0 === (lane & suspendedLanes) || 0 !== (lane & pingedLanes))
         expirationTimes[index$5] = computeExpirationTime(lane, currentTime);
-    } else expirationTime <= currentTime && (expiredLanes |= lane);
+    } else expirationTime <= currentTime && (root.expiredLanes |= lane);
     lanes &= ~lane;
   }
-  0 !== expiredLanes && markRootExpired(root, expiredLanes);
   suspendedLanes = getNextLanes(
     root,
     root === workInProgressRoot ? workInProgressRootRenderLanes : 0
@@ -6062,11 +6058,17 @@ function ensureRootIsScheduled(root, currentTime) {
   ) {
     null != existingCallbackNode && cancelCallback(existingCallbackNode);
     if (1 === currentTime)
-      (existingCallbackNode = performSyncWorkOnRoot.bind(null, root)),
-        null === syncQueue
-          ? (syncQueue = [existingCallbackNode])
-          : syncQueue.push(existingCallbackNode),
-        scheduleCallback(ImmediatePriority, flushSyncCallbackQueue),
+      0 === root.tag
+        ? ((existingCallbackNode = performSyncWorkOnRoot.bind(null, root)),
+          (includesLegacySyncCallbacks = !0),
+          null === syncQueue
+            ? (syncQueue = [existingCallbackNode])
+            : syncQueue.push(existingCallbackNode))
+        : ((existingCallbackNode = performSyncWorkOnRoot.bind(null, root)),
+          null === syncQueue
+            ? (syncQueue = [existingCallbackNode])
+            : syncQueue.push(existingCallbackNode)),
+        scheduleCallback(ImmediatePriority, flushSyncCallbacks),
         (existingCallbackNode = null);
     else {
       switch (lanesToEventPriority(suspendedLanes)) {
@@ -6107,44 +6109,43 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
     root === workInProgressRoot ? workInProgressRootRenderLanes : 0
   );
   if (0 === lanes) return null;
-  if (didTimeout)
-    return (
-      markRootExpired(root, lanes), ensureRootIsScheduled(root, now()), null
-    );
-  didTimeout = lanes;
-  var prevExecutionContext = executionContext;
-  executionContext |= 8;
-  var prevDispatcher = pushDispatcher();
-  if (
-    workInProgressRoot !== root ||
-    workInProgressRootRenderLanes !== didTimeout
-  )
-    (workInProgressRootRenderTargetTime = now() + 500),
-      prepareFreshStack(root, didTimeout);
-  do
-    try {
-      workLoopConcurrent();
-      break;
-    } catch (thrownValue) {
-      handleError(root, thrownValue);
-    }
-  while (1);
-  resetContextDependencies();
-  ReactCurrentDispatcher$2.current = prevDispatcher;
-  executionContext = prevExecutionContext;
-  null !== workInProgress
-    ? (didTimeout = 0)
-    : ((workInProgressRoot = null),
-      (workInProgressRootRenderLanes = 0),
-      (didTimeout = workInProgressRootExitStatus));
+  var JSCompiler_inline_result = 0 !== (lanes & root.expiredLanes) ? !1 : !0;
+  if (JSCompiler_inline_result && !didTimeout) {
+    didTimeout = lanes;
+    JSCompiler_inline_result = executionContext;
+    executionContext |= 8;
+    var prevDispatcher = pushDispatcher();
+    if (
+      workInProgressRoot !== root ||
+      workInProgressRootRenderLanes !== didTimeout
+    )
+      (workInProgressRootRenderTargetTime = now() + 500),
+        prepareFreshStack(root, didTimeout);
+    do
+      try {
+        workLoopConcurrent();
+        break;
+      } catch (thrownValue) {
+        handleError(root, thrownValue);
+      }
+    while (1);
+    resetContextDependencies();
+    ReactCurrentDispatcher$2.current = prevDispatcher;
+    executionContext = JSCompiler_inline_result;
+    null !== workInProgress
+      ? (didTimeout = 0)
+      : ((workInProgressRoot = null),
+        (workInProgressRootRenderLanes = 0),
+        (didTimeout = workInProgressRootExitStatus));
+  } else didTimeout = renderRootSync(root, lanes);
   if (0 !== didTimeout) {
     2 === didTimeout &&
       ((executionContext |= 32),
       root.hydrate && ((root.hydrate = !1), shim(root.containerInfo)),
-      (prevExecutionContext = getLanesToRetrySynchronouslyOnError(root)),
-      0 !== prevExecutionContext &&
-        ((lanes = prevExecutionContext),
-        (didTimeout = renderRootSync(root, prevExecutionContext))));
+      (JSCompiler_inline_result = getLanesToRetrySynchronouslyOnError(root)),
+      0 !== JSCompiler_inline_result &&
+        ((lanes = JSCompiler_inline_result),
+        (didTimeout = renderRootSync(root, JSCompiler_inline_result))));
     if (1 === didTimeout)
       throw ((originalCallbackNode = workInProgressRootFatalError),
       prepareFreshStack(root, 0),
@@ -6168,10 +6169,10 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
           10 < didTimeout)
         ) {
           if (0 !== getNextLanes(root, 0)) break;
-          prevExecutionContext = root.suspendedLanes;
-          if ((prevExecutionContext & lanes) !== lanes) {
+          JSCompiler_inline_result = root.suspendedLanes;
+          if ((JSCompiler_inline_result & lanes) !== lanes) {
             requestEventTime();
-            root.pingedLanes |= root.suspendedLanes & prevExecutionContext;
+            root.pingedLanes |= root.suspendedLanes & JSCompiler_inline_result;
             break;
           }
           root.timeoutHandle = scheduleTimeout(
@@ -6186,14 +6187,15 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
         markRootSuspended$1(root, lanes);
         if ((lanes & 4194240) === lanes) break;
         didTimeout = root.eventTimes;
-        for (prevExecutionContext = -1; 0 < lanes; ) {
+        for (JSCompiler_inline_result = -1; 0 < lanes; ) {
           var index$4 = 31 - clz32(lanes);
           prevDispatcher = 1 << index$4;
           index$4 = didTimeout[index$4];
-          index$4 > prevExecutionContext && (prevExecutionContext = index$4);
+          index$4 > JSCompiler_inline_result &&
+            (JSCompiler_inline_result = index$4);
           lanes &= ~prevDispatcher;
         }
-        lanes = prevExecutionContext;
+        lanes = JSCompiler_inline_result;
         lanes = now() - lanes;
         lanes =
           (120 > lanes
@@ -6247,11 +6249,7 @@ function performSyncWorkOnRoot(root) {
     throw Error("Should not already be working.");
   flushPassiveEffects();
   var lanes = getNextLanes(root, 0);
-  if (0 !== (lanes & 1))
-    root === workInProgressRoot &&
-      0 !== (lanes & workInProgressRootRenderLanes) &&
-      (lanes = workInProgressRootRenderLanes);
-  else return ensureRootIsScheduled(root, now()), null;
+  if (0 === (lanes & 1)) return ensureRootIsScheduled(root, now()), null;
   var exitStatus = renderRootSync(root, lanes);
   if (0 !== root.tag && 2 === exitStatus) {
     executionContext |= 32;
@@ -6690,7 +6688,7 @@ function commitRootImpl(root, renderPriorityLevel) {
   0 !== (pendingPassiveEffectsLanes & 1) &&
     0 !== root.tag &&
     flushPassiveEffects();
-  flushSyncCallbackQueue();
+  flushSyncCallbacks();
   return null;
 }
 function flushPassiveEffects() {
@@ -6820,7 +6818,7 @@ function flushPassiveEffects() {
             }
         }
         executionContext = prevExecutionContext;
-        flushSyncCallbackQueue();
+        flushSyncCallbacks();
         if (
           injectedHook &&
           "function" === typeof injectedHook.onPostCommitFiberRoot
@@ -7630,7 +7628,7 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   this.callbackPriority = 0;
   this.eventTimes = createLaneMap(0);
   this.expirationTimes = createLaneMap(-1);
-  this.entangledLanes = this.finishedLanes = this.mutableReadLanes = this.pingedLanes = this.suspendedLanes = this.pendingLanes = 0;
+  this.entangledLanes = this.finishedLanes = this.mutableReadLanes = this.expiredLanes = this.pingedLanes = this.suspendedLanes = this.pendingLanes = 0;
   this.entanglements = createLaneMap(0);
 }
 function createPortal(children, containerInfo, implementation) {
@@ -7742,11 +7740,11 @@ batchedUpdatesImpl = function(fn, a) {
     (executionContext = prevExecutionContext),
       0 === executionContext &&
         ((workInProgressRootRenderTargetTime = now() + 500),
-        flushSyncCallbackQueue());
+        includesLegacySyncCallbacks && flushSyncCallbacks());
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_934 = {
+  devToolsConfig$jscomp$inline_940 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
     version: "17.0.3",
@@ -7764,11 +7762,11 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1168 = {
-  bundleType: devToolsConfig$jscomp$inline_934.bundleType,
-  version: devToolsConfig$jscomp$inline_934.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_934.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_934.rendererConfig,
+var internals$jscomp$inline_1178 = {
+  bundleType: devToolsConfig$jscomp$inline_940.bundleType,
+  version: devToolsConfig$jscomp$inline_940.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_940.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_940.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -7783,7 +7781,7 @@ var internals$jscomp$inline_1168 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_934.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_940.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
@@ -7793,16 +7791,16 @@ var internals$jscomp$inline_1168 = {
   reconcilerVersion: "17.0.3"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1169 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1179 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1169.isDisabled &&
-    hook$jscomp$inline_1169.supportsFiber
+    !hook$jscomp$inline_1179.isDisabled &&
+    hook$jscomp$inline_1179.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1169.inject(
-        internals$jscomp$inline_1168
+      (rendererID = hook$jscomp$inline_1179.inject(
+        internals$jscomp$inline_1178
       )),
-        (injectedHook = hook$jscomp$inline_1169);
+        (injectedHook = hook$jscomp$inline_1179);
     } catch (err) {}
 }
 exports.createPortal = function(children, containerTag) {

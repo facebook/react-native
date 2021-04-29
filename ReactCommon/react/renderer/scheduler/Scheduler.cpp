@@ -139,9 +139,6 @@ Scheduler::Scheduler(
   enableNewDiffer_ =
       reactNativeConfig_->getBool("react_fabric:enable_new_differ_h1_2021_ios");
 #endif
-
-  uiManager->extractUIManagerBindingOnDemand_ = reactNativeConfig_->getBool(
-      "react_fabric:extract_uimanagerbinding_on_demand");
 }
 
 Scheduler::~Scheduler() {

@@ -10,9 +10,15 @@
 
 jest
   .clearAllMocks()
-  .mock('../NativeAnimatedHelper', () => {
-    return jest.requireActual('../NativeAnimatedHelper');
-  })
+  .mock('../../BatchedBridge/NativeModules', () => ({
+    NativeAnimatedModule: {},
+    PlatformConstants: {
+      getConstants() {
+        return {};
+      },
+    },
+  }))
+  .mock('../NativeAnimatedModule')
   .mock('../../EventEmitter/NativeEventEmitter')
   // findNodeHandle is imported from ReactNative so mock that whole module.
   .setMock('../../Renderer/shims/ReactNative', {findNodeHandle: () => 1});

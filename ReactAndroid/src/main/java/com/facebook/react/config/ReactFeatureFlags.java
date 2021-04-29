@@ -92,4 +92,7 @@ public class ReactFeatureFlags {
 
     return false;
   }
+
+  /** Enables Fabric for LogBox */
+  public static boolean enableFabricInLogBox = false;
 }
