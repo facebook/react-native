@@ -508,10 +508,6 @@ static Class getFallbackClassFromName(const char *name)
 
   TurboModulePerfLogger::moduleCreateSetUpStart(moduleName, moduleId);
 
-  if ([module respondsToSelector:@selector(setTurboModuleRegistry:)]) {
-    [module setTurboModuleRegistry:self];
-  }
-
   /**
    * It is reasonable for NativeModules to not want/need the bridge.
    * In such cases, they won't have `@synthesize bridge = _bridge` in their
