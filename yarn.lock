@@ -3310,10 +3310,10 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-hermes-engine@~0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.7.0.tgz#c4a13e09811d7bc975a0662bd2ca7120003d6ef8"
-  integrity sha512-lU9OenFWXXOzYldqn15QvbiD0kDc+uw2arhCOkR+9D+PhrLFcbEqnaXFESgchN77JYEf77KkqXncTZA8aoXw2A==
+hermes-engine@~0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.8.0.tgz#d8e507fbfda66f6bd604f79503b45fded1163296"
+  integrity sha512-bFxAnIjE8M3cco1uh4HlHME8qmOsPcVS75bQoo/fM3wUzMYxZBL0s1IfePUO+R9IUKoO+pfIpjV2I9ay8w7mqw==
 
 hermes-profile-transformer@^0.0.6:
   version "0.0.6"
