@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <mutex>
+#include <sstream>
 
 #include <folly/Conv.h>
 #include <folly/Executor.h>
@@ -96,6 +97,9 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::heapProfiler::StartSamplingRequest &req) override;
   void handle(const m::heapProfiler::StopSamplingRequest &req) override;
   void handle(const m::heapProfiler::CollectGarbageRequest &req) override;
+  void handle(
+      const m::heapProfiler::GetObjectByHeapObjectIdRequest &req) override;
+  void handle(const m::heapProfiler::GetHeapObjectIdRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
   void handle(const m::runtime::RunIfWaitingForDebuggerRequest &req) override;
@@ -634,6 +638,76 @@ void Connection::Impl::handle(
       .via(executor_.get())
       .thenValue(
           [this, id](auto &&) { sendResponseToClient(m::makeOkResponse(id)); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::GetObjectByHeapObjectIdRequest &req) {
+  uint64_t objID = atoi(req.objectId.c_str());
+  folly::Optional<std::string> group = req.objectGroup;
+  auto remoteObjPtr = std::make_shared<m::runtime::RemoteObject>();
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.getObjectByHeapObjectId",
+          [this, remoteObjPtr, objID, group](const debugger::ProgramState &) {
+            jsi::Runtime *rt = &getRuntime();
+            if (auto *hermesRT = dynamic_cast<HermesRuntime *>(rt)) {
+              jsi::Value val = hermesRT->getObjectForID(objID);
+              if (val.isNull()) {
+                return;
+              }
+              *remoteObjPtr = m::runtime::makeRemoteObject(
+                  getRuntime(), val, objTable_, group.value_or(""));
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, id = req.id, remoteObjPtr](auto &&) {
+        if (!remoteObjPtr->type.empty()) {
+          m::heapProfiler::GetObjectByHeapObjectIdResponse resp;
+          resp.id = id;
+          resp.result = *remoteObjPtr;
+          sendResponseToClient(resp);
+        } else {
+          sendResponseToClient(m::makeErrorResponse(
+              id, m::ErrorCode::ServerError, "Object is not available"));
+        }
+      })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::GetHeapObjectIdRequest &req) {
+  // Use a shared_ptr because the stack frame will go away.
+  std::shared_ptr<uint64_t> snapshotID = std::make_shared<uint64_t>(0);
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.getHeapObjectId",
+          [this, req, snapshotID](const debugger::ProgramState &) {
+            if (const jsi::Value *valuePtr = objTable_.getValue(req.objectId)) {
+              jsi::Runtime *rt = &getRuntime();
+              if (auto *hermesRT = dynamic_cast<HermesRuntime *>(rt)) {
+                *snapshotID = hermesRT->getUniqueID(*valuePtr);
+              }
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, id = req.id, snapshotID](auto &&) {
+        if (*snapshotID) {
+          m::heapProfiler::GetHeapObjectIdResponse resp;
+          resp.id = id;
+          // std::to_string is not available on Android, use a std::ostream
+          // instead.
+          std::ostringstream stream;
+          stream << *snapshotID;
+          resp.heapSnapshotObjectId = stream.str();
+          sendResponseToClient(resp);
+        } else {
+          sendResponseToClient(m::makeErrorResponse(
+              id, m::ErrorCode::ServerError, "Object is not available"));
+        }
+      })
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
