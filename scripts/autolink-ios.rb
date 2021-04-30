@@ -58,9 +58,9 @@ def use_react_native! (options={})
 end
 
 def add_flipper_pods!(versions = {})
-  versions['Flipper'] ||= '~> 0.33.1'
+  versions['Flipper'] ||= '~> 0.75.1'
   versions['DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.1'
+  versions['Flipper-Folly'] ||= '2.5.3'
   versions['Flipper-Glog'] ||= '0.3.6'
   versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
   versions['Flipper-RSocket'] ||= '~> 1.0'
