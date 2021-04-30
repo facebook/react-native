@@ -71,7 +71,7 @@ end
 def use_flipper!(versions = {}, configurations: ['Debug'])
   versions['Flipper'] ||= '~> 0.75.1'
   versions['Flipper-DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.5'
+  versions['Flipper-Folly'] ||= '~> 2.5.3'
   versions['Flipper-Glog'] ||= '0.3.6'
   versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
   versions['Flipper-RSocket'] ||= '~> 1.3'
@@ -138,10 +138,26 @@ def exclude_architectures(installer)
 end
 
 def react_native_post_install(installer)
+  pods_prefix = File.dirname(installer.pods_project.path)
+
   if has_pod(installer, 'Flipper')
     flipper_post_install(installer)
   end
 
+  ## Fix for RTC-Folly on iOS 14.5 - makes Hermes work again
+  find_and_replace(
+    "#{pods_prefix}/RCT-Folly/folly/synchronization/DistributedMutex-inl.h",
+    'atomic_notify_one(state)',
+    'folly::atomic_notify_one(state)'
+  )
+
+  find_and_replace(
+    "#{pods_prefix}Pods/RCT-Folly/folly/synchronization/DistributedMutex-inl.h",
+    'atomic_wait_until(&state, previous | data, deadline)',
+    'folly::atomic_wait_until(&state, previous | data, deadline)'
+  )
+
+  ## Exclude `i386` from valid architectures when building with Hermes on iOS
   exclude_architectures(installer)
 end
 
@@ -198,4 +214,19 @@ def use_react_native_codegen!(spec, options={})
   }
 
   spec.prepare_command = "#{mkdir_command} && touch #{generated_files.reduce() { |str, file| str + " " + file }}"
+end
+
+# Local method for the Xcode 12.5 fix
+def find_and_replace(dir, findstr, replacestr)
+  Dir[dir].each do |name|
+    text = File.read(name)
+    replace = text.gsub(findstr, replacestr)
+    replaced = text.index(replacestr)
+    next if !replaced.nil? || text == replace
+
+    puts "Patching #{name}"
+    File.open(name, 'w') { |file| file.puts replace }
+    $stdout.flush
+  end
+  Dir["#{dir}*/"].each(&method(:find_and_replace))
 end
