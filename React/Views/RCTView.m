@@ -1385,6 +1385,9 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   NSCursor *cursor;
 
   switch (self.cursor) {
+    case RCTCursorArrow:
+      cursor = [NSCursor arrowCursor];
+      break;
     case RCTCursorClosedHand:
       cursor = [NSCursor closedHandCursor];
       break;
@@ -1436,12 +1439,11 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     case RCTCursorResizeUpDown:
       cursor = [NSCursor resizeUpDownCursor];
       break;
-    default:
-      cursor = [NSCursor arrowCursor];
   }
 
+  [self discardCursorRects];
+
   if (cursor) {
-    [self discardCursorRects];
     [self addCursorRect:self.bounds cursor:cursor];
   }
 }
