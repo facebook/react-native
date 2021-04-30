@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<bf135998bdbe97f7773b30c37d6ccc3b>>
+ * @generated SignedSource<<9ed67b3272b99880d9584ed24f7f2d25>>
  */
 
 'use strict';
@@ -6049,12 +6049,7 @@ var Passive$1 =
   /*   */
   4;
 
-// TODO: this is special because it gets imported during build.
-//
-// TODO: 17.0.3 has not been released to NPM;
-// It exists as a placeholder so that DevTools can support work tag changes between releases.
-// When we next publish a release (either 17.0.3 or 17.1.0), update the matching TODO in backend/renderer.js
-var ReactVersion = "17.0.3";
+var ReactVersion = "17.0.3-2a7bb4154";
 
 var NoMode =
   /*            */
