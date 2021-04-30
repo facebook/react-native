@@ -9,17 +9,16 @@
  */
 
 'use strict';
-
+const RNTesterBlock = require('../../components/RNTesterBlock');
+const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
+import type {ViewStyleProp} from '../../../../../Libraries/StyleSheet/StyleSheet';
 const {
   StyleSheet,
   Text,
   View,
   TouchableWithoutFeedback,
 } = require('react-native');
-const RNTesterBlock = require('../../components/RNTesterBlock');
-const RNTesterPage = require('../../components/RNTesterPage');
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 const importantForAccessibilityValues = [
   'auto',
@@ -35,8 +34,8 @@ type AccessibilityAndroidExampleState = {
 };
 
 type Props = $ReadOnly<{|
-  style?: ?ViewStyleProp,
-  accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
+  accessibilityLiveRegion?: string,
+  style?: ViewStyleProp,
 |}>;
 
 class AccessibilityAndroidExample extends React.Component<
@@ -68,6 +67,7 @@ class AccessibilityAndroidExample extends React.Component<
   };
 
   render(): React.Node {
+    const {style} = this.props;
     return (
       <RNTesterPage title={'Accessibility Android APIs'}>
         <RNTesterBlock title="LiveRegion">
@@ -76,7 +76,7 @@ class AccessibilityAndroidExample extends React.Component<
               <Text>Click me</Text>
             </View>
           </TouchableWithoutFeedback>
-          <Text accessibilityLiveRegion={this.props.accessibilityLiveRegion}>
+          <Text accessibilityLiveRegion={'polite'}>
             Clicked {this.state.count} times
           </Text>
         </RNTesterBlock>
@@ -84,6 +84,7 @@ class AccessibilityAndroidExample extends React.Component<
         <RNTesterBlock title="Overlapping views and importantForAccessibility property">
           <View style={styles.container}>
             <TouchableWithoutFeedback
+              style={[styles.touchableContainer, style]}
               accessible={true}
               accessibilityLabel="First layout"
               importantForAccessibility={
@@ -160,6 +161,14 @@ class AccessibilityAndroidExample extends React.Component<
 }
 
 const styles = StyleSheet.create({
+  touchableContainer: {
+    position: 'absolute',
+    left: 10,
+    top: 10,
+    right: 10,
+    height: 100,
+    backgroundColor: 'green',
+  },
   embedded: {
     backgroundColor: 'yellow',
     padding: 10,
