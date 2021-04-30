@@ -679,6 +679,10 @@ RCT_EXPORT_MODULE()
 
 - (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request handler:(id<RCTURLRequestHandler>)handler completionBlock:(RCTURLRequestCompletionBlock)completionBlock
 {
+  if (!handler) {
+    // specified handler is nil, fall back to generic method
+    return [self networkTaskWithRequest:request completionBlock:completionBlock];
+  }
   RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithRequest:request
                                                          handler:handler
                                                    callbackQueue:_methodQueue];
