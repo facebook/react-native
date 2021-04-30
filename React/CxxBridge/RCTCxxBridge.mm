@@ -249,6 +249,21 @@ struct RCTInstanceCallback : public InstanceCallback {
   [_objCModuleRegistry setTurboModuleRegistry:_turboModuleRegistry];
 }
 
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+{
+  id<RCTBridgeModule> bridgeModule = (id<RCTBridgeModule>)module;
+  /**
+   * Attach the RCTViewRegistry to this TurboModule, which allows this TurboModule
+   * To query a React component's UIView, given its reactTag.
+   *
+   * Usage: In the NativeModule @implementation, include:
+   *   `@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED`
+   */
+  if ([bridgeModule respondsToSelector:@selector(setViewRegistry_DEPRECATED:)]) {
+    bridgeModule.viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+  }
+}
+
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
 {
   return _jsMessageThread;

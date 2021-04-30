@@ -174,7 +174,6 @@ static Class getFallbackClassFromName(const char *name)
   std::atomic<bool> _invalidating;
 
   RCTModuleRegistry *_moduleRegistry;
-  RCTViewRegistry *_viewRegistry_DEPRECATED;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -190,9 +189,6 @@ static Class getFallbackClassFromName(const char *name)
     [_moduleRegistry setBridge:bridge];
     [_moduleRegistry setTurboModuleRegistry:self];
 
-    _viewRegistry_DEPRECATED = [RCTViewRegistry new];
-    [_viewRegistry_DEPRECATED setBridge:bridge];
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
                                                  name:RCTBridgeWillInvalidateModulesNotification
@@ -203,11 +199,6 @@ static Class getFallbackClassFromName(const char *name)
                                                object:_bridge.parentBridge];
   }
   return self;
-}
-
-- (void)setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider)viewProvider
-{
-  [_viewRegistry_DEPRECATED setBridgelessComponentViewProvider:viewProvider];
 }
 
 - (void)notifyAboutTurboModuleSetup:(const char *)name
@@ -564,25 +555,6 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   /**
-   * Attach the RCTViewRegistry to this TurboModule, which allows this TurboModule
-   * To query a React component's UIView, given its reactTag.
-   *
-   * Usage: In the NativeModule @implementation, include:
-   *   `@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED`
-   */
-  if ([module respondsToSelector:@selector(viewRegistry_DEPRECATED)] && _viewRegistry_DEPRECATED) {
-    @try {
-      [(id)module setValue:_viewRegistry_DEPRECATED forKey:@"viewRegistry_DEPRECATED"];
-    } @catch (NSException *exception) {
-      RCTLogError(
-          @"%@ has no setter or ivar for its module registry, which is not "
-           "permitted. You must either @synthesize the viewRegistry_DEPRECATED property, "
-           "or provide your own setter method.",
-          RCTBridgeModuleNameForClass([module class]));
-    }
-  }
-
-  /**
    * Some modules need their own queues, but don't provide any, so we need to create it for them.
    * These modules typically have the following:
    *   `@synthesize methodQueue = _methodQueue`
@@ -627,6 +599,13 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   /**
+   * Decorate TurboModules with bridgeless-compatible APIs that call into the bridge.
+   */
+  if (_bridge) {
+    [_bridge attachBridgeAPIsToTurboModule:module];
+  }
+
+  /**
    * Attach method queue to id<RCTTurboModule> object.
    * This is necessary because the id<RCTTurboModule> object can be eagerly created/initialized before the method
    * queue is required. The method queue is required for an id<RCTTurboModule> for JS -> Native calls. So, we need it
@@ -645,7 +624,7 @@ static Class getFallbackClassFromName(const char *name)
     RCTModuleData *data = [[RCTModuleData alloc] initWithModuleInstance:(id<RCTBridgeModule>)module
                                                                  bridge:_bridge
                                                          moduleRegistry:_moduleRegistry
-                                                viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
+                                                viewRegistry_DEPRECATED:nil];
     [_bridge registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:data];
   }
 

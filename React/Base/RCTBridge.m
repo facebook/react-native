@@ -230,6 +230,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+{
+  [self.batchedBridge attachBridgeAPIsToTurboModule:module];
+}
+
 - (void)didReceiveReloadCommand
 {
 #if RCT_ENABLE_INSPECTOR

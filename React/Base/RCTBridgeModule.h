@@ -133,7 +133,7 @@ RCT_EXTERN_C_END
  * viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;`. If using Swift, add
  * `@objc var viewRegistry_DEPRECATED: RCTViewRegistry!` to your module.
  */
-@property (nonatomic, weak, readonly) RCTViewRegistry *viewRegistry_DEPRECATED;
+@property (nonatomic, weak, readwrite) RCTViewRegistry *viewRegistry_DEPRECATED;
 
 /**
  * A reference to the RCTBridge. Useful for modules that require access
