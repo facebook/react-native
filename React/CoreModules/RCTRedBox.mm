@@ -210,12 +210,6 @@
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
-- (void)dealloc
-{
-  _stackTraceTableView.dataSource = nil;
-  _stackTraceTableView.delegate = nil;
-}
-
 - (NSString *)stripAnsi:(NSString *)text
 {
   NSError *error = nil;
