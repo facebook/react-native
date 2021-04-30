@@ -108,15 +108,24 @@ Pod::Spec.new do |spec|
                            'folly/synchronization/*.{h,cpp}',
                            'folly/synchronization/detail/*.{h,cpp}',
                            'folly/experimental/{ExecutionObserver,ReadMostlySharedPtr,SingleWriterFixedHashMap,TLRefCount}.{h,cpp}',
-                           'folly/io/async/{AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseManager,EventBaseBackendBase,EventHandler,EventUtil,HHWheelTimer,HHWheelTimer-fwd,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
+                           'folly/io/async/{AtomicNotificationQueue,AtomicNotificationQueue-inl,AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseManager,EventBaseAtomicNotificationQueue,EventBaseAtomicNotificationQueue-inl,EventBaseBackendBase,EventHandler,EventUtil,HHWheelTimer,HHWheelTimer-fwd,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
                            'folly/io/{Cursor,Cursor-inl,IOBuf,IOBufQueue}.{h,cpp}',
                            'folly/tracing/StaticTracepoint.{h,cpp}',
+                           'folly/tracing/AsyncStack.{h,cpp}',
+                           'folly/tracing/AsyncStack-inl.h',
                            'folly/{Executor,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
                            'folly/detail/{AsyncTrace,AtFork,Futex,Futex-inl,MemoryIdler,SingletonStackTrace,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
                            'folly/lang/SafeAssert.{h,cpp}',
                            'folly/memory/MallctlHelper.{h,cpp}',
                            'folly/portability/{GFlags,SysUio}.{h,cpp}',
-                           'folly/chrono/Hardware.{h,cpp}'
+                           'folly/chrono/Hardware.{h,cpp}',
+                          'folly/experimental/coro/Traits.{h,cpp}',
+                          'folly/fibers/*.{h,cpp}',
+                          'folly/experimental/coro/Coroutine.{h,cpp}',
+                          'folly/fibers/Baton-inl.h',
+                          'folly/experimental/**/*.h',
+                          'folly/system/Pid.h'
+
                           # TODO: Perhaps some of the wildcards above can be further trimmed down with some of these:
                           #
                           #  'folly/executors/{DrivableExecutor,InlineExecutor,QueuedImmediateExecutor,TimedDrivableExecutor}.{h,cpp}',
