@@ -23,7 +23,10 @@ module.exports = {
     return null;
   },
   hasViewManagerConfig: (viewManagerName: string): boolean => {
-    return viewManagerName === 'RCTVirtualText';
+    return (
+      viewManagerName === 'RCTVirtualText' ||
+      viewManagerName === 'RCTShimmeringView'
+    );
   },
   getConstants: (): {...} => ({}),
   getConstantsForViewManager: (viewManagerName: string) => {},
