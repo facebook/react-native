@@ -100,6 +100,9 @@ const UIManagerJS = {
     return getConstants();
   },
   getViewManagerConfig(viewManagerName: string): any {
+    console.warn(
+      'getViewManagerConfig is deprecated, use UIManager.hasViewManagerConfig instead.',
+    );
     return getViewManagerConfig(viewManagerName);
   },
   hasViewManagerConfig(viewManagerName: string): boolean {
