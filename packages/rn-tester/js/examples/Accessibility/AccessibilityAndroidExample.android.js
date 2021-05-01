@@ -34,8 +34,8 @@ type AccessibilityAndroidExampleState = {
 };
 
 type Props = $ReadOnly<{|
-  accessibilityLiveRegion?: string,
-  style?: ViewStyleProp,
+  accessibilityLiveRegion?: ?string,
+  style?: ?ViewStyleProp,
 |}>;
 
 class AccessibilityAndroidExample extends React.Component<
@@ -67,7 +67,6 @@ class AccessibilityAndroidExample extends React.Component<
   };
 
   render(): React.Node {
-    const {style} = this.props;
     return (
       <RNTesterPage title={'Accessibility Android APIs'}>
         <RNTesterBlock title="LiveRegion">
@@ -84,7 +83,7 @@ class AccessibilityAndroidExample extends React.Component<
         <RNTesterBlock title="Overlapping views and importantForAccessibility property">
           <View style={styles.container}>
             <TouchableWithoutFeedback
-              style={[styles.touchableContainer, style]}
+              style={[styles.touchableContainer, this.props.style]}
               accessible={true}
               accessibilityLabel="First layout"
               importantForAccessibility={
