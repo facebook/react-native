@@ -605,15 +605,7 @@ exports.examples = [
     description: ('If the `source` prop `uri` property is prefixed with ' +
       '"http", then it will be downloaded from the network.': string),
     render: function(): React.Node {
-      return (
-        <Image
-          accessible={true}
-          accessibilityLabel="plain network image"
-          accessibilityState={{disabled: true}}
-          source={fullImage}
-          style={styles.base}
-        />
-      );
+      return <Image source={fullImage} style={styles.base} />;
     },
   },
   {
