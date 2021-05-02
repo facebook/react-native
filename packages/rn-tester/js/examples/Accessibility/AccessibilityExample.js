@@ -30,9 +30,6 @@ const checkImageSource = require('./check.png');
 const uncheckImageSource = require('./uncheck.png');
 const mixedCheckboxImageSource = require('./mixed.png');
 const {createRef} = require('react');
-const fullImage = {
-  uri: 'https://www.facebook.com/ads/pics/successstories.png',
-};
 
 const styles = StyleSheet.create({
   default: {
@@ -938,7 +935,7 @@ exports.examples = [
           accessible={true}
           accessibilityLabel="plain network image"
           accessibilityState={{disabled: true}}
-          source={fullImage}
+          source={require('../../assets/like.png')}
           style={styles.image}
         />
       );
