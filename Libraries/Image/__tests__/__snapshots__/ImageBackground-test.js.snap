@@ -1,8 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<ImageBackground /> should be set importantForAccessibility={no} when importantForAccessibility={no} 1`] = `
+exports[`<ImageBackground /> should be set importantForAccessibility in <View> and <Image> 1`] = `
 <View
   accessibilityIgnoresInvertColors={true}
+  importantForAccessibility="no"
   style={
     Object {
       "height": 50,

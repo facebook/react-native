@@ -60,7 +60,7 @@ describe('<ImageBackground />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should be set importantForAccessibility={no} when importantForAccessibility={no}', () => {
+  it('should be set importantForAccessibility in <View> and <Image>', () => {
     const instance = render.create(
       <ImageBackground
         importantForAccessibility={'no'}
