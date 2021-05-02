@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
   },
   image: {
-    width: 20,
-    height: 20,
+    width: 120,
+    height: 120,
     resizeMode: 'contain',
     marginRight: 10,
   },
@@ -930,7 +930,8 @@ exports.examples = [
     },
   },
   {
-    title: 'Check if these properties are enabled',
+    title:
+      'Check if accessibilityState disabled is announced when the screenreader focus moves on the image',
     render(): React.Element<typeof EnabledExamples> {
       return (
         <Image
