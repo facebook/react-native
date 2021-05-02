@@ -19,6 +19,11 @@ import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
 import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import type {ElementRef} from 'react';
 
+// Events that are only supported on Android.
+type AccessibilityEventDefinitionsAndroid = {
+  accessibilityServiceChanged: [boolean],
+};
+
 // Events that are only supported on iOS.
 type AccessibilityEventDefinitionsIOS = {
   announcementFinished: [{announcement: string, success: boolean}],
@@ -29,11 +34,11 @@ type AccessibilityEventDefinitionsIOS = {
 };
 
 type AccessibilityEventDefinitions = {
+  ...AccessibilityEventDefinitionsAndroid,
   ...AccessibilityEventDefinitionsIOS,
   change: [boolean], // screenReaderChanged
   reduceMotionChanged: [boolean],
   screenReaderChanged: [boolean],
-  accessibilityServiceChanged: [boolean],
 };
 
 type AccessibilityEventTypes = 'click' | 'focus';
