@@ -933,7 +933,7 @@ exports.examples = [
       return (
         <Image
           accessible={true}
-          accessibilityLabel="plain network image"
+          accessibilityLabel="plain local image"
           accessibilityState={{disabled: true}}
           source={require('../../assets/like.png')}
           style={styles.image}
