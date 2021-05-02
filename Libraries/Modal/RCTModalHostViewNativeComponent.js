@@ -93,6 +93,13 @@ type NativeProps = $ReadOnly<{|
   onDismiss?: ?DirectEventHandler<null>,
 
   /**
+   * The `visible` prop determines whether your modal is visible.
+   *
+   * See https://reactnative.dev/docs/modal.html#visible
+   */
+  visible?: WithDefault<boolean, false>,
+
+  /**
    * Deprecated. Use the `animationType` prop instead.
    */
   animated?: WithDefault<boolean, false>,
