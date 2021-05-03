@@ -73,6 +73,12 @@ export type Props = $ReadOnly<{|
   ios_backgroundColor?: ?ColorValue,
 
   /**
+   * Only Android, custom switch minimum width size.
+   * Switch width should be also separately specified in the style prop.
+   **/
+  android_minWidth?: number,
+
+  /**
     Invoked when the user tries to change the value of the switch. Receives
     the change event as an argument. If you want to only receive the new
     value, use `onValueChange` instead.
@@ -144,6 +150,7 @@ class Switch extends React.Component<Props> {
       thumbColor,
       trackColor,
       value,
+      android_minWidth,
       ...props
     } = this.props;
 
@@ -158,6 +165,7 @@ class Switch extends React.Component<Props> {
         thumbTintColor: thumbColor,
         trackColorForFalse: trackColorForFalse,
         trackColorForTrue: trackColorForTrue,
+        android_minWidth,
         trackTintColor: value === true ? trackColorForTrue : trackColorForFalse,
       };
 

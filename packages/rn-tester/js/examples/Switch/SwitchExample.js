@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {Switch, Text, View} = require('react-native');
+const {Button, Switch, Text, View} = require('react-native');
 
 type OnOffIndicatorProps = $ReadOnly<{|on: boolean, testID: string|}>;
 function OnOffIndicator({on, testID}: OnOffIndicatorProps) {
@@ -212,6 +212,56 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
+type CustomSizeSwitchExampleState = $ReadOnly<{|
+  trueSwitchIsOn: boolean,
+  falseSwitchIsOn: boolean,
+  width: number,
+|}>;
+
+class CustomSizeSwitchExample extends React.Component<
+  {||},
+  CustomSizeSwitchExampleState,
+> {
+  state = {
+    trueSwitchIsOn: true,
+    falseSwitchIsOn: false,
+    width: 50,
+  };
+
+  render() {
+    const {width} = this.state;
+    return (
+      <>
+        <View
+          style={{
+            display: 'flex',
+            alignItems: 'flex-end',
+          }}>
+          <Switch
+            testID="on-off-initial-off"
+            onValueChange={value => this.setState({falseSwitchIsOn: value})}
+            trackColor={{
+              true: 'yellow',
+              false: 'purple',
+            }}
+            value={this.state.falseSwitchIsOn}
+            android_minWidth={width}
+            style={{width}}
+          />
+        </View>
+        <Button
+          title="increase width"
+          onPress={() => this.setState({width: width + 50})}
+        />
+        <Button
+          title="decrease width"
+          onPress={() => this.setState({width: width - 50})}
+        />
+      </>
+    );
+  }
+}
+
 exports.title = 'Switch';
 exports.documentationURL = 'https://reactnative.dev/docs/switch';
 exports.category = 'UI';
@@ -251,6 +301,12 @@ exports.examples = [
     name: 'custom-colors',
     render(): React.Element<any> {
       return <ColorSwitchExample />;
+    },
+  },
+  {
+    title: 'Custom size',
+    render(): React.Element<any> {
+      return <CustomSizeSwitchExample />;
     },
   },
 ];
