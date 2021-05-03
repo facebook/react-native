@@ -26,6 +26,7 @@ RCT_MULTI_ENUM_CONVERTER(
     (@{
       @"none" : @(UIAccessibilityTraitNone),
       @"button" : @(UIAccessibilityTraitButton),
+      @"togglebutton" : @(UIAccessibilityTraitButton),
       @"link" : @(UIAccessibilityTraitLink),
       @"header" : @(UIAccessibilityTraitHeader),
       @"search" : @(UIAccessibilityTraitSearchField),
