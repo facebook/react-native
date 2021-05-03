@@ -3,6 +3,13 @@
 If you add a non-backport patch, add it here. It's useful when we want to 
 rebase on upstream's `master`
 
+- Unset certain environment variables so NVM doesn't conflict
+  - Summary: fixes a build process issue with `find-node.sh` script
+  - Issues:
+    - https://github.com/react-native-community/upgrade-support/issues/138
+  - Pull requests:
+    - These are not ours, but could potentially fix them:
+    - https://github.com/facebook/react-native/pull/31380 
 - Add Wanderlog-specific README and instructions
   - Summary: not a code change, but adds documentation that makes this fork 
     easier to work with
