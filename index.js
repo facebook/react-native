@@ -89,7 +89,6 @@ import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof UTFSequence from './Libraries/UTFSequence';
 import typeof Vibration from './Libraries/Vibration/Vibration';
-import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
 
 // Plugins
 import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
@@ -446,9 +445,6 @@ module.exports = {
   get Vibration(): Vibration {
     return require('./Libraries/Vibration/Vibration');
   },
-  get YellowBox(): YellowBox {
-    return require('./Libraries/YellowBox/YellowBoxDeprecated');
-  },
 
   // Plugins
   get DeviceEventEmitter(): RCTDeviceEventEmitter {
@@ -481,12 +477,6 @@ module.exports = {
   },
   get RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;
-  },
-  get unstable_enableLogBox(): () => void {
-    return () =>
-      console.warn(
-        'LogBox is enabled by default so there is no need to call unstable_enableLogBox() anymore. This is a no op and will be removed in the next version.',
-      );
   },
   // Prop Types
   // $FlowFixMe[value-as-type]
