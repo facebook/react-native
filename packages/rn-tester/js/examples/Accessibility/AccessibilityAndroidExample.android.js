@@ -9,16 +9,11 @@
  */
 
 'use strict';
-const RNTesterBlock = require('../../components/RNTesterBlock');
-const RNTesterPage = require('../../components/RNTesterPage');
+
 const React = require('react');
-import type {ViewStyleProp} from '../../../../../Libraries/StyleSheet/StyleSheet';
-const {
-  StyleSheet,
-  Text,
-  View,
-  TouchableWithoutFeedback,
-} = require('react-native');
+import RNTesterBlock from '../../components/RNTesterBlock';
+import RNTesterPage from '../../components/RNTesterPage';
+import {StyleSheet, Text, View, TouchableWithoutFeedback} from 'react-native';
 
 const importantForAccessibilityValues = [
   'auto',
@@ -35,7 +30,6 @@ type AccessibilityAndroidExampleState = {
 
 type Props = $ReadOnly<{|
   accessibilityLiveRegion?: ?string,
-  style?: ?ViewStyleProp,
 |}>;
 
 class AccessibilityAndroidExample extends React.Component<
@@ -83,7 +77,7 @@ class AccessibilityAndroidExample extends React.Component<
         <RNTesterBlock title="Overlapping views and importantForAccessibility property">
           <View style={styles.container}>
             <TouchableWithoutFeedback
-              style={[styles.touchableContainer, this.props.style]}
+              style={styles.touchableContainer}
               accessible={true}
               accessibilityLabel="First layout"
               importantForAccessibility={
