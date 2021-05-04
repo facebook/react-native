@@ -11,9 +11,23 @@
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 
-import type {IgnorePattern} from './Data/LogBoxData';
+import type {IgnorePattern, LogData} from './Data/LogBoxData';
+import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
+
+export type {LogData, ExtendedExceptionData, IgnorePattern};
 
 let LogBox;
+
+interface ILogBox {
+  install(): void;
+  uninstall(): void;
+  isInstalled(): boolean;
+  ignoreLogs($ReadOnlyArray<IgnorePattern>): void;
+  ignoreAllLogs(?boolean): void;
+  clearAllLogs(): void;
+  addLog(log: LogData): void;
+  addException(error: ExtendedExceptionData): void;
+}
 
 /**
  * LogBox displays logs in the app.
@@ -22,45 +36,44 @@ if (__DEV__) {
   const LogBoxData = require('./Data/LogBoxData');
   const {parseLogBoxLog, parseInterpolation} = require('./Data/parseLogBoxLog');
 
-  // LogBox needs to insert itself early,
-  // in order to access the component stacks appended by React DevTools.
-  const {error, warn} = console;
-  let errorImpl = error.bind(console);
-  let warnImpl = warn.bind(console);
+  let originalConsoleError;
+  let originalConsoleWarn;
+  let consoleErrorImpl;
+  let consoleWarnImpl;
 
-  (console: any).error = function(...args) {
-    errorImpl(...args);
-  };
-  (console: any).warn = function(...args) {
-    warnImpl(...args);
-  };
+  let isLogBoxInstalled: boolean = false;
 
   LogBox = {
-    ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
-      LogBoxData.addIgnorePatterns(patterns);
-    },
+    install(): void {
+      if (isLogBoxInstalled) {
+        return;
+      }
 
-    ignoreAllLogs: (value?: ?boolean): void => {
-      LogBoxData.setDisabled(value == null ? true : value);
-    },
+      isLogBoxInstalled = true;
 
-    uninstall: (): void => {
-      errorImpl = error;
-      warnImpl = warn;
-      delete (console: any).disableLogBox;
-    },
-
-    install: (): void => {
       // Trigger lazy initialization of module.
       require('../NativeModules/specs/NativeLogBox');
 
-      errorImpl = function(...args) {
-        registerError(...args);
-      };
+      // IMPORTANT: we only overwrite `console.error` and `console.warn` once.
+      // When we uninstall we keep the same reference and only change its
+      // internal implementation
+      const isFirstInstall = originalConsoleError == null;
+      if (isFirstInstall) {
+        originalConsoleError = console.error.bind(console);
+        originalConsoleWarn = console.warn.bind(console);
 
-      warnImpl = function(...args) {
-        registerWarning(...args);
-      };
+        // $FlowExpectedError[cannot-write]
+        console.error = (...args) => {
+          consoleErrorImpl(...args);
+        };
+        // $FlowExpectedError[cannot-write]
+        console.warn = (...args) => {
+          consoleWarnImpl(...args);
+        };
+      }
+
+      consoleErrorImpl = registerError;
+      consoleWarnImpl = registerWarning;
 
       if ((console: any).disableYellowBox === true) {
         LogBoxData.setDisabled(true);
@@ -88,6 +101,50 @@ if (__DEV__) {
         registerWarning(...args);
       });
     },
+
+    uninstall(): void {
+      if (!isLogBoxInstalled) {
+        return;
+      }
+
+      isLogBoxInstalled = false;
+
+      // IMPORTANT: we don't re-assign to `console` in case the method has been
+      // decorated again after installing LogBox. E.g.:
+      // Before uninstalling: original > LogBox > OtherErrorHandler
+      // After uninstalling:  original > LogBox (noop) > OtherErrorHandler
+      consoleErrorImpl = originalConsoleError;
+      consoleWarnImpl = originalConsoleWarn;
+      delete (console: any).disableLogBox;
+    },
+
+    isInstalled(): boolean {
+      return isLogBoxInstalled;
+    },
+
+    ignoreLogs(patterns: $ReadOnlyArray<IgnorePattern>): void {
+      LogBoxData.addIgnorePatterns(patterns);
+    },
+
+    ignoreAllLogs(value?: ?boolean): void {
+      LogBoxData.setDisabled(value == null ? true : value);
+    },
+
+    clearAllLogs(): void {
+      LogBoxData.clear();
+    },
+
+    addLog(log: LogData): void {
+      if (isLogBoxInstalled) {
+        LogBoxData.addLog(log);
+      }
+    },
+
+    addException(error: ExtendedExceptionData): void {
+      if (isLogBoxInstalled) {
+        LogBoxData.addException(error);
+      }
+    },
   };
 
   const isRCTLogAdviceWarning = (...args) => {
@@ -103,7 +160,7 @@ if (__DEV__) {
   const registerWarning = (...args): void => {
     // Let warnings within LogBox itself fall through.
     if (LogBoxData.isLogBoxErrorMessage(String(args[0]))) {
-      error.call(console, ...args);
+      originalConsoleError(...args);
       return;
     }
 
@@ -113,7 +170,7 @@ if (__DEV__) {
 
         if (!LogBoxData.isMessageIgnored(message.content)) {
           // Be sure to pass LogBox warnings through.
-          warn.call(console, ...args);
+          originalConsoleWarn(...args);
 
           LogBoxData.addLog({
             level: 'warn',
@@ -131,7 +188,7 @@ if (__DEV__) {
   const registerError = (...args): void => {
     // Let errors within LogBox itself fall through.
     if (LogBoxData.isLogBoxErrorMessage(args[0])) {
-      error.call(console, ...args);
+      originalConsoleError(...args);
       return;
     }
 
@@ -144,7 +201,7 @@ if (__DEV__) {
         //
         // The 'warning' module needs to be handled here because React internally calls
         // `console.error('Warning: ')` with the component stack already included.
-        error.call(console, ...args);
+        originalConsoleError(...args);
         return;
       }
 
@@ -169,7 +226,7 @@ if (__DEV__) {
         // Interpolate the message so they are formatted for adb and other CLIs.
         // This is different than the message.content above because it includes component stacks.
         const interpolated = parseInterpolation(args);
-        error.call(console, interpolated.message.content);
+        originalConsoleError(interpolated.message.content);
 
         LogBoxData.addLog({
           level,
@@ -184,28 +241,38 @@ if (__DEV__) {
   };
 } else {
   LogBox = {
-    ignoreLogs: (patterns: $ReadOnlyArray<IgnorePattern>): void => {
+    install(): void {
       // Do nothing.
     },
 
-    ignoreAllLogs: (value?: ?boolean): void => {
+    uninstall(): void {
       // Do nothing.
     },
 
-    install: (): void => {
+    isInstalled(): boolean {
+      return false;
+    },
+
+    ignoreLogs(patterns: $ReadOnlyArray<IgnorePattern>): void {
       // Do nothing.
     },
 
-    uninstall: (): void => {
+    ignoreAllLogs(value?: ?boolean): void {
+      // Do nothing.
+    },
+
+    clearAllLogs(): void {
+      // Do nothing.
+    },
+
+    addLog(log: LogData): void {
+      // Do nothing.
+    },
+
+    addException(error: ExtendedExceptionData): void {
       // Do nothing.
     },
   };
 }
 
-module.exports = (LogBox: {
-  ignoreLogs($ReadOnlyArray<IgnorePattern>): void,
-  ignoreAllLogs(?boolean): void,
-  install(): void,
-  uninstall(): void,
-  ...
-});
+module.exports = (LogBox: ILogBox);
