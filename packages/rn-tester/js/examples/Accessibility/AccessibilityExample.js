@@ -48,10 +48,14 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
   },
   image: {
-    width: 120,
-    height: 120,
+    width: 20,
+    height: 20,
     resizeMode: 'contain',
     marginRight: 10,
+  },
+  disabledImage: {
+    width: 120,
+    height: 120,
   },
   containerAlignCenter: {
     display: 'flex',
@@ -936,7 +940,7 @@ exports.examples = [
           accessibilityLabel="plain local image"
           accessibilityState={{disabled: true}}
           source={require('../../assets/like.png')}
-          style={styles.image}
+          style={styles.disabledImage}
         />
       );
     },
