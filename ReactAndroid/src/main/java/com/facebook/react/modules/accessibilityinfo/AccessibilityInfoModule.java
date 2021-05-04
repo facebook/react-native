@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.accessibilityinfo;
 
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -20,11 +21,16 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativeAccessibilityInfoSpec;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * Module that monitors and provides information about the state of Touch Exploration service on the
@@ -68,6 +74,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   private boolean mReduceMotionEnabled = false;
   private boolean mTouchExplorationEnabled = false;
   private int mRecommendedTimeout;
+  private List<AccessibilityServiceInfo> mEnabledAccessibilityServiceList;
 
   private static final String REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange";
   private static final String TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange";
@@ -132,6 +139,44 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
             .emit(TOUCH_EXPLORATION_EVENT_NAME, mTouchExplorationEnabled);
       }
     }
+  }
+
+  // Converts a combination of bits into an array of strings.
+  // This is necessary when the assistive technology parameter has multiple flags.
+  private WritableArray convertBitsToStringArray(int bits, Function<Integer, String> convertToString) {
+    WritableArray strings = Arguments.createArray();
+    while (bits != 0) {
+      final int bit = (1 << Integer.numberOfTrailingZeros(bits));
+      strings.pushString(convertToString.apply(bit));
+      bits &= ~bit;
+    }
+    return strings;
+  }
+
+  private WritableArray createServicesArray(List<AccessibilityServiceInfo> accessibilityServiceList) {
+    WritableArray servicesArray = Arguments.createArray();
+
+    for (AccessibilityServiceInfo accessibilityServiceInfo : mEnabledAccessibilityServiceList) {
+      WritableMap map = Arguments.createMap();
+      int eventTypes = accessibilityServiceInfo.eventTypes;
+      int flags = accessibilityServiceInfo.flags;
+      int feedbackType = accessibilityServiceInfo.feedbackType;
+      int capabilities = accessibilityServiceInfo.getCapabilities();
+
+      map.putString("id", accessibilityServiceInfo.getId());
+      if (accessibilityServiceInfo.packageNames != null) {
+        map.putArray("packageNames", Arguments.fromArray(accessibilityServiceInfo.packageNames));
+      }
+      map.putInt("notificationTimeout", (int) accessibilityServiceInfo.notificationTimeout);
+      map.putArray("capabilities", convertBitsToStringArray(capabilities, (bit) -> accessibilityServiceInfo.capabilityToString(bit)));
+      map.putArray("eventTypes", convertBitsToStringArray(eventTypes, (bit) -> AccessibilityEvent.eventTypeToString(bit)));
+      map.putArray("feedbackType", convertBitsToStringArray(feedbackType, (bit) -> accessibilityServiceInfo.feedbackTypeToString(bit)));
+      map.putArray("flags", convertBitsToStringArray(flags, (bit) -> accessibilityServiceInfo.flagToString(bit)));
+
+      servicesArray.pushMap(map);
+    }
+
+    return servicesArray;
   }
 
   @Override
@@ -205,5 +250,12 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
         mAccessibilityManager.getRecommendedTimeoutMillis(
             (int) originalTimeout, AccessibilityManager.FLAG_CONTENT_CONTROLS);
     successCallback.invoke(mRecommendedTimeout);
+  }
+
+  @Override
+  public void getEnabledAccessibilityServiceList(double feedbackTypeFlags, Callback successCallback) {
+    mEnabledAccessibilityServiceList = mAccessibilityManager.getEnabledAccessibilityServiceList((int) feedbackTypeFlags);
+
+    successCallback.invoke(createServicesArray(mEnabledAccessibilityServiceList));
   }
 }

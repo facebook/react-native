@@ -31,7 +31,7 @@ const RNTesterBlock = require('../../components/RNTesterBlock');
 const checkImageSource = require('./check.png');
 const uncheckImageSource = require('./uncheck.png');
 const mixedCheckboxImageSource = require('./mixed.png');
-const {createRef} = require('react');
+const {createRef, useState} = require('react');
 
 const styles = StyleSheet.create({
   default: {
@@ -932,6 +932,24 @@ class EnabledExample extends React.Component<
   }
 }
 
+function EnabledAccessibilityServiceListExample() {
+  const [serviceList, setServiceList] = useState('');
+  const handleOnPress = async () => {
+    const result = await AccessibilityInfo.getEnabledAccessibilityServiceList();
+    setServiceList(JSON.stringify(result, null, 2));
+  };
+  return (
+    <View>
+      <Text>Service List</Text>
+      <Text>{serviceList}</Text>
+      <Button
+        onPress={handleOnPress}
+        title="Show enabled Accessibility Service List"
+      />
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -976,6 +994,12 @@ exports.examples = [
     title: 'Check if these properties are enabled',
     render(): React.Element<typeof EnabledExamples> {
       return <EnabledExamples />;
+    },
+  },
+  {
+    title: 'Check enabled accessibility service list',
+    render(): React.Element<typeof EnabledExamples> {
+      return <EnabledAccessibilityServiceListExample />;
     },
   },
 ];

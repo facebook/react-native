@@ -18,6 +18,7 @@ import NativeAccessibilityInfoAndroid from './NativeAccessibilityInfo';
 import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
 import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import type {ElementRef} from 'react';
+import type {AccessibilityServiceInfo} from './AccessibilityInfoTypes';
 
 // Events that are only supported on iOS.
 type AccessibilityEventDefinitionsIOS = {
@@ -36,6 +37,19 @@ type AccessibilityEventDefinitions = {
 };
 
 type AccessibilityEventTypes = 'click' | 'focus';
+
+const androidFeedbackFlags = {
+  DEFAULT: 1,
+  FEEDBACK_ALL_MASK: -1,
+  FEEDBACK_AUDIBLE: 4,
+  FEEDBACK_BRAILLE: 32,
+  FEEDBACK_GENERIC: 16,
+  FEEDBACK_HAPTIC: 2,
+  FEEDBACK_SPOKEN: 1,
+  FEEDBACK_VISUAL: 8,
+};
+
+type AndroidFeedbackFlagTypes = $Keys<typeof androidFeedbackFlags>;
 
 // Mapping of public event names to platform-specific event names.
 const EventNames: Map<$Keys<AccessibilityEventDefinitions>, string> =
@@ -343,6 +357,28 @@ const AccessibilityInfo = {
       });
     } else {
       return Promise.resolve(originalTimeout);
+    }
+  },
+
+  getEnabledAccessibilityServiceList(
+    feedbackType?: AndroidFeedbackFlagTypes,
+  ): Promise<Array<AccessibilityServiceInfo> | null> {
+    if (Platform.OS === 'android') {
+      return new Promise((resolve, reject) => {
+        if (
+          NativeAccessibilityInfoAndroid?.getEnabledAccessibilityServiceList
+        ) {
+          const convertedFeedbackType = feedbackType
+            ? androidFeedbackFlags[feedbackType] || androidFeedbackFlags.DEFAULT
+            : androidFeedbackFlags.DEFAULT;
+          NativeAccessibilityInfoAndroid.getEnabledAccessibilityServiceList(
+            convertedFeedbackType,
+            resolve,
+          );
+        }
+      });
+    } else {
+      return Promise.resolve(null);
     }
   },
 };
