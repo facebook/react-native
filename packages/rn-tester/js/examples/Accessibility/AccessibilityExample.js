@@ -932,7 +932,7 @@ class EnabledExample extends React.Component<
   }
 }
 
-function EnabledAccessibilityServiceListExample() {
+function EnabledAccessibilityServiceListExample(): React.Node {
   const [serviceList, setServiceList] = useState('');
   const handleOnPress = async () => {
     const result = await AccessibilityInfo.getEnabledAccessibilityServiceList();
@@ -998,7 +998,7 @@ exports.examples = [
   },
   {
     title: 'Check enabled accessibility service list',
-    render(): React.Element<typeof EnabledExamples> {
+    render(): React.Element<typeof EnabledAccessibilityServiceListExample> {
       return <EnabledAccessibilityServiceListExample />;
     },
   },
