@@ -113,6 +113,11 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
         context, getDraweeControllerBuilder(), mGlobalImageLoadListener, callerContext);
   }
 
+  @ReactProp(name = "accessible")
+  public void setAccessible(ReactImageView view, boolean accessible) {
+    view.setFocusable(accessible);
+  }
+
   // In JS this is Image.props.source
   @ReactProp(name = "src")
   public void setSource(ReactImageView view, @Nullable ReadableArray sources) {
