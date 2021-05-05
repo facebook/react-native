@@ -257,11 +257,22 @@ struct RCTInstanceCallback : public InstanceCallback {
    * Attach the RCTViewRegistry to this TurboModule, which allows this TurboModule
    * To query a React component's UIView, given its reactTag.
    *
-   * Usage: In the NativeModule @implementation, include:
+   * Usage: In the TurboModule @implementation, include:
    *   `@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED`
    */
   if ([bridgeModule respondsToSelector:@selector(setViewRegistry_DEPRECATED:)]) {
     bridgeModule.viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+  }
+
+  /**
+   * Attach the RCTBundleManager to this TurboModule, which allows this TurboModule to
+   * read from/write to the app's bundle URL.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize bundleManager = _bundleManager`
+   */
+  if ([bridgeModule respondsToSelector:@selector(setBundleManager:)]) {
+    bridgeModule.bundleManager = _bundleManager;
   }
 }
 
