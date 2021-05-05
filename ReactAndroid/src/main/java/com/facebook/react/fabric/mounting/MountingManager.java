@@ -263,13 +263,15 @@ public class MountingManager {
    * Send an accessibility eventType to a Native View. eventType is any valid `AccessibilityEvent.X`
    * value.
    *
-   * <p>Why accept `-1` SurfaceId? Currently there are calls to
-   * UIManagerModule.sendAccessibilityEvent which is a legacy API and accepts only reactTag. We will
-   * have to investigate and migrate away from those calls over time.
+   * <p>Why accept `-1` SurfaceId? Currently there are calls to UIManager.sendAccessibilityEvent
+   * which is a legacy API and accepts only reactTag. We will have to investigate and migrate away
+   * from those calls over time.
    *
-   * @param surfaceId
-   * @param reactTag
-   * @param eventType
+   * @param surfaceId {@link int} that identifies the surface or -1 to temporarily support backward
+   *     compatibility.
+   * @param reactTag {@link int} that identifies the react Tag of the view.
+   * @param eventType {@link int} that identifies Android eventType. see {@link
+   *     View#sendAccessibilityEvent}
    */
   public void sendAccessibilityEvent(int surfaceId, int reactTag, int eventType) {
     UiThreadUtil.assertOnUiThread();
