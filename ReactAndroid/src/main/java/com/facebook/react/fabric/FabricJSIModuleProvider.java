@@ -15,6 +15,7 @@ import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
@@ -63,7 +64,9 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
     final Binding binding = new Binding();
     // TODO T31905686: remove this call
-    loadClasses();
+    if (ReactFeatureFlags.eagerInitializeFabricClasses) {
+      loadClasses();
+    }
     MessageQueueThread jsMessageQueueThread =
         mReactApplicationContext
             .getCatalystInstance()
