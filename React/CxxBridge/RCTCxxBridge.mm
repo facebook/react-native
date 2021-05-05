@@ -236,6 +236,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   RCTModuleRegistry *_objCModuleRegistry;
   RCTViewRegistry *_viewRegistry_DEPRECATED;
+  RCTBundleManager *_bundleManager;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
@@ -256,11 +257,22 @@ struct RCTInstanceCallback : public InstanceCallback {
    * Attach the RCTViewRegistry to this TurboModule, which allows this TurboModule
    * To query a React component's UIView, given its reactTag.
    *
-   * Usage: In the NativeModule @implementation, include:
+   * Usage: In the TurboModule @implementation, include:
    *   `@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED`
    */
   if ([bridgeModule respondsToSelector:@selector(setViewRegistry_DEPRECATED:)]) {
     bridgeModule.viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+  }
+
+  /**
+   * Attach the RCTBundleManager to this TurboModule, which allows this TurboModule to
+   * read from/write to the app's bundle URL.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize bundleManager = _bundleManager`
+   */
+  if ([bridgeModule respondsToSelector:@selector(setBundleManager:)]) {
+    bridgeModule.bundleManager = _bundleManager;
   }
 }
 
@@ -300,6 +312,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     _moduleDataByID = [NSMutableArray new];
     _objCModuleRegistry = [RCTModuleRegistry new];
     [_objCModuleRegistry setBridge:self];
+    _bundleManager = [RCTBundleManager new];
+    [_bundleManager setBridge:self];
     _viewRegistry_DEPRECATED = [RCTViewRegistry new];
     [_viewRegistry_DEPRECATED setBridge:self];
 
@@ -778,7 +792,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
                                                      bridge:self
                                              moduleRegistry:_objCModuleRegistry
-                                    viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
+                                    viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
+                                              bundleManager:_bundleManager];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -853,7 +868,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     RCTModuleData *moduleData = [[RCTModuleData alloc] initWithModuleInstance:module
                                                                        bridge:self
                                                                moduleRegistry:_objCModuleRegistry
-                                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
+                                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
+                                                                bundleManager:_bundleManager];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -907,7 +923,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
                                                        bridge:self
                                                moduleRegistry:_objCModuleRegistry
-                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
+                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
+                                                bundleManager:_bundleManager];
       BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
       _moduleDataByName[moduleName] = moduleData;

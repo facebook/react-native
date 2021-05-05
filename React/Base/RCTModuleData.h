@@ -15,6 +15,7 @@
 @class RCTBridge;
 @class RCTModuleRegistry;
 @class RCTViewRegistry;
+@class RCTBundleManager;
 
 typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 
@@ -23,18 +24,21 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 - (instancetype)initWithModuleClass:(Class)moduleClass
                              bridge:(RCTBridge *)bridge
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED;
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager;
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
                      moduleProvider:(RCTBridgeModuleProvider)moduleProvider
                              bridge:(RCTBridge *)bridge
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED NS_DESIGNATED_INITIALIZER;
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
                                 bridge:(RCTBridge *)bridge
                         moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-               viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED NS_DESIGNATED_INITIALIZER;
+               viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                         bundleManager:(RCTBundleManager *)bundleManager NS_DESIGNATED_INITIALIZER;
 
 /**
  * Calls `constantsToExport` on the module and stores the result. Note that

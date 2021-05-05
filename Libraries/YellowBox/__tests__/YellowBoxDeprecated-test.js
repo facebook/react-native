@@ -20,33 +20,39 @@ describe('YellowBox', () => {
   });
   it('calling ignoreWarnings proxies to LogBox.ignoreLogs', () => {
     jest.spyOn(LogBox, 'ignoreLogs');
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const consoleWarn = jest
+      .spyOn(console, 'warn')
+      .mockImplementation(() => {});
     YellowBox.ignoreWarnings(['foo']);
 
     expect(LogBox.ignoreLogs).toBeCalledWith(['foo']);
-    expect(console.warn).toBeCalledWith(
+    expect(consoleWarn).toBeCalledWith(
       'YellowBox has been replaced with LogBox. Please call LogBox.ignoreLogs() instead.',
     );
   });
 
   it('calling install proxies to LogBox.install', () => {
     jest.spyOn(LogBox, 'install');
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const consoleWarn = jest
+      .spyOn(console, 'warn')
+      .mockImplementation(() => {});
     YellowBox.install();
 
     expect(LogBox.install).toBeCalled();
-    expect(console.warn).toBeCalledWith(
+    expect(consoleWarn).toBeCalledWith(
       'YellowBox has been replaced with LogBox. Please call LogBox.install() instead.',
     );
   });
 
   it('calling uninstall proxies to LogBox.uninstall', () => {
     jest.spyOn(LogBox, 'uninstall');
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const consoleWarn = jest
+      .spyOn(console, 'warn')
+      .mockImplementation(() => {});
     YellowBox.uninstall();
 
     expect(LogBox.uninstall).toBeCalled();
-    expect(console.warn).toBeCalledWith(
+    expect(consoleWarn).toBeCalledWith(
       'YellowBox has been replaced with LogBox. Please call LogBox.uninstall() instead.',
     );
   });

@@ -55,6 +55,10 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginRight: 10,
   },
+  disabledImage: {
+    width: 120,
+    height: 120,
+  },
   containerAlignCenter: {
     display: 'flex',
     flexDirection: 'column',
@@ -1000,6 +1004,21 @@ exports.examples = [
     title: 'Check enabled accessibility service list',
     render(): React.Element<typeof EnabledAccessibilityServiceListExample> {
       return <EnabledAccessibilityServiceListExample />;
+    },
+  },
+  {
+    title:
+      'Check if accessibilityState disabled is announced when the screenreader focus moves on the image',
+    render(): React.Element<typeof Image> {
+      return (
+        <Image
+          accessible={true}
+          accessibilityLabel="plain local image"
+          accessibilityState={{disabled: true}}
+          source={require('../../assets/like.png')}
+          style={styles.disabledImage}
+        />
+      );
     },
   },
 ];
