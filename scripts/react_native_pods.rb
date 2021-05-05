@@ -49,9 +49,9 @@ def use_react_native! (options={})
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
-  pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
-  pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
-  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
+  pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec", :modular_headers => false
+  pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec", :modular_headers => false
+  pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => false
 
   if fabric_enabled
     pod 'React-Fabric', :path => "#{prefix}/ReactCommon"
