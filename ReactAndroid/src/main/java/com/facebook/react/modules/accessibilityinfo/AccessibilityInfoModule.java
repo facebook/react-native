@@ -25,10 +25,10 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import java.util.List;
 import java.util.function.Function;
 
@@ -143,7 +143,8 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   // Converts a combination of bits into an array of strings.
   // This is necessary when the assistive technology parameter has multiple flags.
-  private WritableArray convertBitsToStringArray(int bits, Function<Integer, String> convertToString) {
+  private WritableArray convertBitsToStringArray(
+      int bits, Function<Integer, String> convertToString) {
     WritableArray strings = Arguments.createArray();
     while (bits != 0) {
       final int bit = (1 << Integer.numberOfTrailingZeros(bits));
@@ -153,7 +154,8 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     return strings;
   }
 
-  private WritableArray createServicesArray(List<AccessibilityServiceInfo> accessibilityServiceList) {
+  private WritableArray createServicesArray(
+      List<AccessibilityServiceInfo> accessibilityServiceList) {
     WritableArray servicesArray = Arguments.createArray();
 
     for (AccessibilityServiceInfo accessibilityServiceInfo : mEnabledAccessibilityServiceList) {
@@ -168,10 +170,20 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
         map.putArray("packageNames", Arguments.fromArray(accessibilityServiceInfo.packageNames));
       }
       map.putInt("notificationTimeout", (int) accessibilityServiceInfo.notificationTimeout);
-      map.putArray("capabilities", convertBitsToStringArray(capabilities, (bit) -> accessibilityServiceInfo.capabilityToString(bit)));
-      map.putArray("eventTypes", convertBitsToStringArray(eventTypes, (bit) -> AccessibilityEvent.eventTypeToString(bit)));
-      map.putArray("feedbackType", convertBitsToStringArray(feedbackType, (bit) -> accessibilityServiceInfo.feedbackTypeToString(bit)));
-      map.putArray("flags", convertBitsToStringArray(flags, (bit) -> accessibilityServiceInfo.flagToString(bit)));
+      map.putArray(
+          "capabilities",
+          convertBitsToStringArray(
+              capabilities, (bit) -> accessibilityServiceInfo.capabilityToString(bit)));
+      map.putArray(
+          "eventTypes",
+          convertBitsToStringArray(eventTypes, (bit) -> AccessibilityEvent.eventTypeToString(bit)));
+      map.putArray(
+          "feedbackType",
+          convertBitsToStringArray(
+              feedbackType, (bit) -> accessibilityServiceInfo.feedbackTypeToString(bit)));
+      map.putArray(
+          "flags",
+          convertBitsToStringArray(flags, (bit) -> accessibilityServiceInfo.flagToString(bit)));
 
       servicesArray.pushMap(map);
     }
@@ -253,8 +265,10 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   }
 
   @Override
-  public void getEnabledAccessibilityServiceList(double feedbackTypeFlags, Callback successCallback) {
-    mEnabledAccessibilityServiceList = mAccessibilityManager.getEnabledAccessibilityServiceList((int) feedbackTypeFlags);
+  public void getEnabledAccessibilityServiceList(
+      double feedbackTypeFlags, Callback successCallback) {
+    mEnabledAccessibilityServiceList =
+        mAccessibilityManager.getEnabledAccessibilityServiceList((int) feedbackTypeFlags);
 
     successCallback.invoke(createServicesArray(mEnabledAccessibilityServiceList));
   }
