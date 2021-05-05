@@ -426,7 +426,9 @@ typedef NSURL * (^RCTBridgelessBundleURLGetter)();
 @interface RCTBundleManager : NSObject
 - (void)setBridge:(RCTBridge *)bridge;
 - (void)setBridgelessBundleURLGetter:(RCTBridgelessBundleURLGetter)getter
-                           andSetter:(RCTBridgelessBundleURLSetter)setter;
+                           andSetter:(RCTBridgelessBundleURLSetter)setter
+                    andDefaultGetter:(RCTBridgelessBundleURLGetter)defaultGetter;
+- (void)resetBundleURL;
 @property NSURL *bundleURL;
 @end
 
