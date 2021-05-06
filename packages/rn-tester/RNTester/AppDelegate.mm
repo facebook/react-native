@@ -204,25 +204,18 @@
   return facebook::react::RNTesterTurboModuleProvider(name, jsInvoker);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                     initParams:
-                                                         (const facebook::react::ObjCTurboModule::InitParams &)params
-{
-  return facebook::react::RNTesterTurboModuleProvider(name, params);
-}
-
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
-        loadersProvider:^NSArray<id<RCTImageURLLoader>> * {
+        loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry * moduleRegistry) {
           return @ [[RCTLocalAssetImageLoader new]];
         }
-        decodersProvider:^NSArray<id<RCTImageDataDecoder>> * {
+        decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry * moduleRegistry) {
           return @ [[RCTGIFImageDecoder new]];
         }];
   } else if (moduleClass == RCTNetworking.class) {
-    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> * {
+    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry * moduleRegistry) {
       return @[
         [RCTHTTPRequestHandler new],
         [RCTDataRequestHandler new],

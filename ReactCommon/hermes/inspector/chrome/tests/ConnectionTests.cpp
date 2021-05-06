@@ -22,6 +22,7 @@
 #include <hermes/DebuggerAPI.h>
 #include <hermes/hermes.h>
 #include <hermes/inspector/chrome/MessageTypes.h>
+#include <jsi/instrumentation.h>
 
 namespace facebook {
 namespace hermes {
@@ -2508,6 +2509,86 @@ TEST(ConnectionTests, heapProfilerSampling) {
   // SamplingHeapProfilerTest.
 
   // Resume and exit
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, heapSnapshotRemoteObject) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  std::shared_ptr<HermesRuntime> runtime = asyncRuntime.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+
+  asyncRuntime.executeScriptAsync(R"(
+    storeValue([1, 2, 3]);
+    debugger;
+  )");
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // We should get a pause before the first statement.
+  expectNotification<m::debugger::PausedNotification>(conn);
+
+  {
+    // Take a heap snapshot first to assign IDs.
+    m::heapProfiler::TakeHeapSnapshotRequest req;
+    req.id = msgId++;
+    req.reportProgress = false;
+    // We don't need the response because we can directly query for object IDs
+    // from the runtime.
+    send(conn, req);
+  }
+
+  const uint64_t globalObjID = runtime->getUniqueID(runtime->global());
+  jsi::Value storedValue = asyncRuntime.awaitStoredValue();
+  const uint64_t storedObjID =
+      runtime->getUniqueID(storedValue.asObject(*runtime));
+
+  auto testObject = [&msgId, &conn](
+                        uint64_t objID,
+                        const char *type,
+                        const char *className,
+                        const char *description,
+                        const char *subtype) {
+    // Get the object by its snapshot ID.
+    m::heapProfiler::GetObjectByHeapObjectIdRequest req;
+    req.id = msgId++;
+    req.objectId = std::to_string(objID);
+    auto resp = send<
+        m::heapProfiler::GetObjectByHeapObjectIdRequest,
+        m::heapProfiler::GetObjectByHeapObjectIdResponse>(conn, req);
+    EXPECT_EQ(resp.result.type, type);
+    EXPECT_EQ(resp.result.className, className);
+    EXPECT_EQ(resp.result.description, description);
+    if (subtype) {
+      EXPECT_EQ(resp.result.subtype, subtype);
+    }
+
+    // Check that fetching the object by heap snapshot ID works.
+    m::heapProfiler::GetHeapObjectIdRequest idReq;
+    idReq.id = msgId++;
+    idReq.objectId = resp.result.objectId.value();
+    auto idResp = send<
+        m::heapProfiler::GetHeapObjectIdRequest,
+        m::heapProfiler::GetHeapObjectIdResponse>(conn, idReq);
+    EXPECT_EQ(atoi(idResp.heapSnapshotObjectId.c_str()), objID);
+  };
+
+  // Test once before a collection.
+  testObject(globalObjID, "object", "Object", "Object", nullptr);
+  testObject(storedObjID, "object", "Array", "Array(3)", "array");
+  // Force a collection to move the heap.
+  runtime->instrumentation().collectGarbage("test");
+  // A collection should not disturb the unique ID lookup, and it should be the
+  // same object as before. Note that it won't have the same remote ID, because
+  // Hermes doesn't do uniquing.
+  testObject(globalObjID, "object", "Object", "Object", nullptr);
+  testObject(storedObjID, "object", "Array", "Array(3)", "array");
+
+  // Resume and exit.
   send<m::debugger::ResumeRequest>(conn, msgId++);
   expectNotification<m::debugger::ResumedNotification>(conn);
 }

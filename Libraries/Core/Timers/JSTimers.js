@@ -469,7 +469,7 @@ let ExportedJSTimers: {|
 
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
-  // $FlowFixMe: we can assume timers are generally available
+  // $FlowFixMe[prop-missing] : we can assume timers are generally available
   ExportedJSTimers = ({
     callImmediates: JSTimers.callImmediates,
     setImmediate: JSTimers.setImmediate,

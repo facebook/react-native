@@ -14,8 +14,7 @@
 #include <react/renderer/core/EventHandler.h>
 #include <react/renderer/core/ShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using BackgroundExecutor =
     std::function<void(std::function<void()> &&callback)>;
@@ -125,6 +124,19 @@ inline static SurfaceId surfaceIdFromValue(
   return (SurfaceId)value.getNumber();
 }
 
+inline static int displayModeToInt(DisplayMode const value) {
+  // the result of this method should be in sync with
+  // Libraries/ReactNative/DisplayMode.js
+  switch (value) {
+    case DisplayMode::Visible:
+      return 1;
+    case DisplayMode::Suspended:
+      return 2;
+    case DisplayMode::Hidden:
+      return 3;
+  }
+}
+
 inline static std::string stringFromValue(
     jsi::Runtime &runtime,
     jsi::Value const &value) {
@@ -137,5 +149,4 @@ inline static folly::dynamic commandArgsFromValue(
   return jsi::dynamicFromValue(runtime, value);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

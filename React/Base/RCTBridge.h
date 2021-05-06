@@ -232,6 +232,13 @@ RCT_EXTERN void RCTEnableTurboModuleBlockGuard(BOOL enabled);
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
 
 /**
+ * This hook is called by the TurboModule infra with every TurboModule that's created.
+ * It allows the bridge to attach properties to TurboModules that give TurboModules
+ * access to Bridge APIs.
+ */
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module;
+
+/**
  * Convenience method for retrieving all modules conforming to a given protocol.
  * Modules will be synchronously instantiated if they haven't already been,
  * potentially blocking both the calling thread and main thread for a short time.

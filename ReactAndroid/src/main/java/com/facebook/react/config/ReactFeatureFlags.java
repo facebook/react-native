@@ -23,6 +23,13 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
+  /**
+   * Should application use the new TM callback manager in Cxx? This is assumed to be a sane
+   * default, but it's new. We will delete once (1) we know it's safe to ship and (2) we have
+   * quantified impact.
+   */
+  public static volatile boolean useTurboModulesRAIICallbackManager = false;
+
   /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
   public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
 
@@ -54,18 +61,41 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
+  /** Feature flag to configure eager initialization classes of Fabric */
+  public static boolean eagerInitializeFabricClasses = false;
+
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
 
   /** Enables a more aggressive cleanup during destruction of ReactContext */
   public static boolean enableReactContextCleanupFix = false;
 
-  /** Enables setting layout params to empty to fix a crash */
-  public static boolean enableSettingEmptyLayoutParams = false;
-
   /** Enables JS Responder in Fabric */
   public static boolean enableJSResponder = false;
 
   /** Enables MapBuffer Serialization */
   public static boolean mapBufferSerializationEnabled = false;
+
+  /** An interface used to compute flags on demand. */
+  public interface FlagProvider {
+    boolean get();
+  }
+
+  /** Should the RuntimeExecutor call JSIExecutor::flush()? */
+  private static FlagProvider enableRuntimeExecutorFlushingProvider = null;
+
+  public static void setEnableRuntimeExecutorFlushingFlagProvider(FlagProvider provider) {
+    enableRuntimeExecutorFlushingProvider = provider;
+  }
+
+  public static boolean enableRuntimeExecutorFlushing() {
+    if (enableRuntimeExecutorFlushingProvider != null) {
+      return enableRuntimeExecutorFlushingProvider.get();
+    }
+
+    return false;
+  }
+
+  /** Enables Fabric for LogBox */
+  public static boolean enableFabricInLogBox = false;
 }

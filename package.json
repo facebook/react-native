@@ -38,6 +38,7 @@
     "README.md",
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
+    "scripts/find-node.sh",
     "scripts/generate-specs.sh",
     "scripts/generate-specs-cli.js",
     "scripts/ios-configure-glog.sh",
@@ -85,7 +86,7 @@
     "repo-config"
   ],
   "peerDependencies": {
-    "react": "17.0.1"
+    "react": "17.0.2"
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^26.5.0",
@@ -99,18 +100,18 @@
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
     "event-target-shim": "^5.0.1",
-    "hermes-engine": "~0.7.0",
+    "hermes-engine": "~0.8.0",
     "invariant": "^2.2.4",
     "jsc-android": "^245459.0.0",
-    "metro-babel-register": "0.65.2",
-    "metro-react-native-babel-transformer": "0.65.2",
-    "metro-runtime": "0.65.2",
-    "metro-source-map": "0.65.2",
+    "metro-babel-register": "0.66.0",
+    "metro-react-native-babel-transformer": "0.66.0",
+    "metro-runtime": "0.66.0",
+    "metro-source-map": "0.66.0",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "prop-types": "^15.7.2",
-    "react-devtools-core": "^4.6.0",
+    "react-devtools-core": "^4.13.0",
     "react-refresh": "^0.4.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.20.1",
@@ -120,8 +121,8 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.147.0",
-    "react": "17.0.1"
+    "flow-bin": "^0.150.0",
+    "react": "17.0.2"
   },
   "detox": {
     "test-runner": "jest",

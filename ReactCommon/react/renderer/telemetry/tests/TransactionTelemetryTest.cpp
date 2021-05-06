@@ -15,64 +15,87 @@
 
 using namespace facebook::react;
 
-#define EXPECT_EQ_WITH_THRESHOLD(a, b, threshold) \
-  EXPECT_TRUE((a >= b - threshold) && (a <= b + threshold))
+class MockClock {
+ public:
+  typedef std::chrono::
+      time_point<std::chrono::steady_clock, std::chrono::nanoseconds>
+          time_point;
 
-template <typename ClockT>
-void sleep(double durationInSeconds) {
-  auto timepoint = ClockT::now() +
-      std::chrono::milliseconds((long long)(durationInSeconds * 1000));
-  while (ClockT::now() < timepoint) {
+  static time_point now() noexcept {
+    return time_;
   }
+
+  template <typename TDuration>
+  static void advance_by(const TDuration duration) {
+    time_ += duration;
+  }
+
+ private:
+  static time_point time_;
+};
+
+MockClock::time_point MockClock::time_ = {};
+
+/**
+ * Ensures that the at least the specified time passes on a real clock.
+ * Why at least? Because operating systems provide no guarantee that our thread
+ * gets processing time after the specified time. What about using a busywait?
+ * Busywait are also affected by the non-deterministic OS process scheduling.
+ * The OS might decide right before the specified time elapsed to schedule
+ * another thread/process, with the result that more time passes in reality than
+ * the caller intended. Prefer the `MockClock` and only use this function to
+ * verify that at least the specifid time has passed but wihtout making exact
+ * verifications.
+ */
+static void sleepAtLeast(double durationInSeconds) {
+  std::this_thread::sleep_for(
+      std::chrono::milliseconds((long long)(durationInSeconds * 1000)));
 }
 
 TEST(TransactionTelemetryTest, timepoints) {
-  auto threshold = int64_t{70};
-
   auto timepointA = telemetryTimePointNow();
-  sleep<TelemetryClock>(0.1);
+  sleepAtLeast(0.1);
   auto timepointB = telemetryTimePointNow();
 
   auto duration = telemetryDurationToMilliseconds(timepointB - timepointA);
 
-  EXPECT_EQ_WITH_THRESHOLD(duration, 100, threshold);
+  EXPECT_GE(duration, 100);
 }
 
 TEST(TransactionTelemetryTest, normalUseCase) {
-  auto threshold = int64_t{70};
-  auto telemetry = TransactionTelemetry{};
+  auto telemetry = TransactionTelemetry{[]() { return MockClock::now(); }};
 
   telemetry.setAsThreadLocal();
 
   telemetry.willCommit();
-  sleep<TelemetryClock>(0.1);
+  MockClock::advance_by(std::chrono::milliseconds(100));
   telemetry.willLayout();
-  sleep<TelemetryClock>(0.2);
+  MockClock::advance_by(std::chrono::milliseconds(200));
 
   TransactionTelemetry::threadLocalTelemetry()->willMeasureText();
-  sleep<TelemetryClock>(0.1);
+  MockClock::advance_by(std::chrono::milliseconds(100));
   TransactionTelemetry::threadLocalTelemetry()->didMeasureText();
 
   TransactionTelemetry::threadLocalTelemetry()->willMeasureText();
-  sleep<TelemetryClock>(0.2);
+  MockClock::advance_by(std::chrono::milliseconds(200));
   TransactionTelemetry::threadLocalTelemetry()->didMeasureText();
 
   TransactionTelemetry::threadLocalTelemetry()->willMeasureText();
-  sleep<TelemetryClock>(0.3);
+  MockClock::advance_by(std::chrono::milliseconds(300));
   TransactionTelemetry::threadLocalTelemetry()->didMeasureText();
 
   telemetry.didLayout();
-  sleep<TelemetryClock>(0.1);
+  MockClock::advance_by(std::chrono::milliseconds(100));
   telemetry.didCommit();
 
   telemetry.setRevisionNumber(42);
 
   telemetry.unsetAsThreadLocal();
 
-  sleep<TelemetryClock>(0.3);
+  MockClock::advance_by(std::chrono::milliseconds(300));
 
   telemetry.willMount();
-  sleep<TelemetryClock>(0.1);
+  MockClock::advance_by(std::chrono::milliseconds(100));
   telemetry.didMount();
 
   auto commitDuration = telemetryDurationToMilliseconds(
@@ -82,16 +105,50 @@ TEST(TransactionTelemetryTest, normalUseCase) {
   auto mountDuration = telemetryDurationToMilliseconds(
       telemetry.getMountEndTime() - telemetry.getMountStartTime());
 
-  EXPECT_EQ_WITH_THRESHOLD(commitDuration, 1000, threshold);
-  EXPECT_EQ_WITH_THRESHOLD(layoutDuration, 800, threshold);
-  EXPECT_EQ_WITH_THRESHOLD(mountDuration, 100, threshold);
+  EXPECT_EQ(commitDuration, 1000);
+  EXPECT_EQ(layoutDuration, 800);
+  EXPECT_EQ(mountDuration, 100);
 
   EXPECT_EQ(telemetry.getNumberOfTextMeasurements(), 3);
-  EXPECT_EQ_WITH_THRESHOLD(
-      telemetryDurationToMilliseconds(telemetry.getTextMeasureTime()),
-      600,
-      threshold);
+  EXPECT_EQ(
+      telemetryDurationToMilliseconds(telemetry.getTextMeasureTime()), 600);
   EXPECT_EQ(telemetry.getRevisionNumber(), 42);
+}
+
+TEST(TransactionTelemetryTest, defaultImplementation) {
+  auto telemetry = TransactionTelemetry{};
+
+  telemetry.setAsThreadLocal();
+
+  telemetry.willCommit();
+  sleepAtLeast(0.1);
+  telemetry.willLayout();
+  sleepAtLeast(0.2);
+
+  TransactionTelemetry::threadLocalTelemetry()->willMeasureText();
+  sleepAtLeast(0.1);
+  TransactionTelemetry::threadLocalTelemetry()->didMeasureText();
+
+  telemetry.didLayout();
+  sleepAtLeast(0.1);
+  telemetry.didCommit();
+
+  telemetry.unsetAsThreadLocal();
+
+  telemetry.willMount();
+  sleepAtLeast(0.1);
+  telemetry.didMount();
+
+  auto commitDuration = telemetryDurationToMilliseconds(
+      telemetry.getCommitEndTime() - telemetry.getCommitStartTime());
+  auto layoutDuration = telemetryDurationToMilliseconds(
+      telemetry.getLayoutEndTime() - telemetry.getLayoutStartTime());
+  auto mountDuration = telemetryDurationToMilliseconds(
+      telemetry.getMountEndTime() - telemetry.getMountStartTime());
+
+  EXPECT_GE(commitDuration, 500);
+  EXPECT_GE(layoutDuration, 300);
+  EXPECT_GE(mountDuration, 100);
 }
 
 TEST(TransactionTelemetryTest, abnormalUseCases) {

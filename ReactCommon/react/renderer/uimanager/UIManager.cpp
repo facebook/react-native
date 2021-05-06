@@ -16,8 +16,7 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static std::unique_ptr<LeakChecker> constructLeakChecker(
     RuntimeExecutor const &runtimeExecutor,
@@ -149,7 +148,8 @@ void UIManager::setIsJSResponder(
 void UIManager::startSurface(
     ShadowTree::Unique &&shadowTree,
     std::string const &moduleName,
-    folly::dynamic const &props) const {
+    folly::dynamic const &props,
+    DisplayMode displayMode) const {
   SystraceSection s("UIManager::startSurface");
 
   auto surfaceId = shadowTree->getSurfaceId();
@@ -161,7 +161,26 @@ void UIManager::startSurface(
       return;
     }
 
-    uiManagerBinding->startSurface(runtime, surfaceId, moduleName, props);
+    uiManagerBinding->startSurface(
+        runtime, surfaceId, moduleName, props, displayMode);
+  });
+}
+
+void UIManager::setSurfaceProps(
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &props,
+    DisplayMode displayMode) const {
+  SystraceSection s("UIManager::setSurfaceProps");
+
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (!uiManagerBinding) {
+      return;
+    }
+
+    uiManagerBinding->setSurfaceProps(
+        runtime, surfaceId, moduleName, props, displayMode);
   });
 }
 
@@ -345,19 +364,10 @@ UIManagerDelegate *UIManager::getDelegate() {
 void UIManager::visitBinding(
     std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
     jsi::Runtime &runtime) const {
-  if (extractUIManagerBindingOnDemand_) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (uiManagerBinding) {
-      callback(*uiManagerBinding_);
-    }
-    return;
+  auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+  if (uiManagerBinding) {
+    callback(*uiManagerBinding);
   }
-
-  if (!uiManagerBinding_) {
-    return;
-  }
-
-  callback(*uiManagerBinding_);
 }
 
 ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
@@ -433,5 +443,4 @@ void UIManager::animationTick() {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

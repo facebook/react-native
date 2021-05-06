@@ -9,7 +9,7 @@
  */
 
 import ReactNativeViewViewConfig from '../../Components/View/ReactNativeViewViewConfig';
-import {type PartialViewConfig} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import type {PartialViewConfig} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 const AndroidTextInputViewConfig = {
   uiViewClassName: 'AndroidTextInput',

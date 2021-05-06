@@ -75,7 +75,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNode;
   }
 
-  UnsharedShadowNode cloneShadowNode(
+  ShadowNode::Unshared cloneShadowNode(
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment) const override {
     react_native_assert(
@@ -170,7 +170,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
         *family.getMostRecentState());
   }
 
-  virtual ShadowNodeFamily::Shared createFamily(
+  ShadowNodeFamily::Shared createFamily(
       ShadowNodeFamilyFragment const &fragment,
       SharedEventTarget eventTarget) const override {
     auto eventEmitter = std::make_shared<ConcreteEventEmitter const>(
@@ -183,7 +183,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
  protected:
-  virtual void adopt(UnsharedShadowNode shadowNode) const {
+  virtual void adopt(ShadowNode::Unshared const &shadowNode) const {
     // Default implementation does nothing.
     react_native_assert(
         shadowNode->getComponentHandle() == getComponentHandle());

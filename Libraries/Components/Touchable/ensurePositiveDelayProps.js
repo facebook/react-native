@@ -9,8 +9,7 @@
  */
 
 'use strict';
-
-const invariant = require('invariant');
+import invariant from 'invariant';
 
 const ensurePositiveDelayProps = function(props: any) {
   invariant(

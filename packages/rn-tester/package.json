@@ -14,7 +14,7 @@
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "17.0.1",
+    "react": "17.0.2",
     "react-native": "*"
   },
   "devDependencies": {

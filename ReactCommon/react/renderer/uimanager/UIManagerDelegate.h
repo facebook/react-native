@@ -11,8 +11,7 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Abstract class for UIManager's delegate.
@@ -62,5 +61,4 @@ class UIManagerDelegate {
   virtual ~UIManagerDelegate() noexcept = default;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

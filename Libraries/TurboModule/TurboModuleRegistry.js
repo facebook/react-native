@@ -42,12 +42,10 @@ function requireModule<T: TurboModule>(name: string): ?T {
 }
 
 export function get<T: TurboModule>(name: string): ?T {
-  // $FlowFixMe[incompatible-call]
   return requireModule<T>(name);
 }
 
 export function getEnforcing<T: TurboModule>(name: string): T {
-  // $FlowFixMe[incompatible-call]
   const module = requireModule<T>(name);
   invariant(
     module != null,

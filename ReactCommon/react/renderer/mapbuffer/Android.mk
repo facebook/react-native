@@ -17,13 +17,14 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := glog libglog_init
+LOCAL_SHARED_LIBRARIES := glog libglog_init libreact_debug
 
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,glog)
 $(call import-module,fbgloginit)
+$(call import-module,react/debug)
