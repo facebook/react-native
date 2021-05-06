@@ -26,9 +26,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
-import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
-import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
@@ -41,7 +39,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class responsible for actually dispatching view updates enqueued via {@link
- * FabricUIManager#scheduleMountItems(int, MountItem[])} on the UI thread.
+ * FabricUIManager#scheduleMountItem} on the UI thread.
  */
 public class MountingManager {
   public static final String TAG = MountingManager.class.getSimpleName();
@@ -54,36 +52,33 @@ public class MountingManager {
   private final CopyOnWriteArrayList<Integer> mStoppedSurfaceIds = new CopyOnWriteArrayList<>();
 
   @Nullable private SurfaceMountingManager mMostRecentSurfaceMountingManager;
+  @Nullable private SurfaceMountingManager mLastQueriedSurfaceMountingManager;
 
   @NonNull private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
   @NonNull private final RootViewManager mRootViewManager = new RootViewManager();
 
-  private volatile int mStoppedSurfaceCacheLastId = View.NO_ID;
-  private volatile boolean mStoppedSurfaceCacheLastResult = false;
-
   public MountingManager(@NonNull ViewManagerRegistry viewManagerRegistry) {
     mViewManagerRegistry = viewManagerRegistry;
   }
 
-  /**
-   * This mutates the rootView, which is an Android View, so this should only be called on the UI
-   * thread.
-   *
-   * @param surfaceId
-   * @param rootView
-   */
+  /** Starts surface and attaches the root view. */
   @AnyThread
   public void startSurface(
       final int surfaceId, @NonNull final View rootView, ThemedReactContext themedReactContext) {
+    SurfaceMountingManager mountingManager = startSurface(surfaceId);
+    mountingManager.attachRootView(rootView, themedReactContext);
+  }
+
+  /**
+   * Starts surface without attaching the view. All view operations executed against that surface
+   * will be queued until the view is attached.
+   */
+  @AnyThread
+  public SurfaceMountingManager startSurface(final int surfaceId) {
     SurfaceMountingManager surfaceMountingManager =
         new SurfaceMountingManager(
-            surfaceId,
-            rootView,
-            mJSResponderHandler,
-            mViewManagerRegistry,
-            mRootViewManager,
-            themedReactContext);
+            surfaceId, mJSResponderHandler, mViewManagerRegistry, mRootViewManager, this);
 
     // There could technically be a race condition here if addRootView is called twice from
     // different threads, though this is (probably) extremely unlikely, and likely an error.
@@ -94,17 +89,31 @@ public class MountingManager {
     if (mSurfaceIdToManager.get(surfaceId) != surfaceMountingManager) {
       ReactSoftException.logSoftException(
           TAG,
-          new IllegalViewOperationException(
-              "Called addRootView more than once for the SurfaceId [" + surfaceId + "]"));
+          new IllegalStateException(
+              "Called startSurface more than once for the SurfaceId [" + surfaceId + "]"));
     }
 
     mMostRecentSurfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+    return surfaceMountingManager;
+  }
+
+  @AnyThread
+  public void attachRootView(
+      final int surfaceId, @NonNull final View rootView, ThemedReactContext themedReactContext) {
+    SurfaceMountingManager surfaceMountingManager =
+        getSurfaceManagerEnforced(surfaceId, "attachView");
+
+    if (surfaceMountingManager.isStopped()) {
+      ReactSoftException.logSoftException(
+          TAG, new IllegalStateException("Trying to attach a view to a stopped surface"));
+      return;
+    }
+
+    surfaceMountingManager.attachRootView(rootView, themedReactContext);
   }
 
   @AnyThread
   public void stopSurface(final int surfaceId) {
-    mStoppedSurfaceCacheLastId = View.NO_ID;
-
     SurfaceMountingManager surfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
     if (surfaceMountingManager != null) {
       // Maximum number of stopped surfaces to keep track of
@@ -124,13 +133,22 @@ public class MountingManager {
     } else {
       ReactSoftException.logSoftException(
           TAG,
-          new IllegalViewOperationException(
-              "Cannot call StopSurface on non-existent surface: [" + surfaceId + "]"));
+          new IllegalStateException(
+              "Cannot call stopSurface on non-existent surface: [" + surfaceId + "]"));
     }
   }
 
   @Nullable
   public SurfaceMountingManager getSurfaceManager(int surfaceId) {
+    if (mLastQueriedSurfaceMountingManager != null
+        && mLastQueriedSurfaceMountingManager.getSurfaceId() == surfaceId) {
+      return mLastQueriedSurfaceMountingManager;
+    }
+
+    if (mMostRecentSurfaceMountingManager != null
+        && mMostRecentSurfaceMountingManager.getSurfaceId() == surfaceId) {
+      return mMostRecentSurfaceMountingManager;
+    }
     return mSurfaceIdToManager.get(surfaceId);
   }
 
@@ -150,30 +168,29 @@ public class MountingManager {
   }
 
   public boolean surfaceIsStopped(int surfaceId) {
-    if (surfaceId == View.NO_ID) {
-      return false;
-    }
-    if (surfaceId == mStoppedSurfaceCacheLastId) {
-      return mStoppedSurfaceCacheLastResult;
-    }
-
-    boolean res = surfaceIsStoppedImpl(surfaceId);
-    mStoppedSurfaceCacheLastResult = res;
-    mStoppedSurfaceCacheLastId = surfaceId;
-    return res;
-  }
-
-  private boolean surfaceIsStoppedImpl(int surfaceId) {
     if (mStoppedSurfaceIds.contains(surfaceId)) {
       return true;
     }
 
-    SurfaceMountingManager surfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+    SurfaceMountingManager surfaceMountingManager = getSurfaceManager(surfaceId);
     if (surfaceMountingManager != null && surfaceMountingManager.isStopped()) {
       return true;
     }
 
     return false;
+  }
+
+  public boolean isWaitingForViewAttach(int surfaceId) {
+    SurfaceMountingManager mountingManager = getSurfaceManager(surfaceId);
+    if (mountingManager == null) {
+      return false;
+    }
+
+    if (mountingManager.isStopped()) {
+      return false;
+    }
+
+    return !mountingManager.isRootViewAttached();
   }
 
   /**
@@ -246,13 +263,15 @@ public class MountingManager {
    * Send an accessibility eventType to a Native View. eventType is any valid `AccessibilityEvent.X`
    * value.
    *
-   * <p>Why accept `-1` SurfaceId? Currently there are calls to
-   * UIManagerModule.sendAccessibilityEvent which is a legacy API and accepts only reactTag. We will
-   * have to investigate and migrate away from those calls over time.
+   * <p>Why accept `-1` SurfaceId? Currently there are calls to UIManager.sendAccessibilityEvent
+   * which is a legacy API and accepts only reactTag. We will have to investigate and migrate away
+   * from those calls over time.
    *
-   * @param surfaceId
-   * @param reactTag
-   * @param eventType
+   * @param surfaceId {@link int} that identifies the surface or -1 to temporarily support backward
+   *     compatibility.
+   * @param reactTag {@link int} that identifies the react Tag of the view.
+   * @param eventType {@link int} that identifies Android eventType. see {@link
+   *     View#sendAccessibilityEvent}
    */
   public void sendAccessibilityEvent(int surfaceId, int reactTag, int eventType) {
     UiThreadUtil.assertOnUiThread();

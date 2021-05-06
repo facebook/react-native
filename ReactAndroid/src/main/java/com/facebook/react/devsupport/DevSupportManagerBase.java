@@ -43,6 +43,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
+import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
@@ -914,8 +915,7 @@ public abstract class DevSupportManagerBase
                         });
 
                     @Nullable ReactContext context = mCurrentContext;
-                    if (context == null
-                        || (!context.isBridgeless() && !context.hasActiveCatalystInstance())) {
+                    if (context == null || !context.hasActiveReactInstance()) {
                       return;
                     }
 
@@ -1152,11 +1152,7 @@ public abstract class DevSupportManagerBase
         });
   }
 
-  protected interface BundleLoadCallback {
-    void onSuccess();
-  }
-
-  protected void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {
+  public void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {
     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_START);
 
     mDevLoadingViewController.showForUrl(bundleURL);

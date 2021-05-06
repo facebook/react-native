@@ -24,8 +24,7 @@
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 #include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class UIManagerBinding;
 class UIManagerCommitHook;
@@ -88,7 +87,14 @@ class UIManager final : public ShadowTreeDelegate {
   void startSurface(
       ShadowTree::Unique &&shadowTree,
       std::string const &moduleName,
-      folly::dynamic const &props) const;
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
+
+  void setSurfaceProps(
+      SurfaceId surfaceId,
+      std::string const &moduleName,
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
 
   ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
@@ -181,7 +187,6 @@ class UIManager final : public ShadowTreeDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
-  UIManagerBinding *uiManagerBinding_;
   RuntimeExecutor const runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor const backgroundExecutor_{};
@@ -189,10 +194,7 @@ class UIManager final : public ShadowTreeDelegate {
   mutable better::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;
 
-  bool extractUIManagerBindingOnDemand_{};
-
   std::unique_ptr<LeakChecker> leakChecker_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

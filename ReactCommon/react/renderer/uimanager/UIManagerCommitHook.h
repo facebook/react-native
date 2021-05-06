@@ -9,8 +9,7 @@
 
 #include <react/renderer/components/root/RootShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ShadowTree;
 class UIManager;
@@ -41,5 +40,4 @@ class UIManagerCommitHook {
   virtual ~UIManagerCommitHook() noexcept = default;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

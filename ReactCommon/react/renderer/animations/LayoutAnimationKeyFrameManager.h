@@ -38,28 +38,22 @@ void PrintMutationInstructionRelative(
 
 // This corresponds exactly with JS.
 enum class AnimationType {
-  None,
-  Spring,
-  Linear,
-  EaseInEaseOut,
-  EaseIn,
-  EaseOut,
-  Keyboard
+  None = 0,
+  Spring = 1,
+  Linear = 2,
+  EaseInEaseOut = 4,
+  EaseIn = 8,
+  EaseOut = 16,
+  Keyboard = 32
 };
 enum class AnimationProperty {
-  NotApplicable,
-  Opacity,
-  ScaleX,
-  ScaleY,
-  ScaleXY
+  NotApplicable = 0,
+  Opacity = 1,
+  ScaleX = 2,
+  ScaleY = 4,
+  ScaleXY = 8
 };
-enum class AnimationConfigurationType {
-  Noop, // for animation placeholders that are not animated, and should be
-  // executed once other animations have completed
-  Create,
-  Update,
-  Delete
-};
+enum class AnimationConfigurationType { Create = 1, Update = 2, Delete = 4 };
 
 // This corresponds exactly with JS.
 struct AnimationConfig {
@@ -82,9 +76,11 @@ struct LayoutAnimationConfig {
 };
 
 struct AnimationKeyFrame {
-  // The mutation that should be executed once the animation completes
-  // (optional).
-  better::optional<ShadowViewMutation> finalMutationForKeyFrame;
+  // The mutation(s) that should be executed once the animation completes.
+  // This maybe empty.
+  // For CREATE/INSERT this will contain CREATE, INSERT in that order.
+  // For REMOVE/DELETE, same.
+  std::vector<ShadowViewMutation> finalMutationsForKeyFrame;
 
   // The type of animation this is (for configuration purposes)
   AnimationConfigurationType type;
@@ -106,6 +102,10 @@ struct AnimationKeyFrame {
   double initialProgress;
 
   bool invalidated{false};
+
+  // In the case where some mutation conflicts with this keyframe,
+  // should we generate final synthetic UPDATE mutations for this keyframe?
+  bool generateFinalSyntheticMutations{true};
 };
 
 class LayoutAnimationCallbackWrapper {
@@ -218,9 +218,10 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowViewMutation const &mutation,
       bool skipLastAnimation = false) const;
 
-  std::vector<AnimationKeyFrame> getAndEraseConflictingAnimations(
+  void getAndEraseConflictingAnimations(
       SurfaceId surfaceId,
-      ShadowViewMutationList const &mutations) const;
+      ShadowViewMutationList const &mutations,
+      std::vector<AnimationKeyFrame> &conflictingAnimations) const;
 
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable std::vector<SurfaceId> surfaceIdsToStop_{};
@@ -245,6 +246,16 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       SurfaceId surfaceId,
       ShadowViewMutation::List &mutationsList,
       uint64_t now) const = 0;
+
+  /**
+   * Queue (and potentially synthesize) final mutations for a finished keyframe.
+   * Keyframe animation may have timed-out, or be canceled due to a conflict.
+   */
+  void queueFinalMutationsForCompletedKeyFrame(
+      AnimationKeyFrame const &keyframe,
+      ShadowViewMutation::List &mutationsList,
+      bool interrupted,
+      std::string logPrefix) const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable better::optional<LayoutAnimation> currentAnimation_{};
@@ -289,14 +300,6 @@ static inline bool shouldFirstComeBeforeSecondMutation(
       return true;
     }
 
-    // Update comes last, before deletes
-    if (rhs.type == ShadowViewMutation::Type::Update) {
-      return true;
-    }
-    if (lhs.type == ShadowViewMutation::Type::Update) {
-      return false;
-    }
-
     // Remove comes before insert
     if (lhs.type == ShadowViewMutation::Type::Remove &&
         rhs.type == ShadowViewMutation::Type::Insert) {
@@ -320,9 +323,12 @@ static inline bool shouldFirstComeBeforeSecondMutation(
     // Make sure that removes on the same level are sorted - highest indices
     // must come first.
     if (lhs.type == ShadowViewMutation::Type::Remove &&
-        lhs.parentShadowView.tag == rhs.parentShadowView.tag &&
-        lhs.index > rhs.index) {
-      return true;
+        lhs.parentShadowView.tag == rhs.parentShadowView.tag) {
+      if (lhs.index > rhs.index) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 

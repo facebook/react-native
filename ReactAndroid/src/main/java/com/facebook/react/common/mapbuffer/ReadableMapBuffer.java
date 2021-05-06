@@ -29,8 +29,8 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
   // Value used to verify if the data is serialized with LittleEndian order.
   private static final int ALIGNMENT = 0xFE;
 
-  // 6 bytes = 2 (alignment) + 2 (count) + 2 (size)
-  private static final int HEADER_SIZE = 6;
+  // 8 bytes = 2 (alignment) + 2 (count) + 4 (size)
+  private static final int HEADER_SIZE = 8;
 
   // key size = 2 bytes
   private static final int KEY_SIZE = 2;
@@ -50,7 +50,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
 
   // Size of the Serialized Data
   @SuppressWarnings("unused")
-  private short mSizeOfData = 0;
+  private int mSizeOfData = 0;
 
   // Amount of items serialized on the ByteBuffer
   @SuppressWarnings("unused")
@@ -158,10 +158,10 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
   private ReadableMapBuffer readMapBufferValue(int position) {
     int offset = getOffsetForDynamicData() + mBuffer.getInt(position);
 
-    int sizeMapBuffer = mBuffer.getShort(offset);
+    int sizeMapBuffer = mBuffer.getInt(offset);
     byte[] buffer = new byte[sizeMapBuffer];
 
-    int bufferOffset = offset + SHORT_SIZE;
+    int bufferOffset = offset + INT_SIZE;
 
     mBuffer.position(bufferOffset);
     mBuffer.get(buffer, 0, sizeMapBuffer);
@@ -178,7 +178,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     // count
     mCount = mBuffer.getShort();
     // size
-    mSizeOfData = mBuffer.getShort();
+    mSizeOfData = mBuffer.getInt();
   }
 
   /**

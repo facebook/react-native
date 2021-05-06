@@ -10,14 +10,13 @@
 
 'use strict';
 
-const PickerAndroid = require('./PickerAndroid');
-const PickerIOS = require('./PickerIOS');
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const UnimplementedView = require('../UnimplementedViews/UnimplementedView');
+import * as React from 'react';
+import PickerAndroid from './PickerAndroid';
+import PickerIOS from './PickerIOS';
+import Platform from '../../Utilities/Platform';
+import UnimplementedView from '../UnimplementedViews/UnimplementedView';
 
-import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {TextStyleProp, ColorValue} from '../../StyleSheet/StyleSheet';
 
 const MODE_DIALOG = 'dialog';
 const MODE_DROPDOWN = 'dropdown';
@@ -147,13 +146,17 @@ class Picker extends React.Component<PickerProps> {
 
   render(): React.Node {
     if (Platform.OS === 'ios') {
-      /* $FlowFixMe(>=0.81.0 site=react_native_ios_fb) This suppression was
-       * added when renaming suppression sites. */
+      /* $FlowFixMe[prop-missing] (>=0.81.0 site=react_native_ios_fb) This
+       * suppression was added when renaming suppression sites. */
+      /* $FlowFixMe[incompatible-type] (>=0.81.0 site=react_native_ios_fb) This
+       * suppression was added when renaming suppression sites. */
       return <PickerIOS {...this.props}>{this.props.children}</PickerIOS>;
     } else if (Platform.OS === 'android') {
       return (
-        /* $FlowFixMe(>=0.81.0 site=react_native_android_fb) This suppression
-         * was added when renaming suppression sites. */
+        /* $FlowFixMe[incompatible-type] (>=0.81.0 site=react_native_android_fb) This
+         * suppression was added when renaming suppression sites. */
+        /* $FlowFixMe[prop-missing] (>=0.81.0 site=react_native_android_fb) This
+         * suppression was added when renaming suppression sites. */
         <PickerAndroid {...this.props}>{this.props.children}</PickerAndroid>
       );
     } else {

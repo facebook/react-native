@@ -44,9 +44,6 @@ void LayoutAnimationDriver::animationMutationsForFrame(
 
     int incompleteAnimations = 0;
     for (auto &keyframe : animation.keyFrames) {
-      if (keyframe.type == AnimationConfigurationType::Noop) {
-        continue;
-      }
       if (keyframe.invalidated) {
         continue;
       }
@@ -111,42 +108,11 @@ void LayoutAnimationDriver::animationMutationsForFrame(
         if (keyframe.invalidated) {
           continue;
         }
-        if (keyframe.finalMutationForKeyFrame.hasValue()) {
-          auto const &finalMutationForKeyFrame =
-              *keyframe.finalMutationForKeyFrame;
-          PrintMutationInstruction(
-              "Animation Complete: Queuing up Final Mutation:",
-              finalMutationForKeyFrame);
-
-          // Copy so that if something else mutates the inflight animations, it
-          // won't change this mutation after this point.
-          auto mutation = ShadowViewMutation{
-              finalMutationForKeyFrame.type,
-              finalMutationForKeyFrame.parentShadowView,
-              keyframe.viewPrev,
-              finalMutationForKeyFrame.newChildShadowView,
-              finalMutationForKeyFrame.index};
-          react_native_assert(mutation.oldChildShadowView.tag > 0);
-          react_native_assert(
-              mutation.newChildShadowView.tag > 0 ||
-              finalMutationForKeyFrame.type == ShadowViewMutation::Remove ||
-              finalMutationForKeyFrame.type == ShadowViewMutation::Delete);
-          mutationsList.push_back(mutation);
-        } else {
-          // Issue a final UPDATE so that the final props object sent to the
-          // mounting layer is the same as the one on the ShadowTree. This is
-          // mostly to make the MountingCoordinator StubViewTree assertions
-          // pass.
-          auto mutation = ShadowViewMutation{
-              ShadowViewMutation::Type::Update,
-              keyframe.parentView,
-              keyframe.viewPrev,
-              keyframe.viewEnd,
-              -1};
-          react_native_assert(mutation.oldChildShadowView.tag > 0);
-          react_native_assert(mutation.newChildShadowView.tag > 0);
-          mutationsList.push_back(mutation);
-        }
+        queueFinalMutationsForCompletedKeyFrame(
+            keyframe,
+            mutationsList,
+            false,
+            "LayoutAnimationDriver: Animation Completed");
       }
 
       it = inflightAnimations_.erase(it);

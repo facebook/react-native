@@ -42,5 +42,39 @@ using ComponentHandle = int64_t;
  */
 using ComponentName = char const *;
 
+/*
+ * Defines how visual side effects (views, images, text, and so on) are
+ * mounted (on not) on the screen.
+ */
+enum class DisplayMode {
+  /*
+   * The surface is running normally. All visual side-effects will be rendered
+   * on the screen.
+   */
+  Visible = 0,
+
+  /*
+   * The surface is `Suspended`. All new (committed after switching to the
+   * mode) visual side-effects will *not* be mounted on the screen (the screen
+   * will stop updating).
+   *
+   * The mode can be used for preparing a surface for possible future use.
+   * The surface will be prepared without spending computing resources
+   * on mounting, and then can be instantly mounted if needed.
+   */
+  Suspended = 1,
+
+  /*
+   * The surface is `Hidden`. All previously mounted visual side-effects
+   * will be unmounted, and all new (committed after switching to the mode)
+   * visual side-effects will *not* be mounted on the screen until the mode is
+   * switched back to `normal`.
+   *
+   * The mode can be used for temporarily freeing computing resources of
+   * off-the-screen surfaces.
+   */
+  Hidden = 2,
+};
+
 } // namespace react
 } // namespace facebook

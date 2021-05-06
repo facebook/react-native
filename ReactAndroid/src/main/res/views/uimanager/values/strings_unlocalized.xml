@@ -17,6 +17,10 @@
     translatable="false"
     >Button</string>
   <string
+    name="toggle_button_description"
+    translatable="false"
+    >Toggle Button</string>
+  <string
     name="imagebutton_description"
     translatable="false"
     >Button, Image</string>
@@ -92,6 +96,10 @@
     name="state_collapsed_description"
     translatable="false"
     >collapsed</string>
+  <string
+    name="state_unselected_description"
+    translatable="false"
+    >unselected</string>
   <string
     name="state_on_description"
     translatable="false"

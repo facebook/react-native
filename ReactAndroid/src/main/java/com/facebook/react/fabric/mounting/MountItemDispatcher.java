@@ -183,7 +183,7 @@ public class MountItemDispatcher {
           printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
         }
         try {
-          command.execute(mMountingManager);
+          executeOrEnqueue(command);
         } catch (RetryableMountingLayerException e) {
           // If the exception is marked as Retryable, we retry the viewcommand exactly once, after
           // the current batch of mount items has finished executing.
@@ -225,7 +225,7 @@ public class MountItemDispatcher {
               + preMountItemsToDispatch.size());
 
       for (PreAllocateViewMountItem preMountItem : preMountItemsToDispatch) {
-        preMountItem.execute(mMountingManager);
+        executeOrEnqueue(preMountItem);
       }
 
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -244,7 +244,7 @@ public class MountItemDispatcher {
         }
 
         try {
-          mountItem.execute(mMountingManager);
+          executeOrEnqueue(mountItem);
         } catch (Throwable e) {
           // If there's an exception, we want to log diagnostics in prod and rethrow.
           FLog.e(TAG, "dispatchMountItems: caught exception, displaying all MountItems", e);
@@ -288,13 +288,23 @@ public class MountItemDispatcher {
           break;
         }
 
-        preMountItemToDispatch.execute(mMountingManager);
+        executeOrEnqueue(preMountItemToDispatch);
       }
     } finally {
       mInDispatch = false;
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  private void executeOrEnqueue(MountItem item) {
+    if (mMountingManager.isWaitingForViewAttach(item.getSurfaceId())) {
+      SurfaceMountingManager surfaceMountingManager =
+          mMountingManager.getSurfaceManager(item.getSurfaceId());
+      surfaceMountingManager.executeOnViewAttach(item);
+    } else {
+      item.execute(mMountingManager);
+    }
   }
 
   @Nullable

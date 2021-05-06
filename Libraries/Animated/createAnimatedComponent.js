@@ -202,19 +202,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       setLocalRef: ref => {
         this._prevComponent = this._component;
         this._component = ref;
-
-        // TODO: Delete this in a future release.
-        if (ref != null && ref.getNode == null) {
-          ref.getNode = () => {
-            console.warn(
-              '%s: Calling `getNode()` on the ref of an Animated component ' +
-                'is no longer necessary. You can now directly use the ref ' +
-                'instead. This method will be removed in a future release.',
-              ref.constructor.name ?? '<<anonymous>>',
-            );
-            return ref;
-          };
-        }
       },
     });
 

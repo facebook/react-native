@@ -14,7 +14,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     fbandroid_allow_jni_merging = True,
@@ -28,6 +28,7 @@ rn_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
+        react_native_xplat_target("react/debug:debug"),
         FBJNI_TARGET,
     ],
 )

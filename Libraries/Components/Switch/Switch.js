@@ -85,6 +85,8 @@ export type Props = $ReadOnly<{|
    */
   onValueChange?: ?(value: boolean) => Promise<void> | void,
 |}>;
+const returnsFalse = () => false;
+const returnsTrue = () => true;
 
 /**
   Renders a boolean input.
@@ -127,135 +129,103 @@ export type Props = $ReadOnly<{|
   export default App;
   ```
  */
-class Switch extends React.Component<Props> {
-  _nativeSwitchRef: ?React.ElementRef<
+export default function Switch(props: Props): React.Node {
+  const {
+    disabled,
+    ios_backgroundColor,
+    onChange,
+    onValueChange,
+    style,
+    thumbColor,
+    trackColor,
+    value,
+    ...restProps
+  } = props;
+  const trackColorForFalse = trackColor?.false;
+  const trackColorForTrue = trackColor?.true;
+
+  const nativeSwitchRef = React.useRef<?React.ElementRef<
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-  >;
-  _lastNativeValue: ?boolean;
+  >>(null);
+  const [native, setNative] = React.useState({value: null});
 
-  render(): React.Node {
-    const {
-      disabled,
-      ios_backgroundColor,
-      onChange,
-      onValueChange,
-      style,
-      thumbColor,
-      trackColor,
-      value,
-      ...props
-    } = this.props;
+  const handleChange = (event: SwitchChangeEvent) => {
+    onChange?.(event);
+    onValueChange?.(event.nativeEvent.value);
+    setNative({value: event.nativeEvent.value});
+  };
 
-    const trackColorForFalse = trackColor?.false;
-    const trackColorForTrue = trackColor?.true;
-
-    if (Platform.OS === 'android') {
-      const platformProps = {
-        enabled: disabled !== true,
-        on: value === true,
-        style,
-        thumbTintColor: thumbColor,
-        trackColorForFalse: trackColorForFalse,
-        trackColorForTrue: trackColorForTrue,
-        trackTintColor: value === true ? trackColorForTrue : trackColorForFalse,
-      };
-
-      return (
-        <AndroidSwitchNativeComponent
-          {...props}
-          {...platformProps}
-          accessibilityRole={props.accessibilityRole ?? 'switch'}
-          onChange={this._handleChange}
-          onResponderTerminationRequest={returnsFalse}
-          onStartShouldSetResponder={returnsTrue}
-          ref={this._handleSwitchNativeComponentRef}
-        />
-      );
-    } else {
-      const platformProps = {
-        disabled,
-        onTintColor: trackColorForTrue,
-        style: StyleSheet.compose(
-          {height: 31, width: 51},
-          StyleSheet.compose(
-            style,
-            ios_backgroundColor == null
-              ? null
-              : {
-                  backgroundColor: ios_backgroundColor,
-                  borderRadius: 16,
-                },
-          ),
-        ),
-        thumbTintColor: thumbColor,
-        tintColor: trackColorForFalse,
-        value: value === true,
-      };
-
-      return (
-        <SwitchNativeComponent
-          {...props}
-          {...platformProps}
-          accessibilityRole={props.accessibilityRole ?? 'switch'}
-          onChange={this._handleChange}
-          onResponderTerminationRequest={returnsFalse}
-          onStartShouldSetResponder={returnsTrue}
-          ref={this._handleSwitchNativeComponentRef}
-        />
-      );
-    }
-  }
-
-  componentDidUpdate() {
+  React.useLayoutEffect(() => {
     // This is necessary in case native updates the switch and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
-    const nativeProps = {};
-    const value = this.props.value === true;
-
-    if (this._lastNativeValue !== value) {
-      nativeProps.value = value;
-    }
-
+    const jsValue = value === true;
+    const shouldUpdateNativeSwitch = native.value !== jsValue;
     if (
-      Object.keys(nativeProps).length > 0 &&
-      this._nativeSwitchRef &&
-      this._nativeSwitchRef.setNativeProps
+      shouldUpdateNativeSwitch &&
+      nativeSwitchRef.current?.setNativeProps != null
     ) {
       if (Platform.OS === 'android') {
-        AndroidSwitchCommands.setNativeValue(
-          this._nativeSwitchRef,
-          nativeProps.value,
-        );
+        AndroidSwitchCommands.setNativeValue(nativeSwitchRef.current, jsValue);
       } else {
-        SwitchCommands.setValue(this._nativeSwitchRef, nativeProps.value);
+        SwitchCommands.setValue(nativeSwitchRef.current, jsValue);
       }
     }
+  }, [value, native]);
+
+  if (Platform.OS === 'android') {
+    const platformProps = {
+      enabled: disabled !== true,
+      on: value === true,
+      style,
+      thumbTintColor: thumbColor,
+      trackColorForFalse: trackColorForFalse,
+      trackColorForTrue: trackColorForTrue,
+      trackTintColor: value === true ? trackColorForTrue : trackColorForFalse,
+    };
+
+    return (
+      <AndroidSwitchNativeComponent
+        {...restProps}
+        {...platformProps}
+        accessibilityRole={props.accessibilityRole ?? 'switch'}
+        onChange={handleChange}
+        onResponderTerminationRequest={returnsFalse}
+        onStartShouldSetResponder={returnsTrue}
+        ref={nativeSwitchRef}
+      />
+    );
+  } else {
+    const platformProps = {
+      disabled,
+      onTintColor: trackColorForTrue,
+      style: StyleSheet.compose(
+        {height: 31, width: 51},
+        StyleSheet.compose(
+          style,
+          ios_backgroundColor == null
+            ? null
+            : {
+                backgroundColor: ios_backgroundColor,
+                borderRadius: 16,
+              },
+        ),
+      ),
+      thumbTintColor: thumbColor,
+      tintColor: trackColorForFalse,
+      value: value === true,
+    };
+
+    return (
+      <SwitchNativeComponent
+        {...restProps}
+        {...platformProps}
+        accessibilityRole={props.accessibilityRole ?? 'switch'}
+        onChange={handleChange}
+        onResponderTerminationRequest={returnsFalse}
+        onStartShouldSetResponder={returnsTrue}
+        ref={nativeSwitchRef}
+      />
+    );
   }
-
-  _handleChange = (event: SwitchChangeEvent) => {
-    if (this.props.onChange != null) {
-      this.props.onChange(event);
-    }
-
-    if (this.props.onValueChange != null) {
-      this.props.onValueChange(event.nativeEvent.value);
-    }
-
-    this._lastNativeValue = event.nativeEvent.value;
-    this.forceUpdate();
-  };
-
-  _handleSwitchNativeComponentRef = (
-    ref: ?React.ElementRef<
-      typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-    >,
-  ) => {
-    this._nativeSwitchRef = ref;
-  };
 }
-
-const returnsFalse = () => false;
-const returnsTrue = () => true;
-
-module.exports = Switch;
