@@ -86,9 +86,18 @@ public class UIManagerHelper {
       }
     }
     CatalystInstance catalystInstance = context.getCatalystInstance();
-    return uiManagerType == FABRIC
-        ? (UIManager) catalystInstance.getJSIModule(JSIModuleType.UIManager)
-        : catalystInstance.getNativeModule(UIManagerModule.class);
+    try {
+      return uiManagerType == FABRIC
+          ? (UIManager) catalystInstance.getJSIModule(JSIModuleType.UIManager)
+          : catalystInstance.getNativeModule(UIManagerModule.class);
+    } catch (IllegalArgumentException ex) {
+      // TODO T67518514 Clean this up once we migrate everything over to bridgeless mode
+      ReactSoftException.logSoftException(
+          "UIManagerHelper",
+          new ReactNoCrashSoftException(
+              "Cannot get UIManager for UIManagerType: " + uiManagerType));
+      return catalystInstance.getNativeModule(UIManagerModule.class);
+    }
   }
 
   /**
