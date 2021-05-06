@@ -221,7 +221,7 @@ class TouchableOpacity extends React.Component<Props, State> {
     } = this.state.pressability.getEventHandlers();
 
     const accessibilityState =
-      this._disabled !== null
+      this._disabled != null
         ? {
             ...this.props.accessibilityState,
             disabled: this._disabled,

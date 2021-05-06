@@ -2,11 +2,6 @@
 
 exports[`TouchableOpacity renders correctly 1`] = `
 <View
-  accessibilityState={
-    Object {
-      "disabled": undefined,
-    }
-  }
   accessible={true}
   collapsable={false}
   focusable={false}
