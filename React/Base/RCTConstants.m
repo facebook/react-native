@@ -26,21 +26,6 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
 }
 
 /*
- * Optimized hit-testing
- */
-static BOOL RCTExperimentOptimizedHitTesting = NO;
-
-BOOL RCTExperimentGetOptimizedHitTesting()
-{
-  return RCTExperimentOptimizedHitTesting;
-}
-
-void RCTExperimentSetOptimizedHitTesting(BOOL value)
-{
-  RCTExperimentOptimizedHitTesting = value;
-}
-
-/*
  * Preemptive View Allocation
  */
 static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
@@ -53,19 +38,4 @@ BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
 void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
   RCTExperimentPreemptiveViewAllocationDisabled = value;
-}
-
-/*
- * Release resources when app enters background
- */
-static BOOL RCTExperimentReleaseResourcesWhenBackgrounded = NO;
-
-BOOL RCTExperimentGetReleaseResourcesWhenBackgrounded()
-{
-  return RCTExperimentReleaseResourcesWhenBackgrounded;
-}
-
-void RCTExperimentSetReleaseResourcesWhenBackgrounded(BOOL value)
-{
-  RCTExperimentReleaseResourcesWhenBackgrounded = value;
 }

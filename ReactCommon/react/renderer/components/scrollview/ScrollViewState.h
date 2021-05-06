@@ -9,7 +9,11 @@
 
 #include <react/renderer/graphics/Geometry.h>
 
+#ifdef ANDROID
 #include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
 
 namespace facebook {
 namespace react {
@@ -38,6 +42,9 @@ class ScrollViewState final {
   folly::dynamic getDynamic() const {
     return folly::dynamic::object("contentOffsetLeft", contentOffset.x)(
         "contentOffsetTop", contentOffset.y);
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
   };
 #endif
 };

@@ -13,8 +13,7 @@
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Exposes UIManager to JavaScript realm.
@@ -54,7 +53,20 @@ class UIManagerBinding : public jsi::HostObject {
       jsi::Runtime &runtime,
       SurfaceId surfaceId,
       std::string const &moduleName,
-      folly::dynamic const &initalProps) const;
+      folly::dynamic const &initalProps,
+      DisplayMode displayMode) const;
+
+  /*
+   * Updates the React Native Surface identified with surfaceId and moduleName
+   * with the given props.
+   * Thread synchronization must be enforced externally.
+   */
+  void setSurfaceProps(
+      jsi::Runtime &runtime,
+      SurfaceId surfaceId,
+      std::string const &moduleName,
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
 
   /*
    * Stops React Native Surface with given id.
@@ -91,5 +103,4 @@ class UIManagerBinding : public jsi::HostObject {
   std::unique_ptr<EventHandler const> eventHandler_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

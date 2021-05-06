@@ -16,8 +16,27 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
+
+static std::unique_ptr<LeakChecker> constructLeakChecker(
+    RuntimeExecutor const &runtimeExecutor,
+    GarbageCollectionTrigger const &garbageCollectionTrigger) {
+  if (garbageCollectionTrigger) {
+    return std::make_unique<LeakChecker>(
+        runtimeExecutor, garbageCollectionTrigger);
+  } else {
+    return {};
+  }
+}
+
+UIManager::UIManager(
+    RuntimeExecutor const &runtimeExecutor,
+    BackgroundExecutor const &backgroundExecutor,
+    GarbageCollectionTrigger const &garbageCollectionTrigger)
+    : runtimeExecutor_(runtimeExecutor),
+      backgroundExecutor_(backgroundExecutor),
+      leakChecker_(
+          constructLeakChecker(runtimeExecutor, garbageCollectionTrigger)) {}
 
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
@@ -59,6 +78,9 @@ SharedShadowNode UIManager::createNode(
 
   if (delegate_) {
     delegate_->uiManagerDidCreateShadowNode(shadowNode);
+  }
+  if (leakChecker_) {
+    leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
   }
 
   return shadowNode;
@@ -115,23 +137,22 @@ void UIManager::completeSurface(
 
 void UIManager::setIsJSResponder(
     ShadowNode::Shared const &shadowNode,
-    bool isJSResponder) const {
+    bool isJSResponder,
+    bool blockNativeResponder) const {
   if (delegate_) {
-    delegate_->uiManagerDidSetIsJSResponder(shadowNode, isJSResponder);
+    delegate_->uiManagerDidSetIsJSResponder(
+        shadowNode, isJSResponder, blockNativeResponder);
   }
 }
 
-ShadowTree const &UIManager::startSurface(
-    SurfaceId surfaceId,
+void UIManager::startSurface(
+    ShadowTree::Unique &&shadowTree,
     std::string const &moduleName,
     folly::dynamic const &props,
-    LayoutConstraints const &layoutConstraints,
-    LayoutContext const &layoutContext) const {
+    DisplayMode displayMode) const {
   SystraceSection s("UIManager::startSurface");
 
-  auto shadowTree = std::make_unique<ShadowTree>(
-      surfaceId, layoutConstraints, layoutContext, *this);
-  auto shadowTreePointer = shadowTree.get();
+  auto surfaceId = shadowTree->getSurfaceId();
   shadowTreeRegistry_.add(std::move(shadowTree));
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
@@ -140,13 +161,30 @@ ShadowTree const &UIManager::startSurface(
       return;
     }
 
-    uiManagerBinding->startSurface(runtime, surfaceId, moduleName, props);
+    uiManagerBinding->startSurface(
+        runtime, surfaceId, moduleName, props, displayMode);
   });
-
-  return *shadowTreePointer;
 }
 
-void UIManager::stopSurface(SurfaceId surfaceId) const {
+void UIManager::setSurfaceProps(
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &props,
+    DisplayMode displayMode) const {
+  SystraceSection s("UIManager::setSurfaceProps");
+
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (!uiManagerBinding) {
+      return;
+    }
+
+    uiManagerBinding->setSurfaceProps(
+        runtime, surfaceId, moduleName, props, displayMode);
+  });
+}
+
+ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("UIManager::stopSurface");
 
   // Stop any ongoing animations.
@@ -155,13 +193,6 @@ void UIManager::stopSurface(SurfaceId surfaceId) const {
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
-
-  // As part of stopping a Surface, we need to properly destroy all
-  // mounted views, so we need to commit an empty tree to trigger all
-  // side-effects (including destroying and removing mounted views).
-  if (shadowTree) {
-    shadowTree->commitEmptyTree();
-  }
 
   // We execute JavaScript/React part of the process at the very end to minimize
   // any visible side-effects of stopping the Surface. Any possible commits from
@@ -175,6 +206,12 @@ void UIManager::stopSurface(SurfaceId surfaceId) const {
 
     uiManagerBinding->stopSurface(runtime, surfaceId);
   });
+
+  if (leakChecker_) {
+    leakChecker_->stopSurface(surfaceId);
+  }
+
+  return shadowTree;
 }
 
 ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
@@ -324,31 +361,13 @@ UIManagerDelegate *UIManager::getDelegate() {
   return delegate_;
 }
 
-void UIManager::setBackgroundExecutor(
-    BackgroundExecutor const &backgroundExecutor) {
-  backgroundExecutor_ = backgroundExecutor;
-}
-
-void UIManager::setRuntimeExecutor(RuntimeExecutor const &runtimeExecutor) {
-  runtimeExecutor_ = runtimeExecutor;
-}
-
 void UIManager::visitBinding(
     std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
     jsi::Runtime &runtime) const {
-  if (extractUIManagerBindingOnDemand_) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (uiManagerBinding) {
-      callback(*uiManagerBinding_);
-    }
-    return;
+  auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+  if (uiManagerBinding) {
+    callback(*uiManagerBinding);
   }
-
-  if (!uiManagerBinding_) {
-    return;
-  }
-
-  callback(*uiManagerBinding_);
 }
 
 ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
@@ -424,5 +443,4 @@ void UIManager::animationTick() {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

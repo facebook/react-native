@@ -20,7 +20,7 @@ typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData bridge:(RCTBridge *)bridge;
 
-- (UIView *)paperView;
+- (UIView *)createPaperViewWithTag:(NSInteger)tag;
 
 - (void)addObserveForTag:(NSInteger)tag usingBlock:(InterceptorBlock)block;
 

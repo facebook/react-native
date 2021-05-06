@@ -40,9 +40,9 @@ const TESTS = [
 ];
 
 TESTS.forEach(
-  /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-   * suppresses an error found when Flow v0.54 was deployed. To see the error
-   * delete this comment and run Flow. */
+  /* $FlowFixMe[incompatible-call] (>=0.54.0 site=react_native_fb,react_native_
+   * oss) This comment suppresses an error found when Flow v0.54 was deployed.
+   * To see the error delete this comment and run Flow. */
   test => AppRegistry.registerComponent(test.displayName, () => test),
 );
 
@@ -60,9 +60,10 @@ class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
     if (this.state.test) {
       return (
         <ScrollView>
-          {/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-           * comment suppresses an error when upgrading Flow's support for
-           * React. To see the error delete this comment and run Flow. */}
+          {/* $FlowFixMe[type-as-value] (>=0.53.0 site=react_native_fb,react_
+           * native_oss) This comment suppresses an error when upgrading
+           * Flow's support for React. To see the error delete this comment
+           * and run Flow. */}
           <this.state.test />
         </ScrollView>
       );
@@ -79,9 +80,10 @@ class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
           {TESTS.map(test => [
             <TouchableOpacity
               onPress={() => this.setState({test})}
-              /* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-               * suppresses an error found when Flow v0.115 was deployed. To
-               * see the error, delete this comment and run Flow. */
+              /* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_native_fb)
+               * This comment suppresses an error found when Flow v0.115 was
+               * deployed. To see the error, delete this comment and run Flow.
+               */
               style={styles.row}>
               <Text style={styles.testName}>{test.displayName}</Text>
             </TouchableOpacity>,

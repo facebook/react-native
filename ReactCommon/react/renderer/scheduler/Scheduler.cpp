@@ -17,6 +17,7 @@
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/templateprocessor/UITemplateProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -43,7 +44,10 @@ Scheduler::Scheduler(
   eventDispatcher_ =
       std::make_shared<better::optional<EventDispatcher const>>();
 
-  auto uiManager = std::make_shared<UIManager>();
+  auto uiManager = std::make_shared<UIManager>(
+      runtimeExecutor_,
+      schedulerToolbox.backgroundExecutor,
+      schedulerToolbox.garbageCollectionTrigger);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -80,14 +84,24 @@ Scheduler::Scheduler(
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher, schedulerToolbox.contextContainer);
 
-  uiManager->setBackgroundExecutor(schedulerToolbox.backgroundExecutor);
   uiManager->setDelegate(this);
-  uiManager->setRuntimeExecutor(runtimeExecutor_);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
+
+#ifdef ANDROID
+  auto enableRuntimeScheduler = reactNativeConfig_->getBool(
+      "react_fabric:enable_runtimescheduler_android");
+#else
+  auto enableRuntimeScheduler =
+      reactNativeConfig_->getBool("react_fabric:enable_runtimescheduler_ios");
+#endif
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
     uiManagerBinding->attach(uiManager);
+    if (enableRuntimeScheduler) {
+      RuntimeSchedulerBinding::createAndInstallIfNeeded(
+          runtime, runtimeExecutor_);
+    }
   });
 
   auto componentDescriptorRegistryKey =
@@ -115,15 +129,16 @@ Scheduler::Scheduler(
 #ifdef ANDROID
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
+  enableNewDiffer_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_new_differ_h1_2021_android");
   Constants::setPropsForwardingEnabled(reactNativeConfig_->getBool(
       "react_fabric:enable_props_forwarding_android"));
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
+  enableNewDiffer_ =
+      reactNativeConfig_->getBool("react_fabric:enable_new_differ_h1_2021_ios");
 #endif
-
-  uiManager->extractUIManagerBindingOnDemand_ = reactNativeConfig_->getBool(
-      "react_fabric:extract_uimanagerbinding_on_demand");
 }
 
 Scheduler::~Scheduler() {
@@ -149,9 +164,10 @@ Scheduler::~Scheduler() {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
-  react_native_assert(
-      surfaceIds.empty() &&
-      "Scheduler was destroyed with outstanding Surfaces.");
+  // TODO(T88046056): Fix Android memory leak before uncommenting changes
+  //  react_native_assert(
+  //      surfaceIds.empty() &&
+  //      "Scheduler was destroyed with outstanding Surfaces.");
 
   if (surfaceIds.empty()) {
     return;
@@ -184,6 +200,7 @@ Scheduler::~Scheduler() {
 void Scheduler::registerSurface(
     SurfaceHandler const &surfaceHandler) const noexcept {
   surfaceHandler.setUIManager(uiManager_.get());
+  surfaceHandler.setEnableNewDiffer(enableNewDiffer_);
 }
 
 void Scheduler::unregisterSurface(
@@ -300,10 +317,11 @@ void Scheduler::uiManagerDidSendAccessibilityEvent(
  */
 void Scheduler::uiManagerDidSetIsJSResponder(
     ShadowNode::Shared const &shadowNode,
-    bool isJSResponder) {
+    bool isJSResponder,
+    bool blockNativeResponder) {
   if (delegate_) {
     delegate_->schedulerDidSetIsJSResponder(
-        ShadowView(*shadowNode), isJSResponder);
+        ShadowView(*shadowNode), isJSResponder, blockNativeResponder);
   }
 }
 

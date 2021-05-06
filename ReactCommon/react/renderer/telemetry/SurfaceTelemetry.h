@@ -10,7 +10,7 @@
 #include <better/small_vector.h>
 #include <vector>
 
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/utils/Telemetry.h>
 
 namespace facebook {

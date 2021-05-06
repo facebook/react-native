@@ -22,6 +22,7 @@
 #include <hermes/DebuggerAPI.h>
 #include <hermes/hermes.h>
 #include <hermes/inspector/chrome/MessageTypes.h>
+#include <jsi/instrumentation.h>
 
 namespace facebook {
 namespace hermes {
@@ -197,6 +198,12 @@ ResponseType send(SyncConnection &conn, int id) {
   conn.send(req.toJson());
 
   return expectResponse<ResponseType>(conn, id);
+}
+
+template <typename RequestType, typename ResponseType = m::OkResponse>
+ResponseType send(SyncConnection &conn, RequestType req) {
+  conn.send(req.toJson());
+  return expectResponse<ResponseType>(conn, req.id);
 }
 
 void sendRuntimeEvalRequest(
@@ -2445,6 +2452,143 @@ TEST(ConnectionTests, runIfWaitingForDebugger) {
   expectEvalResponse(conn, msgId, true);
 
   // Finally explicitly continue and exit
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, heapProfilerSampling) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+
+  asyncRuntime.executeScriptAsync(R"(
+      debugger;
+      function allocator() {
+        // Do some allocation.
+        return new Object;
+      }
+      (function main() {
+        var a = [];
+        for (var i = 0; i < 100; i++) {
+          a[i] = allocator();
+        }
+      })();
+      debugger;
+    )");
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // We should get a pause before the first statement.
+  expectNotification<m::debugger::PausedNotification>(conn);
+
+  {
+    m::heapProfiler::StartSamplingRequest req;
+    req.id = msgId++;
+    // Sample every 256 bytes to ensure there are some samples. The default is
+    // 32768, which is too high for a small example. Note that sampling is a
+    // random process, so there's no guarantee there will be any samples in any
+    // finite number of allocations. In practice the likelihood is so high that
+    // there shouldn't be any issues.
+    req.samplingInterval = 256;
+    send(conn, req);
+  }
+  // Resume, run the allocations, and once it's paused again, stop them.
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+  expectNotification<m::debugger::PausedNotification>(conn);
+  // Send the stop sampling request, expect the value coming back to be JSON.
+  auto resp = send<
+      m::heapProfiler::StopSamplingRequest,
+      m::heapProfiler::StopSamplingResponse>(conn, msgId++);
+  // Make sure there were some samples.
+  EXPECT_NE(resp.profile.samples.size(), 0);
+  // Don't test the content of the JSON, that is tested via the
+  // SamplingHeapProfilerTest.
+
+  // Resume and exit
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, heapSnapshotRemoteObject) {
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  std::shared_ptr<HermesRuntime> runtime = asyncRuntime.runtime();
+  SyncConnection &conn = context.conn();
+  int msgId = 1;
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+
+  asyncRuntime.executeScriptAsync(R"(
+    storeValue([1, 2, 3]);
+    debugger;
+  )");
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // We should get a pause before the first statement.
+  expectNotification<m::debugger::PausedNotification>(conn);
+
+  {
+    // Take a heap snapshot first to assign IDs.
+    m::heapProfiler::TakeHeapSnapshotRequest req;
+    req.id = msgId++;
+    req.reportProgress = false;
+    // We don't need the response because we can directly query for object IDs
+    // from the runtime.
+    send(conn, req);
+  }
+
+  const uint64_t globalObjID = runtime->getUniqueID(runtime->global());
+  jsi::Value storedValue = asyncRuntime.awaitStoredValue();
+  const uint64_t storedObjID =
+      runtime->getUniqueID(storedValue.asObject(*runtime));
+
+  auto testObject = [&msgId, &conn](
+                        uint64_t objID,
+                        const char *type,
+                        const char *className,
+                        const char *description,
+                        const char *subtype) {
+    // Get the object by its snapshot ID.
+    m::heapProfiler::GetObjectByHeapObjectIdRequest req;
+    req.id = msgId++;
+    req.objectId = std::to_string(objID);
+    auto resp = send<
+        m::heapProfiler::GetObjectByHeapObjectIdRequest,
+        m::heapProfiler::GetObjectByHeapObjectIdResponse>(conn, req);
+    EXPECT_EQ(resp.result.type, type);
+    EXPECT_EQ(resp.result.className, className);
+    EXPECT_EQ(resp.result.description, description);
+    if (subtype) {
+      EXPECT_EQ(resp.result.subtype, subtype);
+    }
+
+    // Check that fetching the object by heap snapshot ID works.
+    m::heapProfiler::GetHeapObjectIdRequest idReq;
+    idReq.id = msgId++;
+    idReq.objectId = resp.result.objectId.value();
+    auto idResp = send<
+        m::heapProfiler::GetHeapObjectIdRequest,
+        m::heapProfiler::GetHeapObjectIdResponse>(conn, idReq);
+    EXPECT_EQ(atoi(idResp.heapSnapshotObjectId.c_str()), objID);
+  };
+
+  // Test once before a collection.
+  testObject(globalObjID, "object", "Object", "Object", nullptr);
+  testObject(storedObjID, "object", "Array", "Array(3)", "array");
+  // Force a collection to move the heap.
+  runtime->instrumentation().collectGarbage("test");
+  // A collection should not disturb the unique ID lookup, and it should be the
+  // same object as before. Note that it won't have the same remote ID, because
+  // Hermes doesn't do uniquing.
+  testObject(globalObjID, "object", "Object", "Object", nullptr);
+  testObject(storedObjID, "object", "Array", "Array(3)", "array");
+
+  // Resume and exit.
   send<m::debugger::ResumeRequest>(conn, msgId++);
   expectNotification<m::debugger::ResumedNotification>(conn);
 }

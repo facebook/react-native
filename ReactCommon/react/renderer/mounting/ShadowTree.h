@@ -31,6 +31,8 @@ using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
  */
 class ShadowTree final {
  public:
+  using Unique = std::unique_ptr<ShadowTree>;
+
   /*
    * Represents a result of a `commit` operation.
    */
@@ -68,7 +70,8 @@ class ShadowTree final {
       SurfaceId surfaceId,
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
-      ShadowTreeDelegate const &delegate);
+      ShadowTreeDelegate const &delegate,
+      bool enableNewDiffer);
 
   ~ShadowTree();
 
@@ -122,6 +125,8 @@ class ShadowTree final {
   MountingCoordinator::Shared getMountingCoordinator() const;
 
  private:
+  constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
+
   void mount(ShadowTreeRevision const &revision) const;
 
   void emitLayoutEvents(

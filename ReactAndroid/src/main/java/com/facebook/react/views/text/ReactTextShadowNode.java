@@ -111,7 +111,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                     text, layout, sTextPaintInstance, themedReactContext);
             WritableMap event = Arguments.createMap();
             event.putArray("lines", lines);
-            if (themedReactContext.hasActiveCatalystInstance()) {
+            if (themedReactContext.hasActiveReactInstance()) {
               themedReactContext
                   .getJSModule(RCTEventEmitter.class)
                   .receiveEvent(getReactTag(), "topTextLayout", event);
@@ -231,7 +231,14 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       // than the width of the text.
       layout =
           BoringLayout.make(
-              text, textPaint, boring.width, alignment, 1.f, 0.f, boring, mIncludeFontPadding);
+              text,
+              textPaint,
+              Math.max(boring.width, 0),
+              alignment,
+              1.f,
+              0.f,
+              boring,
+              mIncludeFontPadding);
     } else {
       // Is used for multiline, boring text and the width is known.
 

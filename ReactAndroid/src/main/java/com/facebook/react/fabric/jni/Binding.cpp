@@ -7,6 +7,7 @@
 
 #include "Binding.h"
 #include "AsyncEventBeat.h"
+#include "AsyncEventBeatV2.h"
 #include "EventEmitterWrapper.h"
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
@@ -376,12 +377,14 @@ void Binding::stopSurface(jint surfaceId) {
   }
 }
 
-void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandler) {
-  surfaceHandler->registerScheduler(getScheduler());
+void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
+  auto scheduler = getScheduler();
+  scheduler->registerSurface(surfaceHandlerBinding->getSurfaceHandler());
 }
 
-void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandler) {
-  surfaceHandler->unregisterScheduler(getScheduler());
+void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
+  auto scheduler = getScheduler();
+  scheduler->unregisterSurface(surfaceHandlerBinding->getSurfaceHandler());
 }
 
 static inline float scale(Float value, Float pointScaleFactor) {
@@ -486,27 +489,51 @@ void Binding::installFabricUIManager(
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
+  auto enableV2AsynchronousEventBeat =
+      config->getBool("react_fabric:enable_asynchronous_event_beat_v2_android");
+
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
   EventBeat::Factory synchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager](
-          EventBeat::SharedOwnerBox const &ownerBox) {
-        return std::make_unique<AsyncEventBeat>(
-            ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
-      };
+      [eventBeatManager,
+       runtimeExecutor,
+       localJavaUIManager,
+       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
+      -> std::unique_ptr<EventBeat> {
+    if (enableV2AsynchronousEventBeat) {
+      return std::make_unique<AsyncEventBeatV2>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    } else {
+      return std::make_unique<AsyncEventBeat>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    }
+  };
 
   EventBeat::Factory asynchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager](
-          EventBeat::SharedOwnerBox const &ownerBox) {
-        return std::make_unique<AsyncEventBeat>(
-            ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
-      };
+      [eventBeatManager,
+       runtimeExecutor,
+       localJavaUIManager,
+       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
+      -> std::unique_ptr<EventBeat> {
+    if (enableV2AsynchronousEventBeat) {
+      return std::make_unique<AsyncEventBeatV2>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    } else {
+      return std::make_unique<AsyncEventBeat>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    }
+  };
 
   contextContainer->insert("ReactNativeConfig", config);
   contextContainer->insert("FabricUIManager", javaUIManager_);
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
+
+  contextContainer->insert(
+      "MapBufferSerializationEnabled",
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_mapbuffer_serialization_android"));
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
@@ -618,8 +645,7 @@ void Binding::schedulerDidFinishTransaction(
     auto &mutationType = mutation.type;
     auto &index = mutation.index;
 
-    bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
-        oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+    bool isVirtual = mutation.mutatedViewIsVirtual();
 
     switch (mutationType) {
       case ShadowViewMutation::Create: {
@@ -1190,7 +1216,8 @@ void Binding::schedulerDidSendAccessibilityEvent(
 
 void Binding::schedulerDidSetIsJSResponder(
     ShadowView const &shadowView,
-    bool isJSResponder) {
+    bool isJSResponder,
+    bool blockNativeResponder) {
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR) << "Binding::schedulerSetJSResponder: JavaUIManager disappeared";
@@ -1215,7 +1242,7 @@ void Binding::schedulerDidSetIsJSResponder(
         // be flattened because the only component that uses this feature -
         // ScrollView - cannot be flattened.
         shadowView.tag,
-        (jboolean) true);
+        (jboolean)blockNativeResponder);
   } else {
     clearJSResponder(localJavaUIManager);
   }

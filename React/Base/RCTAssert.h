@@ -169,3 +169,21 @@ RCT_EXTERN NSString *RCTFormatStackTrace(NSArray<NSDictionary<NSString *, id> *>
   } while (0)
 
 #endif
+
+/**
+ * Controls for ensuring the new architecture runtime assumption holds.
+ * Note: this is work in progress.
+ */
+
+// Enable reporting of any violation related to the new React Native architecture.
+// If RCT_NEW_ARCHITECTURE is defined, it is already enabled by default, otherwise, no violation will be
+// reported until enabled.
+// Note: enabling this at runtime is not early enough to report issues within ObjC class +load execution.
+__attribute__((used)) RCT_EXTERN void RCTEnableNewArchitectureViolationReporting(BOOL enabled);
+
+// When reporting is enabled, trigger an assertion.
+__attribute__((used)) RCT_EXTERN void RCTEnforceNotAllowedForNewArchitecture(id context, NSString *extra);
+
+// When reporting is enabled, warn about the violation. Use this to prepare a specific callsite
+// for stricter enforcement. When ready, switch it to use the variant above.
+__attribute__((used)) RCT_EXTERN void RCTWarnNotAllowedForNewArchitecture(id context, NSString *extra);

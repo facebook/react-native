@@ -20,7 +20,7 @@ LOCAL_SHARED_LIBRARIES := libfolly_json libjsi libfolly_futures libreact_utils l
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 
@@ -30,3 +30,4 @@ $(call import-module,react/utils)
 $(call import-module,react/debug)
 $(call import-module,react/renderer/debug)
 $(call import-module,react/renderer/graphics)
+$(call import-module,react/renderer/mapbuffer)

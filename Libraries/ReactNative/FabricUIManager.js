@@ -16,6 +16,7 @@ import type {
   MeasureLayoutOnSuccessCallback,
   LayoutAnimationConfig,
 } from '../Renderer/shims/ReactNativeTypes';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 // TODO: type these properly.
 type Node = {...};
@@ -26,7 +27,7 @@ export type Spec = {|
   +createNode: (
     reactTag: number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: NodeProps,
     instanceHandle: InstanceHandle,
   ) => Node,
@@ -34,10 +35,10 @@ export type Spec = {|
   +cloneNodeWithNewChildren: (node: Node) => Node,
   +cloneNodeWithNewProps: (node: Node, newProps: NodeProps) => Node,
   +cloneNodeWithNewChildrenAndProps: (node: Node, newProps: NodeProps) => Node,
-  +createChildSet: (rootTag: number) => NodeSet,
+  +createChildSet: (rootTag: RootTag) => NodeSet,
   +appendChild: (parentNode: Node, child: Node) => Node,
   +appendChildToSet: (childSet: NodeSet, child: Node) => void,
-  +completeRoot: (rootTag: number, childSet: NodeSet) => void,
+  +completeRoot: (rootTag: RootTag, childSet: NodeSet) => void,
   +measure: (node: Node, callback: MeasureOnSuccessCallback) => void,
   +measureInWindow: (
     node: Node,
@@ -53,7 +54,7 @@ export type Spec = {|
     config: LayoutAnimationConfig,
     callback: () => void, // check what is returned here
     // This error isn't currently called anywhere, so the `error` object is really not defined
-    // $FlowFixMe
+    // $FlowFixMe[unclear-type]
     errorCallback: (error: Object) => void,
   ) => void,
   +sendAccessibilityEvent: (node: Node, eventType: string) => void,

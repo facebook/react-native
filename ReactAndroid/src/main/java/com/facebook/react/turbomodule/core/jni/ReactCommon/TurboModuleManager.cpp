@@ -39,9 +39,14 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
+    bool useTurboModulesRAIICallbackManager) {
   auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
   auto nativeCallInvoker = nativeCallInvokerHolder->cthis()->getCallInvoker();
+
+  if (useTurboModulesRAIICallbackManager) {
+    JavaTurboModule::enableUseTurboModulesRAIICallbackManager(true);
+  }
 
   return makeCxxInstance(
       jThis,

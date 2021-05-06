@@ -79,7 +79,6 @@ class AndroidTextInputComponentDescriptor final
             {},
             {},
             {},
-            textLayoutManager_,
             ((YGValue)theme[YGEdgeStart]).value,
             ((YGValue)theme[YGEdgeEnd]).value,
             ((YGValue)theme[YGEdgeTop]).value,
@@ -88,7 +87,7 @@ class AndroidTextInputComponentDescriptor final
   }
 
  protected:
-  void adopt(UnsharedShadowNode shadowNode) const override {
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     react_native_assert(
         std::dynamic_pointer_cast<AndroidTextInputShadowNode>(shadowNode));
     auto textInputShadowNode =

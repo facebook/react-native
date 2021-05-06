@@ -31,6 +31,8 @@ emoji=true
 
 exact_by_default=true
 
+format.bracket_spacing=false
+
 module.file_ext=.js
 module.file_ext=.json
 module.file_ext=.ios.js
@@ -46,9 +48,6 @@ suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
-
-experimental.abstract_locations=true
-experimental.new_signatures=true
 
 [lints]
 sketchy-null-number=warn
@@ -71,4 +70,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.146.0
+^0.150.0

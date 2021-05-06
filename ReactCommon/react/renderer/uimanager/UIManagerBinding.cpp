@@ -12,11 +12,11 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-static jsi::Object getModule(
+static jsi::Value getModule(
     jsi::Runtime &runtime,
     std::string const &moduleName) {
   auto batchedBridge =
@@ -31,7 +31,30 @@ static jsi::Object getModule(
     LOG(ERROR) << "getModule of " << moduleName << " is not an object";
   }
   react_native_assert(moduleAsValue.isObject());
-  return moduleAsValue.asObject(runtime);
+  return moduleAsValue;
+}
+
+static bool checkBatchedBridgeIsActive(jsi::Runtime &runtime) {
+  if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge")) {
+    LOG(ERROR)
+        << "getPropertyAsObject: property '__fbBatchedBridge' is undefined, expected an Object";
+    return false;
+  }
+  return true;
+}
+
+static bool checkGetCallableModuleIsActive(jsi::Runtime &runtime) {
+  if (!checkBatchedBridgeIsActive(runtime)) {
+    return false;
+  }
+  auto batchedBridge =
+      runtime.global().getPropertyAsObject(runtime, "__fbBatchedBridge");
+  if (!batchedBridge.hasProperty(runtime, "getCallableModule")) {
+    LOG(ERROR)
+        << "getPropertyAsFunction: function 'getCallableModule' is undefined, expected a Function";
+    return false;
+  }
+  return true;
 }
 
 std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
@@ -73,32 +96,41 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
                << this << ").";
-
-  // We must detach the `UIBinding` on deallocation to prevent accessing
-  // deallocated `UIManagerBinding`.
-  // Since `UIManagerBinding` retains `UIManager`, `UIManager` always overlive
-  // `UIManagerBinding`, therefore we don't need similar logic in `UIManager`'s
-  // destructor.
-  attach(nullptr);
 }
 
 void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
-  if (uiManager_) {
-    uiManager_->uiManagerBinding_ = nullptr;
-  }
-
   uiManager_ = uiManager;
+}
 
-  if (uiManager_) {
-    uiManager_->uiManagerBinding_ = this;
+static jsi::Value callMethodOfModule(
+    jsi::Runtime &runtime,
+    std::string const &moduleName,
+    std::string const &methodName,
+    std::initializer_list<jsi::Value> args) {
+  if (checkGetCallableModuleIsActive(runtime)) {
+    auto module = getModule(runtime, moduleName.c_str());
+    if (module.isObject()) {
+      jsi::Object object = module.asObject(runtime);
+      react_native_assert(object.hasProperty(runtime, methodName.c_str()));
+      if (object.hasProperty(runtime, methodName.c_str())) {
+        auto method = object.getPropertyAsFunction(runtime, methodName.c_str());
+        return method.callWithThis(runtime, object, args);
+      } else {
+        LOG(ERROR) << "getPropertyAsFunction: property '" << methodName
+                   << "' is undefined, expected a Function";
+      }
+    }
   }
+
+  return jsi::Value::undefined();
 }
 
 void UIManagerBinding::startSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
     std::string const &moduleName,
-    folly::dynamic const &initalProps) const {
+    folly::dynamic const &initalProps,
+    DisplayMode displayMode) const {
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
@@ -113,16 +145,49 @@ void UIManagerBinding::startSurface(
     method.call(
         runtime,
         {jsi::String::createFromUtf8(runtime, moduleName),
-         jsi::valueFromDynamic(runtime, parameters)});
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
   } else {
-    auto module = getModule(runtime, "AppRegistry");
-    auto method = module.getPropertyAsFunction(runtime, "runApplication");
-
-    method.callWithThis(
+    callMethodOfModule(
         runtime,
-        module,
+        "AppRegistry",
+        "runApplication",
         {jsi::String::createFromUtf8(runtime, moduleName),
-         jsi::valueFromDynamic(runtime, parameters)});
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
+  }
+}
+
+void UIManagerBinding::setSurfaceProps(
+    jsi::Runtime &runtime,
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &initalProps,
+    DisplayMode displayMode) const {
+  folly::dynamic parameters = folly::dynamic::object();
+  parameters["rootTag"] = surfaceId;
+  parameters["initialProps"] = initalProps;
+  parameters["fabric"] = true;
+
+  if (moduleName.compare("LogBox") != 0 &&
+      runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
+    auto registry =
+        runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+    auto method = registry.getPropertyAsFunction(runtime, "setSurfaceProps");
+
+    method.call(
+        runtime,
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
+  } else {
+    callMethodOfModule(
+        runtime,
+        "AppRegistry",
+        "setSurfaceProps",
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
   }
 }
 
@@ -138,11 +203,11 @@ void UIManagerBinding::stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId)
     global.getPropertyAsFunction(runtime, "RN$stopSurface")
         .call(runtime, {jsi::Value{surfaceId}});
   } else {
-    auto module = getModule(runtime, "ReactFabric");
-    auto method =
-        module.getPropertyAsFunction(runtime, "unmountComponentAtNode");
-
-    method.callWithThis(runtime, module, {jsi::Value{surfaceId}});
+    callMethodOfModule(
+        runtime,
+        "ReactFabric",
+        "unmountComponentAtNode",
+        {jsi::Value{surfaceId}});
   }
 }
 
@@ -282,7 +347,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) noexcept -> jsi::Value {
           uiManager->setIsJSResponder(
               shadowNodeFromValue(runtime, arguments[0]),
-              arguments[1].getBool());
+              arguments[1].getBool(),
+              arguments[2].getBool());
 
           return jsi::Value::undefined();
         });
@@ -711,5 +777,4 @@ jsi::Value UIManagerBinding::get(
   return jsi::Value::undefined();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

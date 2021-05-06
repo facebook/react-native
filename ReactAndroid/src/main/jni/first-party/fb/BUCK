@@ -23,6 +23,10 @@ oss_cxx_library(
         "-DDISABLE_CPUCAP",
         "-DDISABLE_XPLAT",
     ],
+    linker_flags = [
+        "-llog",
+    ],
+    preferred_linkage = "static",
     soname = "libfb.$(ext)",
     visibility = ["PUBLIC"],
     deps = [

@@ -972,9 +972,10 @@ exports.examples = [
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
+                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
+                   * native_fb) This comment suppresses an error found when
+                   * Flow v0.115 was deployed. To see the error, delete this
+                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
                     <Text style={[styles.resizeModeText]}>Cover</Text>
                     <Image
@@ -993,9 +994,10 @@ exports.examples = [
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
+                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
+                   * native_fb) This comment suppresses an error found when
+                   * Flow v0.115 was deployed. To see the error, delete this
+                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
                     <Text style={[styles.resizeModeText]}>Repeat</Text>
                     <Image
@@ -1004,9 +1006,10 @@ exports.examples = [
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
+                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
+                   * native_fb) This comment suppresses an error found when
+                   * Flow v0.115 was deployed. To see the error, delete this
+                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
                     <Text style={[styles.resizeModeText]}>Center</Text>
                     <Image
@@ -1058,9 +1061,12 @@ exports.examples = [
   {
     title: 'Image Size',
     render: function(): React.Node {
-      /* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.115 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[prop-missing] (>=0.115.0 site=react_native_fb) This comment
+       * suppresses an error found when Flow v0.115 was deployed. To see the
+       * error, delete this comment and run Flow. */
+      /* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_native_fb) This
+       * comment suppresses an error found when Flow v0.115 was deployed. To
+       * see the error, delete this comment and run Flow. */
       return <ImageSizeExample source={fullImage} />;
     },
   },
