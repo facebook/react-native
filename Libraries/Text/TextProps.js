@@ -122,6 +122,8 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text.html#onpress
    */
   onPress?: ?(event: PressEvent) => mixed,
+  onPressIn?: ?(event: PressEvent) => mixed,
+  onPressOut?: ?(event: PressEvent) => mixed,
   onResponderGrant?: ?(event: PressEvent) => void,
   onResponderMove?: ?(event: PressEvent) => void,
   onResponderRelease?: ?(event: PressEvent) => void,
