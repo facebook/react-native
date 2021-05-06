@@ -34,6 +34,8 @@ const Text: React.AbstractComponent<
     ellipsizeMode,
     onLongPress,
     onPress,
+    onPressIn,
+    onPressOut,
     onResponderGrant,
     onResponderMove,
     onResponderRelease,
@@ -64,9 +66,11 @@ const Text: React.AbstractComponent<
             onPress,
             onPressIn(event) {
               setHighlighted(!suppressHighlighting);
+              onPressIn?.(event);
             },
             onPressOut(event) {
               setHighlighted(false);
+              onPressOut?.(event);
             },
             onResponderTerminationRequest_DEPRECATED: onResponderTerminationRequest,
             onStartShouldSetResponder_DEPRECATED: onStartShouldSetResponder,
@@ -78,6 +82,8 @@ const Text: React.AbstractComponent<
       pressRetentionOffset,
       onLongPress,
       onPress,
+      onPressIn,
+      onPressOut,
       onResponderTerminationRequest,
       onStartShouldSetResponder,
       suppressHighlighting,
