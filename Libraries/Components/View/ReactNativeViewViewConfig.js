@@ -262,6 +262,7 @@ const ReactNativeViewConfig = {
       borderWidth: true,
       bottom: true,
       color: {process: require('../../StyleSheet/processColor')},
+      cursor: true,
       decomposedMatrix: true,
       direction: true,
       display: true,

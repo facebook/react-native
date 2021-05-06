@@ -583,6 +583,28 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
   borderTopWidth?: number | AnimatedNode,
   opacity?: number | AnimatedNode,
   elevation?: number,
+  cursor?: ?(
+    | 'alias'
+    | 'auto'
+    | 'col-resize'
+    | 'context-menu'
+    | 'copy'
+    | 'crosshair'
+    | 'default'
+    | 'disappearing-item'
+    | 'e-resize'
+    | 'grab'
+    | 'grabbing'
+    | 'n-resize'
+    | 'no-drop'
+    | 'not-allowed'
+    | 'pointer'
+    | 'row-resize'
+    | 's-resize'
+    | 'text'
+    | 'vertical-text'
+    | 'w-resize'
+  ),
 |}>;
 
 export type ____FontWeight_Internal =
