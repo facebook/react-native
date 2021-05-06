@@ -12,33 +12,13 @@
 #import <React/RCTEventDispatcher.h> // TODO(OSS Candidate ISS#2710739)
 #import <React/RCTPointerEvents.h>
 
+#if TARGET_OS_OSX
+#import <React/RCTCursor.h>
+#endif
+
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 #endif // TODO(macOS ISS#2323203)
-
-#if TARGET_OS_OSX
-typedef NS_ENUM(NSInteger, RCTCursor) {
-  RCTCursorAuto,
-  RCTCursorArrow,
-  RCTCursorIBeam,
-  RCTCursorCrosshair,
-  RCTCursorClosedHand,
-  RCTCursorOpenHand,
-  RCTCursorPointingHand,
-  RCTCursorResizeLeft,
-  RCTCursorResizeRight,
-  RCTCursorResizeLeftRight,
-  RCTCursorResizeUp,
-  RCTCursorResizeDown,
-  RCTCursorResizeUpDown,
-  RCTCursorDisappearingItem,
-  RCTCursorIBeamCursorForVerticalLayout,
-  RCTCursorOperationNotAllowed,
-  RCTCursorDragLink,
-  RCTCursorDragCopy,
-  RCTCursorContextualMenu,
-};
-#endif
 
 @protocol RCTAutoInsetsProtocol;
 
@@ -164,8 +144,8 @@ typedef NS_ENUM(NSInteger, RCTCursor) {
 // Keyboarding events
 @property (nonatomic, copy) RCTDirectEventBlock onKeyDown;
 @property (nonatomic, copy) RCTDirectEventBlock onKeyUp;
-@property (nonatomic, copy) NSArray<NSString*> *validKeysDown;
-@property (nonatomic, copy) NSArray<NSString*> *validKeysUp;
+@property (nonatomic, copy) NSArray<NSString *> *validKeysDown;
+@property (nonatomic, copy) NSArray<NSString *> *validKeysUp;
 #endif // ]TODO(macOS ISS#2323203)
 
 /**
