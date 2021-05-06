@@ -21,11 +21,23 @@ type Props = $ReadOnly<{|
 const RNTesterBlock = ({description, title, children}: Props): React.Node => {
   const theme = React.useContext(RNTesterThemeContext);
   return (
-    <View style={[[styles.container], {borderColor: theme.SeparatorColor, backgroundColor: theme.SystemBackgroundColor}]}>
+    <View
+      style={[
+        [styles.container],
+        {
+          borderColor: theme.SeparatorColor,
+          backgroundColor: theme.SystemBackgroundColor,
+        },
+      ]}>
       <View style={[styles.titleContainer]}>
-        <Text style={[styles.titleText, {color: theme.LabelColor}]}>{title}</Text>
+        <Text style={[styles.titleText, {color: theme.LabelColor}]}>
+          {title}
+        </Text>
         <Text
-          style={[styles.descriptionText, {color: theme.LabelColor, marginTop: description ? 10 : 0}]}>
+          style={[
+            styles.descriptionText,
+            {color: theme.LabelColor, marginTop: description ? 10 : 0},
+          ]}>
           {description}
         </Text>
       </View>

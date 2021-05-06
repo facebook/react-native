@@ -16,7 +16,10 @@ import {RNTesterThemeContext} from './RNTesterTheme';
 const BookmarkTab = ({handleNavBarPress, isBookmarkActive, theme}) => (
   <View style={styles.centerBox}>
     <View
-      style={[styles.centralBoxCutout, {backgroundColor: theme.BackgroundColor}]}
+      style={[
+        styles.centralBoxCutout,
+        {backgroundColor: theme.BackgroundColor},
+      ]}
     />
     <View style={styles.floatContainer}>
       <Pressable

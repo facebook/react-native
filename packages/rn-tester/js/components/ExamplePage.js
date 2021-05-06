@@ -26,7 +26,8 @@ export default function ExamplePage(props: Props): React.Node {
   const theme = React.useContext(RNTesterThemeContext);
   return (
     <>
-      <View style={[styles.titleView, {backgroundColor: theme.BackgroundColor}]}>
+      <View
+        style={[styles.titleView, {backgroundColor: theme.BackgroundColor}]}>
         <Text style={styles.title}>{props.title}</Text>
         <Text style={styles.description}>{description}</Text>
       </View>
