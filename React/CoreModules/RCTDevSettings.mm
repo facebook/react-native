@@ -12,7 +12,6 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTBundleHolderModule.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
@@ -114,12 +113,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @end
 
-@interface RCTDevSettings () <
-    RCTBridgeModule,
-    RCTInvalidating,
-    NativeDevSettingsSpec,
-    RCTBundleHolderModule,
-    RCTDevSettingsInspectable> {
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec, RCTDevSettingsInspectable> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -133,8 +127,8 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @implementation RCTDevSettings
 
-@synthesize bundleURL = _bundleURL;
 @synthesize isInspectable = _isInspectable;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -172,15 +166,31 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-#if RCT_ENABLE_INSPECTOR
-// In bridgeless mode, `setBridge` is not called, so dev server connection
-// must be kicked off here.
-- (void)setBundleURL:(NSURL *)bundleURL
+- (void)setBundleManager:(RCTBundleManager *)bundleManager
 {
-  _bundleURL = bundleURL;
-  [RCTInspectorDevServerHelper connectWithBundleURL:_bundleURL];
-}
+  _bundleManager = bundleManager;
+
+#if RCT_ENABLE_INSPECTOR
+  if (self.bridge) {
+    // We need this dispatch to the main thread because the bridge is not yet
+    // finished with its initialisation. By the time it relinquishes control of
+    // the main thread, this operation can be performed.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.bridge
+          dispatchBlock:^{
+            [RCTInspectorDevServerHelper connectWithBundleURL:bundleManager.bundleURL];
+          }
+                  queue:RCTJSThread];
+    });
+  } else {
+    [RCTInspectorDevServerHelper connectWithBundleURL:bundleManager.bundleURL];
+  }
 #endif
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self _synchronizeAllSettings];
+  });
+}
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -198,23 +208,6 @@ RCT_EXPORT_MODULE()
                        queue:dispatch_get_main_queue()
                    forMethod:@"reload"];
 #endif
-
-#if RCT_ENABLE_INSPECTOR
-  // We need this dispatch to the main thread because the bridge is not yet
-  // finished with its initialisation. By the time it relinquishes control of
-  // the main thread, this operation can be performed.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [bridge
-        dispatchBlock:^{
-          [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
-        }
-                queue:RCTJSThread];
-  });
-#endif
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self _synchronizeAllSettings];
-  });
 }
 
 - (dispatch_queue_t)methodQueue
@@ -269,10 +262,8 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isHotLoadingAvailable
 {
-  if (self.bridge.bundleURL) {
-    return !self.bridge.bundleURL.fileURL; // Only works when running from server
-  } else if (self.bundleURL) {
-    return !self.bundleURL.fileURL;
+  if (self.bundleManager.bundleURL) {
+    return !self.bundleManager.bundleURL.fileURL;
   }
   return NO;
 }
