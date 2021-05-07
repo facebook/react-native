@@ -354,6 +354,8 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     return name;
   }
 
+// Re-enable componentViewName_DO_NOT_USE_THIS_IS_BROKEN once macOS uses Fabric
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   __block RCTPlatformView *view; // TODO(macOS GH#774)
   RCTUnsafeExecuteOnMainQueueSync(^{
     view = self->_viewRegistry[reactTag];
@@ -367,6 +369,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   }
 
 #pragma clang diagnostic pop
+#endif // ]TODO(macOS GH#774)
   return nil;
 }
 
@@ -1135,6 +1138,8 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTComponentData *componentData = _componentDataByName[shadowView.viewName];
 
+// Re-enable componentViewName_DO_NOT_USE_THIS_IS_BROKEN once macOS uses Fabric
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   // Achtung! Achtung!
   // This is a remarkably hacky and ugly workaround.
   // We need this only temporary for some testing. We need this hack until Fabric fully implements command-execution
@@ -1152,6 +1157,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand
     }
   }
 #pragma clang diagnostic pop
+#endif // ]TODO(macOS GH#774)
 
   Class managerClass = componentData.managerClass;
   RCTModuleData *moduleData = [_bridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
