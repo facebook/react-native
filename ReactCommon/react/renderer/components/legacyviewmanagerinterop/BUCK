@@ -1,9 +1,9 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "APPLE",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
+    "get_preprocessor_flags_for_build_mode",
     "react_native_xplat_target",
     "rn_xplat_cxx_library",
     "subdir_glob",
@@ -30,7 +30,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,

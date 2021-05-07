@@ -7,7 +7,11 @@
 
 #pragma once
 
-#include <string>
+#include <react/debug/react_native_assert.h>
+#include <react/renderer/mapbuffer/primitives.h>
+
+#include <stdlib.h>
+#include <limits>
 
 namespace facebook {
 namespace react {
@@ -28,9 +32,43 @@ namespace react {
  * - have minimal APK size and build time impact.
  */
 class MapBuffer {
+ private:
+  // Buffer and its size
+  const uint8_t *data_ = nullptr;
+
+  // amount of bytes in the MapBuffer
+  int32_t dataSize_ = 0;
+
+  // amount of items in the MapBuffer
+  uint16_t count_ = 0;
+
+  // returns the relative offset of the first byte of dynamic data
+  int32_t getDynamicDataOffset() const;
+
  public:
-  MapBuffer();
-  virtual ~MapBuffer();
+  MapBuffer(uint8_t *const data, int32_t dataSize);
+
+  ~MapBuffer();
+
+  int32_t getInt(Key key) const;
+
+  bool getBool(Key key) const;
+
+  double getDouble(Key key) const;
+
+  std::string getString(Key key) const;
+
+  // TODO T83483191: review this declaration
+  MapBuffer getMapBuffer(Key key) const;
+
+  int32_t getBufferSize() const;
+
+  // TODO T83483191: review parameters of copy method
+  void copy(uint8_t *output) const;
+
+  bool isNull(Key key) const;
+
+  uint16_t getCount() const;
 };
 
 } // namespace react

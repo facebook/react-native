@@ -166,8 +166,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (accessibilityState == null) {
       return;
     }
+    if (accessibilityState.hasKey("selected")) {
+      boolean prevSelected = view.isSelected();
+      boolean nextSelected = accessibilityState.getBoolean("selected");
+      view.setSelected(nextSelected);
+
+      // For some reason, Android does not announce "unselected" when state changes.
+      // This is inconsistent with other platforms, but also with the "checked" state.
+      // So manually announce this.
+      if (view.isAccessibilityFocused() && prevSelected && !nextSelected) {
+        view.announceForAccessibility(
+            view.getContext().getString(R.string.state_unselected_description));
+      }
+    } else {
+      view.setSelected(false);
+    }
     view.setTag(R.id.accessibility_state, accessibilityState);
-    view.setSelected(false);
     view.setEnabled(true);
 
     // For states which don't have corresponding methods in
@@ -183,8 +197,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
               && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
         updateViewContentDescription(view);
         break;
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-          && view.isAccessibilityFocused()) {
+      } else if (view.isAccessibilityFocused()) {
         // Internally Talkback ONLY uses TYPE_VIEW_CLICKED for "checked" and
         // "selected" announcements. Send a click event to make sure Talkback
         // get notified for the state changes that don't happen upon users' click.

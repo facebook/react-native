@@ -9,6 +9,7 @@ package com.facebook.react.turbomodule.core;
 
 import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.soloader.SoLoader;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class TurboModuleManagerDelegate {
+  @DoNotStrip
+  @SuppressWarnings("unused")
   private final HybridData mHybridData;
 
   private static volatile boolean sIsSoLibraryLoaded;

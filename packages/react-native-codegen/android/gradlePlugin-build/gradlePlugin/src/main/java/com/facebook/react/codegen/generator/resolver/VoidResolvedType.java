@@ -26,7 +26,7 @@ public final class VoidResolvedType extends ResolvedType<VoidType> {
 
   @Override
   public TypeName getNativeType(final NativeTypeContext typeContext) {
-    return TypeUtils.makeNullable(TypeName.VOID, mNullable);
+    return TypeName.VOID;
   }
 
   @Override

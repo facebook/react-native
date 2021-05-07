@@ -6,18 +6,15 @@
  *
  * @format
  * @flow strict-local
+ * @generated SignedSource<<3276da8ef0bf14ad0623df6e1f704d72>>
  */
 
 /* eslint-disable react-internal/invariant-args */
 
 'use strict';
 
-import type {
-  ReactNativeBaseComponentViewConfig,
-  ViewConfigGetter,
-} from './ReactNativeTypes';
-
-const invariant = require('invariant');
+import {type ViewConfig} from './ReactNativeTypes';
+import invariant from 'invariant';
 
 // Event configs
 const customBubblingEventTypes: {
@@ -42,9 +39,7 @@ exports.customDirectEventTypes = customDirectEventTypes;
 const viewConfigCallbacks = new Map();
 const viewConfigs = new Map();
 
-function processEventTypes(
-  viewConfig: ReactNativeBaseComponentViewConfig<>,
-): void {
+function processEventTypes(viewConfig: ViewConfig): void {
   const {bubblingEventTypes, directEventTypes} = viewConfig;
 
   if (__DEV__) {
@@ -82,7 +77,7 @@ function processEventTypes(
  * A callback is provided to load the view config from UIManager.
  * The callback is deferred until the view is actually rendered.
  */
-exports.register = function(name: string, callback: ViewConfigGetter): string {
+exports.register = function(name: string, callback: () => ViewConfig): string {
   invariant(
     !viewConfigCallbacks.has(name),
     'Tried to register two views with the same name %s',
@@ -103,7 +98,7 @@ exports.register = function(name: string, callback: ViewConfigGetter): string {
  * If this is the first time the view has been used,
  * This configuration will be lazy-loaded from UIManager.
  */
-exports.get = function(name: string): ReactNativeBaseComponentViewConfig<> {
+exports.get = function(name: string): ViewConfig {
   let viewConfig;
   if (!viewConfigs.has(name)) {
     const callback = viewConfigCallbacks.get(name);

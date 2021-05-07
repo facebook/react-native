@@ -18,7 +18,7 @@ const {
   Colors,
   DebugInstructions,
   ReloadInstructions,
-} = require('../../../../../Libraries/NewAppScreen');
+} = require('react-native/Libraries/NewAppScreen');
 
 exports.title = 'New App Screen';
 exports.description = 'Displays the content of the new app screen';

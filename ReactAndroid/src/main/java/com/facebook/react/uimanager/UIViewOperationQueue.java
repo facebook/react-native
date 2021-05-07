@@ -118,7 +118,13 @@ public class UIViewOperationQueue {
         uiManager
             .getEventDispatcher()
             .dispatchEvent(
-                OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
+                OnLayoutEvent.obtain(
+                    -1 /* SurfaceId not used in classic renderer */,
+                    mTag,
+                    mScreenX,
+                    mScreenY,
+                    mScreenWidth,
+                    mScreenHeight));
       }
     }
   }

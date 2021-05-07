@@ -69,6 +69,8 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
 
   void reloadJSFromServer(final String bundleURL);
 
+  void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback);
+
   void loadSplitBundleFromServer(String bundlePath, DevSplitBundleCallback callback);
 
   void isPackagerRunning(PackagerStatusCallback callback);
@@ -89,6 +91,9 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
 
   @Nullable
   StackFrame[] getLastErrorStack();
+
+  @Nullable
+  ErrorType getLastErrorType();
 
   void registerErrorCustomizer(ErrorCustomizer errorCustomizer);
 

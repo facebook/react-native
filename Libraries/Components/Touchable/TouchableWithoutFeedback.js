@@ -8,13 +8,10 @@
  * @format
  */
 
-'use strict';
-
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
-import TVTouchable from './TVTouchable';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -29,7 +26,6 @@ import type {
   LayoutEvent,
   PressEvent,
 } from '../../Types/CoreEventTypes';
-import Platform from '../../Utilities/Platform';
 import View from '../../Components/View/View';
 import * as React from 'react';
 
@@ -80,7 +76,6 @@ const PASSTHROUGH_PROPS = [
   'accessibilityLabel',
   'accessibilityLiveRegion',
   'accessibilityRole',
-  'accessibilityState',
   'accessibilityValue',
   'accessibilityViewIsModal',
   'hitSlop',
@@ -94,8 +89,6 @@ const PASSTHROUGH_PROPS = [
 ];
 
 class TouchableWithoutFeedback extends React.Component<Props, State> {
-  _tvTouchable: ?TVTouchable;
-
   state: State = {
     pressability: new Pressability(createPressabilityConfig(this.props)),
   };
@@ -122,6 +115,13 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     const elementProps: {[string]: mixed, ...} = {
       ...eventHandlersWithoutBlurAndFocus,
       accessible: this.props.accessible !== false,
+      accessibilityState:
+        this.props.disabled != null
+          ? {
+              ...this.props.accessibilityState,
+              disabled: this.props.disabled,
+            }
+          : this.props.accessibilityState,
       focusable:
         this.props.focusable !== false && this.props.onPress !== undefined,
     };
@@ -134,39 +134,11 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     return React.cloneElement(element, elementProps, ...children);
   }
 
-  componentDidMount(): void {
-    if (Platform.isTV) {
-      this._tvTouchable = new TVTouchable(this, {
-        getDisabled: () => this.props.disabled === true,
-        onBlur: event => {
-          if (this.props.onBlur != null) {
-            this.props.onBlur(event);
-          }
-        },
-        onFocus: event => {
-          if (this.props.onFocus != null) {
-            this.props.onFocus(event);
-          }
-        },
-        onPress: event => {
-          if (this.props.onPress != null) {
-            this.props.onPress(event);
-          }
-        },
-      });
-    }
-  }
-
   componentDidUpdate(): void {
     this.state.pressability.configure(createPressabilityConfig(this.props));
   }
 
   componentWillUnmount(): void {
-    if (Platform.isTV) {
-      if (this._tvTouchable != null) {
-        this._tvTouchable.destroy();
-      }
-    }
     this.state.pressability.reset();
   }
 }
@@ -174,7 +146,10 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
 function createPressabilityConfig(props: Props): PressabilityConfig {
   return {
     cancelable: !props.rejectResponderTermination,
-    disabled: props.disabled,
+    disabled:
+      props.disabled !== null
+        ? props.disabled
+        : props.accessibilityState?.disabled,
     hitSlop: props.hitSlop,
     delayLongPress: props.delayLongPress,
     delayPressIn: props.delayPressIn,
@@ -190,5 +165,7 @@ function createPressabilityConfig(props: Props): PressabilityConfig {
     onPressOut: props.onPressOut,
   };
 }
+
+TouchableWithoutFeedback.displayName = 'TouchableWithoutFeedback';
 
 module.exports = TouchableWithoutFeedback;

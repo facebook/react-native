@@ -116,7 +116,7 @@ static inline ShadowNode::Unshared messWithChildren(
        std::make_shared<ShadowNode::ListOfShared const>(children)});
 }
 
-static inline ShadowNode::Unshared messWithLayotableOnlyFlag(
+static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
     Entropy const &entropy,
     ShadowNode const &shadowNode) {
   auto oldProps = shadowNode.getProps();
@@ -150,7 +150,7 @@ static inline ShadowNode::Unshared messWithLayotableOnlyFlag(
   }
 
   if (entropy.random<bool>(0.1)) {
-    viewProps.zIndex = entropy.random<bool>() ? 1 : 0;
+    viewProps.zIndex = entropy.random<int>();
   }
 
   if (entropy.random<bool>(0.1)) {
@@ -161,6 +161,48 @@ static inline ShadowNode::Unshared messWithLayotableOnlyFlag(
   if (entropy.random<bool>(0.1)) {
     viewProps.transform = entropy.random<bool>() ? Transform::Identity()
                                                  : Transform::Perspective(42);
+  }
+
+  if (entropy.random<bool>(0.1)) {
+    viewProps.elevation = entropy.random<bool>() ? 1 : 0;
+  }
+
+  return shadowNode.clone({newProps});
+}
+
+// Similar to `messWithLayoutableOnlyFlag` but has a 50/50 chance of flattening
+// (or unflattening) a node's children.
+static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
+    Entropy const &entropy,
+    ShadowNode const &shadowNode) {
+  auto oldProps = shadowNode.getProps();
+  auto newProps = shadowNode.getComponentDescriptor().cloneProps(
+      oldProps, RawProps(folly::dynamic::object()));
+
+  auto &viewProps =
+      const_cast<ViewProps &>(static_cast<ViewProps const &>(*newProps));
+
+  if (entropy.random<bool>(0.5)) {
+    viewProps.nativeId = "";
+    viewProps.collapsable = true;
+    viewProps.backgroundColor = SharedColor();
+    viewProps.foregroundColor = SharedColor();
+    viewProps.shadowColor = SharedColor();
+    viewProps.accessible = false;
+    viewProps.zIndex = {};
+    viewProps.pointerEvents = PointerEventsMode::Auto;
+    viewProps.transform = Transform::Identity();
+    viewProps.elevation = 0;
+  } else {
+    viewProps.nativeId = "42";
+    viewProps.backgroundColor = whiteColor();
+    viewProps.foregroundColor = blackColor();
+    viewProps.shadowColor = blackColor();
+    viewProps.accessible = true;
+    viewProps.zIndex = {entropy.random<int>()};
+    viewProps.pointerEvents = PointerEventsMode::None;
+    viewProps.transform = Transform::Perspective(entropy.random<int>());
+    viewProps.elevation = entropy.random<int>();
   }
 
   return shadowNode.clone({newProps});
@@ -250,8 +292,9 @@ static inline ShadowNode::Shared generateShadowNodeTree(
   auto family = componentDescriptor.createFamily(
       {generateReactTag(), SurfaceId(1), nullptr}, nullptr);
   return componentDescriptor.createShadowNode(
-      ShadowNodeFragment{generateDefaultProps(componentDescriptor),
-                         std::make_shared<SharedShadowNodeList>(children)},
+      ShadowNodeFragment{
+          generateDefaultProps(componentDescriptor),
+          std::make_shared<SharedShadowNodeList>(children)},
       family);
 }
 

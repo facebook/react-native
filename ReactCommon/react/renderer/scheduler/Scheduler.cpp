@@ -10,11 +10,14 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/core/Constants.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/templateprocessor/UITemplateProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -41,7 +44,10 @@ Scheduler::Scheduler(
   eventDispatcher_ =
       std::make_shared<better::optional<EventDispatcher const>>();
 
-  auto uiManager = std::make_shared<UIManager>();
+  auto uiManager = std::make_shared<UIManager>(
+      runtimeExecutor_,
+      schedulerToolbox.backgroundExecutor,
+      schedulerToolbox.garbageCollectionTrigger);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -50,10 +56,12 @@ Scheduler::Scheduler(
                        const EventTarget *eventTarget,
                        const std::string &type,
                        const ValueFactory &payloadFactory) {
-    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
-      uiManagerBinding.dispatchEvent(
-          runtime, eventTarget, type, payloadFactory);
-    });
+    uiManager->visitBinding(
+        [&](UIManagerBinding const &uiManagerBinding) {
+          uiManagerBinding.dispatchEvent(
+              runtime, eventTarget, type, payloadFactory);
+        },
+        runtime);
   };
 
   auto statePipe = [uiManager](StateUpdate const &stateUpdate) {
@@ -76,16 +84,24 @@ Scheduler::Scheduler(
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher, schedulerToolbox.contextContainer);
 
-  rootComponentDescriptor_ = std::make_unique<const RootComponentDescriptor>(
-      ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
-
-  uiManager->setBackgroundExecutor(schedulerToolbox.backgroundExecutor);
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
+
+#ifdef ANDROID
+  auto enableRuntimeScheduler = reactNativeConfig_->getBool(
+      "react_fabric:enable_runtimescheduler_android");
+#else
+  auto enableRuntimeScheduler =
+      reactNativeConfig_->getBool("react_fabric:enable_runtimescheduler_ios");
+#endif
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
     uiManagerBinding->attach(uiManager);
+    if (enableRuntimeScheduler) {
+      RuntimeSchedulerBinding::createAndInstallIfNeeded(
+          runtime, runtimeExecutor_);
+    }
   });
 
   auto componentDescriptorRegistryKey =
@@ -97,7 +113,12 @@ Scheduler::Scheduler(
           componentDescriptorRegistry_));
 
   delegate_ = delegate;
+  commitHooks_ = schedulerToolbox.commitHooks;
   uiManager_ = uiManager;
+
+  for (auto commitHook : commitHooks_) {
+    uiManager->registerCommitHook(*commitHook);
+  }
 
   if (animationDelegate != nullptr) {
     animationDelegate->setComponentDescriptorRegistry(
@@ -106,21 +127,27 @@ Scheduler::Scheduler(
   uiManager_->setAnimationDelegate(animationDelegate);
 
 #ifdef ANDROID
-  enableReparentingDetection_ = reactNativeConfig_->getBool(
-      "react_fabric:enable_reparenting_detection_android");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
+  enableNewDiffer_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_new_differ_h1_2021_android");
+  Constants::setPropsForwardingEnabled(reactNativeConfig_->getBool(
+      "react_fabric:enable_props_forwarding_android"));
 #else
-  enableReparentingDetection_ = reactNativeConfig_->getBool(
-      "react_fabric:enable_reparenting_detection_ios");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
+  enableNewDiffer_ =
+      reactNativeConfig_->getBool("react_fabric:enable_new_differ_h1_2021_ios");
 #endif
 }
 
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
+
+  for (auto commitHook : commitHooks_) {
+    uiManager_->unregisterCommitHook(*commitHook);
+  }
 
   // All Surfaces must be explicitly stopped before destroying `Scheduler`.
   // The idea is that `UIManager` is allowed to call `Scheduler` only if the
@@ -137,9 +164,10 @@ Scheduler::~Scheduler() {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
-  assert(
-      surfaceIds.empty() &&
-      "Scheduler was destroyed with outstanding Surfaces.");
+  // TODO(T88046056): Fix Android memory leak before uncommenting changes
+  //  react_native_assert(
+  //      surfaceIds.empty() &&
+  //      "Scheduler was destroyed with outstanding Surfaces.");
 
   if (surfaceIds.empty()) {
     return;
@@ -169,35 +197,15 @@ Scheduler::~Scheduler() {
   }
 }
 
-void Scheduler::startSurface(
-    SurfaceId surfaceId,
-    const std::string &moduleName,
-    const folly::dynamic &initialProps,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext,
-    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
-    const {
-  SystraceSection s("Scheduler::startSurface");
+void Scheduler::registerSurface(
+    SurfaceHandler const &surfaceHandler) const noexcept {
+  surfaceHandler.setUIManager(uiManager_.get());
+  surfaceHandler.setEnableNewDiffer(enableNewDiffer_);
+}
 
-  auto shadowTree = std::make_unique<ShadowTree>(
-      surfaceId,
-      layoutConstraints,
-      layoutContext,
-      *rootComponentDescriptor_,
-      *uiManager_,
-      mountingOverrideDelegate,
-      enableReparentingDetection_);
-
-  auto uiManager = uiManager_;
-
-  uiManager->getShadowTreeRegistry().add(std::move(shadowTree));
-
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
-    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
-      uiManagerBinding.startSurface(
-          runtime, surfaceId, moduleName, initialProps);
-    });
-  });
+void Scheduler::unregisterSurface(
+    SurfaceHandler const &surfaceHandler) const noexcept {
+  surfaceHandler.setUIManager(nullptr);
 }
 
 void Scheduler::renderTemplateToSurface(
@@ -220,9 +228,9 @@ void Scheduler::renderTemplateToSurface(
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId, [=](const ShadowTree &shadowTree) {
           return shadowTree.tryCommit(
-              [&](RootShadowNode::Shared const &oldRootShadowNode) {
+              [&](RootShadowNode const &oldRootShadowNode) {
                 return std::make_shared<RootShadowNode>(
-                    *oldRootShadowNode,
+                    oldRootShadowNode,
                     ShadowNodeFragment{
                         /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                         /* .children = */
@@ -235,80 +243,6 @@ void Scheduler::renderTemplateToSurface(
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
                << "Scheduler::renderTemplateToSurface: " << e.what();
   }
-}
-
-void Scheduler::stopSurface(SurfaceId surfaceId) const {
-  SystraceSection s("Scheduler::stopSurface");
-
-  // Stop any ongoing animations.
-  uiManager_->stopSurfaceForAnimationDelegate(surfaceId);
-
-  // Waiting for all concurrent commits to be finished and unregistering the
-  // `ShadowTree`.
-  auto shadowTree = uiManager_->getShadowTreeRegistry().remove(surfaceId);
-
-  // As part of stopping a Surface, we need to properly destroy all
-  // mounted views, so we need to commit an empty tree to trigger all
-  // side-effects (including destroying and removing mounted views).
-  if (shadowTree) {
-    shadowTree->commitEmptyTree();
-  }
-
-  // We execute JavaScript/React part of the process at the very end to minimize
-  // any visible side-effects of stopping the Surface. Any possible commits from
-  // the JavaScript side will not be able to reference a `ShadowTree` and will
-  // fail silently.
-  auto uiManager = uiManager_;
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
-    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
-      uiManagerBinding.stopSurface(runtime, surfaceId);
-    });
-  });
-}
-
-Size Scheduler::measureSurface(
-    SurfaceId surfaceId,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const {
-  SystraceSection s("Scheduler::measureSurface");
-
-  Size size;
-  uiManager_->getShadowTreeRegistry().visit(
-      surfaceId, [&](const ShadowTree &shadowTree) {
-        shadowTree.tryCommit(
-            [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              auto rootShadowNode =
-                  oldRootShadowNode->clone(layoutConstraints, layoutContext);
-              rootShadowNode->layoutIfNeeded();
-              size = rootShadowNode->getLayoutMetrics().frame.size;
-              return nullptr;
-            });
-      });
-  return size;
-}
-
-MountingCoordinator::Shared Scheduler::findMountingCoordinator(
-    SurfaceId surfaceId) const {
-  MountingCoordinator::Shared mountingCoordinator = nullptr;
-  uiManager_->getShadowTreeRegistry().visit(
-      surfaceId, [&](const ShadowTree &shadowTree) {
-        mountingCoordinator = shadowTree.getMountingCoordinator();
-      });
-  return mountingCoordinator;
-}
-
-void Scheduler::constraintSurfaceLayout(
-    SurfaceId surfaceId,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const {
-  SystraceSection s("Scheduler::constraintSurfaceLayout");
-
-  uiManager_->getShadowTreeRegistry().visit(
-      surfaceId, [&](ShadowTree const &shadowTree) {
-        shadowTree.commit([&](RootShadowNode::Shared const &oldRootShadowNode) {
-          return oldRootShadowNode->clone(layoutConstraints, layoutContext);
-        });
-      });
 }
 
 ComponentDescriptor const *
@@ -367,28 +301,27 @@ void Scheduler::uiManagerDidDispatchCommand(
   }
 }
 
-/*
- * Set JS responder for a view
- */
-void Scheduler::uiManagerDidSetJSResponder(
-    SurfaceId surfaceId,
+void Scheduler::uiManagerDidSendAccessibilityEvent(
     const ShadowNode::Shared &shadowNode,
-    bool blockNativeResponder) {
+    std::string const &eventType) {
+  SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
+
   if (delegate_) {
-    // TODO: the first shadowView paramenter, should be the first parent that
-    // is non virtual.
     auto shadowView = ShadowView(*shadowNode);
-    delegate_->schedulerDidSetJSResponder(
-        surfaceId, shadowView, shadowView, blockNativeResponder);
+    delegate_->schedulerDidSendAccessibilityEvent(shadowView, eventType);
   }
 }
 
 /*
- * Clear the JSResponder for a view
+ * Set JS responder for a view.
  */
-void Scheduler::uiManagerDidClearJSResponder() {
+void Scheduler::uiManagerDidSetIsJSResponder(
+    ShadowNode::Shared const &shadowNode,
+    bool isJSResponder,
+    bool blockNativeResponder) {
   if (delegate_) {
-    delegate_->schedulerDidClearJSResponder();
+    delegate_->schedulerDidSetIsJSResponder(
+        ShadowView(*shadowNode), isJSResponder, blockNativeResponder);
   }
 }
 

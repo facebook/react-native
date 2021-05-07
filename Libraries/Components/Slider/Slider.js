@@ -8,16 +8,15 @@
  * @flow strict-local
  */
 
-'use strict';
-
-const Platform = require('../../Utilities/Platform');
+import * as React from 'react';
+import Platform from '../../Utilities/Platform';
 import SliderNativeComponent from './SliderNativeComponent';
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
+import StyleSheet, {
+  type ViewStyleProp,
+  type ColorValue,
+} from '../../StyleSheet/StyleSheet';
 
 import type {ImageSource} from '../../Image/ImageSource';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 

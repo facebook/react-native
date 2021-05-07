@@ -7,6 +7,7 @@
 
 #include "Instance.h"
 
+#include "ErrorUtils.h"
 #include "JSBigString.h"
 #include "JSBundleType.h"
 #include "JSExecutor.h"
@@ -106,6 +107,18 @@ void Instance::loadScriptFromString(
   } else {
     loadBundle(nullptr, std::move(string), std::move(sourceURL));
   }
+}
+
+bool Instance::isHBCBundle(const char *sourcePath) {
+  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
+  BundleHeader header;
+
+  if (!bundle_stream ||
+      !bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
+    return false;
+  }
+
+  return parseTypeFromHeader(header) == ScriptTag::HBCBundle;
 }
 
 bool Instance::isIndexedRAMBundle(const char *sourcePath) {
@@ -233,8 +246,30 @@ std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
   return std::static_pointer_cast<CallInvoker>(jsCallInvoker_);
 }
 
-RuntimeExecutor Instance::getRuntimeExecutor() {
-  return nativeToJsBridge_->getRuntimeExecutor();
+RuntimeExecutor Instance::getRuntimeExecutor(bool shouldFlush) {
+  std::weak_ptr<NativeToJsBridge> weakNativeToJsBridge = nativeToJsBridge_;
+
+  auto runtimeExecutor =
+      [weakNativeToJsBridge,
+       shouldFlush](std::function<void(jsi::Runtime & runtime)> &&callback) {
+        if (auto strongNativeToJsBridge = weakNativeToJsBridge.lock()) {
+          strongNativeToJsBridge->runOnExecutorQueue(
+              [callback = std::move(callback),
+               shouldFlush](JSExecutor *executor) {
+                jsi::Runtime *runtime =
+                    (jsi::Runtime *)executor->getJavaScriptContext();
+                try {
+                  callback(*runtime);
+                  if (shouldFlush) {
+                    executor->flush();
+                  }
+                } catch (jsi::JSError &originalError) {
+                  handleJSError(*runtime, originalError, true);
+                }
+              });
+        }
+      };
+  return runtimeExecutor;
 }
 
 std::shared_ptr<CallInvoker> Instance::getDecoratedNativeCallInvoker(

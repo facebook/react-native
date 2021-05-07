@@ -18,7 +18,7 @@ RCT_EXTERN BOOL RCTExperimentGetOnDemandViewMounting(void);
 RCT_EXTERN void RCTExperimentSetOnDemandViewMounting(BOOL value);
 
 /*
- * Allows to some performance flags to report data synchronously right after the mounting transaction finishes.
+ * Preemptive View Allocation
  */
-RCT_EXTERN BOOL RCTExperimentGetSyncPerformanceFlag(void);
-RCT_EXTERN void RCTExperimentSetSyncPerformanceFlag(BOOL value);
+RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);
+RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);

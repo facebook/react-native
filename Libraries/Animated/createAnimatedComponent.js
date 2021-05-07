@@ -11,7 +11,6 @@
 'use strict';
 
 const View = require('../Components/View/View');
-const Platform = require('../Utilities/Platform');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
@@ -38,8 +37,13 @@ export type AnimatedComponentType<
   Instance,
 >;
 
+type AnimatedComponentOptions = {
+  collapsable?: boolean,
+};
+
 function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   Component: React.AbstractComponent<Props, Instance>,
+  options?: AnimatedComponentOptions,
 ): AnimatedComponentType<Props, Instance> {
   invariant(
     typeof Component !== 'function' ||
@@ -56,7 +60,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _eventDetachers: Array<Function> = [];
 
     // Only to be used in this file, and only in Fabric.
-    _animatedComponentId: number = -1;
+    _animatedComponentId: string = `${animatedComponentNextId++}:animatedComponent`;
 
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
@@ -80,6 +84,11 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     }
 
     _isFabric = (): boolean => {
+      // When called during the first render, `_component` is always null.
+      // Therefore, even if a component is rendered in Fabric, we can't detect
+      // that until ref is set, which happens sometime after the first render.
+      // In cases where this value switching between "false" and "true" on Fabric
+      // causes issues, add an additional check for _component nullity.
       if (this._component == null) {
         return false;
       }
@@ -113,9 +122,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
 
     _waitForUpdate = (): void => {
       if (this._isFabric()) {
-        if (this._animatedComponentId === -1) {
-          this._animatedComponentId = animatedComponentNextId++;
-        }
         NativeAnimatedHelper.API.setWaitingForIdentifier(
           this._animatedComponentId,
         );
@@ -196,19 +202,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       setLocalRef: ref => {
         this._prevComponent = this._component;
         this._component = ref;
-
-        // TODO: Delete this in a future release.
-        if (ref != null && ref.getNode == null) {
-          ref.getNode = () => {
-            console.warn(
-              '%s: Calling `getNode()` on the ref of an Animated component ' +
-                'is no longer necessary. You can now directly use the ref ' +
-                'instead. This method will be removed in a future release.',
-              ref.constructor.name ?? '<<anonymous>>',
-            );
-            return ref;
-          };
-        }
       },
     });
 
@@ -217,22 +210,42 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       const {style: passthruStyle = {}, ...passthruProps} =
         this.props.passthroughAnimatedPropExplicitValues || {};
       const mergedStyle = {...style, ...passthruStyle};
+
+      // On Fabric, we always want to ensure the container Animated View is *not*
+      // flattened.
+      // Because we do not get a host component ref immediately and thus cannot
+      // do a proper Fabric vs non-Fabric detection immediately, we default to assuming
+      // that Fabric *is* enabled until we know otherwise.
+      // Thus, in Fabric, this view will never be flattened. In non-Fabric, the view will
+      // not be flattened during the initial render but may be flattened in the second render
+      // and onwards.
+      const forceNativeIdFabric =
+        (this._component == null &&
+          (options?.collapsable === false || props.collapsable !== true)) ||
+        this._isFabric();
+
+      const forceNativeId =
+        props.collapsable ??
+        (this._propsAnimated.__isNative ||
+          forceNativeIdFabric ||
+          options?.collapsable === false);
+      // The native driver updates views directly through the UI thread so we
+      // have to make sure the view doesn't get optimized away because it cannot
+      // go through the NativeViewHierarchyManager since it operates on the shadow
+      // thread. TODO: T68258846
+      const collapsableProps = forceNativeId
+        ? {
+            nativeID: props.nativeID ?? 'animatedComponent',
+            collapsable: false,
+          }
+        : {};
       return (
         <Component
           {...props}
           {...passthruProps}
+          {...collapsableProps}
           style={mergedStyle}
           ref={this._setComponentRef}
-          nativeID={
-            this._isFabric() ? 'animatedComponent' : undefined
-          } /* TODO: T68258846. */
-          // The native driver updates views directly through the UI thread so we
-          // have to make sure the view doesn't get optimized away because it cannot
-          // go through the NativeViewHierarchyManager since it operates on the shadow
-          // thread.
-          collapsable={
-            this._propsAnimated.__isNative ? false : props.collapsable
-          }
         />
       );
     }
@@ -273,6 +286,8 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       this._propsAnimated && this._propsAnimated.__detach();
       this._detachNativeEvents();
       this._markUpdateComplete();
+      this._component = null;
+      this._prevComponent = null;
     }
   }
 

@@ -8,10 +8,8 @@
  * @format
  */
 
-'use strict';
-
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import ReactNativeViewViewConfig from '../../Components/View/ReactNativeViewViewConfig';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
@@ -28,7 +26,7 @@ type PickerIOSChangeEvent = SyntheticEvent<
 
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
-  value: ?(number | string),
+  value: ?string,
   textColor: ?ProcessedColorValue,
 |}>;
 
@@ -56,8 +54,33 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeSelectedIndex'],
 });
 
-const RCTPickerNativeComponent: ComponentType = requireNativeComponent<NativeProps>(
+const RCTPickerNativeComponent: HostComponent<NativeProps> = NativeComponentRegistry.get<NativeProps>(
   'RCTPicker',
+  () => ({
+    uiViewClassName: 'RCTPicker',
+    bubblingEventTypes: {
+      topChange: {
+        phasedRegistrationNames: {
+          bubbled: 'onChange',
+          captured: 'onChangeCapture',
+        },
+      },
+    },
+    directEventTypes: {},
+    validAttributes: {
+      ...ReactNativeViewViewConfig.validAttributes,
+      color: {process: require('../../StyleSheet/processColor')},
+      fontFamily: true,
+      fontSize: true,
+      fontStyle: true,
+      fontWeight: true,
+      items: true,
+      onChange: true,
+      selectedIndex: true,
+      textAlign: true,
+    },
+  }),
 );
 
-export default RCTPickerNativeComponent;
+// flowlint-next-line unclear-type:off
+export default ((RCTPickerNativeComponent: any): HostComponent<NativeProps>);

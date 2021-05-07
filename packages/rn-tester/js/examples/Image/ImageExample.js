@@ -36,6 +36,7 @@ type NetworkImageCallbackExampleState = {|
   events: Array<string>,
   startLoadPrefetched: boolean,
   mountTime: number,
+  imageHash: number,
 |};
 
 type NetworkImageCallbackExampleProps = $ReadOnly<{|
@@ -51,6 +52,7 @@ class NetworkImageCallbackExample extends React.Component<
     events: [],
     startLoadPrefetched: false,
     mountTime: Date.now(),
+    imageHash: Date.now(),
   };
 
   UNSAFE_componentWillMount() {
@@ -61,6 +63,10 @@ class NetworkImageCallbackExample extends React.Component<
     this.setState(state => ({
       events: [...state.events, event],
     }));
+  };
+
+  updateLoadingImageHash = () => {
+    this.setState({imageHash: Date.now()});
   };
 
   render() {
@@ -335,6 +341,193 @@ class MultipleSourcesExample extends React.Component<
             ]}
           />
         </View>
+      </View>
+    );
+  }
+}
+
+type LoadingIndicatorSourceExampleState = {|
+  imageHash: number,
+|};
+
+type LoadingIndicatorSourceExampleProps = $ReadOnly<{||}>;
+
+class LoadingIndicatorSourceExample extends React.Component<
+  LoadingIndicatorSourceExampleProps,
+  LoadingIndicatorSourceExampleState,
+> {
+  state = {
+    imageHash: Date.now(),
+  };
+
+  reloadImage = () => {
+    this.setState({
+      imageHash: Date.now(),
+    });
+  };
+
+  loaderGif = {
+    uri: 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif',
+  };
+
+  render() {
+    const loadingImage = {
+      uri: `https://www.facebook.com/ads/pics/successstories.png?hash=${this.state.imageHash}`,
+    };
+
+    return (
+      <View>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={styles.touchableText} onPress={this.reloadImage}>
+            Refresh Image
+          </Text>
+        </View>
+        <Image
+          loadingIndicatorSource={this.loaderGif}
+          source={loadingImage}
+          style={styles.base}
+        />
+        <Text>Image Hash: {this.state.imageHash}</Text>
+        <Text>Image URI: {loadingImage.uri}</Text>
+      </View>
+    );
+  }
+}
+
+type OnLayoutExampleState = {|
+  width: number,
+  height: number,
+  layoutHandlerMessage: string,
+|};
+
+type OnLayoutExampleProps = $ReadOnly<{||}>;
+
+class OnLayoutExample extends React.Component<
+  OnLayoutExampleProps,
+  OnLayoutExampleState,
+> {
+  state = {
+    width: 30,
+    height: 30,
+    layoutHandlerMessage: 'No Message',
+  };
+
+  onLayoutHandler = event => {
+    this.setState({
+      width: this.state.width,
+      height: this.state.height,
+      layoutHandlerMessage: JSON.stringify(event.nativeEvent),
+    });
+    console.log(event.nativeEvent);
+  };
+
+  increaseImageSize = () => {
+    if (this.state.width >= 100) {
+      return;
+    }
+    this.setState({
+      width: this.state.width + 10,
+      height: this.state.height + 10,
+    });
+  };
+
+  increaseImageSize = () => {
+    if (this.state.width >= 100) {
+      return;
+    }
+    this.setState({
+      width: this.state.width + 10,
+      height: this.state.height + 10,
+    });
+  };
+
+  decreaseImageSize = () => {
+    if (this.state.width <= 10) {
+      return;
+    }
+    this.setState({
+      width: this.state.width - 10,
+      height: this.state.height - 10,
+    });
+  };
+
+  render() {
+    return (
+      <View>
+        <Text>Adjust the image size to trigger the OnLayout handler.</Text>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={styles.touchableText} onPress={this.decreaseImageSize}>
+            Decrease image size
+          </Text>
+          <Text style={styles.touchableText} onPress={this.increaseImageSize}>
+            Increase image size
+          </Text>
+        </View>
+        <Text>
+          Container image size: {this.state.width}x{this.state.height}{' '}
+        </Text>
+        <View style={{height: this.state.height, width: this.state.width}}>
+          <Image
+            onLayout={this.onLayoutHandler}
+            style={{flex: 1}}
+            source={[
+              {
+                uri: 'https://www.facebook.com/favicon.ico',
+                width: 38,
+                height: 38,
+              },
+              {
+                uri: 'https://www.facebook.com/favicon.ico',
+                width: 76,
+                height: 76,
+              },
+              {
+                uri: 'https://www.facebook.com/ads/pics/successstories.png',
+                width: 400,
+                height: 400,
+              },
+            ]}
+          />
+        </View>
+        <Text>Layout Handler Message: {this.state.layoutHandlerMessage}</Text>
+      </View>
+    );
+  }
+}
+
+type OnPartialLoadExampleState = {|
+  hasLoaded: boolean,
+|};
+
+type OnPartialLoadExampleProps = $ReadOnly<{||}>;
+
+class OnPartialLoadExample extends React.Component<
+  OnPartialLoadExampleProps,
+  OnPartialLoadExampleState,
+> {
+  state = {
+    hasLoaded: false,
+  };
+
+  partialLoadHandler = () => {
+    this.setState({
+      hasLoaded: true,
+    });
+  };
+
+  render() {
+    return (
+      <View>
+        <Text>
+          Partial Load Function Executed: {JSON.stringify(this.state.hasLoaded)}
+        </Text>
+        <Image
+          source={{
+            uri: `https://images.pexels.com/photos/671557/pexels-photo-671557.jpeg?&buster=${Math.random()}`,
+          }}
+          onPartialLoad={this.partialLoadHandler}
+          style={styles.base}
+        />
       </View>
     );
   }
@@ -779,9 +972,10 @@ exports.examples = [
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
+                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
+                   * native_fb) This comment suppresses an error found when
+                   * Flow v0.115 was deployed. To see the error, delete this
+                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
                     <Text style={[styles.resizeModeText]}>Cover</Text>
                     <Image
@@ -800,9 +994,10 @@ exports.examples = [
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
+                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
+                   * native_fb) This comment suppresses an error found when
+                   * Flow v0.115 was deployed. To see the error, delete this
+                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
                     <Text style={[styles.resizeModeText]}>Repeat</Text>
                     <Image
@@ -811,9 +1006,10 @@ exports.examples = [
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
+                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
+                   * native_fb) This comment suppresses an error found when
+                   * Flow v0.115 was deployed. To see the error, delete this
+                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
                     <Text style={[styles.resizeModeText]}>Center</Text>
                     <Image
@@ -865,9 +1061,12 @@ exports.examples = [
   {
     title: 'Image Size',
     render: function(): React.Node {
-      /* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.115 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[prop-missing] (>=0.115.0 site=react_native_fb) This comment
+       * suppresses an error found when Flow v0.115 was deployed. To see the
+       * error, delete this comment and run Flow. */
+      /* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_native_fb) This
+       * comment suppresses an error found when Flow v0.115 was deployed. To
+       * see the error, delete this comment and run Flow. */
       return <ImageSizeExample source={fullImage} />;
     },
   },
@@ -950,5 +1149,61 @@ exports.examples = [
         </View>
       );
     },
+  },
+  {
+    title: 'Accessibility',
+    description: ('If the `accessible` (boolean) prop is set to True, the image will be indicated as an accessbility element.': string),
+    render: function(): React.Node {
+      return <Image accessible source={fullImage} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Accessibility Label',
+    description: ('When an element is marked as accessibile (using the accessibility prop), it is good practice to set an accessibilityLabel on the image to provide a description of the element to people who use VoiceOver. VoiceOver will read this string when people select this element.': string),
+    render: function(): React.Node {
+      return (
+        <Image
+          accessible
+          accessibilityLabel="Picture of people standing around a table"
+          source={fullImage}
+          style={styles.base}
+        />
+      );
+    },
+  },
+  {
+    title: 'Fade Duration',
+    description: ('The time (in miliseconds) that an image will fade in for when it appears (default = 300).': string),
+    render: function(): React.Node {
+      return (
+        <>
+          <Image fadeDuration={1500} source={fullImage} style={styles.base} />
+          <Text>This image will fade in over the time of 1.5s.</Text>
+        </>
+      );
+    },
+    platform: 'android',
+  },
+  {
+    title: 'Loading Indicator Source',
+    description: ('This prop is used to set the resource that will be used as the loading indicator for the image (displayed until the image is ready to be displayed).': string),
+    render: function(): React.Node {
+      return <LoadingIndicatorSourceExample />;
+    },
+  },
+  {
+    title: 'On Layout',
+    description: ('This prop is used to set the handler function to be called when the image is mounted or its layout changes. The function receives an event with `{nativeEvent: {layout: {x, y, width, height}}}`': string),
+    render: function(): React.Node {
+      return <OnLayoutExample />;
+    },
+  },
+  {
+    title: 'On Partial Load',
+    description: ('This prop is used to set the handler function to be called when the partial load of the image is complete. This is meant for progressive JPEG loads.': string),
+    render: function(): React.Node {
+      return <OnPartialLoadExample />;
+    },
+    platform: 'ios',
   },
 ];

@@ -43,7 +43,7 @@ class EventQueue {
    * Enqueues and (probably later) dispatch a given state update.
    * Can be called on any thread.
    */
-  void enqueueStateUpdate(const StateUpdate &stateUpdate) const;
+  void enqueueStateUpdate(StateUpdate &&stateUpdate) const;
 
  protected:
   /*
@@ -51,7 +51,7 @@ class EventQueue {
    * Override in subclasses to trigger beat `request` and/or beat `induce`.
    * Default implementation does nothing.
    */
-  virtual void onEnqueue() const;
+  virtual void onEnqueue() const = 0;
   void onBeat(jsi::Runtime &runtime) const;
 
   void flushEvents(jsi::Runtime &runtime) const;

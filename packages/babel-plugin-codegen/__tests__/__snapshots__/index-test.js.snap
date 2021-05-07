@@ -22,13 +22,14 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('NativeComponentRegistry');
 
 const {
   dispatchCommand
 } = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
-const ModuleViewConfig = {
+let nativeComponentName = 'RCTModule';
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'RCTModule',
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
@@ -48,11 +49,7 @@ const ModuleViewConfig = {
     onDirectEventDefinedInlineNull: true,
     onBubblingEventDefinedInlineNull: true
   }
-};
-let nativeComponentName = 'RCTModule';
-registerGeneratedViewConfig(nativeComponentName, ModuleViewConfig);
-export const __INTERNAL_VIEW_CONFIG = ModuleViewConfig;
-export default nativeComponentName;
+}));
 export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
@@ -87,13 +84,14 @@ interface NativeCommands {
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('NativeComponentRegistry');
 
 const {
   dispatchCommand
 } = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
-const ModuleViewConfig = {
+let nativeComponentName = 'RCTModule';
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'RCTModule',
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
@@ -113,11 +111,7 @@ const ModuleViewConfig = {
     onDirectEventDefinedInlineNull: true,
     onBubblingEventDefinedInlineNull: true
   }
-};
-let nativeComponentName = 'RCTModule';
-registerGeneratedViewConfig(nativeComponentName, ModuleViewConfig);
-export const __INTERNAL_VIEW_CONFIG = ModuleViewConfig;
-export default nativeComponentName;
+}));
 export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);

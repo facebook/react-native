@@ -56,6 +56,7 @@ class RN_EXPORT Instance {
       std::unique_ptr<const JSBigString> string,
       std::string sourceURL,
       bool loadSynchronously);
+  static bool isHBCBundle(const char *sourcePath);
   static bool isIndexedRAMBundle(const char *sourcePath);
   static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString> *string);
   void loadRAMBundleFromString(
@@ -133,7 +134,7 @@ class RN_EXPORT Instance {
   /**
    * RuntimeExecutor is used by Fabric to access the jsi::Runtime.
    */
-  RuntimeExecutor getRuntimeExecutor();
+  RuntimeExecutor getRuntimeExecutor(bool shouldFlush);
 
  private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);

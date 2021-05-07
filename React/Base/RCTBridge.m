@@ -11,7 +11,6 @@
 #import <objc/runtime.h>
 
 #import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
@@ -59,6 +58,9 @@ NSArray<Class> *RCTGetModuleClasses(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
+  RCTWarnNotAllowedForNewArchitecture(
+      @"RCTRegisterModule()", [NSString stringWithFormat:@"'%@' was registered unexpectedly", moduleClass]);
+
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
@@ -136,6 +138,17 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
+static BOOL turboModulePromisesBlockGuardEnabled = NO;
+BOOL RCTTurboModulePromisesBlockGuardEnabled(void)
+{
+  return turboModulePromisesBlockGuardEnabled;
+}
+
+void RCTEnableTurboModulePromisesBlockGuard(BOOL enabled)
+{
+  turboModulePromisesBlockGuardEnabled = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
@@ -190,6 +203,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
+    RCTEnforceNotAllowedForNewArchitecture(self, nil);
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;
@@ -214,6 +228,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
   [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
+}
+
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+{
+  [self.batchedBridge attachBridgeAPIsToTurboModule:module];
 }
 
 - (void)didReceiveReloadCommand

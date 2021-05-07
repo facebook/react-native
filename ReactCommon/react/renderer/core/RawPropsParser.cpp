@@ -8,6 +8,7 @@
 #include "RawPropsParser.h"
 
 #include <folly/Likely.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawProps.h>
 
 #include <glog/logging.h>
@@ -40,7 +41,7 @@ RawValue const *RawPropsParser::at(
     // This is not thread-safe part; this happens only during initialization of
     // a `ComponentDescriptor` where it is actually safe.
     keys_.push_back(key);
-    nameToIndex_.insert(key, size_);
+    nameToIndex_.insert(key, static_cast<RawPropsValueIndex>(size_));
     size_++;
     return nullptr;
   }
@@ -62,14 +63,14 @@ RawValue const *RawPropsParser::at(
   // the same order every time. This is trivial if you have a simple Props
   // constructor, but difficult or impossible if you have a shared sub-prop
   // Struct that is used by multiple parent Props.
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
   bool resetLoop = false;
 #endif
   do {
     rawProps.keyIndexCursor_++;
 
     if (UNLIKELY(rawProps.keyIndexCursor_ >= size_)) {
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
       if (resetLoop) {
         LOG(ERROR) << "Looked up RawProps key that does not exist: "
                    << (std::string)key;
@@ -106,7 +107,7 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
       if (!rawProps.value_.isObject()) {
         LOG(ERROR) << "Preparse props: rawProps value is not object";
       }
-      assert(rawProps.value_.isObject());
+      react_native_assert(rawProps.value_.isObject());
       auto object = rawProps.value_.asObject(runtime);
 
       auto names = object.getPropertyNames(runtime);
@@ -119,7 +120,8 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
 
         auto name = nameValue.utf8(runtime);
 
-        auto keyIndex = nameToIndex_.at(name.data(), name.size());
+        auto keyIndex = nameToIndex_.at(
+            name.data(), static_cast<RawPropsPropNameLength>(name.size()));
         if (keyIndex == kRawPropsValueIndexEmpty) {
           continue;
         }
@@ -140,7 +142,8 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
       for (auto const &pair : dynamic.items()) {
         auto name = pair.first.getString();
 
-        auto keyIndex = nameToIndex_.at(name.data(), name.size());
+        auto keyIndex = nameToIndex_.at(
+            name.data(), static_cast<RawPropsPropNameLength>(name.size()));
         if (keyIndex == kRawPropsValueIndexEmpty) {
           continue;
         }

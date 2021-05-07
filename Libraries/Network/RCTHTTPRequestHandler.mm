@@ -25,7 +25,7 @@
   std::mutex _mutex;
 }
 
-@synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 @synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
@@ -74,7 +74,7 @@ RCT_EXPORT_MODULE()
 
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
-    callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
+    callbackQueue.underlyingQueue = [[_moduleRegistry moduleForName:"Networking"] methodQueue];
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     // Set allowsCellularAccess to NO ONLY if key ReactNetworkForceWifiOnly exists AND its value is YES
     if (useWifiOnly) {
@@ -172,6 +172,12 @@ didReceiveResponse:(NSURLResponse *)response
     [_delegates removeObjectForKey:task];
   }
   [delegate URLRequest:task didCompleteWithError:error];
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
 }
 
 @end

@@ -10,8 +10,6 @@
 
 /* eslint no-bitwise: 0 */
 
-'use strict';
-
 import normalizeColorBase from '@react-native/normalize-color/base';
 
 import type {ColorValue} from './StyleSheet';

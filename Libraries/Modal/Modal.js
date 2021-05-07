@@ -8,10 +8,12 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
+import ModalInjection from './ModalInjection';
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import NativeModalManager from './NativeModalManager';
+const Platform = require('../Utilities/Platform');
 const React = require('react');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
@@ -25,6 +27,19 @@ import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
+
+type ModalEventDefinitions = {
+  modalDismissed: [{modalID: number}],
+};
+
+const ModalEventEmitter =
+  Platform.OS === 'ios' && NativeModalManager != null
+    ? new NativeEventEmitter<ModalEventDefinitions>(
+        // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+        // If you want to use the native module on other platforms, please remove this condition and test its behavior
+        Platform.OS !== 'ios' ? null : NativeModalManager,
+      )
+    : null;
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
@@ -144,6 +159,20 @@ export type Props = $ReadOnly<{|
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 |}>;
 
+function confirmProps(props: Props) {
+  if (__DEV__) {
+    if (
+      props.presentationStyle &&
+      props.presentationStyle !== 'overFullScreen' &&
+      props.transparent === true
+    ) {
+      console.warn(
+        `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
+      );
+    }
+  }
+}
+
 class Modal extends React.Component<Props> {
   static defaultProps: {|hardwareAccelerated: boolean, visible: boolean|} = {
     visible: true,
@@ -157,29 +186,35 @@ class Modal extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
-    Modal._confirmProps(props);
+    if (__DEV__) {
+      confirmProps(props);
+    }
     this._identifier = uniqueModalIdentifier++;
   }
 
-  componentWillUnmount() {
-    if (this.props.onDismiss != null) {
-      this.props.onDismiss();
+  componentDidMount() {
+    // 'modalDismissed' is for the old renderer in iOS only
+    if (ModalEventEmitter) {
+      this._eventSubscription = ModalEventEmitter.addListener(
+        'modalDismissed',
+        event => {
+          if (event.modalID === this._identifier && this.props.onDismiss) {
+            this.props.onDismiss();
+          }
+        },
+      );
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    Modal._confirmProps(nextProps);
+  componentWillUnmount() {
+    if (this._eventSubscription) {
+      this._eventSubscription.remove();
+    }
   }
 
-  static _confirmProps(props: Props) {
-    if (
-      props.presentationStyle &&
-      props.presentationStyle !== 'overFullScreen' &&
-      props.transparent === true
-    ) {
-      console.warn(
-        `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
-      );
+  componentDidUpdate() {
+    if (__DEV__) {
+      confirmProps(this.props);
     }
   }
 
@@ -217,6 +252,12 @@ class Modal extends React.Component<Props> {
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
+        onDismiss={() => {
+          if (this.props.onDismiss) {
+            this.props.onDismiss();
+          }
+        }}
+        visible={this.props.visible}
         statusBarTranslucent={this.props.statusBarTranslucent}
         identifier={this._identifier}
         style={styles.modal}
@@ -248,13 +289,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   container: {
-    /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.111 was deployed. To see the error, delete this
-     * comment and run Flow. */
+    /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb) This
+     * comment suppresses an error found when Flow v0.111 was deployed. To see
+     * the error, delete this comment and run Flow. */
     [side]: 0,
     top: 0,
     flex: 1,
   },
 });
 
-module.exports = Modal;
+const ExportedModal: React.AbstractComponent<
+  React.ElementConfig<typeof Modal>,
+> = ModalInjection.unstable_Modal ?? Modal;
+
+module.exports = ExportedModal;

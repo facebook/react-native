@@ -10,6 +10,7 @@
 #include <functional>
 #include <memory>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
@@ -63,7 +64,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   ShadowNode::Shared createShadowNode(
       const ShadowNodeFragment &fragment,
       ShadowNodeFamily::Shared const &family) const override {
-    assert(std::dynamic_pointer_cast<const ConcreteProps>(fragment.props));
+    react_native_assert(
+        std::dynamic_pointer_cast<const ConcreteProps>(fragment.props));
 
     auto shadowNode =
         std::make_shared<ShadowNodeT>(fragment, family, getTraits());
@@ -73,10 +75,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNode;
   }
 
-  UnsharedShadowNode cloneShadowNode(
+  ShadowNode::Unshared cloneShadowNode(
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment) const override {
-    assert(
+    react_native_assert(
         dynamic_cast<ConcreteShadowNode const *>(&sourceShadowNode) &&
         "Provided `sourceShadowNode` has an incompatible type.");
 
@@ -89,7 +91,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   void appendChild(
       const ShadowNode::Shared &parentShadowNode,
       const ShadowNode::Shared &childShadowNode) const override {
-    assert(
+    react_native_assert(
         dynamic_cast<ConcreteShadowNode const *>(parentShadowNode.get()) &&
         "Provided `parentShadowNode` has an incompatible type.");
 
@@ -103,7 +105,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   virtual SharedProps cloneProps(
       const SharedProps &props,
       const RawProps &rawProps) const override {
-    assert(
+    react_native_assert(
         !props ||
         dynamic_cast<ConcreteProps const *>(props.get()) &&
             "Provided `props` has an incompatible type.");
@@ -127,6 +129,14 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       const SharedProps &props,
       const SharedProps &newProps) const override {
     // By default, this does nothing.
+#ifdef ANDROID
+    // On Android only, the merged props should have the same RawProps as the
+    // final props struct
+    if (newProps != nullptr) {
+      return cloneProps(newProps, newProps->rawProps);
+    }
+#endif
+
     return cloneProps(newProps, {});
   };
 
@@ -153,14 +163,14 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       return nullptr;
     }
 
-    assert(data && "Provided `data` is nullptr.");
+    react_native_assert(data && "Provided `data` is nullptr.");
 
     return std::make_shared<ConcreteState const>(
         std::static_pointer_cast<ConcreteStateData const>(data),
         *family.getMostRecentState());
   }
 
-  virtual ShadowNodeFamily::Shared createFamily(
+  ShadowNodeFamily::Shared createFamily(
       ShadowNodeFamilyFragment const &fragment,
       SharedEventTarget eventTarget) const override {
     auto eventEmitter = std::make_shared<ConcreteEventEmitter const>(
@@ -173,9 +183,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
  protected:
-  virtual void adopt(UnsharedShadowNode shadowNode) const {
+  virtual void adopt(ShadowNode::Unshared const &shadowNode) const {
     // Default implementation does nothing.
-    assert(shadowNode->getComponentHandle() == getComponentHandle());
+    react_native_assert(
+        shadowNode->getComponentHandle() == getComponentHandle());
   }
 };
 
