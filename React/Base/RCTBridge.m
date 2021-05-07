@@ -149,6 +149,17 @@ void RCTEnableTurboModuleBlockGuard(BOOL enabled)
   turboModuleBlockGuardEnabled = enabled;
 }
 
+static BOOL turboModulePromisesBlockGuardEnabled = NO;
+BOOL RCTTurboModulePromisesBlockGuardEnabled(void)
+{
+  return turboModulePromisesBlockGuardEnabled;
+}
+
+void RCTEnableTurboModulePromisesBlockGuard(BOOL enabled)
+{
+  turboModulePromisesBlockGuardEnabled = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
