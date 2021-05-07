@@ -138,17 +138,6 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
-static BOOL turboModuleBlockGuardEnabled = NO;
-BOOL RCTTurboModuleBlockGuardEnabled(void)
-{
-  return turboModuleBlockGuardEnabled;
-}
-
-void RCTEnableTurboModuleBlockGuard(BOOL enabled)
-{
-  turboModuleBlockGuardEnabled = enabled;
-}
-
 static BOOL turboModulePromisesBlockGuardEnabled = NO;
 BOOL RCTTurboModulePromisesBlockGuardEnabled(void)
 {

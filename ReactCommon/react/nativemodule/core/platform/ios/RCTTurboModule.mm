@@ -171,15 +171,12 @@ static RCTResponseSenderBlock
 convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   auto weakWrapper = CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
-  RCTBlockGuard *blockGuard;
-  if (RCTTurboModuleBlockGuardEnabled()) {
-    blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
-      auto strongWrapper = weakWrapper.lock();
-      if (strongWrapper) {
-        strongWrapper->destroy();
-      }
-    }];
-  }
+  RCTBlockGuard *blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
+    auto strongWrapper = weakWrapper.lock();
+    if (strongWrapper) {
+      strongWrapper->destroy();
+    }
+  }];
 
   BOOL __block wrapperWasCalled = NO;
   RCTResponseSenderBlock callback = ^(NSArray *responses) {
