@@ -12,7 +12,6 @@ import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import type {
   AccessibilityActionEvent,
@@ -64,7 +63,6 @@ type Props = $ReadOnly<{|
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
   touchSoundDisabled?: ?boolean,
-  style?: ?ViewStyleProp,
 |}>;
 
 type State = $ReadOnly<{|

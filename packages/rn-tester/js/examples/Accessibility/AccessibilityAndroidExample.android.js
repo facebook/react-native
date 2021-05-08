@@ -28,12 +28,8 @@ type AccessibilityAndroidExampleState = {
   forgroundImportantForAcc: number,
 };
 
-type Props = $ReadOnly<{|
-  accessibilityLiveRegion?: ?string,
-|}>;
-
 class AccessibilityAndroidExample extends React.Component<
-  Props,
+  {},
   AccessibilityAndroidExampleState,
 > {
   state: AccessibilityAndroidExampleState = {
@@ -69,15 +65,14 @@ class AccessibilityAndroidExample extends React.Component<
               <Text>Click me</Text>
             </View>
           </TouchableWithoutFeedback>
-          <Text accessibilityLiveRegion={'polite'}>
-            Clicked {this.state.count} times
-          </Text>
+          <View accessibilityLiveRegion={'polite'}>
+            <Text>Clicked {this.state.count} times</Text>
+          </View>
         </RNTesterBlock>
 
         <RNTesterBlock title="Overlapping views and importantForAccessibility property">
           <View style={styles.container}>
             <TouchableWithoutFeedback
-              style={styles.touchableContainer}
               accessible={true}
               accessibilityLabel="First layout"
               importantForAccessibility={
@@ -85,7 +80,7 @@ class AccessibilityAndroidExample extends React.Component<
                   this.state.backgroundImportantForAcc
                 ]
               }>
-              <View accessible={true}>
+              <View accessible={true} style={styles.touchableContainer}>
                 <Text style={{fontSize: 25}}>Hello</Text>
               </View>
             </TouchableWithoutFeedback>
