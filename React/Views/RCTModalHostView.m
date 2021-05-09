@@ -62,13 +62,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 - (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
 {
   _onRequestClose = onRequestClose;
-    // if onRequestClose is present, we set the modalInPresentation to false to support the swipe gesture
-    if (@available(iOS 13.0, *)) {
-        _modalViewController.modalInPresentation = NO;
-    }
 }
 
-- (void)presentationControllerDidDismiss:(UIPresentationController *)controller
+- (void)presentationControllerDidAttemptToDismiss:(UIPresentationController *)controller
 {
     if (_onRequestClose != nil) {
         _onRequestClose(nil);
