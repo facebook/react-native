@@ -24,6 +24,7 @@
   RCTTouchHandler *_touchHandler;
   UIView *_reactSubview;
   UIInterfaceOrientation _lastKnownOrientation;
+  RCTDirectEventBlock _onRequestClose;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
@@ -40,6 +41,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
     _isPresented = NO;
 
+    if (@available(iOS 13.0, *)) {
+      _modalViewController.presentationController.delegate = self;
+    }
+      
     __weak typeof(self) weakSelf = self;
     _modalViewController.boundsDidChangeBlock = ^(CGRect newBounds) {
       [weakSelf notifyForBoundsChange:newBounds];
@@ -56,6 +61,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     [self notifyForOrientationChange];
   }
 }
+
+
+- (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
+{
+  _onRequestClose = onRequestClose;
+}
+
+- (void)presentationControllerDidAttemptToDismiss:(UIPresentationController *)controller
+{
+    if (_onRequestClose != nil) {
+        _onRequestClose(nil);
+    }
+}
+
 
 - (void)notifyForOrientationChange
 {
