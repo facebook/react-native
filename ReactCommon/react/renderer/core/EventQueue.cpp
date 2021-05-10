@@ -24,10 +24,10 @@ EventQueue::EventQueue(
       std::bind(&EventQueue::onBeat, this, std::placeholders::_1));
 }
 
-void EventQueue::enqueueEvent(const RawEvent &rawEvent) const {
+void EventQueue::enqueueEvent(RawEvent &&rawEvent) const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
-    eventQueue_.push_back(rawEvent);
+    eventQueue_.push_back(std::move(rawEvent));
   }
 
   onEnqueue();

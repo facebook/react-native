@@ -42,14 +42,14 @@ class EventDispatcher {
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
    */
-  void dispatchEvent(RawEvent const &rawEvent, EventPriority priority) const;
+  void dispatchEvent(RawEvent &&rawEvent, EventPriority priority) const;
 
   /*
    * Dispatches a raw event with asynchronous batched priority. Before the
    * dispatch we make sure that no other RawEvent of same type and same target
    * is on the queue.
    */
-  void dispatchUniqueEvent(RawEvent const &rawEvent) const;
+  void dispatchUniqueEvent(RawEvent &&rawEvent) const;
 
   /*
    * Dispatches a state update with given priority.
