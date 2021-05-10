@@ -13,8 +13,9 @@
 
 const React = require('react');
 const Picker = require('../Picker');
-
+const PickerAndroid = require('../PickerAndroid.android');
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
+const render = require('../../../../jest/renderer');
 
 describe('<Picker />', () => {
   it('should render as expected', () => {
@@ -31,38 +32,41 @@ describe('<Picker />', () => {
       },
     );
   });
+});
+
+describe('<Picker /> on Android', () => {
+  beforeEach(() => {
+    jest.doMock('../AndroidDialogPickerNativeComponent', () => 'PickerAndroid');
+  });
+
+  afterEach(() => {
+    jest.resetModules();
+    jest.dontMock('../AndroidDialogPickerNativeComponent');
+  });
+
   it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}', () => {
-    ReactNativeTestTools.expectRendersMatchingSnapshot(
-      'Picker',
-      () => (
-        <Picker
+    expect(
+      render.create(
+        <PickerAndroid
           importantForAccessibility={'no-hide-descendants'}
           selectedValue="foo"
           onValueChange={jest.fn()}>
-          <Picker.Item label="foo" value="foo" />
           <Picker.Item label="bar" value="bar" />
-        </Picker>
+        </PickerAndroid>,
       ),
-      () => {
-        jest.dontMock('../Picker');
-      },
-    );
+    ).toMatchSnapshot();
   });
+
   it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}', () => {
-    ReactNativeTestTools.expectRendersMatchingSnapshot(
-      'Picker',
-      () => (
-        <Picker
+    expect(
+      render.create(
+        <PickerAndroid
           importantForAccessibility={'no'}
           selectedValue="foo"
           onValueChange={jest.fn()}>
-          <Picker.Item label="foo" value="foo" />
           <Picker.Item label="bar" value="bar" />
-        </Picker>
+        </PickerAndroid>,
       ),
-      () => {
-        jest.dontMock('../Picker');
-      },
-    );
+    ).toMatchSnapshot();
   });
 });
