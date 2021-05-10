@@ -39,13 +39,6 @@ public class ReactFeatureFlags {
   public static boolean enableFabricLogs = false;
 
   /**
-   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
-   * provided) to execute the view commands. If {@code false}, then {@code receiveCommand} method
-   * inside view manager will be called instead.
-   */
-  public static boolean useViewManagerDelegatesForCommands = false;
-
-  /**
    * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
    * remove this when bug is fixed
    */
