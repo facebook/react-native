@@ -24,6 +24,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -284,13 +286,20 @@ public class TextLayoutManager {
       }
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
+      int boringLayoutWidth = boring.width;
+      if (boring.width < 0) {
+        ReactSoftException.logSoftException(
+            TAG, new ReactNoCrashSoftException("Text width is invalid: " + boring.width));
+        boringLayoutWidth = 0;
+      }
+
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout =
           BoringLayout.make(
               text,
               textPaint,
-              boring.width,
+              boringLayoutWidth,
               Layout.Alignment.ALIGN_NORMAL,
               1.f,
               0.f,
@@ -375,10 +384,6 @@ public class TextLayoutManager {
     }
 
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
-    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
-
-    // technically, width should never be negative, but there is currently a bug in
-    boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
 
     Layout layout =
         createLayout(

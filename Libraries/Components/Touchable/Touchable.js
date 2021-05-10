@@ -8,12 +8,12 @@
  * @format
  */
 
-const BoundingDimensions = require('./BoundingDimensions');
-const Platform = require('../../Utilities/Platform');
-const Position = require('./Position');
-const React = require('react');
-const UIManager = require('../../ReactNative/UIManager');
-const SoundManager = require('../Sound/SoundManager');
+import * as React from 'react';
+import BoundingDimensions from './BoundingDimensions';
+import Platform from '../../Utilities/Platform';
+import Position from './Position';
+import UIManager from '../../ReactNative/UIManager';
+import SoundManager from '../Sound/SoundManager';
 
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 

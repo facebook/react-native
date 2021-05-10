@@ -49,7 +49,9 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
       override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidSetIsJSResponder:isJSResponder forShadowView:shadowView];
+    [scheduler.delegate schedulerDidSetIsJSResponder:isJSResponder
+                                blockNativeResponder:blockNativeResponder
+                                       forShadowView:shadowView];
   }
 
   void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, std::string const &eventType) override

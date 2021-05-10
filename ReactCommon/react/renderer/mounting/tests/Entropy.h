@@ -75,6 +75,10 @@ class Entropy final {
     result = generator() % 10000 < 10000 * ratio;
   }
 
+  void generateRandomValue(Generator &generator, int &result) const {
+    result = generator();
+  }
+
   void generateRandomValue(Generator &generator, int &result, int min, int max)
       const {
     std::uniform_int_distribution<int> distribution(min, max);

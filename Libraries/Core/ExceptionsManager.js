@@ -105,8 +105,8 @@ function reportException(
     }
 
     if (__DEV__ && isHandledByLogBox) {
-      const LogBoxData = require('../LogBox/Data/LogBoxData');
-      LogBoxData.addException({
+      const LogBox = require('../LogBox/LogBox');
+      LogBox.addException({
         ...data,
         isComponentError: !!e.isComponentError,
       });

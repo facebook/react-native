@@ -40,13 +40,6 @@ public class ReactFeatureFlags {
 
   /**
    * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
-   * provided) to update the view properties. If {@code false}, then the generated {@code
-   * ...$$PropsSetter} class will be used instead.
-   */
-  public static boolean useViewManagerDelegates = false;
-
-  /**
-   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
    * provided) to execute the view commands. If {@code false}, then {@code receiveCommand} method
    * inside view manager will be called instead.
    */
@@ -61,6 +54,9 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
+  /** Feature flag to configure eager initialization classes of Fabric */
+  public static boolean eagerInitializeFabricClasses = false;
+
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
 
@@ -72,4 +68,27 @@ public class ReactFeatureFlags {
 
   /** Enables MapBuffer Serialization */
   public static boolean mapBufferSerializationEnabled = false;
+
+  /** An interface used to compute flags on demand. */
+  public interface FlagProvider {
+    boolean get();
+  }
+
+  /** Should the RuntimeExecutor call JSIExecutor::flush()? */
+  private static FlagProvider enableRuntimeExecutorFlushingProvider = null;
+
+  public static void setEnableRuntimeExecutorFlushingFlagProvider(FlagProvider provider) {
+    enableRuntimeExecutorFlushingProvider = provider;
+  }
+
+  public static boolean enableRuntimeExecutorFlushing() {
+    if (enableRuntimeExecutorFlushingProvider != null) {
+      return enableRuntimeExecutorFlushingProvider.get();
+    }
+
+    return false;
+  }
+
+  /** Enables Fabric for LogBox */
+  public static boolean enableFabricInLogBox = false;
 }

@@ -50,6 +50,7 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
   BOOL _setupComplete;
   RCTModuleRegistry *_moduleRegistry;
   RCTViewRegistry *_viewRegistry_DEPRECATED;
+  RCTBundleManager *_bundleManager;
 }
 
 @synthesize methods = _methods;
@@ -103,6 +104,7 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
                              bridge:(RCTBridge *)bridge
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
 {
   return [self initWithModuleClass:moduleClass
                     moduleProvider:^id<RCTBridgeModule> {
@@ -110,7 +112,8 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
                     }
                             bridge:bridge
                     moduleRegistry:moduleRegistry
-           viewRegistry_DEPRECATED:viewRegistry_DEPRECATED];
+           viewRegistry_DEPRECATED:viewRegistry_DEPRECATED
+                     bundleManager:bundleManager];
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
@@ -118,6 +121,7 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
                              bridge:(RCTBridge *)bridge
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
 {
   if (self = [super init]) {
     _bridge = bridge;
@@ -125,6 +129,7 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
     _moduleProvider = [moduleProvider copy];
     _moduleRegistry = moduleRegistry;
     _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
     [self setUp];
   }
   return self;
@@ -134,6 +139,7 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
                                 bridge:(RCTBridge *)bridge
                         moduleRegistry:(RCTModuleRegistry *)moduleRegistry
                viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                         bundleManager:(RCTBundleManager *)bundleManager
 {
   if (self = [super init]) {
     _bridge = bridge;
@@ -141,6 +147,7 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
     _moduleClass = [instance class];
     _moduleRegistry = moduleRegistry;
     _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
     [self setUp];
   }
   return self;
@@ -203,6 +210,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       [self setBridgeForInstance];
       [self setModuleRegistryForInstance];
       [self setViewRegistryForInstance];
+      [self setBundleManagerForInstance];
     }
 
     [self setUpMethodQueue];
@@ -277,6 +285,23 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       RCTLogError(
           @"%@ has no setter or ivar for its module registry, which is not "
            "permitted. You must either @synthesize the viewRegistry_DEPRECATED property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setBundleManagerForInstance
+{
+  if ([_instance respondsToSelector:@selector(bundleManager)] && _instance.bundleManager != _bundleManager) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setBundleManagerForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_bundleManager forKey:@"bundleManager"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the bundleManager property, "
            "or provide your own setter method.",
           self.name);
     }

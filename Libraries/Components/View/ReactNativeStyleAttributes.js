@@ -9,14 +9,12 @@
  */
 
 'use strict';
-
-const DeprecatedImageStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
-const DeprecatedTextStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedTextStylePropTypes');
-const DeprecatedViewStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedViewStylePropTypes');
-
-const processColor = require('../../StyleSheet/processColor');
-const processTransform = require('../../StyleSheet/processTransform');
-const sizesDiffer = require('../../Utilities/differ/sizesDiffer');
+import DeprecatedImageStylePropTypes from '../../DeprecatedPropTypes/DeprecatedImageStylePropTypes';
+import DeprecatedTextStylePropTypes from '../../DeprecatedPropTypes/DeprecatedTextStylePropTypes';
+import DeprecatedViewStylePropTypes from '../../DeprecatedPropTypes/DeprecatedViewStylePropTypes';
+import processColor from '../../StyleSheet/processColor';
+import processTransform from '../../StyleSheet/processTransform';
+import sizesDiffer from '../../Utilities/differ/sizesDiffer';
 
 type ReturnBoolType = <V>(V) => true;
 type BoolifiedDeprecatedViewStylePropTypes = $ObjMap<

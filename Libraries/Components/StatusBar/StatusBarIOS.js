@@ -10,6 +10,7 @@
 
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
+import Platform from '../../Utilities/Platform';
 
 type StatusBarFrameChangeEvent = {
   frame: {
@@ -30,4 +31,8 @@ type StatusBarIOSEventDefinitions = {
  */
 class StatusBarIOS extends NativeEventEmitter<StatusBarIOSEventDefinitions> {}
 
-module.exports = (new StatusBarIOS(NativeStatusBarManagerIOS): StatusBarIOS);
+module.exports = (new StatusBarIOS(
+  // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+  // If you want to use the native module on other platforms, please remove this condition and test its behavior
+  Platform.OS !== 'ios' ? null : NativeStatusBarManagerIOS,
+): StatusBarIOS);

@@ -213,7 +213,7 @@ module.exports = {
     return require('./Libraries/Components/RefreshControl/RefreshControl');
   },
   get SafeAreaView(): SafeAreaView {
-    return require('./Libraries/Components/SafeAreaView/SafeAreaView');
+    return require('./Libraries/Components/SafeAreaView/SafeAreaView').default;
   },
   get ScrollView(): ScrollView {
     return require('./Libraries/Components/ScrollView/ScrollView');
@@ -244,7 +244,7 @@ module.exports = {
     return require('./Libraries/Components/StatusBar/StatusBar');
   },
   get Switch(): Switch {
-    return require('./Libraries/Components/Switch/Switch');
+    return require('./Libraries/Components/Switch/Switch').default;
   },
   get Text(): Text {
     return require('./Libraries/Text/Text');
@@ -479,7 +479,7 @@ module.exports = {
   ) => HostComponent<T> {
     return require('./Libraries/ReactNative/requireNativeComponent');
   },
-  get unstable_RootTagContext(): RootTagContext {
+  get RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;
   },
   get unstable_enableLogBox(): () => void {

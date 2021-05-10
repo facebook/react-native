@@ -4,14 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
- * @flow
  */
 
-'use strict';
-
-import typeof Switch from './Switch';
-
-export default {
-  unstable_Switch: (null: ?Switch),
-};
+export type {RootTag} from '../ReactNative/RootTag';
