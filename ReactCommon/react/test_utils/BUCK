@@ -3,7 +3,6 @@ load(
     "ANDROID",
     "APPLE",
     "CXX",
-    "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
     "get_preprocessor_flags_for_build_mode",
@@ -15,11 +14,8 @@ load(
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
-    name = "telemetry",
-    srcs = glob(
-        ["**/*.cpp"],
-        exclude = glob(["tests/**/*.cpp"]),
-    ),
+    name = "test_utils",
+    srcs = [],
     headers = glob(
         ["**/*.h"],
         exclude = glob(["tests/**/*.h"]),
@@ -28,9 +24,8 @@ rn_xplat_cxx_library(
     exported_headers = subdir_glob(
         [
             ("", "*.h"),
-            ("stubs", "*.h"),
         ],
-        prefix = "react/renderer/telemetry",
+        prefix = "react/test_utils",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -39,6 +34,7 @@ rn_xplat_cxx_library(
         "-Wall",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_frameworks = ["Foundation"],
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
@@ -48,37 +44,11 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
-    tests = [":tests"],
+    tests = [],
     visibility = ["PUBLIC"],
     deps = [
-        "//third-party/glog:glog",
-        "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
+        "//xplat/jsi:jsi",
         react_native_xplat_target("better:better"),
         react_native_xplat_target("react/debug:debug"),
-        react_native_xplat_target("react/utils:utils"),
-    ],
-)
-
-fb_xplat_cxx_test(
-    name = "tests",
-    srcs = glob(["tests/**/*.cpp"]),
-    headers = glob(["tests/**/*.h"]),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
-    contacts = ["oncall+react_native@xmail.facebook.com"],
-    fbandroid_use_instrumentation_test = True,
-    platforms = (ANDROID, APPLE, CXX),
-    deps = [
-        ":telemetry",
-        "//xplat/folly:molly",
-        "//xplat/third-party/gmock:gtest",
-        react_native_xplat_target("react/test_utils:test_utils"),
     ],
 )
