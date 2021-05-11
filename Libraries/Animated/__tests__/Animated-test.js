@@ -57,8 +57,6 @@ describe('Animated tests', () => {
         callback,
       );
 
-      expect(anim.__getChildren().length).toBe(3);
-
       expect(node.__getValue()).toEqual({
         style: {
           backgroundColor: 'red',
@@ -70,6 +68,12 @@ describe('Animated tests', () => {
           },
         },
       });
+
+      expect(anim.__getChildren().length).toBe(0);
+
+      node.__attach();
+
+      expect(anim.__getChildren().length).toBe(3);
 
       anim.setValue(0.5);
 
@@ -811,6 +815,10 @@ describe('Animated tests', () => {
         },
       });
 
+      node.__attach();
+
+      expect(callback.mock.calls.length).toBe(0);
+
       vec.setValue({x: 42, y: 1492});
 
       expect(callback.mock.calls.length).toBe(2); // once each for x, y
@@ -904,6 +912,7 @@ describe('Animated tests', () => {
         },
         callback,
       );
+      view.__attach();
       const listener = jest.fn();
       const id = value4.addListener(listener);
       value3.setValue(137);

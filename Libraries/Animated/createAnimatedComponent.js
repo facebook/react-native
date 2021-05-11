@@ -182,6 +182,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
         nextProps,
         this._animatedPropsCallback,
       );
+      this._propsAnimated.__attach();
 
       // When you call detach, it removes the element from the parent list
       // of children. If it goes to 0, then the parent also detaches itself
