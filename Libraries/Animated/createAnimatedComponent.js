@@ -174,10 +174,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _attachProps(nextProps) {
       const oldPropsAnimated = this._propsAnimated;
 
-      if (nextProps === oldPropsAnimated) {
-        return;
-      }
-
       this._propsAnimated = new AnimatedProps(
         nextProps,
         this._animatedPropsCallback,
