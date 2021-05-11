@@ -82,6 +82,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
   public enum AccessibilityRole {
     NONE,
     BUTTON,
+    TOGGLEBUTTON,
     LINK,
     SEARCH,
     IMAGE,
@@ -112,6 +113,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       switch (role) {
         case BUTTON:
           return "android.widget.Button";
+        case TOGGLEBUTTON:
+          return "android.widget.ToggleButton";
         case SEARCH:
           return "android.widget.EditText";
         case IMAGE:
@@ -392,6 +395,10 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     } else if (role.equals(AccessibilityRole.BUTTON)) {
       nodeInfo.setRoleDescription(context.getString(R.string.button_description));
       nodeInfo.setClickable(true);
+    } else if (role.equals(AccessibilityRole.TOGGLEBUTTON)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.toggle_button_description));
+      nodeInfo.setClickable(true);
+      nodeInfo.setCheckable(true);
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
       nodeInfo.setRoleDescription(context.getString(R.string.summary_description));
     } else if (role.equals(AccessibilityRole.HEADER)) {

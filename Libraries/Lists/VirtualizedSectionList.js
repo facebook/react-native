@@ -8,17 +8,11 @@
  * @format
  */
 
-'use strict';
-
-const React = require('react');
-const View = require('../Components/View/View');
-const VirtualizedList = require('./VirtualizedList');
-
-const invariant = require('invariant');
-
+import invariant from 'invariant';
 import type {ViewToken} from './ViewabilityHelper';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
-import VirtualizedSectionListInjection from './VirtualizedSectionListInjection';
+import {View, VirtualizedList} from 'react-native';
+import * as React from 'react';
 
 type Item = any;
 
@@ -386,11 +380,13 @@ class VirtualizedSectionList<
           item={item}
           leadingItem={info.leadingItem}
           leadingSection={info.leadingSection}
-          onUpdateSeparator={this._onUpdateSeparator}
           prevCellKey={(this._subExtractor(index - 1) || {}).key}
-          ref={ref => {
-            this._cellRefs[info.key] = ref;
-          }}
+          // Callback to provide updateHighlight for this item
+          setSelfHighlightCallback={this._setUpdateHighlightFor}
+          setSelfUpdatePropsCallback={this._setUpdatePropsFor}
+          // Provide child ability to set highlight/updateProps for previous item using prevCellKey
+          updateHighlightFor={this._updateHighlightFor}
+          updatePropsFor={this._updatePropsFor}
           renderItem={renderItem}
           section={info.section}
           trailingItem={info.trailingItem}
@@ -401,9 +397,34 @@ class VirtualizedSectionList<
     }
   };
 
-  _onUpdateSeparator = (key: string, newProps: Object) => {
-    const ref = this._cellRefs[key];
-    ref && ref.updateSeparatorProps(newProps);
+  _updatePropsFor = (cellKey, value) => {
+    const updateProps = this._updatePropsMap[cellKey];
+    if (updateProps != null) {
+      updateProps(value);
+    }
+  };
+
+  _updateHighlightFor = (cellKey, value) => {
+    const updateHighlight = this._updateHighlightMap[cellKey];
+    if (updateHighlight != null) {
+      updateHighlight(value);
+    }
+  };
+
+  _setUpdateHighlightFor = (cellKey, updateHighlightFn) => {
+    if (updateHighlightFn != null) {
+      this._updateHighlightMap[cellKey] = updateHighlightFn;
+    } else {
+      delete this._updateHighlightFor[cellKey];
+    }
+  };
+
+  _setUpdatePropsFor = (cellKey, updatePropsFn) => {
+    if (updatePropsFn != null) {
+      this._updatePropsMap[cellKey] = updatePropsFn;
+    } else {
+      delete this._updatePropsMap[cellKey];
+    }
   };
 
   _getSeparatorComponent(
@@ -430,7 +451,8 @@ class VirtualizedSectionList<
     return null;
   }
 
-  _cellRefs = {};
+  _updateHighlightMap = {};
+  _updatePropsMap = {};
   _listRef: ?React.ElementRef<typeof VirtualizedList>;
   _captureRef = ref => {
     this._listRef = ref;
@@ -452,142 +474,140 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   cellKey: string,
   index: number,
   item: Item,
-  onUpdateSeparator: (cellKey: string, newProps: Object) => void,
+  setSelfHighlightCallback: (
+    cellKey: string,
+    updateFn: ?(boolean) => void,
+  ) => void,
+  setSelfUpdatePropsCallback: (
+    cellKey: string,
+    updateFn: ?(boolean) => void,
+  ) => void,
   prevCellKey?: ?string,
+  updateHighlightFor: (prevCellKey: string, value: boolean) => void,
+  updatePropsFor: (prevCellKey: string, value: Object) => void,
   renderItem: Function,
   inverted: boolean,
 |}>;
 
-type ItemWithSeparatorState = {
-  separatorProps: $ReadOnly<{|
-    highlighted: false,
-    ...ItemWithSeparatorCommonProps,
-  |}>,
-  leadingSeparatorProps: $ReadOnly<{|
-    highlighted: false,
-    ...ItemWithSeparatorCommonProps,
-  |}>,
-  ...
-};
+function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
+  const {
+    LeadingSeparatorComponent,
+    // this is the trailing separator and is associated with this item
+    SeparatorComponent,
+    cellKey,
+    prevCellKey,
+    setSelfHighlightCallback,
+    updateHighlightFor,
+    setSelfUpdatePropsCallback,
+    updatePropsFor,
+    item,
+    index,
+    section,
+    inverted,
+  } = props;
 
-class ItemWithSeparator extends React.Component<
-  ItemWithSeparatorProps,
-  ItemWithSeparatorState,
-> {
-  state = {
-    separatorProps: {
-      highlighted: false,
-      leadingItem: this.props.item,
-      leadingSection: this.props.leadingSection,
-      section: this.props.section,
-      trailingItem: this.props.trailingItem,
-      trailingSection: this.props.trailingSection,
-    },
-    leadingSeparatorProps: {
-      highlighted: false,
-      leadingItem: this.props.leadingItem,
-      leadingSection: this.props.leadingSection,
-      section: this.props.section,
-      trailingItem: this.props.item,
-      trailingSection: this.props.trailingSection,
-    },
-  };
+  const [
+    leadingSeparatorHiglighted,
+    setLeadingSeparatorHighlighted,
+  ] = React.useState(false);
 
-  _separators = {
+  const [separatorHighlighted, setSeparatorHighlighted] = React.useState(false);
+
+  const [leadingSeparatorProps, setLeadingSeparatorProps] = React.useState({
+    leadingItem: props.leadingItem,
+    leadingSection: props.leadingSection,
+    section: props.section,
+    trailingItem: props.item,
+    trailingSection: props.trailingSection,
+  });
+  const [separatorProps, setSeparatorProps] = React.useState({
+    leadingItem: props.item,
+    leadingSection: props.leadingSection,
+    section: props.section,
+    trailingItem: props.trailingItem,
+    trailingSection: props.trailingSection,
+  });
+
+  React.useEffect(() => {
+    setSelfHighlightCallback(cellKey, setSeparatorHighlighted);
+    setSelfUpdatePropsCallback(cellKey, setSeparatorProps);
+
+    return () => {
+      setSelfUpdatePropsCallback(cellKey, null);
+      setSelfHighlightCallback(cellKey, null);
+    };
+  }, [
+    cellKey,
+    setSelfHighlightCallback,
+    setSeparatorProps,
+    setSelfUpdatePropsCallback,
+  ]);
+
+  const separators = {
     highlight: () => {
-      ['leading', 'trailing'].forEach(s =>
-        this._separators.updateProps(s, {highlighted: true}),
-      );
+      setLeadingSeparatorHighlighted(true);
+      setSeparatorHighlighted(true);
+      if (prevCellKey != null) {
+        updateHighlightFor(prevCellKey, true);
+      }
     },
     unhighlight: () => {
-      ['leading', 'trailing'].forEach(s =>
-        this._separators.updateProps(s, {highlighted: false}),
-      );
+      setLeadingSeparatorHighlighted(false);
+      setSeparatorHighlighted(false);
+      if (prevCellKey != null) {
+        updateHighlightFor(prevCellKey, false);
+      }
     },
-    updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
-      const {LeadingSeparatorComponent, cellKey, prevCellKey} = this.props;
-      if (select === 'leading' && LeadingSeparatorComponent != null) {
-        this.setState(state => ({
-          leadingSeparatorProps: {...state.leadingSeparatorProps, ...newProps},
-        }));
-      } else {
-        this.props.onUpdateSeparator(
-          (select === 'leading' && prevCellKey) || cellKey,
-          newProps,
-        );
+    updateProps: (
+      select: 'leading' | 'trailing',
+      newProps: $Shape<ItemWithSeparatorCommonProps>,
+    ) => {
+      if (select === 'leading') {
+        if (LeadingSeparatorComponent != null) {
+          setLeadingSeparatorProps({...leadingSeparatorProps, ...newProps});
+        } else if (prevCellKey != null) {
+          // update the previous item's separator
+          updatePropsFor(prevCellKey, {...leadingSeparatorProps, ...newProps});
+        }
+      } else if (select === 'trailing' && SeparatorComponent != null) {
+        setSeparatorProps({...separatorProps, ...newProps});
       }
     },
   };
-
-  static getDerivedStateFromProps(
-    props: ItemWithSeparatorProps,
-    prevState: ItemWithSeparatorState,
-  ): ?ItemWithSeparatorState {
-    return {
-      separatorProps: {
-        ...prevState.separatorProps,
-        leadingItem: props.item,
-        leadingSection: props.leadingSection,
-        section: props.section,
-        trailingItem: props.trailingItem,
-        trailingSection: props.trailingSection,
-      },
-      leadingSeparatorProps: {
-        ...prevState.leadingSeparatorProps,
-        leadingItem: props.leadingItem,
-        leadingSection: props.leadingSection,
-        section: props.section,
-        trailingItem: props.item,
-        trailingSection: props.trailingSection,
-      },
-    };
-  }
-
-  updateSeparatorProps(newProps: Object) {
-    this.setState(state => ({
-      separatorProps: {...state.separatorProps, ...newProps},
-    }));
-  }
-
-  render() {
-    const {
-      LeadingSeparatorComponent,
-      SeparatorComponent,
-      item,
-      index,
-      section,
-      inverted,
-    } = this.props;
-    const element = this.props.renderItem({
-      item,
-      index,
-      section,
-      separators: this._separators,
-    });
-    const leadingSeparator = LeadingSeparatorComponent != null && (
-      <LeadingSeparatorComponent {...this.state.leadingSeparatorProps} />
-    );
-    const separator = SeparatorComponent != null && (
-      <SeparatorComponent {...this.state.separatorProps} />
-    );
-    return leadingSeparator || separator ? (
-      <View>
-        {inverted === false ? leadingSeparator : separator}
-        {element}
-        {inverted === false ? separator : leadingSeparator}
-      </View>
-    ) : (
-      element
-    );
-  }
+  const element = props.renderItem({
+    item,
+    index,
+    section,
+    separators,
+  });
+  const leadingSeparator = LeadingSeparatorComponent != null && (
+    <LeadingSeparatorComponent
+      highlighted={leadingSeparatorHiglighted}
+      {...leadingSeparatorProps}
+    />
+  );
+  const separator = SeparatorComponent != null && (
+    <SeparatorComponent
+      highlighted={separatorHighlighted}
+      {...separatorProps}
+    />
+  );
+  return leadingSeparator || separator ? (
+    <View>
+      {inverted === false ? leadingSeparator : separator}
+      {element}
+      {inverted === false ? separator : leadingSeparator}
+    </View>
+  ) : (
+    element
+  );
 }
 
-const VSLToExport: React.AbstractComponent<
+module.exports = (VirtualizedSectionList: React.AbstractComponent<
   React.ElementConfig<typeof VirtualizedSectionList>,
   $ReadOnly<{
     getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
     scrollToLocation: (params: ScrollToLocationParamsType) => void,
     ...
   }>,
-> = VirtualizedSectionListInjection.unstable_VSL ?? VirtualizedSectionList;
-module.exports = VSLToExport;
+>);

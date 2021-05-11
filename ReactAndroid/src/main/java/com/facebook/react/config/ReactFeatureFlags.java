@@ -39,20 +39,6 @@ public class ReactFeatureFlags {
   public static boolean enableFabricLogs = false;
 
   /**
-   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
-   * provided) to update the view properties. If {@code false}, then the generated {@code
-   * ...$$PropsSetter} class will be used instead.
-   */
-  public static boolean useViewManagerDelegates = false;
-
-  /**
-   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
-   * provided) to execute the view commands. If {@code false}, then {@code receiveCommand} method
-   * inside view manager will be called instead.
-   */
-  public static boolean useViewManagerDelegatesForCommands = false;
-
-  /**
    * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
    * remove this when bug is fixed
    */
@@ -60,6 +46,9 @@ public class ReactFeatureFlags {
 
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
+
+  /** Feature flag to configure eager initialization classes of Fabric */
+  public static boolean eagerInitializeFabricClasses = false;
 
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;

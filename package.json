@@ -100,7 +100,7 @@
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
     "event-target-shim": "^5.0.1",
-    "hermes-engine": "~0.7.0",
+    "hermes-engine": "~0.8.0",
     "invariant": "^2.2.4",
     "jsc-android": "^245459.0.0",
     "metro-babel-register": "0.66.0",
@@ -111,7 +111,7 @@
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "prop-types": "^15.7.2",
-    "react-devtools-core": "^4.6.0",
+    "react-devtools-core": "^4.13.0",
     "react-refresh": "^0.4.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.20.1",
@@ -121,7 +121,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.149.0",
+    "flow-bin": "^0.150.0",
     "react": "17.0.2"
   },
   "detox": {
