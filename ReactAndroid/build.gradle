@@ -56,7 +56,8 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
     from(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
     from("src/main/jni/third-party/boost/Android.mk")
-    include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp")
+    from("src/main/jni/third-party/boost")
+    include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp", "asm/**/*.S")
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/boost")
     doLast {
@@ -94,6 +95,51 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/folly")
+}
+
+task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {
+    src("https://github.com/fmtlib/fmt/archive/${FMT_VERSION}.tar.gz")
+    onlyIfNewer(true)
+    overwrite(false)
+    dest(new File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
+}
+
+task prepareFmt(dependsOn: dependenciesPath ? [] : [downloadFmt], type: Copy) {
+    from(dependenciesPath ?: tarTree(downloadFmt.dest))
+    from("src/main/jni/third-party/fmt/Android.mk")
+    include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "Android.mk")
+    eachFile { fname -> fname.path = (fname.path - "fmt-${FMT_VERSION}/") }
+    includeEmptyDirs = false
+    into("$thirdPartyNdkDir/fmt")
+}
+
+task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
+    src("https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable/libevent-${LIBEVENT_VERSION}-stable.tar.gz")
+    onlyIfNewer(true)
+    overwrite(false)
+    dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
+}
+
+task prepareLibevent(dependsOn: dependenciesPath ? [] : [downloadLibevent], type: Copy) {
+    from(dependenciesPath ?: tarTree(downloadLibevent.dest))
+    from("src/main/jni/third-party/libevent/Android.mk")
+    from("src/main/jni/third-party/libevent/event-config.h")
+    from("src/main/jni/third-party/libevent/evconfig-private.h")
+    include(
+        "libevent-${LIBEVENT_VERSION}-stable/*.c",
+        "libevent-${LIBEVENT_VERSION}-stable/*.h",
+        "libevent-${LIBEVENT_VERSION}-stable/include/**/*",
+        "evconfig-private.h",
+        "event-config.h",
+        "Android.mk"
+    )
+    eachFile { fname -> fname.path = (fname.path - "libevent-${LIBEVENT_VERSION}-stable/") }
+    includeEmptyDirs = false
+    into("$thirdPartyNdkDir/libevent")
+
+    doLast {
+        ant.move(file: "$thirdPartyNdkDir/libevent/event-config.h", tofile: "$thirdPartyNdkDir/libevent/include/event2/event-config.h")
+    }
 }
 
 task prepareHermes(dependsOn: createNativeDepsDirectories, type: Copy) {
@@ -196,6 +242,8 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadDoubleConversion)
     dependsOn(downloadFolly)
     dependsOn(downloadGlog)
+    dependsOn(downloadFmt)
+    dependsOn(downloadLibevent)
 }
 
 /**
@@ -297,7 +345,7 @@ def getNdkBuildFullPath() {
 }
 
 def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
-    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog, extractAARHeaders, extractJNIFiles)
+    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractAARHeaders, extractJNIFiles)
     dependsOn("generateCodegenArtifactsFromSchema");
 
     inputs.dir("$projectDir/../ReactCommon")
