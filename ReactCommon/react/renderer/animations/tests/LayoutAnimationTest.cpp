@@ -45,7 +45,9 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
     int animation_frames,
     int delay_ms_between_frames,
     int delay_ms_between_stages,
-    int delay_ms_between_repeats) {
+    int delay_ms_between_repeats,
+    bool commits_conflicting_mutations = false,
+    int final_animation_delay = 0) {
   auto entropy = seed == 0 ? Entropy() : Entropy(seed);
 
   auto eventDispatcher = EventDispatcher::Shared{};
@@ -197,7 +199,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
         if (k != (animation_frames + 1)) {
           EXPECT_TRUE(animationDriver->shouldOverridePullTransaction());
-        } else {
+        } else if (!commits_conflicting_mutations) {
           EXPECT_FALSE(animationDriver->shouldOverridePullTransaction());
         }
 
@@ -230,8 +232,57 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
       // Build a view tree to compare with.
       // After all the synthetic mutations, at the end of the animation,
       // the mutated and newly-constructed trees should be identical.
+      if (!commits_conflicting_mutations) {
+        auto rebuiltViewTree =
+            buildStubViewTreeWithoutUsingDifferentiator(*nextRootNode);
+
+        // Comparing the newly built tree with the updated one.
+        if (rebuiltViewTree != viewTree) {
+          // Something went wrong.
+
+          LOG(ERROR)
+              << "Entropy seed: " << entropy.getSeed()
+              << ". To see why trees are different, define STUB_VIEW_TREE_VERBOSE and see logging in StubViewTree.cpp.\n";
+
+          EXPECT_TRUE(false);
+        }
+      }
+
+      currentRootNode = nextRootNode;
+
+      MockClock::advance_by(std::chrono::milliseconds(delay_ms_between_stages));
+    }
+
+    // Flush all remaining animations before validating trees
+    if (final_animation_delay > 0) {
+      MockClock::advance_by(std::chrono::milliseconds(final_animation_delay));
+
+      auto telemetry = TransactionTelemetry{};
+      telemetry.willLayout();
+      telemetry.willCommit();
+      telemetry.willDiff();
+
+      auto transaction =
+          animationDriver->pullTransaction(surfaceId, 0, telemetry, {});
+      // We have something to validate.
+      if (transaction.hasValue()) {
+        auto mutations = transaction->getMutations();
+
+        // Mutating the view tree.
+        viewTree.mutate(mutations);
+
+        // We don't do any validation on this until all animations are
+        // finished!
+      }
+    }
+
+    // After all animations are completed...
+    // Build a view tree to compare with.
+    // After all the synthetic mutations, at the end of the animation,
+    // the mutated and newly-constructed trees should be identical.
+    if (commits_conflicting_mutations) {
       auto rebuiltViewTree =
-          buildStubViewTreeWithoutUsingDifferentiator(*nextRootNode);
+          buildStubViewTreeWithoutUsingDifferentiator(*currentRootNode);
 
       // Comparing the newly built tree with the updated one.
       if (rebuiltViewTree != viewTree) {
@@ -243,10 +294,6 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
         EXPECT_TRUE(false);
       }
-
-      currentRootNode = nextRootNode;
-
-      MockClock::advance_by(std::chrono::milliseconds(delay_ms_between_stages));
     }
 
     MockClock::advance_by(std::chrono::milliseconds(delay_ms_between_repeats));
@@ -377,6 +424,111 @@ TEST(LayoutAnimationTest, stableBiggerTreeFewRepeatsManyStages_NonOverlapping) {
 //         /* delay_ms_between_frames */ 100,
 //         /* delay_ms_between_stages */ 100,
 //         /* delay_ms_between_repeats */ 2000);
+//   }
+//   // Fail if you want output to get seeds
+//   LOG(ERROR) << "ALL RUNS SUCCESSFUL";
+//   // react_native_assert(false);
+// }
+
+//
+// These tests are "overlapping", meaning that mutations will be committed
+// before the previous animation completes.
+//
+
+TEST(
+    LayoutAnimationTest,
+    stableSmallerTreeFewRepeatsFewStages_Overlapping_2029343357) {
+  testShadowNodeTreeLifeCycleLayoutAnimations(
+      /* seed */ 2029343357,
+      /* size */ 128,
+      /* repeats */ 128,
+      /* stages */ 10,
+      /* animation_duration */ 1000,
+      /* animation_frames*/ 9, // an animation completes in 10 frames, so this
+                               // causes conflicts
+      /* delay_ms_between_frames */ 100,
+      /* delay_ms_between_stages */ 100,
+      /* delay_ms_between_repeats */ 2000,
+      /* commits_conflicting_mutations */ true,
+      /* final_animation_delay */ 10000 + 1);
+}
+
+TEST(
+    LayoutAnimationTest,
+    stableSmallerTreeFewRepeatsFewStages_Overlapping_597132284) {
+  testShadowNodeTreeLifeCycleLayoutAnimations(
+      /* seed */ 597132284,
+      /* size */ 128,
+      /* repeats */ 128,
+      /* stages */ 10,
+      /* animation_duration */ 1000,
+      /* animation_frames*/ 9, // an animation completes in 10 frames, so this
+                               // causes conflicts
+      /* delay_ms_between_frames */ 100,
+      /* delay_ms_between_stages */ 100,
+      /* delay_ms_between_repeats */ 2000,
+      /* commits_conflicting_mutations */ true,
+      /* final_animation_delay */ 10000 + 1);
+}
+
+TEST(
+    LayoutAnimationTest,
+    stableSmallerTreeFewRepeatsFewStages_Overlapping_ManyConflicts_597132284) {
+  testShadowNodeTreeLifeCycleLayoutAnimations(
+      /* seed */ 597132284,
+      /* size */ 128,
+      /* repeats */ 128,
+      /* stages */ 50,
+      /* animation_duration */ 1000,
+      /* animation_frames*/ 5, // an animation completes in 10 frames, so this
+                               // causes conflicts. We only animate 5 frames,
+                               // but have 50 stages, so conflicts stack up
+                               // quickly.
+      /* delay_ms_between_frames */ 100,
+      /* delay_ms_between_stages */ 100,
+      /* delay_ms_between_repeats */ 2000,
+      /* commits_conflicting_mutations */ true,
+      /* final_animation_delay */ 50000 + 1);
+}
+
+TEST(
+    LayoutAnimationTest,
+    stableBiggerTreeFewRepeatsManyStages_Overlapping_ManyConflicts_2029343357) {
+  testShadowNodeTreeLifeCycleLayoutAnimations(
+      /* seed */ 2029343357,
+      /* size */ 512,
+      /* repeats */ 32,
+      /* stages */ 128,
+      /* animation_duration */ 1000,
+      /* animation_frames*/ 10,
+      /* delay_ms_between_frames */ 10,
+      /* delay_ms_between_stages */ 10,
+      /* delay_ms_between_repeats */ 2000,
+      /* commits_conflicting_mutations */ true,
+      /* final_animation_delay */ (128 * 1000 + 100));
+}
+
+// You may uncomment this -
+//     locally only !-to generate failing seeds.
+// TEST(
+//     LayoutAnimationTest,
+//     stableSmallerTreeFewRepeatsFewStages_Overlapping_Random) {
+//   std::random_device device;
+//   for (int i = 0; i < 10; i++) {
+//     uint_fast32_t seed = device();
+//     LOG(ERROR) << "Seed: " << seed;
+//     testShadowNodeTreeLifeCycleLayoutAnimations(
+//         /* seed */ seed,
+//         /* size */ 512,
+//         /* repeats */ 32,
+//         /* stages */ 128,
+//         /* animation_duration */ 1000,
+//         /* animation_frames*/ 10,
+//         /* delay_ms_between_frames */ 10,
+//         /* delay_ms_between_stages */ 10,
+//         /* delay_ms_between_repeats */ 2000,
+//         /* commits_conflicting_mutations */ true,
+//         /* final_animation_delay */ (128 * 1000 + 100));
 //   }
 //   // Fail if you want output to get seeds
 //   LOG(ERROR) << "ALL RUNS SUCCESSFUL";
