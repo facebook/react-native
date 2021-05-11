@@ -57,15 +57,15 @@ using namespace facebook::react;
   // build an array of the accessibleElements
   NSMutableArray<UIAccessibilityElement *> *elements = [NSMutableArray new];
 
-  NSString *accessibilityLabel = [_view valueForKey:@"accessibilityLabel"];
-  if (!accessibilityLabel.length) {
+  NSString *accessibilityLabel = _view.accessibilityLabel;
+  if (accessibilityLabel.length == 0) {
     accessibilityLabel = RCTNSStringFromString(_attributedString.getString());
   }
   // add first element has the text for the whole textview in order to read out the whole text
   RCTAccessibilityElement *firstElement =
       [[RCTAccessibilityElement alloc] initWithAccessibilityContainer:_view.superview];
   firstElement.isAccessibilityElement = YES;
-  firstElement.accessibilityTraits = UIAccessibilityTraitStaticText;
+  firstElement.accessibilityTraits = _view.accessibilityTraits;
   firstElement.accessibilityLabel = accessibilityLabel;
   firstElement.accessibilityFrame = UIAccessibilityConvertFrameToScreenCoordinates(_view.bounds, _view);
   [firstElement setAccessibilityActivationPoint:CGPointMake(
@@ -80,7 +80,11 @@ using namespace facebook::react;
                            enumerateAttribute:RCTTextAttributesAccessibilityRoleAttributeName
                                         frame:_frame
                                    usingBlock:^(CGRect fragmentRect, NSString *_Nonnull fragmentText, NSString *value) {
-                                     if (![value isEqualToString:@"button"] && ![value isEqualToString:@"link"]) {
+                                     if ([fragmentText isEqualToString:firstElement.accessibilityLabel]) {
+                                       // The fragment is the entire paragraph. This is handled as `firstElement`.
+                                       return;
+                                     }
+                                     if ((![value isEqualToString:@"button"] && ![value isEqualToString:@"link"])) {
                                        return;
                                      }
                                      if ([value isEqualToString:@"button"] &&
