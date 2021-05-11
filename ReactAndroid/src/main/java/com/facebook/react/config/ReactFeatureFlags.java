@@ -60,9 +60,6 @@ public class ReactFeatureFlags {
   /** Enables JS Responder in Fabric */
   public static boolean enableJSResponder = false;
 
-  /** Enables MapBuffer Serialization */
-  public static boolean mapBufferSerializationEnabled = false;
-
   /** An interface used to compute flags on demand. */
   public interface FlagProvider {
     boolean get();
@@ -73,6 +70,17 @@ public class ReactFeatureFlags {
 
   public static void setEnableRuntimeExecutorFlushingFlagProvider(FlagProvider provider) {
     enableRuntimeExecutorFlushingProvider = provider;
+  }
+
+  private static boolean mapBufferSerializationEnabled = false;
+
+  /** Enables or disables MapBuffer Serialization */
+  public static void setMapBufferSerializationEnabled(boolean enabled) {
+    mapBufferSerializationEnabled = enabled;
+  }
+
+  public static boolean isMapBufferSerializationEnabled() {
+    return mapBufferSerializationEnabled;
   }
 
   public static boolean enableRuntimeExecutorFlushing() {

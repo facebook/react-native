@@ -453,6 +453,17 @@ void Binding::setConstraints(
   }
 }
 
+bool isMapBufferSerializationEnabled() {
+  static const auto reactFeatureFlagsJavaDescriptor =
+      jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
+  static const auto isMapBufferSerializationEnabledMethod =
+      reactFeatureFlagsJavaDescriptor->getStaticMethod<jboolean()>(
+          "isMapBufferSerializationEnabled");
+  bool value =
+      isMapBufferSerializationEnabledMethod(reactFeatureFlagsJavaDescriptor);
+  return value;
+}
+
 void Binding::installFabricUIManager(
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
     jni::alias_ref<jobject> javaUIManager,
@@ -461,9 +472,6 @@ void Binding::installFabricUIManager(
     ComponentFactory *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
-
-  static const auto reactFeatureFlagsJavaDescriptor =
-      jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
 
   std::shared_ptr<const ReactNativeConfig> config =
       std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
@@ -533,14 +541,8 @@ void Binding::installFabricUIManager(
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
 
-  static const auto mapBufferSerializationEnabledField =
-      reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(
-          "mapBufferSerializationEnabled");
-  bool mapBufferSerializationEnabled =
-      reactFeatureFlagsJavaDescriptor->getStaticFieldValue(
-          mapBufferSerializationEnabledField);
   contextContainer->insert(
-      "MapBufferSerializationEnabled", mapBufferSerializationEnabled);
+      "MapBufferSerializationEnabled", isMapBufferSerializationEnabled());
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
