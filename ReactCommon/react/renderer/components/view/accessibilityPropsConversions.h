@@ -21,7 +21,7 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
     result = AccessibilityTraits::None;
     return;
   }
-  if (string == "button") {
+  if (string == "button" || string == "togglebutton") {
     result = AccessibilityTraits::Button;
     return;
   }

@@ -10,20 +10,67 @@
 namespace facebook::react {
 
 RuntimeScheduler::RuntimeScheduler(RuntimeExecutor const &runtimeExecutor)
-    : runtimeExecutor_(runtimeExecutor) {}
+    : RuntimeScheduler(runtimeExecutor, RuntimeSchedulerClock::now) {}
 
-void RuntimeScheduler::scheduleTask(std::shared_ptr<Task> const &task) {
+RuntimeScheduler::RuntimeScheduler(
+    RuntimeExecutor const &runtimeExecutor,
+    std::function<RuntimeSchedulerTimePoint()> now)
+    : runtimeExecutor_(runtimeExecutor), now_(now) {}
+
+std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
+    SchedulerPriority priority,
+    jsi::Function callback) {
+  auto expirationTime = now() + timeoutForSchedulerPriority(priority);
+  auto task =
+      std::make_shared<Task>(priority, std::move(callback), expirationTime);
   taskQueue_.push(task);
 
-  runtimeExecutor_([this](jsi::Runtime &runtime) {
-    auto topPriority = taskQueue_.top();
-    taskQueue_.pop();
-    (*topPriority)(runtime);
-  });
+  if (!isCallbackScheduled_) {
+    isCallbackScheduled_ = true;
+    runtimeExecutor_([this](jsi::Runtime &runtime) {
+      isCallbackScheduled_ = false;
+      auto previousPriority = currentPriority_;
+      while (!taskQueue_.empty()) {
+        auto topPriorityTask = taskQueue_.top();
+        auto now = now_();
+        auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
+
+        if (!didUserCallbackTimeout && shouldYield_) {
+          // This task hasn't expired and we need to yield.
+          break;
+        }
+        currentPriority_ = topPriorityTask->priority;
+        auto result = topPriorityTask->execute(runtime);
+
+        if (result.isObject() &&
+            result.getObject(runtime).isFunction(runtime)) {
+          topPriorityTask->callback =
+              result.getObject(runtime).getFunction(runtime);
+        } else {
+          taskQueue_.pop();
+        }
+      }
+      currentPriority_ = previousPriority;
+    });
+  }
+
+  return task;
 }
 
 void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
-  task->cancel();
+  task->callback.reset();
+}
+
+bool RuntimeScheduler::getShouldYield() const {
+  return shouldYield_;
+}
+
+SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const {
+  return currentPriority_;
+}
+
+RuntimeSchedulerTimePoint RuntimeScheduler::now() const {
+  return now_();
 }
 
 } // namespace facebook::react

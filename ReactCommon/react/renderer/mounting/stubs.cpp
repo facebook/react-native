@@ -26,7 +26,8 @@ static bool shouldFirstPairComesBeforeSecondOne(
 /*
  * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
  */
-static void reorderInPlaceIfNeeded(ShadowViewNodePair::List &pairs) noexcept {
+static void reorderInPlaceIfNeeded(
+    ShadowViewNodePair::OwningList &pairs) noexcept {
   // This is a simplified version of the function intentionally copied from
   // `Differentiator.cpp`.
   std::stable_sort(
@@ -42,7 +43,7 @@ static void reorderInPlaceIfNeeded(ShadowViewNodePair::List &pairs) noexcept {
 static void calculateShadowViewMutationsForNewTree(
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
-    ShadowViewNodePair::List newChildPairs) {
+    ShadowViewNodePair::OwningList newChildPairs) {
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(newChildPairs);
 
@@ -88,7 +89,7 @@ StubViewTree buildStubViewTreeUsingDifferentiator(
       ShadowNode::emptySharedShadowNodeSharedList()});
 
   auto mutations =
-      calculateShadowViewMutations(*emptyRootShadowNode, rootShadowNode);
+      calculateShadowViewMutations(*emptyRootShadowNode, rootShadowNode, true);
 
   auto stubViewTree = StubViewTree(ShadowView(*emptyRootShadowNode));
   stubViewTree.mutate(mutations);

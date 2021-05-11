@@ -9,22 +9,29 @@
 
 #include <better/optional.h>
 #include <jsi/jsi.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/SchedulerPriority.h>
 
 namespace facebook::react {
 
-class Task final {
- public:
-  Task(SchedulerPriority priority, jsi::Function callback);
+class RuntimeScheduler;
+class TaskPriorityComparer;
 
-  SchedulerPriority getPriority() const;
-  void cancel();
-
-  void operator()(jsi::Runtime &runtime) const;
+struct Task final {
+  Task(
+      SchedulerPriority priority,
+      jsi::Function callback,
+      std::chrono::steady_clock::time_point expirationTime);
 
  private:
-  SchedulerPriority priority_;
-  better::optional<jsi::Function> callback_;
+  friend RuntimeScheduler;
+  friend TaskPriorityComparer;
+
+  SchedulerPriority priority;
+  better::optional<jsi::Function> callback;
+  RuntimeSchedulerClock::time_point expirationTime;
+
+  jsi::Value execute(jsi::Runtime &runtime) const;
 };
 
 class TaskPriorityComparer {
@@ -32,7 +39,7 @@ class TaskPriorityComparer {
   inline bool operator()(
       std::shared_ptr<Task> const &lhs,
       std::shared_ptr<Task> const &rhs) {
-    return lhs->getPriority() > rhs->getPriority();
+    return lhs->expirationTime > rhs->expirationTime;
   }
 };
 

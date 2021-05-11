@@ -346,10 +346,10 @@ CatalystInstanceImpl::getNativeCallInvokerHolder() {
 }
 
 jni::alias_ref<JRuntimeExecutor::javaobject>
-CatalystInstanceImpl::getRuntimeExecutor() {
+CatalystInstanceImpl::getRuntimeExecutor(bool shouldFlush) {
   if (!runtimeExecutor_) {
-    runtimeExecutor_ = jni::make_global(
-        JRuntimeExecutor::newObjectCxxArgs(instance_->getRuntimeExecutor()));
+    runtimeExecutor_ = jni::make_global(JRuntimeExecutor::newObjectCxxArgs(
+        instance_->getRuntimeExecutor(shouldFlush)));
   }
   return runtimeExecutor_;
 }

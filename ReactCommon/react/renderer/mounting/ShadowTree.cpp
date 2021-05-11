@@ -223,7 +223,8 @@ ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext,
-    ShadowTreeDelegate const &delegate)
+    ShadowTreeDelegate const &delegate,
+    bool enableNewDiffer)
     : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
@@ -252,6 +253,7 @@ ShadowTree::ShadowTree(
 
   mountingCoordinator_ =
       std::make_shared<MountingCoordinator const>(currentRevision_);
+  mountingCoordinator_->setEnableNewDiffer(enableNewDiffer);
 }
 
 ShadowTree::~ShadowTree() {

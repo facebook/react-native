@@ -28,7 +28,7 @@ using namespace facebook::react;
 
 @synthesize bridge = _bridge;
 @synthesize loadScript = _loadScript;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -69,7 +69,7 @@ RCT_EXPORT_METHOD(loadBundle
           }
           __typeof(self) strongSelf = weakSelf;
           strongSelf->_loadScript(source);
-          RCTDevSettings *devSettings = [strongSelf->_turboModuleRegistry moduleForName:"RCTDevSettings"];
+          RCTDevSettings *devSettings = [strongSelf->_moduleRegistry moduleForName:"RCTDevSettings"];
           [devSettings setupHMRClientWithAdditionalBundleURL:source.url];
           resolve(@YES);
         }];

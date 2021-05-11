@@ -350,9 +350,7 @@ using namespace facebook::react;
 
   BOOL clipsToBounds = self.clipsToBounds;
 
-  if (RCTExperimentGetOptimizedHitTesting()) {
-    clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
-  }
+  clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
 
   if (clipsToBounds && !isPointInside) {
     return nil;

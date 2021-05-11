@@ -10,6 +10,7 @@
 #include "primitives.h"
 
 #include <react/debug/react_native_assert.h>
+#include <chrono>
 #include <memory>
 
 namespace facebook::react {
@@ -25,8 +26,9 @@ RuntimeSchedulerBinding::createAndInstallIfNeeded(
   if (runtimeSchedulerValue.isUndefined()) {
     // The global namespace does not have an instance of the binding;
     // we need to create, install and return it.
-    auto runtimeSchedulerBinding = std::make_shared<RuntimeSchedulerBinding>(
-        RuntimeScheduler(runtimeExecutor));
+    auto runtimeScheduler = std::make_unique<RuntimeScheduler>(runtimeExecutor);
+    auto runtimeSchedulerBinding =
+        std::make_shared<RuntimeSchedulerBinding>(std::move(runtimeScheduler));
     auto object =
         jsi::Object::createFromHostObject(runtime, runtimeSchedulerBinding);
     runtime.global().setProperty(
@@ -41,7 +43,7 @@ RuntimeSchedulerBinding::createAndInstallIfNeeded(
 }
 
 RuntimeSchedulerBinding::RuntimeSchedulerBinding(
-    RuntimeScheduler runtimeScheduler)
+    std::unique_ptr<RuntimeScheduler> runtimeScheduler)
     : runtimeScheduler_(std::move(runtimeScheduler)) {}
 
 jsi::Value RuntimeSchedulerBinding::get(
@@ -61,10 +63,9 @@ jsi::Value RuntimeSchedulerBinding::get(
             size_t) noexcept -> jsi::Value {
           SchedulerPriority priority = fromRawValue(arguments[0].getNumber());
           auto callback = arguments[1].getObject(runtime).getFunction(runtime);
-          react_native_assert(arguments[2].isUndefined());
 
-          auto task = std::make_shared<Task>(priority, std::move(callback));
-          runtimeScheduler_.scheduleTask(task);
+          auto task =
+              runtimeScheduler_->scheduleTask(priority, std::move(callback));
 
           return valueFromTask(runtime, task);
         });
@@ -80,10 +81,63 @@ jsi::Value RuntimeSchedulerBinding::get(
             jsi::Value const &,
             jsi::Value const *arguments,
             size_t) noexcept -> jsi::Value {
-          runtimeScheduler_.cancelTask(taskFromValue(runtime, arguments[0]));
+          runtimeScheduler_->cancelTask(taskFromValue(runtime, arguments[0]));
           return jsi::Value::undefined();
         });
   }
+
+  if (propertyName == "unstable_shouldYield") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [this](
+            jsi::Runtime &,
+            jsi::Value const &,
+            jsi::Value const *,
+            size_t) noexcept -> jsi::Value {
+          auto shouldYield = runtimeScheduler_->getShouldYield();
+          return jsi::Value(shouldYield);
+        });
+  }
+
+  if (propertyName == "unstable_requestPaint") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [](jsi::Runtime &,
+           jsi::Value const &,
+           jsi::Value const *,
+           size_t) noexcept -> jsi::Value {
+          // RequestPaint is left empty by design.
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (propertyName == "unstable_now") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [this](
+            jsi::Runtime &,
+            jsi::Value const &,
+            jsi::Value const *,
+            size_t) noexcept -> jsi::Value {
+          auto now = runtimeScheduler_->now();
+          auto asDouble =
+              std::chrono::duration<double, std::milli>(now.time_since_epoch())
+                  .count();
+          return jsi::Value(asDouble);
+        });
+  }
+
+  if (propertyName == "unstable_getCurrentPriorityLevel") {
+    auto currentPriorityLevel = runtimeScheduler_->getCurrentPriorityLevel();
+    return jsi::Value(runtime, serialize(currentPriorityLevel));
+  }
+
   if (propertyName == "unstable_ImmediatePriority") {
     return jsi::Value(runtime, serialize(SchedulerPriority::ImmediatePriority));
   }
@@ -103,6 +157,10 @@ jsi::Value RuntimeSchedulerBinding::get(
 
   if (propertyName == "unstable_IdlePriority") {
     return jsi::Value(runtime, serialize(SchedulerPriority::IdlePriority));
+  }
+
+  if (propertyName == "$$typeof") {
+    return jsi::Value::undefined();
   }
 
   react_native_assert(false && "undefined property");

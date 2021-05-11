@@ -96,25 +96,10 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
                << this << ").";
-
-  // We must detach the `UIBinding` on deallocation to prevent accessing
-  // deallocated `UIManagerBinding`.
-  // Since `UIManagerBinding` retains `UIManager`, `UIManager` always overlive
-  // `UIManagerBinding`, therefore we don't need similar logic in `UIManager`'s
-  // destructor.
-  attach(nullptr);
 }
 
 void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
-  if (uiManager_) {
-    uiManager_->uiManagerBinding_ = nullptr;
-  }
-
   uiManager_ = uiManager;
-
-  if (uiManager_) {
-    uiManager_->uiManagerBinding_ = this;
-  }
 }
 
 static jsi::Value callMethodOfModule(
@@ -209,8 +194,11 @@ void UIManagerBinding::setSurfaceProps(
 void UIManagerBinding::stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId)
     const {
   auto global = runtime.global();
-  if (global.hasProperty(runtime, "RN$Bridgeless") &&
-      global.hasProperty(runtime, "RN$stopSurface")) {
+  if (global.hasProperty(runtime, "RN$Bridgeless")) {
+    if (!global.hasProperty(runtime, "RN$stopSurface")) {
+      // ReactFabric module has not been loaded yet; there's no surface to stop.
+      return;
+    }
     // Bridgeless mode uses a custom JSI binding instead of callable module.
     global.getPropertyAsFunction(runtime, "RN$stopSurface")
         .call(runtime, {jsi::Value{surfaceId}});

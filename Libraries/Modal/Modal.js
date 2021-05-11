@@ -193,6 +193,7 @@ class Modal extends React.Component<Props> {
   }
 
   componentDidMount() {
+    // 'modalDismissed' is for the old renderer in iOS only
     if (ModalEventEmitter) {
       this._eventSubscription = ModalEventEmitter.addListener(
         'modalDismissed',
@@ -251,6 +252,12 @@ class Modal extends React.Component<Props> {
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
+        onDismiss={() => {
+          if (this.props.onDismiss) {
+            this.props.onDismiss();
+          }
+        }}
+        visible={this.props.visible}
         statusBarTranslucent={this.props.statusBarTranslucent}
         identifier={this._identifier}
         style={styles.modal}

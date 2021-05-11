@@ -89,10 +89,10 @@ Scheduler::Scheduler(
 
 #ifdef ANDROID
   auto enableRuntimeScheduler = reactNativeConfig_->getBool(
-      "react_fabric:enable_runtime_scheduler_android");
+      "react_fabric:enable_runtimescheduler_android");
 #else
   auto enableRuntimeScheduler =
-      reactNativeConfig_->getBool("react_fabric:enable_runtime_scheduler_ios");
+      reactNativeConfig_->getBool("react_fabric:enable_runtimescheduler_ios");
 #endif
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
@@ -129,15 +129,16 @@ Scheduler::Scheduler(
 #ifdef ANDROID
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
+  enableNewDiffer_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_new_differ_h1_2021_android");
   Constants::setPropsForwardingEnabled(reactNativeConfig_->getBool(
       "react_fabric:enable_props_forwarding_android"));
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
+  enableNewDiffer_ =
+      reactNativeConfig_->getBool("react_fabric:enable_new_differ_h1_2021_ios");
 #endif
-
-  uiManager->extractUIManagerBindingOnDemand_ = reactNativeConfig_->getBool(
-      "react_fabric:extract_uimanagerbinding_on_demand");
 }
 
 Scheduler::~Scheduler() {
@@ -199,6 +200,7 @@ Scheduler::~Scheduler() {
 void Scheduler::registerSurface(
     SurfaceHandler const &surfaceHandler) const noexcept {
   surfaceHandler.setUIManager(uiManager_.get());
+  surfaceHandler.setEnableNewDiffer(enableNewDiffer_);
 }
 
 void Scheduler::unregisterSurface(

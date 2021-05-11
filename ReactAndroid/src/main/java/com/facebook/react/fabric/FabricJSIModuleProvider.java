@@ -15,11 +15,14 @@ import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.LayoutMetricsConversions;
+import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
+import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchIntCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
@@ -61,7 +64,9 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
     final Binding binding = new Binding();
     // TODO T31905686: remove this call
-    loadClasses();
+    if (ReactFeatureFlags.eagerInitializeFabricClasses) {
+      loadClasses();
+    }
     MessageQueueThread jsMessageQueueThread =
         mReactApplicationContext
             .getCatalystInstance()
@@ -112,21 +117,26 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     DispatchCommandMountItem.class.getClass();
     DispatchIntCommandMountItem.class.getClass();
     DispatchStringCommandMountItem.class.getClass();
+    IntBufferBatchMountItem.class.getClass();
     MountItem.class.getClass();
     PreAllocateViewMountItem.class.getClass();
     SendAccessibilityEvent.class.getClass();
     LayoutMetricsConversions.class.getClass();
     MountingManager.class.getClass();
+    MountItemDispatcher.class.getClass();
+    SurfaceMountingManager.class.getClass();
     Binding.class.getClass();
     ComponentFactory.class.getClass();
+    CoreComponentsRegistry.class.getClass();
     FabricComponents.class.getClass();
     FabricSoLoader.class.getClass();
     FabricUIManager.class.getClass();
     GuardedFrameCallback.class.getClass();
     StateWrapper.class.getClass();
     StateWrapperImpl.class.getClass();
+    SurfaceHandler.class.getClass();
+    SurfaceHandlerBinding.class.getClass();
     BatchEventDispatchedListener.class.getClass();
     ReactNativeConfig.class.getClass();
-    IntBufferBatchMountItem.class.getClass();
   }
 }

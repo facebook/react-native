@@ -9,25 +9,23 @@
 
 namespace facebook::react {
 
-Task::Task(SchedulerPriority priority, jsi::Function callback)
-    : priority_(priority), callback_(std::move(callback)) {}
+Task::Task(
+    SchedulerPriority priority,
+    jsi::Function callback,
+    std::chrono::steady_clock::time_point expirationTime)
+    : priority(priority),
+      callback(std::move(callback)),
+      expirationTime(expirationTime) {}
 
-SchedulerPriority Task::getPriority() const {
-  return priority_;
-}
-
-void Task::cancel() {
-  // Null out the callback to indicate the task has been canceled. (Can't
-  // remove from the priority_queue because you can't remove arbitrary nodes
-  // from an array based heap, only the first one.)
-  callback_.reset();
-}
-
-void Task::operator()(jsi::Runtime &runtime) const {
-  if (callback_) {
-    // Cancelled task doesn't have a callback.
-    callback_.value().call(runtime, {});
+jsi::Value Task::execute(jsi::Runtime &runtime) const {
+  // Cancelled task doesn't have a callback.
+  if (callback) {
+    // Callback in JavaScript is expecting a single bool parameter.
+    // React team plans to remove it and it is safe to pass in
+    // hardcoded false value.
+    return callback.value().call(runtime, {false});
   }
+  return jsi::Value::undefined();
 }
 
 } // namespace facebook::react

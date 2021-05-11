@@ -7,6 +7,7 @@
 
 #include "ShadowView.h"
 
+#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 
 namespace facebook {
@@ -52,7 +53,7 @@ bool ShadowView::operator!=(const ShadowView &rhs) const {
   return !(*this == rhs);
 }
 
-#if RN_DEBUG_STRING_CONVERTIBLE
+#ifdef RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(ShadowView const &object) {
   return object.componentHandle == 0 ? "Invalid" : object.componentName;
@@ -64,6 +65,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
   return {
       {"surfaceId", getDebugDescription(object.surfaceId, options)},
       {"tag", getDebugDescription(object.tag, options)},
+      {"componentName", object.componentName},
       {"props", getDebugDescription(object.props, options)},
       {"eventEmitter", getDebugDescription(object.eventEmitter, options)},
       {"layoutMetrics", getDebugDescription(object.layoutMetrics, options)},
@@ -78,6 +80,16 @@ bool ShadowViewNodePair::operator==(const ShadowViewNodePair &rhs) const {
 }
 
 bool ShadowViewNodePair::operator!=(const ShadowViewNodePair &rhs) const {
+  return !(*this == rhs);
+}
+
+bool ShadowViewNodePairLegacy::operator==(
+    const ShadowViewNodePairLegacy &rhs) const {
+  return this->shadowNode == rhs.shadowNode;
+}
+
+bool ShadowViewNodePairLegacy::operator!=(
+    const ShadowViewNodePairLegacy &rhs) const {
   return !(*this == rhs);
 }
 

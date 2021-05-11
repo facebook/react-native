@@ -98,6 +98,7 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 @synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize invokeJS = _invokeJS;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -210,8 +211,8 @@ RCT_EXPORT_MODULE()
 - (void)setDefaultJSBundle
 {
   [[RCTBundleURLProvider sharedSettings] resetToDefaults];
-  self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil
-                                                                                fallbackExtension:nil];
+  self->_bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil
+                                                                                       fallbackExtension:nil];
   RCTTriggerReloadCommandListeners(@"Dev menu - reset to default");
 }
 
@@ -220,9 +221,9 @@ RCT_EXPORT_MODULE()
   NSMutableArray<RCTDevMenuItem *> *items = [NSMutableArray new];
 
   // Add built-in items
-  __weak RCTBridge *bridge = _bridge;
   __weak RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
   __weak RCTDevMenu *weakSelf = self;
+  __weak RCTBundleManager *bundleManager = _bundleManager;
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload"
                                                handler:^{
@@ -242,7 +243,7 @@ RCT_EXPORT_MODULE()
                            handler:^{
                              [RCTInspectorDevServerHelper
                                           openURL:@"flipper://null/Hermesdebuggerrn?device=React%20Native"
-                                    withBundleURL:bridge.bundleURL
+                                    withBundleURL:bundleManager.bundleURL
                                  withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
                            }]];
 
@@ -253,7 +254,7 @@ RCT_EXPORT_MODULE()
                            handler:^{
                              [RCTInspectorDevServerHelper
                                           openURL:@"flipper://null/React?device=React%20Native"
-                                    withBundleURL:bridge.bundleURL
+                                    withBundleURL:bundleManager.bundleURL
                                  withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
                            }]];
     } else if (devSettings.isRemoteDebuggingAvailable) {
@@ -359,16 +360,15 @@ RCT_EXPORT_MODULE()
                                                   }
                                                   [RCTBundleURLProvider sharedSettings].jsLocation = [NSString
                                                       stringWithFormat:@"%@:%d", ipTextField.text, portNumber.intValue];
-                                                  __strong RCTBridge *strongBridge = bridge;
-                                                  if (strongBridge) {
-                                                    NSURL *bundleURL = bundleRoot.length
-                                                        ? [[RCTBundleURLProvider sharedSettings]
-                                                              jsBundleURLForBundleRoot:bundleRoot
-                                                                      fallbackResource:nil]
-                                                        : [strongBridge.delegate sourceURLForBridge:strongBridge];
-                                                    strongBridge.bundleURL = bundleURL;
-                                                    RCTTriggerReloadCommandListeners(@"Dev menu - apply changes");
+                                                  if (bundleRoot.length == 0) {
+                                                    [bundleManager resetBundleURL];
+                                                  } else {
+                                                    bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings]
+                                                        jsBundleURLForBundleRoot:bundleRoot
+                                                                fallbackResource:nil];
                                                   }
+
+                                                  RCTTriggerReloadCommandListeners(@"Dev menu - apply changes");
                                                 }]];
                       [alertController addAction:[UIAlertAction actionWithTitle:@"Reset to Default"
                                                                           style:UIAlertActionStyleDefault

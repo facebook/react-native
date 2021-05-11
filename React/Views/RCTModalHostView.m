@@ -119,31 +119,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     return;
   }
 
-  if (!_isPresented && self.window) {
-    RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
-
-    _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
-
-    if ([self.animationType isEqualToString:@"fade"]) {
-      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    } else if ([self.animationType isEqualToString:@"slide"]) {
-      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    }
-    if (self.presentationStyle != UIModalPresentationNone) {
-      _modalViewController.modalPresentationStyle = self.presentationStyle;
-    }
-    [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
-    _isPresented = YES;
-  }
+  [self ensurePresentedOnlyIfNeeded];
 }
 
 - (void)didMoveToSuperview
 {
   [super didMoveToSuperview];
-
-  if (_isPresented && !self.superview) {
-    [self dismissModalViewController];
-  }
+  [self ensurePresentedOnlyIfNeeded];
 }
 
 - (void)invalidate
@@ -161,6 +143,40 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 - (BOOL)hasAnimationType
 {
   return ![self.animationType isEqualToString:@"none"];
+}
+
+- (void)setVisible:(BOOL)visible
+{
+  if (_visible != visible) {
+    _visible = visible;
+    [self ensurePresentedOnlyIfNeeded];
+  }
+}
+
+- (void)ensurePresentedOnlyIfNeeded
+{
+  BOOL shouldBePresented = !_isPresented && _visible && self.window;
+  if (shouldBePresented) {
+    RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
+
+    _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
+
+    if ([self.animationType isEqualToString:@"fade"]) {
+      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    } else if ([self.animationType isEqualToString:@"slide"]) {
+      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    }
+    if (self.presentationStyle != UIModalPresentationNone) {
+      _modalViewController.modalPresentationStyle = self.presentationStyle;
+    }
+    [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
+    _isPresented = YES;
+  }
+
+  BOOL shouldBeHidden = _isPresented && (!_visible || !self.superview);
+  if (shouldBeHidden) {
+    [self dismissModalViewController];
+  }
 }
 
 - (void)setTransparent:(BOOL)transparent

@@ -17,6 +17,10 @@
     translatable="false"
     >Button</string>
   <string
+    name="toggle_button_description"
+    translatable="false"
+    >Toggle Button</string>
+  <string
     name="imagebutton_description"
     translatable="false"
     >Button, Image</string>
