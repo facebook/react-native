@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<e849805d384d655a0b454ba748de33e0>>
+ * @generated SignedSource<<8974e8c964125552d627281e52405ecc>>
  */
 
 'use strict';
@@ -2515,8 +2515,25 @@ var ReactFabricGlobalResponderHandler = {
       fromOrToStateNode && fromOrToStateNode.canonical._internalInstanceHandle
     );
 
-    if (isFabric);
-    else {
+    if (isFabric) {
+      if (from) {
+        // equivalent to clearJSResponder
+        nativeFabricUIManager.setIsJSResponder(
+          from.stateNode.node,
+          false,
+          blockNativeResponder || false
+        );
+      }
+
+      if (to) {
+        // equivalent to setJSResponder
+        nativeFabricUIManager.setIsJSResponder(
+          to.stateNode.node,
+          true,
+          blockNativeResponder || false
+        );
+      }
+    } else {
       if (to !== null) {
         var tag = to.stateNode.canonical._nativeTag;
         ReactNativePrivateInterface.UIManager.setJSResponder(
@@ -2620,11 +2637,16 @@ function getIteratorFn(maybeIterable) {
 }
 
 function getWrappedName(outerType, innerType, wrapperName) {
+  var displayName = outerType.displayName;
+
+  if (displayName) {
+    return displayName;
+  }
+
   var functionName = innerType.displayName || innerType.name || "";
-  return (
-    outerType.displayName ||
-    (functionName !== "" ? wrapperName + "(" + functionName + ")" : wrapperName)
-  );
+  return functionName !== ""
+    ? wrapperName + "(" + functionName + ")"
+    : wrapperName;
 } // Keep in sync with react-reconciler/getComponentNameFromFiber
 
 function getContextName(type) {
@@ -2640,7 +2662,7 @@ function getComponentNameFromType(type) {
   {
     if (typeof type.tag === "number") {
       error(
-        "Received an unexpected object in getComponentName(). " +
+        "Received an unexpected object in getComponentNameFromType(). " +
           "This is likely a bug in React. Please file an issue."
       );
     }
@@ -2691,7 +2713,13 @@ function getComponentNameFromType(type) {
         return getWrappedName(type, type.render, "ForwardRef");
 
       case REACT_MEMO_TYPE:
-        return getComponentNameFromType(type.type);
+        var outerName = type.displayName || null;
+
+        if (outerName !== null) {
+          return outerName;
+        }
+
+        return getComponentNameFromType(type.type) || "Memo";
 
       case REACT_LAZY_TYPE: {
         var lazyComponent = type;
@@ -4009,6 +4037,29 @@ function onCommitUnmount(fiber) {
   }
 }
 
+var NoMode =
+  /*                         */
+  0; // TODO: Remove ConcurrentMode by reading from the root tag instead
+
+var ConcurrentMode =
+  /*                 */
+  1;
+var ProfileMode =
+  /*                    */
+  2;
+var DebugTracingMode =
+  /*               */
+  4;
+var StrictLegacyMode =
+  /*               */
+  8;
+var StrictEffectsMode =
+  /*              */
+  16;
+var ConcurrentUpdatesByDefaultMode =
+  /* */
+  32;
+
 // If those values are changed that package should be rebuilt and redeployed.
 
 var TotalLanes = 31;
@@ -4260,6 +4311,15 @@ function getNextLanes(root, wipLanes) {
       return wipLanes;
     }
   }
+
+  if ((root.current.mode & ConcurrentUpdatesByDefaultMode) !== NoMode);
+  else if ((nextLanes & InputContinuousLane) !== NoLanes) {
+    // When updates are sync by default, we entangle continuous priority updates
+    // and default updates, so they render in the same batch. The only reason
+    // they use separate lanes is because continuous updates should interrupt
+    // transitions, but default updates should not.
+    nextLanes |= pendingLanes & DefaultLane;
+  } // Check for entangled lanes and add them to the batch.
   //
   // A lane is said to be entangled with another when it's not allowed to render
   // in a batch that does not also include the other lane. Typically we do this
@@ -4448,9 +4508,17 @@ function shouldTimeSlice(root, lanes) {
     return false;
   }
 
-  {
+  if ((root.current.mode & ConcurrentUpdatesByDefaultMode) !== NoMode) {
+    // Concurrent updates by default always use time slicing.
     return true;
   }
+
+  var SyncDefaultLanes =
+    InputContinuousHydrationLane |
+    InputContinuousLane |
+    DefaultHydrationLane |
+    DefaultLane;
+  return (lanes & SyncDefaultLanes) === NoLanes;
 }
 function isTransitionLane(lane) {
   return (lane & TransitionLanes) !== 0;
@@ -5744,27 +5812,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-2a7bb4154";
-
-var NoMode =
-  /*            */
-  0; // TODO: Remove ConcurrentMode by reading from the root tag instead
-
-var ConcurrentMode =
-  /*    */
-  1;
-var ProfileMode =
-  /*       */
-  2;
-var DebugTracingMode =
-  /*  */
-  4;
-var StrictLegacyMode =
-  /*  */
-  8;
-var StrictEffectsMode =
-  /* */
-  16;
+var ReactVersion = "17.0.3-b8fda6cab";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -10148,7 +10196,12 @@ function renderWithHooks(
 
     if (
       current !== null &&
-      (current.flags & StaticMask) !== (workInProgress.flags & StaticMask)
+      (current.flags & StaticMask) !== (workInProgress.flags & StaticMask) && // Disable this warning in legacy mode, because legacy Suspense is weird
+      // and creates false positives. To make this work in legacy mode, we'd
+      // need to mark fibers that commit in an incomplete state, somehow. For
+      // now I'll disable the warning that most of the bugs that would trigger
+      // it are either exclusive to concurrent mode or exist in both.
+      (current.mode & ConcurrentMode) !== NoMode
     ) {
       error(
         "Internal React error: Expected static flag was missing. Please " +
@@ -21092,26 +21145,26 @@ function resetWorkInProgress(workInProgress, renderLanes) {
 
   return workInProgress;
 }
-function createHostRootFiber(tag, strictModeLevelOverride) {
+function createHostRootFiber(
+  tag,
+  isStrictMode,
+  concurrentUpdatesByDefaultOverride
+) {
   var mode;
 
   if (tag === ConcurrentRoot) {
     mode = ConcurrentMode;
 
-    if (strictModeLevelOverride !== null) {
-      if (strictModeLevelOverride >= 1) {
-        mode |= StrictLegacyMode;
-      }
+    if (isStrictMode === true) {
+      mode |= StrictLegacyMode;
 
       {
-        if (strictModeLevelOverride >= 2) {
-          mode |= StrictEffectsMode;
-        }
+        mode |= StrictEffectsMode;
       }
-    } else {
-      {
-        mode |= StrictLegacyMode;
-      }
+    }
+
+    {
+      mode |= ConcurrentUpdatesByDefaultMode;
     }
   } else {
     mode = NoMode;
@@ -21163,22 +21216,8 @@ function createFiberFromTypeAndProps(
         break;
 
       case REACT_STRICT_MODE_TYPE:
-        fiberTag = Mode; // Legacy strict mode (<StrictMode> without any level prop) defaults to level 1.
-
-        var level =
-          pendingProps.unstable_level == null ? 1 : pendingProps.unstable_level; // Levels cascade; higher levels inherit all lower level modes.
-        // It is explicitly not supported to lower a mode with nesting, only to increase it.
-
-        if (level >= 1) {
-          mode |= StrictLegacyMode;
-        }
-
-        {
-          if (level >= 2) {
-            mode |= StrictEffectsMode;
-          }
-        }
-
+        fiberTag = Mode;
+        mode |= StrictLegacyMode | StrictEffectsMode;
         break;
 
       case REACT_PROFILER_TYPE:
@@ -21470,12 +21509,13 @@ function createFiberRoot(
   tag,
   hydrate,
   hydrationCallbacks,
-  strictModeLevelOverride
+  isStrictMode,
+  concurrentUpdatesByDefaultOverride
 ) {
   var root = new FiberRootNode(containerInfo, tag, hydrate);
   // stateNode is any.
 
-  var uninitializedFiber = createHostRootFiber(tag, strictModeLevelOverride);
+  var uninitializedFiber = createHostRootFiber(tag, isStrictMode);
   root.current = uninitializedFiber;
   uninitializedFiber.stateNode = root;
 
@@ -21613,14 +21653,15 @@ function createContainer(
   tag,
   hydrate,
   hydrationCallbacks,
-  strictModeLevelOverride
+  isStrictMode,
+  concurrentUpdatesByDefaultOverride
 ) {
   return createFiberRoot(
     containerInfo,
     tag,
     hydrate,
     hydrationCallbacks,
-    strictModeLevelOverride
+    isStrictMode
   );
 }
 function updateContainer(element, container, parentComponent, callback) {
@@ -22385,7 +22426,7 @@ function render(element, containerTag, callback) {
   if (!root) {
     // TODO (bvaughn): If we decide to keep the wrapper component,
     // We could create a wrapper for containerTag as well to reduce special casing.
-    root = createContainer(containerTag, LegacyRoot, false, null, null);
+    root = createContainer(containerTag, LegacyRoot, false, null, false);
     roots.set(containerTag, root);
   }
 
