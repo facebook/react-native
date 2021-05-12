@@ -14,7 +14,7 @@ namespace react {
 
 // TODO T83483191: Extend MapBuffer C++ implementation to support basic random
 // access
-MapBuffer::MapBuffer(uint8_t *const data, int dataSize) {
+MapBuffer::MapBuffer(uint8_t *const data, int32_t dataSize) {
   react_native_assert(
       (data != nullptr) && "Error trying to build an invalid MapBuffer");
 
@@ -42,8 +42,8 @@ MapBuffer::MapBuffer(uint8_t *const data, int dataSize) {
   }
 }
 
-int MapBuffer::getInt(Key key) const {
-  int value = 0;
+int32_t MapBuffer::getInt(Key key) const {
+  int32_t value = 0;
   memcpy(
       reinterpret_cast<uint8_t *>(&value),
       reinterpret_cast<const uint8_t *>(data_ + getValueOffset(key)),
@@ -66,7 +66,7 @@ double MapBuffer::getDouble(Key key) const {
   return value;
 }
 
-int MapBuffer::getDynamicDataOffset() const {
+int32_t MapBuffer::getDynamicDataOffset() const {
   // The begininig of dynamic data can be calculated as the offset of the next
   // key in the map
   return getKeyOffset(count_);
@@ -75,9 +75,9 @@ int MapBuffer::getDynamicDataOffset() const {
 std::string MapBuffer::getString(Key key) const {
   // TODO T83483191:Add checks to verify that offsets are under the boundaries
   // of the map buffer
-  int dynamicDataOffset = getDynamicDataOffset();
-  int stringLength = 0;
-  int offset = getInt(key);
+  int32_t dynamicDataOffset = getDynamicDataOffset();
+  int32_t stringLength = 0;
+  int32_t offset = getInt(key);
   memcpy(
       reinterpret_cast<uint8_t *>(&stringLength),
       reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset + offset),
@@ -97,10 +97,10 @@ std::string MapBuffer::getString(Key key) const {
 MapBuffer MapBuffer::getMapBuffer(Key key) const {
   // TODO T83483191: Add checks to verify that offsets are under the boundaries
   // of the map buffer
-  int dynamicDataOffset = getDynamicDataOffset();
+  int32_t dynamicDataOffset = getDynamicDataOffset();
 
-  int mapBufferLength = 0;
-  int offset = getInt(key);
+  int32_t mapBufferLength = 0;
+  int32_t offset = getInt(key);
   memcpy(
       reinterpret_cast<uint8_t *>(&mapBufferLength),
       reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset + offset),
@@ -121,7 +121,7 @@ bool MapBuffer::isNull(Key key) const {
   return getInt(key) == NULL_VALUE;
 }
 
-int MapBuffer::getBufferSize() const {
+int32_t MapBuffer::getBufferSize() const {
   return dataSize_;
 }
 

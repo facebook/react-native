@@ -30,7 +30,7 @@ class BatchedEventQueue final : public EventQueue {
    * Deletes last RawEvent from the queue if it has the same type and target.
    * Can be called on any thread.
    */
-  void enqueueUniqueEvent(const RawEvent &rawEvent) const;
+  void enqueueUniqueEvent(RawEvent &&rawEvent) const;
 };
 
 } // namespace react

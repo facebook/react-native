@@ -10,14 +10,13 @@
 
 'use strict';
 
-const PickerAndroid = require('./PickerAndroid');
-const PickerIOS = require('./PickerIOS');
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const UnimplementedView = require('../UnimplementedViews/UnimplementedView');
+import * as React from 'react';
+import PickerAndroid from './PickerAndroid';
+import PickerIOS from './PickerIOS';
+import Platform from '../../Utilities/Platform';
+import UnimplementedView from '../UnimplementedViews/UnimplementedView';
 
-import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {TextStyleProp, ColorValue} from '../../StyleSheet/StyleSheet';
 
 const MODE_DIALOG = 'dialog';
 const MODE_DROPDOWN = 'dropdown';

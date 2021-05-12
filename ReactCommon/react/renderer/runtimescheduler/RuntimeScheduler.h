@@ -31,6 +31,8 @@ class RuntimeScheduler final {
 
   bool getShouldYield() const;
 
+  SchedulerPriority getCurrentPriorityLevel() const;
+
   RuntimeSchedulerTimePoint now() const;
 
  private:
@@ -40,6 +42,7 @@ class RuntimeScheduler final {
       TaskPriorityComparer>
       taskQueue_;
   RuntimeExecutor const runtimeExecutor_;
+  SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
   std::atomic_bool shouldYield_{false};
 
   /*

@@ -96,25 +96,10 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
                << this << ").";
-
-  // We must detach the `UIBinding` on deallocation to prevent accessing
-  // deallocated `UIManagerBinding`.
-  // Since `UIManagerBinding` retains `UIManager`, `UIManager` always overlive
-  // `UIManagerBinding`, therefore we don't need similar logic in `UIManager`'s
-  // destructor.
-  attach(nullptr);
 }
 
 void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
-  if (uiManager_) {
-    uiManager_->uiManagerBinding_ = nullptr;
-  }
-
   uiManager_ = uiManager;
-
-  if (uiManager_) {
-    uiManager_->uiManagerBinding_ = this;
-  }
 }
 
 static jsi::Value callMethodOfModule(

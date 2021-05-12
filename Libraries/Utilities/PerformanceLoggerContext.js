@@ -9,6 +9,7 @@
  */
 
 import * as React from 'react';
+import {useContext} from 'react';
 import GlobalPerformanceLogger from './GlobalPerformanceLogger';
 import type {IPerformanceLogger} from './createPerformanceLogger';
 
@@ -24,4 +25,9 @@ const PerformanceLoggerContext: React.Context<IPerformanceLogger> = React.create
 if (__DEV__) {
   PerformanceLoggerContext.displayName = 'PerformanceLoggerContext';
 }
-module.exports = PerformanceLoggerContext;
+
+export function usePerformanceLogger(): IPerformanceLogger {
+  return useContext(PerformanceLoggerContext);
+}
+
+export default PerformanceLoggerContext;
