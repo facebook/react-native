@@ -25,6 +25,7 @@
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -499,6 +500,18 @@ void Binding::installFabricUIManager(
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
+  std::shared_ptr<RuntimeScheduler> runtimeScheduler;
+
+  if (config->getBool("react_fabric:enable_runtimescheduler_android")) {
+    runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
+
+    auto originalRuntimeExecutor = runtimeExecutorHolder->cthis()->get();
+    runtimeExecutor =
+        [originalRuntimeExecutor, runtimeScheduler](
+            std::function<void(jsi::Runtime & runtime)> &&callback) {
+          runtimeScheduler->scheduleWork(std::move(callback));
+        };
+  }
 
   auto enableV2AsynchronousEventBeat =
       config->getBool("react_fabric:enable_asynchronous_event_beat_v2_android");
@@ -551,6 +564,7 @@ void Binding::installFabricUIManager(
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
   toolbox.runtimeExecutor = runtimeExecutor;
+  toolbox.runtimeScheduler = runtimeScheduler;
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
