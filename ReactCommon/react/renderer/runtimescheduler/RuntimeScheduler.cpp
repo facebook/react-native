@@ -9,6 +9,8 @@
 
 namespace facebook::react {
 
+#pragma mark - Public
+
 RuntimeScheduler::RuntimeScheduler(
     RuntimeExecutor const &runtimeExecutor,
     std::function<RuntimeSchedulerTimePoint()> now)
@@ -50,6 +52,28 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
   return task;
 }
 
+bool RuntimeScheduler::getShouldYield() const {
+  return shouldYield_;
+}
+
+void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
+  task->callback.reset();
+}
+
+SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const {
+  return currentPriority_;
+}
+
+RuntimeSchedulerTimePoint RuntimeScheduler::now() const {
+  return now_();
+}
+
+void RuntimeScheduler::setEnableYielding(bool enableYielding) {
+  enableYielding_ = enableYielding;
+}
+
+#pragma mark - Private
+
 void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
   auto previousPriority = currentPriority_;
   while (!taskQueue_.empty()) {
@@ -72,26 +96,6 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
     }
   }
   currentPriority_ = previousPriority;
-}
-
-void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
-  task->callback.reset();
-}
-
-bool RuntimeScheduler::getShouldYield() const {
-  return shouldYield_;
-}
-
-SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const {
-  return currentPriority_;
-}
-
-RuntimeSchedulerTimePoint RuntimeScheduler::now() const {
-  return now_();
-}
-
-void RuntimeScheduler::setEnableYielding(bool enableYielding) {
-  enableYielding_ = enableYielding;
 }
 
 } // namespace facebook::react
