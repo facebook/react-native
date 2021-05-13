@@ -18,7 +18,7 @@ namespace facebook::react {
 std::shared_ptr<RuntimeSchedulerBinding>
 RuntimeSchedulerBinding::createAndInstallIfNeeded(
     jsi::Runtime &runtime,
-    RuntimeExecutor runtimeExecutor) {
+    std::shared_ptr<RuntimeScheduler> const &runtimeScheduler) {
   auto runtimeSchedulerModuleName = "nativeRuntimeScheduler";
 
   auto runtimeSchedulerValue =
@@ -26,9 +26,8 @@ RuntimeSchedulerBinding::createAndInstallIfNeeded(
   if (runtimeSchedulerValue.isUndefined()) {
     // The global namespace does not have an instance of the binding;
     // we need to create, install and return it.
-    auto runtimeScheduler = std::make_unique<RuntimeScheduler>(runtimeExecutor);
     auto runtimeSchedulerBinding =
-        std::make_shared<RuntimeSchedulerBinding>(std::move(runtimeScheduler));
+        std::make_shared<RuntimeSchedulerBinding>(runtimeScheduler);
     auto object =
         jsi::Object::createFromHostObject(runtime, runtimeSchedulerBinding);
     runtime.global().setProperty(
@@ -43,8 +42,8 @@ RuntimeSchedulerBinding::createAndInstallIfNeeded(
 }
 
 RuntimeSchedulerBinding::RuntimeSchedulerBinding(
-    std::unique_ptr<RuntimeScheduler> runtimeScheduler)
-    : runtimeScheduler_(std::move(runtimeScheduler)) {}
+    std::shared_ptr<RuntimeScheduler> const &runtimeScheduler)
+    : runtimeScheduler_(runtimeScheduler) {}
 
 jsi::Value RuntimeSchedulerBinding::get(
     jsi::Runtime &runtime,

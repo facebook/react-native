@@ -44,7 +44,7 @@ void LeakChecker::stopSurface(SurfaceId surfaceId) {
 
 void LeakChecker::checkSurfaceForLeaks(SurfaceId surfaceId) const {
   auto weakFamilies = registry_.weakFamiliesForSurfaceId(surfaceId);
-  uint numberOfLeaks = 0;
+  unsigned int numberOfLeaks = 0;
   for (auto const &weakFamily : weakFamilies) {
     auto strong = weakFamily.lock();
     if (strong) {

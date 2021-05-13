@@ -259,7 +259,9 @@ static void RCTPerformMountInstructions(
       });
 }
 
-- (void)setIsJSResponder:(BOOL)isJSResponder forShadowView:(facebook::react::ShadowView)shadowView
+- (void)setIsJSResponder:(BOOL)isJSResponder
+    blockNativeResponder:(BOOL)blockNativeResponder
+           forShadowView:(facebook::react::ShadowView)shadowView
 {
   RCTExecuteOnMainQueue(^{
     UIView<RCTComponentViewProtocol> *componentView =

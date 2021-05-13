@@ -76,6 +76,9 @@ class Binding : public jni::HybridClass<Binding>,
   constexpr static auto UIManagerJavaDescriptor =
       "com/facebook/react/fabric/FabricUIManager";
 
+  constexpr static auto ReactFeatureFlagsJavaDescriptor =
+      "com/facebook/react/config/ReactFeatureFlags";
+
   static void registerNatives();
 
  private:

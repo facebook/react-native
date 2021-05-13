@@ -34,7 +34,7 @@ using namespace facebook::react;
   dispatch_block_t _initialMessageBlock;
 }
 
-@synthesize bridge = _bridge;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -61,15 +61,6 @@ RCT_EXPORT_MODULE()
 + (BOOL)requiresMainQueueSetup
 {
   return YES;
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
-
-  if (bridge.loading) {
-    [self showWithURL:bridge.bundleURL];
-  }
 }
 
 - (void)clearInitialMessageDelay
@@ -104,11 +95,12 @@ RCT_EXPORT_MODULE()
 
 - (NSString *)getTextForHost
 {
-  if (self->_bridge.bundleURL == nil || self->_bridge.bundleURL.fileURL) {
+  NSURL *bundleURL = _bundleManager.bundleURL;
+  if (bundleURL == nil || bundleURL.fileURL) {
     return @"React Native";
   }
 
-  return [NSString stringWithFormat:@"%@:%@", self->_bridge.bundleURL.host, self->_bridge.bundleURL.port];
+  return [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
 }
 
 - (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor

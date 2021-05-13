@@ -16,12 +16,12 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/stubs.h>
 
+#include <react/test_utils/Entropy.h>
+#include <react/test_utils/shadowTreeGeneration.h>
+
 // Uncomment when random test blocks are uncommented below.
 // #include <algorithm>
 // #include <random>
-
-#include "Entropy.h"
-#include "shadowTreeGeneration.h"
 
 namespace facebook {
 namespace react {

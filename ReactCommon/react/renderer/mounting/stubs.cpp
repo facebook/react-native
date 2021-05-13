@@ -47,13 +47,13 @@ static void calculateShadowViewMutationsForNewTree(
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(newChildPairs);
 
-  for (auto index = 0; index < newChildPairs.size(); index++) {
+  for (size_t index = 0; index < newChildPairs.size(); index++) {
     auto const &newChildPair = newChildPairs[index];
 
     mutations.push_back(
         ShadowViewMutation::CreateMutation(newChildPair.shadowView));
     mutations.push_back(ShadowViewMutation::InsertMutation(
-        parentShadowView, newChildPair.shadowView, index));
+        parentShadowView, newChildPair.shadowView, static_cast<int>(index)));
 
     auto newGrandChildPairs =
         sliceChildShadowNodeViewPairsLegacy(*newChildPair.shadowNode);

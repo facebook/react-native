@@ -30,6 +30,7 @@
 #import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/LayoutConstraints.h>
 #import <react/renderer/core/LayoutContext.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/AsynchronousEventBeatV2.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
@@ -91,7 +92,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   if (self = [super init]) {
     assert(contextContainer && "RuntimeExecutor must be not null.");
-
     _runtimeExecutor = runtimeExecutor;
     _contextContainer = contextContainer;
 
@@ -257,10 +257,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetOnDemandViewMounting(YES);
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:optimized_hit_testing_ios")) {
-    RCTExperimentSetOptimizedHitTesting(YES);
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:preemptive_view_allocation_disabled_ios")) {
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
   }
@@ -277,7 +273,17 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = _contextContainer;
   toolbox.componentRegistryFactory = componentRegistryFactory;
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_runtimescheduler_ios")) {
+    auto runtimeScheduler = std::make_shared<RuntimeScheduler>(_runtimeExecutor);
+    toolbox.runtimeScheduler = runtimeScheduler;
+    runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
+      runtimeScheduler->scheduleWork(std::move(callback));
+    };
+  }
+
   toolbox.runtimeExecutor = runtimeExecutor;
+
   toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
                                           RunLoopObserver::WeakOwner const &owner) {
     return std::make_unique<MainRunLoopObserver>(activities, owner);
@@ -373,9 +379,13 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   [self->_mountingManager sendAccessibilityEvent:tag eventType:eventTypeStr];
 }
 
-- (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder forShadowView:(facebook::react::ShadowView const &)shadowView;
+- (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder
+                blockNativeResponder:(BOOL)blockNativeResponder
+                       forShadowView:(facebook::react::ShadowView const &)shadowView;
 {
-  [self->_mountingManager setIsJSResponder:isJSResponder forShadowView:shadowView];
+  [self->_mountingManager setIsJSResponder:isJSResponder
+                      blockNativeResponder:blockNativeResponder
+                             forShadowView:shadowView];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer

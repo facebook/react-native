@@ -45,7 +45,6 @@
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
 - (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
-- (void)setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider)bridgelessComponentViewProvider;
 
 - (void)invalidate;
 

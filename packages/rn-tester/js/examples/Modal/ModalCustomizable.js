@@ -124,10 +124,13 @@ class ModalExample extends React.Component<{...}, $FlowFixMe> {
       );
     }
     return (
-      <Switch
-        value={this.state.transparent}
-        onValueChange={this._toggleTransparent}
-      />
+      <>
+        <Text style={styles.rowTitle}>Transparent</Text>
+        <Switch
+          value={this.state.transparent}
+          onValueChange={this._toggleTransparent}
+        />
+      </>
     );
   }
 
@@ -243,7 +246,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMe> {
             <Item label="Page Sheet" value="pageSheet" />
             <Item label="Form Sheet" value="formSheet" />
             <Item label="Over Full Screen" value="overFullScreen" />
-            <Item label="Default presentationStyle" value={null} />
+            <Item label="Default presentationStyle" value="" />
           </Picker>
         </View>
 

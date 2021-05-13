@@ -131,11 +131,4 @@ const styles = StyleSheet.create({
   },
 });
 
-if (__DEV__) {
-  if (!global.__RCTProfileIsProfiling) {
-    const LogBox = require('../LogBox/LogBox');
-    LogBox.install();
-  }
-}
-
 module.exports = AppContainer;

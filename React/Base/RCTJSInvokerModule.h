@@ -13,6 +13,5 @@
 
 @optional
 @property (nonatomic, copy) void (^invokeJS)(NSString *module, NSString *method, NSArray *args);
-@property (nonatomic, copy) void (^invokeJSWithModuleDotMethod)(NSString *moduleDotMethod, NSArray *args);
 
 @end
