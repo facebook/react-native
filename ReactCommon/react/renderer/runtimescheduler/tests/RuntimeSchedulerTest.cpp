@@ -312,4 +312,19 @@ TEST_F(RuntimeSchedulerTest, getCurrentPriorityLevel) {
       SchedulerPriority::NormalPriority);
 }
 
+TEST_F(RuntimeSchedulerTest, scheduleWork) {
+  bool wasCalled = false;
+  runtimeScheduler_->scheduleWork(
+      [&](jsi::Runtime const &) { wasCalled = true; });
+
+  EXPECT_FALSE(wasCalled);
+
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(wasCalled);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
 } // namespace facebook::react

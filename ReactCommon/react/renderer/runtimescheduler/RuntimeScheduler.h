@@ -23,6 +23,8 @@ class RuntimeScheduler final {
       RuntimeExecutor const &runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now);
 
+  void scheduleWork(std::function<void(jsi::Runtime &)> callback) const;
+
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       jsi::Function callback);

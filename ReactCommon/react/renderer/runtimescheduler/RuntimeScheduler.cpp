@@ -17,6 +17,11 @@ RuntimeScheduler::RuntimeScheduler(
     std::function<RuntimeSchedulerTimePoint()> now)
     : runtimeExecutor_(runtimeExecutor), now_(now) {}
 
+void RuntimeScheduler::scheduleWork(
+    std::function<void(jsi::Runtime &)> callback) const {
+  runtimeExecutor_(std::move(callback));
+}
+
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
     jsi::Function callback) {
