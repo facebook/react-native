@@ -156,7 +156,7 @@ def use_react_native_codegen!(spec, options={})
 
   # Library name (e.g. FBReactNativeSpec)
   modules_library_name = spec.name
-  modules_output_dir = "React/#{modules_library_name}/#{modules_library_name}"
+  modules_output_dir = options[:codegen_modules_output_dir] ||= "React/#{modules_library_name}/#{modules_library_name}"
 
   # Run the codegen as part of the Xcode build pipeline.
   env_vars = "SRCS_DIR='#{js_srcs}'"
@@ -190,9 +190,9 @@ def use_react_native_codegen!(spec, options={})
     :name => 'Generate Specs',
     :input_files => [js_srcs],
     :output_files => ["${DERIVED_FILE_DIR}/codegen-#{modules_library_name}.log"].concat(generated_files.map { |filename| "#{prefix}/#{filename}"} ),
-    :script => "set -o pipefail\n\nbash -l -c '#{env_vars} ${PODS_TARGET_SRCROOT}/../../scripts/generate-specs.sh' 2>&1 | tee \"${SCRIPT_OUTPUT_FILE_0}\"",
+    :script => "set -o pipefail\n\nbash -l -c '#{env_vars} #{File.join(__dir__, "generate-specs.sh")}' 2>&1 | tee \"${SCRIPT_OUTPUT_FILE_0}\"",
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
-  spec.prepare_command = "mkdir -p #{generated_dirs.map {|dir| "'../../#{dir}'"}.join(" ")} && touch #{generated_files.map {|file| "'../../#{file}'"}.join(" ")}"
+  spec.prepare_command = "mkdir -p #{generated_dirs.map {|dir| "'#{prefix.sub(/\${?PODS_TARGET_SRCROOT}?/, '.')}/#{dir}'"}.join(" ")} && touch #{generated_files.map {|file| "'#{prefix.sub(/\${?PODS_TARGET_SRCROOT}?/, '.')}/#{file}'"}.join(" ")}"
 end
