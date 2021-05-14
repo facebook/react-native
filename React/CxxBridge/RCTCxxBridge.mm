@@ -275,6 +275,18 @@ struct RCTInstanceCallback : public InstanceCallback {
   if ([bridgeModule respondsToSelector:@selector(setBundleManager:)]) {
     bridgeModule.bundleManager = _bundleManager;
   }
+
+  /**
+   * Attach the RCTCallableJSModules to this TurboModule, which allows this TurboModule
+   * to call JS Module methods.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize callableJSModules = _callableJSModules`
+   */
+
+  if ([bridgeModule respondsToSelector:@selector(setCallableJSModules:)]) {
+    bridgeModule.callableJSModules = _callableJSModules;
+  }
 }
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
