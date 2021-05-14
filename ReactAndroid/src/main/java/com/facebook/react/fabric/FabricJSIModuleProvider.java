@@ -15,6 +15,8 @@ import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.common.mapbuffer.ReadableMapBufferSoLoader;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -66,6 +68,9 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     // TODO T31905686: remove this call
     if (ReactFeatureFlags.eagerInitializeFabricClasses) {
       loadClasses();
+    }
+    if (ReactFeatureFlags.enableEagerInitializeMapBufferSoFile) {
+      ReadableMapBufferSoLoader.staticInit();
     }
     MessageQueueThread jsMessageQueueThread =
         mReactApplicationContext
@@ -138,5 +143,6 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     SurfaceHandlerBinding.class.getClass();
     BatchEventDispatchedListener.class.getClass();
     ReactNativeConfig.class.getClass();
+    ReadableMapBuffer.class.getClass();
   }
 }

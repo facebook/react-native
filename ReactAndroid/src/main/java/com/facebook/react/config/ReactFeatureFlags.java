@@ -60,6 +60,9 @@ public class ReactFeatureFlags {
   /** Enables JS Responder in Fabric */
   public static boolean enableJSResponder = false;
 
+  /** Feature flag to configure eager initialization of MapBuffer So file */
+  public static boolean enableEagerInitializeMapBufferSoFile = false;
+
   /** An interface used to compute flags on demand. */
   public interface FlagProvider {
     boolean get();
