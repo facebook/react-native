@@ -13,6 +13,7 @@
 import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 import RotatingImagesExample from './RotatingImagesExample';
 import ContinuousInteractionsExample from './ContinuousInteractionsExample';
+import LoopingExample from './LoopingExample';
 import MovingBoxExample from './MovingBoxExample';
 import FadeInViewExample from './FadeInViewExample';
 import ComposeAnimationsWithEasingExample from './ComposeAnimationsWithEasingExample';
@@ -32,5 +33,6 @@ exports.examples = ([
   RotatingImagesExample,
   MovingBoxExample,
   TransformBounceExample,
+  LoopingExample,
   ContinuousInteractionsExample,
 ]: Array<RNTesterExampleModuleItem>);
