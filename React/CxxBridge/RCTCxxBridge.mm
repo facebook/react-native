@@ -237,6 +237,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCTModuleRegistry *_objCModuleRegistry;
   RCTViewRegistry *_viewRegistry_DEPRECATED;
   RCTBundleManager *_bundleManager;
+  RCTCallableJSModules *_callableJSModules;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
@@ -316,6 +317,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     [_bundleManager setBridge:self];
     _viewRegistry_DEPRECATED = [RCTViewRegistry new];
     [_viewRegistry_DEPRECATED setBridge:self];
+    _callableJSModules = [RCTCallableJSModules new];
+    [_callableJSModules setBridge:self];
 
     [RCTBridge setCurrentBridge:self];
 
@@ -801,7 +804,8 @@ struct RCTInstanceCallback : public InstanceCallback {
                                                      bridge:self
                                              moduleRegistry:_objCModuleRegistry
                                     viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
-                                              bundleManager:_bundleManager];
+                                              bundleManager:_bundleManager
+                                          callableJSModules:_callableJSModules];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -877,7 +881,8 @@ struct RCTInstanceCallback : public InstanceCallback {
                                                                        bridge:self
                                                                moduleRegistry:_objCModuleRegistry
                                                       viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
-                                                                bundleManager:_bundleManager];
+                                                                bundleManager:_bundleManager
+                                                            callableJSModules:_callableJSModules];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -932,7 +937,8 @@ struct RCTInstanceCallback : public InstanceCallback {
                                                        bridge:self
                                                moduleRegistry:_objCModuleRegistry
                                       viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
-                                                bundleManager:_bundleManager];
+                                                bundleManager:_bundleManager
+                                            callableJSModules:_callableJSModules];
       BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
       _moduleDataByName[moduleName] = moduleData;

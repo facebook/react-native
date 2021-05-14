@@ -625,7 +625,8 @@ static Class getFallbackClassFromName(const char *name)
                                                                  bridge:_bridge
                                                          moduleRegistry:_moduleRegistry
                                                 viewRegistry_DEPRECATED:nil
-                                                          bundleManager:nil];
+                                                          bundleManager:nil
+                                                      callableJSModules:nil];
     [_bridge registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:data];
   }
 
