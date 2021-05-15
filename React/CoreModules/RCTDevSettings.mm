@@ -350,16 +350,12 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       if (enabled) {
-        if (self.bridge) {
-          [self.bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
-        } else if (self.invokeJS) {
-          self.invokeJS(@"HMRClient", @"enable", @[]);
+        if (self.callableJSModules) {
+          [self.callableJSModules invokeModule:@"HMRClient" method:@"enable" withArgs:@[]];
         }
       } else {
-        if (self.bridge) {
-          [self.bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
-        } else if (self.invokeJS) {
-          self.invokeJS(@"HMRClient", @"disable", @[]);
+        if (self.callableJSModules) {
+          [self.callableJSModules invokeModule:@"HMRClient" method:@"disable" withArgs:@[]];
         }
       }
 #pragma clang diagnostic pop
@@ -441,13 +437,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     NSString *const host = bundleURL.host;
     NSNumber *const port = bundleURL.port;
     BOOL isHotLoadingEnabled = self.isHotLoadingEnabled;
-    if (self.bridge) {
-      [self.bridge enqueueJSCall:@"HMRClient"
-                          method:@"setup"
-                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]
-                      completion:NULL];
-    } else {
-      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]);
+    if (self.callableJSModules) {
+      [self.callableJSModules invokeModule:@"HMRClient"
+                                    method:@"setup"
+                                  withArgs:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]];
     }
   }
 }
@@ -455,13 +448,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL
 {
   if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
-    if (self.bridge) {
-      [self.bridge enqueueJSCall:@"HMRClient"
-                          method:@"registerBundle"
-                            args:@[ [bundleURL absoluteString] ]
-                      completion:NULL];
-    } else {
-      self.invokeJS(@"HMRClient", @"registerBundle", @[ [bundleURL absoluteString] ]);
+    if (self.callableJSModules) {
+      [self.callableJSModules invokeModule:@"HMRClient"
+                                    method:@"registerBundle"
+                                  withArgs:@[ [bundleURL absoluteString] ]];
     }
   }
 }
