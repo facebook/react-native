@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<162e8fe0b21fb97be1e9fa859e58204d>>
+ * @generated SignedSource<<2dc7c402c6aee869836656b83828b0a5>>
  */
 
 "use strict";
@@ -1007,14 +1007,27 @@ getNodeFromInstance = function(inst) {
 };
 ResponderEventPlugin.injection.injectGlobalResponderHandler({
   onChange: function(from, to, blockNativeResponder) {
-    ((from = (from = from || to) && from.stateNode) &&
-      from.canonical._internalInstanceHandle) ||
-      (null !== to
-        ? ReactNativePrivateInterface.UIManager.setJSResponder(
-            to.stateNode.canonical._nativeTag,
-            blockNativeResponder
-          )
-        : ReactNativePrivateInterface.UIManager.clearJSResponder());
+    var fromOrTo = from || to;
+    (fromOrTo = fromOrTo && fromOrTo.stateNode) &&
+    fromOrTo.canonical._internalInstanceHandle
+      ? (from &&
+          nativeFabricUIManager.setIsJSResponder(
+            from.stateNode.node,
+            !1,
+            blockNativeResponder || !1
+          ),
+        to &&
+          nativeFabricUIManager.setIsJSResponder(
+            to.stateNode.node,
+            !0,
+            blockNativeResponder || !1
+          ))
+      : null !== to
+      ? ReactNativePrivateInterface.UIManager.setJSResponder(
+          to.stateNode.canonical._nativeTag,
+          blockNativeResponder
+        )
+      : ReactNativePrivateInterface.UIManager.clearJSResponder();
   }
 });
 var ReactSharedInternals =
@@ -1091,13 +1104,18 @@ function getComponentNameFromType(type) {
         return (type._context.displayName || "Context") + ".Provider";
       case REACT_FORWARD_REF_TYPE:
         var innerType = type.render;
-        innerType = innerType.displayName || innerType.name || "";
-        return (
-          type.displayName ||
-          ("" !== innerType ? "ForwardRef(" + innerType + ")" : "ForwardRef")
-        );
+        type = type.displayName;
+        type ||
+          ((type = innerType.displayName || innerType.name || ""),
+          (type = "" !== type ? "ForwardRef(" + type + ")" : "ForwardRef"));
+        return type;
       case REACT_MEMO_TYPE:
-        return getComponentNameFromType(type.type);
+        return (
+          (innerType = type.displayName || null),
+          null !== innerType
+            ? innerType
+            : getComponentNameFromType(type.type) || "Memo"
+        );
       case REACT_LAZY_TYPE:
         innerType = type._payload;
         type = type._init;
@@ -1673,18 +1691,19 @@ function getNextLanes(root, wipLanes) {
     suspendedLanes = root.suspendedLanes,
     pingedLanes = root.pingedLanes,
     nonIdlePendingLanes = pendingLanes & 268435455;
-  0 !== nonIdlePendingLanes
-    ? ((pendingLanes = nonIdlePendingLanes & ~suspendedLanes),
-      0 !== pendingLanes
-        ? (nextLanes = getHighestPriorityLanes(pendingLanes))
-        : ((pingedLanes &= nonIdlePendingLanes),
-          0 !== pingedLanes &&
-            (nextLanes = getHighestPriorityLanes(pingedLanes))))
-    : ((nonIdlePendingLanes = pendingLanes & ~suspendedLanes),
+  if (0 !== nonIdlePendingLanes) {
+    var nonIdleUnblockedLanes = nonIdlePendingLanes & ~suspendedLanes;
+    0 !== nonIdleUnblockedLanes
+      ? (nextLanes = getHighestPriorityLanes(nonIdleUnblockedLanes))
+      : ((pingedLanes &= nonIdlePendingLanes),
+        0 !== pingedLanes &&
+          (nextLanes = getHighestPriorityLanes(pingedLanes)));
+  } else
+    (nonIdlePendingLanes = pendingLanes & ~suspendedLanes),
       0 !== nonIdlePendingLanes
         ? (nextLanes = getHighestPriorityLanes(nonIdlePendingLanes))
         : 0 !== pingedLanes &&
-          (nextLanes = getHighestPriorityLanes(pingedLanes)));
+          (nextLanes = getHighestPriorityLanes(pingedLanes));
   if (0 === nextLanes) return 0;
   if (
     0 !== wipLanes &&
@@ -1696,13 +1715,16 @@ function getNextLanes(root, wipLanes) {
       (16 === suspendedLanes && 0 !== (pingedLanes & 4194240)))
   )
     return wipLanes;
+  0 === (root.current.mode & 32) &&
+    0 !== (nextLanes & 4) &&
+    (nextLanes |= pendingLanes & 16);
   wipLanes = root.entangledLanes;
   if (0 !== wipLanes)
     for (root = root.entanglements, wipLanes &= nextLanes; 0 < wipLanes; )
-      (suspendedLanes = 31 - clz32(wipLanes)),
-        (pingedLanes = 1 << suspendedLanes),
-        (nextLanes |= root[suspendedLanes]),
-        (wipLanes &= ~pingedLanes);
+      (pendingLanes = 31 - clz32(wipLanes)),
+        (suspendedLanes = 1 << pendingLanes),
+        (nextLanes |= root[pendingLanes]),
+        (wipLanes &= ~suspendedLanes);
   return nextLanes;
 }
 function computeExpirationTime(lane, currentTime) {
@@ -6109,7 +6131,12 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
     root === workInProgressRoot ? workInProgressRootRenderLanes : 0
   );
   if (0 === lanes) return null;
-  var JSCompiler_inline_result = 0 !== (lanes & root.expiredLanes) ? !1 : !0;
+  var JSCompiler_inline_result =
+    0 !== (lanes & root.expiredLanes)
+      ? !1
+      : 0 !== (root.current.mode & 32)
+      ? !0
+      : 0 === (lanes & 30);
   if (JSCompiler_inline_result && !didTimeout) {
     didTimeout = lanes;
     JSCompiler_inline_result = executionContext;
@@ -7519,10 +7546,7 @@ function createFiberFromTypeAndProps(
         break;
       case REACT_STRICT_MODE_TYPE:
         fiberTag = 8;
-        1 <=
-          (null == pendingProps.unstable_level
-            ? 1
-            : pendingProps.unstable_level) && (mode |= 8);
+        mode |= 24;
         break;
       case REACT_PROFILER_TYPE:
         return (
@@ -7744,10 +7768,10 @@ batchedUpdatesImpl = function(fn, a) {
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_940 = {
+  devToolsConfig$jscomp$inline_942 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "17.0.3-2a7bb4154",
+    version: "17.0.3-b8fda6cab",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -7762,11 +7786,11 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1178 = {
-  bundleType: devToolsConfig$jscomp$inline_940.bundleType,
-  version: devToolsConfig$jscomp$inline_940.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_940.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_940.rendererConfig,
+var internals$jscomp$inline_1180 = {
+  bundleType: devToolsConfig$jscomp$inline_942.bundleType,
+  version: devToolsConfig$jscomp$inline_942.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_942.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_942.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -7781,26 +7805,26 @@ var internals$jscomp$inline_1178 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_940.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_942.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "17.0.3-2a7bb4154"
+  reconcilerVersion: "17.0.3-b8fda6cab"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1179 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1181 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1179.isDisabled &&
-    hook$jscomp$inline_1179.supportsFiber
+    !hook$jscomp$inline_1181.isDisabled &&
+    hook$jscomp$inline_1181.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1179.inject(
-        internals$jscomp$inline_1178
+      (rendererID = hook$jscomp$inline_1181.inject(
+        internals$jscomp$inline_1180
       )),
-        (injectedHook = hook$jscomp$inline_1179);
+        (injectedHook = hook$jscomp$inline_1181);
     } catch (err) {}
 }
 exports.createPortal = function(children, containerTag) {

@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactFabric-prod
  * @preventMunge
- * @generated SignedSource<<73c8a64b90ccdf69b1db99ffeefc7603>>
+ * @generated SignedSource<<13b77909c1b0f4c0d620f64b4cb52c31>>
  */
 
 "use strict";
@@ -1008,14 +1008,27 @@ getNodeFromInstance = function(inst) {
 };
 ResponderEventPlugin.injection.injectGlobalResponderHandler({
   onChange: function(from, to, blockNativeResponder) {
-    ((from = (from = from || to) && from.stateNode) &&
-      from.canonical._internalInstanceHandle) ||
-      (null !== to
-        ? ReactNativePrivateInterface.UIManager.setJSResponder(
-            to.stateNode.canonical._nativeTag,
-            blockNativeResponder
-          )
-        : ReactNativePrivateInterface.UIManager.clearJSResponder());
+    var fromOrTo = from || to;
+    (fromOrTo = fromOrTo && fromOrTo.stateNode) &&
+    fromOrTo.canonical._internalInstanceHandle
+      ? (from &&
+          nativeFabricUIManager.setIsJSResponder(
+            from.stateNode.node,
+            !1,
+            blockNativeResponder || !1
+          ),
+        to &&
+          nativeFabricUIManager.setIsJSResponder(
+            to.stateNode.node,
+            !0,
+            blockNativeResponder || !1
+          ))
+      : null !== to
+      ? ReactNativePrivateInterface.UIManager.setJSResponder(
+          to.stateNode.canonical._nativeTag,
+          blockNativeResponder
+        )
+      : ReactNativePrivateInterface.UIManager.clearJSResponder();
   }
 });
 var ReactSharedInternals =
@@ -1092,13 +1105,18 @@ function getComponentNameFromType(type) {
         return (type._context.displayName || "Context") + ".Provider";
       case REACT_FORWARD_REF_TYPE:
         var innerType = type.render;
-        innerType = innerType.displayName || innerType.name || "";
-        return (
-          type.displayName ||
-          ("" !== innerType ? "ForwardRef(" + innerType + ")" : "ForwardRef")
-        );
+        type = type.displayName;
+        type ||
+          ((type = innerType.displayName || innerType.name || ""),
+          (type = "" !== type ? "ForwardRef(" + type + ")" : "ForwardRef"));
+        return type;
       case REACT_MEMO_TYPE:
-        return getComponentNameFromType(type.type);
+        return (
+          (innerType = type.displayName || null),
+          null !== innerType
+            ? innerType
+            : getComponentNameFromType(type.type) || "Memo"
+        );
       case REACT_LAZY_TYPE:
         innerType = type._payload;
         type = type._init;
@@ -7523,10 +7541,7 @@ function createFiberFromTypeAndProps(
         break;
       case REACT_STRICT_MODE_TYPE:
         fiberTag = 8;
-        1 <=
-          (null == pendingProps.unstable_level
-            ? 1
-            : pendingProps.unstable_level) && (mode |= 8);
+        mode |= 24;
         break;
       case REACT_PROFILER_TYPE:
         return (
@@ -7748,10 +7763,10 @@ batchedUpdatesImpl = function(fn, a) {
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_941 = {
+  devToolsConfig$jscomp$inline_942 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "17.0.3-experimental-2a7bb4154",
+    version: "17.0.3-experimental-b8fda6cab",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -7766,11 +7781,11 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1179 = {
-  bundleType: devToolsConfig$jscomp$inline_941.bundleType,
-  version: devToolsConfig$jscomp$inline_941.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_941.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_941.rendererConfig,
+var internals$jscomp$inline_1180 = {
+  bundleType: devToolsConfig$jscomp$inline_942.bundleType,
+  version: devToolsConfig$jscomp$inline_942.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_942.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_942.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -7785,26 +7800,26 @@ var internals$jscomp$inline_1179 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_941.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_942.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "17.0.3-experimental-2a7bb4154"
+  reconcilerVersion: "17.0.3-experimental-b8fda6cab"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1180 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1181 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1180.isDisabled &&
-    hook$jscomp$inline_1180.supportsFiber
+    !hook$jscomp$inline_1181.isDisabled &&
+    hook$jscomp$inline_1181.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1180.inject(
-        internals$jscomp$inline_1179
+      (rendererID = hook$jscomp$inline_1181.inject(
+        internals$jscomp$inline_1180
       )),
-        (injectedHook = hook$jscomp$inline_1180);
+        (injectedHook = hook$jscomp$inline_1181);
     } catch (err) {}
 }
 exports.createPortal = function(children, containerTag) {

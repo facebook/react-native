@@ -87,20 +87,14 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-#ifdef ANDROID
-  auto enableRuntimeScheduler = reactNativeConfig_->getBool(
-      "react_fabric:enable_runtimescheduler_android");
-#else
-  auto enableRuntimeScheduler =
-      reactNativeConfig_->getBool("react_fabric:enable_runtimescheduler_ios");
-#endif
-
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
+  runtimeExecutor_([uiManager,
+                    runtimeScheduler = schedulerToolbox.runtimeScheduler](
+                       jsi::Runtime &runtime) {
     auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
     uiManagerBinding->attach(uiManager);
-    if (enableRuntimeScheduler) {
+    if (runtimeScheduler) {
       RuntimeSchedulerBinding::createAndInstallIfNeeded(
-          runtime, runtimeExecutor_);
+          runtime, runtimeScheduler);
     }
   });
 

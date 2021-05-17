@@ -9,13 +9,29 @@
 
 namespace facebook::react {
 
-RuntimeScheduler::RuntimeScheduler(RuntimeExecutor const &runtimeExecutor)
-    : RuntimeScheduler(runtimeExecutor, RuntimeSchedulerClock::now) {}
+#pragma mark - Public
 
 RuntimeScheduler::RuntimeScheduler(
     RuntimeExecutor const &runtimeExecutor,
     std::function<RuntimeSchedulerTimePoint()> now)
     : runtimeExecutor_(runtimeExecutor), now_(now) {}
+
+void RuntimeScheduler::scheduleWork(
+    std::function<void(jsi::Runtime &)> callback) const {
+  if (enableYielding_) {
+    shouldYield_ = true;
+    runtimeExecutor_(
+        [this, callback = std::move(callback)](jsi::Runtime &runtime) {
+          shouldYield_ = false;
+          callback(runtime);
+          startWorkLoop(runtime);
+        });
+  } else {
+    runtimeExecutor_([callback = std::move(callback)](jsi::Runtime &runtime) {
+      callback(runtime);
+    });
+  }
+}
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
@@ -29,40 +45,19 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     isCallbackScheduled_ = true;
     runtimeExecutor_([this](jsi::Runtime &runtime) {
       isCallbackScheduled_ = false;
-      auto previousPriority = currentPriority_;
-      while (!taskQueue_.empty()) {
-        auto topPriorityTask = taskQueue_.top();
-        auto now = now_();
-        auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
-
-        if (!didUserCallbackTimeout && shouldYield_) {
-          // This task hasn't expired and we need to yield.
-          break;
-        }
-        currentPriority_ = topPriorityTask->priority;
-        auto result = topPriorityTask->execute(runtime);
-
-        if (result.isObject() &&
-            result.getObject(runtime).isFunction(runtime)) {
-          topPriorityTask->callback =
-              result.getObject(runtime).getFunction(runtime);
-        } else {
-          taskQueue_.pop();
-        }
-      }
-      currentPriority_ = previousPriority;
+      startWorkLoop(runtime);
     });
   }
 
   return task;
 }
 
-void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
-  task->callback.reset();
-}
-
 bool RuntimeScheduler::getShouldYield() const {
   return shouldYield_;
+}
+
+void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
+  task->callback.reset();
 }
 
 SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const {
@@ -71,6 +66,36 @@ SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const {
 
 RuntimeSchedulerTimePoint RuntimeScheduler::now() const {
   return now_();
+}
+
+void RuntimeScheduler::setEnableYielding(bool enableYielding) {
+  enableYielding_ = enableYielding;
+}
+
+#pragma mark - Private
+
+void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
+  auto previousPriority = currentPriority_;
+  while (!taskQueue_.empty()) {
+    auto topPriorityTask = taskQueue_.top();
+    auto now = now_();
+    auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
+
+    if (!didUserCallbackTimeout && shouldYield_) {
+      // This task hasn't expired and we need to yield.
+      break;
+    }
+    currentPriority_ = topPriorityTask->priority;
+    auto result = topPriorityTask->execute(runtime);
+
+    if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+      topPriorityTask->callback =
+          result.getObject(runtime).getFunction(runtime);
+    } else {
+      taskQueue_.pop();
+    }
+  }
+  currentPriority_ = previousPriority;
 }
 
 } // namespace facebook::react

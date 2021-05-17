@@ -7,6 +7,8 @@
 
 package com.facebook.react.config;
 
+import com.facebook.proguard.annotations.DoNotStripAny;
+
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of RN. It
  * contains mainly flags for features that are either under active development and not ready for
@@ -14,6 +16,7 @@ package com.facebook.react.config;
  *
  * <p>These values are safe defaults and should not require manual changes.
  */
+@DoNotStripAny
 public class ReactFeatureFlags {
 
   /**
@@ -33,24 +36,8 @@ public class ReactFeatureFlags {
   /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
   public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
 
-  /*
-   * This feature flag enables logs for Fabric
-   */
+  /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
-
-  /**
-   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
-   * provided) to update the view properties. If {@code false}, then the generated {@code
-   * ...$$PropsSetter} class will be used instead.
-   */
-  public static boolean useViewManagerDelegates = false;
-
-  /**
-   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
-   * provided) to execute the view commands. If {@code false}, then {@code receiveCommand} method
-   * inside view manager will be called instead.
-   */
-  public static boolean useViewManagerDelegatesForCommands = false;
 
   /**
    * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
@@ -73,8 +60,8 @@ public class ReactFeatureFlags {
   /** Enables JS Responder in Fabric */
   public static boolean enableJSResponder = false;
 
-  /** Enables MapBuffer Serialization */
-  public static boolean mapBufferSerializationEnabled = false;
+  /** Feature flag to configure eager initialization of MapBuffer So file */
+  public static boolean enableEagerInitializeMapBufferSoFile = false;
 
   /** An interface used to compute flags on demand. */
   public interface FlagProvider {
@@ -86,6 +73,17 @@ public class ReactFeatureFlags {
 
   public static void setEnableRuntimeExecutorFlushingFlagProvider(FlagProvider provider) {
     enableRuntimeExecutorFlushingProvider = provider;
+  }
+
+  private static boolean mapBufferSerializationEnabled = false;
+
+  /** Enables or disables MapBuffer Serialization */
+  public static void setMapBufferSerializationEnabled(boolean enabled) {
+    mapBufferSerializationEnabled = enabled;
+  }
+
+  public static boolean isMapBufferSerializationEnabled() {
+    return mapBufferSerializationEnabled;
   }
 
   public static boolean enableRuntimeExecutorFlushing() {

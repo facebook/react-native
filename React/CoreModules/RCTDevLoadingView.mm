@@ -34,7 +34,6 @@ using namespace facebook::react;
   dispatch_block_t _initialMessageBlock;
 }
 
-@synthesize bridge = _bridge;
 @synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
@@ -62,15 +61,6 @@ RCT_EXPORT_MODULE()
 + (BOOL)requiresMainQueueSetup
 {
   return YES;
-}
-
-- (void)setBundleManager:(RCTBundleManager *)bundleManager
-{
-  _bundleManager = bundleManager;
-
-  if (_bridge.loading) {
-    [self showWithURL:bundleManager.bundleURL];
-  }
 }
 
 - (void)clearInitialMessageDelay

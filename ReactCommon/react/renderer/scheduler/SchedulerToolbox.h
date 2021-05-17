@@ -13,6 +13,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/leakchecker/LeakChecker.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
@@ -41,6 +42,8 @@ struct SchedulerToolbox final {
    * Represents running JavaScript VM and associated execution queue.
    */
   RuntimeExecutor runtimeExecutor;
+
+  std::shared_ptr<RuntimeScheduler> runtimeScheduler;
 
   /*
    * Represent connections with a platform-specific UI run loops.

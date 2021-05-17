@@ -48,6 +48,11 @@ RootShadowNode::Unshared RootShadowNode::clone(
       ShadowNodeFragment{
           /* .props = */ props,
       });
+
+  if (layoutConstraints != getConcreteProps().layoutConstraints) {
+    newRootShadowNode->dirtyLayout();
+  }
+
   return newRootShadowNode;
 }
 
