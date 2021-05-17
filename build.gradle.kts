@@ -41,7 +41,6 @@ allprojects {
         jcenter {
           content {
             includeModule("com.facebook.yoga", "proguard-annotations")
-            includeModule("com.facebook.fbjni", "fbjni-java-only")
             includeModule("com.facebook.fresco", "stetho")
           }
         }
