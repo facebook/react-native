@@ -10,6 +10,9 @@
 
 'use strict';
 
+const ExceptionsManager = require('../ExceptionsManager');
+const NativeExceptionsManager = require('../NativeExceptionsManager').default;
+const ReactFiberErrorDialog = require('../ReactFiberErrorDialog').default;
 const fs = require('fs');
 const path = require('path');
 
@@ -23,10 +26,8 @@ const capturedErrorDefaults = {
 };
 
 describe('ExceptionsManager', () => {
-  let ReactFiberErrorDialog,
-    ExceptionsManager,
-    NativeExceptionsManager,
-    nativeReportException;
+  let nativeReportException;
+
   beforeEach(() => {
     jest.resetModules();
     jest.mock('../NativeExceptionsManager', () => {
@@ -46,11 +47,8 @@ describe('ExceptionsManager', () => {
           return {stack};
         },
     );
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    ReactFiberErrorDialog = require('../ReactFiberErrorDialog');
-    NativeExceptionsManager = require('../NativeExceptionsManager').default;
+    jest.spyOn(console, 'error').mockReturnValue(undefined);
     nativeReportException = NativeExceptionsManager.reportException;
-    ExceptionsManager = require('../ExceptionsManager');
   });
 
   afterEach(() => {
