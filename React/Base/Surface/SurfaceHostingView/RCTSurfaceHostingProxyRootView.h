@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTRootView.h>
 
@@ -30,8 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 @property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
 @property (nonatomic, weak) UIViewController *reactViewController;
-@property (nonatomic, strong, readonly) RCTUIView *contentView; // TODO(macOS ISS#2323203)
-@property (nonatomic, strong) RCTUIView *loadingView; // TODO(macOS ISS#2323203)
+@property (nonatomic, strong, readonly) RCTUIView *contentView; // TODO(macOS GH#774)
+@property (nonatomic, strong) RCTUIView *loadingView; // TODO(macOS GH#774)
 @property (nonatomic, assign) BOOL passThroughTouches;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;

@@ -92,7 +92,7 @@ function focusTextInput(textField: ?ComponentRef) {
     focusInput(textField);
     if (
       Platform.OS === 'ios' ||
-      Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+      Platform.OS === 'macos' /* TODO(macOS GH#774) */
     ) {
       // This isn't necessarily a single line text input
       // But commands don't actually care as long as the thing being passed in
@@ -126,7 +126,7 @@ function blurTextInput(textField: ?ComponentRef) {
     blurInput(textField);
     if (
       Platform.OS === 'ios' ||
-      Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+      Platform.OS === 'macos' /* TODO(macOS GH#774) */
     ) {
       // This isn't necessarily a single line text input
       // But commands don't actually care as long as the thing being passed in

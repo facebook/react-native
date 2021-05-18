@@ -166,7 +166,7 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
   return font;
 }
 
-static NSArray<NSString *> *fontNamesForFamilyName(NSString *familyName) // [TODO(macOS ISS#2323203)
+static NSArray<NSString *> *fontNamesForFamilyName(NSString *familyName) // [TODO(macOS GH#774)
 {
 #if !TARGET_OS_OSX
   return [UIFont fontNamesForFamilyName:familyName];
@@ -177,7 +177,7 @@ static NSArray<NSString *> *fontNamesForFamilyName(NSString *familyName) // [TOD
   }
   return fontNames;
 #endif
-} // ]TODO(macOS ISS#2323203)
+} // ]TODO(macOS GH#774)
 
 @implementation RCTConvert (RCTFont)
 
@@ -334,7 +334,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // Gracefully handle being given a font name rather than font family, for
   // example: "Helvetica Light Oblique" rather than just "Helvetica".
-  if (!didFindFont && fontNamesForFamilyName(familyName).count == 0) { // TODO(macOS ISS#2323203)
+  if (!didFindFont && fontNamesForFamilyName(familyName).count == 0) { // TODO(macOS GH#774)
     font = [UIFont fontWithName:familyName size:fontSize];
     if (font) {
       // It's actually a font name, not a font family name,
@@ -361,7 +361,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // Get the closest font that matches the given weight for the fontFamily
   CGFloat closestWeight = INFINITY;
-  for (NSString *name in fontNamesForFamilyName(familyName)) { // TODO(macOS ISS#2323203)
+  for (NSString *name in fontNamesForFamilyName(familyName)) { // TODO(macOS GH#774)
     UIFont *match = [UIFont fontWithName:name size:fontSize];
     if (isItalic == isItalicFont(match) && isCondensed == isCondensedFont(match)) {
       CGFloat testWeight = weightOfFont(match);
@@ -375,7 +375,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
   // If we still don't have a match at least return the first font in the fontFamily
   // This is to support built-in font Zapfino and other custom single font families like Impact
   if (!font) {
-    NSArray *names = fontNamesForFamilyName(familyName); // TODO(macOS ISS#2323203)
+    NSArray *names = fontNamesForFamilyName(familyName); // TODO(macOS GH#774)
     if (names.count > 0) {
       font = [UIFont fontWithName:names[0] size:fontSize];
     }

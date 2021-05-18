@@ -28,10 +28,10 @@ import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {
   LayoutEvent,
-  MouseEvent, // TODO(macOS ISS#2323203)
+  MouseEvent, // TODO(macOS GH#774)
   PressEvent,
 } from '../../Types/CoreEventTypes';
-import type {DraggedTypesType} from '../View/DraggedType'; // TODO(macOS ISS#2323203)
+import type {DraggedTypesType} from '../View/DraggedType'; // TODO(macOS GH#774)
 import View from '../View/View';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
@@ -137,7 +137,7 @@ type Props = $ReadOnly<{|
    */
   testOnly_pressed?: ?boolean,
 
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   acceptsFirstMouse?: ?boolean,
   enableFocusRing?: ?boolean,
   tooltip?: ?string,
@@ -147,7 +147,7 @@ type Props = $ReadOnly<{|
   onDragLeave?: (event: MouseEvent) => void,
   onDrop?: (event: MouseEvent) => void,
   draggedTypes?: ?DraggedTypesType,
-  // ]TODO(macOS ISS#2323203)
+  // ]TODO(macOS GH#774)
 |}>;
 
 /**
@@ -156,8 +156,8 @@ type Props = $ReadOnly<{|
  */
 function Pressable(props: Props, forwardedRef): React.Node {
   const {
-    acceptsFirstMouse, // [TODO(macOS ISS#2323203)
-    enableFocusRing, // ]TODO(macOS ISS#2323203)
+    acceptsFirstMouse, // [TODO(macOS GH#774)
+    enableFocusRing, // ]TODO(macOS GH#774)
     accessible,
     android_disableSound,
     android_ripple,
@@ -234,8 +234,8 @@ function Pressable(props: Props, forwardedRef): React.Node {
       {...restProps}
       {...eventHandlers}
       {...android_rippleConfig?.viewProps}
-      acceptsFirstMouse={acceptsFirstMouse !== false && !disabled} // [TODO(macOS ISS#2323203)
-      enableFocusRing={enableFocusRing !== false && !disabled} // ]TODO(macOS ISS#2323203)
+      acceptsFirstMouse={acceptsFirstMouse !== false && !disabled} // [TODO(macOS GH#774)
+      enableFocusRing={enableFocusRing !== false && !disabled} // ]TODO(macOS GH#774)
       accessible={accessible !== false}
       focusable={focusable !== false}
       hitSlop={hitSlop}

@@ -37,7 +37,7 @@ function processTransform(
   if (
     Platform.OS === 'android' ||
     Platform.OS === 'ios' ||
-    Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+    Platform.OS === 'macos' /* TODO(macOS GH#774) */
   ) {
     return transform;
   }

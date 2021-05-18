@@ -10,11 +10,11 @@
 #import <React/RCTRootView.h>
 #import <React/RCTViewManager.h>
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import "AppDelegate.h"
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 #import "../../RNTester-macOS/AppDelegate.h"
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @interface UpdatePropertiesExampleViewManager : RCTViewManager
 
@@ -24,7 +24,7 @@
 
 RCT_EXPORT_MODULE();
 
-- (RCTUIView *)view // TODO(macOS ISS#2323203)
+- (RCTUIView *)view // TODO(macOS GH#774)
 {
   return [UpdatePropertiesExampleView new];
 }
@@ -34,11 +34,11 @@ RCT_EXPORT_MODULE();
 @implementation UpdatePropertiesExampleView
 {
   RCTRootView *_rootView;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIButton *_button;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   NSButton *_button;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   BOOL _beige;
 }
 
@@ -54,7 +54,7 @@ RCT_EXPORT_MODULE();
                                          moduleName:@"SetPropertiesExampleApp"
                                   initialProperties:@{@"color":@"beige"}];
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     _button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [_button setTitle:@"Native Button" forState:UIControlStateNormal];
     [_button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -63,12 +63,12 @@ RCT_EXPORT_MODULE();
     [_button addTarget:self
                 action:@selector(changeColor)
       forControlEvents:UIControlEventTouchUpInside];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     _button = [[NSButton alloc] init];
     [_button setTitle:@"Native Button"];
     [_button setTarget:self];
     [_button setAction:@selector(changeColor)];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
     [self addSubview:_button];
     [self addSubview:_rootView];
@@ -93,7 +93,7 @@ RCT_EXPORT_MODULE();
   [_rootView setAppProperties:@{@"color":_beige ? @"beige" : @"purple"}];
 }
 
-- (NSArray<RCTUIView<RCTComponent> *> *)reactSubviews // TODO(macOS ISS#2323203)
+- (NSArray<RCTUIView<RCTComponent> *> *)reactSubviews // TODO(macOS GH#774)
 {
   // this is to avoid unregistering our RCTRootView when the component is removed from RN hierarchy
   (void)[super reactSubviews];

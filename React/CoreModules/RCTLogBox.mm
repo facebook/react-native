@@ -26,7 +26,7 @@
 
 #if RCT_DEV_MENU
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @interface RCTLogBoxWindow : UIWindow // TODO(OSS Candidate ISS#2710739) Renamed from RCTLogBoxView to RCTLogBoxWindow
 @end
 
@@ -72,7 +72,7 @@
 
 @end
 
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 
 @interface RCTLogBoxWindow : NSWindow
 @end
@@ -137,7 +137,7 @@
 
 @end
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @interface RCTLogBox () <NativeLogBoxSpec>
 @end

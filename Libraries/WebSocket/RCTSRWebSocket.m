@@ -14,10 +14,10 @@
 //   limitations under the License.
 //
 
-#import <TargetConditionals.h> // [TODO(macOS ISS#2323203)
+#import <TargetConditionals.h> // [TODO(macOS GH#774)
 #if !TARGET_OS_OSX
 #import <Endian.h>
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 #import <React/RCTSRWebSocket.h>
 
 #import <Availability.h>

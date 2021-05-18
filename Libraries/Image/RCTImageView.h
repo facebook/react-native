@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 #import <UIKit/UIKit.h>
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
     UIImageRenderingModeAlwaysOriginal,
     UIImageRenderingModeAlwaysTemplate,
 };
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 #import <React/RCTView.h>
 #import <React/RCTResizeMode.h>
 
@@ -31,7 +31,7 @@ typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
 @property (nonatomic, assign) CGFloat blurRadius;
 @property (nonatomic, assign) RCTResizeMode resizeMode;
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 @property (nonatomic, copy) NSColor *tintColor;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 @end

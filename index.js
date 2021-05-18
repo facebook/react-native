@@ -15,7 +15,7 @@ import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/A
 import typeof Button from './Libraries/Components/Button';
 import typeof CheckBox from './Libraries/Components/CheckBox/CheckBox';
 import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
-import typeof DatePickerMacOS from './Libraries/Components/DatePickerMacOS/DatePickerMacOS'; // TODO(macOS ISS#2323203)
+import typeof DatePickerMacOS from './Libraries/Components/DatePickerMacOS/DatePickerMacOS'; // TODO(macOS GH#774)
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof FlatList from './Libraries/Lists/FlatList';
 import typeof Image from './Libraries/Image/Image';
@@ -49,7 +49,7 @@ import typeof VirtualizedList from './Libraries/Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionList';
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
 import typeof Alert from './Libraries/Alert/Alert';
-import typeof AlertMacOS from './Libraries/Alert/AlertMacOS'; // TODO(macOS ISS#2323203)
+import typeof AlertMacOS from './Libraries/Alert/AlertMacOS'; // TODO(macOS GH#774)
 import typeof Animated from './Libraries/Animated/src/Animated';
 import typeof Appearance from './Libraries/Utilities/Appearance';
 import typeof AppRegistry from './Libraries/ReactNative/AppRegistry';
@@ -98,7 +98,7 @@ import typeof Platform from './Libraries/Utilities/Platform';
 import typeof processColor from './Libraries/StyleSheet/processColor';
 import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
 import typeof {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
-import typeof {DynamicColorMacOS} from './Libraries/StyleSheet/PlatformColorValueTypesMacOS'; // TODO(macOS ISS#2323203)
+import typeof {DynamicColorMacOS} from './Libraries/StyleSheet/PlatformColorValueTypesMacOS'; // TODO(macOS GH#774)
 import typeof {ColorWithSystemEffectMacOS} from './Libraries/StyleSheet/PlatformColorValueTypesMacOS'; // TODO(macOS GH#750)
 import typeof {ColorAndroid} from './Libraries/StyleSheet/PlatformColorValueTypesAndroid';
 import typeof RootTagContext from './Libraries/ReactNative/RootTagContext';
@@ -143,7 +143,7 @@ module.exports = {
     );
     return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   get DatePickerMacOS(): DatePickerMacOS {
     warnOnce(
       'DatePickerMacOS-deprecated',
@@ -152,7 +152,7 @@ module.exports = {
         'See https://github.com/microsoft/react-native-macos/issues/389',
     );
     return require('./Libraries/Components/DatePickerMacOS/DatePickerMacOS');
-  }, // ]TODO(macOS ISS#2323203)
+  }, // ]TODO(macOS GH#774)
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
   },
@@ -296,7 +296,7 @@ module.exports = {
   get Alert(): Alert {
     return require('./Libraries/Alert/Alert');
   },
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   get AlertMacOS(): AlertMacOS {
     warnOnce(
       'AlertMacOS-deprecated',
@@ -305,7 +305,7 @@ module.exports = {
         'See https://github.com/microsoft/react-native-macos/issues/354',
     );
     return require('./Libraries/Alert/AlertMacOS');
-  }, // ]TODO(macOS ISS#2323203)
+  }, // ]TODO(macOS GH#774)
   get Animated(): Animated {
     return require('./Libraries/Animated/src/Animated');
   },
@@ -497,11 +497,11 @@ module.exports = {
     return require('./Libraries/StyleSheet/PlatformColorValueTypesIOS')
       .DynamicColorIOS;
   },
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   get DynamicColorMacOS(): DynamicColorMacOS {
     return require('./Libraries/StyleSheet/PlatformColorValueTypesMacOS')
       .DynamicColorMacOS;
-  }, // [TODO(macOS ISS#2323203)
+  }, // [TODO(macOS GH#774)
   // [TODO(macOS GH#750)
   get ColorWithSystemEffectMacOS(): ColorWithSystemEffectMacOS {
     return require('./Libraries/StyleSheet/PlatformColorValueTypesMacOS')

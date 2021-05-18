@@ -14,7 +14,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
-#import <React/RCTBundleURLProvider.h> // TODO(macOS ISS#2323203)
+#import <React/RCTBundleURLProvider.h> // TODO(macOS GH#774)
 #import <React/RCTImageLoader.h> // TODO(OSS Candidate ISS#2710739)
 
 #import "FBSnapshotTestController.h"
@@ -62,7 +62,7 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);
 
-  // TODO(macOS ISS#2323203): uncomment to record snapshot images
+  // TODO(macOS GH#774): uncomment to record snapshot images
 //  referenceDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
   // Search for `_runner.recordMode = ` and change instances to YES
 
@@ -93,8 +93,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (NSURL *)defaultScriptURL
 {
   if (getenv("CI_USE_PACKAGER") || _useBundler) {
-    NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"] ?: @""; // TODO(macOS ISS#2323203)
-    return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@%@.bundle?platform=%@&dev=true", bundlePrefix, _appPath, kRCTPlatformName]]; // TODO(macOS ISS#2323203)
+    NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"] ?: @""; // TODO(macOS GH#774)
+    return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@%@.bundle?platform=%@&dev=true", bundlePrefix, _appPath, kRCTPlatformName]]; // TODO(macOS GH#774)
   } else {
     return [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
   }
@@ -178,10 +178,10 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     [bridge.devSettings setIsDebuggingRemotely:_useJSDebugger];
     batchedBridge = [bridge batchedBridge];
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     UIViewController *vc = RCTSharedApplication().delegate.window.rootViewController;
     vc.view = [UIView new];
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
     RCTTestModule *testModule = [bridge moduleForClass:[RCTTestModule class]];
     RCTAssert(_testController != nil, @"_testController should not be nil");
@@ -201,9 +201,9 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
       rootTag = rootView.reactTag;
       testModule.view = rootView;
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
       [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
       if (configurationBlock) {
         configurationBlock(rootView);
@@ -232,7 +232,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
       }
     });
 
-#if RCT_DEV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if RCT_DEV && !TARGET_OS_OSX // TODO(macOS GH#774)
     NSArray<UIView *> *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
       return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];
     }]];

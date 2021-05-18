@@ -51,7 +51,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   // there will be only one driver per mapping so all code code should be optimized around that.
   NSMutableDictionary<NSString *, NSMutableArray<RCTEventAnimation *> *> *_eventDrivers;
   NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
-  RCTPlatformDisplayLink *_displayLink; // TODO(macOS ISS#2323203)
+  RCTPlatformDisplayLink *_displayLink; // TODO(macOS GH#774)
 }
 
 - (instancetype)initWithBridge:(nonnull RCTBridge *)bridge
@@ -412,7 +412,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
 - (void)startAnimationLoopIfNeeded
 {
   if (!_displayLink && _activeAnimations.count > 0) {
-    _displayLink = [RCTPlatformDisplayLink displayLinkWithTarget:self selector:@selector(stepAnimations:)]; // TODO(macOS ISS#2323203)
+    _displayLink = [RCTPlatformDisplayLink displayLinkWithTarget:self selector:@selector(stepAnimations:)]; // TODO(macOS GH#774)
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
   }
 }
@@ -432,7 +432,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   }
 }
 
-- (void)stepAnimations:(RCTPlatformDisplayLink *)displaylink // TODO(macOS ISS#2323203)
+- (void)stepAnimations:(RCTPlatformDisplayLink *)displaylink // TODO(macOS GH#774)
 {
   NSTimeInterval time = displaylink.timestamp;
   for (id<RCTAnimationDriver> animationDriver in _activeAnimations) {

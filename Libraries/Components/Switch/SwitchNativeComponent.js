@@ -12,7 +12,7 @@
 
 import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {ProcessedColorValue} from '../../StyleSheet/processColor'; // TODO(macOS ISS#2323203)
+import type {ProcessedColorValue} from '../../StyleSheet/processColor'; // TODO(macOS GH#774)
 import type {ViewProps} from '../View/ViewPropTypes';
 import * as React from 'react';
 
@@ -30,14 +30,14 @@ type NativeProps = $ReadOnly<{|
   // Props
   disabled?: WithDefault<boolean, false>,
   value?: WithDefault<boolean, false>,
-  tintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  onTintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  thumbTintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  tintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
+  onTintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
+  thumbTintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
 
   // Deprecated props
-  thumbColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  trackColorForFalse?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
-  trackColorForTrue?: ?(ColorValue | ProcessedColorValue), // TODO(macOS ISS#2323203)
+  thumbColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
+  trackColorForFalse?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
+  trackColorForTrue?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
 
   // Events
   onChange?: ?BubblingEventHandler<SwitchChangeEvent>,

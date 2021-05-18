@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
-#import <React/RCTPlatformDisplayLink.h> // TODO(macOS ISS#2323203)
+#import <React/RCTPlatformDisplayLink.h> // TODO(macOS GH#774)
 
 @protocol RCTValueAnimatedNodeObserver;
 
@@ -18,7 +18,7 @@
 
 - (void)updateAnimations;
 
-- (void)stepAnimations:(nonnull RCTPlatformDisplayLink *)displaylink; // TODO(macOS ISS#2323203)
+- (void)stepAnimations:(nonnull RCTPlatformDisplayLink *)displaylink; // TODO(macOS GH#774)
 
 - (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag;
 

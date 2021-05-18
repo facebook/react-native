@@ -47,7 +47,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
   renderItem?: (info: {
     item: Item,
     index: number,
-    isSelected?: boolean, // TODO(macOS ISS#2323203)
+    isSelected?: boolean, // TODO(macOS GH#774)
     section: SectionT,
     separators: {
       highlight: () => void,

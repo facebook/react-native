@@ -19,7 +19,7 @@
 #import <React/RCTModalHostViewController.h>
 #endif // !TARGET_OS_OSX
 #import <React/RCTUtils.h>
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import "CoreModulesPlugins.h"
 
@@ -31,13 +31,13 @@ using namespace facebook::react;
 #if RCT_DEV | RCT_ENABLE_LOADING_VIEW
 
 @implementation RCTDevLoadingView {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIWindow *_window;
   UILabel *_label;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   NSWindow *_window;
   NSTextField *_label;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   NSDate *_showDate;
 }
 
@@ -82,7 +82,7 @@ RCT_EXPORT_MODULE()
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_showDate = [NSDate date];
     if (!self->_window && !RCTRunningInTestEnvironment()) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
 
       if (@available(iOS 11.0, *)) {
@@ -105,7 +105,7 @@ RCT_EXPORT_MODULE()
 
       self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0 weight:UIFontWeightRegular];
       self->_label.textAlignment = NSTextAlignmentCenter;
-#elif TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#elif TARGET_OS_OSX // [TODO(macOS GH#774)
       NSRect screenFrame = [NSScreen mainScreen].visibleFrame;
       self->_window = [[NSPanel alloc] initWithContentRect:NSMakeRect(screenFrame.origin.x + round((screenFrame.size.width - 375) / 2), screenFrame.size.height - 20, 375, 19)
                                                  styleMask:NSWindowStyleMaskBorderless
@@ -123,20 +123,20 @@ RCT_EXPORT_MODULE()
       label.layer.cornerRadius = label.frame.size.height / 3;
       self->_label = label;
       [[self->_window contentView] addSubview:label];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
     }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     self->_label.text = message;
     self->_label.textColor = color;
     self->_window.backgroundColor = backgroundColor;
     self->_window.hidden = NO;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     self->_label.stringValue = message;
     self->_label.textColor = color;
     self->_label.backgroundColor = backgroundColor;
     [self->_window orderFront:nil];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
@@ -166,7 +166,7 @@ RCT_EXPORT_METHOD(hide)
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
     NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     CGRect windowFrame = self->_window.frame;
     [UIView animateWithDuration:0.25
         delay:delay
@@ -179,7 +179,7 @@ RCT_EXPORT_METHOD(hide)
           self->_window.hidden = YES;
           self->_window = nil;
         }];
-#elif TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#elif TARGET_OS_OSX // [TODO(macOS GH#774)
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
       [NSAnimationContext runAnimationGroup:^(__unused NSAnimationContext *context) {
         self->_window.animator.alphaValue = 0.0;
@@ -188,14 +188,14 @@ RCT_EXPORT_METHOD(hide)
         self->_window = nil;
       }];
     });
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   });
 }
 
 - (void)showWithURL:(NSURL *)URL
 {
-  RCTUIColor *color; // TODO(macOS ISS#2323203)
-  RCTUIColor *backgroundColor; // TODO(macOS ISS#2323203)
+  RCTUIColor *color; // TODO(macOS GH#774)
+  RCTUIColor *backgroundColor; // TODO(macOS GH#774)
   NSString *message;
   if (URL.fileURL) {
     // If dev mode is not enabled, we don't want to show this kind of notification
@@ -220,11 +220,11 @@ RCT_EXPORT_METHOD(hide)
     return;
   }
   dispatch_async(dispatch_get_main_queue(), ^{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     self->_label.text = [progress description];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     self->_label.stringValue = [progress description];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   });
 }
 

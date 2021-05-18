@@ -22,11 +22,11 @@
 // - The compile-time #ifdef's can't be used because an app compiled for iOS8 can still run on iOS9
 
 static BOOL isStreamTaskSupported() {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   return [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){9,0,0}];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   return [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){10,11,0}];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 @implementation RCTMultipartDataTask {

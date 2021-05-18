@@ -14,11 +14,11 @@ NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProvider
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
 
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 NSString *const kRCTPlatformName = @"ios";
 #else
 NSString *const kRCTPlatformName = @"macos";
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 // This option is no longer exposed in the dev menu UI.
@@ -191,7 +191,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
   // When we support only iOS 8 and above, use queryItems for a better API.
   NSString *query = [NSString stringWithFormat:@"platform=%@&dev=%@&minify=%@",
-                                               kRCTPlatformName, // TODO(macOS ISS#2323203)
+                                               kRCTPlatformName, // TODO(macOS GH#774)
                                                enableDev ? @"true" : @"false",
                                                enableMinification ? @"true" : @"false"];
   return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost query:query];

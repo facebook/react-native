@@ -13,7 +13,7 @@
 const React = require('react');
 
 const {PlatformColor, StyleSheet, Text, View} = require('react-native');
-import {Platform} from 'react-native'; // TODO(macOS ISS#2323203)
+import {Platform} from 'react-native'; // TODO(macOS GH#774)
 import {RNTesterThemeContext} from './RNTesterTheme';
 
 type Props = $ReadOnly<{|

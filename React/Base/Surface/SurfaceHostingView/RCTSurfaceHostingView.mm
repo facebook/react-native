@@ -22,8 +22,8 @@
 @end
 
 @implementation RCTSurfaceHostingView {
-  RCTUIView *_Nullable _activityIndicatorView; // TODO(macOS ISS#2323203)
-  RCTUIView *_Nullable _surfaceView; // TODO(macOS ISS#2323203)
+  RCTUIView *_Nullable _activityIndicatorView; // TODO(macOS GH#774)
+  RCTUIView *_Nullable _surfaceView; // TODO(macOS GH#774)
   RCTSurfaceStage _stage;
 }
 
@@ -99,11 +99,11 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 {
   if (RCTSurfaceStageIsPreparing(_stage)) {
     if (_activityIndicatorView) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
       return [_activityIndicatorView sizeThatFits:size];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
       return [_activityIndicatorView fittingSize];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
     }
 
     return CGSizeZero;
@@ -201,7 +201,7 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
 #pragma mark - UITraitCollection updates
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
@@ -212,18 +212,18 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
                     RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : self.traitCollection,
                   }];
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 #pragma mark - Private stuff
 
 - (void)_invalidateLayout
 {
   [self invalidateIntrinsicContentSize];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   [self.superview setNeedsLayout];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   [self.superview setNeedsLayout:YES];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)_updateViews

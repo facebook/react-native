@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTComponent.h>
 #import <React/RCTLayout.h>
@@ -15,7 +15,7 @@
 @class RCTRootShadowView;
 @class RCTSparseArray;
 
-typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry); // TODO(macOS ISS#2323203)
+typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry); // TODO(macOS GH#774)
 
 /**
  * ShadowView tree mirrors RCT view tree. Every node is highly stateful.

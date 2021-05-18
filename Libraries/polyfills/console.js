@@ -586,7 +586,7 @@ if (global.nativeLoggingHook) {
           // the condition
           if (methodName === 'assert') {
             if (!arguments[0] && originalConsole.hasOwnProperty('assert')) {
-              // TODO(macOS ISS#2323203)
+              // TODO(macOS GH#774)
               originalConsole.assert(...arguments);
             }
           } else {

@@ -12,11 +12,11 @@
 #import <React/RCTNativeAnimatedNodesManager.h>
 #import <React/RCTValueAnimatedNode.h>
 #import <React/RCTUIManager.h>
-#import <React/RCTPlatformDisplayLink.h> // TODO(macOS ISS#2323203)
+#import <React/RCTPlatformDisplayLink.h> // TODO(macOS GH#774)
 
 static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
 
-@interface RCTFakeDisplayLink : RCTPlatformDisplayLink // TODO(macOS ISS#2323203)
+@interface RCTFakeDisplayLink : RCTPlatformDisplayLink // TODO(macOS GH#774)
 
 @end
 

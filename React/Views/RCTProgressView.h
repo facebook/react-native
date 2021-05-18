@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// TODO(macOS ISS#2323203)
+// TODO(macOS GH#774)
 
 #import <React/RCTComponent.h>
 #import <React/RCTUIKit.h>

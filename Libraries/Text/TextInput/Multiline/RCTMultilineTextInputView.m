@@ -13,9 +13,9 @@
 
 @implementation RCTMultilineTextInputView
 {
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
   RCTUIScrollView *_scrollView;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   RCTUITextView *_backedTextInputView;
 }
 
@@ -27,7 +27,7 @@
 
     _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-#if TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // TODO(macOS GH#774)
     _scrollView = [[RCTUIScrollView alloc] initWithFrame:self.bounds]; // TODO(macOS ISS#3536887)
     _scrollView.backgroundColor = [RCTUIColor clearColor];
     _scrollView.drawsBackground = NO;
@@ -40,12 +40,12 @@
     _backedTextInputView.horizontallyResizable = YES;
     _backedTextInputView.textContainer.containerSize = NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX);
     _backedTextInputView.textContainer.widthTracksTextView = YES;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
     _backedTextInputView.textInputDelegate = self;
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     [self addSubview:_backedTextInputView];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     _scrollView.documentView = _backedTextInputView;
     _scrollView.contentView.postsBoundsChangedNotifications = YES;
     [self addSubview:_scrollView];
@@ -55,25 +55,25 @@
                                              selector:@selector(boundDidChange:)
                                                  name:NSViewBoundsDidChangeNotification
                                                object:_scrollView.contentView];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   }
 
   return self;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 - (id<RCTBackedTextInputViewProtocol>)backedTextInputView
 {
   return _backedTextInputView;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
 {
   [super setReactPaddingInsets:reactPaddingInsets];
@@ -89,7 +89,7 @@
   _scrollView.frame = UIEdgeInsetsInsetRect(self.bounds, reactBorderInsets);
   [self setNeedsLayout];
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 #pragma mark - UIScrollViewDelegate
 
@@ -127,7 +127,7 @@
   }
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 
 #pragma mark - Notification handling
 
@@ -143,6 +143,6 @@
   return _backedTextInputView.acceptsFirstResponder;
 }
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @end

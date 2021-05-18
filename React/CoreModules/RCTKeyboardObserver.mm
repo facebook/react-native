@@ -23,7 +23,7 @@ RCT_EXPORT_MODULE()
 
 - (void)startObserving
 {
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
 
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
@@ -96,7 +96,7 @@ NS_INLINE NSDictionary *RCTRectDictionaryValue(CGRect rect)
     @"height" : @(rect.size.height),
   };
 }
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 static NSString *RCTAnimationNameForCurve(UIViewAnimationCurve curve)
 {
   switch (curve) {
@@ -112,11 +112,11 @@ static NSString *RCTAnimationNameForCurve(UIViewAnimationCurve curve)
       return @"keyboard";
   }
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
 {
-#if TARGET_OS_TV || TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if TARGET_OS_TV || TARGET_OS_OSX // TODO(macOS GH#774)
   return @{};
 #else
   NSDictionary *userInfo = notification.userInfo;

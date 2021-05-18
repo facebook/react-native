@@ -31,11 +31,11 @@ export type StatusBarStyle = $Keys<{
   /**
    * Dark background, white texts and icons
    */
-  'light-content': ColorValue, // TODO(macOS ISS#2323203)
+  'light-content': ColorValue, // TODO(macOS GH#774)
   /**
    * Light background, dark texts and icons
    */
-  'dark-content': ColorValue, // TODO(macOS ISS#2323203)
+  'dark-content': ColorValue, // TODO(macOS GH#774)
   ...
 }>;
 

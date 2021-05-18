@@ -8,7 +8,7 @@
 #import <React/RCTComponent.h>
 #import <React/RCTEventDispatcher.h> // TODO(OSS Candidate ISS#2710739)
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 NS_ASSUME_NONNULL_BEGIN
 

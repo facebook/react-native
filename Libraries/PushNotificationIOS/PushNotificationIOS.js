@@ -11,7 +11,7 @@
 'use strict';
 
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-import {Platform} from 'react-native'; // TODO(macOS ISS#2323203)
+import {Platform} from 'react-native'; // TODO(macOS GH#774)
 import NativePushNotificationManagerIOS from './NativePushNotificationManagerIOS';
 const invariant = require('invariant');
 
@@ -429,7 +429,7 @@ class PushNotificationIOS {
       !this._isRemote ||
       !this._notificationId ||
       this._remoteNotificationCompleteCallbackCalled ||
-      Platform.OS === 'macos' // TODO(macOS ISS#2323203)
+      Platform.OS === 'macos' // TODO(macOS GH#774)
     ) {
       return;
     }

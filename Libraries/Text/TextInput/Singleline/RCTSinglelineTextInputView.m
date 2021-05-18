@@ -10,14 +10,14 @@
 #import <React/RCTBridge.h>
 
 #include <React/RCTUITextField.h>
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 #include <React/RCTUISecureTextField.h>
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @implementation RCTSinglelineTextInputView
 {
   RCTUITextField *_backedTextInputView;
-  BOOL _useSecureTextField; // TODO(macOS ISS#2323203)
+  BOOL _useSecureTextField; // TODO(macOS GH#774)
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -41,7 +41,7 @@
   return _backedTextInputView;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
 {
   [super setReactPaddingInsets:reactPaddingInsets];
@@ -87,6 +87,6 @@
     [self replaceSubview:previousTextField with:_backedTextInputView];
   }
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @end

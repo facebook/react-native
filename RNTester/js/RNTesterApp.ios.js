@@ -29,7 +29,7 @@ const {
   Platform, // TODO(OSS Candidate ISS#2710739)
   PlatformColor, // TODO(OSS Candidate ISS#2710739)
   DynamicColorIOS, // TODO(OSS Candidate ISS#2710739)
-  DynamicColorMacOS, // TODO(macOS ISS#2323203)
+  DynamicColorMacOS, // TODO(macOS GH#774)
   SafeAreaView,
   StyleSheet,
   Text,
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: PlatformColor('separatorColor'), // TODO(OSS Candidate ISS#2710739)
     ...Platform.select({
-      // [TODO(macOS ISS#2323203)
+      // [TODO(macOS GH#774)
       ios: {
         backgroundColor: PlatformColor('tertiarySystemBackgroundColor'),
       },
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
         backgroundColor: PlatformColor('windowBackgroundColor'),
       },
     }),
-    // ]TODO(macOS ISS#2323203)
+    // ]TODO(macOS GH#774)
   },
   header: {
     height: 40,
@@ -251,11 +251,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     color:
-      // [TODO(macOS ISS#2323203)
+      // [TODO(macOS GH#774)
       Platform.OS === 'macos'
         ? DynamicColorMacOS({light: 'black', dark: 'white'})
         : DynamicColorIOS({light: 'black', dark: 'white'}), // TODO(OSS Candidate ISS#2710739)
-    // ]TODO(macOS ISS#2323203)
+    // ]TODO(macOS GH#774)
   },
   exampleContainer: {
     flex: 1,

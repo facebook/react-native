@@ -22,12 +22,12 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     [self addTarget:self action:@selector(didChange) forControlEvents:UIControlEventValueChanged];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     self.target = self;
     self.action = @selector(didChange);
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
     _reactMinuteInterval = 1;
   }
   return self;
@@ -39,31 +39,31 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   if (_onChange) {
     _onChange(@{ @"timestamp":
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
                    @(self.date.timeIntervalSince1970 * 1000.0)
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
                    @(self.dateValue.timeIntervalSince1970 * 1000.0)
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
                  });
   }
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)setDatePickerMode:(UIDatePickerMode)datePickerMode
 {
   [super setDatePickerMode:datePickerMode];
   // We need to set minuteInterval after setting datePickerMode, otherwise minuteInterval is invalid in time mode.
   self.minuteInterval = _reactMinuteInterval;
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)setMinuteInterval:(NSInteger)minuteInterval
 {
   [super setMinuteInterval:minuteInterval];
   _reactMinuteInterval = minuteInterval;
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 @end

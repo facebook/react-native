@@ -11,15 +11,15 @@
 
 @interface RCTAlertController ()
 
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 @property (nonatomic, strong) UIWindow *alertWindow;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @end
 
 @implementation RCTAlertController
 
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 - (UIWindow *)alertWindow
 {
   if (_alertWindow == nil) {
@@ -35,6 +35,6 @@
   [self.alertWindow makeKeyAndVisible];
   [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @end

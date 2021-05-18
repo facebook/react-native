@@ -7,7 +7,7 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,17 +22,17 @@ typedef struct {
   } window, screen;
 } RCTDimensions;
 extern __attribute__((visibility("default")))
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 RCTDimensions RCTGetDimensions(CGFloat fontScale);
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 RCTDimensions RCTGetDimensions(RCTPlatformView *rootView);
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 // Get font size multiplier for font base size (Large) by content size category
 extern __attribute__((visibility("default"))) CGFloat RCTGetMultiplierForContentSizeCategory(
     UIContentSizeCategory category);
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 #ifdef __cplusplus
 }

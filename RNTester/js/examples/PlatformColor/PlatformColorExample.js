@@ -199,7 +199,7 @@ function FallbackColorsExample() {
   let color = {};
   if (
     Platform.OS === 'ios' ||
-    Platform.OS === 'macos' // TODO(macOS ISS#2323203)
+    Platform.OS === 'macos' // TODO(macOS GH#774)
   ) {
     color = {
       label: "PlatformColor('bogus', 'systemGreenColor')",
@@ -230,7 +230,7 @@ function FallbackColorsExample() {
 }
 
 function DynamicColorsExample() {
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   return Platform.OS === 'macos' ? (
     <View style={styles.column}>
       <View style={styles.row}>
@@ -264,7 +264,7 @@ function DynamicColorsExample() {
         />
       </View>
     </View>
-  ) : // ]TODO(macOS ISS#2323203)
+  ) : // ]TODO(macOS GH#774)
   Platform.OS === 'ios' ? (
     <View style={styles.column}>
       <View style={styles.row}>
@@ -341,10 +341,10 @@ function VariantColorsExample() {
             backgroundColor:
               Platform.OS === 'ios'
                 ? DynamicColorIOS({light: 'red', dark: 'blue'})
-                : // [TODO(macOS ISS#2323203)
+                : // [TODO(macOS GH#774)
                 Platform.OS === 'macos'
                 ? DynamicColorMacOS({light: 'red', dark: 'blue'})
-                : // ]TODO(macOS ISS#2323203)
+                : // ]TODO(macOS GH#774)
                   ColorAndroid('?attr/colorAccent'),
           }}
         />
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
   labelCell: {
     flex: 1,
     alignItems: 'stretch',
-    // TODO(macOS ISS#2323203)
+    // TODO(macOS GH#774)
     // Remove need to specify label color
   },
   colorCell: {flex: 0.25, alignItems: 'stretch'},

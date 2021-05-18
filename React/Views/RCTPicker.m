@@ -11,11 +11,11 @@
 #import "RCTUtils.h"
 
 @interface RCTPicker ()
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   <UIPickerViewDataSource, UIPickerViewDelegate, UIPickerViewAccessibilityDelegate>
 #else
   <NSComboBoxDataSource, NSComboBoxDelegate>
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 @end
 
 @implementation RCTPicker
@@ -23,17 +23,17 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     _color = [RCTUIColor blackColor]; // TODO(OSS Candidate ISS#2710739)
     _font = [UIFont systemFontOfSize:21]; // TODO: selected title default should be 23.5
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     _color = [NSColor labelColor];
     [self setFont:[NSFont systemFontOfSize:[NSFont systemFontSize]]];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
     _selectedIndex = NSNotFound;
     _textAlign = NSTextAlignmentCenter;
     self.delegate = self;
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
     self.controlSize = NSControlSizeRegular;
     self.editable = NO;
     self.drawsBackground = NO;
@@ -44,7 +44,7 @@
            animated:
                YES]; // Workaround for missing selection indicator lines (see
                      // https://stackoverflow.com/questions/39564660/uipickerview-selection-indicator-not-visible-in-ios10)
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   }
   return self;
 }
@@ -53,10 +53,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)setItems:(NSArray<NSDictionary *> *)items
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   _items = [items copy];
   [self setNeedsLayout];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   CGFloat maxHeight = 0.0;
   NSMutableParagraphStyle *mutableParagraphStyle = [[NSMutableParagraphStyle alloc] init];
   mutableParagraphStyle.alignment = _textAlign;
@@ -78,30 +78,30 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   self.itemHeight = maxHeight;
   _items = mutableItems.copy;
   self.needsLayout = YES;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)setSelectedIndex:(NSInteger)selectedIndex
 {
   if (_selectedIndex != selectedIndex) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     BOOL animated = _selectedIndex != NSNotFound; // Don't animate the initial value
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
     _selectedIndex = selectedIndex;
     dispatch_async(dispatch_get_main_queue(), ^{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
       [self selectRow:selectedIndex inComponent:0 animated:animated];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
       self.delegate = nil;
       [self selectItemAtIndex:selectedIndex];
       self.attributedStringValue = _items[selectedIndex][@"label"];
       self.delegate = self;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
     });
   }
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 
 #pragma mark - UIPickerViewDataSource protocol
 
@@ -155,7 +155,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
       didSelectRow:(NSInteger)row
        inComponent:(__unused NSInteger)component
 {
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
   [self didSelectRowAtIndex:row];
 }
 
@@ -198,12 +198,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   _selectedIndex = idx;
   if (_onChange && _items.count > (NSUInteger)idx) {
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
     _onChange(@{
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
       @"newIndex" : @(idx),
       @"newValue" : RCTNullIfNil(_items[idx][@"value"]),
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
     });
   }
 }

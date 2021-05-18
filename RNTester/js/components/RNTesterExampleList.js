@@ -42,7 +42,7 @@ type Props = {
 
 class RowComponent extends React.PureComponent<{
   item: Object,
-  isSelected?: ?boolean, // TODO(macOS ISS#2323203)
+  isSelected?: ?boolean, // TODO(macOS GH#774)
   onNavigate: Function,
   onPress?: Function,
   onShowUnderlay?: Function,
@@ -63,18 +63,18 @@ class RowComponent extends React.PureComponent<{
         {theme => {
           const rowStyle = this.props.isSelected
             ? styles.selectedRow
-            : styles.row; // TODO(macOS ISS#2323203)
+            : styles.row; // TODO(macOS GH#774)
           return (
             <TouchableHighlight
               onShowUnderlay={this.props.onShowUnderlay}
               onHideUnderlay={this.props.onHideUnderlay}
-              onAccessibilityAction={this._onPress} // TODO(macOS ISS#2323203)
-              focusable={false} // TODO(macOS ISS#2323203)
+              onAccessibilityAction={this._onPress} // TODO(macOS GH#774)
+              focusable={false} // TODO(macOS GH#774)
               onPress={this._onPress}>
               <View
                 style={[
                   {backgroundColor: theme.SystemBackgroundColor},
-                  rowStyle, // TODO(macOS ISS#2323203)
+                  rowStyle, // TODO(macOS GH#774)
                 ]}>
                 <Text style={[styles.rowTitleText, {color: theme.LabelColor}]}>
                   {item.module.title}
@@ -158,9 +158,9 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
                     sections={filteredSections}
                     renderItem={this._renderItem}
                     keyboardShouldPersistTaps="handled"
-                    focusable={true} // TODO(macOS ISS#2323203)
-                    onSelectionEntered={this._handleOnSelectionEntered} // TODO(macOS ISS#2323203)
-                    enableSelectionOnKeyPress={true} // TODO(macOS ISS#2323203)
+                    focusable={true} // TODO(macOS GH#774)
+                    onSelectionEntered={this._handleOnSelectionEntered} // TODO(macOS GH#774)
+                    enableSelectionOnKeyPress={true} // TODO(macOS GH#774)
                     automaticallyAdjustContentInsets={false}
                     keyboardDismissMode="on-drag"
                     renderSectionHeader={renderSectionHeader}
@@ -168,7 +168,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
                     //  macos: 'transparent',
                     //  ios: 'transparent',
                     //  default: undefined,
-                    // })} // TODO(macOS ISS#2323203)
+                    // })} // TODO(macOS GH#774)
                   />
                 )}
               />
@@ -179,19 +179,19 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     );
   }
 
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   _handleOnSelectionEntered = (item: any) => {
     const {key} = item;
     this.props.onNavigate(RNTesterActions.ExampleAction(key));
   };
-  // ]TODO(macOS ISS#2323203)
+  // ]TODO(macOS GH#774)
 
   _renderItem = (
-    {item, isSelected, separators}, // TODO(macOS ISS#2323203)
+    {item, isSelected, separators}, // TODO(macOS GH#774)
   ) => (
     <RowComponent
       item={item}
-      isSelected={isSelected} // TODO(macOS ISS#2323203)
+      isSelected={isSelected} // TODO(macOS GH#774)
       onNavigate={this.props.onNavigate}
       onShowUnderlay={separators.highlight}
       onHideUnderlay={separators.unhighlight}
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   },
   list: {
     ...Platform.select({
-      // [TODO(macOS ISS#2323203)
+      // [TODO(macOS GH#774)
       macos: {
         backgroundColor: PlatformColor('controlBackgroundColor'),
       },
@@ -259,14 +259,14 @@ const styles = StyleSheet.create({
         backgroundColor: PlatformColor('systemBackgroundColor'),
       },
       default: {
-        // ]TODO(macOS ISS#2323203)
+        // ]TODO(macOS GH#774)
         backgroundColor: '#eeeeee',
-      }, // [TODO(macOS ISS#2323203)
-    }), // ]TODO(macOS ISS#2323203)
+      }, // [TODO(macOS GH#774)
+    }), // ]TODO(macOS GH#774)
   },
   sectionHeader: {
     ...Platform.select({
-      // [TODO(macOS ISS#2323203)
+      // [TODO(macOS GH#774)
       macos: {
         backgroundColor: {
           semantic: 'unemphasizedSelectedContentBackgroundColor',
@@ -280,11 +280,11 @@ const styles = StyleSheet.create({
         color: PlatformColor('secondaryLabelColor'),
       },
       default: {
-        // ]TODO(macOS ISS#2323203)
+        // ]TODO(macOS GH#774)
         backgroundColor: '#eeeeee',
         color: 'black',
-      }, // [TODO(macOS ISS#2323203)
-    }), // ]TODO(macOS ISS#2323203)
+      }, // [TODO(macOS GH#774)
+    }), // ]TODO(macOS GH#774)
     padding: 5,
     fontWeight: '500',
     fontSize: 11,
@@ -295,17 +295,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   selectedRow: {
-    // [TODO(macOS ISS#2323203)
+    // [TODO(macOS GH#774)
     backgroundColor: '#DDECF8',
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingVertical: 8,
-  }, // ]TODO(macOS ISS#2323203)
+  }, // ]TODO(macOS GH#774)
   separator: {
     height: StyleSheet.hairlineWidth,
     marginLeft: 15,
     ...Platform.select({
-      // [TODO(macOS ISS#2323203)
+      // [TODO(macOS GH#774)
       macos: {
         backgroundColor: PlatformColor('separatorColor'),
       },
@@ -313,26 +313,26 @@ const styles = StyleSheet.create({
         backgroundColor: PlatformColor('separatorColor'),
       },
       default: {
-        // ]TODO(macOS ISS#2323203)
+        // ]TODO(macOS GH#774)
         backgroundColor: '#bbbbbb',
-      }, // [TODO(macOS ISS#2323203)
-    }), // ]TODO(macOS ISS#2323203)
+      }, // [TODO(macOS GH#774)
+    }), // ]TODO(macOS GH#774)
   },
   separatorHighlighted: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: 'rgb(217, 217, 217)',
   },
   sectionListContentContainer: Platform.select({
-    // [TODO(macOS ISS#2323203)
+    // [TODO(macOS GH#774)
     macos: {backgroundColor: PlatformColor('separatorColor')},
     ios: {backgroundColor: PlatformColor('separatorColor')},
     default: {backgroundColor: 'white'},
-  }), // ]TODO(macOS ISS#2323203)
+  }), // ]TODO(macOS GH#774)
   rowTitleText: {
     fontSize: 17,
     fontWeight: '500',
     ...Platform.select({
-      // [TODO(macOS ISS#2323203)
+      // [TODO(macOS GH#774)
       macos: {
         color: PlatformColor('controlTextColor'),
       },
@@ -340,10 +340,10 @@ const styles = StyleSheet.create({
         color: PlatformColor('labelColor'),
       },
       default: {
-        // ]TODO(macOS ISS#2323203)
+        // ]TODO(macOS GH#774)
         color: 'black',
-      }, // [TODO(macOS ISS#2323203)
-    }), // ]TODO(macOS ISS#2323203)
+      }, // [TODO(macOS GH#774)
+    }), // ]TODO(macOS GH#774)
   },
   rowDetailText: {
     fontSize: 15,

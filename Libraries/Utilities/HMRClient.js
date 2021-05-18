@@ -171,7 +171,7 @@ Try the following to fix the issue:
 
       if (
         Platform.OS === 'ios' ||
-        Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+        Platform.OS === 'macos' /* TODO(macOS GH#774) */
       ) {
         error += `
 - Ensure that the Metro server URL is correctly set in AppDelegate`;
@@ -295,7 +295,7 @@ function flushEarlyLogs(client) {
 function dismissRedbox() {
   if (
     (Platform.OS === 'ios' ||
-      Platform.OS === 'macos') /* TODO(macOS ISS#2323203) */ &&
+      Platform.OS === 'macos') /* TODO(macOS GH#774) */ &&
     NativeRedBox != null &&
     NativeRedBox.dismiss != null
   ) {

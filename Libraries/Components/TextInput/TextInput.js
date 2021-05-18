@@ -49,7 +49,7 @@ if (Platform.OS === 'android') {
     .Commands;
 } else if (
   Platform.OS === 'ios' ||
-  Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+  Platform.OS === 'macos' /* TODO(macOS GH#774) */
 ) {
   RCTSinglelineTextInputView = require('./RCTSingelineTextInputNativeComponent')
     .default;
@@ -138,7 +138,7 @@ type DataDetectorTypesType =
   // iOS-only
   | 'none'
   | 'all'
-  // macOS-only // [TODO(macOS ISS#2323203)
+  // macOS-only // [TODO(macOS GH#774)
   | 'ortography'
   | 'spelling'
   | 'grammar'
@@ -147,7 +147,7 @@ type DataDetectorTypesType =
   | 'replacement'
   | 'correction'
   | 'regularExpression'
-  | 'transitInformation'; // ]TODO(macOS ISS#2323203)
+  | 'transitInformation'; // ]TODO(macOS GH#774)
 
 export type KeyboardType =
   // Cross Platform
@@ -1095,7 +1095,7 @@ function InternalTextInput(props: Props): React.Node {
 
   if (
     Platform.OS === 'ios' ||
-    Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+    Platform.OS === 'macos' /* TODO(macOS GH#774) */
   ) {
     const RCTTextInputView = props.multiline
       ? RCTMultilineTextInputView
@@ -1169,12 +1169,12 @@ function InternalTextInput(props: Props): React.Node {
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={_onPress}
-        onFocus={_onFocus} // TODO(macOS ISS#2323203)
-        onBlur={_onBlur} // TODO(macOS ISS#2323203)
+        onFocus={_onFocus} // TODO(macOS GH#774)
+        onBlur={_onBlur} // TODO(macOS GH#774)
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
-        accessibilityHint={props.accessibilityHint} // TODO(macOS ISS#2323203)
+        accessibilityHint={props.accessibilityHint} // TODO(macOS GH#774)
         accessibilityState={props.accessibilityState}
         nativeID={props.nativeID}
         testID={props.testID}

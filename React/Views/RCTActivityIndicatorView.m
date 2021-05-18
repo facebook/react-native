@@ -7,18 +7,18 @@
 
 #import "RCTActivityIndicatorView.h"
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 #import <QuartzCore/QuartzCore.h>
 
 @interface RCTActivityIndicatorView ()
 @property (nonatomic, readwrite, getter=isAnimating) BOOL animating;
 @end
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @implementation RCTActivityIndicatorView {
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
@@ -110,7 +110,7 @@
   return !self.displayedWhenStopped;
 }
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 - (void)setHidden:(BOOL)hidden
 {

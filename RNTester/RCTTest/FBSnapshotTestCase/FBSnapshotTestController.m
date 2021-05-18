@@ -9,7 +9,7 @@
 
 #import <objc/runtime.h>
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import "UIImage+Compare.h"
 #import "UIImage+Diff.h"
@@ -66,7 +66,7 @@ typedef struct RGBAPixel {
                                  error:(NSError **)errorPtr
 {
   NSString *filePath = [self _referenceFilePathForSelector:selector identifier:identifier];
-  UIImage *image = UIImageWithContentsOfFile(filePath); // TODO(macOS ISS#2323203)
+  UIImage *image = UIImageWithContentsOfFile(filePath); // TODO(macOS GH#774)
   if (nil == image && NULL != errorPtr) {
     BOOL exists = [_fileManager fileExistsAtPath:filePath];
     if (!exists) {
@@ -237,19 +237,19 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
   if (0 < identifier.length) {
     fileName = [fileName stringByAppendingFormat:@"_%@", identifier];
   }
-  CGFloat scale; // [TODO(macOS ISS#2323203)
+  CGFloat scale; // [TODO(macOS GH#774)
 #if !TARGET_OS_OSX
   scale = [[UIScreen mainScreen] scale];
 #else
   scale = [[NSScreen mainScreen] backingScaleFactor];
 #endif
-  if (scale > 1.0) { // ]TODO(macOS ISS#2323203)
+  if (scale > 1.0) { // ]TODO(macOS GH#774)
     fileName = [fileName stringByAppendingFormat:@"@%.fx", scale];
   }
 #if TARGET_OS_TV
   fileName = [fileName stringByAppendingString:@"_tvOS"];
-#elif TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  fileName = [fileName stringByAppendingString:@"_macOS"]; // TODO(macOS ISS#2323203)
+#elif TARGET_OS_OSX // TODO(macOS GH#774)
+  fileName = [fileName stringByAppendingString:@"_macOS"]; // TODO(macOS GH#774)
 #endif
   fileName = [fileName stringByAppendingPathExtension:@"png"];
   return fileName;
@@ -327,18 +327,18 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
 
 - (UIImage *)_snapshotView:(RCTUIView *)view // TODO(macOS ISS#3536887)
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   [view layoutIfNeeded];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   [view layoutSubtreeIfNeeded];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   
   CGRect bounds = view.bounds;
 
   NSAssert1(CGRectGetWidth(bounds), @"Zero width for view %@", view);
   NSAssert1(CGRectGetHeight(bounds), @"Zero height for view %@", view);
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0);
   CGContextRef context = UIGraphicsGetCurrentContext();
   NSAssert1(context, @"Could not generate context for view %@", view);
@@ -354,14 +354,14 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
 
   UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
-#else // TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#else // TARGET_OS_OSX // [TODO(macOS GH#774)
   // The macOS snapshot bitmap will *not* be scaled to the machine's current screen.
   // The snapshot image is used for integration testing so the consistent scale makes the test results machine independent.
   NSBitmapImageRep *rep = [view bitmapImageRepForCachingDisplayInRect:bounds];
   [view cacheDisplayInRect:bounds toBitmapImageRep:rep];
   UIImage *snapshot = [[NSImage alloc] initWithSize:bounds.size];
   [snapshot addRepresentation:rep];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   
   return snapshot;
 }

@@ -6,7 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "RCTPlatformDisplayLink.h" // TODO(macOS ISS#2323203)
+#import "RCTPlatformDisplayLink.h" // TODO(macOS GH#774)
 
 /**
  * Interface containing the information about the last screen refresh.

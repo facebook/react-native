@@ -240,13 +240,13 @@
   CGSize size = [_layoutManager usedRectForTextContainer:_textContainer].size;
 
   return (CGSize){
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     MAX(minimumSize.width, MIN(RCTCeilPixelValue(size.width), maximumSize.width)),
     MAX(minimumSize.height, MIN(RCTCeilPixelValue(size.height), maximumSize.height))
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     MAX(minimumSize.width, MIN(RCTCeilPixelValue(size.width, [self scale]), maximumSize.width)),
     MAX(minimumSize.height, MIN(RCTCeilPixelValue(size.height, [self scale]), maximumSize.height))
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   };
 }
 

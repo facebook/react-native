@@ -101,9 +101,9 @@ try {
   mv('_flowconfig', '.flowconfig');
   mv('_watchmanconfig', '.watchmanconfig');
 
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   process.env.REACT_NATIVE_RUNNING_E2E_TESTS = 'true';
-  // ]TODO(macOS ISS#2323203)
+  // ]TODO(macOS GH#774)
 
   describe('Install React Native package');
   exec(`npm install ${REACT_NATIVE_PACKAGE}`);

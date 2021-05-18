@@ -76,12 +76,12 @@ static NSString *RCTGetStorageDirectory()
   static NSString *storageDirectory = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     // iOS and tvOS to use Caches folder.
     // Don't use NSDocumentsDirectory otherwise the RCTAsyncLocalStorage_V1 will appear in apps that
     // expose the User's Documents folder such as Microsoft Office apps.
     storageDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     // Apps on macos may not be sandboxed and using NSDocumentsDirectory with NSSearchPathForDirectoriesInDomains
     // will return the User's Document folder which is not what we want. Instead, we will query NSFileManager for
     // NSApplicationSupportDirectory which returns the correct URL path based on whether the app is sandboxed or not
@@ -98,7 +98,7 @@ static NSString *RCTGetStorageDirectory()
     } else {
       RCTLogError(@"Unable to access storage directory for RCTAsyncLocalStorage. %@", [error description]);
     }
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
 #endif
     storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
   });
@@ -162,7 +162,7 @@ static NSCache *RCTGetCache()
   dispatch_once(&onceToken, ^{
     cache = [NSCache new];
     cache.totalCostLimit = 2 * 1024 * 1024; // 2MB
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     // Clear cache in the event of a memory warning
     [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification
                                                       object:nil
@@ -170,7 +170,7 @@ static NSCache *RCTGetCache()
                                                   usingBlock:^(__unused NSNotification *note) {
                                                     [cache removeAllObjects];
                                                   }];
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   });
   return cache;
 }

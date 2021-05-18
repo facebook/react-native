@@ -8,7 +8,7 @@
  *
  */
 
-// TODO(macOS ISS#2323203)
+// TODO(macOS GH#774)
 
 'use strict';
 

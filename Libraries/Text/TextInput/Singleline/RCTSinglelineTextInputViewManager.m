@@ -29,6 +29,6 @@ RCT_EXPORT_MODULE()
   return [[RCTSinglelineTextInputView alloc] initWithBridge:self.bridge];
 }
 
-RCT_REMAP_OSX_VIEW_PROPERTY(secureTextEntry, useSecureTextField, BOOL) // TODO(macOS ISS#2323203)
+RCT_REMAP_OSX_VIEW_PROPERTY(secureTextEntry, useSecureTextField, BOOL) // TODO(macOS GH#774)
 
 @end

@@ -64,7 +64,7 @@ target 'RNTester-macOSIntegrationTests' do
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 
-# [TODO(macOS ISS#2323203): these are special targets used by the internal Microsoft build pipeline
+# [TODO(macOS GH#774): these are special targets used by the internal Microsoft build pipeline
 target 'iosDeviceBuild' do
   platform :ios, '10.0'
   pods()
@@ -79,7 +79,7 @@ target 'macOSBuild' do
   platform :osx, '10.14'
   pods()
 end
-# ]TODO(macOS ISS#2323203)
+# ]TODO(macOS GH#774)
 
 post_install do |installer|
   flipper_post_install(installer)

@@ -13,11 +13,11 @@
 {
   NSAssert(CGSizeEqualToSize(self.size, image.size), @"Images must be same size.");
 
-  CGImageRef imageRef = UIImageGetCGImageRef(image); // TODO(macOS ISS#2323203)
+  CGImageRef imageRef = UIImageGetCGImageRef(image); // TODO(macOS GH#774)
   
   // The images have the equal size, so we could use the smallest amount of bytes because of byte padding
-  size_t minBytesPerRow = MIN(CGImageGetBytesPerRow(imageRef), CGImageGetBytesPerRow(imageRef)); // TODO(macOS ISS#2323203)
-  size_t referenceImageSizeBytes = CGImageGetHeight(imageRef) * minBytesPerRow; // TODO(macOS ISS#2323203)
+  size_t minBytesPerRow = MIN(CGImageGetBytesPerRow(imageRef), CGImageGetBytesPerRow(imageRef)); // TODO(macOS GH#774)
+  size_t referenceImageSizeBytes = CGImageGetHeight(imageRef) * minBytesPerRow; // TODO(macOS GH#774)
   void *referenceImagePixels = calloc(1, referenceImageSizeBytes);
   void *imagePixels = calloc(1, referenceImageSizeBytes);
 
@@ -28,30 +28,30 @@
   }
 
   CGContextRef referenceImageContext = CGBitmapContextCreate(referenceImagePixels,
-                                                             CGImageGetWidth(imageRef), // TODO(macOS ISS#2323203)
-                                                             CGImageGetHeight(imageRef), // TODO(macOS ISS#2323203)
-                                                             CGImageGetBitsPerComponent(imageRef), // TODO(macOS ISS#2323203)
+                                                             CGImageGetWidth(imageRef), // TODO(macOS GH#774)
+                                                             CGImageGetHeight(imageRef), // TODO(macOS GH#774)
+                                                             CGImageGetBitsPerComponent(imageRef), // TODO(macOS GH#774)
                                                              minBytesPerRow,
-                                                             CGImageGetColorSpace(imageRef), // TODO(macOS ISS#2323203)
+                                                             CGImageGetColorSpace(imageRef), // TODO(macOS GH#774)
                                                              (CGBitmapInfo)kCGImageAlphaPremultipliedLast
                                                              );
   CGContextRef imageContext = CGBitmapContextCreate(imagePixels,
-                                                    CGImageGetWidth(imageRef), // TODO(macOS ISS#2323203)
-                                                    CGImageGetHeight(imageRef), // TODO(macOS ISS#2323203)
-                                                    CGImageGetBitsPerComponent(imageRef), // TODO(macOS ISS#2323203)
+                                                    CGImageGetWidth(imageRef), // TODO(macOS GH#774)
+                                                    CGImageGetHeight(imageRef), // TODO(macOS GH#774)
+                                                    CGImageGetBitsPerComponent(imageRef), // TODO(macOS GH#774)
                                                     minBytesPerRow,
-                                                    CGImageGetColorSpace(imageRef), // TODO(macOS ISS#2323203)
+                                                    CGImageGetColorSpace(imageRef), // TODO(macOS GH#774)
                                                     (CGBitmapInfo)kCGImageAlphaPremultipliedLast
                                                     );
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   CGFloat scaleFactor = [UIScreen mainScreen].scale;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   // The compareWithImage: method is used for integration test snapshot image comparison.
   // The _snapshotView: method that creates snapshot images that are *not* scaled for the screen.
   // By not using the screen scale factor in this method the test results are machine independent.
   CGFloat scaleFactor = 1;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
   CGContextScaleCTM(referenceImageContext, scaleFactor, scaleFactor);
   CGContextScaleCTM(imageContext, scaleFactor, scaleFactor);
@@ -64,8 +64,8 @@
     return NO;
   }
 
-  CGContextDrawImage(referenceImageContext, CGRectMake(0.0f, 0.0f, self.size.width, self.size.height), imageRef); // TODO(macOS ISS#2323203)
-  CGContextDrawImage(imageContext, CGRectMake(0.0f, 0.0f, image.size.width, image.size.height), imageRef); // TODO(macOS ISS#2323203)
+  CGContextDrawImage(referenceImageContext, CGRectMake(0.0f, 0.0f, self.size.width, self.size.height), imageRef); // TODO(macOS GH#774)
+  CGContextDrawImage(imageContext, CGRectMake(0.0f, 0.0f, image.size.width, image.size.height), imageRef); // TODO(macOS GH#774)
   CGContextRelease(referenceImageContext);
   CGContextRelease(imageContext);
 

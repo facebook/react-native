@@ -13,13 +13,13 @@
 const React = require('react');
 const View = require('../Components/View/View');
 const VirtualizedList = require('./VirtualizedList');
-const Platform = require('../Utilities/Platform'); // TODO(macOS ISS#2323203)
+const Platform = require('../Utilities/Platform'); // TODO(macOS GH#774)
 
 const invariant = require('invariant');
 
 import type {ViewToken} from './ViewabilityHelper';
-import type {SelectedRowIndexPathType} from './VirtualizedList'; // TODO(macOS ISS#2323203)
-import type {ScrollEvent} from '../Types/CoreEventTypes'; // TODO(macOS ISS#2323203)
+import type {SelectedRowIndexPathType} from './VirtualizedList'; // TODO(macOS GH#774)
+import type {ScrollEvent} from '../Types/CoreEventTypes'; // TODO(macOS GH#774)
 
 type Item = any;
 
@@ -37,7 +37,7 @@ export type SectionBase<SectionItemT> = {
   renderItem?: ?(info: {
     item: SectionItemT,
     index: number,
-    isSelected?: boolean, // TODO(macOS ISS#2323203)
+    isSelected?: boolean, // TODO(macOS GH#774)
     section: SectionBase<SectionItemT>,
     separators: {
       highlight: () => void,
@@ -62,14 +62,14 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    *
    * @platform macos
    */
-  enableSelectionOnKeyPress?: ?boolean, // TODO(macOS ISS#2323203)
+  enableSelectionOnKeyPress?: ?boolean, // TODO(macOS GH#774)
   /**
    * Default renderer for every item in every section.
    */
   renderItem?: (info: {
     item: Item,
     index: number,
-    isSelected?: boolean, // TODO(macOS ISS#2323203)
+    isSelected?: boolean, // TODO(macOS GH#774)
     section: SectionT,
     separators: {
       highlight: () => void,
@@ -118,13 +118,13 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
     previousSelection: Object,
     newSelection: Object,
     item: ?Item,
-  }) => void, // TODO(macOS ISS#2323203)
+  }) => void, // TODO(macOS GH#774)
   /**
    * If provided, called when 'Enter' key is pressed on an item.
    *
    * @platform macos
    */
-  onSelectionEntered?: ?(item: ?Item) => void, // TODO(macOS ISS#2323203)
+  onSelectionEntered?: ?(item: ?Item) => void, // TODO(macOS GH#774)
 |};
 
 type VirtualizedListProps = React.ElementProps<typeof VirtualizedList>;
@@ -152,7 +152,7 @@ type DefaultProps = {|
 
 type State = {
   childProps: VirtualizedListProps,
-  selectedRowIndexPath: SelectedRowIndexPathType, // TODO(macOS ISS#2323203)
+  selectedRowIndexPath: SelectedRowIndexPathType, // TODO(macOS GH#774)
   ...
 };
 
@@ -240,10 +240,10 @@ class VirtualizedSectionList<
           ? stickyHeaderIndices
           : undefined,
       },
-      selectedRowIndexPath: {sectionIndex: 0, rowIndex: -1}, // TODO(macOS ISS#2323203)
+      selectedRowIndexPath: {sectionIndex: 0, rowIndex: -1}, // TODO(macOS GH#774)
     };
   }
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   _selectRowAboveIndexPath = rowIndexPath => {
     let sectionIndex = rowIndexPath.sectionIndex;
     if (sectionIndex >= this.props.sections.length) {
@@ -344,17 +344,17 @@ class VirtualizedSectionList<
         }
       }
     }
-  }; // ]TODO(macOS ISS#2323203)
+  }; // ]TODO(macOS GH#774)
 
   render(): React.Node {
-    let keyEventHandler = this.props.onScrollKeyDown; // [TODO(macOS ISS#2323203)
+    let keyEventHandler = this.props.onScrollKeyDown; // [TODO(macOS GH#774)
     if (!keyEventHandler) {
       keyEventHandler = this.props.enableSelectionOnKeyPress
         ? this._handleKeyDown
         : null;
     }
     const preferredScrollerStyleDidChangeHandler = this.props
-      .onPreferredScrollerStyleDidChange; // ]TODO(macOS ISS#2323203)
+      .onPreferredScrollerStyleDidChange; // ]TODO(macOS GH#774)
     return (
       <VirtualizedList
         {...this.state.childProps}
@@ -364,7 +364,7 @@ class VirtualizedSectionList<
           preferredScrollerStyleDidChangeHandler
         }
         {...this.state.selectedRowIndexPath}
-      /> // TODO(macOS ISS#2323203)
+      /> // TODO(macOS GH#774)
     );
   }
 
@@ -495,7 +495,7 @@ class VirtualizedSectionList<
     }
   };
 
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   _isItemSelected = (item: Item): boolean => {
     let isSelected = false;
     if (this.state.selectedRowIndexPath) {
@@ -511,7 +511,7 @@ class VirtualizedSectionList<
     }
     return isSelected;
   };
-  // ]TODO(macOS ISS#2323203)
+  // ]TODO(macOS GH#774)
 
   _renderItem = ({item, index}: {item: Item, index: number, ...}) => {
     const info = this._subExtractor(index);
@@ -540,7 +540,7 @@ class VirtualizedSectionList<
           }
           cellKey={info.key}
           index={infoIndex}
-          isSelected={this._isItemSelected(item)} // TODO(macOS ISS#2323203)
+          isSelected={this._isItemSelected(item)} // TODO(macOS GH#774)
           item={item}
           leadingItem={info.leadingItem}
           leadingSection={info.leadingSection}
@@ -612,7 +612,7 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   cellKey: string,
   index: number,
   item: Item,
-  isSelected: boolean, // TODO(macOS ISS#2323203)
+  isSelected: boolean, // TODO(macOS GH#774)
   onUpdateSeparator: (cellKey: string, newProps: Object) => void,
   prevCellKey?: ?string,
   renderItem: Function,
@@ -716,14 +716,14 @@ class ItemWithSeparator extends React.Component<
       SeparatorComponent,
       item,
       index,
-      isSelected, // TODO(macOS ISS#2323203)
+      isSelected, // TODO(macOS GH#774)
       section,
       inverted,
     } = this.props;
     const element = this.props.renderItem({
       item,
       index,
-      isSelected, // TODO(macOS ISS#2323203)
+      isSelected, // TODO(macOS GH#774)
       section,
       separators: this._separators,
     });

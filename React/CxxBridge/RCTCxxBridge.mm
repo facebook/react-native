@@ -27,7 +27,7 @@
 #import <React/RCTRedBox.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
-#import <React/RCTBundleURLProvider.h> // TODO(macOS ISS#2323203)
+#import <React/RCTBundleURLProvider.h> // TODO(macOS GH#774)
 #import <cxxreact/CxxNativeModule.h>
 #import <cxxreact/Instance.h>
 #import <cxxreact/JSBundleType.h>

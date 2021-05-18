@@ -7,7 +7,7 @@
 
 #import <React/RCTImageViewManager.h>
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTConvert.h>
 #import <React/RCTImageSource.h>
@@ -25,7 +25,7 @@ RCT_EXPORT_MODULE()
   return [RCTImageShadowView new];
 }
 
-- (RCTPlatformView *)view // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)view // TODO(macOS GH#774)
 {
   return [[RCTImageView alloc] initWithBridge:self.bridge];
 }

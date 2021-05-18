@@ -14,7 +14,7 @@
 #import <React/RCTErrorInfo.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTJSStackFrame.h>
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import <React/RCTRedBoxExtraDataViewController.h>
 #endif
 #import <React/RCTRedBoxSetEnabled.h>
@@ -29,7 +29,7 @@
 
 @class RCTRedBoxWindow;
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @interface UIButton (RCTRedBox)
 
 @property (nonatomic) RCTRedBoxButtonPressHandler rct_handler;
@@ -64,7 +64,7 @@
 }
 
 @end
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 @protocol RCTRedBoxWindowActionDelegate <NSObject>
 
@@ -74,7 +74,7 @@
 
 @end
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @interface RCTRedBoxWindow : NSObject <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UIViewController *rootViewController;
 @property (nonatomic, weak) id<RCTRedBoxWindowActionDelegate> actionDelegate;
@@ -446,7 +446,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @end
-#elif TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#elif TARGET_OS_OSX // [TODO(macOS GH#774)
 
 @interface RCTRedBoxScrollView : NSScrollView
 @end
@@ -792,12 +792,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 @end
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @interface RCTRedBox () <
     RCTInvalidating,
     RCTRedBoxWindowActionDelegate,
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     RCTRedBoxExtraDataActionDelegate,
 #endif
     NativeRedBoxSpec>
@@ -806,7 +806,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 @implementation RCTRedBox {
   RCTRedBoxWindow *_window;
   NSMutableArray<id<RCTErrorCustomizer>> *_errorCustomizers;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   RCTRedBoxExtraDataViewController *_extraDataViewController;
 #endif
   NSMutableArray<NSString *> *_customButtonTitles;
@@ -942,12 +942,12 @@ RCT_EXPORT_MODULE()
              errorCookie:(int)errorCookie
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     if (self->_extraDataViewController == nil) {
       self->_extraDataViewController = [RCTRedBoxExtraDataViewController new];
       self->_extraDataViewController.actionDelegate = self;
     }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -955,13 +955,13 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic pop
 
     if (!self->_window) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
       self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds
                                     customButtonTitles:self->_customButtonTitles
                                   customButtonHandlers:self->_customButtonHandlers];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
       self->_window = [RCTRedBoxWindow new];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
       self->_window.actionDelegate = self;
     }
 
@@ -975,7 +975,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)loadExtraDataViewController {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   dispatch_async(dispatch_get_main_queue(), ^{
     // Make sure the CMD+E shortcut doesn't call this twice
     if (self->_extraDataViewController != nil && ![self->_window.rootViewController presentedViewController]) {
@@ -988,21 +988,21 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_METHOD(setExtraData:(NSDictionary *)extraData forIdentifier:(NSString *)identifier) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     [_extraDataViewController addExtraData:extraData forIdentifier:identifier];
 #endif
 }
 
 RCT_EXPORT_METHOD(dismiss)
 {
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
   [self->_window performSelectorOnMainThread:@selector(dismiss) withObject:nil waitUntilDone:NO];
-#else // ]TODO(macOS ISS#2323203)
+#else // ]TODO(macOS GH#774)
   dispatch_async(dispatch_get_main_queue(), ^{
     [self->_window dismiss];
     self->_window = nil; // TODO(OSS Candidate ISS#2710739): release _window now to ensure its UIKit ivars are dealloc'd on the main thread as the RCTRedBox can be dealloc'd on a background thread.
   });
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 }
 
 - (void)invalidate

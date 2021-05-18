@@ -8,7 +8,7 @@
 #import <React/RCTImageURLLoader.h>
 #import <React/RCTImageLoaderProtocol.h>
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
@@ -67,7 +67,7 @@ struct ImageURLLoaderAttribution {
 /**
  * Image instrumentation - start tracking the on-screen visibility of the native image view.
  */
-- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView; // TODO(macOS ISS#2323203)
+- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView; // TODO(macOS GH#774)
 
 /**
  * Image instrumentation - notify that the native image view was destroyed.

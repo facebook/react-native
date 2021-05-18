@@ -7,29 +7,29 @@
 
 #import <React/RCTTextView.h>
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import <MobileCoreServices/UTCoreTypes.h>
 #else
-#import <Quartz/Quartz.h> // TODO(macOS ISS#2323203) for CATiledLayer
-#endif // TODO(macOS ISS#2323203)
+#import <Quartz/Quartz.h> // TODO(macOS GH#774) for CATiledLayer
+#endif // TODO(macOS GH#774)
 
-#import <React/RCTAssert.h> // TODO(macOS ISS#2323203)
+#import <React/RCTAssert.h> // TODO(macOS GH#774)
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 #import <React/RCTFocusChangeEvent.h> // TODO(OSS Candidate ISS#2710739)
 
 #import <React/RCTTextShadowView.h>
 
-#import <QuartzCore/QuartzCore.h> // TODO(macOS ISS#2323203)
+#import <QuartzCore/QuartzCore.h> // TODO(macOS GH#774)
 
 @implementation RCTTextView
 {
   CAShapeLayer *_highlightLayer;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   NSString * _accessibilityLabel;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
   RCTEventDispatcher *_eventDispatcher; // TODO(OSS Candidate ISS#2710739)
   NSArray<RCTUIView *> *_Nullable _descendantViews; // TODO(macOS ISS#3536887)
@@ -50,19 +50,19 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     self.accessibilityRole = NSAccessibilityStaticTextRole;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
     self.opaque = NO;
-    RCTUIViewSetContentModeRedraw(self); // TODO(macOS ISS#2323203) and TODO(macOS ISS#3536887)
+    RCTUIViewSetContentModeRedraw(self); // TODO(macOS GH#774) and TODO(macOS ISS#3536887)
   }
   return self;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (void)dealloc
 {
   [self removeAllTextStorageLayoutManagers];
@@ -102,7 +102,7 @@
 - (NSRect)focusRingMaskBounds {
   return [self bounds];
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 - (NSString *)description
 {
@@ -120,17 +120,17 @@
 
   _selectable = selectable;
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   if (_selectable) {
     [self enableContextMenu];
   }
   else {
     [self disableContextMenu];
   }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)reactSetFrame:(CGRect)frame
 {
   // Text looks super weird if its frame is animated.
@@ -139,7 +139,7 @@
     [super reactSetFrame:frame];
   }];
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 - (void)didUpdateReactSubviews
 {
@@ -150,9 +150,9 @@
           contentFrame:(CGRect)contentFrame
        descendantViews:(NSArray<RCTUIView *> *)descendantViews // TODO(macOS ISS#3536887)
 {
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
   [self removeAllTextStorageLayoutManagers];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
   _textStorage = textStorage;
   _contentFrame = contentFrame;
@@ -237,7 +237,7 @@
         NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) xRadius:2 yRadius:2];
 #endif // TODO(macOS ISS#3536887)
           if (highlightPath) {
-            UIBezierPathAppendPath(highlightPath, path); // TODO(macOS ISS#2323203)
+            UIBezierPathAppendPath(highlightPath, path); // TODO(macOS GH#774)
           } else {
             highlightPath = path;
           }
@@ -252,7 +252,7 @@
       [self.layer addSublayer:_highlightLayer];
     }
     _highlightLayer.position = _contentFrame.origin;
-    _highlightLayer.path = UIBezierPathCreateCGPathRef(highlightPath); // TODO(macOS ISS#2323203)
+    _highlightLayer.path = UIBezierPathCreateCGPathRef(highlightPath); // TODO(macOS GH#774)
   } else {
     [_highlightLayer removeFromSuperlayer];
     _highlightLayer = nil;
@@ -297,7 +297,7 @@
 
 #pragma mark - Accessibility
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 
 // This code is here to cover for a mismatch in the what accessibilityLabels and accessibilityValues mean in iOS versus macOS.
 // In macOS a text element will always read its accessibilityValue, but will only read it's accessibilityLabel if it's value is set.
@@ -318,7 +318,7 @@
   }
   return _textStorage.string;
 }
-#else // ]TODO(macOS ISS#2323203)
+#else // ]TODO(macOS GH#774)
 - (NSString *)accessibilityLabel
 {
   NSString *superAccessibilityLabel = [super accessibilityLabel];
@@ -327,11 +327,11 @@
   }
   return _textStorage.string;
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 #pragma mark - Context Menu
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)enableContextMenu
 {
   _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
@@ -362,7 +362,7 @@
   [menuController setMenuVisible:YES animated:YES];
 #endif
 }
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 
 - (void)rightMouseDown:(NSEvent *)event
 {
@@ -421,14 +421,14 @@
   return YES;
 }
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 - (BOOL)canBecomeFirstResponder
 {
   return _selectable;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
   if (_selectable && action == @selector(copy:)) {
@@ -437,7 +437,7 @@
 
   return [self.nextResponder canPerformAction:action withSender:sender];
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 - (void)copy:(id)sender
 {
@@ -447,8 +447,8 @@
   NSData *rtf = [attributedText dataFromRange:NSMakeRange(0, attributedText.length)
                            documentAttributes:@{NSDocumentTypeDocumentAttribute: NSRTFDTextDocumentType}
                                         error:nil];
-#if TARGET_OS_IPHONE // TODO(macOS ISS#2323203)
-  NSMutableDictionary *item = [NSMutableDictionary new]; // TODO(macOS ISS#2323203)
+#if TARGET_OS_IPHONE // TODO(macOS GH#774)
+  NSMutableDictionary *item = [NSMutableDictionary new]; // TODO(macOS GH#774)
 
   if (rtf) {
     [item setObject:rtf forKey:(id)kUTTypeFlatRTFD];
@@ -458,11 +458,11 @@
 
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
   pasteboard.items = @[item];
-#elif TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#elif TARGET_OS_OSX // TODO(macOS GH#774)
   NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
   [pasteboard clearContents];
   [pasteboard writeObjects:[NSArray arrayWithObjects:attributedText.string, rtf, nil]];
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 #endif
 }
 

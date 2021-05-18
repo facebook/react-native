@@ -10,7 +10,7 @@
 #if RCT_DEV
 
 #import <React/RCTLog.h>
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTDefines.h>
 #import <React/RCTInspectorPackagerConnection.h>
@@ -39,12 +39,12 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
   if (inspectorProxyPortStr && [inspectorProxyPortStr length] > 0) {
     inspectorProxyPort = [NSNumber numberWithInt:[inspectorProxyPortStr intValue]];
   }
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name]
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   NSString *escapedDeviceName = @"";
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier]
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@",

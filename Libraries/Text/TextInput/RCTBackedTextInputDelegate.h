@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 @protocol RCTBackedTextInputViewProtocol;
 
@@ -34,12 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)textInputDidChangeSelection;
 
 - (BOOL)textInputShouldHandleDeleteBackward:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the deleteBackward event handled normally. Return `NO` to disallow it and handle it yourself. TODO(OSS Candidate ISS#2710739)
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (BOOL)textInputShouldHandleDeleteForward:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the deleteForward event handled normally. Return `NO` to disallow it and handle it yourself.
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @optional
-- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView; // TODO(macOS ISS#2323203)
+- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView; // TODO(macOS GH#774)
 
 @end
 

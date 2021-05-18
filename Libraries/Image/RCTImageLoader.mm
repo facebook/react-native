@@ -14,7 +14,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
-#import <React/RCTDevSettings.h> // TODO(macOS ISS#2323203) - Expose DevSettings in release builds
+#import <React/RCTDevSettings.h> // TODO(macOS GH#774) - Expose DevSettings in release builds
 #import <React/RCTImageCache.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageLoaderWithAttributionProtocol.h>
@@ -22,7 +22,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import "RCTImagePlugins.h"
 
@@ -43,15 +43,15 @@ void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled)
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
   CGFloat imageScale = 1.0;
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  imageScale = image.scale; // [TODO(macOS ISS#2323203) // no .scale prop on NSImage
-#endif // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
+  imageScale = image.scale; // [TODO(macOS GH#774) // no .scale prop on NSImage
+#endif // [TODO(macOS GH#774)
   NSInteger singleImageBytes = image.size.width * image.size.height * imageScale * imageScale * 4;
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
-#else // [TODO(macOS ISS#2323203)
-    return singleImageBytes; // [TODO(macOS ISS#2323203)
-#endif // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
+    return singleImageBytes; // [TODO(macOS GH#774)
+#endif // [TODO(macOS GH#774)
 }
 
 #if TARGET_OS_OSX
@@ -862,7 +862,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   }
 }
 
-- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView // TODO(macOS ISS#2323203)
+- (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView // TODO(macOS GH#774)
 {
   if (!loaderRequest || !imageView) {
     return;
@@ -936,9 +936,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           // Decompress the image data (this may be CPU and memory intensive)
           UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode);
 
-#if !TARGET_OS_OSX && RCT_DEV // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX && RCT_DEV // TODO(macOS GH#774)
           if ([[self->_bridge devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
-            CGSize imagePixelSize = RCTSizeInPixels(image.size, UIImageGetScale(image)); // TODO(macOS ISS#2323203)
+            CGSize imagePixelSize = RCTSizeInPixels(image.size, UIImageGetScale(image)); // TODO(macOS GH#774)
             CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
             if (imagePixelSize.width * imagePixelSize.height >
                 screenPixelSize.width * screenPixelSize.height) {
@@ -1035,8 +1035,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       CGFloat imageScale = 1.0;
 #endif // TARGET_OS_OSX
       size = (CGSize){
-        image.size.width * imageScale, // TODO(macOS ISS#2323203)
-        image.size.height * imageScale, // TODO(macOS ISS#2323203)
+        image.size.width * imageScale, // TODO(macOS GH#774)
+        image.size.height * imageScale, // TODO(macOS GH#774)
       };
     }
     callback(error, size);
@@ -1134,7 +1134,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
     NSString *mimeType = nil;
     NSData *imageData = nil;
-    if (RCTUIImageHasAlpha(image)) { // TODO(macOS ISS#2323203)
+    if (RCTUIImageHasAlpha(image)) { // TODO(macOS GH#774)
       mimeType = @"image/png";
 #if TARGET_OS_OSX
       imageData = NSImageDataForFileType(image, NSBitmapImageFileTypePNG, @{});

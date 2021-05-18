@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // [TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // [TODO(macOS GH#774)
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTUITextFieldDelegate <NSTextFieldDelegate>
 @optional
@@ -18,31 +18,31 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)textFieldDidChangeSelection:(NSTextField *)textField;
 @end
 NS_ASSUME_NONNULL_END
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @protocol RCTBackedTextInputDelegate;
 @class RCTTextAttributes;
 
 NS_ASSUME_NONNULL_BEGIN
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @protocol RCTBackedTextInputViewProtocol <UITextInput>
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 @protocol RCTBackedTextInputViewProtocol
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) RCTUIColor *placeholderColor; // TODO(OSS Candidate ISS#2710739)
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 @property (nonatomic, assign) BOOL textWasPasted;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 @property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
 @property (nonatomic, readonly) CGSize contentSize;
 @property (nonatomic, strong, nullable) NSDictionary<NSAttributedStringKey,id> *defaultTextAttributes;
@@ -50,9 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL enablesReturnKeyAutomatically;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 
 // This protocol disallows direct access to `selectedTextRange` property because
@@ -60,19 +60,19 @@ NS_ASSUME_NONNULL_BEGIN
 // explicitly specify should `delegate` be notified about the change or not.
 // If the change was initiated programmatically, we must NOT notify the delegate.
 // If the change was a result of user actions (like typing or touches), we MUST notify the delegate.
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)setSelectedTextRange:(nullable UITextRange *)selectedTextRange NS_UNAVAILABLE;
 - (void)setSelectedTextRange:(nullable UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 - (NSRange)selectedTextRange;
 - (void)setSelectedTextRange:(NSRange)selectedTextRange NS_UNAVAILABLE;
 - (void)setSelectedTextRange:(NSRange)selectedTextRange notifyDelegate:(BOOL)notifyDelegate;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 // UITextInput method for OSX
 - (CGSize)sizeThatFits:(CGSize)size;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 // This protocol disallows direct access to `text` property because
 // unwise usage of it can break the `attributeText` behavior.

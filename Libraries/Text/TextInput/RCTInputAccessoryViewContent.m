@@ -11,14 +11,14 @@
 
 @implementation RCTInputAccessoryViewContent
 {
-  RCTUIView *_safeAreaContainer; // TODO(macOS ISS#2323203)
+  RCTUIView *_safeAreaContainer; // TODO(macOS GH#774)
   NSLayoutConstraint *_heightConstraint;
 }
 
 - (instancetype)init
 {
   if (self = [super init]) {
-    _safeAreaContainer = [RCTUIView new]; // TODO(macOS ISS#2323203)
+    _safeAreaContainer = [RCTUIView new]; // TODO(macOS GH#774)
     [self addSubview:_safeAreaContainer];
 
     // Use autolayout to position the view properly and take into account
@@ -30,21 +30,21 @@
     _heightConstraint = [_safeAreaContainer.heightAnchor constraintEqualToConstant:0];
     _heightConstraint.active = YES;
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     if (@available(iOS 11.0, tvOS 11.0, *)) {
       [_safeAreaContainer.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor].active = YES;
       [_safeAreaContainer.topAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor].active = YES;
       [_safeAreaContainer.leadingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor].active = YES;
       [_safeAreaContainer.trailingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor].active = YES;
     } else {
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
       [_safeAreaContainer.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
       [_safeAreaContainer.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
       [_safeAreaContainer.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
       [_safeAreaContainer.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   }
   return self;
 }
@@ -68,13 +68,13 @@
   [self layoutIfNeeded];
 }
 
-- (void)insertReactSubview:(RCTUIView *)subview atIndex:(NSInteger)index // TODO(macOS ISS#2323203)
+- (void)insertReactSubview:(RCTUIView *)subview atIndex:(NSInteger)index // TODO(macOS GH#774)
 {
   [super insertReactSubview:subview atIndex:index];
   [_safeAreaContainer insertSubview:subview atIndex:index];
 }
 
-- (void)removeReactSubview:(RCTUIView *)subview // TODO(macOS ISS#2323203)
+- (void)removeReactSubview:(RCTUIView *)subview // TODO(macOS GH#774)
 {
   [super removeReactSubview:subview];
   [subview removeFromSuperview];

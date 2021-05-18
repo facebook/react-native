@@ -222,7 +222,7 @@ class Button extends React.Component<ButtonProps> {
     if (color) {
       if (
         Platform.OS === 'ios' ||
-        Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+        Platform.OS === 'macos' /* TODO(macOS GH#774) */
       ) {
         textStyles.push({color: color});
       } else {
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#2196F3',
       borderRadius: 2,
     },
-    macos: {}, // TODO(macOS ISS#2323203)
+    macos: {}, // TODO(macOS GH#774)
   }),
   text: {
     textAlign: 'center',
@@ -303,10 +303,10 @@ const styles = StyleSheet.create({
         fontWeight: '500',
       },
       macos: {
-        // [TODO(macOS ISS#2323203)
+        // [TODO(macOS GH#774)
         color: '#007AFF',
         fontSize: 18,
-      }, // ]TODO(macOS ISS#2323203)
+      }, // ]TODO(macOS GH#774)
     }),
   },
   buttonDisabled: Platform.select({
@@ -315,16 +315,16 @@ const styles = StyleSheet.create({
       elevation: 0,
       backgroundColor: '#dfdfdf',
     },
-    macos: {}, // TODO(macOS ISS#2323203)
+    macos: {}, // TODO(macOS GH#774)
   }),
   textDisabled: Platform.select({
     ios: {
       color: '#cdcdcd',
     },
     macos: {
-      // [TODO(macOS ISS#2323203)
+      // [TODO(macOS GH#774)
       color: '#cdcdcd',
-    }, // ]TODO(macOS ISS#2323203)
+    }, // ]TODO(macOS GH#774)
     android: {
       color: '#a1a1a1',
     },

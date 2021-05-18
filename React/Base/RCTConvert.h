@@ -6,7 +6,7 @@
  */
 
 #import <QuartzCore/QuartzCore.h>
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderStyle.h>
@@ -65,7 +65,7 @@ typedef NSURL RCTFileURL;
 + (NSTextAlignment)NSTextAlignment:(id)json;
 + (NSUnderlineStyle)NSUnderlineStyle:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;
 + (UIKeyboardType)UIKeyboardType:(id)json;
@@ -83,11 +83,11 @@ typedef NSURL RCTFileURL;
 #if !TARGET_OS_TV
 + (UIBarStyle)UIBarStyle:(id)json;
 #endif
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 + (NSTextCheckingTypes)NSTextCheckingTypes:(id)json;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 + (CGFloat)CGFloat:(id)json;
 + (CGPoint)CGPoint:(id)json;
@@ -114,9 +114,9 @@ typedef NSURL RCTFileURL;
 + (NSArray<RCTFileURL *> *)RCTFileURLArray:(id)json;
 + (NSArray<NSNumber *> *)NSNumberArray:(id)json;
 + (NSArray<RCTUIColor *> *)UIColorArray:(id)json; // TODO(OSS Candidate ISS#2710739)
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 + (NSArray<NSPasteboardType> *)NSPasteboardTypeArray:(id)json;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 typedef NSArray CGColorArray;
 + (CGColorArray *)CGColorArray:(id)json;
@@ -144,9 +144,9 @@ typedef BOOL css_backface_visibility_t;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
 + (RCTFontSmoothing)RCTFontSmoothing:(id)json; // TODO(OSS Candidate ISS#2710739)
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 + (NSString *)accessibilityRoleFromTraits:(id)json;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 @end
 
 @interface RCTConvert (Deprecated)

@@ -63,20 +63,20 @@ static SEL selectorForType(NSString *type)
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
-- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag // TODO(macOS GH#774)
 {
   RCTAssertMainQueue();
 
-  RCTPlatformView *view = [self.manager view]; // TODO(macOS ISS#2323203)
+  RCTPlatformView *view = [self.manager view]; // TODO(macOS GH#774)
   view.reactTag = tag;
   view.rootTag = rootTag;
-#if !TARGET_OS_OSX && !TARGET_OS_TV // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX && !TARGET_OS_TV // TODO(macOS GH#774)
   view.multipleTouchEnabled = YES;
 #endif
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   view.userInteractionEnabled = YES; // required for touch handling
   view.layer.allowsGroupOpacity = YES; // required for touch handling
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   return view;
 }
 

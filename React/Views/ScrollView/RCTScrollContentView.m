@@ -10,29 +10,29 @@
 #import <React/RCTAssert.h>
 #import <React/UIView+React.h>
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 #import <React/RCTUIManager.h>
 #import "RCTScrollContentLocalData.h"
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 #import "RCTScrollView.h"
 
 @implementation RCTScrollContentView
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 {
   BOOL _hasHorizontalScroller;
   BOOL _hasVerticalScroller;
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 - (void)reactSetFrame:(CGRect)frame
 {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   RCTScrollView *scrollView = (RCTScrollView *)self.superview.superview;
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   // macOS also has a NSClipView in its hierarchy
   RCTScrollView *scrollView = (RCTScrollView *)self.superview.superview.superview;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
   [super reactSetFrame:frame];
 
@@ -44,7 +44,7 @@
 
   [scrollView updateContentOffsetIfNeeded];
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
   // On macOS scroll indicators may float over the content view like they do in iOS
   // or depending on system preferences they may be outside of the content view
   // which means the clip view will be smaller than the scroll view itself.
@@ -68,7 +68,7 @@
       [[[scrollView bridge] uiManager] setLocalData:localData forView:self];
     }
   }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 @end

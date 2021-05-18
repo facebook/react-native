@@ -74,7 +74,7 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
                                             initialProperties:initialProperties];
   [surface start];
   if (self = [super initWithSurface:surface sizeMeasureMode:sizeMeasureMode]) {
-    self.backgroundColor = [RCTUIColor whiteColor]; // TODO(macOS ISS#2323203)
+    self.backgroundColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -102,7 +102,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   return super.surface.moduleName;
 }
 
-- (RCTUIView *)contentView // TODO(macOS ISS#2323203)
+- (RCTUIView *)contentView // TODO(macOS GH#774)
 {
   return self;
 }
@@ -132,14 +132,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [super.surface setProperties:appProperties];
 }
 
-- (RCTUIView *)loadingView // TODO(macOS ISS#2323203)
+- (RCTUIView *)loadingView // TODO(macOS GH#774)
 {
   return super.activityIndicatorViewFactory ? super.activityIndicatorViewFactory() : nil;
 }
 
-- (void)setLoadingView:(RCTUIView *)loadingView // TODO(macOS ISS#2323203)
+- (void)setLoadingView:(RCTUIView *)loadingView // TODO(macOS GH#774)
 {
-  super.activityIndicatorViewFactory = ^RCTUIView *(void) // TODO(macOS ISS#2323203)
+  super.activityIndicatorViewFactory = ^RCTUIView *(void) // TODO(macOS GH#774)
   {
     return loadingView;
   };

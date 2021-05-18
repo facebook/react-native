@@ -17,7 +17,7 @@
 #import <React/RCTProfile.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
-#import <React/RCTBundleURLProvider.h> // TODO(macOS ISS#2323203)
+#import <React/RCTBundleURLProvider.h> // TODO(macOS GH#774)
 
 #import <React/RCTDevMenu.h>
 
@@ -31,7 +31,7 @@ static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely
 static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
 static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
-static NSString *const kRCTDevSettingSecondClickToShowDevMenu = @"secondClickToShow"; // TODO(macOS ISS#2323203)
+static NSString *const kRCTDevSettingSecondClickToShowDevMenu = @"secondClickToShow"; // TODO(macOS GH#774)
 
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
@@ -103,12 +103,12 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
   return _settings[key];
 }
 
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
 - (NSArray<NSString *> *)overridenKeys
 {
   return [_settings allKeys];
 }
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
 
 - (void)_reloadWithDefaults:(NSDictionary *)defaultValues
 {
@@ -120,7 +120,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
     }
   }
 
-  // TODO(macOS ISS#2323203): protect against race conditions where another thread holds a mutext trying to set this at the same time
+  // TODO(macOS GH#774): protect against race conditions where another thread holds a mutext trying to set this at the same time
   RCTExecuteOnMainQueue(^{
     [self->_userDefaults setObject:self->_settings forKey:kRCTDevSettingsUserDefaultsKey];
   });
@@ -153,7 +153,7 @@ RCT_EXPORT_MODULE()
 #endif // ]TODO(OSS Candidate ISS#2710739)
     kRCTDevSettingShakeToShowDevMenu : @YES,
     kRCTDevSettingHotLoadingEnabled : @YES,
-    kRCTDevSettingSecondClickToShowDevMenu: @YES, // TODO(macOS ISS#2323203)
+    kRCTDevSettingSecondClickToShowDevMenu: @YES, // TODO(macOS GH#774)
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource =
       [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
@@ -300,7 +300,7 @@ RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
   return [[self settingForKey:kRCTDevSettingShakeToShowDevMenu] boolValue];
 }
 
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
 RCT_EXPORT_METHOD(setIsSecondaryClickToShowDevMenuEnabled:(BOOL)enabled)
 {
   [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingSecondClickToShowDevMenu];
@@ -310,7 +310,7 @@ RCT_EXPORT_METHOD(setIsSecondaryClickToShowDevMenuEnabled:(BOOL)enabled)
 {
   return [[self settingForKey:kRCTDevSettingSecondClickToShowDevMenu] boolValue];
 }
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
 
 RCT_EXPORT_METHOD(setIsDebuggingRemotely:(BOOL)enabled)
 {
@@ -451,14 +451,14 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
     NSString *const host = bundleURL.host;
     NSNumber *const port = bundleURL.port;
-    // TODO(macOS ISS#2323203) - we could perhaps infer the platform from the bundleURL's query parameters, instead of hardcoding
+    // TODO(macOS GH#774) - we could perhaps infer the platform from the bundleURL's query parameters, instead of hardcoding
     if (self.bridge) {
       [self.bridge enqueueJSCall:@"HMRClient"
                           method:@"setup"
-                            args:@[ kRCTPlatformName, path, host, RCTNullIfNil(port), @(YES) ] // TODO(macOS ISS#2323203)
+                            args:@[ kRCTPlatformName, path, host, RCTNullIfNil(port), @(YES) ] // TODO(macOS GH#774)
                       completion:NULL];
     } else {
-      self.invokeJS(@"HMRClient", @"setup", @[ kRCTPlatformName, path, host, RCTNullIfNil(port), @(YES) ]); // TODO(macOS ISS#2323203)
+      self.invokeJS(@"HMRClient", @"setup", @[ kRCTPlatformName, path, host, RCTNullIfNil(port), @(YES) ]); // TODO(macOS GH#774)
     }
   }
 }
@@ -513,7 +513,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 
 @implementation RCTDevSettings
 
-RCT_EXPORT_MODULE()	// TODO(macOS ISS#2323203)
+RCT_EXPORT_MODULE()	// TODO(macOS GH#774)
 
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource
 {

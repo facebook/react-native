@@ -10,7 +10,7 @@
 
 'use strict';
 
-import AlertMacOS from './AlertMacOS'; // TODO(macOS ISS#2323203)
+import AlertMacOS from './AlertMacOS'; // TODO(macOS GH#774)
 import Platform from '../Utilities/Platform';
 import NativeDialogManagerAndroid, {
   type DialogOptions,
@@ -50,7 +50,7 @@ class Alert {
   ): void {
     if (
       Platform.OS === 'ios' ||
-      Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+      Platform.OS === 'macos' /* TODO(macOS GH#774) */
     ) {
       Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
@@ -153,12 +153,12 @@ class Alert {
           cb && cb(value);
         },
       );
-      // [TODO(macOS ISS#2323203)
+      // [TODO(macOS GH#774)
     } else if (Platform.OS === 'macos') {
       const defaultInputs = [{default: defaultValue}];
       AlertMacOS.prompt(title, message, callbackOrButtons, type, defaultInputs);
     }
-    // ]TODO(macOS ISS#2323203)
+    // ]TODO(macOS GH#774)
   }
 }
 

@@ -17,7 +17,7 @@ import type {
   PressEvent,
   Layout,
   LayoutEvent,
-  ScrollEvent, // TODO(macOS ISS#2323203)
+  ScrollEvent, // TODO(macOS GH#774)
   KeyEvent,
 } from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
@@ -32,11 +32,11 @@ import type {
   AccessibilityNodeInfoProp, // TODO(android ISS)
 } from './ViewAccessibility';
 
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
 import type {DraggedTypesType} from '../View/DraggedType';
 //$FlowFixMe
 import {array} from 'yargs';
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
@@ -68,19 +68,19 @@ type DirectEventProps = $ReadOnly<{|
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility double click gesture.
    */
-  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
+  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS GH#774)
 
   /**
    * This event is fired when the system's preferred scroller style changes.
    * The `preferredScrollerStyle` key will be `legacy` or `overlay`.
    */
-  onPreferredScrollerStyleDidChange?: ?(event: ScrollEvent) => mixed, // TODO(macOS ISS#2323203)
+  onPreferredScrollerStyleDidChange?: ?(event: ScrollEvent) => mixed, // TODO(macOS GH#774)
 
   /**
    * When `acceptsKeyboardFocus` is true, the system will try to invoke this function
    * when the user performs accessibility key down gesture.
    */
-  onScrollKeyDown?: ?(event: ScrollEvent) => mixed, // TODO(macOS ISS#2323203)
+  onScrollKeyDown?: ?(event: ScrollEvent) => mixed, // TODO(macOS GH#774)
 
   /**
    * Invoked on mount and layout changes with:
@@ -433,7 +433,7 @@ type IOSViewProps = $ReadOnly<{|
    */
   accessibilityElementsHidden?: ?boolean,
 
-  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
+  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS GH#774)
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -563,27 +563,27 @@ export type ViewProps = $ReadOnly<{|
    *
    * @platform macos
    */
-  onDragEnter?: (event: MouseEvent) => void, // TODO(macOS ISS#2323203)
+  onDragEnter?: (event: MouseEvent) => void, // TODO(macOS GH#774)
 
   /**
    * Fired when a dragged element leaves a valid drop target
    *
    * @platform macos
    */
-  onDragLeave?: (event: MouseEvent) => void, // TODO(macOS ISS#2323203)
+  onDragLeave?: (event: MouseEvent) => void, // TODO(macOS GH#774)
 
   /**
    * Fired when an element is dropped on a valid drop target
    *
    * @platform macos
    */
-  onDrop?: (event: MouseEvent) => void, // TODO(macOS ISS#2323203)
+  onDrop?: (event: MouseEvent) => void, // TODO(macOS GH#774)
 
   /**
    * Specifies the Tooltip for the view
    * @platform macos
    */
-  tooltip?: ?string, // TODO(macOS ISS#2323203)
+  tooltip?: ?string, // TODO(macOS GH#774)
 
   /**
    * Specifies whether the view should receive the mouse down event when the
@@ -591,18 +591,18 @@ export type ViewProps = $ReadOnly<{|
    *
    * @platform macos
    */
-  acceptsFirstMouse?: ?boolean, // TODO(macOS ISS#2323203)
+  acceptsFirstMouse?: ?boolean, // TODO(macOS GH#774)
 
   /**
    * Specifies whether the view participates in the key view loop as user tabs
    * through different controls.
    */
-  acceptsKeyboardFocus?: ?boolean, // TODO(macOS ISS#2323203)
+  acceptsKeyboardFocus?: ?boolean, // TODO(macOS GH#774)
 
   /**
    * Specifies whether focus ring should be drawn when the view has the first responder status.
    */
-  enableFocusRing?: ?boolean, // TODO(macOS ISS#2323203)
+  enableFocusRing?: ?boolean, // TODO(macOS GH#774)
 
   /*
    * Array of keys to receive key down events for
@@ -625,5 +625,5 @@ export type ViewProps = $ReadOnly<{|
    *
    * @platform macos
    */
-  draggedTypes?: ?DraggedTypesType, // TODO(macOS ISS#2323203)
+  draggedTypes?: ?DraggedTypesType, // TODO(macOS GH#774)
 |}>;

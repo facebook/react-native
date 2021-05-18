@@ -148,7 +148,7 @@ class Picker extends React.Component<PickerProps> {
   render(): React.Node {
     if (
       Platform.OS === 'ios' ||
-      Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+      Platform.OS === 'macos' /* TODO(macOS GH#774) */
     ) {
       /* $FlowFixMe(>=0.81.0 site=react_native_ios_fb) This suppression was
        * added when renaming suppression sites. */

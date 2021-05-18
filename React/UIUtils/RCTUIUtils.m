@@ -9,7 +9,7 @@
 
 #import "RCTUtils.h"
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 RCTDimensions RCTGetDimensions(CGFloat fontScale)
 {
   UIScreen *mainScreen = UIScreen.mainScreen;
@@ -55,7 +55,7 @@ CGFloat RCTGetMultiplierForContentSizeCategory(UIContentSizeCategory category)
   return value > 0.0 ? value : 1.0;
 }
 
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 
 RCTDimensions RCTGetDimensions(RCTPlatformView *rootView) {
   RCTDimensions dimensions = {
@@ -96,4 +96,4 @@ RCTDimensions RCTGetDimensions(RCTPlatformView *rootView) {
   return dimensions;
 }
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)

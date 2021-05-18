@@ -44,9 +44,9 @@ static NSUInteger RCTDeviceFreeMemory() {
 @property (nonatomic, strong) NSOperationQueue *fetchQueue;
 @property (nonatomic, strong) dispatch_semaphore_t lock;
 @property (nonatomic, assign) CGFloat animatedImageScale;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @property (nonatomic, strong) CADisplayLink *displayLink;
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 @end
 
@@ -56,9 +56,9 @@ static NSUInteger RCTDeviceFreeMemory() {
 {
   if (self = [super initWithFrame:frame]) {
     self.lock = dispatch_semaphore_create(1);
-    #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+    #if !TARGET_OS_OSX // TODO(macOS GH#774)
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
-    #endif // TODO(macOS ISS#2323203)
+    #endif // TODO(macOS GH#774)
   }
   return self;
 }
@@ -91,7 +91,7 @@ static NSUInteger RCTDeviceFreeMemory() {
 
 #if TARGET_OS_OSX
   [super setImage:image];
-#else // TODO(macOS ISS#2323203)
+#else // TODO(macOS GH#774)
   [self stop];
   [self resetAnimatedImage];
 
@@ -108,7 +108,7 @@ static NSUInteger RCTDeviceFreeMemory() {
     // Get the current frame and loop count.
     self.totalLoopCount = self.animatedImage.animatedImageLoopCount;
 
-    self.animatedImageScale = UIImageGetScale(image); // TODO(macOS ISS#2323203)
+    self.animatedImageScale = UIImageGetScale(image); // TODO(macOS GH#774)
 
     self.currentFrame = image;
 
@@ -127,7 +127,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   } else {
     super.image = image;
   }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 }
 
 #pragma mark - Private
@@ -149,7 +149,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   return _frameBuffer;
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (CADisplayLink *)displayLink
 {
   // We only need a displayLink in the case of animated images, so short-circuit this code and don't create one for most of the use cases.
@@ -329,6 +329,6 @@ static NSUInteger RCTDeviceFreeMemory() {
     dispatch_semaphore_signal(self.lock);
   }];
 }
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 @end

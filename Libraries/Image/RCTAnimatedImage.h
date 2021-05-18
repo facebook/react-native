@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 @protocol RCTAnimatedImage <NSObject>
 @property (nonatomic, assign, readonly) NSUInteger animatedImageFrameCount;
@@ -17,9 +17,9 @@
 @end
 
 @interface RCTAnimatedImage : UIImage <RCTAnimatedImage>
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
 // This is a known initializer for UIImage, but needs to be exposed publicly for macOS since
 // this is not a known initializer for NSImage
 - (nullable instancetype)initWithData:(NSData *)data scale:(CGFloat)scale;
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
 @end

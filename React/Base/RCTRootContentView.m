@@ -8,7 +8,7 @@
 #import "RCTRootContentView.h"
 
 #import "RCTBridge.h"
-#import "RCTDeviceInfo.h" // TODO(macOS ISS#2323203)
+#import "RCTDeviceInfo.h" // TODO(macOS GH#774)
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
 #import "RCTRootViewInternal.h"
@@ -17,11 +17,11 @@
 #import "UIView+React.h"
 
 @implementation RCTRootContentView
-{ // [TODO(macOS ISS#2323203)
+{ // [TODO(macOS GH#774)
 #if TARGET_OS_OSX
   BOOL _subscribedToWindowNotifications;
 #endif
-} // ]TODO(macOS ISS#2323203)
+} // ]TODO(macOS GH#774)
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
@@ -35,10 +35,10 @@
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
     [_touchHandler attachToView:self];
     [_bridge.uiManager registerRootView:self];
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
     self.postsFrameChangedNotifications = YES;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendFrameChangedEvent:) name:NSViewFrameDidChangeNotification object:self];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
   }
   return self;
 }
@@ -46,7 +46,7 @@
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (nonnull NSCoder *)aDecoder)
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -85,7 +85,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (nonnull NSCoder *)aDecoder)
 #pragma clang diagnostic pop
 }
 
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 - (void)layoutSubviews
 {

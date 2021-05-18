@@ -18,7 +18,7 @@
 
 @end
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 @implementation RCTConvert (UIScrollView)
 
 RCT_ENUM_CONVERTER(
@@ -66,30 +66,30 @@ RCT_ENUM_CONVERTER(
 
 RCT_EXPORT_MODULE()
 
-- (RCTPlatformView *)view // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)view // TODO(macOS GH#774)
 {
   return [[RCTScrollView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(alwaysBounceHorizontal, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(alwaysBounceVertical, BOOL)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(bounces, BOOL) // TODO(macOS ISS#2323203)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(bouncesZoom, BOOL) // TODO(macOS ISS#2323203)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(canCancelContentTouches, BOOL) // TODO(macOS ISS#2323203)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(bounces, BOOL) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(bouncesZoom, BOOL) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(canCancelContentTouches, BOOL) // TODO(macOS GH#774)
 RCT_EXPORT_VIEW_PROPERTY(centerContent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maintainVisibleContentPosition, NSDictionary)
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(decelerationRate, CGFloat) // TODO(macOS ISS#2323203)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(directionalLockEnabled, BOOL) // TODO(macOS ISS#2323203)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(indicatorStyle, UIScrollViewIndicatorStyle) // TODO(macOS ISS#2323203)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode) // TODO(macOS ISS#2323203)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(maximumZoomScale, CGFloat) // TODO(macOS ISS#2323203)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(minimumZoomScale, CGFloat) // TODO(macOS ISS#2323203)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(decelerationRate, CGFloat) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(directionalLockEnabled, BOOL) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(indicatorStyle, UIScrollViewIndicatorStyle) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(maximumZoomScale, CGFloat) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(minimumZoomScale, CGFloat) // TODO(macOS GH#774)
 RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
 #if !TARGET_OS_TV
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(pagingEnabled, BOOL) // TODO(macOS ISS#2323203)
-RCT_REMAP_NOT_OSX_VIEW_PROPERTY(pinchGestureEnabled, scrollView.pinchGestureEnabled, BOOL) // TODO(macOS ISS#2323203)
-RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(scrollsToTop, BOOL) // TODO(macOS ISS#2323203)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(pagingEnabled, BOOL) // TODO(macOS GH#774)
+RCT_REMAP_NOT_OSX_VIEW_PROPERTY(pinchGestureEnabled, scrollView.pinchGestureEnabled, BOOL) // TODO(macOS GH#774)
+RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(scrollsToTop, BOOL) // TODO(macOS GH#774)
 #endif
 RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator, BOOL)
@@ -112,8 +112,8 @@ RCT_EXPORT_VIEW_PROPERTY(onScrollEndDrag, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollBegin, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(DEPRECATED_sendUpdatedChildFrames, BOOL)
-RCT_EXPORT_OSX_VIEW_PROPERTY(onScrollKeyDown, RCTDirectEventBlock) // TODO(macOS ISS#2323203)
-RCT_EXPORT_OSX_VIEW_PROPERTY(onPreferredScrollerStyleDidChange, RCTDirectEventBlock) // TODO(macOS ISS#2323203)
+RCT_EXPORT_OSX_VIEW_PROPERTY(onScrollKeyDown, RCTDirectEventBlock) // TODO(macOS GH#774)
+RCT_EXPORT_OSX_VIEW_PROPERTY(onPreferredScrollerStyleDidChange, RCTDirectEventBlock) // TODO(macOS GH#774)
 RCT_EXPORT_VIEW_PROPERTY(inverted, BOOL)
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
@@ -227,7 +227,7 @@ RCT_EXPORT_METHOD(flashScrollIndicators : (nonnull NSNumber *)reactTag)
           return;
         }
 
-        [view flashScrollIndicators]; // TODO(macOS ISS#2323203)
+        [view flashScrollIndicators]; // TODO(macOS GH#774)
       }];
 }
 

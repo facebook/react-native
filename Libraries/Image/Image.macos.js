@@ -8,7 +8,7 @@
  * @format
  */
 
-// TODO(macOS ISS#2323203)
+// TODO(macOS GH#774)
 
 /* $FlowFixMe allow macOS to share iOS file */
 const Image = require('./Image.ios');

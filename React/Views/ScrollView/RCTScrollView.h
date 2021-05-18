@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTAutoInsetsProtocol.h>
 #import <React/RCTEventDispatcher.h>
@@ -15,11 +15,11 @@
 @protocol UIScrollViewDelegate;
 
 @interface RCTScrollView : RCTView <
-#if TARGET_OS_IPHONE // [TODO(macOS ISS#2323203)
+#if TARGET_OS_IPHONE // [TODO(macOS GH#774)
 	UIScrollViewDelegate,
 #endif
 	RCTScrollableProtocol, RCTAutoInsetsProtocol
-> // ]TODO(macOS ISS#2323203)
+> // ]TODO(macOS GH#774)
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
@@ -69,10 +69,10 @@
 @property (nonatomic, copy) RCTDirectEventBlock onScrollEndDrag;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollBegin;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollEnd;
-@property (nonatomic, copy) RCTDirectEventBlock onScrollKeyDown; // TODO(macOS ISS#2323203)
-@property (nonatomic, copy) RCTDirectEventBlock onPreferredScrollerStyleDidChange; // TODO(macOS ISS#2323203)
+@property (nonatomic, copy) RCTDirectEventBlock onScrollKeyDown; // TODO(macOS GH#774)
+@property (nonatomic, copy) RCTDirectEventBlock onPreferredScrollerStyleDidChange; // TODO(macOS GH#774)
 
-- (void)flashScrollIndicators; // TODO(macOS ISS#2323203)
+- (void)flashScrollIndicators; // TODO(macOS GH#774)
 
 @end
 

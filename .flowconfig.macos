@@ -1,5 +1,5 @@
 [ignore]
-; TODO(macOS ISS#2323203)
+; TODO(macOS GH#774)
 ; We fork some components by platform
 .*/*[.]ios.js
 .*/*[.]android.js
@@ -13,7 +13,7 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; TODO(macOS ISS#2323203): Ignore metro.config.js
+; TODO(macOS GH#774): Ignore metro.config.js
 <PROJECT_ROOT>/metro.config.js
 
 ; These should not be required directly

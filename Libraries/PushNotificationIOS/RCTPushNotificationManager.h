@@ -11,23 +11,23 @@ extern NSString *const RCTRemoteNotificationReceived;
 
 @interface RCTPushNotificationManager : RCTEventEmitter
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 typedef void (^RCTRemoteNotificationCallback)(UIBackgroundFetchResult result);
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 + (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler;
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification;
-#endif // [TODO(macOS ISS#2323203)
+#endif // [TODO(macOS GH#774)
 #if TARGET_OS_OSX
 + (void)didReceiveUserNotification:(NSUserNotification *)notification;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 + (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 #endif
 

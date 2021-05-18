@@ -39,9 +39,9 @@
 #import "RCTDevMenu.h"
 #endif // ]TODO(OSS Candidate ISS#2710739)
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 #define RCT_LAYOUT_THROTTLE 0.25
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
@@ -58,10 +58,10 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   BOOL _passThroughTouches;
   CGSize _intrinsicContentSize;
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
   NSDate *_lastLayout;
   BOOL _throttleLayout;
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -90,9 +90,9 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
     _minimumSize = CGSizeZero;
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
     _lastLayout = [NSDate new];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidReload)
@@ -182,7 +182,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   return fitSize;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 // TODO: https://github.com/microsoft/react-native-macos/issues/459
 // This is a workaround for window resizing events overloading the shadow queue:
 //  - https://github.com/microsoft/react-native-macos/issues/322
@@ -209,15 +209,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     }
   }
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
   _contentView.frame = self.bounds;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   _loadingView.center = (CGPoint){CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)};
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   NSRect bounds = self.bounds;
   NSSize loadingViewSize = _loadingView.frame.size;
   CGFloat scale = self.window.backingScaleFactor;
@@ -227,7 +227,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     RCTRoundPixelValue(bounds.origin.x + ((bounds.size.width - loadingViewSize.width) / 2), scale),
     RCTRoundPixelValue(bounds.origin.y + ((bounds.size.height - loadingViewSize.height) / 2), scale)
   );
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)setMinimumSize:(CGSize)minimumSize
@@ -254,11 +254,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (BOOL)canBecomeFirstResponder
 {
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
   return YES;
 #else
   return NO; // commit 01aba7e8: Merged PR 94656: Enable keyboard accessibility and support for focus ring drawing for button, textfields etc
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 }
 
 - (void)setLoadingView:(RCTUIView *)loadingView // TODO(macOS ISS#3536887)
@@ -285,7 +285,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
           dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_loadingViewFadeDelay * NSEC_PER_SEC)),
           dispatch_get_main_queue(),
           ^{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
             [UIView transitionWithView:self
                 duration:self->_loadingViewFadeDuration
                 options:UIViewAnimationOptionTransitionCrossDissolve
@@ -295,7 +295,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
                 completion:^(__unused BOOL finished) {
                   [self->_loadingView removeFromSuperview];
                 }];
-#elif TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#elif TARGET_OS_OSX // [TODO(macOS GH#774)
                        [NSAnimationContext runAnimationGroup:^(__unused NSAnimationContext *context) {
                          self->_loadingView.animator.alphaValue = 0.0;
                        } completionHandler:^{
@@ -303,7 +303,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
                          self->_loadingView.hidden = YES;
                          self->_loadingView.alphaValue = 1.0;
                        }];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
                      });
     } else {
       _loadingView.hidden = YES;
@@ -392,10 +392,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   _contentView.sizeFlexibility = _sizeFlexibility;
 }
 
-- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // TODO(macOS GH#774)
 {
   // The root view itself should never receive touches
-  RCTPlatformView *hitView = [super hitTest:point withEvent:event]; // TODO(macOS ISS#2323203)
+  RCTPlatformView *hitView = [super hitTest:point withEvent:event]; // TODO(macOS GH#774)
   if (self.passThroughTouches && hitView == self) {
     return nil;
   }
@@ -428,11 +428,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   _intrinsicContentSize = intrinsicContentSize;
 
   [self invalidateIntrinsicContentSize];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   [self.superview setNeedsLayout];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 	[self.superview setNeedsLayout:YES];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
   // Don't notify the delegate if the content remains invisible or its size has not changed
   if (bothSizesHaveAZeroDimension || sizesAreEqual) {
@@ -440,11 +440,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
 
   [self invalidateIntrinsicContentSize];
-  #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  #if !TARGET_OS_OSX // TODO(macOS GH#774)
 	[self.superview setNeedsLayout];
-  #else // [TODO(macOS ISS#2323203)
+  #else // [TODO(macOS GH#774)
 	  [self.superview setNeedsLayout:YES];
-  #endif // ]TODO(macOS ISS#2323203)
+  #endif // ]TODO(macOS GH#774)
 
   [_delegate rootViewDidChangeIntrinsicSize:self];
 }
@@ -461,7 +461,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [self showLoadingView];
 }
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
@@ -473,7 +473,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
                     RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : self.traitCollection,
                   }];
 }
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 - (void)viewDidChangeEffectiveAppearance {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
                                                       object:self
@@ -482,10 +482,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
                                                     }];
 
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (NSMenu *)menuForEvent:(NSEvent *)event
 {
   NSMenu *menu = nil;
@@ -502,7 +502,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
   return menu;
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 - (void)dealloc
 {

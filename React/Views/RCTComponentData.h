@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
 #import <React/RCTComponent.h>
 #import <React/RCTDefines.h>
@@ -13,7 +13,7 @@
 
 @class RCTBridge;
 @class RCTShadowView;
-@class RCTUIView; // TODO(macOS ISS#2323203)
+@class RCTUIView; // TODO(macOS GH#774)
 
 @interface RCTComponentData : NSObject
 
@@ -23,7 +23,7 @@
 
 - (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
-- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag; // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag; // TODO(macOS GH#774)
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;

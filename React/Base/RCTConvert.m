@@ -16,9 +16,9 @@
 #import "RCTParserUtils.h"
 #import "RCTUtils.h"
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 #import "RCTDynamicColor.h"
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @implementation RCTConvert
 
@@ -383,7 +383,7 @@ RCT_ENUM_CONVERTER(
     NSWritingDirectionNatural,
     integerValue)
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 RCT_ENUM_CONVERTER(
     UITextAutocapitalizationType,
     (@{
@@ -532,7 +532,7 @@ RCT_ENUM_CONVERTER(
     UIBarStyleDefault,
     integerValue)
 #endif
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
 RCT_MULTI_ENUM_CONVERTER(NSTextCheckingTypes, (@{
   @"ortography": @(NSTextCheckingTypeOrthography),
   @"spelling": @(NSTextCheckingTypeSpelling),
@@ -548,7 +548,7 @@ RCT_MULTI_ENUM_CONVERTER(NSTextCheckingTypes, (@{
   @"phoneNumber": @(NSTextCheckingTypePhoneNumber),
   @"transitInformation": @(NSTextCheckingTypeTransitInformation),
 }), NSTextCheckingTypeOrthography, unsignedLongLongValue)
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 static void convertCGStruct(const char *type, NSArray *fields, CGFloat *result, id json)
 {
@@ -640,7 +640,7 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
   static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
   if (colorMap == nil) {
     NSMutableDictionary<NSString *, NSDictionary *> *map = [@{
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
       // https://developer.apple.com/documentation/appkit/nscolor/ui_element_colors
       // Label Colors
       @"labelColor": @{}, // 10_10
@@ -719,7 +719,7 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
       @"systemPurpleColor": @{}, // 10_10
       @"systemRedColor": @{},    // 10_10
       @"systemYellowColor": @{}, // 10_10
-#else // ]TODO(macOS ISS#2323203)
+#else // ]TODO(macOS GH#774)
       // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
       // Label Colors
       @"labelColor" : @{
@@ -844,7 +844,7 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
         // iOS 13.0
         RCTFallbackARGB : @(0xFFf2f2f7)
       },
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
     } mutableCopy];
     // The color names are the Objective-C UIColor selector names,
     // but Swift selector names are valid as well, so make aliases.
@@ -883,7 +883,7 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
   return colorMap;
 }
 
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
 /** Returns a UIColor based on a semantic color name.
  *  Returns nil if the semantic color name is invalid.
  */
@@ -925,7 +925,7 @@ static RCTUIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
   }
   return color;
 }
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
 
 /** Returns a comma seperated list of the valid semantic color names
  */
@@ -944,12 +944,12 @@ static NSString *RCTSemanticColorNames()
   return names;
 }
 
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
 + (RCTUIColor *)NSColor:(id)json
 {
   return [RCTConvert UIColor:json];
 }
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
 
 // [TODO(macOS GH#750)
 #if TARGET_OS_OSX
@@ -992,7 +992,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
     CGFloat b = (argb & 0xFF) / 255.0;
     return [RCTUIColor colorWithRed:r green:g blue:b alpha:a]; // TODO(OSS Candidate ISS#2710739)
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
   } else if ([json isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dictionary = json;
     id value = nil;
@@ -1047,7 +1047,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
         }
 #endif
 #endif
-// [TODO(macOS ISS#2323203)
+// [TODO(macOS GH#774)
       } else {
         RCTLogConvertError(json, @"a UIColor. Expected a dynamic appearance aware color.");
         return nil;
@@ -1072,7 +1072,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
       RCTLogConvertError(json, @"a UIColor. Expected a semantic color, dynamic appearance aware color, or color with system effect"); //TODO(macOS GH#750)
       return nil;
     }
-// ]TODO(macOS ISS#2323203)
+// ]TODO(macOS GH#774)
   } else {
     RCTLogConvertError(json, @"a UIColor. Did you forget to call processColor() on the JS side?");
     return nil;
@@ -1165,7 +1165,7 @@ RCT_JSON_ARRAY_CONVERTER(NSNumber)
   return colors;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 + (NSArray<NSPasteboardType> *)NSPasteboardType:(id)json
 {
   NSString *type = [self NSString:json];
@@ -1193,7 +1193,7 @@ RCT_JSON_ARRAY_CONVERTER(NSNumber)
   }
   return @[];
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 static id RCTConvertPropertyListValue(id json)
 {
@@ -1343,21 +1343,21 @@ RCT_ENUM_CONVERTER(
 RCT_ENUM_CONVERTER(
     RCTAnimationType,
     (@{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
       @"spring" : @(RCTAnimationTypeSpring),
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
       @"linear" : @(RCTAnimationTypeLinear),
       @"easeIn" : @(RCTAnimationTypeEaseIn),
       @"easeOut" : @(RCTAnimationTypeEaseOut),
       @"easeInEaseOut" : @(RCTAnimationTypeEaseInEaseOut),
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
       @"keyboard" : @(RCTAnimationTypeKeyboard),
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
     }),
     RCTAnimationTypeEaseInEaseOut,
     integerValue)
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX // [TODO(macOS GH#774)
 + (NSString*)accessibilityRoleFromTrait:(NSString*)trait
 {
   static NSDictionary<NSString *, NSString *> *traitOrRoleToAccessibilityRole;
@@ -1422,7 +1422,7 @@ RCT_ENUM_CONVERTER(
   }
   return NSAccessibilityUnknownRole;
 }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
 @end
 
@@ -1476,29 +1476,29 @@ RCT_ENUM_CONVERTER(
       RCTLogConvertError(json, @"an image. File not found.");
     }
   } else if ([scheme isEqualToString:@"data"]) {
-    image = UIImageWithData([NSData dataWithContentsOfURL:URL]); // TODO(macOS ISS#2323203)
+    image = UIImageWithData([NSData dataWithContentsOfURL:URL]); // TODO(macOS GH#774)
   } else if ([scheme isEqualToString:@"http"] && imageSource.packagerAsset) {
-    image = UIImageWithData([NSData dataWithContentsOfURL:URL]); // TODO(macOS ISS#2323203)
+    image = UIImageWithData([NSData dataWithContentsOfURL:URL]); // TODO(macOS GH#774)
   } else {
     RCTLogConvertError(json, @"an image. Only local files or data URIs are supported.");
     return nil;
   }
 
-  CGImageRef imageRef = UIImageGetCGImageRef(image); // TODO(macOS ISS#2323203)
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  CGImageRef imageRef = UIImageGetCGImageRef(image); // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   CGFloat scale = imageSource.scale;
   if (!scale && imageSource.size.width) {
     // If no scale provided, set scale to image width / source width
-    scale = CGImageGetWidth(imageRef) / imageSource.size.width; // TODO(macOS ISS#2323203)
+    scale = CGImageGetWidth(imageRef) / imageSource.size.width; // TODO(macOS GH#774)
   }
   if (scale) {
     image = [UIImage imageWithCGImage:imageRef scale:scale orientation:image.imageOrientation];
   }
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   if (!CGSizeEqualToSize(image.size, imageSource.size)) {
     image = [[NSImage alloc] initWithCGImage:imageRef size:imageSource.size];
   }
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
   if (!CGSizeEqualToSize(imageSource.size, CGSizeZero) && !CGSizeEqualToSize(imageSource.size, image.size)) {
     RCTLogError(
@@ -1513,7 +1513,7 @@ RCT_ENUM_CONVERTER(
 
 + (CGImageRef)CGImage:(id)json
 {
-  return UIImageGetCGImageRef([self UIImage:json]); // TODO(macOS ISS#2323203)
+  return UIImageGetCGImageRef([self UIImage:json]); // TODO(macOS GH#774)
 }
 
 @end

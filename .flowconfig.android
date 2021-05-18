@@ -1,7 +1,7 @@
 [ignore]
 ; We fork some components by platform
 .*/*[.]ios.js
-; TODO(macOS ISS#2323203):
+; TODO(macOS GH#774):
 .*/*[.]macos.js
 
 ; Ignore templates for 'react-native init'
@@ -13,7 +13,7 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; TODO(macOS ISS#2323203): Ignore metro.config.js
+; TODO(macOS GH#774): Ignore metro.config.js
 <PROJECT_ROOT>/metro.config.js
 
 ; These should not be required directly
@@ -47,7 +47,7 @@ module.file_ext=.js
 module.file_ext=.json
 module.file_ext=.android.js
 
-# TODO(macOS ISS#2323203):
+# TODO(macOS GH#774):
 module.system.haste.name_reducers='^\(.*\)\.macos$' -> '\1'
 
 munge_underscores=true

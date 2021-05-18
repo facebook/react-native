@@ -192,11 +192,11 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     attributes[RCTTextAttributesIsHighlightedAttributeName] = @YES;
   }
 
-  // [TODO(macOS ISS#2323203)
+  // [TODO(macOS GH#774)
   if (_fontSmoothing != RCTFontSmoothingAuto) {
     attributes[RCTTextAttributesFontSmoothingAttributeName] = @(_fontSmoothing);
   }
-  // ]TODO(macOS ISS#2323203)
+  // ]TODO(macOS GH#774)
 
   if (_tag) {
     attributes[RCTTextAttributesTagAttributeName] = _tag;

@@ -87,18 +87,18 @@ export type TextLayoutEvent = SyntheticEvent<
 
 export type PressEvent = ResponderSyntheticEvent<
   $ReadOnly<{|
-    altKey?: ?boolean, // TODO(macOS ISS#2323203)
-    button?: ?number, // TODO(macOS ISS#2323203)
+    altKey?: ?boolean, // TODO(macOS GH#774)
+    button?: ?number, // TODO(macOS GH#774)
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
-    ctrlKey?: ?boolean, // TODO(macOS ISS#2323203)
+    ctrlKey?: ?boolean, // TODO(macOS GH#774)
     force: number,
     identifier: number,
     locationX: number,
     locationY: number,
-    metaKey?: ?boolean, // TODO(macOS ISS#2323203)
+    metaKey?: ?boolean, // TODO(macOS GH#774)
     pageX: number,
     pageY: number,
-    shiftKey?: ?boolean, // TODO(macOS ISS#2323203)
+    shiftKey?: ?boolean, // TODO(macOS GH#774)
     target: ?number,
     timestamp: number,
     touches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
@@ -135,8 +135,8 @@ export type ScrollEvent = SyntheticEvent<
     |}>,
     zoomScale?: number,
     responderIgnoreScroll?: boolean,
-    key?: string, // TODO(macOS ISS#2323203)
-    preferredScrollerStyle?: string, // TODO(macOS ISS#2323203)
+    key?: string, // TODO(macOS GH#774)
+    preferredScrollerStyle?: string, // TODO(macOS GH#774)
   |}>,
 >;
 

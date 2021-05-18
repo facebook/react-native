@@ -23,7 +23,7 @@
   UILabel *_label;
 
   CGFloat *_frames;
-  RCTUIColor *_color; // TODO(macOS ISS#2323203)
+  RCTUIColor *_color; // TODO(macOS GH#774)
 
   NSTimeInterval _prevTime;
   NSUInteger _frameCount;
@@ -34,7 +34,7 @@
   NSUInteger _height;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame color:(RCTUIColor *)color // TODO(macOS ISS#2323203)
+- (instancetype)initWithFrame:(CGRect)frame color:(RCTUIColor *)color // TODO(macOS GH#774)
 {
   if ((self = [super initWithFrame:frame])) {
     _frameCount = -1;

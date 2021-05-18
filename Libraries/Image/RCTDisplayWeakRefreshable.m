@@ -9,9 +9,9 @@
 
 @implementation RCTDisplayWeakRefreshable
 
-+ (RCTPlatformDisplayLink *)displayLinkWithWeakRefreshable:(id<RCTDisplayRefreshable>)refreshable { // TODO(macOS ISS#2323203)
++ (RCTPlatformDisplayLink *)displayLinkWithWeakRefreshable:(id<RCTDisplayRefreshable>)refreshable { // TODO(macOS GH#774)
   RCTDisplayWeakRefreshable *target = [[RCTDisplayWeakRefreshable alloc] initWithRefreshable:refreshable];
-  return [RCTPlatformDisplayLink displayLinkWithTarget:target selector:@selector(displayDidRefresh:)]; // TODO(macOS ISS#2323203)
+  return [RCTPlatformDisplayLink displayLinkWithTarget:target selector:@selector(displayDidRefresh:)]; // TODO(macOS GH#774)
 }
 
 - (instancetype)initWithRefreshable:(id<RCTDisplayRefreshable>)refreshable
@@ -22,7 +22,7 @@
   return self;
 }
 
-- (void)displayDidRefresh:(RCTPlatformDisplayLink *)displayLink { // TODO(macOS ISS#2323203)
+- (void)displayDidRefresh:(RCTPlatformDisplayLink *)displayLink { // TODO(macOS GH#774)
   [_refreshable displayDidRefresh:displayLink];
 }
 

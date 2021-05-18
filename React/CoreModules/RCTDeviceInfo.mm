@@ -12,10 +12,10 @@
 #import <React/RCTAssert.h>
 #import <React/RCTConstants.h>
 #import <React/RCTEventDispatcher.h>
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
-#import "UIView+React.h" // TODO(macOS ISS#2323203)
+#import "UIView+React.h" // TODO(macOS GH#774)
 
 #import "CoreModulesPlugins.h"
 
@@ -25,7 +25,7 @@ using namespace facebook::react;
 @end
 
 @implementation RCTDeviceInfo {
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
   UIInterfaceOrientation _currentInterfaceOrientation;
   NSDictionary *_currentInterfaceDimensions;
 #endif
@@ -49,14 +49,14 @@ RCT_EXPORT_MODULE()
 {
   _bridge = bridge;
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -82,7 +82,7 @@ RCT_EXPORT_MODULE()
 static BOOL RCTIsIPhoneX()
 {
   static BOOL isIPhoneX = NO;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   static dispatch_once_t onceToken;
 
   dispatch_once(&onceToken, ^{
@@ -96,23 +96,23 @@ static BOOL RCTIsIPhoneX()
     isIPhoneX = CGSizeEqualToSize(screenSize, iPhoneXScreenSize) ||
         CGSizeEqualToSize(screenSize, iPhoneXMaxScreenSize) || CGSizeEqualToSize(screenSize, iPhoneXRScreenSize);
   });
-#endif // TODO(macOS ISS#2323203)
+#endif // TODO(macOS GH#774)
   return isIPhoneX;
 }
 
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // [TODO(macOS GH#774)
 NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 #else
 NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 {
   RCTAssertMainQueue();
 
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
   RCTDimensions dimensions = RCTGetDimensions(rootView);
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 
   __typeof(dimensions.window) window = dimensions.window;
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
@@ -139,11 +139,11 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 - (NSDictionary<NSString *, id> *)getConstants
 {
   return @{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     @"Dimensions" : RCTExportedDimensions(_bridge),
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     @"Dimensions": RCTExportedDimensions(nil),
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
     // Note:
     // This prop is deprecated and will be removed in a future release.
     // Please use this only for a quick and temporary solution.
@@ -160,16 +160,16 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     body:RCTExportedDimensions(bridge)];
-#else // [TODO(macOS ISS#2323203)
+#else // [TODO(macOS GH#774)
     body:RCTExportedDimensions(nil)];
-#endif // ]TODO(macOS ISS#2323203)
+#endif // ]TODO(macOS GH#774)
 #pragma clang diagnostic pop
   });
 }
 
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
 
 - (void)interfaceOrientationDidChange
 {

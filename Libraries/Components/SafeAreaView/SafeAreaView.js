@@ -35,7 +35,7 @@ let exported: React.AbstractComponent<
  * sensor housing area on iPhone X).
  */
 if (Platform.OS !== 'ios') {
-  // TODO(macOS ISS#2323203)
+  // TODO(macOS GH#774)
   exported = React.forwardRef<Props, React.ElementRef<HostComponent<mixed>>>(
     function SafeAreaView(props, forwardedRef) {
       const {emulateUnlessSupported, ...localProps} = props;

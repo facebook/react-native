@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTPlatformDisplayLink.h" // TODO(macOS ISS#2323203)
+#import "RCTPlatformDisplayLink.h" // TODO(macOS GH#774)
 #import "RCTAssert.h"
 #import "RCTBridgeModule.h"
 #import "RCTFrameUpdate.h"
@@ -25,7 +25,7 @@
   RCTAssert(_runLoop == [NSRunLoop currentRunLoop], @"This method must be called on the CADisplayLink run loop")
 
 @implementation RCTDisplayLink {
-  RCTPlatformDisplayLink *_jsDisplayLink; // TODO(macOS ISS#2323203)
+  RCTPlatformDisplayLink *_jsDisplayLink; // TODO(macOS GH#774)
   NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
   NSRunLoop *_runLoop;
 }
@@ -34,7 +34,7 @@
 {
   if ((self = [super init])) {
     _frameUpdateObservers = [NSMutableSet new];
-    _jsDisplayLink = [RCTPlatformDisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)]; // TODO(macOS ISS#2323203)
+    _jsDisplayLink = [RCTPlatformDisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)]; // TODO(macOS GH#774)
   }
 
   return self;
@@ -108,7 +108,7 @@
   }
 }
 
-- (void)_jsThreadUpdate:(RCTPlatformDisplayLink *)displayLink // TODO(macOS ISS#2323203)
+- (void)_jsThreadUpdate:(RCTPlatformDisplayLink *)displayLink // TODO(macOS GH#774)
 {
   RCTAssertRunLoop();
 
