@@ -41,7 +41,8 @@ export type PermissionType =
   | 'android.permission.RECEIVE_WAP_PUSH'
   | 'android.permission.RECEIVE_MMS'
   | 'android.permission.READ_EXTERNAL_STORAGE'
-  | 'android.permission.WRITE_EXTERNAL_STORAGE';
+  | 'android.permission.WRITE_EXTERNAL_STORAGE'
+  | 'android.permission.ACTIVITY_RECOGNITION';
 */
 
 export interface Spec extends TurboModule {
