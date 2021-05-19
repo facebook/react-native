@@ -42,7 +42,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
   private static final String TAG = "ReactTextAnchorViewManager";
-  private Integer mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
+  private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
 
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
