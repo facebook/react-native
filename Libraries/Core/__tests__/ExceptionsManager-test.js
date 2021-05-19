@@ -358,6 +358,18 @@ describe('ExceptionsManager', () => {
       expect(mockError.mock.calls[0]).toEqual(args);
     });
 
+    test('logging a warning-looking object', () => {
+      // Forces `strignifySafe` to invoke `toString()`.
+      const object = {toString: () => 'Warning: Some error may have happened'};
+      object.cycle = object;
+
+      const args = [object];
+
+      console.error(...args);
+
+      expect(nativeReportException).toHaveBeenCalled();
+    });
+
     test('reportErrorsAsExceptions = false', () => {
       console.reportErrorsAsExceptions = false;
       const message = 'Some error happened';
