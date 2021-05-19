@@ -130,8 +130,7 @@ Scheduler::Scheduler(
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-  enableNewDiffer_ =
-      reactNativeConfig_->getBool("react_fabric:enable_new_differ_h1_2021_ios");
+  enableNewDiffer_ = true;
 #endif
 }
 
