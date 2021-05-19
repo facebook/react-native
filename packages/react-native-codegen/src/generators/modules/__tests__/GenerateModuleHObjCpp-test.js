@@ -25,6 +25,7 @@ describe('GenerateModuleHObjCpp', () => {
           fixtureName,
           fixture,
           'com.facebook.fbreact.specs',
+          false,
         );
         expect(
           new Map([[`${fixtureName}.h`, output.get(`${fixtureName}.h`)]]),
