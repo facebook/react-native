@@ -12,7 +12,11 @@
 
 const DevSettings = require('./DevSettings');
 const invariant = require('invariant');
-const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
+//corrected dependency for HMRClient
+const MetroHMRClient =
+  Platform.OS === 'android'
+    ? require('../../../metro/src/lib/bundle-modules/HMRClient')
+    : require('metro/src/lib/bundle-modules/HMRClient');
 const Platform = require('./Platform');
 const prettyFormat = require('pretty-format');
 
@@ -119,7 +123,7 @@ const HMRClient: HMRClientNativeInterface = {
         JSON.stringify({
           type: 'log',
           level,
-          data: data.map(item =>
+          data: data.map((item) =>
             typeof item === 'string'
               ? item
               : prettyFormat(item, {
@@ -163,7 +167,7 @@ const HMRClient: HMRClientNativeInterface = {
       `ws://${wsHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
     );
 
-    client.on('connection-error', e => {
+    client.on('connection-error', (e) => {
       let error = `Cannot connect to the Metro server.
 
 Try the following to fix the issue:
@@ -208,7 +212,7 @@ Error: ${e.message}`;
       LoadingView.hide();
     });
 
-    client.on('error', data => {
+    client.on('error', (data) => {
       LoadingView.hide();
 
       if (data.type === 'GraphNotFoundError') {
@@ -229,7 +233,7 @@ Error: ${e.message}`;
       }
     });
 
-    client.on('close', data => {
+    client.on('close', (data) => {
       LoadingView.hide();
       setHMRUnavailableReason('Disconnected from the Metro server.');
     });
@@ -297,8 +301,8 @@ function dismissRedbox() {
   ) {
     NativeRedBox.dismiss();
   } else {
-    const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
-      .default;
+    const NativeExceptionsManager =
+      require('../Core/NativeExceptionsManager').default;
     NativeExceptionsManager &&
       NativeExceptionsManager.dismissRedbox &&
       NativeExceptionsManager.dismissRedbox();

@@ -403,6 +403,16 @@ android {
         testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
     }
 
+    buildTypes {
+        debug {}
+        qa {}
+        fox {}
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir("$buildDir/react-ndk/exported")

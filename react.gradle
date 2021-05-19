@@ -176,8 +176,11 @@ afterEvaluate {
                 doLast {
                     def hermesFlags;
                     def hbcTempFile = file("${jsBundleFile}.hbc")
+                    def generateSourceMap = config."generateSourceMapIn${targetName}" != null
+                        ? config."generateSourceMapIn${targetName}"
+                        : false
                     exec {
-                        if (targetName.toLowerCase().contains("release")) {
+                        if (targetName.toLowerCase().contains("release") || generateSourceMap) {
                             // Can't use ?: since that will also substitute valid empty lists
                             hermesFlags = config.hermesFlagsRelease
                             if (hermesFlags == null) hermesFlags = ["-O", "-output-source-map"]
@@ -318,7 +321,8 @@ afterEvaluate {
         // This should really be done by packaging all Hermes releated libs into
         // two separate HermesDebug and HermesRelease AARs, but until then we'll
         // kludge it by deleting the .so files out of the /transforms/ directory.
-        def isRelease = targetName.toLowerCase().contains("release")
+        def isRelease = targetName.toLowerCase().contains("release")||
+            targetName.toLowerCase().contains("qa") || targetName.toLowerCase().contains("fox")
         def libDir = "$buildDir/intermediates/transforms/"
         def vmSelectionAction = {
             fileTree(libDir).matching {

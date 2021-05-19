@@ -154,12 +154,12 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   private void dismiss() {
     UiThreadUtil.assertOnUiThread();
-
-    if (mDialog != null) {
+    Activity currentActivity = ((ReactContext) getContext()).getCurrentActivity();
+    if (currentActivity!=null && !currentActivity.isFinishing() && mDialog != null) {
       if (mDialog.isShowing()) {
         Activity dialogContext =
             ContextUtils.findContextOfType(mDialog.getContext(), Activity.class);
-        if (dialogContext == null || !dialogContext.isFinishing()) {
+        if (dialogContext != null && !dialogContext.isFinishing()) {
           mDialog.dismiss();
         }
       }
@@ -236,6 +236,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     // If the existing Dialog is currently up, we may need to redraw it or we may be able to update
     // the property without having to recreate the dialog
+    Activity currentReactActivity = ((ReactContext) getContext()).getCurrentActivity();
+    if (currentReactActivity == null || currentReactActivity.isFinishing()) {
+      return;
+    }
     if (mDialog != null) {
       if (mPropertyRequiresNewDialog) {
         dismiss();
@@ -348,24 +352,40 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     Activity currentActivity = getCurrentActivity();
     if (currentActivity != null) {
-      int activityWindowFlags = currentActivity.getWindow().getAttributes().flags;
-      if ((activityWindowFlags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
-        mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-      } else {
-        mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      try{
+        int activityWindowFlags = currentActivity.getWindow().getAttributes().flags;
+        if ((activityWindowFlags
+          & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
+          mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+          mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+      }catch(IllegalArgumentException e){
+        handleDialogException();
       }
     }
 
-    if (mTransparent) {
-      mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-    } else {
-      mDialog.getWindow().setDimAmount(0.5f);
-      mDialog
-          .getWindow()
-          .setFlags(
-              WindowManager.LayoutParams.FLAG_DIM_BEHIND,
-              WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    try{
+      if (mTransparent) {
+        mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+      } else {
+        mDialog.getWindow().setDimAmount(0.5f);
+        mDialog.getWindow().setFlags(
+          WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+          WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+      }
+    }catch(IllegalArgumentException e){
+      handleDialogException();
     }
+  }
+
+  private void handleDialogException(){
+    mDialog = null;
+    ViewGroup parent = (ViewGroup) mHostView.getParent();
+    if(parent!= null){
+      parent.removeViewAt(0);
+    }
+    showOrUpdate();
   }
 
   /**

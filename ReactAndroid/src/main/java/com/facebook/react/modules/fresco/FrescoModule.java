@@ -90,7 +90,7 @@ public class FrescoModule extends ReactContextBaseJavaModule
   public void initialize() {
     super.initialize();
     getReactApplicationContext().addLifecycleEventListener(this);
-    if (!hasBeenInitialized()) {
+    if (!hasBeenInitialized() && !Fresco.hasBeenInitialized()) {
       if (mConfig == null) {
         mConfig = getDefaultConfig(getReactApplicationContext());
       }
@@ -170,5 +170,11 @@ public class FrescoModule extends ReactContextBaseJavaModule
     if (hasBeenInitialized() && mClearOnDestroy) {
       Fresco.getImagePipeline().clearMemoryCaches();
     }
+  }
+
+  //enable fresco module override for autolinking
+  @Override
+  public boolean canOverrideExistingModule() {
+    return true;
   }
 }
