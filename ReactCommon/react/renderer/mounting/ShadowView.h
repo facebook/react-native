@@ -14,6 +14,7 @@
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/debug/flags.h>
 
 namespace facebook {
 namespace react {
@@ -40,6 +41,7 @@ struct ShadowView final {
 
   ComponentName componentName{};
   ComponentHandle componentHandle{};
+  SurfaceId surfaceId{};
   Tag tag{};
   Props::Shared props{};
   EventEmitter::Shared eventEmitter{};
@@ -62,8 +64,47 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
  *
  */
 struct ShadowViewNodePair final {
-  using List = better::
+  using NonOwningList = better::
+      small_vector<ShadowViewNodePair *, kShadowNodeChildrenSmallVectorSize>;
+  using OwningList = better::
       small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
+
+  ShadowView shadowView;
+  ShadowNode const *shadowNode;
+  bool flattened{false};
+  bool isConcreteView{true};
+  Point contextOrigin{0, 0};
+
+  size_t mountIndex{0};
+
+  /**
+   * This is nullptr unless `inOtherTree` is set to true.
+   * We rely on this only for marginal cases. TODO: could we
+   * rely on this more heavily to simplify the diffing algorithm
+   * overall?
+   */
+  mutable ShadowViewNodePair const *otherTreePair{nullptr};
+
+  /*
+   * The stored pointer to `ShadowNode` represents an identity of the pair.
+   */
+  bool operator==(const ShadowViewNodePair &rhs) const;
+  bool operator!=(const ShadowViewNodePair &rhs) const;
+
+  bool inOtherTree() const {
+    return this->otherTreePair != nullptr;
+  }
+};
+
+/*
+ * Describes pair of a `ShadowView` and a `ShadowNode`.
+ * This is not exposed to the mounting layer.
+ *
+ */
+struct ShadowViewNodePairLegacy final {
+  using OwningList = better::small_vector<
+      ShadowViewNodePairLegacy,
+      kShadowNodeChildrenSmallVectorSize>;
 
   ShadowView shadowView;
   ShadowNode const *shadowNode;
@@ -77,8 +118,8 @@ struct ShadowViewNodePair final {
   /*
    * The stored pointer to `ShadowNode` represents an identity of the pair.
    */
-  bool operator==(const ShadowViewNodePair &rhs) const;
-  bool operator!=(const ShadowViewNodePair &rhs) const;
+  bool operator==(const ShadowViewNodePairLegacy &rhs) const;
+  bool operator!=(const ShadowViewNodePairLegacy &rhs) const;
 };
 
 } // namespace react
@@ -91,10 +132,12 @@ struct hash<facebook::react::ShadowView> {
   size_t operator()(const facebook::react::ShadowView &shadowView) const {
     return folly::hash::hash_combine(
         0,
+        shadowView.surfaceId,
         shadowView.componentHandle,
         shadowView.tag,
         shadowView.props,
         shadowView.eventEmitter,
+        shadowView.layoutMetrics,
         shadowView.state);
   }
 };

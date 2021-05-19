@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
@@ -78,7 +76,6 @@ const PASSTHROUGH_PROPS = [
   'accessibilityLabel',
   'accessibilityLiveRegion',
   'accessibilityRole',
-  'accessibilityState',
   'accessibilityValue',
   'accessibilityViewIsModal',
   'hitSlop',
@@ -118,6 +115,13 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
     const elementProps: {[string]: mixed, ...} = {
       ...eventHandlersWithoutBlurAndFocus,
       accessible: this.props.accessible !== false,
+      accessibilityState:
+        this.props.disabled != null
+          ? {
+              ...this.props.accessibilityState,
+              disabled: this.props.disabled,
+            }
+          : this.props.accessibilityState,
       focusable:
         this.props.focusable !== false && this.props.onPress !== undefined,
     };
@@ -142,7 +146,10 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
 function createPressabilityConfig(props: Props): PressabilityConfig {
   return {
     cancelable: !props.rejectResponderTermination,
-    disabled: props.disabled,
+    disabled:
+      props.disabled !== null
+        ? props.disabled
+        : props.accessibilityState?.disabled,
     hitSlop: props.hitSlop,
     delayLongPress: props.delayLongPress,
     delayPressIn: props.delayPressIn,
@@ -158,5 +165,7 @@ function createPressabilityConfig(props: Props): PressabilityConfig {
     onPressOut: props.onPressOut,
   };
 }
+
+TouchableWithoutFeedback.displayName = 'TouchableWithoutFeedback';
 
 module.exports = TouchableWithoutFeedback;

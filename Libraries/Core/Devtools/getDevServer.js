@@ -8,8 +8,6 @@
  * @flow strict
  */
 
-'use strict';
-
 import NativeSourceCode from '../../NativeModules/specs/NativeSourceCode';
 
 let _cachedDevServerURL: ?string;

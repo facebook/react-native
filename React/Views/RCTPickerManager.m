@@ -48,19 +48,10 @@ RCT_EXPORT_METHOD(setNativeSelectedIndex : (nonnull NSNumber *)viewTag toIndex :
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[viewTag];
-
     if ([view isKindOfClass:[RCTPicker class]]) {
       [(RCTPicker *)view setSelectedIndex:index.integerValue];
     } else {
-      // This component is used in Fabric through LegacyInteropLayer.
-      // `RCTPicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
-      // `viewTag` passed as parameter to this method is tag of the `RCTLegacyViewManagerInteropComponentView`.
-      UIView *subview = [uiManager viewForReactTag:viewTag].subviews.firstObject;
-      if ([subview isKindOfClass:[RCTPicker class]]) {
-        [(RCTPicker *)subview setSelectedIndex:index.integerValue];
-      } else {
-        RCTLogError(@"view type must be RCTPicker");
-      }
+      RCTLogError(@"View type must be RCTPicker!");
     }
   }];
 }

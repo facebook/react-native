@@ -16,6 +16,7 @@ import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 export type AccessibilityRole =
   | 'none'
   | 'button'
+  | 'togglebutton'
   | 'link'
   | 'search'
   | 'image'

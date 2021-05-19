@@ -1111,7 +1111,7 @@ inline JS::NativeSampleTurboModuleArrays::Constants::Builder::Builder(const Inpu
   auto const3 = i.const3.get();
   d[@\\"const3\\"] = RCTConvertVecToArray(const3, ^id(NSString * el_) { return el_; });
   auto id_ = i.id_;
-  d[@\\"id_\\"] = RCTConvertOptionalVecToArray(id_, ^id(folly::Optional<JS::NativeSampleTurboModuleArrays::ConstantsIdElement::Builder> el_) { return el_.hasValue() ? el_.value().buildUnsafeRawValue() : nil; });
+  d[@\\"id\\"] = RCTConvertOptionalVecToArray(id_, ^id(folly::Optional<JS::NativeSampleTurboModuleArrays::ConstantsIdElement::Builder> el_) { return el_.hasValue() ? el_.value().buildUnsafeRawValue() : nil; });
   return d;
 }) {}
 inline JS::NativeSampleTurboModuleArrays::Constants::Builder::Builder(Constants i) : _factory(^{

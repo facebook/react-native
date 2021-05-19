@@ -85,8 +85,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final String mJsPendingCallsTitleForTrace =
       "pending_js_calls_instance" + sNextInstanceIdForTrace.getAndIncrement();
   private volatile boolean mDestroyed = false;
-  private volatile boolean mNativeModulesThreadDestructionComplete = false;
-  private volatile boolean mJSThreadDestructionComplete = false;
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
@@ -552,7 +550,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
-  public native RuntimeExecutor getRuntimeExecutor();
+  public RuntimeExecutor getRuntimeExecutor() {
+    return getRuntimeExecutor(ReactFeatureFlags.enableRuntimeExecutorFlushing());
+  }
+
+  public native RuntimeExecutor getRuntimeExecutor(boolean shouldFlush);
 
   @Override
   public void addJSIModules(List<JSIModuleSpec> jsiModules) {

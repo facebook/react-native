@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/core/EventTarget.h>
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>

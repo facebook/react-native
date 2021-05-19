@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {
   BubblingEventHandler,
@@ -20,13 +18,16 @@ import type {
   WithDefault,
 } from '../../Types/CodegenTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {
+  TextStyleProp,
+  ViewStyleProp,
+  ColorValue,
+} from '../../StyleSheet/StyleSheet';
 import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
-const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
 export type KeyboardType =
   // Cross Platform
@@ -545,17 +546,10 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
-let AndroidTextInputNativeComponent;
-if (global.RN$Bridgeless) {
-  ReactNativeViewConfigRegistry.register('AndroidTextInput', () => {
-    return AndroidTextInputViewConfig;
-  });
-  AndroidTextInputNativeComponent = 'AndroidTextInput';
-} else {
-  AndroidTextInputNativeComponent = requireNativeComponent<NativeProps>(
-    'AndroidTextInput',
-  );
-}
+let AndroidTextInputNativeComponent = NativeComponentRegistry.get<NativeProps>(
+  'AndroidTextInput',
+  () => AndroidTextInputViewConfig,
+);
 
 // flowlint-next-line unclear-type:off
 export default ((AndroidTextInputNativeComponent: any): HostComponent<NativeProps>);

@@ -9,8 +9,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import * as HoverState from '../HoverState';
 import Pressability from '../Pressability';
@@ -258,7 +256,7 @@ describe('Pressability', () => {
     beforeEach(() => {
       originalPlatform = Platform.OS;
       Platform.OS = 'web';
-      // $FlowExpectedError
+      // $FlowExpectedError[prop-missing]
       HoverState.isHoverEnabled.mockReturnValue(true);
     });
 
@@ -278,7 +276,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });
@@ -291,7 +289,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });
@@ -304,7 +302,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });
@@ -317,7 +315,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       jest.advanceTimersByTime(499);
       expect(config.onHoverIn).not.toBeCalled();
@@ -333,7 +331,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });

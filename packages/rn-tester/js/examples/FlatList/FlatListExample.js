@@ -98,6 +98,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
     this._listRef.recordInteraction(); // e.g. flipping logViewable switch
   }
 
+  _setBooleanValue: string => boolean => void = key => value =>
+    this.setState({[key]: value});
+
   render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = item =>
@@ -123,14 +126,46 @@ class FlatListExample extends React.PureComponent<Props, State> {
               />
             </View>
             <View style={styles.options}>
-              {renderSmallSwitchOption(this, 'virtualized')}
-              {renderSmallSwitchOption(this, 'horizontal')}
-              {renderSmallSwitchOption(this, 'fixedHeight')}
-              {renderSmallSwitchOption(this, 'log')}
-              {renderSmallSwitchOption(this, 'inverted')}
-              {renderSmallSwitchOption(this, 'empty')}
-              {renderSmallSwitchOption(this, 'debug')}
-              {renderSmallSwitchOption(this, 'useFlatListItemComponent')}
+              {renderSmallSwitchOption(
+                'Virtualized',
+                this.state.virtualized,
+                this._setBooleanValue('virtualized'),
+              )}
+              {renderSmallSwitchOption(
+                'Horizontal',
+                this.state.horizontal,
+                this._setBooleanValue('horizontal'),
+              )}
+              {renderSmallSwitchOption(
+                'Fixed Height',
+                this.state.fixedHeight,
+                this._setBooleanValue('fixedHeight'),
+              )}
+              {renderSmallSwitchOption(
+                'Log Viewable',
+                this.state.logViewable,
+                this._setBooleanValue('logViewable'),
+              )}
+              {renderSmallSwitchOption(
+                'Inverted',
+                this.state.inverted,
+                this._setBooleanValue('inverted'),
+              )}
+              {renderSmallSwitchOption(
+                'Empty',
+                this.state.empty,
+                this._setBooleanValue('empty'),
+              )}
+              {renderSmallSwitchOption(
+                'Debug',
+                this.state.debug,
+                this._setBooleanValue('debug'),
+              )}
+              {renderSmallSwitchOption(
+                'Use FlatListItemComponent',
+                this.state.useFlatListItemComponent,
+                this._setBooleanValue('useFlatListItemComponent'),
+              )}
               {Platform.OS === 'android' && (
                 <View>
                   <TextInput
@@ -208,9 +243,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
 
     return {
       renderItem: undefined,
-      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.111 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
+       * This comment suppresses an error found when Flow v0.111 was deployed.
+       * To see the error, delete this comment and run Flow. */
       [flatListPropKey]: ({item, separators}) => {
         return (
           <ItemComponent
@@ -246,10 +281,21 @@ class FlatListExample extends React.PureComponent<Props, State> {
       );
     }
   };
+
   _pressItem = (key: string) => {
     this._listRef && this._listRef.recordInteraction();
-    pressItem(this, key);
+    const index = Number(key);
+    const itemState = pressItem(this.state.data[index]);
+    this.setState(state => ({
+      ...state,
+      data: [
+        ...state.data.slice(0, index),
+        itemState,
+        ...state.data.slice(index + 1),
+      ],
+    }));
   };
+
   _listRef: React.ElementRef<typeof Animated.FlatList>;
 }
 

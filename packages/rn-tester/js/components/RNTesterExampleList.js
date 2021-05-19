@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const RNTesterComponentTitle = require('./RNTesterComponentTitle');
 const React = require('react');

@@ -20,6 +20,7 @@ import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAnd
 import typeof flattenStyle from '../StyleSheet/flattenStyle';
 import {type DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
 import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
+import typeof legacySendAccessibilityEvent from '../Components/AccessibilityInfo/legacySendAccessibilityEvent';
 
 // flowlint unsafe-getters-setters:off
 module.exports = {
@@ -48,7 +49,7 @@ module.exports = {
     return require('../Utilities/differ/deepDiffer');
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
-    // $FlowFixMe - can't properly parameterize the getter's type
+    // $FlowFixMe[deprecated-type] - can't properly parameterize the getter's type
     *,
   > {
     return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
@@ -57,6 +58,9 @@ module.exports = {
     return require('../StyleSheet/flattenStyle');
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {
-    return require('../Core/ReactFiberErrorDialog');
+    return require('../Core/ReactFiberErrorDialog').default;
+  },
+  get legacySendAccessibilityEvent(): legacySendAccessibilityEvent {
+    return require('../Components/AccessibilityInfo/legacySendAccessibilityEvent');
   },
 };

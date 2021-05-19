@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import RCTActionSheetManager from './NativeActionSheetManager';
 
 const invariant = require('invariant');

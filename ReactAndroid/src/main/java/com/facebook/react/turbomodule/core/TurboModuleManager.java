@@ -15,7 +15,6 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
-import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
@@ -61,7 +60,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
             delegate,
-            ReactFeatureFlags.useTurboModuleJSCodegen);
+            ReactFeatureFlags.useTurboModulesRAIICallbackManager);
     installJSIBindings();
 
     mEagerInitModuleNames =
@@ -216,7 +215,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
          * NativeModules should be initialized after ReactApplicationContext has been set up.
          * Therefore, we should initialize on the TurboModule now.
          */
-        ((NativeModule) turboModule).initialize();
+        turboModule.initialize();
       }
 
       TurboModulePerfLogger.moduleCreateSetUpEnd(moduleName, moduleHolder.getModuleId());
@@ -294,7 +293,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       CallInvokerHolderImpl jsCallInvokerHolder,
       CallInvokerHolderImpl nativeCallInvokerHolder,
       TurboModuleManagerDelegate tmmDelegate,
-      boolean enableTurboModuleJSCodegen);
+      boolean useTurboModulesRAIICallbackManager);
 
   private native void installJSIBindings();
 
@@ -329,8 +328,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       final TurboModule turboModule = getModule(moduleName, moduleHolder, false);
 
       if (turboModule != null) {
-        // TODO(T48014458): Rename this to invalidate()
-        ((NativeModule) turboModule).onCatalystInstanceDestroy();
+        turboModule.invalidate();
       }
     }
 

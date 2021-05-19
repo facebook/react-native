@@ -8,19 +8,16 @@
  * @format
  */
 
-'use strict';
+import * as React from 'react';
+import BoundingDimensions from './BoundingDimensions';
+import Platform from '../../Utilities/Platform';
+import Position from './Position';
+import UIManager from '../../ReactNative/UIManager';
+import SoundManager from '../Sound/SoundManager';
 
-const BoundingDimensions = require('./BoundingDimensions');
-const Platform = require('../../Utilities/Platform');
-const Position = require('./Position');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const UIManager = require('../../ReactNative/UIManager');
-const View = require('../View/View');
-const SoundManager = require('../Sound/SoundManager');
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 
-const normalizeColor = require('../../StyleSheet/normalizeColor');
-
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 
@@ -899,7 +896,6 @@ TouchableMixin.withoutDefaultFocusAndBlur = TouchableMixinWithoutDefaultFocusAnd
 
 const Touchable = {
   Mixin: TouchableMixin,
-  TOUCH_TARGET_DEBUG: false, // Highlights all touchable targets. Toggle with Inspector.
   /**
    * Renders a debugging overlay to visualize touch target with hitSlop (might not work on Android).
    */
@@ -907,54 +903,15 @@ const Touchable = {
     color,
     hitSlop,
   }: {
-    color: string | number,
+    color: ColorValue,
     hitSlop: EdgeInsetsProp,
     ...
   }): null | React.Node => {
-    if (!Touchable.TOUCH_TARGET_DEBUG) {
-      return null;
+    if (__DEV__) {
+      return <PressabilityDebugView color={color} hitSlop={hitSlop} />;
     }
-    if (!__DEV__) {
-      throw Error(
-        'Touchable.TOUCH_TARGET_DEBUG should not be enabled in prod!',
-      );
-    }
-    const debugHitSlopStyle = {};
-    hitSlop = hitSlop || {top: 0, bottom: 0, left: 0, right: 0};
-    for (const key in hitSlop) {
-      debugHitSlopStyle[key] = -hitSlop[key];
-    }
-    const normalizedColor = normalizeColor(color);
-    if (typeof normalizedColor !== 'number') {
-      return null;
-    }
-    const hexColor =
-      '#' + ('00000000' + normalizedColor.toString(16)).substr(-8);
-    return (
-      <View
-        pointerEvents="none"
-        style={[
-          styles.debug,
-          /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.111 was deployed. To see the error,
-           * delete this comment and run Flow. */
-          {
-            borderColor: hexColor.slice(0, -2) + '55', // More opaque
-            backgroundColor: hexColor.slice(0, -2) + '0F', // Less opaque
-            ...debugHitSlopStyle,
-          },
-        ]}
-      />
-    );
+    return null;
   },
 };
-
-const styles = StyleSheet.create({
-  debug: {
-    position: 'absolute',
-    borderWidth: 1,
-    borderStyle: 'dashed',
-  },
-});
 
 module.exports = Touchable;

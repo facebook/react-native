@@ -7,9 +7,14 @@
 
 #pragma once
 
+#include <memory>
+
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/core/EventBeat.h>
+#include <react/renderer/leakchecker/LeakChecker.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/RunLoopObserver.h>
@@ -38,6 +43,8 @@ struct SchedulerToolbox final {
    */
   RuntimeExecutor runtimeExecutor;
 
+  std::shared_ptr<RuntimeScheduler> runtimeScheduler;
+
   /*
    * Represent connections with a platform-specific UI run loops.
    */
@@ -60,6 +67,17 @@ struct SchedulerToolbox final {
    * the call back synchronously if the executor is invoked on the main thread.
    */
   BackgroundExecutor backgroundExecutor;
+
+  /*
+   * Triggers garbage collection. Used when checking if all Fabric's HostObjects
+   * have been properly cleaned up from JavaScript.
+   */
+  GarbageCollectionTrigger garbageCollectionTrigger;
+
+  /*
+   * A list of `UIManagerCommitHook`s that should be registered in `UIManager`.
+   */
+  std::vector<std::shared_ptr<UIManagerCommitHook const>> commitHooks;
 };
 
 } // namespace react

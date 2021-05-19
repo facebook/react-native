@@ -5,8 +5,6 @@
  * @format
  */
 
-'use strict';
-
 import EventEmitter from '../EventEmitter';
 
 type MyEvents = {

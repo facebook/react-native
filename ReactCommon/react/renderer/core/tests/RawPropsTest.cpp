@@ -8,6 +8,7 @@
 #include <memory>
 
 #include <gtest/gtest.h>
+#include <react/debug/flags.h>
 #include <react/renderer/core/ConcreteShadowNode.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/propsConversions.h>
@@ -275,7 +276,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncomplete) {
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
 }
 
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
 TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncorrectLookup) {
   const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42));
 

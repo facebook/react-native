@@ -26,7 +26,7 @@ static std::string normalizeEventType(const std::string &type) {
   auto prefixedType = type;
   if (type.find("top", 0) != 0) {
     prefixedType.insert(0, "top");
-    prefixedType[3] = toupper(prefixedType[3]);
+    prefixedType[3] = static_cast<char>(toupper(prefixedType[3]));
   }
   return prefixedType;
 }
@@ -52,7 +52,7 @@ EventEmitter::EventEmitter(
 void EventEmitter::dispatchEvent(
     const std::string &type,
     const folly::dynamic &payload,
-    const EventPriority &priority) const {
+    EventPriority priority) const {
   dispatchEvent(
       type,
       [payload](jsi::Runtime &runtime) {
@@ -64,7 +64,7 @@ void EventEmitter::dispatchEvent(
 void EventEmitter::dispatchEvent(
     const std::string &type,
     const ValueFactory &payloadFactory,
-    const EventPriority &priority) const {
+    EventPriority priority) const {
   SystraceSection s("EventEmitter::dispatchEvent");
 
   auto eventDispatcher = eventDispatcher_.lock();

@@ -25,6 +25,7 @@ project.xcworkspace
 /build/
 /packages/react-native-codegen/android/build/
 /packages/react-native-codegen/android/gradlePlugin-build/gradlePlugin/build
+/packages/react-native-gradle-plugin/build/
 /packages/rn-tester/android/app/.cxx/
 /packages/rn-tester/android/app/build/
 /packages/rn-tester/android/app/gradle/
@@ -85,9 +86,9 @@ package-lock.json
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
-/Libraries/FBReactNativeSpec/**/*.xcodeproj
 /Libraries/RCTRequired/**/*.xcodeproj
 /React/CoreModules/**/*.xcodeproj
+/React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj
 
 # CocoaPods
@@ -100,7 +101,7 @@ package-lock.json
 !/packages/rn-tester/Pods/__offline_mirrors__
 
 # react-native-codegen
-/Libraries/FBReactNativeSpec/FBReactNativeSpec
+/React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
 /ReactCommon/react/renderer/components/rncore/
 

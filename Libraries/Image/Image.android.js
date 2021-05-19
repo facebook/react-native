@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const DeprecatedImageStylePropTypes = require('../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
 const DeprecatedStyleSheetPropType = require('../DeprecatedPropTypes/DeprecatedStyleSheetPropType');
 const DeprecatedViewPropTypes = require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
@@ -29,6 +27,7 @@ import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
 const TextInlineImageNativeComponent = require('./TextInlineImageNativeComponent');
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
+import type {RootTag} from '../Types/RootTagTypes';
 
 let _requestId = 1;
 function generateRequestId() {
@@ -197,7 +196,7 @@ function getSizeWithHeaders(
 function prefetchWithMetadata(
   url: string,
   queryRootName: string,
-  rootTag?: ?number,
+  rootTag?: ?RootTag,
   callback: ?Function,
 ): any {
   // TODO: T79192300 Log queryRootName and rootTag

@@ -6,6 +6,7 @@
  */
 
 #import "RCTTurboModule.h"
+#import "RCTBlockGuard.h"
 
 #import <objc/message.h>
 #import <objc/runtime.h>
@@ -170,6 +171,13 @@ static RCTResponseSenderBlock
 convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   auto weakWrapper = CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
+  RCTBlockGuard *blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
+    auto strongWrapper = weakWrapper.lock();
+    if (strongWrapper) {
+      strongWrapper->destroy();
+    }
+  }];
+
   BOOL __block wrapperWasCalled = NO;
   RCTResponseSenderBlock callback = ^(NSArray *responses) {
     if (wrapperWasCalled) {
@@ -181,7 +189,7 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
       return;
     }
 
-    strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses]() {
+    strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses, blockGuard]() {
       auto strongWrapper2 = weakWrapper.lock();
       if (!strongWrapper2) {
         return;
@@ -190,6 +198,9 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
       std::vector<jsi::Value> args = convertNSArrayToStdVector(strongWrapper2->runtime(), responses);
       strongWrapper2->callback().call(strongWrapper2->runtime(), (const jsi::Value *)args.data(), args.size());
       strongWrapper2->destroy();
+
+      // Delete the CallbackWrapper when the block gets dealloced without being invoked.
+      (void)blockGuard;
     });
 
     wrapperWasCalled = YES;
@@ -240,6 +251,21 @@ jsi::Value ObjCTurboModule::createPromise(
         __block BOOL resolveWasCalled = NO;
         __block BOOL rejectWasCalled = NO;
 
+        RCTBlockGuard *blockGuard;
+        if (RCTTurboModulePromisesBlockGuardEnabled()) {
+          blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
+            auto strongResolveWrapper = weakResolveWrapper.lock();
+            if (strongResolveWrapper) {
+              strongResolveWrapper->destroy();
+            }
+
+            auto strongRejectWrapper = weakRejectWrapper.lock();
+            if (strongRejectWrapper) {
+              strongRejectWrapper->destroy();
+            }
+          }];
+        }
+
         RCTPromiseResolveBlock resolveBlock = ^(id result) {
           if (rejectWasCalled) {
             RCTLogError(@"%s: Tried to resolve a promise after it's already been rejected.", moduleMethod.c_str());
@@ -257,7 +283,7 @@ jsi::Value ObjCTurboModule::createPromise(
             return;
           }
 
-          strongResolveWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, result]() {
+          strongResolveWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, result, blockGuard]() {
             auto strongResolveWrapper2 = weakResolveWrapper.lock();
             auto strongRejectWrapper2 = weakRejectWrapper.lock();
             if (!strongResolveWrapper2 || !strongRejectWrapper2) {
@@ -270,6 +296,7 @@ jsi::Value ObjCTurboModule::createPromise(
 
             strongResolveWrapper2->destroy();
             strongRejectWrapper2->destroy();
+            (void)blockGuard;
           });
 
           resolveWasCalled = YES;
@@ -293,7 +320,7 @@ jsi::Value ObjCTurboModule::createPromise(
           }
 
           NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError]() {
+          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError, blockGuard]() {
             auto strongResolveWrapper2 = weakResolveWrapper.lock();
             auto strongRejectWrapper2 = weakRejectWrapper.lock();
             if (!strongResolveWrapper2 || !strongRejectWrapper2) {
@@ -306,6 +333,7 @@ jsi::Value ObjCTurboModule::createPromise(
 
             strongResolveWrapper2->destroy();
             strongRejectWrapper2->destroy();
+            (void)blockGuard;
           });
 
           rejectWasCalled = YES;

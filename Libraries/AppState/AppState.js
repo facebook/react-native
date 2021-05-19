@@ -4,19 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @flow
  */
 
-'use strict';
-
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import type EventSubscription from '../vendor/emitter/_EventSubscription';
-import type EmitterSubscription from '../vendor/emitter/_EmitterSubscription';
 import logError from '../Utilities/logError';
-import EventEmitter from '../vendor/emitter/EventEmitter';
 import NativeAppState from './NativeAppState';
-import invariant from 'invariant';
+import Platform from '../Utilities/Platform';
 
 export type AppStateValues = 'inactive' | 'background' | 'active';
 
@@ -39,56 +35,50 @@ type NativeAppStateEventDefinitions = {
  *
  * See https://reactnative.dev/docs/appstate.html
  */
-class AppState extends NativeEventEmitter<NativeAppStateEventDefinitions> {
-  _eventHandlers: {
-    [key: $Keys<AppStateEventDefinitions>]: Map<
-      /* Handler */ $FlowFixMe,
-      EventSubscription<NativeAppStateEventDefinitions, $FlowFixMe>,
-    >,
-    ...,
-  };
-  _supportedEvents: $ReadOnlyArray<$Keys<AppStateEventDefinitions>> = [
-    'change',
-    'memoryWarning',
-    'blur',
-    'focus',
-  ];
-  currentState: ?string;
+class AppState {
+  currentState: ?string = null;
   isAvailable: boolean;
 
+  _emitter: ?NativeEventEmitter<NativeAppStateEventDefinitions>;
+
   constructor() {
-    super(NativeAppState);
+    if (NativeAppState == null) {
+      this.isAvailable = false;
+    } else {
+      this.isAvailable = true;
 
-    this.isAvailable = true;
-    this._eventHandlers = this._supportedEvents.reduce((handlers, key) => {
-      handlers[key] = new Map();
-      return handlers;
-    }, {});
+      const emitter: NativeEventEmitter<NativeAppStateEventDefinitions> = new NativeEventEmitter(
+        // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+        // If you want to use the native module on other platforms, please remove this condition and test its behavior
+        Platform.OS !== 'ios' ? null : NativeAppState,
+      );
+      this._emitter = emitter;
 
-    this.currentState = NativeAppState.getConstants().initialAppState;
+      this.currentState = NativeAppState.getConstants().initialAppState;
 
-    let eventUpdated = false;
+      let eventUpdated = false;
 
-    // TODO: this is a terrible solution - in order to ensure `currentState`
-    // prop is up to date, we have to register an observer that updates it
-    // whenever the state changes, even if nobody cares. We should just
-    // deprecate the `currentState` property and get rid of this.
-    this.addListener('appStateDidChange', appStateData => {
-      eventUpdated = true;
-      this.currentState = appStateData.app_state;
-    });
-
-    // TODO: see above - this request just populates the value of `currentState`
-    // when the module is first initialized. Would be better to get rid of the
-    // prop and expose `getCurrentAppState` method directly.
-    NativeAppState.getCurrentAppState(appStateData => {
-      // It's possible that the state will have changed here & listeners need to be notified
-      if (!eventUpdated && this.currentState !== appStateData.app_state) {
+      // TODO: this is a terrible solution - in order to ensure `currentState`
+      // prop is up to date, we have to register an observer that updates it
+      // whenever the state changes, even if nobody cares. We should just
+      // deprecate the `currentState` property and get rid of this.
+      emitter.addListener('appStateDidChange', appStateData => {
+        eventUpdated = true;
         this.currentState = appStateData.app_state;
-        // $FlowExpectedError[incompatible-call]
-        this.emit('appStateDidChange', appStateData);
-      }
-    }, logError);
+      });
+
+      // TODO: see above - this request just populates the value of `currentState`
+      // when the module is first initialized. Would be better to get rid of the
+      // prop and expose `getCurrentAppState` method directly.
+      // $FlowExpectedError[incompatible-call]
+      NativeAppState.getCurrentAppState(appStateData => {
+        // It's possible that the state will have changed here & listeners need to be notified
+        if (!eventUpdated && this.currentState !== appStateData.app_state) {
+          this.currentState = appStateData.app_state;
+          emitter.emit('appStateDidChange', appStateData);
+        }
+      }, logError);
+    }
   }
 
   // TODO: now that AppState is a subclass of NativeEventEmitter, we could
@@ -105,133 +95,69 @@ class AppState extends NativeEventEmitter<NativeAppStateEventDefinitions> {
   addEventListener<K: $Keys<AppStateEventDefinitions>>(
     type: K,
     handler: (...$ElementType<AppStateEventDefinitions, K>) => void,
-  ): void {
-    invariant(
-      this._supportedEvents.indexOf(type) !== -1,
-      'Trying to subscribe to unknown event: "%s"',
-      type,
-    );
-
+  ): EventSubscription {
+    const emitter = this._emitter;
+    if (emitter == null) {
+      throw new Error('Cannot use AppState when `isAvailable` is false.');
+    }
     switch (type) {
-      case 'change': {
+      case 'change':
         // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const changeHandler: AppStateValues => void = handler;
-        this._eventHandlers[type].set(
-          handler,
-          this.addListener('appStateDidChange', appStateData => {
-            changeHandler(appStateData.app_state);
-          }),
-        );
-        break;
-      }
-      case 'memoryWarning': {
+        return emitter.addListener('appStateDidChange', appStateData => {
+          changeHandler(appStateData.app_state);
+        });
+      case 'memoryWarning':
         // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const memoryWarningHandler: () => void = handler;
-        this._eventHandlers[type].set(
-          handler,
-          this.addListener('memoryWarning', memoryWarningHandler),
-        );
-        break;
-      }
-
+        return emitter.addListener('memoryWarning', memoryWarningHandler);
       case 'blur':
-      case 'focus': {
+      case 'focus':
         // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const focusOrBlurHandler: () => void = handler;
-        this._eventHandlers[type].set(
-          handler,
-          this.addListener('appStateFocusChange', hasFocus => {
-            if (type === 'blur' && !hasFocus) {
-              focusOrBlurHandler();
-            }
-            if (type === 'focus' && hasFocus) {
-              focusOrBlurHandler();
-            }
-          }),
-        );
-      }
+        return emitter.addListener('appStateFocusChange', hasFocus => {
+          if (type === 'blur' && !hasFocus) {
+            focusOrBlurHandler();
+          }
+          if (type === 'focus' && hasFocus) {
+            focusOrBlurHandler();
+          }
+        });
     }
+    throw new Error('Trying to subscribe to unknown event: ' + type);
   }
 
   /**
-   * Remove a handler by passing the `change` event type and the handler.
-   *
-   * See https://reactnative.dev/docs/appstate.html#removeeventlistener
+   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
    */
   removeEventListener<K: $Keys<AppStateEventDefinitions>>(
     type: K,
-    handler: (...$ElementType<AppStateEventDefinitions, K>) => void,
-  ) {
-    invariant(
-      this._supportedEvents.indexOf(type) !== -1,
-      'Trying to remove listener for unknown event: "%s"',
-      type,
-    );
-    const subscription = this._eventHandlers[type].get(handler);
-    if (!subscription) {
-      return;
+    listener: (...$ElementType<AppStateEventDefinitions, K>) => mixed,
+  ): void {
+    const emitter = this._emitter;
+    if (emitter == null) {
+      throw new Error('Cannot use AppState when `isAvailable` is false.');
     }
-    subscription.remove();
-    this._eventHandlers[type].delete(handler);
+    // NOTE: This will report a deprecation notice via `console.error`.
+    switch (type) {
+      case 'change':
+        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        // $FlowIssue[incompatible-call]
+        emitter.removeListener('appStateDidChange', listener);
+        return;
+      case 'memoryWarning':
+        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        emitter.removeListener('memoryWarning', listener);
+        return;
+      case 'blur':
+      case 'focus':
+        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        // $FlowIssue[incompatible-call]
+        emitter.addListener('appStateFocusChange', listener);
+        return;
+    }
+    throw new Error('Trying to unsubscribe from unknown event: ' + type);
   }
 }
 
-class MissingNativeModuleError extends Error {
-  constructor() {
-    super(
-      'Cannot use AppState module when native RCTAppState is not included in the build.\n' +
-        'Either include it, or check AppState.isAvailable before calling any methods.',
-    );
-  }
-}
-
-class MissingNativeAppStateShim extends EventEmitter<NativeAppStateEventDefinitions> {
-  // AppState
-  isAvailable: boolean = false;
-  currentState: ?string = null;
-
-  addEventListener<K: $Keys<AppStateEventDefinitions>>(
-    type: K,
-    handler: (...$ElementType<AppStateEventDefinitions, K>) => mixed,
-  ): void {
-    throw new MissingNativeModuleError();
-  }
-
-  removeEventListener<K: $Keys<AppStateEventDefinitions>>(
-    type: K,
-    handler: (...$ElementType<AppStateEventDefinitions, K>) => mixed,
-  ) {
-    throw new MissingNativeModuleError();
-  }
-
-  // $FlowIssue[invalid-tuple-arity]
-  addListener<K: $Keys<NativeAppStateEventDefinitions>>(
-    eventType: K,
-    // $FlowIssue[incompatible-extend]
-    listener: (...$ElementType<NativeAppStateEventDefinitions, K>) => mixed,
-    context: $FlowFixMe,
-  ): EmitterSubscription<NativeAppStateEventDefinitions, K> {
-    throw new MissingNativeModuleError();
-  }
-
-  removeAllListeners<K: $Keys<NativeAppStateEventDefinitions>>(
-    eventType: ?K,
-  ): void {
-    throw new MissingNativeModuleError();
-  }
-
-  removeSubscription<K: $Keys<NativeAppStateEventDefinitions>>(
-    subscription: EmitterSubscription<NativeAppStateEventDefinitions, K>,
-  ): void {
-    throw new MissingNativeModuleError();
-  }
-}
-
-// This module depends on the native `RCTAppState` module. If you don't include it,
-// `AppState.isAvailable` will return `false`, and any method calls will throw.
-// We reassign the class variable to keep the autodoc generator happy.
-const AppStateInstance: AppState | MissingNativeAppStateShim = NativeAppState
-  ? new AppState()
-  : new MissingNativeAppStateShim();
-
-module.exports = AppStateInstance;
+module.exports = (new AppState(): AppState);

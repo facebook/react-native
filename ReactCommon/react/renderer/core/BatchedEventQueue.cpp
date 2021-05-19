@@ -20,7 +20,7 @@ void BatchedEventQueue::onEnqueue() const {
   eventBeat_->request();
 }
 
-void BatchedEventQueue::enqueueUniqueEvent(RawEvent const &rawEvent) const {
+void BatchedEventQueue::enqueueUniqueEvent(RawEvent &&rawEvent) const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
 
@@ -41,7 +41,7 @@ void BatchedEventQueue::enqueueUniqueEvent(RawEvent const &rawEvent) const {
     }
 
     if (repeatedEvent == eventQueue_.rend()) {
-      eventQueue_.push_back(rawEvent);
+      eventQueue_.push_back(std::move(rawEvent));
     } else {
       *repeatedEvent = std::move(rawEvent);
     }

@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const DevSettings = require('./DevSettings');
 const invariant = require('invariant');
 const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
@@ -18,8 +16,8 @@ const prettyFormat = require('pretty-format');
 
 import getDevServer from '../Core/Devtools/getDevServer';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
-import * as LogBoxData from '../LogBox/Data/LogBoxData';
-import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
+import LogBox from '../LogBox/LogBox';
+import type {ExtendedError} from '../Core/ExtendedError';
 
 const pendingEntryPoints = [];
 let hmrClient = null;
@@ -208,7 +206,7 @@ Error: ${e.message}`;
     client.on('update', ({isInitialUpdate}) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
-        LogBoxData.clear();
+        LogBox.clearAllLogs();
       }
     });
 

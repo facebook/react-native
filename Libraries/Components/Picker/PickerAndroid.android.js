@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import AndroidDropdownPickerNativeComponent, {
   Commands as AndroidDropdownPickerCommands,
 } from './AndroidDropdownPickerNativeComponent';

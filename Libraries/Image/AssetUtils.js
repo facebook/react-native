@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import PixelRatio from '../Utilities/PixelRatio';
 
 let cacheBreaker;
@@ -37,9 +35,13 @@ export function setUrlCacheBreaker(appendage: string) {
 }
 
 export function getUrlCacheBreaker(): string {
-  if (__DEV__ && warnIfCacheBreakerUnset && cacheBreaker == null) {
-    warnIfCacheBreakerUnset = false;
-    console.warn('AssetUtils.getUrlCacheBreaker: Cache breaker value is unset');
+  if (cacheBreaker == null) {
+    if (__DEV__ && warnIfCacheBreakerUnset) {
+      warnIfCacheBreakerUnset = false;
+      console.warn(
+        'AssetUtils.getUrlCacheBreaker: Cache breaker value is unset',
+      );
+    }
     return '';
   }
   return cacheBreaker;

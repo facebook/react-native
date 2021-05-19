@@ -40,6 +40,18 @@ static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(ScrollV
   }
 }
 
+static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(ScrollViewProps const &props)
+{
+  switch (props.indicatorStyle) {
+    case ScrollViewIndicatorStyle::Default:
+      return UIScrollViewIndicatorStyleDefault;
+    case ScrollViewIndicatorStyle::Black:
+      return UIScrollViewIndicatorStyleBlack;
+    case ScrollViewIndicatorStyle::White:
+      return UIScrollViewIndicatorStyleWhite;
+  }
+}
+
 static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
 {
   static uint16_t coalescingKey = 0;
@@ -140,6 +152,20 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   return concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>();
 }
 
+- (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
+           oldLayoutMetrics:(const LayoutMetrics &)oldLayoutMetrics
+{
+  [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+  if (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection) {
+    CGAffineTransform transform = (layoutMetrics.layoutDirection == LayoutDirection::LeftToRight)
+        ? CGAffineTransformIdentity
+        : CGAffineTransformMakeScale(-1, 1);
+
+    _containerView.transform = transform;
+    _scrollView.transform = transform;
+  }
+}
+
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(_props);
@@ -166,7 +192,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   // MAP_SCROLL_VIEW_PROP(automaticallyAdjustContentInsets);
   MAP_SCROLL_VIEW_PROP(decelerationRate);
   MAP_SCROLL_VIEW_PROP(directionalLockEnabled);
-  // MAP_SCROLL_VIEW_PROP(indicatorStyle);
   MAP_SCROLL_VIEW_PROP(maximumZoomScale);
   MAP_SCROLL_VIEW_PROP(minimumZoomScale);
   MAP_SCROLL_VIEW_PROP(scrollEnabled);
@@ -175,6 +200,14 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   MAP_SCROLL_VIEW_PROP(scrollsToTop);
   MAP_SCROLL_VIEW_PROP(showsHorizontalScrollIndicator);
   MAP_SCROLL_VIEW_PROP(showsVerticalScrollIndicator);
+
+  if (oldScrollViewProps.scrollIndicatorInsets != newScrollViewProps.scrollIndicatorInsets) {
+    _scrollView.scrollIndicatorInsets = RCTUIEdgeInsetsFromEdgeInsets(newScrollViewProps.scrollIndicatorInsets);
+  }
+
+  if (oldScrollViewProps.indicatorStyle != newScrollViewProps.indicatorStyle) {
+    _scrollView.indicatorStyle = RCTUIScrollViewIndicatorStyleFromProps(newScrollViewProps);
+  }
 
   if (oldScrollViewProps.scrollEventThrottle != newScrollViewProps.scrollEventThrottle) {
     // Zero means "send value only once per significant logical event".
@@ -239,8 +272,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     scrollView.keyboardDismissMode = RCTUIKeyboardDismissModeFromProps(newScrollViewProps);
   }
 
-  // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
-
   [super updateProps:props oldProps:oldProps];
 }
 
@@ -262,8 +293,27 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   }
 
   _contentSize = contentSize;
-  _containerView.frame = CGRect{CGPointZero, contentSize};
-  _scrollView.contentSize = contentSize;
+  _containerView.frame = CGRect{RCTCGPointFromPoint(data.contentBoundingRect.origin), contentSize};
+
+  [self _preserveContentOffsetIfNeededWithBlock:^{
+    self->_scrollView.contentSize = contentSize;
+  }];
+}
+
+/*
+ * Disables programmatical changing of ScrollView's `contentOffset` if a touch gesture is in progress.
+ */
+- (void)_preserveContentOffsetIfNeededWithBlock:(void (^)())block
+{
+  if (!block) {
+    return;
+  }
+
+  if (!_isUserTriggeredScrolling) {
+    return block();
+  }
+
+  [((RCTEnhancedScrollView *)_scrollView) preserveContentOffsetWithBlock:block];
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
@@ -289,6 +339,28 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     RCTAssert(childComponentView.superview == _containerView, @"Attempt to unmount improperly mounted component view.");
     [childComponentView removeFromSuperview];
   }
+}
+
+/*
+ * Returns whether or not the scroll view interaction should be blocked because
+ * JavaScript was found to be the responder.
+ */
+- (BOOL)_shouldDisableScrollInteraction
+{
+  UIView *ancestorView = self.superview;
+
+  while (ancestorView) {
+    if ([ancestorView respondsToSelector:@selector(isJSResponder)]) {
+      BOOL isJSResponder = ((UIView<RCTComponentViewProtocol> *)ancestorView).isJSResponder;
+      if (isJSResponder) {
+        return YES;
+      }
+    }
+
+    ancestorView = ancestorView.superview;
+  }
+
+  return NO;
 }
 
 - (ScrollViewMetrics)_scrollViewMetrics
@@ -330,7 +402,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 {
   // Historically, `UIScrollView`s in React Native do not cancel touches
   // started on `UIControl`-based views (as normal iOS `UIScrollView`s do).
-  return YES;
+  return ![self _shouldDisableScrollInteraction];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -550,10 +622,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     return;
   }
 
-  CGRect visibleFrame = CGRect{_scrollView.contentOffset, _scrollView.bounds.size};
+  CGRect visibleFrame = [_scrollView convertRect:_scrollView.bounds toView:_containerView];
   visibleFrame = CGRectInset(visibleFrame, -kClippingLeeway, -kClippingLeeway);
 
-  CGFloat scale = 1.0 / _scrollView.zoomScale;
+  // `zoomScale` is negative in RTL. Absolute value is needed.
+  CGFloat scale = 1.0 / std::abs(_scrollView.zoomScale);
   visibleFrame.origin.x *= scale;
   visibleFrame.origin.y *= scale;
   visibleFrame.size.width *= scale;
