@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ExtendedError} from './Devtools/parseErrorStack';
+import type {ExtendedError} from './ExtendedError';
 import type {ExceptionData} from './NativeExceptionsManager';
 
 class SyntheticError extends Error {

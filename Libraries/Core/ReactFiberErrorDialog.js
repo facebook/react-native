@@ -10,7 +10,7 @@
 
 import {handleException, SyntheticError} from './ExceptionsManager';
 
-import type {ExtendedError} from './Devtools/parseErrorStack';
+import type {ExtendedError} from './ExtendedError';
 
 export type CapturedError = {
   +componentStack: string,

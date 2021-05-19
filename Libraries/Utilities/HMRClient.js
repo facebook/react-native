@@ -17,7 +17,7 @@ const prettyFormat = require('pretty-format');
 import getDevServer from '../Core/Devtools/getDevServer';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 import LogBox from '../LogBox/LogBox';
-import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
+import type {ExtendedError} from '../Core/ExtendedError';
 
 const pendingEntryPoints = [];
 let hmrClient = null;
