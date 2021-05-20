@@ -369,6 +369,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const files = new Map();
     const nativeModules = getModules(schema);

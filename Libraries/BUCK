@@ -12,6 +12,7 @@ rn_codegen(
     name = "FBReactNativeSpec",
     android_package_name = "com.facebook.fbreact.specs",
     codegen_modules = True,
+    ios_assume_nonnull = False,
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
     native_module_spec_name = "FBReactNativeSpec",
 )
@@ -20,5 +21,6 @@ rn_codegen(
 rn_codegen(
     name = "FBReactNativeComponentSpec",
     codegen_components = True,
+    ios_assume_nonnull = False,
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
 )

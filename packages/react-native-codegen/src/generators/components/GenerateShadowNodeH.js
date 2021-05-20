@@ -55,6 +55,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'ShadowNodes.h';
 
