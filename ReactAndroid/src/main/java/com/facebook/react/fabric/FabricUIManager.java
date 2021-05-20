@@ -42,7 +42,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -574,11 +573,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             try {
               mountingManager.updateProps(reactTag, props);
             } catch (Exception ex) {
-              // TODO T42943890: Fix animations in Fabric and remove this try/catch
-              ReactSoftException.logSoftException(
-                  TAG,
-                  new ReactNoCrashSoftException(
-                      "Caught exception in synchronouslyUpdateViewOnUIThread", ex));
+              // TODO T42943890: Fix animations in Fabric and remove this try/catch?
+              // There might always be race conditions between surface teardown and
+              // animations/other operations, so it may not be feasible to remove this.
+              // Practically 100% of reported errors from this point are because the
+              // surface has stopped by this point, but the MountItem was queued before
+              // the surface was stopped. It's likely not feasible to prevent all such races.
             }
           }
 
