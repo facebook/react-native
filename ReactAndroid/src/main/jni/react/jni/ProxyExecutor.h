@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cxxreact/JSExecutor.h>
+#include <cxxreact/RAMBundleRegistry.h>
 #include <fbjni/fbjni.h>
 #include <jni.h>
 #include "OnLoad.h"

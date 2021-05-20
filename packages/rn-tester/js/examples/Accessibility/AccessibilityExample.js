@@ -161,6 +161,18 @@ class AccessibilityExample extends React.Component<{}> {
           </TouchableOpacity>
         </RNTesterBlock>
 
+        <RNTesterBlock title="Disabled TouchableOpacity">
+          <TouchableOpacity
+            onPress={() => Alert.alert('Disabled Button has been pressed!')}
+            accessibilityLabel={'You are pressing Disabled TouchableOpacity'}
+            accessibilityState={{disabled: true}}>
+            <View>
+              <Text>
+                I am disabled. Clicking me will not trigger any action.
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </RNTesterBlock>
         <RNTesterBlock title="View with multiple states">
           <View
             accessible={true}
