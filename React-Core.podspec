@@ -77,6 +77,10 @@ Pod::Spec.new do |s|
     ss.dependency "React-Core/Default", version
   end
 
+  s.subspec "Hermes" do |ss|
+    ss.dependency "React-hermes", version
+  end
+
   # Add a subspec containing just the headers for each
   # pod that should live under <React/*.h>
   header_subspecs.each do |name, headers|
