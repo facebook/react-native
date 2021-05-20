@@ -69,12 +69,12 @@ def use_react_native! (options={})
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '~> 0.75.1'
-  versions['Flipper-DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.5.3'
+  versions['Flipper'] ||= '0.91.1'
+  versions['Flipper-DoubleConversion'] ||= '3.1.7'
+  versions['Flipper-Folly'] ||= '2.6.7'
   versions['Flipper-Glog'] ||= '0.3.6'
-  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
-  versions['Flipper-RSocket'] ||= '~> 1.3'
+  versions['Flipper-PeerTalk'] ||= '0.0.4'
+  versions['Flipper-RSocket'] ||= '1.4.3'
   pod 'FlipperKit', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
