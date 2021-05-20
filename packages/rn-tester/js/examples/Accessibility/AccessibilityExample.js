@@ -22,6 +22,7 @@ const {
   TouchableWithoutFeedback,
   Alert,
   StyleSheet,
+  Picker,
   Platform,
 } = require('react-native');
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
@@ -690,6 +691,70 @@ class AccessibilityActionsExample extends React.Component<{}> {
               <Text>Click me</Text>
             </View>
           </TouchableWithoutFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Button with accessibility actions">
+          <Button
+            accessible={true}
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessiblity action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}
+            onPress={() => Alert.alert('Button has been pressed!')}
+            title="Button with accessiblity action"
+          />
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Text with custom accessibility actions">
+          <Text
+            accessible={true}
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessiblity action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}>
+            Text
+          </Text>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Picker with accessibility actions">
+          <Picker
+            accessible={true}
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessiblity action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}>
+            <Picker.Item label="Item 1" value="item1" />
+          </Picker>
         </RNTesterBlock>
       </View>
     );
