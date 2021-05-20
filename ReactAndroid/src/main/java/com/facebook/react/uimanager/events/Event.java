@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.common.UIManagerType;
 
 /**
  * A UI event that can be dispatched to JS.
@@ -33,10 +34,20 @@ public abstract class Event<T extends Event> {
   private static int sUniqueID = 0;
 
   private boolean mInitialized;
+  private @UIManagerType int mUIManagerType;
   private int mSurfaceId;
   private int mViewTag;
   private long mTimestampMs;
   private int mUniqueID = sUniqueID++;
+
+  // Android native Event times use 'uptimeMillis', and historically we've used `uptimeMillis`
+  // throughout this Event class as the coalescing key for events, and for other purposes.
+  // To get an accurate(ish) absolute UNIX time for the event, we store the initial clock time here.
+  // uptimeMillis can then be added to this to get an accurate UNIX time.
+  // However, we still default to uptimeMillis: you must explicitly request UNIX time if you want
+  // that; see `getUnixTimestampMs`.
+  public static final long sInitialClockTimeUnixOffset =
+      SystemClock.currentTimeMillis() - SystemClock.uptimeMillis();
 
   protected Event() {}
 
@@ -58,7 +69,22 @@ public abstract class Event<T extends Event> {
   protected void init(int surfaceId, int viewTag) {
     mSurfaceId = surfaceId;
     mViewTag = viewTag;
+
+    // We infer UIManagerType. Even though it's not passed in explicitly, we have a
+    // contract that Fabric events *always* have a SurfaceId passed in, and non-Fabric events
+    // NEVER have a SurfaceId passed in (the default/placeholder of -1 is passed in instead).
+    // Why does this matter?
+    // Events can be sent to Views that are part of the View hierarchy *but not directly managed
+    // by React Native*. For example, embedded custom hierachies, Litho hierachies, etc.
+    // In those cases it's important to konw that the Event should be sent to the Fabric or
+    // non-Fabric UIManager, and we cannot use the ViewTag for inference since it's not controlled
+    // by RN and is essentially a random number.
+    // At some point it would be great to pass the SurfaceContext here instead.
+    mUIManagerType = (surfaceId == -1 ? UIManagerType.DEFAULT : UIManagerType.FABRIC);
+
+    // This is a *relative* time. See `getUnixTimestampMs`.
     mTimestampMs = SystemClock.uptimeMillis();
+
     mInitialized = true;
   }
 
@@ -78,6 +104,11 @@ public abstract class Event<T extends Event> {
    */
   public final long getTimestampMs() {
     return mTimestampMs;
+  }
+
+  /** @return the time at which the event happened as a UNIX timestamp, in milliseconds. */
+  public final long getUnixTimestampMs() {
+    return sInitialClockTimeUnixOffset + mTimestampMs;
   }
 
   /** @return false if this Event can *never* be coalesced */
@@ -124,6 +155,10 @@ public abstract class Event<T extends Event> {
   /*package*/ final void dispose() {
     mInitialized = false;
     onDispose();
+  }
+
+  public final @UIManagerType int getUIManagerType() {
+    return mUIManagerType;
   }
 
   /** @return the name of this event as registered in JS */

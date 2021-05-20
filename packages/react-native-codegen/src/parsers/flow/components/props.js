@@ -416,7 +416,7 @@ function buildPropSchema(
   };
 }
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type PropAST = Object;
 
 function verifyPropNotAlreadyDefined(

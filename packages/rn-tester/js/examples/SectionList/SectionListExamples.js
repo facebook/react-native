@@ -16,7 +16,11 @@ import {
   Text,
   View,
 } from 'react-native';
+
 import * as React from 'react';
+type SectionListProps = React.ElementProps<typeof SectionList>;
+
+type ViewabilityConfig = $PropertyType<SectionListProps, 'viewabilityConfig'>;
 
 const DATA = [
   {
@@ -37,17 +41,19 @@ const DATA = [
   },
 ];
 
-const VIEWABILITY_CONFIG = {
-  minimumViewTime: 1000,
-  viewAreaCoveragePercentThreshold: 100,
-  waitForInteraction: true,
-};
-
 const Item = ({item, section, separators}) => {
   return (
     <Pressable
-      onPressIn={separators.highlight}
-      onPressOut={separators.unhighlight}
+      onPressIn={() => {
+        separators.highlight();
+      }}
+      onPress={() => {
+        separators.updateProps('trailing', {hasBeenHighlighted: true});
+        separators.updateProps('leading', {hasBeenHighlighted: true});
+      }}
+      onPressOut={() => {
+        separators.unhighlight();
+      }}
       style={({pressed}) => [
         styles.item,
         {
@@ -60,7 +66,18 @@ const Item = ({item, section, separators}) => {
   );
 };
 
-const Separator = (defaultColor, highlightColor, text) => ({highlighted}) => {
+const Separator = (defaultColor, highlightColor, isSectionSeparator) => ({
+  leadingItem,
+  trailingItem,
+  highlighted,
+  hasBeenHighlighted,
+}) => {
+  const text = `${
+    isSectionSeparator ? 'Section ' : ''
+  }separator for leading ${leadingItem} and trailing ${trailingItem} has ${
+    !hasBeenHighlighted ? 'not ' : ''
+  }been pressed`;
+
   return (
     <View
       style={[
@@ -174,7 +191,7 @@ export function SectionList_onEndReached(): React.Node {
     onEndReached: info => setOutput('onEndReached'),
     onEndReachedThreshold: 0,
   };
-  const ref = React.createRef<?React.ElementRef<typeof SectionList>>();
+  const ref = React.useRef(null);
 
   const onTest = () => {
     const scrollResponder = ref?.current?.getScrollResponder();
@@ -195,28 +212,23 @@ export function SectionList_onEndReached(): React.Node {
 
 export function SectionList_withSeparators(): React.Node {
   const exampleProps = {
-    ItemSeparatorComponent: Separator('lightgreen', 'green', 'Item Separator'),
-    SectionSeparatorComponent: Separator(
-      'lightblue',
-      'blue',
-      'Section Separator',
-    ),
+    ItemSeparatorComponent: Separator('lightgreen', 'green', false),
+    SectionSeparatorComponent: Separator('lightblue', 'blue', true),
   };
-  const ref = React.createRef<?React.ElementRef<typeof SectionList>>();
-
-  const onTest = null;
+  const ref = React.useRef(null);
 
   return (
-    <SectionListExampleWithForwardedRef
-      ref={ref}
-      exampleProps={exampleProps}
-      testOutput="Tap for press state of section and item separators"
-      onTest={onTest}
-    />
+    <SectionListExampleWithForwardedRef ref={ref} exampleProps={exampleProps} />
   );
 }
 
-export function SectionList_onViewableItemsChanged(): React.Node {
+export function SectionList_onViewableItemsChanged(props: {
+  viewabilityConfig: ViewabilityConfig,
+  offScreen?: ?boolean,
+  horizontal?: ?boolean,
+  useScrollRefScroll?: ?boolean,
+}): React.Node {
+  const {viewabilityConfig, offScreen, horizontal, useScrollRefScroll} = props;
   const [output, setOutput] = React.useState('');
   const exampleProps = {
     onViewableItemsChanged: info =>
@@ -226,15 +238,25 @@ export function SectionList_onViewableItemsChanged(): React.Node {
           .map(viewToken => viewToken.item)
           .join(', '),
       ),
-    viewabilityConfig: VIEWABILITY_CONFIG,
+    viewabilityConfig,
+    horizontal,
   };
+  const ref = React.useRef(null);
+  const onTest =
+    useScrollRefScroll === true
+      ? () => {
+          ref?.current?.getScrollResponder()?.scrollToEnd();
+        }
+      : null;
 
   return (
     <SectionListExampleWithForwardedRef
+      ref={ref}
       exampleProps={exampleProps}
-      onTest={null}
-      testOutput={output}
-    />
+      onTest={onTest}
+      testOutput={output}>
+      {offScreen === true ? <View style={styles.offScreen} /> : null}
+    </SectionListExampleWithForwardedRef>
   );
 }
 
@@ -242,33 +264,35 @@ type Props = {
   exampleProps: $Shape<React.ElementConfig<typeof SectionList>>,
   onTest?: ?() => void,
   testLabel?: ?string,
-  testOutput: ?string,
+  testOutput?: ?string,
+  children?: ?React.Node,
 };
 
 const SectionListExampleWithForwardedRef = React.forwardRef(
-  function SectionListExample(
-    props: Props,
-    ref: ?React.ElementRef<typeof SectionListExampleWithForwardedRef>,
-  ): React.Node {
+  (props: Props, ref): React.Node => {
     return (
-      <View>
-        <View testID="test_container" style={styles.testContainer}>
-          <Text numberOfLines={1} testID="output">
-            {props.testOutput}
-          </Text>
-          {props.onTest != null ? (
-            <Button
-              testID="start_test"
-              onPress={props.onTest}
-              title={props.testLabel ?? 'Test'}
-            />
-          ) : null}
-        </View>
+      <View style={styles.container}>
+        {props.testOutput != null ? (
+          <View testID="test_container" style={styles.testContainer}>
+            <Text style={styles.output} numberOfLines={1} testID="output">
+              {props.testOutput}
+            </Text>
+            {props.onTest != null ? (
+              <Button
+                testID="start_test"
+                onPress={props.onTest}
+                title={props.testLabel ?? 'Test'}
+              />
+            ) : null}
+          </View>
+        ) : null}
+        {props.children}
         <SectionList
           ref={ref}
           testID="section_list"
           sections={DATA}
           keyExtractor={(item, index) => item + index}
+          style={styles.list}
           renderItem={Item}
           renderSectionHeader={({section: {title}}) => (
             <Text style={styles.header}>{title}</Text>
@@ -313,9 +337,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#f2f2f7ff',
-    padding: 4,
+    height: 40,
   },
   output: {
+    width: '80%',
     fontSize: 12,
   },
   separator: {
@@ -323,5 +348,12 @@ const styles = StyleSheet.create({
   },
   separtorText: {
     fontSize: 10,
+  },
+  list: {
+    flex: 1,
+  },
+  container: {flex: 1},
+  offScreen: {
+    height: 1000,
   },
 });

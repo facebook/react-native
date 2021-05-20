@@ -435,6 +435,14 @@ using namespace facebook::react;
 
 - (void)setDefaultInputAccessoryView
 {
+  // InputAccessoryView component sets the inputAccessoryView when inputAccessoryViewID exists
+  if (_backedTextInputView.inputAccessoryViewID) {
+    if (_backedTextInputView.isFirstResponder) {
+      [_backedTextInputView reloadInputViews];
+    }
+    return;
+  }
+
   UIKeyboardType keyboardType = _backedTextInputView.keyboardType;
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,

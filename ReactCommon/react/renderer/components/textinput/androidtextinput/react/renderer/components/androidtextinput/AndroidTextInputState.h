@@ -13,6 +13,8 @@
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook {
@@ -66,13 +68,6 @@ class AndroidTextInputState final {
    */
   ShadowView defaultParentShadowView;
 
-  /*
-   * `TextLayoutManager` provides a connection to platform-specific
-   * text rendering infrastructure which is capable to render the
-   * `AttributedString`.
-   */
-  SharedTextLayoutManager layoutManager{};
-
   /**
    * Communicates Android theme padding back to the ShadowNode / Component
    * Descriptor for layout.
@@ -89,7 +84,6 @@ class AndroidTextInputState final {
       ParagraphAttributes const &paragraphAttributes,
       TextAttributes const &defaultTextAttributes,
       ShadowView const &defaultParentShadowView,
-      SharedTextLayoutManager const &layoutManager,
       float defaultThemePaddingStart,
       float defaultThemePaddingEnd,
       float defaultThemePaddingTop,
@@ -100,6 +94,9 @@ class AndroidTextInputState final {
       AndroidTextInputState const &previousState,
       folly::dynamic const &data);
   folly::dynamic getDynamic() const;
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 };
 
 } // namespace react

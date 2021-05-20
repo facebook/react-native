@@ -15,7 +15,6 @@ namespace facebook {
 namespace react {
 
 using Status = SurfaceHandler::Status;
-using DisplayMode = SurfaceHandler::DisplayMode;
 
 SurfaceHandler::SurfaceHandler(
     std::string const &moduleName,
@@ -58,6 +57,9 @@ void SurfaceHandler::start() const noexcept {
     std::unique_lock<better::shared_mutex> lock(linkMutex_);
     react_native_assert(
         link_.status == Status::Registered && "Surface must be registered.");
+    react_native_assert(
+        getLayoutConstraints().layoutDirection != LayoutDirection::Undefined &&
+        "layoutDirection must be set.");
 
     auto parameters = Parameters{};
     {
@@ -65,12 +67,20 @@ void SurfaceHandler::start() const noexcept {
       parameters = parameters_;
     }
 
-    link_.shadowTree = &link_.uiManager->startSurface(
+    auto shadowTree = std::make_unique<ShadowTree>(
         parameters.surfaceId,
+        parameters.layoutConstraints,
+        parameters.layoutContext,
+        *link_.uiManager,
+        enableNewDiffer_);
+
+    link_.shadowTree = shadowTree.get();
+
+    link_.uiManager->startSurface(
+        std::move(shadowTree),
         parameters.moduleName,
         parameters.props,
-        parameters.layoutConstraints,
-        parameters.layoutContext);
+        parameters_.displayMode);
 
     link_.status = Status::Running;
 
@@ -79,13 +89,22 @@ void SurfaceHandler::start() const noexcept {
 }
 
 void SurfaceHandler::stop() const noexcept {
-  std::unique_lock<better::shared_mutex> lock(linkMutex_);
-  react_native_assert(
-      link_.status == Status::Running && "Surface must be running.");
+  auto shadowTree = ShadowTree::Unique{};
+  {
+    std::unique_lock<better::shared_mutex> lock(linkMutex_);
+    react_native_assert(
+        link_.status == Status::Running && "Surface must be running.");
 
-  link_.status = Status::Registered;
-  link_.shadowTree = nullptr;
-  link_.uiManager->stopSurface(parameters_.surfaceId);
+    link_.status = Status::Registered;
+    link_.shadowTree = nullptr;
+    shadowTree = link_.uiManager->stopSurface(parameters_.surfaceId);
+  }
+
+  // As part of stopping a Surface, we need to properly destroy all
+  // mounted views, so we need to commit an empty tree to trigger all
+  // side-effects (including destroying and removing mounted views).
+  react_native_assert(shadowTree && "`shadowTree` must not be null.");
+  shadowTree->commitEmptyTree();
 }
 
 void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
@@ -105,6 +124,12 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
       return;
     }
 
+    link_.uiManager->setSurfaceProps(
+        parameters_.surfaceId,
+        parameters_.moduleName,
+        parameters_.props,
+        parameters_.displayMode);
+
     applyDisplayMode(displayMode);
   }
 }
@@ -114,11 +139,21 @@ DisplayMode SurfaceHandler::getDisplayMode() const noexcept {
   return parameters_.displayMode;
 }
 
+#pragma mark - Feature Flags
+void SurfaceHandler::setEnableNewDiffer(bool enabled) const noexcept {
+  enableNewDiffer_ = enabled;
+}
+
 #pragma mark - Accessors
 
 SurfaceId SurfaceHandler::getSurfaceId() const noexcept {
   std::shared_lock<better::shared_mutex> lock(parametersMutex_);
   return parameters_.surfaceId;
+}
+
+void SurfaceHandler::setSurfaceId(SurfaceId surfaceId) const noexcept {
+  std::unique_lock<better::shared_mutex> lock(parametersMutex_);
+  parameters_.surfaceId = surfaceId;
 }
 
 std::string SurfaceHandler::getModuleName() const noexcept {
@@ -257,9 +292,11 @@ void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
 }
 
 SurfaceHandler::~SurfaceHandler() noexcept {
-  react_native_assert(
-      link_.status == Status::Unregistered &&
-      "`SurfaceHandler` must be unregistered (or moved-from) before deallocation.");
+  // TODO(T88046056): Fix Android memory leak before uncommenting changes
+  //  react_native_assert(
+  //      link_.status == Status::Unregistered &&
+  //      "`SurfaceHandler` must be unregistered (or moved-from) before
+  //      deallocation.");
 }
 
 } // namespace react

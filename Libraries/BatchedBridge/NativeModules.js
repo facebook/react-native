@@ -14,7 +14,7 @@ const BatchedBridge = require('./BatchedBridge');
 
 const invariant = require('invariant');
 
-import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
+import type {ExtendedError} from '../Core/ExtendedError';
 
 export type ModuleConfig = [
   string /* name */,

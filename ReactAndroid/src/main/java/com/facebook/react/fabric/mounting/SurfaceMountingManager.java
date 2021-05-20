@@ -21,12 +21,12 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactRoot;
@@ -40,6 +40,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nullable;
 
 public class SurfaceMountingManager {
@@ -48,15 +49,18 @@ public class SurfaceMountingManager {
   private static final boolean SHOW_CHANGED_VIEW_HIERARCHIES = ReactBuildConfig.DEBUG && false;
 
   private volatile boolean mIsStopped = false;
+  private volatile boolean mRootViewAttached = false;
 
-  @NonNull private final ThemedReactContext mThemedReactContext;
+  @Nullable private ThemedReactContext mThemedReactContext;
 
   // These are all non-null, until StopSurface is called
   private ConcurrentHashMap<Integer, ViewState> mTagToViewState =
       new ConcurrentHashMap<>(); // any thread
+  private ConcurrentLinkedQueue<MountItem> mOnViewAttachItems = new ConcurrentLinkedQueue<>();
   private JSResponderHandler mJSResponderHandler;
   private ViewManagerRegistry mViewManagerRegistry;
   private RootViewManager mRootViewManager;
+  private MountingManager mMountingManager;
 
   // This is null *until* StopSurface is called.
   private Set<Integer> mTagSetForStoppedSurface;
@@ -66,24 +70,36 @@ public class SurfaceMountingManager {
 
   public SurfaceMountingManager(
       int surfaceId,
-      @NonNull final View rootView,
       @NonNull JSResponderHandler jsResponderHandler,
       @NonNull ViewManagerRegistry viewManagerRegistry,
       @NonNull RootViewManager rootViewManager,
-      @NonNull ThemedReactContext context) {
+      @NonNull MountingManager mountingManager) {
     mSurfaceId = surfaceId;
+
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
     mRootViewManager = rootViewManager;
-    mThemedReactContext = context;
-
-    addRootView(rootView);
+    mMountingManager = mountingManager;
   }
 
   public boolean isStopped() {
     return mIsStopped;
   }
 
+  public void attachRootView(View rootView, ThemedReactContext themedReactContext) {
+    mThemedReactContext = themedReactContext;
+    addRootView(rootView);
+  }
+
+  public int getSurfaceId() {
+    return mSurfaceId;
+  }
+
+  public boolean isRootViewAttached() {
+    return mRootViewAttached;
+  }
+
+  @Nullable
   public ThemedReactContext getContext() {
     return mThemedReactContext;
   }
@@ -133,8 +149,16 @@ public class SurfaceMountingManager {
   }
 
   @AnyThread
+  public void executeOnViewAttach(MountItem item) {
+    mOnViewAttachItems.add(item);
+  }
+
+  @AnyThread
   private void addRootView(@NonNull final View rootView) {
-    // Since this is called from the constructor, we know the surface cannot have stopped yet.
+    if (isStopped()) {
+      return;
+    }
+
     mTagToViewState.put(mSurfaceId, new ViewState(mSurfaceId, rootView, mRootViewManager, true));
 
     Runnable runnable =
@@ -170,6 +194,9 @@ public class SurfaceMountingManager {
             if (rootView instanceof ReactRoot) {
               ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
             }
+            mRootViewAttached = true;
+
+            executeViewAttachMountItems();
           }
         };
 
@@ -177,6 +204,14 @@ public class SurfaceMountingManager {
       runnable.run();
     } else {
       UiThreadUtil.runOnUiThread(runnable);
+    }
+  }
+
+  @UiThread
+  private void executeViewAttachMountItems() {
+    while (!mOnViewAttachItems.isEmpty()) {
+      MountItem item = mOnViewAttachItems.poll();
+      item.execute(mMountingManager);
     }
   }
 
@@ -204,19 +239,37 @@ public class SurfaceMountingManager {
       return;
     }
 
-    // Prevent more views from being created, or the hierarchy from being manipulated at all
+    // Prevent more views from being created, or the hierarchy from being manipulated at all. This
+    // causes further operations to noop.
     mIsStopped = true;
+
+    // Reset all StateWrapper objects
+    // Since this can happen on any thread, is it possible to race between StateWrapper destruction
+    // and some accesses from View classes in the UI thread?
+    for (ViewState viewState : mTagToViewState.values()) {
+      if (viewState.mStateWrapper != null) {
+        viewState.mStateWrapper.destroyState();
+        viewState.mStateWrapper = null;
+      }
+    }
 
     Runnable runnable =
         new Runnable() {
           @Override
           public void run() {
+            // We must call `onDropViewInstance` on all remaining Views
+            for (ViewState viewState : mTagToViewState.values()) {
+              onViewStateDeleted(viewState);
+            }
+
             // Evict all views from cache and memory
             mLastSuccessfulQueryTime = System.currentTimeMillis();
             mTagSetForStoppedSurface = mTagToViewState.keySet();
             mTagToViewState = null;
             mJSResponderHandler = null;
             mRootViewManager = null;
+            mMountingManager = null;
+            mOnViewAttachItems.clear();
           }
         };
 
@@ -498,12 +551,11 @@ public class SurfaceMountingManager {
       view =
           viewManager.createView(
               reactTag, mThemedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
-      view.setId(reactTag);
     }
 
     ViewState viewState = new ViewState(reactTag, view, viewManager);
     viewState.mCurrentProps = propsDiffMap;
-    viewState.mCurrentState = (stateWrapper != null ? stateWrapper.getState() : null);
+    viewState.mStateWrapper = stateWrapper;
 
     mTagToViewState.put(reactTag, viewState);
   }
@@ -676,9 +728,9 @@ public class SurfaceMountingManager {
     }
 
     ViewState viewState = getViewState(reactTag);
-    @Nullable ReadableNativeMap newState = stateWrapper == null ? null : stateWrapper.getState();
 
-    viewState.mCurrentState = newState;
+    StateWrapper prevStateWrapper = viewState.mStateWrapper;
+    viewState.mStateWrapper = stateWrapper;
 
     ViewManager viewManager = viewState.mViewManager;
 
@@ -689,6 +741,12 @@ public class SurfaceMountingManager {
         viewManager.updateState(viewState.mView, viewState.mCurrentProps, stateWrapper);
     if (extraData != null) {
       viewManager.updateExtraData(viewState.mView, extraData);
+    }
+
+    // Immediately clear native side of previous state wrapper. This causes the State object in C++
+    // to be destroyed immediately instead of waiting for Java GC to kick in.
+    if (prevStateWrapper != null) {
+      prevStateWrapper.destroyState();
     }
   }
 
@@ -742,6 +800,21 @@ public class SurfaceMountingManager {
   }
 
   @UiThread
+  private void onViewStateDeleted(ViewState viewState) {
+    // Destroy state immediately instead of waiting for Java GC.
+    if (viewState.mStateWrapper != null) {
+      viewState.mStateWrapper.destroyState();
+      viewState.mStateWrapper = null;
+    }
+
+    // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
+    ViewManager viewManager = viewState.mViewManager;
+    if (!viewState.mIsRoot && viewManager != null) {
+      viewManager.onDropViewInstance(viewState.mView);
+    }
+  }
+
+  @UiThread
   public void deleteView(int reactTag) {
     UiThreadUtil.assertOnUiThread();
     if (isStopped()) {
@@ -763,11 +836,7 @@ public class SurfaceMountingManager {
     // or StopSurface being called, so we do not handle deleting descendents of the View.
     mTagToViewState.remove(reactTag);
 
-    // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-    ViewManager viewManager = viewState.mViewManager;
-    if (!viewState.mIsRoot && viewManager != null) {
-      viewManager.onDropViewInstance(viewState.mView);
-    }
+    onViewStateDeleted(viewState);
   }
 
   @UiThread
@@ -833,7 +902,7 @@ public class SurfaceMountingManager {
     @Nullable final ViewManager mViewManager;
     @Nullable public ReactStylesDiffMap mCurrentProps = null;
     @Nullable public ReadableMap mCurrentLocalData = null;
-    @Nullable public ReadableMap mCurrentState = null;
+    @Nullable public StateWrapper mStateWrapper = null;
     @Nullable public EventEmitterWrapper mEventEmitter = null;
 
     private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {

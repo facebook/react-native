@@ -91,6 +91,7 @@ public class Binding {
         jsMessageQueueThread,
         componentFactory,
         reactNativeConfig);
+
     setPixelDensity(PixelUtil.getDisplayMetricDensity());
   }
 
@@ -99,4 +100,8 @@ public class Binding {
   public void unregister() {
     uninstallFabricUIManager();
   }
+
+  public native void registerSurface(SurfaceHandlerBinding surfaceHandler);
+
+  public native void unregisterSurface(SurfaceHandlerBinding surfaceHandler);
 }

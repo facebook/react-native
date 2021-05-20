@@ -72,6 +72,7 @@ module.exports = {
       },
       rules: {
         'react-native/no-inline-styles': 0,
+        quotes: [1, 'single', {avoidEscape: true, allowTemplateLiterals: true}],
       },
     },
   ],

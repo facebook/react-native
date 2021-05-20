@@ -95,6 +95,8 @@ import com.facebook.react.surface.ReactStage;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
+import com.facebook.react.uimanager.ComponentNameResolver;
+import com.facebook.react.uimanager.ComponentNameResolverManager;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -153,11 +155,13 @@ public class ReactInstanceManager {
   /* accessed from any thread */
   private final JavaScriptExecutorFactory mJavaScriptExecutorFactory;
 
+  private @Nullable List<String> mViewManagerNames = null;
   private final @Nullable JSBundleLoader mBundleLoader;
   private final @Nullable String mJSMainModulePath; /* path to JS bundle root on Metro */
   private final List<ReactPackage> mPackages;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
+  private @Nullable ComponentNameResolverManager mComponentNameResolverManager;
   private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private final Object mReactContextLock = new Object();
   private @Nullable volatile ReactContext mCurrentReactContext;
@@ -314,9 +318,8 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-
+          rootView.setIsFabric(ReactFeatureFlags.enableFabricInLogBox);
           rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
-
           return rootView;
         }
 
@@ -514,7 +517,7 @@ public class ReactInstanceManager {
 
   private void toggleElementInspector() {
     ReactContext currentContext = getCurrentReactContext();
-    if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
+    if (currentContext != null && currentContext.hasActiveReactInstance()) {
       currentContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit("toggleElementInspector", null);
@@ -711,6 +714,10 @@ public class ReactInstanceManager {
     synchronized (mHasStartedDestroying) {
       mHasStartedDestroying.notifyAll();
     }
+    synchronized (mPackages) {
+      mViewManagerNames = null;
+    }
+    mComponentNameResolverManager = null;
     FLog.d(ReactConstants.TAG, "ReactInstanceManager has been destroyed");
   }
 
@@ -851,7 +858,7 @@ public class ReactInstanceManager {
       if (mAttachedReactRoots.contains(reactRoot)) {
         ReactContext currentContext = getCurrentReactContext();
         mAttachedReactRoots.remove(reactRoot);
-        if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
+        if (currentContext != null && currentContext.hasActiveReactInstance()) {
           detachViewFromInstance(reactRoot, currentContext.getCatalystInstance());
         }
       }
@@ -886,7 +893,7 @@ public class ReactInstanceManager {
     ReactApplicationContext context;
     synchronized (mReactContextLock) {
       context = (ReactApplicationContext) getCurrentReactContext();
-      if (context == null || !context.hasActiveCatalystInstance()) {
+      if (context == null || !context.hasActiveReactInstance()) {
         return null;
       }
     }
@@ -908,33 +915,38 @@ public class ReactInstanceManager {
 
   public @Nullable List<String> getViewManagerNames() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerNames");
-    ReactApplicationContext context;
-    synchronized (mReactContextLock) {
-      context = (ReactApplicationContext) getCurrentReactContext();
-      if (context == null || !context.hasActiveCatalystInstance()) {
-        return null;
-      }
-    }
-
-    synchronized (mPackages) {
-      Set<String> uniqueNames = new HashSet<>();
-      for (ReactPackage reactPackage : mPackages) {
-        SystraceMessage.beginSection(
-                TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
-            .arg("Package", reactPackage.getClass().getSimpleName())
-            .flush();
-        if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
-          List<String> names =
-              ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
-          if (names != null) {
-            uniqueNames.addAll(names);
-          }
+    if (mViewManagerNames == null) {
+      ReactApplicationContext context;
+      synchronized (mReactContextLock) {
+        context = (ReactApplicationContext) getCurrentReactContext();
+        if (context == null || !context.hasActiveReactInstance()) {
+          return null;
         }
-        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
       }
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-      return new ArrayList<>(uniqueNames);
+
+      synchronized (mPackages) {
+        if (mViewManagerNames == null) {
+          Set<String> uniqueNames = new HashSet<>();
+          for (ReactPackage reactPackage : mPackages) {
+            SystraceMessage.beginSection(
+                    TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
+                .arg("Package", reactPackage.getClass().getSimpleName())
+                .flush();
+            if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
+              List<String> names =
+                  ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
+              if (names != null) {
+                uniqueNames.addAll(names);
+              }
+            }
+            SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+          }
+          Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+          mViewManagerNames = new ArrayList<>(uniqueNames);
+        }
+      }
     }
+    return new ArrayList<>(mViewManagerNames);
   }
 
   /** Add a listener to be notified of react instance events. */
@@ -1322,6 +1334,15 @@ public class ReactInstanceManager {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
     if (ReactFeatureFlags.enableExperimentalStaticViewConfigs) {
+      mComponentNameResolverManager =
+          new ComponentNameResolverManager(
+              catalystInstance.getRuntimeExecutor(),
+              new ComponentNameResolver() {
+                @Override
+                public String[] getComponentNames() {
+                  return getViewManagerNames().toArray(new String[0]);
+                }
+              });
       catalystInstance.setGlobalVariable("__fbStaticViewConfig", "true");
     }
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);

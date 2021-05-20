@@ -12,7 +12,6 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTBundleHolderModule.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
@@ -114,7 +113,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @end
 
-@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec, RCTBundleHolderModule> {
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec, RCTDevSettingsInspectable> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -128,7 +127,8 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @implementation RCTDevSettings
 
-@synthesize bundleURL = _bundleURL;
+@synthesize isInspectable = _isInspectable;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -166,6 +166,32 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (void)setBundleManager:(RCTBundleManager *)bundleManager
+{
+  _bundleManager = bundleManager;
+
+#if RCT_ENABLE_INSPECTOR
+  if (self.bridge) {
+    // We need this dispatch to the main thread because the bridge is not yet
+    // finished with its initialisation. By the time it relinquishes control of
+    // the main thread, this operation can be performed.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.bridge
+          dispatchBlock:^{
+            [RCTInspectorDevServerHelper connectWithBundleURL:bundleManager.bundleURL];
+          }
+                  queue:RCTJSThread];
+    });
+  } else {
+    [RCTInspectorDevServerHelper connectWithBundleURL:bundleManager.bundleURL];
+  }
+#endif
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self _synchronizeAllSettings];
+  });
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
@@ -182,23 +208,6 @@ RCT_EXPORT_MODULE()
                        queue:dispatch_get_main_queue()
                    forMethod:@"reload"];
 #endif
-
-#if RCT_ENABLE_INSPECTOR
-  // We need this dispatch to the main thread because the bridge is not yet
-  // finished with its initialisation. By the time it relinquishes control of
-  // the main thread, this operation can be performed.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [bridge
-        dispatchBlock:^{
-          [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
-        }
-                queue:RCTJSThread];
-  });
-#endif
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self _synchronizeAllSettings];
-  });
 }
 
 - (dispatch_queue_t)methodQueue
@@ -232,7 +241,11 @@ RCT_EXPORT_MODULE()
 - (BOOL)isDeviceDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
-  return self.bridge.isInspectable;
+  if (self.bridge) {
+    return self.bridge.isInspectable;
+  } else {
+    return self.isInspectable;
+  }
 #else
   return false;
 #endif // RCT_ENABLE_INSPECTOR
@@ -249,10 +262,8 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isHotLoadingAvailable
 {
-  if (self.bridge.bundleURL) {
-    return !self.bridge.bundleURL.fileURL; // Only works when running from server
-  } else if (self.bundleURL) {
-    return !self.bundleURL.fileURL;
+  if (self.bundleManager.bundleURL) {
+    return !self.bundleManager.bundleURL.fileURL;
   }
   return NO;
 }
@@ -339,16 +350,12 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       if (enabled) {
-        if (self.bridge) {
-          [self.bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
-        } else if (self.invokeJS) {
-          self.invokeJS(@"HMRClient", @"enable", @[]);
+        if (self.callableJSModules) {
+          [self.callableJSModules invokeModule:@"HMRClient" method:@"enable" withArgs:@[]];
         }
       } else {
-        if (self.bridge) {
-          [self.bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
-        } else if (self.invokeJS) {
-          self.invokeJS(@"HMRClient", @"disable", @[]);
+        if (self.callableJSModules) {
+          [self.callableJSModules invokeModule:@"HMRClient" method:@"disable" withArgs:@[]];
         }
       }
 #pragma clang diagnostic pop
@@ -430,13 +437,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     NSString *const host = bundleURL.host;
     NSNumber *const port = bundleURL.port;
     BOOL isHotLoadingEnabled = self.isHotLoadingEnabled;
-    if (self.bridge) {
-      [self.bridge enqueueJSCall:@"HMRClient"
-                          method:@"setup"
-                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]
-                      completion:NULL];
-    } else {
-      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]);
+    if (self.callableJSModules) {
+      [self.callableJSModules invokeModule:@"HMRClient"
+                                    method:@"setup"
+                                  withArgs:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]];
     }
   }
 }
@@ -444,13 +448,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL
 {
   if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
-    if (self.bridge) {
-      [self.bridge enqueueJSCall:@"HMRClient"
-                          method:@"registerBundle"
-                            args:@[ [bundleURL absoluteString] ]
-                      completion:NULL];
-    } else {
-      self.invokeJS(@"HMRClient", @"registerBundle", @[ [bundleURL absoluteString] ]);
+    if (self.callableJSModules) {
+      [self.callableJSModules invokeModule:@"HMRClient"
+                                    method:@"registerBundle"
+                                  withArgs:@[ [bundleURL absoluteString] ]];
     }
   }
 }

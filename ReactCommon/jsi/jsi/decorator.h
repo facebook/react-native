@@ -126,6 +126,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
       const std::shared_ptr<const PreparedJavaScript>& js) override {
     return plain().evaluatePreparedJavaScript(js);
   }
+  bool drainMicrotasks(int maxMicrotasksHint) override {
+    return plain().drainMicrotasks(maxMicrotasksHint);
+  }
   Object global() override {
     return plain().global();
   }
@@ -348,6 +351,14 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().stopTrackingHeapObjectStackTraces();
   }
 
+  void startHeapSampling(size_t samplingInterval) override {
+    plain().instrumentation().startHeapSampling(samplingInterval);
+  }
+
+  void stopHeapSampling(std::ostream& os) override {
+    plain().instrumentation().stopHeapSampling(os);
+  }
+
   void createSnapshotToFile(const std::string& path) override {
     plain().instrumentation().createSnapshotToFile(path);
   }
@@ -482,6 +493,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       const std::shared_ptr<const PreparedJavaScript>& js) override {
     Around around{with_};
     return RD::evaluatePreparedJavaScript(js);
+  }
+  bool drainMicrotasks(int maxMicrotasksHint) override {
+    Around around{with_};
+    return RD::drainMicrotasks(maxMicrotasksHint);
   }
   Object global() override {
     Around around{with_};

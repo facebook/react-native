@@ -7,6 +7,7 @@
 
 #include "Binding.h"
 #include "AsyncEventBeat.h"
+#include "AsyncEventBeatV2.h"
 #include "EventEmitterWrapper.h"
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
@@ -24,6 +25,7 @@
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -105,7 +107,7 @@ static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
   } else if (mountItemType == CppMountItem::Type::UpdatePadding) {
     return 5; // tag, top, left, bottom, right
   } else if (mountItemType == CppMountItem::Type::UpdateLayout) {
-    return 7; // tag, x, y, w, h, layoutDirection, DisplayType
+    return 6; // tag, x, y, w, h, DisplayType
   } else if (mountItemType == CppMountItem::Type::UpdateEventEmitter) {
     return 1; // tag
   } else {
@@ -376,6 +378,16 @@ void Binding::stopSurface(jint surfaceId) {
   }
 }
 
+void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
+  auto scheduler = getScheduler();
+  scheduler->registerSurface(surfaceHandlerBinding->getSurfaceHandler());
+}
+
+void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
+  auto scheduler = getScheduler();
+  scheduler->unregisterSurface(surfaceHandlerBinding->getSurfaceHandler());
+}
+
 static inline float scale(Float value, Float pointScaleFactor) {
   std::feclearexcept(FE_ALL_EXCEPT);
   float result = value * pointScaleFactor;
@@ -442,6 +454,17 @@ void Binding::setConstraints(
   }
 }
 
+bool isMapBufferSerializationEnabled() {
+  static const auto reactFeatureFlagsJavaDescriptor =
+      jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
+  static const auto isMapBufferSerializationEnabledMethod =
+      reactFeatureFlagsJavaDescriptor->getStaticMethod<jboolean()>(
+          "isMapBufferSerializationEnabled");
+  bool value =
+      isMapBufferSerializationEnabledMethod(reactFeatureFlagsJavaDescriptor);
+  return value;
+}
+
 void Binding::installFabricUIManager(
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
     jni::alias_ref<jobject> javaUIManager,
@@ -477,28 +500,62 @@ void Binding::installFabricUIManager(
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
+  std::shared_ptr<RuntimeScheduler> runtimeScheduler;
+
+  if (config->getBool("react_fabric:enable_runtimescheduler_android")) {
+    runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
+
+    auto originalRuntimeExecutor = runtimeExecutorHolder->cthis()->get();
+    runtimeExecutor =
+        [originalRuntimeExecutor, runtimeScheduler](
+            std::function<void(jsi::Runtime & runtime)> &&callback) {
+          runtimeScheduler->scheduleWork(std::move(callback));
+        };
+  }
+
+  auto enableV2AsynchronousEventBeat =
+      config->getBool("react_fabric:enable_asynchronous_event_beat_v2_android");
 
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
   EventBeat::Factory synchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager](
-          EventBeat::SharedOwnerBox const &ownerBox) {
-        return std::make_unique<AsyncEventBeat>(
-            ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
-      };
+      [eventBeatManager,
+       runtimeExecutor,
+       localJavaUIManager,
+       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
+      -> std::unique_ptr<EventBeat> {
+    if (enableV2AsynchronousEventBeat) {
+      return std::make_unique<AsyncEventBeatV2>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    } else {
+      return std::make_unique<AsyncEventBeat>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    }
+  };
 
   EventBeat::Factory asynchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager](
-          EventBeat::SharedOwnerBox const &ownerBox) {
-        return std::make_unique<AsyncEventBeat>(
-            ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
-      };
+      [eventBeatManager,
+       runtimeExecutor,
+       localJavaUIManager,
+       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
+      -> std::unique_ptr<EventBeat> {
+    if (enableV2AsynchronousEventBeat) {
+      return std::make_unique<AsyncEventBeatV2>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    } else {
+      return std::make_unique<AsyncEventBeat>(
+          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
+    }
+  };
 
   contextContainer->insert("ReactNativeConfig", config);
   contextContainer->insert("FabricUIManager", javaUIManager_);
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
+
+  contextContainer->insert(
+      "MapBufferSerializationEnabled", isMapBufferSerializationEnabled());
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
@@ -507,6 +564,7 @@ void Binding::installFabricUIManager(
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
   toolbox.runtimeExecutor = runtimeExecutor;
+  toolbox.runtimeScheduler = runtimeScheduler;
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
@@ -610,8 +668,7 @@ void Binding::schedulerDidFinishTransaction(
     auto &mutationType = mutation.type;
     auto &index = mutation.index;
 
-    bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
-        oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+    bool isVirtual = mutation.mutatedViewIsVirtual();
 
     switch (mutationType) {
       case ShadowViewMutation::Create: {
@@ -958,8 +1015,6 @@ void Binding::schedulerDidFinishTransaction(
       int y = round(scale(frame.origin.y, pointScaleFactor));
       int w = round(scale(frame.size.width, pointScaleFactor));
       int h = round(scale(frame.size.height, pointScaleFactor));
-      int layoutDirection =
-          toInt(mountItem.newChildShadowView.layoutMetrics.layoutDirection);
       int displayType =
           toInt(mountItem.newChildShadowView.layoutMetrics.displayType);
 
@@ -968,10 +1023,9 @@ void Binding::schedulerDidFinishTransaction(
       temp[2] = y;
       temp[3] = w;
       temp[4] = h;
-      temp[5] = layoutDirection;
-      temp[6] = displayType;
-      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 7, temp);
-      intBufferPosition += 7;
+      temp[5] = displayType;
+      env->SetIntArrayRegion(intBufferArray, intBufferPosition, 6, temp);
+      intBufferPosition += 6;
     }
   }
   if (cppUpdateEventEmitterMountItems.size() > 0) {
@@ -1185,7 +1239,8 @@ void Binding::schedulerDidSendAccessibilityEvent(
 
 void Binding::schedulerDidSetIsJSResponder(
     ShadowView const &shadowView,
-    bool isJSResponder) {
+    bool isJSResponder,
+    bool blockNativeResponder) {
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR) << "Binding::schedulerSetJSResponder: JavaUIManager disappeared";
@@ -1210,28 +1265,31 @@ void Binding::schedulerDidSetIsJSResponder(
         // be flattened because the only component that uses this feature -
         // ScrollView - cannot be flattened.
         shadowView.tag,
-        (jboolean) true);
+        (jboolean)blockNativeResponder);
   } else {
     clearJSResponder(localJavaUIManager);
   }
 }
 
 void Binding::registerNatives() {
-  registerHybrid(
-      {makeNativeMethod("initHybrid", Binding::initHybrid),
-       makeNativeMethod(
-           "installFabricUIManager", Binding::installFabricUIManager),
-       makeNativeMethod("startSurface", Binding::startSurface),
-       makeNativeMethod(
-           "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
-       makeNativeMethod(
-           "renderTemplateToSurface", Binding::renderTemplateToSurface),
-       makeNativeMethod("stopSurface", Binding::stopSurface),
-       makeNativeMethod("setConstraints", Binding::setConstraints),
-       makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
-       makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
-       makeNativeMethod(
-           "uninstallFabricUIManager", Binding::uninstallFabricUIManager)});
+  registerHybrid({
+      makeNativeMethod("initHybrid", Binding::initHybrid),
+      makeNativeMethod(
+          "installFabricUIManager", Binding::installFabricUIManager),
+      makeNativeMethod("startSurface", Binding::startSurface),
+      makeNativeMethod(
+          "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
+      makeNativeMethod(
+          "renderTemplateToSurface", Binding::renderTemplateToSurface),
+      makeNativeMethod("stopSurface", Binding::stopSurface),
+      makeNativeMethod("setConstraints", Binding::setConstraints),
+      makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
+      makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
+      makeNativeMethod(
+          "uninstallFabricUIManager", Binding::uninstallFabricUIManager),
+      makeNativeMethod("registerSurface", Binding::registerSurface),
+      makeNativeMethod("unregisterSurface", Binding::unregisterSurface),
+  });
 }
 
 } // namespace react

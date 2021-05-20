@@ -11,6 +11,7 @@ import static org.mockito.Mockito.*;
 
 import com.facebook.react.common.JavascriptException;
 import java.util.HashMap;
+import okhttp3.WebSocket;
 import okio.ByteString;
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,7 +75,8 @@ public class JSDebuggerWebSocketClientTest {
   public void test_onMessage_WithInvalidContentType_ShouldNotTriggerCallbacks() throws Exception {
     JSDebuggerWebSocketClient client = PowerMockito.spy(new JSDebuggerWebSocketClient());
 
-    client.onMessage(null, ByteString.encodeUtf8("{\"replyID\":0, \"result\":\"OK\"}"));
+    client.onMessage(
+        mock(WebSocket.class), ByteString.encodeUtf8("{\"replyID\":0, \"result\":\"OK\"}"));
     PowerMockito.verifyPrivate(client, never())
         .invoke("triggerRequestSuccess", anyInt(), nullable(String.class));
     PowerMockito.verifyPrivate(client, never()).invoke("triggerRequestFailure", anyInt(), any());

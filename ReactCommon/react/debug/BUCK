@@ -32,7 +32,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     exported_platform_linker_flags = [
@@ -58,10 +58,12 @@ rn_xplat_cxx_library(
     tests = [],
     visibility = ["PUBLIC"],
     deps = [
-        "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
+    ],
+    exported_deps = [
+        "//third-party/glog:glog",
     ],
 )

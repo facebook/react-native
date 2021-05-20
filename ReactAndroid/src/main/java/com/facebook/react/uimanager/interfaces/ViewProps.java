@@ -81,6 +81,7 @@ public class ViewProps {
   // Props that affect more than just layout
   public static final String ENABLED = "enabled";
   public static final String BACKGROUND_COLOR = "backgroundColor";
+  public static final String FOREGROUND_COLOR = "foregroundColor";
   public static final String COLOR = "color";
   public static final String FONT_SIZE = "fontSize";
   public static final String FONT_WEIGHT = "fontWeight";
@@ -257,7 +258,9 @@ public class ViewProps {
         // Ignore if explicitly set to default opacity.
         return map.isNull(OPACITY) || map.getDouble(OPACITY) == 1d;
       case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
-        if (map.hasKey(BACKGROUND_COLOR) && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
+        if (map.hasKey(BACKGROUND_COLOR)
+            && !map.isNull(BACKGROUND_COLOR)
+            && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
           return false;
         }
         if (map.hasKey(BORDER_WIDTH)

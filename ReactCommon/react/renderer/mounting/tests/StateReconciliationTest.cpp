@@ -77,11 +77,14 @@ TEST(StateReconciliationTest, testStateReconciliation) {
             .reference(shadowNodeAB)
             .children({
               Element<ViewShadowNode>()
-                .reference(shadowNodeABA),
-              Element<ViewShadowNode>()
-                .reference(shadowNodeABB),
-              Element<ViewShadowNode>()
-                .reference(shadowNodeABC)
+              .children({
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABA),
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABB),
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABC)
+              })
             })
         });
   // clang-format on
@@ -95,7 +98,11 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   auto state1 = shadowNodeAB->getState();
   auto shadowTreeDelegate = DummyShadowTreeDelegate{};
   ShadowTree shadowTree{
-      SurfaceId{11}, LayoutConstraints{}, LayoutContext{}, shadowTreeDelegate};
+      SurfaceId{11},
+      LayoutConstraints{},
+      LayoutContext{},
+      shadowTreeDelegate,
+      true};
 
   shadowTree.commit(
       [&](RootShadowNode const &oldRootShadowNode) {

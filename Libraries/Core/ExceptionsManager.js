@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ExtendedError} from './Devtools/parseErrorStack';
+import type {ExtendedError} from './ExtendedError';
 import type {ExceptionData} from './NativeExceptionsManager';
 
 class SyntheticError extends Error {
@@ -105,8 +105,8 @@ function reportException(
     }
 
     if (__DEV__ && isHandledByLogBox) {
-      const LogBoxData = require('../LogBox/Data/LogBoxData');
-      LogBoxData.addException({
+      const LogBox = require('../LogBox/LogBox');
+      LogBox.addException({
         ...data,
         isComponentError: !!e.isComponentError,
       });
@@ -175,9 +175,9 @@ function handleException(e: mixed, isFatal: boolean) {
   }
 }
 
-function reactConsoleErrorHandler() {
+function reactConsoleErrorHandler(...args) {
   // bubble up to any original handlers
-  console._errorOriginal.apply(console, arguments);
+  console._errorOriginal(...args);
   if (!console.reportErrorsAsExceptions) {
     return;
   }
@@ -213,31 +213,33 @@ function reactConsoleErrorHandler() {
     return;
   }
 
-  if (arguments[0] && arguments[0].stack) {
+  let error;
+
+  const firstArg = args[0];
+  if (firstArg?.stack) {
     // reportException will console.error this with high enough fidelity.
-    reportException(
-      arguments[0],
-      /* isFatal */ false,
-      /*reportToConsole*/ false,
-    );
+    error = firstArg;
   } else {
     const stringifySafe = require('../Utilities/stringifySafe').default;
-    const str = Array.prototype.map
-      .call(arguments, value =>
-        typeof value === 'string' ? value : stringifySafe(value),
-      )
-      .join(' ');
-
-    if (str.slice(0, 9) === 'Warning: ') {
+    if (typeof firstArg === 'string' && firstArg.startsWith('Warning: ')) {
       // React warnings use console.error so that a stack trace is shown, but
       // we don't (currently) want these to show a redbox
       // (Note: Logic duplicated in polyfills/console.js.)
       return;
     }
-    const error: ExtendedError = new SyntheticError(str);
+    const message = args
+      .map(arg => (typeof arg === 'string' ? arg : stringifySafe(arg)))
+      .join(' ');
+
+    error = new SyntheticError(message);
     error.name = 'console.error';
-    reportException(error, /* isFatal */ false, /*reportToConsole*/ false);
   }
+
+  reportException(
+    error,
+    false, // isFatal
+    false, // reportToConsole
+  );
 }
 
 /**

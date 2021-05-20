@@ -74,7 +74,7 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
                                                        initialProperties:initialProperties];
   [surface start];
   if (self = [super initWithSurface:surface sizeMeasureMode:sizeMeasureMode]) {
-    self.backgroundColor = [UIColor whiteColor];
+    // Nothing specific to do.
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");

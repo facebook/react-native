@@ -7,6 +7,8 @@
 
 #include "ComponentDescriptorRegistry.h"
 
+#include "componentNameByReactViewName.h"
+
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
@@ -48,65 +50,6 @@ void ComponentDescriptorRegistry::registerComponentDescriptor(
 
   ComponentName componentName = componentDescriptor->getComponentName();
   _registryByName[componentName] = componentDescriptor;
-}
-
-static std::string componentNameByReactViewName(std::string viewName) {
-  // We need this function only for the transition period;
-  // eventually, all names will be unified.
-
-  std::string rctPrefix("RCT");
-  if (std::mismatch(rctPrefix.begin(), rctPrefix.end(), viewName.begin())
-          .first == rctPrefix.end()) {
-    // If `viewName` has "RCT" prefix, remove it.
-    viewName.erase(0, rctPrefix.length());
-  }
-
-  // Fabric uses slightly new names for Text components because of differences
-  // in semantic.
-  if (viewName == "Text") {
-    return "Paragraph";
-  }
-
-  // TODO T63839307: remove this condition after deleting TextInlineImage from
-  // Paper
-  if (viewName == "TextInlineImage") {
-    return "Image";
-  }
-  if (viewName == "VirtualText") {
-    return "Text";
-  }
-
-  if (viewName == "ImageView") {
-    return "Image";
-  }
-
-  if (viewName == "AndroidHorizontalScrollView") {
-    return "ScrollView";
-  }
-
-  if (viewName == "RKShimmeringView") {
-    return "ShimmeringView";
-  }
-
-  if (viewName == "RefreshControl") {
-    return "PullToRefreshView";
-  }
-
-  // We need this temporarily for testing purposes until we have proper
-  // implementation of core components.
-  if (viewName == "ScrollContentView" ||
-      viewName == "AndroidHorizontalScrollContentView" // Android
-  ) {
-    return "View";
-  }
-
-  // iOS-only
-  if (viewName == "MultilineTextInputView" ||
-      viewName == "SinglelineTextInputView") {
-    return "TextInput";
-  }
-
-  return viewName;
 }
 
 ComponentDescriptor const &ComponentDescriptorRegistry::at(

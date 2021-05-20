@@ -100,7 +100,7 @@ public class AppStateModule extends NativeAppStateSpec
     // We don't gain anything interesting from logging here, and it's an extremely common
     // race condition for an AppState event to be triggered as the Catalyst instance is being
     // set up or torn down. So, just fail silently here.
-    if (!reactApplicationContext.hasActiveCatalystInstance()) {
+    if (!reactApplicationContext.hasActiveReactInstance()) {
       return;
     }
     reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
@@ -118,5 +118,15 @@ public class AppStateModule extends NativeAppStateSpec
   @Override
   public void removeListeners(double count) {
     // iOS only
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
   }
 }

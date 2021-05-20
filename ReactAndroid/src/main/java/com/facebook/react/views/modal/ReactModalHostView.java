@@ -23,6 +23,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -60,6 +61,8 @@ import java.util.ArrayList;
  */
 public class ReactModalHostView extends ViewGroup
     implements LifecycleEventListener, FabricViewStateManager.HasFabricViewStateManager {
+
+  private static final String TAG = "ReactModalHost";
 
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
@@ -244,6 +247,15 @@ public class ReactModalHostView extends ViewGroup
     // If the existing Dialog is currently up, we may need to redraw it or we may be able to update
     // the property without having to recreate the dialog
     if (mDialog != null) {
+      Context dialogContext = ContextUtils.findContextOfType(mDialog.getContext(), Activity.class);
+      // TODO(T85755791): remove after investigation
+      FLog.e(
+          TAG,
+          "Updating existing dialog with context: "
+              + dialogContext
+              + "@"
+              + dialogContext.hashCode());
+
       if (mPropertyRequiresNewDialog) {
         dismiss();
       } else {
@@ -268,6 +280,9 @@ public class ReactModalHostView extends ViewGroup
         .setFlags(
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+
+    // TODO(T85755791): remove after investigation
+    FLog.e(TAG, "Creating new dialog from context: " + context + "@" + context.hashCode());
 
     mDialog.setContentView(getContentView());
     updateProperties();
@@ -456,7 +471,7 @@ public class ReactModalHostView extends ViewGroup
 
       // Check incoming state values. If they're already the correct value, return early to prevent
       // infinite UpdateState/SetState loop.
-      ReadableMap currentState = getFabricViewStateManager().getState();
+      ReadableMap currentState = getFabricViewStateManager().getStateData();
       if (currentState != null) {
         float delta = (float) 0.9;
         float stateScreenHeight =
