@@ -19,6 +19,7 @@ import StyleSheet, {
 import type {ImageSource} from '../../Image/ImageSource';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {AccessibilityState} from '../View/ViewAccessibility';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -131,6 +132,11 @@ type Props = $ReadOnly<{|
    * Used to locate this view in UI automation tests.
    */
   testID?: ?string,
+
+  /**
+    Indicates to accessibility services that UI Component is in a specific State.
+   */
+  accessibilityState?: ?AccessibilityState,
 |}>;
 
 /**
@@ -200,7 +206,6 @@ const Slider = (
   const style = StyleSheet.compose(styles.slider, props.style);
 
   const {
-    disabled = false,
     value = 0.5,
     minimumValue = 0,
     maximumValue = 1,
@@ -230,9 +235,16 @@ const Slider = (
       }
     : null;
 
+  const disabled =
+    props.disabled === true || props.accessibilityState?.disabled === true;
+  const accessibilityState = disabled
+    ? {...props.accessibilityState, disabled: true}
+    : props.accessibilityState;
+
   return (
     <SliderNativeComponent
       {...localProps}
+      accessibilityState={accessibilityState}
       // TODO: Reconcile these across the two platforms.
       enabled={!disabled}
       disabled={disabled}
