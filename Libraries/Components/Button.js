@@ -154,6 +154,7 @@ type ButtonProps = $ReadOnly<{|
    * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
    */
   validKeysUp?: ?Array<string>,
+
   /*
    * Specifies the Tooltip for the view
    */
@@ -212,9 +213,9 @@ class Button extends React.Component<ButtonProps> {
       onFocus, // TODO(OSS Candidate ISS#2710739)
       onBlur, // TODO(OSS Candidate ISS#2710739)
       onKeyDown,
+      onKeyUp,
       validKeysDown,
       validKeysUp,
-      onKeyUp,
       tooltip,
     } = this.props;
     const buttonStyles = [styles.button];

@@ -449,10 +449,6 @@ NS_INLINE BOOL RCTUIViewIsDescendantOfView(RCTPlatformView *view, RCTPlatformVie
   return [view isDescendantOf:parent];
 }
 
-NSArray *RCTUIViewCalculateKeyViewLoop(RCTPlatformView *root);
-
-BOOL RCTUIViewHasDescendantPassingPredicate(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view));
-
 NS_INLINE NSValue *NSValueWithCGRect(CGRect rect)
 {
   return [NSValue valueWithBytes:&rect objCType:@encode(CGRect)];

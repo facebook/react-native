@@ -600,6 +600,11 @@ export type ViewProps = $ReadOnly<{|
   acceptsKeyboardFocus?: ?boolean, // TODO(macOS GH#774)
 
   /**
+   * The react tag of the view that follows the current view in the key view loop.
+   */
+  nextKeyViewTag?: ?number, // TODO(macOS GH#768)
+
+  /**
    * Specifies whether focus ring should be drawn when the view has the first responder status.
    */
   enableFocusRing?: ?boolean, // TODO(macOS GH#774)
