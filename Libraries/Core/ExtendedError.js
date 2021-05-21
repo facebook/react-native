@@ -14,5 +14,6 @@ export type ExtendedError = Error & {
   componentStack?: string,
   forceRedbox?: boolean,
   isComponentError?: boolean,
+  type?: string,
   ...
 };
