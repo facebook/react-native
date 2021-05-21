@@ -26,6 +26,7 @@
 
   _module = [RCTBlobManager new];
   [_module setValue:nil forKey:@"bridge"];
+  [_module initialize];
   NSInteger size = 120;
   _data = [NSMutableData dataWithCapacity:size];
   for (NSInteger i = 0; i < size / 4; i++) {
