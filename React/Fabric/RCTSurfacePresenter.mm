@@ -293,19 +293,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
 
-#ifdef REACT_NATIVE_DEBUG
-  auto optionalBridge = _contextContainer->find<std::shared_ptr<void>>("Bridge");
-  if (optionalBridge) {
-    RCTBridge *bridge = unwrapManagedObjectWeakly(optionalBridge.value());
-    toolbox.garbageCollectionTrigger = [bridge]() {
-      RCTCxxBridge *batchedBridge = (RCTCxxBridge *)([bridge batchedBridge] ?: bridge);
-      if ([batchedBridge respondsToSelector:@selector(forceGarbageCollection)]) {
-        [batchedBridge forceGarbageCollection];
-      }
-    };
-  }
-#endif
-
   toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
     auto runLoopObserver =
         std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);

@@ -8,15 +8,13 @@
 #include "LeakChecker.h"
 
 #include <glog/logging.h>
+#include <jsi/instrumentation.h>
 
 namespace facebook {
 namespace react {
 
-LeakChecker::LeakChecker(
-    RuntimeExecutor const &runtimeExecutor,
-    GarbageCollectionTrigger const &garbageCollectionTrigger)
-    : runtimeExecutor_(runtimeExecutor),
-      garbageCollectionTrigger_(garbageCollectionTrigger) {}
+LeakChecker::LeakChecker(RuntimeExecutor const &runtimeExecutor)
+    : runtimeExecutor_(runtimeExecutor) {}
 
 void LeakChecker::uiManagerDidCreateShadowNodeFamily(
     ShadowNodeFamily::Shared const &shadowNodeFamily) const {
@@ -24,13 +22,12 @@ void LeakChecker::uiManagerDidCreateShadowNodeFamily(
 }
 
 void LeakChecker::stopSurface(SurfaceId surfaceId) {
-  garbageCollectionTrigger_();
-
   if (previouslyStoppedSurface_ > 0) {
     // Dispatch the check onto JavaScript thread to make sure all other
     // cleanup code has had chance to run.
     runtimeExecutor_([previouslySoppedSurface = previouslyStoppedSurface_,
-                      this](jsi::Runtime &) {
+                      this](jsi::Runtime &runtime) {
+      runtime.instrumentation().collectGarbage("LeakChecker");
       // For now check the previous surface because React uses double
       // buffering which keeps the surface that was just stopped in
       // memory. This is a documented problem in the last point of
