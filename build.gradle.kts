@@ -41,7 +41,24 @@ allprojects {
         jcenter {
           content {
             includeModule("com.facebook.yoga", "proguard-annotations")
+            // Fresco 2.4.0 and higher is not yet available in mavenCentral,
+            // progress: https://github.com/facebook/fresco/issues/2603
+            includeModule("com.facebook.fresco", "drawee")
+            includeModule("com.facebook.fresco", "fbcore")
+            includeModule("com.facebook.fresco", "flipper")
+            includeModule("com.facebook.fresco", "fresco")
+            includeModule("com.facebook.fresco", "imagepipeline-base")
+            includeModule("com.facebook.fresco", "imagepipeline-native")
+            includeModule("com.facebook.fresco", "imagepipeline")
+            includeModule("com.facebook.fresco", "memory-type-ashmem")
+            includeModule("com.facebook.fresco", "memory-type-java")
+            includeModule("com.facebook.fresco", "memory-type-native")
+            includeModule("com.facebook.fresco", "middleware")
+            includeModule("com.facebook.fresco", "nativeimagefilters")
+            includeModule("com.facebook.fresco", "nativeimagetranscoder")
+            includeModule("com.facebook.fresco", "soloader")
             includeModule("com.facebook.fresco", "stetho")
+            includeModule("com.facebook.fresco", "ui-common")
           }
         }
     }
