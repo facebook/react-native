@@ -19,6 +19,11 @@ import com.facebook.proguard.annotations.DoNotStripAny;
 @DoNotStripAny
 public class ReactFeatureFlags {
 
+  /** An interface used to compute flags on demand. */
+  public interface FlagProvider {
+    boolean get();
+  }
+
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
@@ -63,11 +68,6 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of MapBuffer So file */
   public static boolean enableEagerInitializeMapBufferSoFile = false;
 
-  /** An interface used to compute flags on demand. */
-  public interface FlagProvider {
-    boolean get();
-  }
-
   /** Should the RuntimeExecutor call JSIExecutor::flush()? */
   private static FlagProvider enableRuntimeExecutorFlushingProvider = null;
 
@@ -96,4 +96,17 @@ public class ReactFeatureFlags {
 
   /** Enables Fabric for LogBox */
   public static boolean enableFabricInLogBox = false;
+
+  //
+  // ScrollView C++ UpdateState vs onScroll race fixes
+  //
+
+  /* Enables a "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter */
+  public static boolean enableScrollViewStateEventRaceFix = false;
+
+  /* Enables another "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter. Races a StateUpdate with every onScroll event. */
+  public static boolean enableScrollViewStateEventAlwaysRace = false;
+
+  /* Configure a min scroll delta for UpdateState to be called while still actively scrolling. */
+  public static int scrollViewUpdateStateMinScrollDelta = 0;
 }

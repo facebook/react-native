@@ -112,28 +112,30 @@ function reportException(
       });
     }
 
-    NativeExceptionsManager.reportException(data);
+    if (e.type !== 'warn') {
+      NativeExceptionsManager.reportException(data);
 
-    if (__DEV__ && !global.RN$Express) {
-      if (e.preventSymbolication === true) {
-        return;
+      if (__DEV__ && !global.RN$Express) {
+        if (e.preventSymbolication === true) {
+          return;
+        }
+        const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
+        symbolicateStackTrace(stack)
+          .then(({stack: prettyStack}) => {
+            if (prettyStack) {
+              NativeExceptionsManager.updateExceptionMessage(
+                data.message,
+                prettyStack,
+                currentExceptionID,
+              );
+            } else {
+              throw new Error('The stack is null');
+            }
+          })
+          .catch(error => {
+            console.log('Unable to symbolicate stack trace: ' + error.message);
+          });
       }
-      const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
-      symbolicateStackTrace(stack)
-        .then(({stack: prettyStack}) => {
-          if (prettyStack) {
-            NativeExceptionsManager.updateExceptionMessage(
-              data.message,
-              prettyStack,
-              currentExceptionID,
-            );
-          } else {
-            throw new Error('The stack is null');
-          }
-        })
-        .catch(error => {
-          console.log('Unable to symbolicate stack trace: ' + error.message);
-        });
     }
   } else if (reportToConsole) {
     // we feed back into console.error, to make sure any methods that are
