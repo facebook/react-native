@@ -166,9 +166,22 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-- (void)setBundleManager:(RCTBundleManager *)bundleManager
+- (void)initialize
 {
-  _bundleManager = bundleManager;
+#if ENABLE_PACKAGER_CONNECTION
+  if (self.bridge) {
+    RCTBridge *__weak weakBridge = self.bridge;
+    _reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
+        addNotificationHandler:^(id params) {
+          if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
+            weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+          }
+          RCTTriggerReloadCommandListeners(@"Global hotkey");
+        }
+                         queue:dispatch_get_main_queue()
+                     forMethod:@"reload"];
+  }
+#endif
 
 #if RCT_ENABLE_INSPECTOR
   if (self.bridge) {
@@ -178,36 +191,18 @@ RCT_EXPORT_MODULE()
     dispatch_async(dispatch_get_main_queue(), ^{
       [self.bridge
           dispatchBlock:^{
-            [RCTInspectorDevServerHelper connectWithBundleURL:bundleManager.bundleURL];
+            [RCTInspectorDevServerHelper connectWithBundleURL:self.bundleManager.bundleURL];
           }
                   queue:RCTJSThread];
     });
   } else {
-    [RCTInspectorDevServerHelper connectWithBundleURL:bundleManager.bundleURL];
+    [RCTInspectorDevServerHelper connectWithBundleURL:self.bundleManager.bundleURL];
   }
 #endif
 
   dispatch_async(dispatch_get_main_queue(), ^{
     [self _synchronizeAllSettings];
   });
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  [super setBridge:bridge];
-
-#if ENABLE_PACKAGER_CONNECTION
-  RCTBridge *__weak weakBridge = bridge;
-  _reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
-      addNotificationHandler:^(id params) {
-        if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
-          weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
-        }
-        RCTTriggerReloadCommandListeners(@"Global hotkey");
-      }
-                       queue:dispatch_get_main_queue()
-                   forMethod:@"reload"];
-#endif
 }
 
 - (dispatch_queue_t)methodQueue
@@ -511,6 +506,9 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource
 {
   return [super init];
+}
+- (void)initialize
+{
 }
 - (BOOL)isHotLoadingAvailable
 {
