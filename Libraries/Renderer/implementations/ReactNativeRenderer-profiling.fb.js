@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<3edf91c7123cf41e201981f807941641>>
+ * @generated SignedSource<<6cad811dbb0701b65f3ecc4aca877fe5>>
  */
 
 "use strict";
@@ -1208,13 +1208,18 @@ function getComponentNameFromType(type) {
         return (type._context.displayName || "Context") + ".Provider";
       case REACT_FORWARD_REF_TYPE:
         var innerType = type.render;
-        innerType = innerType.displayName || innerType.name || "";
-        return (
-          type.displayName ||
-          ("" !== innerType ? "ForwardRef(" + innerType + ")" : "ForwardRef")
-        );
+        type = type.displayName;
+        type ||
+          ((type = innerType.displayName || innerType.name || ""),
+          (type = "" !== type ? "ForwardRef(" + type + ")" : "ForwardRef"));
+        return type;
       case REACT_MEMO_TYPE:
-        return getComponentNameFromType(type.type);
+        return (
+          (innerType = type.displayName || null),
+          null !== innerType
+            ? innerType
+            : getComponentNameFromType(type.type) || "Memo"
+        );
       case REACT_LAZY_TYPE:
         innerType = type._payload;
         type = type._init;
@@ -1785,18 +1790,19 @@ function getNextLanes(root, wipLanes) {
     suspendedLanes = root.suspendedLanes,
     pingedLanes = root.pingedLanes,
     nonIdlePendingLanes = pendingLanes & 268435455;
-  0 !== nonIdlePendingLanes
-    ? ((pendingLanes = nonIdlePendingLanes & ~suspendedLanes),
-      0 !== pendingLanes
-        ? (nextLanes = getHighestPriorityLanes(pendingLanes))
-        : ((pingedLanes &= nonIdlePendingLanes),
-          0 !== pingedLanes &&
-            (nextLanes = getHighestPriorityLanes(pingedLanes))))
-    : ((nonIdlePendingLanes = pendingLanes & ~suspendedLanes),
+  if (0 !== nonIdlePendingLanes) {
+    var nonIdleUnblockedLanes = nonIdlePendingLanes & ~suspendedLanes;
+    0 !== nonIdleUnblockedLanes
+      ? (nextLanes = getHighestPriorityLanes(nonIdleUnblockedLanes))
+      : ((pingedLanes &= nonIdlePendingLanes),
+        0 !== pingedLanes &&
+          (nextLanes = getHighestPriorityLanes(pingedLanes)));
+  } else
+    (nonIdlePendingLanes = pendingLanes & ~suspendedLanes),
       0 !== nonIdlePendingLanes
         ? (nextLanes = getHighestPriorityLanes(nonIdlePendingLanes))
         : 0 !== pingedLanes &&
-          (nextLanes = getHighestPriorityLanes(pingedLanes)));
+          (nextLanes = getHighestPriorityLanes(pingedLanes));
   if (0 === nextLanes) return 0;
   if (
     0 !== wipLanes &&
@@ -1808,13 +1814,16 @@ function getNextLanes(root, wipLanes) {
       (16 === suspendedLanes && 0 !== (pingedLanes & 4194240)))
   )
     return wipLanes;
+  0 === (root.current.mode & 32) &&
+    0 !== (nextLanes & 4) &&
+    (nextLanes |= pendingLanes & 16);
   wipLanes = root.entangledLanes;
   if (0 !== wipLanes)
     for (root = root.entanglements, wipLanes &= nextLanes; 0 < wipLanes; )
-      (suspendedLanes = 31 - clz32(wipLanes)),
-        (pingedLanes = 1 << suspendedLanes),
-        (nextLanes |= root[suspendedLanes]),
-        (wipLanes &= ~pingedLanes);
+      (pendingLanes = 31 - clz32(wipLanes)),
+        (suspendedLanes = 1 << pendingLanes),
+        (nextLanes |= root[pendingLanes]),
+        (wipLanes &= ~suspendedLanes);
   return nextLanes;
 }
 function computeExpirationTime(lane, currentTime) {
@@ -6447,7 +6456,12 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
     root === workInProgressRoot ? workInProgressRootRenderLanes : 0
   );
   if (0 === lanes) return null;
-  var JSCompiler_inline_result = 0 !== (lanes & root.expiredLanes) ? !1 : !0;
+  var JSCompiler_inline_result =
+    0 !== (lanes & root.expiredLanes)
+      ? !1
+      : 0 !== (root.current.mode & 32)
+      ? !0
+      : 0 === (lanes & 30);
   if (JSCompiler_inline_result && !didTimeout) {
     didTimeout = lanes;
     JSCompiler_inline_result = executionContext;
@@ -7893,10 +7907,7 @@ function createFiberFromTypeAndProps(
         break;
       case REACT_STRICT_MODE_TYPE:
         fiberTag = 8;
-        1 <=
-          (null == pendingProps.unstable_level
-            ? 1
-            : pendingProps.unstable_level) && (mode |= 8);
+        mode |= 24;
         break;
       case REACT_PROFILER_TYPE:
         return (
@@ -8126,10 +8137,10 @@ batchedUpdatesImpl = function(fn, a) {
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_1008 = {
+  devToolsConfig$jscomp$inline_1010 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "17.0.3-2a7bb4154",
+    version: "17.0.3-b8fda6cab",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8144,11 +8155,11 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1269 = {
-  bundleType: devToolsConfig$jscomp$inline_1008.bundleType,
-  version: devToolsConfig$jscomp$inline_1008.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_1008.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_1008.rendererConfig,
+var internals$jscomp$inline_1271 = {
+  bundleType: devToolsConfig$jscomp$inline_1010.bundleType,
+  version: devToolsConfig$jscomp$inline_1010.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_1010.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_1010.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -8163,26 +8174,26 @@ var internals$jscomp$inline_1269 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_1008.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_1010.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "17.0.3-2a7bb4154"
+  reconcilerVersion: "17.0.3-b8fda6cab"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1270 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1272 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1270.isDisabled &&
-    hook$jscomp$inline_1270.supportsFiber
+    !hook$jscomp$inline_1272.isDisabled &&
+    hook$jscomp$inline_1272.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1270.inject(
-        internals$jscomp$inline_1269
+      (rendererID = hook$jscomp$inline_1272.inject(
+        internals$jscomp$inline_1271
       )),
-        (injectedHook = hook$jscomp$inline_1270);
+        (injectedHook = hook$jscomp$inline_1272);
     } catch (err) {}
 }
 exports.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {

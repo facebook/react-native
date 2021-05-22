@@ -7,6 +7,8 @@
 
 package com.facebook.react.config;
 
+import com.facebook.proguard.annotations.DoNotStripAny;
+
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of RN. It
  * contains mainly flags for features that are either under active development and not ready for
@@ -14,7 +16,13 @@ package com.facebook.react.config;
  *
  * <p>These values are safe defaults and should not require manual changes.
  */
+@DoNotStripAny
 public class ReactFeatureFlags {
+
+  /** An interface used to compute flags on demand. */
+  public interface FlagProvider {
+    boolean get();
+  }
 
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
@@ -33,17 +41,8 @@ public class ReactFeatureFlags {
   /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
   public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
 
-  /*
-   * This feature flag enables logs for Fabric
-   */
+  /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
-
-  /**
-   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
-   * provided) to execute the view commands. If {@code false}, then {@code receiveCommand} method
-   * inside view manager will be called instead.
-   */
-  public static boolean useViewManagerDelegatesForCommands = false;
 
   /**
    * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
@@ -66,19 +65,25 @@ public class ReactFeatureFlags {
   /** Enables JS Responder in Fabric */
   public static boolean enableJSResponder = false;
 
-  /** Enables MapBuffer Serialization */
-  public static boolean mapBufferSerializationEnabled = false;
-
-  /** An interface used to compute flags on demand. */
-  public interface FlagProvider {
-    boolean get();
-  }
+  /** Feature flag to configure eager initialization of MapBuffer So file */
+  public static boolean enableEagerInitializeMapBufferSoFile = false;
 
   /** Should the RuntimeExecutor call JSIExecutor::flush()? */
   private static FlagProvider enableRuntimeExecutorFlushingProvider = null;
 
   public static void setEnableRuntimeExecutorFlushingFlagProvider(FlagProvider provider) {
     enableRuntimeExecutorFlushingProvider = provider;
+  }
+
+  private static boolean mapBufferSerializationEnabled = false;
+
+  /** Enables or disables MapBuffer Serialization */
+  public static void setMapBufferSerializationEnabled(boolean enabled) {
+    mapBufferSerializationEnabled = enabled;
+  }
+
+  public static boolean isMapBufferSerializationEnabled() {
+    return mapBufferSerializationEnabled;
   }
 
   public static boolean enableRuntimeExecutorFlushing() {
@@ -91,4 +96,19 @@ public class ReactFeatureFlags {
 
   /** Enables Fabric for LogBox */
   public static boolean enableFabricInLogBox = false;
+
+  public static boolean enableLockFreeEventDispatcher = false;
+
+  //
+  // ScrollView C++ UpdateState vs onScroll race fixes
+  //
+
+  /* Enables a "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter */
+  public static boolean enableScrollViewStateEventRaceFix = false;
+
+  /* Enables another "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter. Races a StateUpdate with every onScroll event. */
+  public static boolean enableScrollViewStateEventAlwaysRace = false;
+
+  /* Configure a min scroll delta for UpdateState to be called while still actively scrolling. */
+  public static int scrollViewUpdateStateMinScrollDelta = 0;
 }

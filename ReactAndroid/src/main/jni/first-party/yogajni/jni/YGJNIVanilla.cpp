@@ -726,8 +726,7 @@ static void jni_YGNodePrintJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   YGNodePrint(
       node,
-      (YGPrintOptions)(
-          YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
+      (YGPrintOptions) (YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
 #endif
 }
 

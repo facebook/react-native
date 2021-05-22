@@ -367,7 +367,7 @@ class TokenizedTextExample extends React.Component<
 type SelectionExampleState = {
   selection: $ReadOnly<{|
     start: number,
-    end?: number,
+    end: number,
   |}>,
   value: string,
   ...
@@ -436,7 +436,8 @@ class SelectionExample extends React.Component<
         </View>
         <View>
           <Text testID={`${this.props.testID}-selection`}>
-            selection = {JSON.stringify(this.state.selection).replace(/"/g, '')}
+            selection ={' '}
+            {`{start:${this.state.selection.start},end:${this.state.selection.end}}`}
           </Text>
           <Text
             testID={`${this.props.testID}-cursor-start`}

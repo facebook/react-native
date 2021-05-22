@@ -40,6 +40,12 @@ inline bool operator==(
       std::tie(rhs.minimumSize, rhs.maximumSize, rhs.layoutDirection);
 }
 
+inline bool operator!=(
+    const LayoutConstraints &lhs,
+    const LayoutConstraints &rhs) {
+  return !(lhs == rhs);
+}
+
 } // namespace react
 } // namespace facebook
 

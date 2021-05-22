@@ -37,7 +37,7 @@ class EventQueue {
    * Enqueues and (probably later) dispatch a given event.
    * Can be called on any thread.
    */
-  void enqueueEvent(const RawEvent &rawEvent) const;
+  void enqueueEvent(RawEvent &&rawEvent) const;
 
   /*
    * Enqueues and (probably later) dispatch a given state update.

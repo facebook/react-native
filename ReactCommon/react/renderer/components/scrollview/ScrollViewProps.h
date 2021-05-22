@@ -28,12 +28,12 @@ class ScrollViewProps final : public ViewProps {
   bool canCancelContentTouches{true};
   bool centerContent{};
   bool automaticallyAdjustContentInsets{};
-  Float decelerationRate{0.998};
+  Float decelerationRate{0.998f};
   bool directionalLockEnabled{};
   ScrollViewIndicatorStyle indicatorStyle{};
   ScrollViewKeyboardDismissMode keyboardDismissMode{};
-  Float maximumZoomScale{1.0};
-  Float minimumZoomScale{1.0};
+  Float maximumZoomScale{1.0f};
+  Float minimumZoomScale{1.0f};
   bool scrollEnabled{true};
   bool pagingEnabled{};
   bool pinchGestureEnabled{true};
@@ -41,7 +41,7 @@ class ScrollViewProps final : public ViewProps {
   bool showsHorizontalScrollIndicator{true};
   bool showsVerticalScrollIndicator{true};
   Float scrollEventThrottle{};
-  Float zoomScale{1.0};
+  Float zoomScale{1.0f};
   EdgeInsets contentInset{};
   Point contentOffset{};
   EdgeInsets scrollIndicatorInsets{};

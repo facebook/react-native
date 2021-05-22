@@ -45,9 +45,7 @@ Scheduler::Scheduler(
       std::make_shared<better::optional<EventDispatcher const>>();
 
   auto uiManager = std::make_shared<UIManager>(
-      runtimeExecutor_,
-      schedulerToolbox.backgroundExecutor,
-      schedulerToolbox.garbageCollectionTrigger);
+      runtimeExecutor_, schedulerToolbox.backgroundExecutor);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -87,20 +85,14 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-#ifdef ANDROID
-  auto enableRuntimeScheduler = reactNativeConfig_->getBool(
-      "react_fabric:enable_runtimescheduler_android");
-#else
-  auto enableRuntimeScheduler =
-      reactNativeConfig_->getBool("react_fabric:enable_runtimescheduler_ios");
-#endif
-
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
+  runtimeExecutor_([uiManager,
+                    runtimeScheduler = schedulerToolbox.runtimeScheduler](
+                       jsi::Runtime &runtime) {
     auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
     uiManagerBinding->attach(uiManager);
-    if (enableRuntimeScheduler) {
+    if (runtimeScheduler) {
       RuntimeSchedulerBinding::createAndInstallIfNeeded(
-          runtime, runtimeExecutor_);
+          runtime, runtimeScheduler);
     }
   });
 
@@ -136,8 +128,7 @@ Scheduler::Scheduler(
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-  enableNewDiffer_ =
-      reactNativeConfig_->getBool("react_fabric:enable_new_differ_h1_2021_ios");
+  enableNewDiffer_ = true;
 #endif
 }
 

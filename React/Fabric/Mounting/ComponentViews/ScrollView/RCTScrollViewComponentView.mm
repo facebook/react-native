@@ -622,10 +622,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     return;
   }
 
-  CGRect visibleFrame = CGRect{_scrollView.contentOffset, _scrollView.bounds.size};
+  CGRect visibleFrame = [_scrollView convertRect:_scrollView.bounds toView:_containerView];
   visibleFrame = CGRectInset(visibleFrame, -kClippingLeeway, -kClippingLeeway);
 
-  CGFloat scale = 1.0 / _scrollView.zoomScale;
+  // `zoomScale` is negative in RTL. Absolute value is needed.
+  CGFloat scale = 1.0 / std::abs(_scrollView.zoomScale);
   visibleFrame.origin.x *= scale;
   visibleFrame.origin.y *= scale;
   visibleFrame.size.width *= scale;

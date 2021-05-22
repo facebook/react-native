@@ -166,9 +166,22 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-- (void)setBundleManager:(RCTBundleManager *)bundleManager
+- (void)initialize
 {
-  _bundleManager = bundleManager;
+#if ENABLE_PACKAGER_CONNECTION
+  if (self.bridge) {
+    RCTBridge *__weak weakBridge = self.bridge;
+    _reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
+        addNotificationHandler:^(id params) {
+          if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
+            weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+          }
+          RCTTriggerReloadCommandListeners(@"Global hotkey");
+        }
+                         queue:dispatch_get_main_queue()
+                     forMethod:@"reload"];
+  }
+#endif
 
 #if RCT_ENABLE_INSPECTOR
   if (self.bridge) {
@@ -178,36 +191,18 @@ RCT_EXPORT_MODULE()
     dispatch_async(dispatch_get_main_queue(), ^{
       [self.bridge
           dispatchBlock:^{
-            [RCTInspectorDevServerHelper connectWithBundleURL:bundleManager.bundleURL];
+            [RCTInspectorDevServerHelper connectWithBundleURL:self.bundleManager.bundleURL];
           }
                   queue:RCTJSThread];
     });
   } else {
-    [RCTInspectorDevServerHelper connectWithBundleURL:bundleManager.bundleURL];
+    [RCTInspectorDevServerHelper connectWithBundleURL:self.bundleManager.bundleURL];
   }
 #endif
 
   dispatch_async(dispatch_get_main_queue(), ^{
     [self _synchronizeAllSettings];
   });
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  [super setBridge:bridge];
-
-#if ENABLE_PACKAGER_CONNECTION
-  RCTBridge *__weak weakBridge = bridge;
-  _reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
-      addNotificationHandler:^(id params) {
-        if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
-          weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
-        }
-        RCTTriggerReloadCommandListeners(@"Global hotkey");
-      }
-                       queue:dispatch_get_main_queue()
-                   forMethod:@"reload"];
-#endif
 }
 
 - (dispatch_queue_t)methodQueue
@@ -350,16 +345,12 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       if (enabled) {
-        if (self.bridge) {
-          [self.bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
-        } else if (self.invokeJS) {
-          self.invokeJS(@"HMRClient", @"enable", @[]);
+        if (self.callableJSModules) {
+          [self.callableJSModules invokeModule:@"HMRClient" method:@"enable" withArgs:@[]];
         }
       } else {
-        if (self.bridge) {
-          [self.bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
-        } else if (self.invokeJS) {
-          self.invokeJS(@"HMRClient", @"disable", @[]);
+        if (self.callableJSModules) {
+          [self.callableJSModules invokeModule:@"HMRClient" method:@"disable" withArgs:@[]];
         }
       }
 #pragma clang diagnostic pop
@@ -441,13 +432,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     NSString *const host = bundleURL.host;
     NSNumber *const port = bundleURL.port;
     BOOL isHotLoadingEnabled = self.isHotLoadingEnabled;
-    if (self.bridge) {
-      [self.bridge enqueueJSCall:@"HMRClient"
-                          method:@"setup"
-                            args:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]
-                      completion:NULL];
-    } else {
-      self.invokeJS(@"HMRClient", @"setup", @[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]);
+    if (self.callableJSModules) {
+      [self.callableJSModules invokeModule:@"HMRClient"
+                                    method:@"setup"
+                                  withArgs:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]];
     }
   }
 }
@@ -455,13 +443,10 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL
 {
   if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
-    if (self.bridge) {
-      [self.bridge enqueueJSCall:@"HMRClient"
-                          method:@"registerBundle"
-                            args:@[ [bundleURL absoluteString] ]
-                      completion:NULL];
-    } else {
-      self.invokeJS(@"HMRClient", @"registerBundle", @[ [bundleURL absoluteString] ]);
+    if (self.callableJSModules) {
+      [self.callableJSModules invokeModule:@"HMRClient"
+                                    method:@"registerBundle"
+                                  withArgs:@[ [bundleURL absoluteString] ]];
     }
   }
 }
@@ -521,6 +506,9 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource
 {
   return [super init];
+}
+- (void)initialize
+{
 }
 - (BOOL)isHotLoadingAvailable
 {

@@ -39,9 +39,8 @@ EventDispatcher::EventDispatcher(
           statePipe,
           asynchonousEventBeatFactory(ownerBox))) {}
 
-void EventDispatcher::dispatchEvent(
-    RawEvent const &rawEvent,
-    EventPriority priority) const {
+void EventDispatcher::dispatchEvent(RawEvent &&rawEvent, EventPriority priority)
+    const {
   getEventQueue(priority).enqueueEvent(std::move(rawEvent));
 }
 
@@ -51,8 +50,8 @@ void EventDispatcher::dispatchStateUpdate(
   getEventQueue(priority).enqueueStateUpdate(std::move(stateUpdate));
 }
 
-void EventDispatcher::dispatchUniqueEvent(RawEvent const &rawEvent) const {
-  asynchronousBatchedQueue_->enqueueUniqueEvent(rawEvent);
+void EventDispatcher::dispatchUniqueEvent(RawEvent &&rawEvent) const {
+  asynchronousBatchedQueue_->enqueueUniqueEvent(std::move(rawEvent));
 }
 
 const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {

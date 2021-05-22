@@ -105,6 +105,7 @@ def rn_codegen_cli():
 def rn_codegen_modules(
         name,
         android_package_name,
+        ios_assume_nonnull,
         library_labels = [],
         schema_target = ""):
     generate_fixtures_rule_name = "{}-codegen-modules".format(name)
@@ -118,11 +119,12 @@ def rn_codegen_modules(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe {generator_script}) $(location {schema_target}) {library_name} $OUT {android_package_name}".format(
+        cmd = "$(exe {generator_script}) $(location {schema_target}) {library_name} $OUT {android_package_name} {ios_assume_nonnull}".format(
             generator_script = react_native_root_target("packages/react-native-codegen:generate_all_from_schema"),
             schema_target = schema_target,
             library_name = name,
             android_package_name = android_package_name,
+            ios_assume_nonnull = ios_assume_nonnull,
         ),
         out = "codegenfiles-{}".format(name),
         labels = ["codegen_rule"],
