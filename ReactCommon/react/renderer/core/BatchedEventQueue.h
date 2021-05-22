@@ -24,13 +24,6 @@ class BatchedEventQueue final : public EventQueue {
       std::unique_ptr<EventBeat> eventBeat);
 
   void onEnqueue() const override;
-
-  /*
-   * Enqueues and (probably later) dispatches a given event.
-   * Deletes last RawEvent from the queue if it has the same type and target.
-   * Can be called on any thread.
-   */
-  void enqueueUniqueEvent(RawEvent &&rawEvent) const;
 };
 
 } // namespace react
