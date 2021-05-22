@@ -257,6 +257,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetOnDemandViewMounting(YES);
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_sending_scroll_events_to_paper")) {
+    RCTExperimentSetSendScrollEventToPaper(NO);
+  }
+
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:preemptive_view_allocation_disabled_ios")) {
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
   }
