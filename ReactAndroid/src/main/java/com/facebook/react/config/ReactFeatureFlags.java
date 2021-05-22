@@ -97,6 +97,8 @@ public class ReactFeatureFlags {
   /** Enables Fabric for LogBox */
   public static boolean enableFabricInLogBox = false;
 
+  public static boolean enableLockFreeEventDispatcher = false;
+
   //
   // ScrollView C++ UpdateState vs onScroll race fixes
   //
