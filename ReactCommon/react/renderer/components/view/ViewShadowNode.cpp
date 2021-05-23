@@ -28,14 +28,6 @@ ViewShadowNode::ViewShadowNode(
   initialize();
 }
 
-static bool isColorMeaningful(SharedColor const &color) noexcept {
-  if (!color) {
-    return false;
-  }
-
-  return colorComponentsFromColor(color).alpha > 0;
-}
-
 void ViewShadowNode::initialize() noexcept {
   auto &viewProps = static_cast<ViewProps const &>(*props_);
 
