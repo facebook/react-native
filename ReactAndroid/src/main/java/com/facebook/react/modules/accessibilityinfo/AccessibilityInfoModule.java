@@ -177,7 +177,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
               new Function<Integer, String>() {
                 @Override
                 public String apply(Integer bit) {
-                  return accessibilityServiceInfo.capabilityToString(bit);
+                  return AccessibilityServiceInfo.capabilityToString(bit);
                 }
               }));
       map.putArray(
@@ -197,7 +197,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
               new Function<Integer, String>() {
                 @Override
                 public String apply(Integer bit) {
-                  return accessibilityServiceInfo.feedbackTypeToString(bit);
+                  return AccessibilityServiceInfo.feedbackTypeToString(bit);
                 }
               }));
       map.putArray(
@@ -206,8 +206,8 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
               flags,
               new Function<Integer, String>() {
                 @Override
-                public String apply(Integer bit) {
-                  return accessibilityServiceInfo.flagToString(bit);
+                public String apply(final Integer bit) {
+                  return AccessibilityServiceInfo.flagToString(bit);
                 }
               }));
 
