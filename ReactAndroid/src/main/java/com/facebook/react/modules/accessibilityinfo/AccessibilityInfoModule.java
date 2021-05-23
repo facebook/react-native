@@ -173,17 +173,43 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
       map.putArray(
           "capabilities",
           convertBitsToStringArray(
-              capabilities, (bit) -> accessibilityServiceInfo.capabilityToString(bit)));
+              capabilities,
+              new Function<Integer, String>() {
+                @Override
+                public String apply(Integer bit) {
+                  return accessibilityServiceInfo.capabilityToString(bit);
+                }
+              }));
       map.putArray(
           "eventTypes",
-          convertBitsToStringArray(eventTypes, (bit) -> AccessibilityEvent.eventTypeToString(bit)));
+          convertBitsToStringArray(
+              eventTypes,
+              new Function<Integer, String>() {
+                @Override
+                public String apply(Integer bit) {
+                  return AccessibilityEvent.eventTypeToString(bit);
+                }
+              }));
       map.putArray(
           "feedbackType",
           convertBitsToStringArray(
-              feedbackType, (bit) -> accessibilityServiceInfo.feedbackTypeToString(bit)));
+              feedbackType,
+              new Function<Integer, String>() {
+                @Override
+                public String apply(Integer bit) {
+                  return accessibilityServiceInfo.feedbackTypeToString(bit);
+                }
+              }));
       map.putArray(
           "flags",
-          convertBitsToStringArray(flags, (bit) -> accessibilityServiceInfo.flagToString(bit)));
+          convertBitsToStringArray(
+              flags,
+              new Function<Integer, String>() {
+                @Override
+                public String apply(Integer bit) {
+                  return accessibilityServiceInfo.flagToString(bit);
+                }
+              }));
 
       servicesArray.pushMap(map);
     }
