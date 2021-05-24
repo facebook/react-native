@@ -27,7 +27,8 @@ TextMeasurement TextLayoutManager::measure(
           TextMeasurement::Attachment{{{0, 0}, {0, 0}}, false});
     }
   }
-  return TextMeasurement{{0, 0}, attachments};
+
+  return TextMeasurement{{0, 0}, 0, attachments};
 }
 
 LinesMeasurements TextLayoutManager::measureLines(

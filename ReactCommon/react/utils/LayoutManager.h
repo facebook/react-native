@@ -35,6 +35,7 @@ Size measureAndroidComponent(
     float maxWidth,
     float minHeight,
     float maxHeight,
+    jfloatArray extras,
     jfloatArray attachmentPositions) {
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
@@ -51,6 +52,7 @@ Size measureAndroidComponent(
               jfloat,
               jfloat,
               jfloat,
+              jfloatArray,
               jfloatArray)>("measure");
 
   auto componentNameRef = make_jstring(componentName);
@@ -79,6 +81,7 @@ Size measureAndroidComponent(
       maxWidth,
       minHeight,
       maxHeight,
+      extras,
       attachmentPositions));
 
   // Explicitly release smart pointers to free up space faster in JNI tables
@@ -103,6 +106,7 @@ Size measureAndroidComponentMapBuffer(
     float maxWidth,
     float minHeight,
     float maxHeight,
+    jfloatArray extras,
     jfloatArray attachmentPositions) {
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
@@ -119,6 +123,7 @@ Size measureAndroidComponentMapBuffer(
               jfloat,
               jfloat,
               jfloat,
+              jfloatArray,
               jfloatArray)>("measureMapBuffer");
 
   auto localDataMap =
@@ -135,6 +140,7 @@ Size measureAndroidComponentMapBuffer(
       maxWidth,
       minHeight,
       maxHeight,
+      extras,
       attachmentPositions));
 
   // Explicitly release smart pointers to free up space faster in JNI tables

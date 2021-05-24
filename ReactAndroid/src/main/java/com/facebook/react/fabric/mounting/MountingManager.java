@@ -330,6 +330,7 @@ public class MountingManager {
    * @param widthMode
    * @param height
    * @param heightMode
+   * @param extras
    * @param attachmentsPositions
    * @return
    */
@@ -344,6 +345,7 @@ public class MountingManager {
       @NonNull YogaMeasureMode widthMode,
       float height,
       @NonNull YogaMeasureMode heightMode,
+      @Nullable float[] extras,
       @Nullable float[] attachmentsPositions) {
 
     return mViewManagerRegistry
@@ -357,6 +359,7 @@ public class MountingManager {
             widthMode,
             height,
             heightMode,
+            extras,
             attachmentsPositions);
   }
 

@@ -175,6 +175,7 @@ public class ReactProgressBarViewManager
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode,
+      @Nullable float[] extras,
       @Nullable float[] attachmentsPositions) {
 
     final Integer style =

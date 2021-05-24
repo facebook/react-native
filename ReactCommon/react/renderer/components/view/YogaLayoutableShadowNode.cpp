@@ -49,6 +49,8 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
 
     yogaNode_.setMeasureFunc(
         YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
+    yogaNode_.setBaselineFunc(
+        YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector);
   }
 
   updateYogaProps();
@@ -563,6 +565,22 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 
   return YGSize{
       yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};
+}
+
+float YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector(
+    YGNode *yogaNode,
+    float width,
+    float height) {
+  SystraceSection s(
+      "YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector");
+
+  auto shadowNodeRawPtr =
+      static_cast<YogaLayoutableShadowNode *>(yogaNode->getContext());
+
+  auto size = Size{floatFromYogaFloat(width), floatFromYogaFloat(height)};
+  auto baseline = shadowNodeRawPtr->measureBaseline(
+      threadLocalLayoutContext, {size, size});
+  return yogaFloatFromFloat(baseline);
 }
 
 #ifdef RN_DEBUG_YOGA_LOGGER

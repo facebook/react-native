@@ -167,6 +167,7 @@ public class ReactTextViewManager
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode,
+      @Nullable float[] extras,
       @Nullable float[] attachmentsPositions) {
 
     return TextLayoutManager.measureText(
@@ -178,6 +179,7 @@ public class ReactTextViewManager
         height,
         heightMode,
         mReactTextViewManagerCallback,
+        extras,
         attachmentsPositions);
   }
 

@@ -422,7 +422,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float minWidth,
       float maxWidth,
       float minHeight,
-      float maxHeight) {
+      float maxHeight,
+      @Nullable float[] extras) {
     return measure(
         rootTag,
         componentName,
@@ -447,6 +448,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float maxWidth,
       float minHeight,
       float maxHeight,
+      @Nullable float[] extras,
       @Nullable float[] attachmentsPositions) {
 
     ReactContext context;
@@ -471,6 +473,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight),
+        extras,
         attachmentsPositions);
   }
 
@@ -484,6 +487,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float maxWidth,
       float minHeight,
       float maxHeight,
+      @Nullable float[] extras,
       @Nullable float[] attachmentsPositions) {
 
     ReactContext context;

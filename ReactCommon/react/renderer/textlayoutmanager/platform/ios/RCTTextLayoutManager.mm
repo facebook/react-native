@@ -86,8 +86,22 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
                 attachments.push_back(TextMeasurement::Attachment{rect, false});
               }];
+  
+  __block auto minimumDescender = CGFloat{0.0};
+  [textStorage enumerateAttribute:NSFontAttributeName
+                             inRange:NSMakeRange(0, textStorage.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:
+    ^(UIFont *font, NSRange range, BOOL *stop) {
+      if (minimumDescender > font.descender) {
+        minimumDescender = font.descender;
+      }
+    }
+  ];
 
-  return TextMeasurement{{size.width, size.height}, attachments};
+  auto baseline = size.height + minimumDescender;
+
+  return TextMeasurement{{size.width, size.height}, baseline, attachments};
 }
 
 - (TextMeasurement)measureAttributedString:(AttributedString)attributedString

@@ -138,6 +138,11 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       YGMeasureMode widthMode,
       float height,
       YGMeasureMode heightMode);
+  static float yogaNodeBaselineCallbackConnector(
+      YGNode *yogaNode,
+      float width,
+      float height);
+
 
 #pragma mark - RTL Legacy Autoflip
 

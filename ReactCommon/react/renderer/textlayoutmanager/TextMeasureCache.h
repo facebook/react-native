@@ -53,6 +53,7 @@ class TextMeasurement final {
   using Attachments = std::vector<Attachment>;
 
   Size size;
+  Float baseline;
   Attachments attachments;
 };
 

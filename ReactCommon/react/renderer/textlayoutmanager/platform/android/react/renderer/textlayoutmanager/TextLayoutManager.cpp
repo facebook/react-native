@@ -62,6 +62,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   auto env = Environment::current();
+  auto extras = env->NewFloatArray(0);
   auto attachmentPositions = env->NewFloatArray(0);
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
@@ -80,16 +81,18 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
       maximumSize.width,
       minimumSize.height,
       maximumSize.height,
+      extras,
       attachmentPositions);
 
   // Clean up allocated ref - it still takes up space in the JNI ref table even
   // though it's 0 length
+  env->DeleteLocalRef(extras);
   env->DeleteLocalRef(attachmentPositions);
 
   // TODO: currently we do not support attachments for cached IDs - should we?
   auto attachments = TextMeasurement::Attachments{};
 
-  return TextMeasurement{size, attachments};
+  return TextMeasurement{size, 0, attachments};
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
@@ -200,6 +203,7 @@ TextMeasurement TextLayoutManager::doMeasure(
     }
   }
   auto env = Environment::current();
+  auto extras = env->NewFloatArray(1);
   auto attachmentPositions = env->NewFloatArray(attachmentsCount * 2);
 
   auto minimumSize = layoutConstraints.minimumSize;
@@ -217,6 +221,7 @@ TextMeasurement TextLayoutManager::doMeasure(
       maximumSize.width,
       minimumSize.height,
       maximumSize.height,
+      extras,
       attachmentPositions);
 
   jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
@@ -241,12 +246,22 @@ TextMeasurement TextLayoutManager::doMeasure(
     }
   }
 
+  // Baseline calculation
+  auto baseline = size.height;
+  jsize extrasCount = env->GetArrayLength(extras);
+  jfloat *extrasPointer = env->GetFloatArrayElements(extras, 0);
+  if (extrasCount > 0) {
+    baseline = extrasPointer[0];
+  }
+
   // Clean up allocated ref
+  env->ReleaseFloatArrayElements(extras, extrasPointer, JNI_ABORT);
+  env->DeleteLocalRef(extras);
   env->ReleaseFloatArrayElements(
       attachmentPositions, attachmentData, JNI_ABORT);
   env->DeleteLocalRef(attachmentPositions);
 
-  return TextMeasurement{size, attachments};
+  return TextMeasurement{size, baseline, attachments};
 }
 
 TextMeasurement TextLayoutManager::doMeasureMapBuffer(
@@ -262,6 +277,7 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
     }
   }
   auto env = Environment::current();
+  auto extras = env->NewFloatArray(1);
   auto attachmentPositions = env->NewFloatArray(attachmentsCount * 2);
 
   auto minimumSize = layoutConstraints.minimumSize;
@@ -280,6 +296,7 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
       maximumSize.width,
       minimumSize.height,
       maximumSize.height,
+      extras,
       attachmentPositions);
 
   jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
@@ -303,12 +320,22 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
     }
   }
 
+  // Baseline calculation
+  auto baseline = size.height;
+  jsize extrasCount = env->GetArrayLength(extras);
+  jfloat *extrasPointer = env->GetFloatArrayElements(extras, 0);
+  if (extrasCount > 0) {
+    baseline = extrasPointer[0];
+  }
+
   // Clean up allocated ref
+  env->ReleaseFloatArrayElements(extras, extrasPointer, JNI_ABORT);
+  env->DeleteLocalRef(extras);
   env->ReleaseFloatArrayElements(
       attachmentPositions, attachmentData, JNI_ABORT);
   env->DeleteLocalRef(attachmentPositions);
 
-  return TextMeasurement{size, attachments};
+  return TextMeasurement{size, baseline, attachments};
 }
 
 } // namespace react

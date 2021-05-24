@@ -346,6 +346,7 @@ public class TextLayoutManager {
       float height,
       YogaMeasureMode heightYogaMeasureMode,
       ReactTextViewManagerCallback reactTextViewManagerCallback,
+      @Nullable float[] extras,
       @Nullable float[] attachmentsPositions) {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
@@ -500,6 +501,9 @@ public class TextLayoutManager {
         }
       }
     }
+
+    float baseline = layout.getLineBaseline(layout.getLineCount() - 1);
+    extras[0] = PixelUtil.toSPFromPixel(baseline);
 
     float widthInSP = PixelUtil.toSPFromPixel(calculatedWidth);
     float heightInSP = PixelUtil.toSPFromPixel(calculatedHeight);

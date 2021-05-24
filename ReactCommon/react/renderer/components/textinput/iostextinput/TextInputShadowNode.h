@@ -53,6 +53,9 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
   Size measureContent(
       LayoutContext const &layoutContext,
       LayoutConstraints const &layoutConstraints) const override;
+  Float measureBaseline(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
  private:

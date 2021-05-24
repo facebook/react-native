@@ -82,6 +82,18 @@ class LayoutableShadowNode : public ShadowNode {
       LayoutConstraints const &layoutConstraints) const;
 
   /*
+   * Returns the distance between `top` and `baseline` of the last line
+   * of text content (or its equivalent) of the node.
+   * Default implementation returns height returned from `measureContent`.
+   * Should be implemented for all components that display text
+   * (e.g. <Text> or <TextInput>) or might be placed into text flow
+   * (e.g. hypothetical <Emoji> component).
+   */
+  virtual Float measureBaseline(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const;
+  
+  /*
    * Measures the node with given `layoutContext` and `layoutConstraints`.
    * The size of nested content and the padding should be included, the margin
    * should *not* be included. Default implementation returns zero size.
@@ -144,12 +156,6 @@ class LayoutableShadowNode : public ShadowNode {
   virtual void cleanLayout() = 0;
   virtual void dirtyLayout() = 0;
   virtual bool getIsLayoutClean() const = 0;
-
-  /*
-   * Unifed methods to access text layout metrics.
-   */
-  virtual Float firstBaseline(Size size) const;
-  virtual Float lastBaseline(Size size) const;
 
   /*
    * Returns layoutable children to interate on.

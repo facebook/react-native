@@ -115,11 +115,9 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
       textLayoutManager_});
 }
 
-#pragma mark - LayoutableShadowNode
-
-Size ParagraphShadowNode::measureContent(
-    LayoutContext const &layoutContext,
-    LayoutConstraints const &layoutConstraints) const {
+TextMeasurement ParagraphShadowNode::measureText(
+   LayoutContext const &layoutContext,
+   LayoutConstraints const &layoutConstraints) const {
   auto content =
       getContentWithMeasuredAttachments(layoutContext, layoutConstraints);
 
@@ -140,8 +138,21 @@ Size ParagraphShadowNode::measureContent(
       ->measure(
           AttributedStringBox{attributedString},
           content.paragraphAttributes,
-          layoutConstraints)
-      .size;
+          layoutConstraints);
+}
+
+#pragma mark - LayoutableShadowNode
+
+Size ParagraphShadowNode::measureContent(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
+  return measureText(layoutContext, layoutConstraints).size;
+}
+
+Float ParagraphShadowNode::measureBaseline(
+   LayoutContext const &layoutContext,
+   LayoutConstraints const &layoutConstraints) const {
+  return measureText(layoutContext, layoutConstraints).baseline;
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
