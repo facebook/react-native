@@ -307,20 +307,25 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
   if (layoutAnimationConfig) {
     std::lock_guard<std::mutex> lock(currentAnimationMutex_);
 
-    currentAnimation_ = better::optional<LayoutAnimation>{LayoutAnimation{
+    uiManagerDidConfigureNextLayoutAnimation(LayoutAnimation{
         -1,
         0,
         false,
         *layoutAnimationConfig,
         successCallback,
         failureCallback,
-        {}}};
+        {}});
   } else {
     LOG(ERROR) << "Parsing LayoutAnimationConfig failed: "
                << (folly::dynamic)config;
 
     callCallback(failureCallback);
   }
+}
+
+void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
+    LayoutAnimation layoutAnimation) const {
+  currentAnimation_ = better::optional<LayoutAnimation>{layoutAnimation};
 }
 
 void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
@@ -733,6 +738,11 @@ void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
   }
 }
 
+void LayoutAnimationKeyFrameManager::setClockNow(
+    std::function<uint64_t()> now) {
+  now_ = now;
+}
+
 better::optional<MountingTransaction>
 LayoutAnimationKeyFrameManager::pullTransaction(
     SurfaceId surfaceId,
@@ -740,10 +750,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     TransactionTelemetry const &telemetry,
     ShadowViewMutationList mutations) const {
   // Current time in milliseconds
-  uint64_t now =
-      std::chrono::duration_cast<std::chrono::milliseconds>(
-          std::chrono::high_resolution_clock::now().time_since_epoch())
-          .count();
+  uint64_t now = now_();
 
   bool inflightAnimationsExistInitially = !inflightAnimations_.empty();
 
@@ -906,7 +913,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         bool haveComponentDescriptor =
             hasComponentDescriptorForShadowView(baselineShadowView);
 
-        bool executeMutationImmediately = false;
+        better::optional<ShadowViewMutation> executeMutationImmediately{};
 
         bool isRemoveReinserted =
             mutation.type == ShadowViewMutation::Type::Remove &&
@@ -972,7 +979,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         if (isRemoveReinserted || !haveConfiguration || isReparented ||
             mutation.type == ShadowViewMutation::Type::Create ||
             mutation.type == ShadowViewMutation::Type::Insert) {
-          executeMutationImmediately = true;
+          executeMutationImmediately = mutation;
 
           // It is possible, especially in the case of "moves", that we have a
           // sequence of operations like:
@@ -1004,6 +1011,36 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 if (keyframe.type == AnimationConfigurationType::Update &&
                     mutation.newChildShadowView.tag > 0) {
                   keyframe.viewPrev = mutation.newChildShadowView;
+                }
+              }
+            }
+          } else if (mutation.type == ShadowViewMutation::Type::Remove) {
+            for (auto &keyframe : keyFramesToAnimate) {
+              if (keyframe.tag == baselineShadowView.tag) {
+                // If there's already an animation queued up, followed by this
+                // Insert, it *must* be an Update mutation animation. Other
+                // sequences should not be possible.
+                react_native_assert(
+                    keyframe.type == AnimationConfigurationType::Update);
+
+                // The mutation is a "remove", so it must have a
+                // "oldChildShadowView"
+                react_native_assert(mutation.oldChildShadowView.tag > 0);
+
+                // Those asserts don't run in prod. If there's some edge-case
+                // that we haven't caught yet, we'd crash in debug; make sure we
+                // don't mutate the prevView in prod.
+                // Since normally the UPDATE would have been executed first and
+                // now it's deferred, we need to change the `oldChildShadowView`
+                // that is being referenced by the REMOVE mutation.
+                if (keyframe.type == AnimationConfigurationType::Update &&
+                    mutation.oldChildShadowView.tag > 0) {
+                  executeMutationImmediately = ShadowViewMutation{
+                      mutation.type,
+                      mutation.parentShadowView,
+                      keyframe.viewPrev,
+                      {},
+                      mutation.index};
                 }
               }
             }
@@ -1282,10 +1319,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           keyFramesToAnimate.push_back(keyFrame);
         }
 
-        if (executeMutationImmediately) {
+        if (executeMutationImmediately.hasValue()) {
           PrintMutationInstruction(
-              "Queue Up Animation For Immediate Execution", mutation);
-          immediateMutations.push_back(mutation);
+              "Queue Up For Immediate Execution", *executeMutationImmediately);
+          immediateMutations.push_back(*executeMutationImmediately);
         }
       }
 

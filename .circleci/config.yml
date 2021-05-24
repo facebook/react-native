@@ -51,7 +51,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: &_XCODE_VERSION "12.1.0"
+      xcode: &_XCODE_VERSION "12.4.0"
 
 # -------------------------
 #        COMMANDS

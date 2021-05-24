@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactNativeRenderer-prod
  * @preventMunge
- * @generated SignedSource<<5b43b00ffda366247921c6aaf524b5ab>>
+ * @generated SignedSource<<c2bd920e65c75725045e8813eeeac57b>>
  */
 
 "use strict";
@@ -1209,13 +1209,18 @@ function getComponentNameFromType(type) {
         return (type._context.displayName || "Context") + ".Provider";
       case REACT_FORWARD_REF_TYPE:
         var innerType = type.render;
-        innerType = innerType.displayName || innerType.name || "";
-        return (
-          type.displayName ||
-          ("" !== innerType ? "ForwardRef(" + innerType + ")" : "ForwardRef")
-        );
+        type = type.displayName;
+        type ||
+          ((type = innerType.displayName || innerType.name || ""),
+          (type = "" !== type ? "ForwardRef(" + type + ")" : "ForwardRef"));
+        return type;
       case REACT_MEMO_TYPE:
-        return getComponentNameFromType(type.type);
+        return (
+          (innerType = type.displayName || null),
+          null !== innerType
+            ? innerType
+            : getComponentNameFromType(type.type) || "Memo"
+        );
       case REACT_LAZY_TYPE:
         innerType = type._payload;
         type = type._init;
@@ -7747,10 +7752,7 @@ function createFiberFromTypeAndProps(
         break;
       case REACT_STRICT_MODE_TYPE:
         fiberTag = 8;
-        1 <=
-          (null == pendingProps.unstable_level
-            ? 1
-            : pendingProps.unstable_level) && (mode |= 8);
+        mode |= 24;
         break;
       case REACT_PROFILER_TYPE:
         return (
@@ -7979,10 +7981,10 @@ batchedUpdatesImpl = function(fn, a) {
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_985 = {
+  devToolsConfig$jscomp$inline_986 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "17.0.3-experimental-2a7bb4154",
+    version: "17.0.3-experimental-b8fda6cab",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -7997,11 +7999,11 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1242 = {
-  bundleType: devToolsConfig$jscomp$inline_985.bundleType,
-  version: devToolsConfig$jscomp$inline_985.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_985.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_985.rendererConfig,
+var internals$jscomp$inline_1243 = {
+  bundleType: devToolsConfig$jscomp$inline_986.bundleType,
+  version: devToolsConfig$jscomp$inline_986.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_986.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_986.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -8016,26 +8018,26 @@ var internals$jscomp$inline_1242 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_985.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_986.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "17.0.3-experimental-2a7bb4154"
+  reconcilerVersion: "17.0.3-experimental-b8fda6cab"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1243 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1244 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1243.isDisabled &&
-    hook$jscomp$inline_1243.supportsFiber
+    !hook$jscomp$inline_1244.isDisabled &&
+    hook$jscomp$inline_1244.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1243.inject(
-        internals$jscomp$inline_1242
+      (rendererID = hook$jscomp$inline_1244.inject(
+        internals$jscomp$inline_1243
       )),
-        (injectedHook = hook$jscomp$inline_1243);
+        (injectedHook = hook$jscomp$inline_1244);
     } catch (err) {}
 }
 exports.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {

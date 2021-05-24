@@ -18,6 +18,12 @@ RCT_EXTERN BOOL RCTExperimentGetOnDemandViewMounting(void);
 RCT_EXTERN void RCTExperimentSetOnDemandViewMounting(BOOL value);
 
 /*
+ * Allows sending scroll events to Paper.
+ */
+RCT_EXTERN BOOL RCTExperimentGetSendScrollEventToPaper(void);
+RCT_EXTERN void RCTExperimentSetSendScrollEventToPaper(BOOL value);
+
+/*
  * Preemptive View Allocation
  */
 RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);

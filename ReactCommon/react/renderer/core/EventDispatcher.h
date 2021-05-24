@@ -37,19 +37,20 @@ class EventDispatcher {
       StatePipe const &statePipe,
       EventBeat::Factory const &synchonousEventBeatFactory,
       EventBeat::Factory const &asynchonousEventBeatFactory,
-      EventBeat::SharedOwnerBox const &ownerBox);
+      EventBeat::SharedOwnerBox const &ownerBox,
+      bool unbatchedQueuesOnly);
 
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
    */
-  void dispatchEvent(RawEvent const &rawEvent, EventPriority priority) const;
+  void dispatchEvent(RawEvent &&rawEvent, EventPriority priority) const;
 
   /*
    * Dispatches a raw event with asynchronous batched priority. Before the
    * dispatch we make sure that no other RawEvent of same type and same target
    * is on the queue.
    */
-  void dispatchUniqueEvent(RawEvent const &rawEvent) const;
+  void dispatchUniqueEvent(RawEvent &&rawEvent) const;
 
   /*
    * Dispatches a state update with given priority.
@@ -64,6 +65,8 @@ class EventDispatcher {
   std::unique_ptr<BatchedEventQueue> synchronousBatchedQueue_;
   std::unique_ptr<UnbatchedEventQueue> asynchronousUnbatchedQueue_;
   std::unique_ptr<BatchedEventQueue> asynchronousBatchedQueue_;
+
+  bool const unbatchedQueuesOnly_;
 };
 
 } // namespace react

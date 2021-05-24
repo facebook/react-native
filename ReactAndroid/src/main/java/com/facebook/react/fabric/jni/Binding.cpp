@@ -25,6 +25,7 @@
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -453,6 +454,17 @@ void Binding::setConstraints(
   }
 }
 
+bool isMapBufferSerializationEnabled() {
+  static const auto reactFeatureFlagsJavaDescriptor =
+      jni::findClassStatic(Binding::ReactFeatureFlagsJavaDescriptor);
+  static const auto isMapBufferSerializationEnabledMethod =
+      reactFeatureFlagsJavaDescriptor->getStaticMethod<jboolean()>(
+          "isMapBufferSerializationEnabled");
+  bool value =
+      isMapBufferSerializationEnabledMethod(reactFeatureFlagsJavaDescriptor);
+  return value;
+}
+
 void Binding::installFabricUIManager(
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
     jni::alias_ref<jobject> javaUIManager,
@@ -488,6 +500,18 @@ void Binding::installFabricUIManager(
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
+  std::shared_ptr<RuntimeScheduler> runtimeScheduler;
+
+  if (config->getBool("react_fabric:enable_runtimescheduler_android")) {
+    runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
+
+    auto originalRuntimeExecutor = runtimeExecutorHolder->cthis()->get();
+    runtimeExecutor =
+        [originalRuntimeExecutor, runtimeScheduler](
+            std::function<void(jsi::Runtime & runtime)> &&callback) {
+          runtimeScheduler->scheduleWork(std::move(callback));
+        };
+  }
 
   auto enableV2AsynchronousEventBeat =
       config->getBool("react_fabric:enable_asynchronous_event_beat_v2_android");
@@ -531,9 +555,7 @@ void Binding::installFabricUIManager(
   reactNativeConfig_ = config;
 
   contextContainer->insert(
-      "MapBufferSerializationEnabled",
-      reactNativeConfig_->getBool(
-          "react_fabric:enable_mapbuffer_serialization_android"));
+      "MapBufferSerializationEnabled", isMapBufferSerializationEnabled());
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
@@ -542,6 +564,7 @@ void Binding::installFabricUIManager(
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
   toolbox.runtimeExecutor = runtimeExecutor;
+  toolbox.runtimeScheduler = runtimeScheduler;
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 

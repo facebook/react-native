@@ -114,7 +114,7 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
       auto count = names.size(runtime);
       auto valueIndex = RawPropsValueIndex{0};
 
-      for (auto i = 0; i < count; i++) {
+      for (size_t i = 0; i < count; i++) {
         auto nameValue = names.getValueAtIndex(runtime, i).getString(runtime);
         auto value = object.getProperty(runtime, nameValue);
 

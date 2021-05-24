@@ -152,5 +152,4 @@ module.exports = {
   forkEvent: AnimatedImplementation.forkEvent,
   unforkEvent: AnimatedImplementation.unforkEvent,
   Event: AnimatedEvent,
-  __PropsOnlyForTests: AnimatedProps,
 };

@@ -87,6 +87,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   BOOL _isUserTriggeredScrolling;
 
   BOOL _isOnDemandViewMountingEnabled;
+  BOOL _sendScrollEventToPaper;
   CGPoint _contentOffsetWhenClipped;
   NSMutableArray<UIView<RCTComponentViewProtocol> *> *_childComponentViews;
 }
@@ -106,6 +107,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _props = defaultProps;
 
     _isOnDemandViewMountingEnabled = RCTExperimentGetOnDemandViewMounting();
+    _sendScrollEventToPaper = RCTExperimentGetSendScrollEventToPaper();
     _childComponentViews = [[NSMutableArray alloc] init];
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
@@ -419,7 +421,9 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     }
     // Once Fabric implements proper NativeAnimationDriver, this should be removed.
     // This is just a workaround to allow animations based on onScroll event.
-    RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
+    if (_sendScrollEventToPaper) {
+      RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
+    }
   }
 
   [self _remountChildrenIfNeeded];
@@ -622,10 +626,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     return;
   }
 
-  CGRect visibleFrame = CGRect{_scrollView.contentOffset, _scrollView.bounds.size};
+  CGRect visibleFrame = [_scrollView convertRect:_scrollView.bounds toView:_containerView];
   visibleFrame = CGRectInset(visibleFrame, -kClippingLeeway, -kClippingLeeway);
 
-  CGFloat scale = 1.0 / _scrollView.zoomScale;
+  // `zoomScale` is negative in RTL. Absolute value is needed.
+  CGFloat scale = 1.0 / std::abs(_scrollView.zoomScale);
   visibleFrame.origin.x *= scale;
   visibleFrame.origin.y *= scale;
   visibleFrame.size.width *= scale;

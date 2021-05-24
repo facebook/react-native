@@ -21,7 +21,8 @@ EventDispatcher::EventDispatcher(
     StatePipe const &statePipe,
     EventBeat::Factory const &synchonousEventBeatFactory,
     EventBeat::Factory const &asynchonousEventBeatFactory,
-    EventBeat::SharedOwnerBox const &ownerBox)
+    EventBeat::SharedOwnerBox const &ownerBox,
+    bool unbatchedQueuesOnly)
     : synchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
           eventPipe,
           statePipe,
@@ -37,11 +38,11 @@ EventDispatcher::EventDispatcher(
       asynchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
           eventPipe,
           statePipe,
-          asynchonousEventBeatFactory(ownerBox))) {}
+          asynchonousEventBeatFactory(ownerBox))),
+      unbatchedQueuesOnly_(unbatchedQueuesOnly) {}
 
-void EventDispatcher::dispatchEvent(
-    RawEvent const &rawEvent,
-    EventPriority priority) const {
+void EventDispatcher::dispatchEvent(RawEvent &&rawEvent, EventPriority priority)
+    const {
   getEventQueue(priority).enqueueEvent(std::move(rawEvent));
 }
 
@@ -51,20 +52,37 @@ void EventDispatcher::dispatchStateUpdate(
   getEventQueue(priority).enqueueStateUpdate(std::move(stateUpdate));
 }
 
-void EventDispatcher::dispatchUniqueEvent(RawEvent const &rawEvent) const {
-  asynchronousBatchedQueue_->enqueueUniqueEvent(rawEvent);
+void EventDispatcher::dispatchUniqueEvent(RawEvent &&rawEvent) const {
+  if (unbatchedQueuesOnly_) {
+    asynchronousUnbatchedQueue_->enqueueUniqueEvent(std::move(rawEvent));
+  } else {
+    asynchronousBatchedQueue_->enqueueUniqueEvent(std::move(rawEvent));
+  }
 }
 
 const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
-  switch (priority) {
-    case EventPriority::SynchronousUnbatched:
-      return *synchronousUnbatchedQueue_;
-    case EventPriority::SynchronousBatched:
-      return *synchronousBatchedQueue_;
-    case EventPriority::AsynchronousUnbatched:
-      return *asynchronousUnbatchedQueue_;
-    case EventPriority::AsynchronousBatched:
-      return *asynchronousBatchedQueue_;
+  if (unbatchedQueuesOnly_) {
+    switch (priority) {
+      case EventPriority::SynchronousUnbatched:
+        return *synchronousUnbatchedQueue_;
+      case EventPriority::SynchronousBatched:
+        return *synchronousUnbatchedQueue_;
+      case EventPriority::AsynchronousUnbatched:
+        return *asynchronousUnbatchedQueue_;
+      case EventPriority::AsynchronousBatched:
+        return *asynchronousUnbatchedQueue_;
+    }
+  } else {
+    switch (priority) {
+      case EventPriority::SynchronousUnbatched:
+        return *synchronousUnbatchedQueue_;
+      case EventPriority::SynchronousBatched:
+        return *synchronousBatchedQueue_;
+      case EventPriority::AsynchronousUnbatched:
+        return *asynchronousUnbatchedQueue_;
+      case EventPriority::AsynchronousBatched:
+        return *asynchronousBatchedQueue_;
+    }
   }
 }
 

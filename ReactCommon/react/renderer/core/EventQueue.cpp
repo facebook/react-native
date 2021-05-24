@@ -24,10 +24,40 @@ EventQueue::EventQueue(
       std::bind(&EventQueue::onBeat, this, std::placeholders::_1));
 }
 
-void EventQueue::enqueueEvent(const RawEvent &rawEvent) const {
+void EventQueue::enqueueEvent(RawEvent &&rawEvent) const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
-    eventQueue_.push_back(rawEvent);
+    eventQueue_.push_back(std::move(rawEvent));
+  }
+
+  onEnqueue();
+}
+
+void EventQueue::enqueueUniqueEvent(RawEvent &&rawEvent) const {
+  {
+    std::lock_guard<std::mutex> lock(queueMutex_);
+
+    auto repeatedEvent = eventQueue_.rend();
+
+    for (auto it = eventQueue_.rbegin(); it != eventQueue_.rend(); ++it) {
+      if (it->type == rawEvent.type &&
+          it->eventTarget == rawEvent.eventTarget) {
+        repeatedEvent = it;
+        break;
+      } else if (it->eventTarget == rawEvent.eventTarget) {
+        // It is necessary to maintain order of different event types
+        // for the same target. If the same target has event types A1, B1
+        // in the event queue and event A2 occurs. A1 has to stay in the
+        // queue.
+        break;
+      }
+    }
+
+    if (repeatedEvent == eventQueue_.rend()) {
+      eventQueue_.push_back(std::move(rawEvent));
+    } else {
+      *repeatedEvent = std::move(rawEvent);
+    }
   }
 
   onEnqueue();

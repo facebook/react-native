@@ -33,8 +33,7 @@ class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
       RuntimeExecutor const &runtimeExecutor,
-      BackgroundExecutor const &backgroundExecutor,
-      GarbageCollectionTrigger const &garbageCollectionTrigger);
+      BackgroundExecutor const &backgroundExecutor);
 
   ~UIManager();
 
