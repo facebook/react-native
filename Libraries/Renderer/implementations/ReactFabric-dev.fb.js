@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<4d9eb77d05517d9f9d1fbc421949ae0e>>
+ * @generated SignedSource<<3836d5af681381d070c07bf87c303843>>
  */
 
 'use strict';
@@ -5812,7 +5812,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-459c34fde";
+var ReactVersion = "17.0.3-2d8d133e1";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -21167,7 +21167,12 @@ function createHostRootFiber(
       }
     }
 
-    {
+    if (
+      // We only use this flag for our repo tests to check both behaviors.
+      // TODO: Flip this flag and rename it something like "forceConcurrentByDefaultForTesting"
+      // Only for internal experiments.
+      concurrentUpdatesByDefaultOverride
+    ) {
       mode |= ConcurrentUpdatesByDefaultMode;
     }
   } else {
@@ -21519,7 +21524,11 @@ function createFiberRoot(
   var root = new FiberRootNode(containerInfo, tag, hydrate);
   // stateNode is any.
 
-  var uninitializedFiber = createHostRootFiber(tag, isStrictMode);
+  var uninitializedFiber = createHostRootFiber(
+    tag,
+    isStrictMode,
+    concurrentUpdatesByDefaultOverride
+  );
   root.current = uninitializedFiber;
   uninitializedFiber.stateNode = root;
 
@@ -21665,7 +21674,8 @@ function createContainer(
     tag,
     hydrate,
     hydrationCallbacks,
-    isStrictMode
+    isStrictMode,
+    concurrentUpdatesByDefaultOverride
   );
 }
 function updateContainer(element, container, parentComponent, callback) {
@@ -22435,7 +22445,8 @@ function render(element, containerTag, callback, concurrentRoot) {
       concurrentRoot ? ConcurrentRoot : LegacyRoot,
       false,
       null,
-      false
+      false,
+      null
     );
     roots.set(containerTag, root);
   }

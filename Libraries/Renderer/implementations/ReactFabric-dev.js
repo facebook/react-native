@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactFabric-dev
  * @preventMunge
- * @generated SignedSource<<4d5f2029889b40aa66f49d113efae635>>
+ * @generated SignedSource<<64e2487c0986fc70b80db55f5a1cbb38>>
  */
 
 'use strict';
@@ -5697,7 +5697,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-459c34fde";
+var ReactVersion = "17.0.3-2d8d133e1";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;

@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<f49e2008d57b20c2e903bfb3247a8247>>
+ * @generated SignedSource<<fa60bbe943550ad6b4198e70879e32ab>>
  */
 
 "use strict";
@@ -7772,7 +7772,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_942 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "17.0.3-459c34fde",
+    version: "17.0.3-2d8d133e1",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -7813,7 +7813,7 @@ var internals$jscomp$inline_1180 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "17.0.3-459c34fde"
+  reconcilerVersion: "17.0.3-2d8d133e1"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1181 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
@@ -7868,8 +7868,7 @@ exports.render = function(element, containerTag, callback, concurrentRoot) {
   root ||
     ((root = concurrentRoot ? 1 : 0),
     (concurrentRoot = new FiberRootNode(containerTag, root, !1)),
-    (root = 1 === root ? 33 : 0),
-    (root = createFiber(3, null, null, root)),
+    (root = createFiber(3, null, null, 1 === root ? 1 : 0)),
     (concurrentRoot.current = root),
     (root.stateNode = concurrentRoot),
     (root.memoizedState = { element: null }),
