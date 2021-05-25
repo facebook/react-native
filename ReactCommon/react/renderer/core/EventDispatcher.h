@@ -7,14 +7,10 @@
 
 #pragma once
 
-#include <array>
-#include <memory>
-
 #include <react/renderer/core/BatchedEventQueue.h>
 #include <react/renderer/core/EventBeat.h>
-#include <react/renderer/core/EventPipe.h>
 #include <react/renderer/core/EventPriority.h>
-#include <react/renderer/core/StatePipe.h>
+#include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/StateUpdate.h>
 #include <react/renderer/core/UnbatchedEventQueue.h>
 
@@ -33,8 +29,7 @@ class EventDispatcher {
   using Weak = std::weak_ptr<EventDispatcher const>;
 
   EventDispatcher(
-      EventPipe const &eventPipe,
-      StatePipe const &statePipe,
+      EventQueueProcessor eventProcessor,
       EventBeat::Factory const &synchonousEventBeatFactory,
       EventBeat::Factory const &asynchonousEventBeatFactory,
       EventBeat::SharedOwnerBox const &ownerBox,

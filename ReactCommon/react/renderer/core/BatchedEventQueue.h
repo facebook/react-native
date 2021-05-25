@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/core/EventQueue.h>
+#include <react/renderer/core/EventQueueProcessor.h>
 
 namespace facebook {
 namespace react {
@@ -19,8 +20,7 @@ namespace react {
 class BatchedEventQueue final : public EventQueue {
  public:
   BatchedEventQueue(
-      EventPipe eventPipe,
-      StatePipe statePipe,
+      EventQueueProcessor eventProcessor,
       std::unique_ptr<EventBeat> eventBeat);
 
   void onEnqueue() const override;
