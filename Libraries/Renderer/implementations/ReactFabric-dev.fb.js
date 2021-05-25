@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<d8654ddab1f90ed55c9d13dacb5fd34d>>
+ * @generated SignedSource<<4d9eb77d05517d9f9d1fbc421949ae0e>>
  */
 
 'use strict';
@@ -5812,7 +5812,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-316943091";
+var ReactVersion = "17.0.3-459c34fde";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -22424,13 +22424,19 @@ function sendAccessibilityEvent(handle, eventType) {
   }
 }
 
-function render(element, containerTag, callback) {
+function render(element, containerTag, callback, concurrentRoot) {
   var root = roots.get(containerTag);
 
   if (!root) {
     // TODO (bvaughn): If we decide to keep the wrapper component,
     // We could create a wrapper for containerTag as well to reduce special casing.
-    root = createContainer(containerTag, LegacyRoot, false, null, false);
+    root = createContainer(
+      containerTag,
+      concurrentRoot ? ConcurrentRoot : LegacyRoot,
+      false,
+      null,
+      false
+    );
     roots.set(containerTag, root);
   }
 

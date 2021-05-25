@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<53c0b624e2940b070555c7f2253a7464>>
+ * @generated SignedSource<<cd5e70fb000e75a265a6e926c958d134>>
  */
 
 "use strict";
@@ -7923,7 +7923,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_966 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "17.0.3-316943091",
+    version: "17.0.3-459c34fde",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -7964,7 +7964,7 @@ var internals$jscomp$inline_1208 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "17.0.3-316943091"
+  reconcilerVersion: "17.0.3-459c34fde"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1209 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
@@ -8014,24 +8014,20 @@ exports.findHostInstance_DEPRECATED = function(componentOrHandle) {
     : componentOrHandle;
 };
 exports.findNodeHandle = findNodeHandle;
-exports.render = function(element, containerTag, callback) {
+exports.render = function(element, containerTag, callback, concurrentRoot) {
   var root = roots.get(containerTag);
-  if (!root) {
-    root = new FiberRootNode(containerTag, 0, !1);
-    var JSCompiler_inline_result = 0;
-    isDevToolsPresent && (JSCompiler_inline_result |= 2);
-    JSCompiler_inline_result = createFiber(
-      3,
-      null,
-      null,
-      JSCompiler_inline_result
-    );
-    root.current = JSCompiler_inline_result;
-    JSCompiler_inline_result.stateNode = root;
-    JSCompiler_inline_result.memoizedState = { element: null };
-    initializeUpdateQueue(JSCompiler_inline_result);
-    roots.set(containerTag, root);
-  }
+  root ||
+    ((root = concurrentRoot ? 1 : 0),
+    (concurrentRoot = new FiberRootNode(containerTag, root, !1)),
+    (root = 1 === root ? 33 : 0),
+    isDevToolsPresent && (root |= 2),
+    (root = createFiber(3, null, null, root)),
+    (concurrentRoot.current = root),
+    (root.stateNode = concurrentRoot),
+    (root.memoizedState = { element: null }),
+    initializeUpdateQueue(root),
+    (root = concurrentRoot),
+    roots.set(containerTag, root));
   updateContainer(element, root, null, callback);
   a: if (((element = root.current), element.child))
     switch (element.child.tag) {
