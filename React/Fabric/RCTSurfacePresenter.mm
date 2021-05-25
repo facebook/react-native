@@ -297,11 +297,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
 
-  toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
-    auto runLoopObserver =
-        std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-    return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
-  };
+  toolbox.synchronousEventBeatFactory =
+      [runtimeExecutor, runtimeScheduler = toolbox.runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {
+        auto runLoopObserver =
+            std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+        return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor, runtimeScheduler);
+      };
 
   auto enableV2AsynchronousEventBeat =
       reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_asynchronous_event_beat_v2_ios");
