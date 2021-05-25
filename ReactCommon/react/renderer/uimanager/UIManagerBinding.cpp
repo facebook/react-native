@@ -777,8 +777,18 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "unstable_currentEventPriority") {
-    return jsi::Value(serialize(currentEventPriority_));
+  if (methodName == "unstable_getCurrentEventPriority") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [this](
+            jsi::Runtime &,
+            jsi::Value const &,
+            jsi::Value const *,
+            size_t) noexcept -> jsi::Value {
+          return jsi::Value(serialize(currentEventPriority_));
+        });
   }
 
   if (methodName == "unstable_DefaultEventPriority") {
