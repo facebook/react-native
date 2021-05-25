@@ -61,6 +61,14 @@ void EventEmitter::dispatchEvent(
       priority);
 }
 
+void EventEmitter::dispatchUniqueEvent(
+    const std::string &type,
+    const folly::dynamic &payload) const {
+  dispatchUniqueEvent(type, [payload](jsi::Runtime &runtime) {
+    return valueFromDynamic(runtime, payload);
+  });
+}
+
 void EventEmitter::dispatchEvent(
     const std::string &type,
     const ValueFactory &payloadFactory,

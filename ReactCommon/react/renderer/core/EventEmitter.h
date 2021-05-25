@@ -80,6 +80,10 @@ class EventEmitter {
 
   void dispatchUniqueEvent(
       const std::string &type,
+      const folly::dynamic &payload) const;
+
+  void dispatchUniqueEvent(
+      const std::string &type,
       const ValueFactory &payloadFactory =
           EventEmitter::defaultPayloadFactory()) const;
 
