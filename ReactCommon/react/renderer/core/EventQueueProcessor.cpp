@@ -33,7 +33,11 @@ void EventQueueProcessor::flushEvents(
 
   for (const auto &event : events) {
     eventPipe_(
-        runtime, event.eventTarget.get(), event.type, event.payloadFactory);
+        runtime,
+        event.eventTarget.get(),
+        event.type,
+        ReactEventPriority::Default,
+        event.payloadFactory);
   }
 
   // No need to lock `EventEmitter::DispatchMutex()` here.
