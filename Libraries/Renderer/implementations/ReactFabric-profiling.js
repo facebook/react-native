@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactFabric-profiling
  * @preventMunge
- * @generated SignedSource<<e02801db70a5777798593a0165dd112f>>
+ * @generated SignedSource<<539de6e874474ef5e41b0b59b08b0a87>>
  */
 
 "use strict";
@@ -2393,6 +2393,7 @@ function processUpdateQueue(
           }
         }
         null !== pendingQueue.callback &&
+          0 !== pendingQueue.lane &&
           ((workInProgress$jscomp$0.flags |= 64),
           (updateLane = queue.effects),
           null === updateLane
@@ -7917,7 +7918,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_966 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "17.0.3-experimental-b8fda6cab",
+    version: "17.0.3-experimental-316943091",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -7958,7 +7959,7 @@ var internals$jscomp$inline_1208 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "17.0.3-experimental-b8fda6cab"
+  reconcilerVersion: "17.0.3-experimental-316943091"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1209 = __REACT_DEVTOOLS_GLOBAL_HOOK__;

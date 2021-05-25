@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<8033e694383dc0dfd8e2862436d6a7f5>>
+ * @generated SignedSource<<d730d65da7794cd154ac00cac3550316>>
  */
 
 'use strict';
@@ -6100,7 +6100,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-b8fda6cab";
+var ReactVersion = "17.0.3-316943091";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -7367,7 +7367,11 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
         );
         var callback = update.callback;
 
-        if (callback !== null) {
+        if (
+          callback !== null && // If the update was already committed, we should not queue its
+          // callback again.
+          update.lane !== NoLane
+        ) {
           workInProgress.flags |= Callback;
           var effects = queue.effects;
 
