@@ -28,6 +28,8 @@ class EventQueueProcessor {
  private:
   EventPipe const eventPipe_;
   StatePipe const statePipe_;
+
+  mutable bool hasContinuousEventStarted_{false};
 };
 
 } // namespace react

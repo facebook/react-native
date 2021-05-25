@@ -17,7 +17,7 @@
 namespace facebook {
 namespace react {
 
-class RawEvent;
+struct RawEvent;
 
 /*
  * Represents event-delivery infrastructure.

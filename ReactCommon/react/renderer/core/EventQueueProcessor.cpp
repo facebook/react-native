@@ -31,13 +31,33 @@ void EventQueueProcessor::flushEvents(
     }
   }
 
-  for (const auto &event : events) {
+  for (auto const &event : events) {
+    if (event.category == RawEvent::Category::ContinuousEnd) {
+      hasContinuousEventStarted_ = false;
+    }
+
+    auto reactPriority = hasContinuousEventStarted_
+        ? ReactEventPriority::Default
+        : ReactEventPriority::Discrete;
+
+    if (event.category == RawEvent::Category::Continuous) {
+      reactPriority = ReactEventPriority::Default;
+    }
+
+    if (event.category == RawEvent::Category::Discrete) {
+      reactPriority = ReactEventPriority::Discrete;
+    }
+
     eventPipe_(
         runtime,
         event.eventTarget.get(),
         event.type,
-        ReactEventPriority::Default,
+        reactPriority,
         event.payloadFactory);
+
+    if (event.category == RawEvent::Category::ContinuousStart) {
+      hasContinuousEventStarted_ = true;
+    }
   }
 
   // No need to lock `EventEmitter::DispatchMutex()` here.
