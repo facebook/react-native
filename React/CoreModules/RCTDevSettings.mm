@@ -28,6 +28,7 @@ static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely
 static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
 static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
+static NSString *const kRCTDevSettingIsTimelineRecordingEnabled = @"isTimelineRecordingEnabled";
 
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
@@ -399,6 +400,16 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (BOOL)isPerfMonitorShown
 {
   return [[self settingForKey:kRCTDevSettingIsPerfMonitorShown] boolValue];
+}
+
+- (void)setIsTimelineRecordingEnabled:(BOOL)isTimelineRecordingEnabled
+{
+  [self _updateSettingWithValue:@(isTimelineRecordingEnabled) forKey:kRCTDevSettingIsTimelineRecordingEnabled];
+}
+
+- (BOOL)isTimelineRecordingEnabled
+{
+  return [[self settingForKey:kRCTDevSettingIsTimelineRecordingEnabled] boolValue];
 }
 
 - (void)setExecutorClass:(Class)executorClass

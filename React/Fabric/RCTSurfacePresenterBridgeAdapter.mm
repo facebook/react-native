@@ -26,6 +26,7 @@ using namespace facebook::react;
 @interface RCTBridge ()
 - (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
 - (void)invokeAsync:(std::function<void()> &&)func;
+- (RCTModuleRegistry *)moduleRegistry;
 @end
 
 static ContextContainer::Shared RCTContextContainerFromBridge(RCTBridge *bridge)
@@ -38,6 +39,10 @@ static ContextContainer::Shared RCTContextContainerFromBridge(RCTBridge *bridge)
 
   contextContainer->insert("Bridge", wrapManagedObjectWeakly(bridge));
   contextContainer->insert("RCTImageLoader", wrapManagedObject((id<RCTImageLoaderWithAttributionProtocol>)imageLoader));
+    
+  RCTModuleRegistry *moduleRegistry = ([bridge batchedBridge] ?: bridge).moduleRegistry;
+  contextContainer->insert("ModuleRegistry", wrapManagedObjectWeakly(moduleRegistry));
+      
   return contextContainer;
 }
 
