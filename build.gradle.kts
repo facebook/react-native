@@ -17,7 +17,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.0")
+        classpath("com.android.tools.build:gradle:4.2.0")
         classpath("de.undercouch:gradle-download-task:4.0.2")
 
         // NOTE: Do not place your application dependencies here; they belong
