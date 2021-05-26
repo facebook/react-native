@@ -31,3 +31,10 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
     eval "$(anyenv init -)"
   fi
 fi
+
+# Set up the fnm node version manager if present
+if [[ -x "$HOME/.fnm/fnm" ]]; then
+  eval "$("$HOME/.fnm/fnm" env)"
+elif [[ -x "$(command -v brew)" && -x "$(brew --prefix fnm)/fnm" ]]; then
+  eval "$("$(brew --prefix fnm)/fnm" env)"
+fi
