@@ -77,8 +77,8 @@ void EventQueue::enqueueStateUpdate(StateUpdate &&stateUpdate) const {
 }
 
 void EventQueue::onBeat(jsi::Runtime &runtime) const {
-  flushEvents(runtime);
   flushStateUpdates();
+  flushEvents(runtime);
 }
 
 void EventQueue::flushEvents(jsi::Runtime &runtime) const {
