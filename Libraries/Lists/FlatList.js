@@ -276,6 +276,7 @@ export type DefaultProps = typeof defaultProps;
  * Also inherits [ScrollView Props](docs/scrollview.html#props), unless it is nested in another FlatList of same orientation.
  */
 class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
+  static defaultProps: DefaultProps = defaultProps;
   props: Props<ItemT>;
   /**
    * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
