@@ -42,19 +42,21 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
   private static final String TAG = "ReactTextAnchorViewManager";
-  private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
 
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
   public void setNumberOfLines(ReactTextView view, int numberOfLines) {
-    mNumberOfLines = numberOfLines;
     view.setNumberOfLines(numberOfLines);
+    boolean isMultiline = view.getNumberOfLines() > 1 && view.getNumberOfLines() != ViewDefaults.NUMBER_OF_LINES;
+    if (isMultiline && view.getEllipsizeLocation() != null) {
+      view.setEllipsizeLocation(TextUtils.TruncateAt.END);
+    }
   }
 
   @ReactProp(name = ViewProps.ELLIPSIZE_MODE)
   public void setEllipsizeMode(ReactTextView view, @Nullable String ellipsizeMode) {
-    boolean useDefaultValue = mNumberOfLines > 1 && !ellipsizeMode.equals("clip");
-    if (ellipsizeMode == null || useDefaultValue || ellipsizeMode.equals("tail")) {
+    boolean isMultiline = view.getNumberOfLines() > 1 && view.getNumberOfLines() != ViewDefaults.NUMBER_OF_LINES;
+    if (ellipsizeMode == null || isMultiline && !ellipsizeMode.equals("clip") || ellipsizeMode.equals("tail")) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.END);
     } else if (ellipsizeMode.equals("head")) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.START);

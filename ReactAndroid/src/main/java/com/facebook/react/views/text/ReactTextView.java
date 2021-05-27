@@ -475,12 +475,20 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     setMaxLines(mNumberOfLines);
   }
 
+  public int getNumberOfLines() {
+    return mNumberOfLines;
+  }
+
   public void setAdjustFontSizeToFit(boolean adjustsFontSizeToFit) {
     mAdjustsFontSizeToFit = adjustsFontSizeToFit;
   }
 
   public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
     mEllipsizeLocation = ellipsizeLocation;
+  }
+
+  public TextUtils.TruncateAt getEllipsizeLocation() {
+    return mEllipsizeLocation;
   }
 
   public void setNotifyOnInlineViewLayout(boolean notifyOnInlineViewLayout) {
