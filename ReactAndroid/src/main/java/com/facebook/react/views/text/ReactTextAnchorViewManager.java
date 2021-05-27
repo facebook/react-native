@@ -47,7 +47,8 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
   public void setNumberOfLines(ReactTextView view, int numberOfLines) {
     view.setNumberOfLines(numberOfLines);
-    boolean isMultiline = view.getNumberOfLines() > 1 && view.getNumberOfLines() != ViewDefaults.NUMBER_OF_LINES;
+    boolean isMultiline =
+        view.getNumberOfLines() > 1 && view.getNumberOfLines() != ViewDefaults.NUMBER_OF_LINES;
     if (isMultiline && view.getEllipsizeLocation() != null) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.END);
     }
@@ -55,8 +56,11 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
 
   @ReactProp(name = ViewProps.ELLIPSIZE_MODE)
   public void setEllipsizeMode(ReactTextView view, @Nullable String ellipsizeMode) {
-    boolean isMultiline = view.getNumberOfLines() > 1 && view.getNumberOfLines() != ViewDefaults.NUMBER_OF_LINES;
-    if (ellipsizeMode == null || isMultiline && !ellipsizeMode.equals("clip") || ellipsizeMode.equals("tail")) {
+    boolean isMultiline =
+        view.getNumberOfLines() > 1 && view.getNumberOfLines() != ViewDefaults.NUMBER_OF_LINES;
+    if (ellipsizeMode == null
+        || isMultiline && !ellipsizeMode.equals("clip")
+        || ellipsizeMode.equals("tail")) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.END);
     } else if (ellipsizeMode.equals("head")) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.START);
