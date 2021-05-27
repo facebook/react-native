@@ -37,12 +37,6 @@ public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
   }
 
   @Override
-  public short getCoalescingKey() {
-    // All events for a given view can be coalesced.
-    return 0;
-  }
-
-  @Override
   protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putDouble("drawerState", getDrawerState());

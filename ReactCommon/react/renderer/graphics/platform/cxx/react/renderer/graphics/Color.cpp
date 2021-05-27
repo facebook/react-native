@@ -10,6 +10,14 @@
 namespace facebook {
 namespace react {
 
+bool isColorMeaningful(SharedColor const &color) noexcept {
+  if (!color) {
+    return false;
+  }
+
+  return colorComponentsFromColor(color).alpha > 0;
+}
+
 SharedColor colorFromComponents(ColorComponents components) {
   float ratio = 255;
   return SharedColor(

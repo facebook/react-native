@@ -96,6 +96,7 @@
   _eventDispatcher = [RCTEventDispatcher new];
   [_eventDispatcher setValue:_bridge forKey:@"bridge"];
   [_eventDispatcher setValue:_callableJSModules forKey:@"callableJSModules"];
+  [_eventDispatcher initialize];
 
   _eventName = RCTNormalizeInputEventName(@"sampleEvent");
   _body = @{ @"foo": @"bar" };

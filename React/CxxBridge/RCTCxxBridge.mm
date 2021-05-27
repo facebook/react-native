@@ -40,7 +40,7 @@
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #ifndef RCT_USE_HERMES
-#if __has_include(<hermes/hermes.h>)
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #define RCT_USE_HERMES 1
 #else
 #define RCT_USE_HERMES 0
@@ -48,7 +48,7 @@
 #endif
 
 #if RCT_USE_HERMES
-#import <reacthermes/HermesExecutorFactory.h">
+#import <reacthermes/HermesExecutorFactory.h>
 #else
 #import "JSCExecutorFactory.h"
 #endif
@@ -194,7 +194,6 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge;
 - (void)partialBatchDidFlush;
 - (void)batchDidComplete;
-- (void)forceGarbageCollection;
 
 @end
 
@@ -381,11 +380,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 - (void)handleMemoryWarning
-{
-  [self forceGarbageCollection];
-}
-
-- (void)forceGarbageCollection
 {
   // We only want to run garbage collector when the loading is finished
   // and the instance is valid.

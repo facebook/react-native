@@ -207,4 +207,27 @@ public abstract class Event<T extends Event> {
     }
     dispatch(rctEventEmitter);
   }
+
+  /**
+   * Dispatch this event to JS using a V2 version of dispatchModern. See all comments from
+   * `dispatchModern` - all still apply. This method additionally allows C++ to coalesce events
+   * (Fabric only). This will ONLY be called in an experimental path, and in Fabric only.
+   */
+  @Deprecated
+  public void dispatchModernV2(RCTModernEventEmitter rctEventEmitter) {
+    if (getSurfaceId() != -1) {
+      WritableMap eventData = getEventData();
+      if (eventData != null) {
+        rctEventEmitter.receiveEvent(
+            getSurfaceId(),
+            getViewTag(),
+            getEventName(),
+            canCoalesce(),
+            getCoalescingKey(),
+            getEventData());
+        return;
+      }
+    }
+    dispatch(rctEventEmitter);
+  }
 }

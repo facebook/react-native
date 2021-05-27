@@ -192,5 +192,22 @@ inline void fromRawValue(
   }
 }
 
+inline void fromRawValue(const RawValue &value, AccessibilityAction &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto name = map.find("name");
+  react_native_assert(name != map.end() && name->second.hasType<std::string>());
+  if (name != map.end()) {
+    fromRawValue(name->second, result.name);
+  }
+
+  auto label = map.find("label");
+  if (label != map.end()) {
+    if (label->second.hasType<std::string>()) {
+      result.label = (std::string)label->second;
+    }
+  }
+}
+
 } // namespace react
 } // namespace facebook

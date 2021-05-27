@@ -72,6 +72,17 @@ void RuntimeScheduler::setEnableYielding(bool enableYielding) {
   enableYielding_ = enableYielding;
 }
 
+void RuntimeScheduler::executeNowOnTheSameThread(
+    std::function<void(jsi::Runtime &runtime)> callback) const {
+  shouldYield_ = true;
+  executeSynchronouslyOnSameThread_CAN_DEADLOCK(
+      runtimeExecutor_,
+      [callback = std::move(callback)](jsi::Runtime &runtime) {
+        callback(runtime);
+      });
+  shouldYield_ = false;
+}
+
 #pragma mark - Private
 
 void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {

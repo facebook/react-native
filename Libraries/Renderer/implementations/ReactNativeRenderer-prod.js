@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactNativeRenderer-prod
  * @preventMunge
- * @generated SignedSource<<c2bd920e65c75725045e8813eeeac57b>>
+ * @generated SignedSource<<8960cfed6037c61be089c6fd4cf802ce>>
  */
 
 "use strict";
@@ -2398,6 +2398,7 @@ function processUpdateQueue(
           }
         }
         null !== pendingQueue.callback &&
+          0 !== pendingQueue.lane &&
           ((workInProgress$jscomp$0.flags |= 64),
           (updateLane = queue.effects),
           null === updateLane
@@ -7984,7 +7985,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_986 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "17.0.3-experimental-b8fda6cab",
+    version: "17.0.3-experimental-2d8d133e1",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8025,7 +8026,7 @@ var internals$jscomp$inline_1243 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "17.0.3-experimental-b8fda6cab"
+  reconcilerVersion: "17.0.3-experimental-2d8d133e1"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1244 = __REACT_DEVTOOLS_GLOBAL_HOOK__;

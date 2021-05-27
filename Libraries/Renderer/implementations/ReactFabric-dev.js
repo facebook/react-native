@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactFabric-dev
  * @preventMunge
- * @generated SignedSource<<0b8cd409f26ccc8dbab26e2f700f6c68>>
+ * @generated SignedSource<<64e2487c0986fc70b80db55f5a1cbb38>>
  */
 
 'use strict';
@@ -5697,7 +5697,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-b8fda6cab";
+var ReactVersion = "17.0.3-2d8d133e1";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -6944,7 +6944,11 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
         );
         var callback = update.callback;
 
-        if (callback !== null) {
+        if (
+          callback !== null && // If the update was already committed, we should not queue its
+          // callback again.
+          update.lane !== NoLane
+        ) {
           workInProgress.flags |= Callback;
           var effects = queue.effects;
 
@@ -21908,13 +21912,19 @@ function sendAccessibilityEvent(handle, eventType) {
   }
 }
 
-function render(element, containerTag, callback) {
+function render(element, containerTag, callback, concurrentRoot) {
   var root = roots.get(containerTag);
 
   if (!root) {
     // TODO (bvaughn): If we decide to keep the wrapper component,
     // We could create a wrapper for containerTag as well to reduce special casing.
-    root = createContainer(containerTag, LegacyRoot, false, null, false);
+    root = createContainer(
+      containerTag,
+      concurrentRoot ? ConcurrentRoot : LegacyRoot,
+      false,
+      null,
+      false
+    );
     roots.set(containerTag, root);
   }
 

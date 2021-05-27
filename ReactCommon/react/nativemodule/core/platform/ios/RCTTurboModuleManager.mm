@@ -18,6 +18,7 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxModule.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
@@ -603,6 +604,13 @@ static Class getFallbackClassFromName(const char *name)
    */
   if (_bridge) {
     [_bridge attachBridgeAPIsToTurboModule:module];
+  }
+
+  /**
+   * If the TurboModule conforms to RCTInitializing, invoke its initialize method.
+   */
+  if ([module respondsToSelector:@selector(initialize)]) {
+    [(id<RCTInitializing>)module initialize];
   }
 
   /**

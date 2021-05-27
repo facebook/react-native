@@ -15,6 +15,7 @@
 
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTInitializing.h"
 #import "RCTLog.h"
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
@@ -52,6 +53,7 @@ BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
   RCTViewRegistry *_viewRegistry_DEPRECATED;
   RCTBundleManager *_bundleManager;
   RCTCallableJSModules *_callableJSModules;
+  BOOL _isInitialized;
 }
 
 @synthesize methods = _methods;
@@ -222,6 +224,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
     }
 
     [self setUpMethodQueue];
+
+    if (shouldSetup) {
+      [self _initializeModule];
+    }
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
@@ -332,6 +338,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
           self.name);
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)_initializeModule
+{
+  if (!_isInitialized && [_instance respondsToSelector:@selector(initialize)]) {
+    _isInitialized = YES;
+    [(id<RCTInitializing>)_instance initialize];
   }
 }
 

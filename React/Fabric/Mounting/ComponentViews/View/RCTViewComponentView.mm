@@ -630,7 +630,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
   for (auto const &accessibilityAction : accessibilityActions) {
     [customActions
-        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
+        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction.name)
                                                              target:self
                                                            selector:@selector(didActivateAccessibilityCustomAction:)]];
   }
