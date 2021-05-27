@@ -82,12 +82,6 @@
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   RCTEnableTurboModule(YES);
-  // uncomment to configure NSURLSession
-  /* RCTSetCustomNSURLSessionConfigurationProvider(^NSURLSessionConfiguration *{
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    // configure the session
-    return configuration;
-  }); */
 
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 
