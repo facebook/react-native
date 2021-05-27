@@ -126,7 +126,7 @@ type OptionalProps<ItemT> = {|
    * Multiple columns can only be rendered with `horizontal={false}` and will zig-zag like a
    * `flexWrap` layout. Items should all be the same height - masonry layouts are not supported.
    */
-  numColumns: number,
+  numColumns?: ?number,
   /**
    * See `ScrollView` for flow type and further documentation.
    */
@@ -383,13 +383,14 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     super(props);
     this._checkProps(this.props);
     if (this.props.viewabilityConfigCallbackPairs) {
-      this._virtualizedListPairs =
-        this.props.viewabilityConfigCallbackPairs.map(pair => ({
+      this._virtualizedListPairs = this.props.viewabilityConfigCallbackPairs.map(
+        pair => ({
           viewabilityConfig: pair.viewabilityConfig,
           onViewableItemsChanged: this._createOnViewableItemsChanged(
             pair.onViewableItemsChanged,
           ),
-        }));
+        }),
+      );
     } else if (this.props.onViewableItemsChanged) {
       this._virtualizedListPairs.push({
         /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
@@ -554,8 +555,12 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   _renderer = () => {
-    const {ListItemComponent, renderItem, numColumns, columnWrapperStyle} =
-      this.props;
+    const {
+      ListItemComponent,
+      renderItem,
+      numColumns,
+      columnWrapperStyle,
+    } = this.props;
 
     let virtualizedListRenderKey = ListItemComponent
       ? 'ListItemComponent'
