@@ -33,7 +33,9 @@ allprojects {
         mavenLocal()
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        maven {
+            url = uri("https://jitpack.io")
+        }
     }
 
     // used to override ndk path on CI
