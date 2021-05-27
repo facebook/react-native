@@ -40,7 +40,6 @@ exports[`<DrawerLayoutAndroid /> should render as expected: should deep render w
           "top": 0,
         },
         Object {
-          "backgroundColor": undefined,
           "width": 300,
         },
       ]
@@ -91,7 +90,6 @@ exports[`<DrawerLayoutAndroid /> should render as expected: should deep render w
           "top": 0,
         },
         Object {
-          "backgroundColor": undefined,
           "width": 300,
         },
       ]

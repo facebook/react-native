@@ -163,7 +163,7 @@ const defaultProps = {
    * The alternative is that scrolling on Android is unusably bad. Enabling it on iOS has a few
    * known issues.
    */
-  removeClippedSubviews: Platform.OS === 'android',
+  // removeClippedSubviews: Platform.OS === 'android',
 };
 export type DefaultProps = typeof defaultProps;
 
