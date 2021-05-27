@@ -13,7 +13,7 @@ plugins {
 
 repositories {
   google()
-  jcenter()
+  mavenCentral()
 }
 
 gradlePlugin {
