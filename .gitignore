@@ -37,6 +37,7 @@ project.xcworkspace
 /ReactAndroid/gradlew.bat
 
 # Buck
+.buckconfig.local
 .buckd
 buck-out
 /.lsp.buckd

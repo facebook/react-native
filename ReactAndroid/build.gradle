@@ -487,11 +487,13 @@ android {
 }
 
 dependencies {
+    def appcompat_version = "1.3.0"
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
     api("com.facebook.yoga:proguard-annotations:1.17.0")
     api("javax.inject:javax.inject:1")
-    api("androidx.appcompat:appcompat:1.0.2")
-    api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+    api("androidx.appcompat:appcompat:$appcompat_version")
+    api("androidx.appcompat:appcompat-resources:$appcompat_version")
+    api("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
