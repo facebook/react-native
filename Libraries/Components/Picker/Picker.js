@@ -166,10 +166,6 @@ class Picker extends React.Component<PickerProps> {
 
   static Item: typeof PickerItem = PickerItem;
 
-  static defaultProps: {|mode: $TEMPORARY$string<'dialog'>|} = {
-    mode: MODE_DIALOG,
-  };
-
   render(): React.Node {
     if (Platform.OS === 'ios') {
       /* $FlowFixMe[prop-missing] (>=0.81.0 site=react_native_ios_fb) This

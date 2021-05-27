@@ -76,11 +76,6 @@ type Props = $ReadOnly<{|
  */
 
 class SegmentedControlIOS extends React.Component<Props> {
-  static defaultProps = {
-    values: [],
-    enabled: true,
-  };
-
   _onChange = (event: SyntheticEvent<OnChangeEvent>) => {
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange &&
