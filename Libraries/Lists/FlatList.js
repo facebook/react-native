@@ -126,7 +126,7 @@ type OptionalProps<ItemT> = {|
    * Multiple columns can only be rendered with `horizontal={false}` and will zig-zag like a
    * `flexWrap` layout. Items should all be the same height - masonry layouts are not supported.
    */
-  numColumns?: ?number,
+  numColumns: number,
   /**
    * See `ScrollView` for flow type and further documentation.
    */
@@ -155,6 +155,17 @@ export type Props<ItemT> = {
   ...FlatListProps<ItemT>,
   ...
 };
+
+const defaultProps = {
+  numColumns: 1,
+  /**
+   * Enabling this prop on Android greatly improves scrolling performance with no known issues.
+   * The alternative is that scrolling on Android is unusably bad. Enabling it on iOS has a few
+   * known issues.
+   */
+  removeClippedSubviews: Platform.OS === 'android',
+};
+export type DefaultProps = typeof defaultProps;
 
 /**
  * A performant interface for rendering simple, flat lists, supporting the most handy features:
