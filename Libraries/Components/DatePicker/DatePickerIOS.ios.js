@@ -117,10 +117,6 @@ type Props = $ReadOnly<{|
  * source of truth.
  */
 class DatePickerIOS extends React.Component<Props> {
-  static DefaultProps: {|mode: $TEMPORARY$string<'datetime'>|} = {
-    mode: 'datetime',
-  };
-
   _picker: ?React.ElementRef<typeof RCTDatePickerNativeComponent> = null;
 
   componentDidUpdate() {
