@@ -146,7 +146,9 @@
   BOOL pauseDisplayLink = YES;
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
     id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
-    if (!observer.paused) {
+    BOOL validObserverProtocol = [observer conformsToProtocol:@protocol(RCTFrameUpdateObserver)]; // [TODO: GH#774- add protocol check before accessing data
+    RCTAssert(validObserverProtocol, @"Observer does not conform to necessary protocol (RCTFrameUpdateObserver)");
+    if (validObserverProtocol && !observer.paused) { // TODO: GH#774- add protocol check before accessing data]
       pauseDisplayLink = NO;
       break;
     }
