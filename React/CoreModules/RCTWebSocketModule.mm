@@ -66,37 +66,40 @@ RCT_EXPORT_METHOD(connect
                   : (JS::NativeWebSocketModule::SpecConnectOptions &)options socketID
                   : (double)socketID)
 {
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+  RCTAssertParam(URL); // TODO: GH#774, prevent crashes when URL is erroneously nil
+  if (URL != nil) { // TODO: GH#774, prevent crashes when URL is erroneously nil
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
 
-  // We load cookies from sharedHTTPCookieStorage (shared with XHR and
-  // fetch). To get secure cookies for wss URLs, replace wss with https
-  // in the URL.
-  NSURLComponents *components = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:true];
-  if ([components.scheme.lowercaseString isEqualToString:@"wss"]) {
-    components.scheme = @"https";
-  }
+    // We load cookies from sharedHTTPCookieStorage (shared with XHR and
+    // fetch). To get secure cookies for wss URLs, replace wss with https
+    // in the URL.
+    NSURLComponents *components = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:true];
+    if ([components.scheme.lowercaseString isEqualToString:@"wss"]) {
+      components.scheme = @"https";
+    }
 
-  // Load and set the cookie header.
-  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
-  request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+    // Load and set the cookie header.
+    NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
+    request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
 
-  // Load supplied headers
-  if ([options.headers() isKindOfClass:NSDictionary.class]) {
-    NSDictionary *headers = (NSDictionary *)options.headers();
-    [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
-      [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
-    }];
-  }
+    // Load supplied headers
+    if ([options.headers() isKindOfClass:NSDictionary.class]) {
+      NSDictionary *headers = (NSDictionary *)options.headers();
+      [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+        [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+      }];
+    }
 
-  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
-  [webSocket setDelegateDispatchQueue:[self methodQueue]];
-  webSocket.delegate = self;
-  webSocket.reactTag = @(socketID);
-  if (!_sockets) {
-    _sockets = [NSMutableDictionary new];
-  }
-  _sockets[@(socketID)] = webSocket;
-  [webSocket open];
+    RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+    [webSocket setDelegateDispatchQueue:[self methodQueue]];
+    webSocket.delegate = self;
+    webSocket.reactTag = @(socketID);
+    if (!_sockets) {
+      _sockets = [NSMutableDictionary new];
+    }
+    _sockets[@(socketID)] = webSocket;
+    [webSocket open];
+  } // TODO: GH#774, prevent crashes when URL is erroneously nil
 }
 
 RCT_EXPORT_METHOD(send : (NSString *)message forSocketID : (double)socketID)
