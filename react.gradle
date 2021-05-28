@@ -7,7 +7,7 @@
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
-def config = project.hasProperty("react") ? project.react : [:];
+def config = project.hasProperty("react") ? project.react : [:]
 
 def detectEntryFile(config) {
     if (System.getenv('ENTRY_FILE')) {
@@ -18,7 +18,7 @@ def detectEntryFile(config) {
         return "index.android.js"
     }
 
-    return "index.js";
+    return "index.js"
 }
 
 /**
@@ -37,7 +37,7 @@ def detectCliPath(config) {
         return "${projectDir}/../../node_modules/react-native/cli.js"
     } else {
         throw new Exception("Couldn't determine CLI location. " +
-            "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
+            "Please set `project.ext.react.cliPath` to the path of the react-native cli.js")
     }
 }
 
@@ -45,11 +45,11 @@ def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = detectEntryFile(config)
 def bundleCommand = config.bundleCommand ?: "bundle"
-def reactRoot = file(config.root ?: "../../")
+def reactRoot = file(config.root ?: "${projectDir}/../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
-def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
+def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null
 def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
-def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermesc"
+def hermesCommand = config.hermesCommand ?: "${projectDir}/../../node_modules/hermes-engine/%OS-BIN%/hermesc"
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
