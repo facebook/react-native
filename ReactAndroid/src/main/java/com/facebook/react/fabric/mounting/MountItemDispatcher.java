@@ -282,10 +282,15 @@ public class MountItemDispatcher {
         }
 
         PreAllocateViewMountItem preMountItemToDispatch = mPreMountItems.poll();
-
         // If list is empty, `poll` will return null, or var will never be set
         if (preMountItemToDispatch == null) {
           break;
+        }
+
+        if (ENABLE_FABRIC_LOGS) {
+          printMountItem(
+              preMountItemToDispatch,
+              "dispatchPreMountItems: Dispatching PreAllocateViewMountItem");
         }
 
         executeOrEnqueue(preMountItemToDispatch);
@@ -299,6 +304,12 @@ public class MountItemDispatcher {
 
   private void executeOrEnqueue(MountItem item) {
     if (mMountingManager.isWaitingForViewAttach(item.getSurfaceId())) {
+      if (ENABLE_FABRIC_LOGS) {
+        FLog.e(
+            TAG,
+            "executeOrEnqueue: Item execution delayed, surface %s is not ready yet",
+            item.getSurfaceId());
+      }
       SurfaceMountingManager surfaceMountingManager =
           mMountingManager.getSurfaceManager(item.getSurfaceId());
       surfaceMountingManager.executeOnViewAttach(item);

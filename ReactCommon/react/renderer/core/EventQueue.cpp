@@ -14,11 +14,9 @@ namespace facebook {
 namespace react {
 
 EventQueue::EventQueue(
-    EventPipe eventPipe,
-    StatePipe statePipe,
+    EventQueueProcessor eventProcessor,
     std::unique_ptr<EventBeat> eventBeat)
-    : eventPipe_(std::move(eventPipe)),
-      statePipe_(std::move(statePipe)),
+    : eventProcessor_(std::move(eventProcessor)),
       eventBeat_(std::move(eventBeat)) {
   eventBeat_->setBeatCallback(
       std::bind(&EventQueue::onBeat, this, std::placeholders::_1));
@@ -79,8 +77,8 @@ void EventQueue::enqueueStateUpdate(StateUpdate &&stateUpdate) const {
 }
 
 void EventQueue::onBeat(jsi::Runtime &runtime) const {
-  flushEvents(runtime);
   flushStateUpdates();
+  flushEvents(runtime);
 }
 
 void EventQueue::flushEvents(jsi::Runtime &runtime) const {
@@ -97,30 +95,7 @@ void EventQueue::flushEvents(jsi::Runtime &runtime) const {
     eventQueue_.clear();
   }
 
-  {
-    std::lock_guard<std::mutex> lock(EventEmitter::DispatchMutex());
-
-    for (const auto &event : queue) {
-      if (event.eventTarget) {
-        event.eventTarget->retain(runtime);
-      }
-    }
-  }
-
-  for (const auto &event : queue) {
-    eventPipe_(
-        runtime, event.eventTarget.get(), event.type, event.payloadFactory);
-  }
-
-  // No need to lock `EventEmitter::DispatchMutex()` here.
-  // The mutex protects from a situation when the `instanceHandle` can be
-  // deallocated during accessing, but that's impossible at this point because
-  // we have a strong pointer to it.
-  for (const auto &event : queue) {
-    if (event.eventTarget) {
-      event.eventTarget->release(runtime);
-    }
-  }
+  eventProcessor_.flushEvents(runtime, std::move(queue));
 }
 
 void EventQueue::flushStateUpdates() const {
@@ -137,9 +112,7 @@ void EventQueue::flushStateUpdates() const {
     stateUpdateQueue_.clear();
   }
 
-  for (const auto &stateUpdate : stateUpdateQueue) {
-    statePipe_(stateUpdate);
-  }
+  eventProcessor_.flushStateUpdates(std::move(stateUpdateQueue));
 }
 
 } // namespace react

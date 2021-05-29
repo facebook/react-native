@@ -25,6 +25,16 @@ class RuntimeScheduler final {
 
   void scheduleWork(std::function<void(jsi::Runtime &)> callback) const;
 
+  /*
+   * Grants access to the runtime synchronously on the caller's thread.
+   *
+   * Shouldn't be called directly. it is expected to be used
+   * by dispatching a synchronous event via event emitter in your native
+   * component.
+   */
+  void executeNowOnTheSameThread(
+      std::function<void(jsi::Runtime &runtime)> callback) const;
+
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       jsi::Function callback);
@@ -45,6 +55,7 @@ class RuntimeScheduler final {
       std::vector<std::shared_ptr<Task>>,
       TaskPriorityComparer>
       taskQueue_;
+
   RuntimeExecutor const runtimeExecutor_;
   mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
   mutable std::atomic_bool shouldYield_{false};

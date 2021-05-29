@@ -18,6 +18,11 @@ import UnimplementedView from '../UnimplementedViews/UnimplementedView';
 
 import type {TextStyleProp, ColorValue} from '../../StyleSheet/StyleSheet';
 
+import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+} from '../View/ViewAccessibility';
+
 const MODE_DIALOG = 'dialog';
 const MODE_DROPDOWN = 'dropdown';
 
@@ -115,6 +120,27 @@ type PickerProps = $ReadOnly<{|
    * The string used for the accessibility label. Will be read once focused on the picker but not on change.
    */
   accessibilityLabel?: ?string,
+
+  /**
+   * When `true`, indicates that the view is an accessibility element.
+   * By default, all the touchable elements are accessible.
+   *
+   * See https://reactnative.dev/docs/view.html#accessible
+   */
+  accessible?: ?boolean,
+
+  /**
+   * Provides an array of custom actions available for accessibility.
+   *
+   */
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+
+  /**
+   * When `accessible` is true, the system will try to invoke this function
+   * when the user performs an accessibility custom action.
+   *
+   */
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
 |}>;
 
 /**

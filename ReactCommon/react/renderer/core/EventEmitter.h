@@ -71,7 +71,8 @@ class EventEmitter {
       const std::string &type,
       const ValueFactory &payloadFactory =
           EventEmitter::defaultPayloadFactory(),
-      EventPriority priority = EventPriority::AsynchronousBatched) const;
+      EventPriority priority = EventPriority::AsynchronousBatched,
+      RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchEvent(
       const std::string &type,

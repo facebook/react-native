@@ -41,6 +41,21 @@ void RCTExperimentSetSendScrollEventToPaper(BOOL value)
 }
 
 /*
+ * Enable fix for data race between state and scroll event.
+ */
+static BOOL RCTExperimentScrollViewEventRaceFix = NO;
+
+BOOL RCTExperimentGetScrollViewEventRaceFix()
+{
+  return RCTExperimentScrollViewEventRaceFix;
+}
+
+void RCTExperimentSetScrollViewEventRaceFix(BOOL value)
+{
+  RCTExperimentScrollViewEventRaceFix = value;
+}
+
+/*
  * Preemptive View Allocation
  */
 static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
