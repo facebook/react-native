@@ -272,6 +272,7 @@ function SectionListExample(Props: {...}): React.Element<typeof RNTesterPage> {
         ItemSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
         )}
+        accessibilityRole="list"
         debug={debug}
         inverted={inverted}
         disableVirtualization={!virtualized}
