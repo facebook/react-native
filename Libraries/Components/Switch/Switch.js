@@ -12,6 +12,7 @@
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
+import setAndForwardRef from '../../Utilities/setAndForwardRef';
 
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,
@@ -129,7 +130,13 @@ const returnsTrue = () => true;
   export default App;
   ```
  */
-export default function Switch(props: Props): React.Node {
+
+const SwitchWithForwardedRef: React.AbstractComponent<
+  Props,
+  React.ElementRef<
+    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
+  >,
+> = React.forwardRef(function Switch(props, forwardedRef): React.Node {
   const {
     disabled,
     ios_backgroundColor,
@@ -147,6 +154,13 @@ export default function Switch(props: Props): React.Node {
   const nativeSwitchRef = React.useRef<?React.ElementRef<
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
   >>(null);
+  const _setNativeRef = setAndForwardRef({
+    getForwardedRef: () => forwardedRef,
+    setLocalRef: ref => {
+      nativeSwitchRef.current = ref;
+    },
+  });
+
   const [native, setNative] = React.useState({value: null});
 
   const handleChange = (event: SwitchChangeEvent) => {
@@ -192,7 +206,7 @@ export default function Switch(props: Props): React.Node {
         onChange={handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}
-        ref={nativeSwitchRef}
+        ref={_setNativeRef}
       />
     );
   } else {
@@ -224,8 +238,10 @@ export default function Switch(props: Props): React.Node {
         onChange={handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}
-        ref={nativeSwitchRef}
+        ref={_setNativeRef}
       />
     );
   }
-}
+});
+
+export default SwitchWithForwardedRef;
