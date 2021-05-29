@@ -383,7 +383,7 @@ class StatusBar extends React.Component<Props> {
     StatusBar._updatePropsStack();
     return newEntry;
   }
-  
+
   _stackEntry = null;
 
   componentDidMount() {
