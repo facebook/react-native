@@ -27,6 +27,7 @@ export type RippleConfig = {|
   color?: ColorValue,
   borderless?: boolean,
   radius?: number,
+  useForeground?: boolean,
 |};
 
 /**
@@ -44,7 +45,7 @@ export default function useAndroidRippleForView(
     nativeBackgroundAndroid: NativeBackgroundProp,
   |}>,
 |}> {
-  const {color, borderless, radius} = rippleConfig ?? {};
+  const {color, borderless, radius, useForeground} = rippleConfig ?? {};
 
   return useMemo(() => {
     if (
@@ -58,10 +59,13 @@ export default function useAndroidRippleForView(
         'Unexpected color given for Ripple color',
       );
 
+      const backgroundPropKey = useForeground
+        ? 'nativeForegroundAndroid'
+        : 'nativeBackgroundAndroid';
+
       return {
         viewProps: {
-          // Consider supporting `nativeForegroundAndroid`
-          nativeBackgroundAndroid: {
+          [backgroundPropKey]: {
             type: 'RippleAndroid',
             color: processedColor,
             borderless: borderless === true,

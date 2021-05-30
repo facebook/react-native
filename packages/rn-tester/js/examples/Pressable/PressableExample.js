@@ -16,6 +16,7 @@ import {
   Text,
   Platform,
   View,
+  Image,
 } from 'react-native';
 
 const {useEffect, useRef, useState} = React;
@@ -385,6 +386,11 @@ exports.examples = [
         textAlign: 'center',
         margin: 10,
       };
+      const imageDimension = {
+        height: 100,
+        width: 100,
+      };
+
       return (
         <View>
           <View
@@ -425,6 +431,22 @@ exports.examples = [
               </Text>
             </View>
           </Pressable>
+          <View style={{alignItems: 'center'}}>
+            <Pressable
+              android_ripple={{
+                borderless: false,
+                useForeground: true,
+              }}
+              style={imageDimension}>
+              <Image
+                source={{
+                  uri: 'https://www.facebook.com/ads/pics/successstories.png',
+                }}
+                style={imageDimension}
+              />
+            </Pressable>
+            <Text>use foreground</Text>
+          </View>
         </View>
       );
     },
