@@ -307,6 +307,8 @@ afterEvaluate {
 
             // mergeAssets must run first, as it clears the intermediates directory
             dependsOn(variant.mergeAssetsProvider.get())
+            // currentBundleTask must run before currentAssetsCopyTask (fix copying index.android.bundle to intermediates assets dir with Android plugin 4.1+)
+            dependsOn(currentBundleTask)
 
             enabled(currentBundleTask.enabled)
         }
