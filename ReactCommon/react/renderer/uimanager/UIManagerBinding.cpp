@@ -215,6 +215,7 @@ void UIManagerBinding::dispatchEvent(
     jsi::Runtime &runtime,
     EventTarget const *eventTarget,
     std::string const &type,
+    ReactEventPriority priority,
     ValueFactory const &payloadFactory) const {
   SystraceSection s("UIManagerBinding::dispatchEvent");
 
@@ -245,11 +246,13 @@ void UIManagerBinding::dispatchEvent(
   auto &eventHandlerWrapper =
       static_cast<EventHandlerWrapper const &>(*eventHandler_);
 
+  currentEventPriority_ = priority;
   eventHandlerWrapper.callback.call(
       runtime,
       {std::move(instanceHandle),
        jsi::String::createFromUtf8(runtime, type),
        std::move(payload)});
+  currentEventPriority_ = ReactEventPriority::Default;
 }
 
 void UIManagerBinding::invalidate() const {
@@ -772,6 +775,28 @@ jsi::Value UIManagerBinding::get(
               arguments[2]);
           return jsi::Value::undefined();
         });
+  }
+
+  if (methodName == "unstable_getCurrentEventPriority") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [this](
+            jsi::Runtime &,
+            jsi::Value const &,
+            jsi::Value const *,
+            size_t) noexcept -> jsi::Value {
+          return jsi::Value(serialize(currentEventPriority_));
+        });
+  }
+
+  if (methodName == "unstable_DefaultEventPriority") {
+    return jsi::Value(serialize(ReactEventPriority::Default));
+  }
+
+  if (methodName == "unstable_DiscreteEventPriority") {
+    return jsi::Value(serialize(ReactEventPriority::Discrete));
   }
 
   return jsi::Value::undefined();

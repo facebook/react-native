@@ -82,6 +82,7 @@ class UIManagerBinding : public jsi::HostObject {
       jsi::Runtime &runtime,
       EventTarget const *eventTarget,
       std::string const &type,
+      ReactEventPriority priority,
       ValueFactory const &payloadFactory) const;
 
   /*
@@ -101,6 +102,7 @@ class UIManagerBinding : public jsi::HostObject {
  private:
   std::shared_ptr<UIManager> uiManager_;
   std::unique_ptr<EventHandler const> eventHandler_;
+  mutable ReactEventPriority currentEventPriority_;
 };
 
 } // namespace facebook::react

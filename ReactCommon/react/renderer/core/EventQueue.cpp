@@ -14,11 +14,9 @@ namespace facebook {
 namespace react {
 
 EventQueue::EventQueue(
-    EventPipe eventPipe,
-    StatePipe statePipe,
+    EventQueueProcessor eventProcessor,
     std::unique_ptr<EventBeat> eventBeat)
-    : eventPipe_(std::move(eventPipe)),
-      statePipe_(std::move(statePipe)),
+    : eventProcessor_(std::move(eventProcessor)),
       eventBeat_(std::move(eventBeat)) {
   eventBeat_->setBeatCallback(
       std::bind(&EventQueue::onBeat, this, std::placeholders::_1));
@@ -28,6 +26,36 @@ void EventQueue::enqueueEvent(RawEvent &&rawEvent) const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
     eventQueue_.push_back(std::move(rawEvent));
+  }
+
+  onEnqueue();
+}
+
+void EventQueue::enqueueUniqueEvent(RawEvent &&rawEvent) const {
+  {
+    std::lock_guard<std::mutex> lock(queueMutex_);
+
+    auto repeatedEvent = eventQueue_.rend();
+
+    for (auto it = eventQueue_.rbegin(); it != eventQueue_.rend(); ++it) {
+      if (it->type == rawEvent.type &&
+          it->eventTarget == rawEvent.eventTarget) {
+        repeatedEvent = it;
+        break;
+      } else if (it->eventTarget == rawEvent.eventTarget) {
+        // It is necessary to maintain order of different event types
+        // for the same target. If the same target has event types A1, B1
+        // in the event queue and event A2 occurs. A1 has to stay in the
+        // queue.
+        break;
+      }
+    }
+
+    if (repeatedEvent == eventQueue_.rend()) {
+      eventQueue_.push_back(std::move(rawEvent));
+    } else {
+      *repeatedEvent = std::move(rawEvent);
+    }
   }
 
   onEnqueue();
@@ -49,8 +77,8 @@ void EventQueue::enqueueStateUpdate(StateUpdate &&stateUpdate) const {
 }
 
 void EventQueue::onBeat(jsi::Runtime &runtime) const {
-  flushEvents(runtime);
   flushStateUpdates();
+  flushEvents(runtime);
 }
 
 void EventQueue::flushEvents(jsi::Runtime &runtime) const {
@@ -67,30 +95,7 @@ void EventQueue::flushEvents(jsi::Runtime &runtime) const {
     eventQueue_.clear();
   }
 
-  {
-    std::lock_guard<std::mutex> lock(EventEmitter::DispatchMutex());
-
-    for (const auto &event : queue) {
-      if (event.eventTarget) {
-        event.eventTarget->retain(runtime);
-      }
-    }
-  }
-
-  for (const auto &event : queue) {
-    eventPipe_(
-        runtime, event.eventTarget.get(), event.type, event.payloadFactory);
-  }
-
-  // No need to lock `EventEmitter::DispatchMutex()` here.
-  // The mutex protects from a situation when the `instanceHandle` can be
-  // deallocated during accessing, but that's impossible at this point because
-  // we have a strong pointer to it.
-  for (const auto &event : queue) {
-    if (event.eventTarget) {
-      event.eventTarget->release(runtime);
-    }
-  }
+  eventProcessor_.flushEvents(runtime, std::move(queue));
 }
 
 void EventQueue::flushStateUpdates() const {
@@ -107,9 +112,7 @@ void EventQueue::flushStateUpdates() const {
     stateUpdateQueue_.clear();
   }
 
-  for (const auto &stateUpdate : stateUpdateQueue) {
-    statePipe_(stateUpdate);
-  }
+  eventProcessor_.flushStateUpdates(std::move(stateUpdateQueue));
 }
 
 } // namespace react
