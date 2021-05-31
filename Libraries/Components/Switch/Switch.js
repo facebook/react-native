@@ -150,9 +150,9 @@ const SwitchWithForwardedRef: React.AbstractComponent<
   const trackColorForFalse = trackColor?.false;
   const trackColorForTrue = trackColor?.true;
 
-  const nativeSwitchRef = React.useRef<?React.ElementRef<
+  const nativeSwitchRef = React.useRef<React.ElementRef<
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-  >>(null);
+  > | null>(null);
   React.useImperativeHandle(forwardedRef, () => nativeSwitchRef.current);
 
   const [native, setNative] = React.useState({value: null});
