@@ -119,6 +119,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'ScrollViewIndicatorInsetsExample',
+    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
+  },
+  {
     key: 'SectionList-inverted',
     module: require('../examples/SectionList/SectionList-inverted'),
     category: 'ListView',
