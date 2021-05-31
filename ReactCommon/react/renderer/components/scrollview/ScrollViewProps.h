@@ -28,6 +28,7 @@ class ScrollViewProps final : public ViewProps {
   bool canCancelContentTouches{true};
   bool centerContent{};
   bool automaticallyAdjustContentInsets{};
+  bool automaticallyAdjustsScrollIndicatorInsets{true};
   Float decelerationRate{0.998f};
   bool directionalLockEnabled{};
   ScrollViewIndicatorStyle indicatorStyle{};
