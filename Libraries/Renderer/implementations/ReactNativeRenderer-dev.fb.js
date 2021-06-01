@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<8033e694383dc0dfd8e2862436d6a7f5>>
+ * @generated SignedSource<<2d7090219901967e7d2d5c87aacfd377>>
  */
 
 'use strict';
@@ -6100,7 +6100,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-b8fda6cab";
+var ReactVersion = "17.0.3-2d8d133e1";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -7367,7 +7367,11 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
         );
         var callback = update.callback;
 
-        if (callback !== null) {
+        if (
+          callback !== null && // If the update was already committed, we should not queue its
+          // callback again.
+          update.lane !== NoLane
+        ) {
           workInProgress.flags |= Callback;
           var effects = queue.effects;
 
@@ -21754,7 +21758,12 @@ function createHostRootFiber(
       }
     }
 
-    {
+    if (
+      // We only use this flag for our repo tests to check both behaviors.
+      // TODO: Flip this flag and rename it something like "forceConcurrentByDefaultForTesting"
+      // Only for internal experiments.
+      concurrentUpdatesByDefaultOverride
+    ) {
       mode |= ConcurrentUpdatesByDefaultMode;
     }
   } else {
@@ -22106,7 +22115,11 @@ function createFiberRoot(
   var root = new FiberRootNode(containerInfo, tag, hydrate);
   // stateNode is any.
 
-  var uninitializedFiber = createHostRootFiber(tag, isStrictMode);
+  var uninitializedFiber = createHostRootFiber(
+    tag,
+    isStrictMode,
+    concurrentUpdatesByDefaultOverride
+  );
   root.current = uninitializedFiber;
   uninitializedFiber.stateNode = root;
 
@@ -22252,7 +22265,8 @@ function createContainer(
     tag,
     hydrate,
     hydrationCallbacks,
-    isStrictMode
+    isStrictMode,
+    concurrentUpdatesByDefaultOverride
   );
 }
 function updateContainer(element, container, parentComponent, callback) {
@@ -23009,7 +23023,7 @@ function render(element, containerTag, callback) {
   if (!root) {
     // TODO (bvaughn): If we decide to keep the wrapper component,
     // We could create a wrapper for containerTag as well to reduce special casing.
-    root = createContainer(containerTag, LegacyRoot, false, null, false);
+    root = createContainer(containerTag, LegacyRoot, false, null, false, null);
     roots.set(containerTag, root);
   }
 

@@ -46,9 +46,8 @@ static uint16_t RCTUniqueCoalescingKeyGenerator = 0;
 
 RCT_EXPORT_MODULE()
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)initialize
 {
-  _bridge = bridge;
   _events = [NSMutableDictionary new];
   _eventQueue = [NSMutableArray new];
   _eventQueueLock = [NSLock new];

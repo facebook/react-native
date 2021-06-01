@@ -44,12 +44,6 @@ public class ReactFeatureFlags {
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
-  /**
-   * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
-   * remove this when bug is fixed
-   */
-  public static boolean enableTransitionLayoutOnlyViewCleanup = false;
-
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
@@ -96,6 +90,8 @@ public class ReactFeatureFlags {
 
   /** Enables Fabric for LogBox */
   public static boolean enableFabricInLogBox = false;
+
+  public static boolean enableLockFreeEventDispatcher = false;
 
   //
   // ScrollView C++ UpdateState vs onScroll race fixes

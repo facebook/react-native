@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactFabric-prod
  * @preventMunge
- * @generated SignedSource<<13b77909c1b0f4c0d620f64b4cb52c31>>
+ * @generated SignedSource<<ae6fe527bd96e6ad3ea1d713d5b1d2d6>>
  */
 
 "use strict";
@@ -2375,6 +2375,7 @@ function processUpdateQueue(
           }
         }
         null !== pendingQueue.callback &&
+          0 !== pendingQueue.lane &&
           ((workInProgress$jscomp$0.flags |= 64),
           (updateLane = queue.effects),
           null === updateLane
@@ -7766,7 +7767,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_942 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "17.0.3-experimental-b8fda6cab",
+    version: "17.0.3-experimental-2d8d133e1",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -7807,7 +7808,7 @@ var internals$jscomp$inline_1180 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "17.0.3-experimental-b8fda6cab"
+  reconcilerVersion: "17.0.3-experimental-2d8d133e1"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1181 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
@@ -7857,17 +7858,18 @@ exports.findHostInstance_DEPRECATED = function(componentOrHandle) {
     : componentOrHandle;
 };
 exports.findNodeHandle = findNodeHandle;
-exports.render = function(element, containerTag, callback) {
+exports.render = function(element, containerTag, callback, concurrentRoot) {
   var root = roots.get(containerTag);
-  if (!root) {
-    root = new FiberRootNode(containerTag, 0, !1);
-    var JSCompiler_inline_result = createFiber(3, null, null, 0);
-    root.current = JSCompiler_inline_result;
-    JSCompiler_inline_result.stateNode = root;
-    JSCompiler_inline_result.memoizedState = { element: null };
-    initializeUpdateQueue(JSCompiler_inline_result);
-    roots.set(containerTag, root);
-  }
+  root ||
+    ((root = concurrentRoot ? 1 : 0),
+    (concurrentRoot = new FiberRootNode(containerTag, root, !1)),
+    (root = createFiber(3, null, null, 1 === root ? 1 : 0)),
+    (concurrentRoot.current = root),
+    (root.stateNode = concurrentRoot),
+    (root.memoizedState = { element: null }),
+    initializeUpdateQueue(root),
+    (root = concurrentRoot),
+    roots.set(containerTag, root));
   updateContainer(element, root, null, callback);
   a: if (((element = root.current), element.child))
     switch (element.child.tag) {

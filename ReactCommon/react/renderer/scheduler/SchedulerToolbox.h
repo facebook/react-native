@@ -69,12 +69,6 @@ struct SchedulerToolbox final {
   BackgroundExecutor backgroundExecutor;
 
   /*
-   * Triggers garbage collection. Used when checking if all Fabric's HostObjects
-   * have been properly cleaned up from JavaScript.
-   */
-  GarbageCollectionTrigger garbageCollectionTrigger;
-
-  /*
    * A list of `UIManagerCommitHook`s that should be registered in `UIManager`.
    */
   std::vector<std::shared_ptr<UIManagerCommitHook const>> commitHooks;

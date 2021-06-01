@@ -18,25 +18,21 @@
 
 namespace facebook::react {
 
-static std::unique_ptr<LeakChecker> constructLeakChecker(
-    RuntimeExecutor const &runtimeExecutor,
-    GarbageCollectionTrigger const &garbageCollectionTrigger) {
-  if (garbageCollectionTrigger) {
-    return std::make_unique<LeakChecker>(
-        runtimeExecutor, garbageCollectionTrigger);
-  } else {
-    return {};
-  }
+static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
+    RuntimeExecutor const &runtimeExecutor) {
+#ifdef REACT_NATIVE_DEBUG
+  return std::make_unique<LeakChecker>(runtimeExecutor);
+#else
+  return {};
+#endif
 }
 
 UIManager::UIManager(
     RuntimeExecutor const &runtimeExecutor,
-    BackgroundExecutor const &backgroundExecutor,
-    GarbageCollectionTrigger const &garbageCollectionTrigger)
+    BackgroundExecutor const &backgroundExecutor)
     : runtimeExecutor_(runtimeExecutor),
       backgroundExecutor_(backgroundExecutor),
-      leakChecker_(
-          constructLeakChecker(runtimeExecutor, garbageCollectionTrigger)) {}
+      leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
 
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this

@@ -31,11 +31,6 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
   public static final String REACT_CLASS = "RCTImageView";
 
-  @Override
-  public String getName() {
-    return REACT_CLASS;
-  }
-
   private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
   private final @Nullable Object mCallerContext;
@@ -111,6 +106,11 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
             : getCallerContext();
     return new ReactImageView(
         context, getDraweeControllerBuilder(), mGlobalImageLoadListener, callerContext);
+  }
+
+  @Override
+  public String getName() {
+    return REACT_CLASS;
   }
 
   @ReactProp(name = "accessible")

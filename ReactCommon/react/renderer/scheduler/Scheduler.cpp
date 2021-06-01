@@ -13,6 +13,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/Constants.h>
+#include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
@@ -45,9 +46,7 @@ Scheduler::Scheduler(
       std::make_shared<better::optional<EventDispatcher const>>();
 
   auto uiManager = std::make_shared<UIManager>(
-      runtimeExecutor_,
-      schedulerToolbox.backgroundExecutor,
-      schedulerToolbox.garbageCollectionTrigger);
+      runtimeExecutor_, schedulerToolbox.backgroundExecutor);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -55,11 +54,12 @@ Scheduler::Scheduler(
                        jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
                        const std::string &type,
+                       ReactEventPriority priority,
                        const ValueFactory &payloadFactory) {
     uiManager->visitBinding(
         [&](UIManagerBinding const &uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
-              runtime, eventTarget, type, payloadFactory);
+              runtime, eventTarget, type, priority, payloadFactory);
         },
         runtime);
   };
@@ -68,14 +68,22 @@ Scheduler::Scheduler(
     uiManager->updateState(stateUpdate);
   };
 
+#ifdef ANDROID
+  auto unbatchedQueuesOnly =
+      reactNativeConfig_->getBool("react_fabric:unbatched_queues_only_android");
+#else
+  auto unbatchedQueuesOnly =
+      reactNativeConfig_->getBool("react_fabric:unbatched_queues_only_ios");
+#endif
+
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
-      eventPipe,
-      statePipe,
+      EventQueueProcessor(eventPipe, statePipe),
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox);
+      eventOwnerBox,
+      unbatchedQueuesOnly);
 
   // Casting to `std::shared_ptr<EventDispatcher const>`.
   auto eventDispatcher =

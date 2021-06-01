@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactNativeRenderer-dev
  * @preventMunge
- * @generated SignedSource<<b6540a3b671ae373f1722d7ea8f20722>>
+ * @generated SignedSource<<6bb77061f5834486ffcc964f4e8c0fcf>>
  */
 
 'use strict';
@@ -5985,7 +5985,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-experimental-b8fda6cab";
+var ReactVersion = "17.0.3-experimental-2d8d133e1";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -7232,7 +7232,11 @@ function processUpdateQueue(workInProgress, props, instance, renderLanes) {
         );
         var callback = update.callback;
 
-        if (callback !== null) {
+        if (
+          callback !== null && // If the update was already committed, we should not queue its
+          // callback again.
+          update.lane !== NoLane
+        ) {
           workInProgress.flags |= Callback;
           var effects = queue.effects;
 

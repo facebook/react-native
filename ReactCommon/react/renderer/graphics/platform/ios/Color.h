@@ -20,6 +20,7 @@ using Color = int32_t;
 
 using SharedColor = better::optional<Color>;
 
+bool isColorMeaningful(SharedColor const &color) noexcept;
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
 
