@@ -34,6 +34,7 @@ class PromptOptions extends React.Component<Props, State> {
 
     /* $FlowFixMe[cannot-write] this seems to be a Flow bug, `saveResponse` is
      * defined below */
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this.saveResponse = this.saveResponse.bind(this);
 
     this.customButtons = [
@@ -62,6 +63,7 @@ class PromptOptions extends React.Component<Props, State> {
 
         <TouchableHighlight
           style={styles.wrapper}
+          // $FlowFixMe[method-unbinding] added when improving typing for this parameters
           onPress={() => Alert.prompt('Type a value', null, this.saveResponse)}>
           <View style={styles.button}>
             <Text>prompt with title & callback</Text>
@@ -101,6 +103,7 @@ class PromptOptions extends React.Component<Props, State> {
             Alert.prompt(
               'Type a value',
               null,
+              // $FlowFixMe[method-unbinding] added when improving typing for this parameters
               this.saveResponse,
               undefined,
               'Default value',

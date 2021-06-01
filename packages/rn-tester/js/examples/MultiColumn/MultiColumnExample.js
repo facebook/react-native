@@ -107,6 +107,7 @@ class MultiColumnExample extends React.PureComponent<
           ListFooterComponent={FooterComponent}
           ListHeaderComponent={HeaderComponent}
           getItemLayout={
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             this.state.fixedHeight ? this._getItemLayout : undefined
           }
           data={filteredData}

@@ -603,6 +603,8 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   );
 }
 
+/* $FlowFixMe[class-object-subtyping] added when improving typing for this
+ * parameters */
 module.exports = (VirtualizedSectionList: React.AbstractComponent<
   React.ElementConfig<typeof VirtualizedSectionList>,
   $ReadOnly<{
