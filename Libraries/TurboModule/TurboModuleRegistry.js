@@ -26,15 +26,6 @@ function requireModule<T: TurboModule>(name: string): ?T {
 
   if (turboModuleProxy != null) {
     const module: ?T = turboModuleProxy(name);
-    if (module == null) {
-      // Common fixes: Verify the TurboModule is registered in the native binary, and adopts the code generated type-safe Spec base class.
-      // Safe to ignore when caused by importing legacy modules that are unused.
-      console.info(
-        'Unable to get TurboModule for ' +
-          name +
-          '. Safe to ignore if module works.',
-      );
-    }
     return module;
   }
 

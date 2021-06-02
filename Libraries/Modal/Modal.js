@@ -219,7 +219,7 @@ class Modal extends React.Component<Props> {
   }
 
   render(): React.Node {
-    if (Platform.OS !== 'ios' && this.props.visible !== true) {
+    if (this.props.visible !== true) {
       return null;
     }
 
@@ -261,6 +261,7 @@ class Modal extends React.Component<Props> {
         statusBarTranslucent={this.props.statusBarTranslucent}
         identifier={this._identifier}
         style={styles.modal}
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}>

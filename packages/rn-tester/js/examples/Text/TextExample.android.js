@@ -10,6 +10,8 @@
 
 'use strict';
 
+import TextAdjustsDynamicLayoutExample from './TextAdjustsDynamicLayoutExample';
+
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
@@ -201,6 +203,9 @@ class TextExample extends React.Component<{...}> {
       <RNTesterPage title="<Text>">
         <RNTesterBlock title="Dynamic Font Size Adjustment">
           <AdjustingFontSize />
+        </RNTesterBlock>
+        <RNTesterBlock title="Font Size Adjustment with Dynamic Layout">
+          <TextAdjustsDynamicLayoutExample />
         </RNTesterBlock>
         <RNTesterBlock title="Wrap">
           <Text>

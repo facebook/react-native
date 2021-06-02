@@ -19,6 +19,11 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import invariant from 'invariant';
 import processColor from '../../StyleSheet/processColor';
 
+import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+} from '../View/ViewAccessibility';
+
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ColorValue, TextStyleProp} from '../../StyleSheet/StyleSheet';
 
@@ -31,6 +36,9 @@ type PickerItemSelectSyntheticEvent = SyntheticEvent<
 type PickerItemValue = number | string;
 
 type Props = $ReadOnly<{|
+  accessible?: ?boolean,
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityLabel?: ?Stringish,
   children?: React.Node,
   style?: ?TextStyleProp,
@@ -111,6 +119,9 @@ function PickerAndroid(props: Props): React.Node {
   );
 
   const rootProps = {
+    accessible: props.accessible,
+    accessibilityActions: props.accessibilityActions,
+    onAccessibilityAction: props.onAccessibilityAction,
     accessibilityLabel: props.accessibilityLabel,
     enabled: props.enabled,
     items,

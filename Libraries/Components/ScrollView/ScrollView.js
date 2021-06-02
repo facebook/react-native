@@ -988,6 +988,7 @@ class ScrollView extends React.Component<Props, State> {
       UIManager.measureLayout(
         nodeHandle,
         ReactNative.findNodeHandle(this),
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
         this._inputMeasureAndScrollToKeyboard,
       );
@@ -995,6 +996,7 @@ class ScrollView extends React.Component<Props, State> {
       nodeHandle.measureLayout(
         this._innerViewRef,
         this._inputMeasureAndScrollToKeyboard,
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
       );
     }
