@@ -10,11 +10,6 @@ buildscript {
         mavenLocal()
         google()
         mavenCentral()
-        jcenter {
-          content {
-            includeModule("org.jetbrains.trove4j", "trove4j")
-          }
-        }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.2.1")
@@ -38,16 +33,10 @@ allprojects {
         mavenLocal()
         google()
         mavenCentral()
-        jcenter {
-          content {
-            includeModule("com.facebook.yoga", "proguard-annotations")
-            includeModule("com.facebook.fresco", "stetho")
-          }
-        }
     }
 
     // used to override ndk path on CI
     if (System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
-      setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
+        setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
     }
 }
