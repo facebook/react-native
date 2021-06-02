@@ -18,12 +18,6 @@ import com.facebook.proguard.annotations.DoNotStripAny;
  */
 @DoNotStripAny
 public class ReactFeatureFlags {
-
-  /** An interface used to compute flags on demand. */
-  public interface FlagProvider {
-    boolean get();
-  }
-
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
@@ -59,13 +53,6 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of MapBuffer So file */
   public static boolean enableEagerInitializeMapBufferSoFile = false;
 
-  /** Should the RuntimeExecutor call JSIExecutor::flush()? */
-  private static FlagProvider enableRuntimeExecutorFlushingProvider = null;
-
-  public static void setEnableRuntimeExecutorFlushingFlagProvider(FlagProvider provider) {
-    enableRuntimeExecutorFlushingProvider = provider;
-  }
-
   private static boolean mapBufferSerializationEnabled = false;
 
   /** Enables or disables MapBuffer Serialization */
@@ -75,14 +62,6 @@ public class ReactFeatureFlags {
 
   public static boolean isMapBufferSerializationEnabled() {
     return mapBufferSerializationEnabled;
-  }
-
-  public static boolean enableRuntimeExecutorFlushing() {
-    if (enableRuntimeExecutorFlushingProvider != null) {
-      return enableRuntimeExecutorFlushingProvider.get();
-    }
-
-    return false;
   }
 
   /** Enables Fabric for LogBox */
