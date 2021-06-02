@@ -79,9 +79,8 @@ if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
   exit 2
 fi
 
-# Find path to Node
-# shellcheck source=/dev/null
-source "$RN_DIR/scripts/find-node.sh"
+# create bundle file
+touch ios/main.jsbundle
 
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
