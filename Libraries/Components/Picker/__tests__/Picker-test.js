@@ -6,13 +6,15 @@
  *
  * @format
  * @emails oncall+react_native
- * @flow strict-local
+ * @flow
  */
 
 'use strict';
 
 const React = require('react');
 const Picker = require('../Picker');
+const PickerIOS = require('../PickerIOS');
+const ReactTestRenderer = require('react-test-renderer');
 
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 
@@ -30,5 +32,10 @@ describe('<Picker />', () => {
         jest.dontMock('../Picker');
       },
     );
+  });
+
+  it('defaultProps should work as expected', () => {
+    const component = ReactTestRenderer.create(<Picker />);
+    expect(component.root.findByType(PickerIOS).props.mode).toBe('dialog');
   });
 });

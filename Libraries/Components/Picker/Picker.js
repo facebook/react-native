@@ -174,18 +174,14 @@ class Picker extends React.Component<PickerProps> {
        * suppression was added when renaming suppression sites. */
       /* $FlowFixMe[incompatible-type] (>=0.81.0 site=react_native_ios_fb) This
        * suppression was added when renaming suppression sites. */
-      return (
-        <PickerIOS mode={mode} {...rest}>
-          {this.props.children}
-        </PickerIOS>
-      );
+      return <PickerIOS {...{mode, ...rest}}>{this.props.children}</PickerIOS>;
     } else if (Platform.OS === 'android') {
       return (
         /* $FlowFixMe[incompatible-type] (>=0.81.0 site=react_native_android_fb) This
          * suppression was added when renaming suppression sites. */
         /* $FlowFixMe[prop-missing] (>=0.81.0 site=react_native_android_fb) This
          * suppression was added when renaming suppression sites. */
-        <PickerAndroid mode={mode} {...rest}>
+        <PickerAndroid {...{mode, ...rest}}>
           {this.props.children}
         </PickerAndroid>
       );
