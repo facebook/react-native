@@ -131,10 +131,7 @@ def useIntlJsc = false
 android {
     compileSdkVersion 29
     ndkVersion ANDROID_NDK_VERSION
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+
     dexOptions {
         javaMaxHeapSize "4g"
     }

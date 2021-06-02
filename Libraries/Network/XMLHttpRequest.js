@@ -551,6 +551,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
         nativeResponseType,
         incrementalEvents,
         this.timeout,
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this.__didCreateRequest.bind(this),
         this.withCredentials,
       );
