@@ -31,3 +31,9 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
     eval "$(anyenv init -)"
   fi
 fi
+
+# Support Homebrew on M1
+HOMEBREW_M1_BIN=/opt/homebrew/bin
+if [[ -d $HOMEBREW_M1_BIN && ! $PATH =~ $HOMEBREW_M1_BIN ]]; then
+  export PATH="$HOMEBREW_M1_BIN:$PATH"
+fi
