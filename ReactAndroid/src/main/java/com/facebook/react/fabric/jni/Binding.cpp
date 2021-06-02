@@ -561,6 +561,9 @@ void Binding::installFabricUIManager(
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 
+  disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
+      "react_fabric:disable_virtual_node_preallocation");
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
@@ -1141,7 +1144,8 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
-  if (disableVirtualNodePreallocation_ && !isLayoutableShadowNode) {
+  if (disableVirtualNodePreallocation_ &&
+      !shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
     return;
   }
 
