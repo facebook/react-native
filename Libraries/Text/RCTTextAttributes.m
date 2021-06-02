@@ -135,10 +135,6 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     attributes[NSForegroundColorAttributeName] = effectiveForegroundColor;
   }
 
-  if (_backgroundColor || !isnan(_opacity)) {
-    attributes[NSBackgroundColorAttributeName] = self.effectiveBackgroundColor;
-  }
-
   // Kerning
   if (!isnan(_letterSpacing)) {
     attributes[NSKernAttributeName] = @(_letterSpacing);
@@ -167,6 +163,13 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   if (_textDecorationColor || isTextDecorationEnabled) {
     attributes[NSStrikethroughColorAttributeName] = _textDecorationColor ?: effectiveForegroundColor;
     attributes[NSUnderlineColorAttributeName] = _textDecorationColor ?: effectiveForegroundColor;
+  }
+
+  // @Taskadev1 Turn background color into underline highlight
+  if (_backgroundColor || !isnan(_opacity)) {
+    isTextDecorationEnabled = YES;
+    attributes[NSUnderlineColorAttributeName] = self.effectiveBackgroundColor;
+    attributes[NSUnderlineStyleAttributeName] = @(NSUnderlineStyleThick + NSUnderlineStyleThick);
   }
 
   // Shadow

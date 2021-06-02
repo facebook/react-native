@@ -48,6 +48,8 @@ RCT_REMAP_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UITextFieldViewMode)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, backedTextInputView.scrollEnabled, BOOL)
 RCT_REMAP_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BOOL)
+//@Taskadev1 Editor input map property
+RCT_REMAP_VIEW_PROPERTY(editorInput, backedTextInputView.editorInput, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(autoFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)

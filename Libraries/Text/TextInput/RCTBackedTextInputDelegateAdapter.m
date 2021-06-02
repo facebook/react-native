@@ -222,6 +222,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   if (newText == nil) {
     return NO;
   }
+  
+  //@Taskadev1 Prevent enter for editor input
+  if (_backedTextInputView.editorInput && [text isEqualToString:@"\n"]) {
+    return NO;
+  }
 
   if ([newText isEqualToString:text]) {
     _textDidChangeIsComing = YES;
