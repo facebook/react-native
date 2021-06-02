@@ -47,9 +47,6 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Feature flag to configure eager initialization classes of Fabric */
-  public static boolean eagerInitializeFabricClasses = false;
-
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
 
