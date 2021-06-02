@@ -89,7 +89,7 @@
     "react": "17.0.2"
   },
   "dependencies": {
-    "@jest/create-cache-key-function": "^26.5.0",
+    "@jest/create-cache-key-function": "^27.0.1",
     "@react-native-community/cli": "^5.0.1-alpha.0",
     "@react-native-community/cli-platform-android": "^5.0.1-alpha.0",
     "@react-native-community/cli-platform-ios": "^5.0.1-alpha.0",
