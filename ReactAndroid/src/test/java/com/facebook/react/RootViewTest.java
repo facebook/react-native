@@ -152,7 +152,7 @@ public class RootViewTest {
                 "identifier",
                 0.,
                 "targetSurface",
-                rootViewId));
+                -1));
 
     // Test ACTION_UP event
     reset(eventEmitterModuleMock, eventDispatcher);
@@ -190,7 +190,7 @@ public class RootViewTest {
                 "identifier",
                 0.,
                 "targetSurface",
-                rootViewId));
+                -1));
 
     // Test other action
     reset(eventDispatcher);

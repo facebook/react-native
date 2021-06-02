@@ -187,6 +187,7 @@ function SectionListExample(Props: {...}): React.Element<typeof RNTesterPage> {
 
   const ref = React.useRef<?React.ElementRef<typeof SectionList>>(null);
   const scrollToLocation = (sectionIndex, itemIndex) => {
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     if (ref != null && ref.current?.scrollToLocation != null) {
       ref.current.scrollToLocation({sectionIndex, itemIndex});
     }
