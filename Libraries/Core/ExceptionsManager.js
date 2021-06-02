@@ -112,7 +112,7 @@ function reportException(
       });
     }
 
-    if (e.type !== 'warn') {
+    if (isFatal || e.type !== 'warn') {
       NativeExceptionsManager.reportException(data);
 
       if (__DEV__ && !global.RN$Express) {
