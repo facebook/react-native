@@ -216,7 +216,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'AnimatedExample',
-    module: require('../examples/Animated/AnimatedExample'),
+    module: require('../examples/Animated/AnimatedExample').default,
     supportsTVOS: true,
   },
   {

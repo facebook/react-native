@@ -175,7 +175,7 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'AnimatedExample',
     category: 'UI',
-    module: require('../examples/Animated/AnimatedExample'),
+    module: require('../examples/Animated/AnimatedExample').default,
   },
   {
     key: 'Animation - GratuitousAnimation',
