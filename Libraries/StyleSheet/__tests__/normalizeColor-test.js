@@ -42,7 +42,7 @@ describe('iOS', () => {
       const expectedColor = {dynamic: {light: 'black', dark: 'white'}};
       expect(normalizedColor).toEqual(expectedColor);
     });
-    
+
     it('should normalize iOS Dynamic colors with accessible colors', () => {
       const color = DynamicColorIOS({
         light: 'black',
