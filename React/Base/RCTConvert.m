@@ -879,12 +879,28 @@ static NSString *RCTSemanticColorNames()
       UIColor *lightColor = [RCTConvert UIColor:light];
       id dark = [appearances objectForKey:@"dark"];
       UIColor *darkColor = [RCTConvert UIColor:dark];
+      id accessibleLight = [appearances objectForKey:@"accessibleLight"];
+      UIColor *accessibleLightColor = [RCTConvert UIColor:accessibleLight];
+      id accessibleDark = [appearances objectForKey:@"accessibleDark"];
+      UIColor *accessibleDarkColor = [RCTConvert UIColor:accessibleDark];
       if (lightColor != nil && darkColor != nil) {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
           UIColor *color =
               [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(UITraitCollection *_Nonnull collection) {
-                return collection.userInterfaceStyle == UIUserInterfaceStyleDark ? darkColor : lightColor;
+                if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+                  if (collection.accessibilityContrast == UIAccessibilityContrastHigh && accessibleDarkColor != nil) {
+                    return accessibleDarkColor;
+                  } else {
+                    return darkColor;
+                  }
+                } else {
+                  if (collection.accessibilityContrast == UIAccessibilityContrastHigh && accessibleLightColor != nil) {
+                    return accessibleLightColor;
+                  } else {
+                    return lightColor;
+                  }
+                }
               }];
           return color;
         } else {
