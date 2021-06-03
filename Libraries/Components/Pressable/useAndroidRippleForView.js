@@ -102,5 +102,5 @@ export default function useAndroidRippleForView(
       };
     }
     return null;
-  }, [color, borderless, radius, viewRef]);
+  }, [color, borderless, radius, viewRef, useForeground]);
 }
