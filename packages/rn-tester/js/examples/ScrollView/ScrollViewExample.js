@@ -567,8 +567,9 @@ const SnapToOptions = () => {
           <Picker
             selectedValue={snapToAlignment}
             onValueChange={value => {
-              if (value === 'start' || value === 'center' || value === 'end')
+              if (value === 'start' || value === 'center' || value === 'end') {
                 setSnapToAlignment(value);
+              }
             }}
             itemStyle={styles.pickerItem}>
             {snapToAlignmentModes.map(label => {
@@ -754,8 +755,9 @@ const OnScrollOptions = () => {
           <Picker
             selectedValue={overScrollMode}
             onValueChange={value => {
-              if (value === 'always' || value === 'auto' || value === 'never')
+              if (value === 'always' || value === 'auto' || value === 'never') {
                 setOverScrollMode(value);
+              }
             }}
             itemStyle={styles.pickerItem}>
             {overScrollModeOptions.map(label => {
@@ -892,8 +894,9 @@ const KeyboardExample = () => {
             value === 'none' ||
             value === 'on-drag' ||
             value === 'interactive'
-          )
+          ) {
             setKeyboardDismissMode(value);
+          }
         }}
         itemStyle={styles.pickerItem}>
         {dismissOptions.map(label => {
@@ -904,8 +907,9 @@ const KeyboardExample = () => {
       <Picker
         selectedValue={keyboardShouldPersistTaps}
         onValueChange={value => {
-          if (value === 'never' || value === 'always' || value === 'handled')
+          if (value === 'never' || value === 'always' || value === 'handled') {
             setKeyboardShouldPersistTaps(value);
+          }
         }}
         itemStyle={styles.pickerItem}>
         {persistOptions.map(label => {
