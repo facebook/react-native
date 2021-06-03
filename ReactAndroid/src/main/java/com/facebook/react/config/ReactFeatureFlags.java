@@ -18,12 +18,6 @@ import com.facebook.proguard.annotations.DoNotStripAny;
  */
 @DoNotStripAny
 public class ReactFeatureFlags {
-
-  /** An interface used to compute flags on demand. */
-  public interface FlagProvider {
-    boolean get();
-  }
-
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
@@ -44,17 +38,8 @@ public class ReactFeatureFlags {
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
-  /**
-   * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
-   * remove this when bug is fixed
-   */
-  public static boolean enableTransitionLayoutOnlyViewCleanup = false;
-
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
-
-  /** Feature flag to configure eager initialization classes of Fabric */
-  public static boolean eagerInitializeFabricClasses = false;
 
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
@@ -68,13 +53,6 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager initialization of MapBuffer So file */
   public static boolean enableEagerInitializeMapBufferSoFile = false;
 
-  /** Should the RuntimeExecutor call JSIExecutor::flush()? */
-  private static FlagProvider enableRuntimeExecutorFlushingProvider = null;
-
-  public static void setEnableRuntimeExecutorFlushingFlagProvider(FlagProvider provider) {
-    enableRuntimeExecutorFlushingProvider = provider;
-  }
-
   private static boolean mapBufferSerializationEnabled = false;
 
   /** Enables or disables MapBuffer Serialization */
@@ -84,14 +62,6 @@ public class ReactFeatureFlags {
 
   public static boolean isMapBufferSerializationEnabled() {
     return mapBufferSerializationEnabled;
-  }
-
-  public static boolean enableRuntimeExecutorFlushing() {
-    if (enableRuntimeExecutorFlushingProvider != null) {
-      return enableRuntimeExecutorFlushingProvider.get();
-    }
-
-    return false;
   }
 
   /** Enables Fabric for LogBox */

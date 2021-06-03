@@ -433,10 +433,6 @@ task installArchives {
 android {
     compileSdkVersion 30
     ndkVersion ANDROID_NDK_VERSION
-    compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_1_8)
-        targetCompatibility(JavaVersion.VERSION_1_8)
-    }
 
     defaultConfig {
         minSdkVersion(21)
@@ -493,7 +489,7 @@ android {
 
 dependencies {
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
-    api("com.facebook.yoga:proguard-annotations:1.17.0")
+    api("com.facebook.yoga:proguard-annotations:1.19.0")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
     api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")

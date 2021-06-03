@@ -169,7 +169,8 @@ static inline void computeBufferSizes(
 
     batchMountItemIntsSize += getIntBufferSizeForType(mountItemType);
     if (mountItemType == CppMountItem::Type::Create) {
-      batchMountItemObjectsSize += 3; // component name, props, state
+      batchMountItemObjectsSize +=
+          4; // component name, props, state, event emitter
     }
   }
 
@@ -560,6 +561,9 @@ void Binding::installFabricUIManager(
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 
+  disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
+      "react_fabric:disable_virtual_node_preallocation");
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
@@ -676,24 +680,6 @@ void Binding::schedulerDidFinishTransaction(
             newChildShadowView.props->revision > 1) {
           cppCommonMountItems.push_back(
               CppMountItem::CreateMountItem(newChildShadowView));
-
-          // Generally, DELETE operations can always safely execute at the end
-          // of a MountItem batch. The usual expected order would be REMOVE and
-          // then DELETE, for instance. However... in specific cases with
-          // LayoutAnimations especially, a DELETE and CREATE may happen for a
-          // View - in that order. The inverse is NOT possible - for example, we
-          // do not expect a CREATE...DELETE in the same batch. That would
-          // contradict itself - a node cannot be in the tree (CREATE) and
-          // removed from the tree (DELETE) at the same time.
-          cppDeleteMountItems.erase(
-              std::remove_if(
-                  cppDeleteMountItems.begin(),
-                  cppDeleteMountItems.end(),
-                  [&](const CppMountItem &mountItem) {
-                    return mountItem.oldChildShadowView.tag ==
-                        newChildShadowView.tag;
-                  }),
-              cppDeleteMountItems.end());
         }
         break;
       }
@@ -899,6 +885,13 @@ void Binding::schedulerDidFinishTransaction(
         cStateWrapper->state_ = mountItem.newChildShadowView.state;
       }
 
+      // Do not hold a reference to javaEventEmitter from the C++ side.
+      SharedEventEmitter eventEmitter =
+          mountItem.newChildShadowView.eventEmitter;
+      auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
+      EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
+      cEventEmitter->eventEmitter = eventEmitter;
+
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = isLayoutable;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
@@ -908,6 +901,7 @@ void Binding::schedulerDidFinishTransaction(
       (*objBufferArray)[objBufferPosition++] = props.get();
       (*objBufferArray)[objBufferPosition++] =
           javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr;
+      (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
     } else if (mountItemType == CppMountItem::Type::Insert) {
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = mountItem.parentShadowView.tag;
@@ -1150,15 +1144,21 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
-  if (disableVirtualNodePreallocation_ && !isLayoutableShadowNode) {
+  if (disableVirtualNodePreallocation_ &&
+      !shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
     return;
   }
 
   static auto preallocateView =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void(
-              jint, jint, jstring, ReadableMap::javaobject, jobject, jboolean)>(
-              "preallocateView");
+              jint,
+              jint,
+              jstring,
+              ReadableMap::javaobject,
+              jobject,
+              jobject,
+              jboolean)>("preallocateView");
 
   // Do not hold onto Java object from C
   // We DO want to hold onto C object from Java, since we don't know the
@@ -1169,6 +1169,12 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
     StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
     cStateWrapper->state_ = shadowView.state;
   }
+
+  // Do not hold a reference to javaEventEmitter from the C++ side.
+  SharedEventEmitter eventEmitter = shadowView.eventEmitter;
+  auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
+  EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
+  cEventEmitter->eventEmitter = eventEmitter;
 
   local_ref<ReadableMap::javaobject> props = castReadableMap(
       ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
@@ -1181,6 +1187,7 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
       component.get(),
       props.get(),
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
+      javaEventEmitter.get(),
       isLayoutableShadowNode);
 }
 

@@ -132,7 +132,7 @@ class AnExTilt extends React.Component<Object, any> {
               },
             ],
           }}
-          source={require('../../../assets/trees.jpg')}
+          source={require('../../assets/trees.jpg')}
         />
       </Animated.View>
     );
