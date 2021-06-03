@@ -16,6 +16,8 @@ export opaque type NativeColorValue = {
   dynamic?: {
     light: ?(ColorValue | ProcessedColorValue),
     dark: ?(ColorValue | ProcessedColorValue),
+    accessibleLight?: ?(ColorValue | ProcessedColorValue),
+    accessibleDark?: ?(ColorValue | ProcessedColorValue),
   },
 };
 
@@ -26,12 +28,21 @@ export const PlatformColor = (...names: Array<string>): ColorValue => {
 export type DynamicColorIOSTuplePrivate = {
   light: ColorValue,
   dark: ColorValue,
+  accessibleLight?: ColorValue,
+  accessibleDark?: ColorValue,
 };
 
 export const DynamicColorIOSPrivate = (
   tuple: DynamicColorIOSTuplePrivate,
 ): ColorValue => {
-  return {dynamic: {light: tuple.light, dark: tuple.dark}};
+  return {
+    dynamic: {
+      light: tuple.light,
+      dark: tuple.dark,
+      accessibleLight: tuple.accessibleLight,
+      accessibleDark: tuple.accessibleDark,
+    },
+  };
 };
 
 export const normalizeColorObject = (
@@ -49,6 +60,8 @@ export const normalizeColorObject = (
       dynamic: {
         light: normalizeColor(dynamic.light),
         dark: normalizeColor(dynamic.dark),
+        accessibleLight: normalizeColor(dynamic.accessibleLight),
+        accessibleDark: normalizeColor(dynamic.accessibleDark),
       },
     };
     return dynamicColor;
@@ -67,6 +80,8 @@ export const processColorObject = (
       dynamic: {
         light: processColor(dynamic.light),
         dark: processColor(dynamic.dark),
+        accessibleLight: processColor(dynamic.accessibleLight),
+        accessibleDark: processColor(dynamic.accessibleDark),
       },
     };
     return dynamicColor;
