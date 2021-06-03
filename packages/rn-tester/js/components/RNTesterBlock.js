@@ -56,9 +56,8 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   children: {
-    paddingTop: 10,
-    paddingHorizontal: 10,
-    margin: 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
 });
 
