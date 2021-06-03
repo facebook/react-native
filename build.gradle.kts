@@ -9,11 +9,11 @@ buildscript {
     repositories {
         mavenLocal()
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.3")
-        classpath("de.undercouch:gradle-download-task:4.0.2")
+        classpath("com.android.tools.build:gradle:4.2.1")
+        classpath("de.undercouch:gradle-download-task:4.1.1")
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -32,6 +32,11 @@ allprojects {
         }
         mavenLocal()
         google()
-        jcenter()
+        mavenCentral()
+    }
+
+    // used to override ndk path on CI
+    if (System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+        setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
     }
 }

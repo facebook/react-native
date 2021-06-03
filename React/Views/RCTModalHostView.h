@@ -13,7 +13,6 @@
 
 @class RCTBridge;
 @class RCTModalHostViewController;
-@class RCTTVRemoteHandler;
 
 @protocol RCTModalHostViewInteractor;
 
@@ -24,6 +23,7 @@
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
+@property (nonatomic, assign) BOOL visible;
 
 @property (nonatomic, copy) NSNumber *identifier;
 
@@ -32,10 +32,8 @@
 @property (nonatomic, copy) NSArray<NSString *> *supportedOrientations;
 @property (nonatomic, copy) RCTDirectEventBlock onOrientationChange;
 
-#if TARGET_OS_TV
-@property (nonatomic, copy) RCTDirectEventBlock onRequestClose;
-@property (nonatomic, strong) RCTTVRemoteHandler *tvRemoteHandler;
-#endif
+// Fabric only
+@property (nonatomic, copy) RCTBubblingEventBlock onDismiss;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 

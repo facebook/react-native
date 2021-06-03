@@ -1,6 +1,6 @@
 
 [android]
-  target = android-29
+  target = android-30
 
 [download]
   max_number_of_retries = 3
@@ -8,7 +8,6 @@
 [maven_repositories]
   central = https://repo1.maven.org/maven2
   google = https://maven.google.com/
-  jcenter = https://jcenter.bintray.com/
 
 [alias]
-  rntester = //RNTester/android/app:app
+  rntester = //packages/rn-tester/android/app:app

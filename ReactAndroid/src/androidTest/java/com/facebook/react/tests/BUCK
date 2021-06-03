@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_int
 rn_android_library(
     name = "tests",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     visibility = [
         "PUBLIC",

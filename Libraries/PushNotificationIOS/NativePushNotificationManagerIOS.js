@@ -32,7 +32,7 @@ type Notification = {|
 |};
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {...};
+  +getConstants: () => {||};
   +onFinishRemoteNotification: (
     notificationId: string,
     /**
@@ -64,6 +64,9 @@ export interface Spec extends TurboModule {
   +removeDeliveredNotifications: (identifiers: Array<string>) => void;
   +getDeliveredNotifications: (
     callback: (notification: Array<Notification>) => void,
+  ) => void;
+  +getAuthorizationStatus: (
+    callback: (authorizationStatus: number) => void,
   ) => void;
   +addListener: (eventType: string) => void;
   +removeListeners: (count: number) => void;

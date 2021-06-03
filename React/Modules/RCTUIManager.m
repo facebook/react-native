@@ -17,7 +17,7 @@
 #import "RCTComponentData.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
-#import "RCTEventDispatcher.h"
+#import "RCTEventDispatcherProtocol.h"
 #import "RCTLayoutAnimation.h"
 #import "RCTLayoutAnimationGroup.h"
 #import "RCTLog.h"
@@ -81,6 +81,7 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -146,6 +147,8 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
+  RCTEnforceNotAllowedForNewArchitecture(self, @"RCTUIManager must not be initialized for the new architecture");
+
   RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
 
@@ -166,7 +169,9 @@ RCT_EXPORT_MODULE()
   _componentDataByName = [NSMutableDictionary new];
   for (Class moduleClass in _bridge.moduleClasses) {
     if ([moduleClass isSubclassOfClass:[RCTViewManager class]]) {
-      RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:_bridge];
+      RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass
+                                                                                bridge:_bridge
+                                                                       eventDispatcher:_bridge.eventDispatcher];
       _componentDataByName[componentData.name] = componentData;
     }
   }
@@ -179,12 +184,10 @@ RCT_EXPORT_MODULE()
                                                object:[self->_bridge moduleForName:@"AccessibilityManager"
                                                              lazilyLoadIfNecessary:YES]];
   });
-#if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(namedOrientationDidChange)
                                                name:UIDeviceOrientationDidChangeNotification
                                              object:nil];
-#endif
   [RCTLayoutAnimation initializeStatics];
 }
 
@@ -198,7 +201,8 @@ RCT_EXPORT_MODULE()
   id multiplier = [[self->_bridge moduleForName:@"AccessibilityManager"
                           lazilyLoadIfNecessary:YES] valueForKey:@"multiplier"];
   if (multiplier) {
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier" body:multiplier];
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                                                          body:multiplier];
   }
 #pragma clang diagnostic pop
 
@@ -210,7 +214,6 @@ RCT_EXPORT_MODULE()
   });
 }
 
-#if !TARGET_OS_TV
 // Names and coordinate system from html5 spec:
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen.orientation
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen.lockOrientation
@@ -259,10 +262,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"namedOrientationDidChange" body:orientationEvent];
+  [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"namedOrientationDidChange"
+                                                                        body:orientationEvent];
 #pragma clang diagnostic pop
 }
-#endif
 
 - (dispatch_queue_t)methodQueue
 {
@@ -556,11 +559,12 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     for (RCTShadowView *shadowView in affectedShadowViews) {
       reactTags[index] = shadowView.reactTag;
       RCTLayoutMetrics layoutMetrics = shadowView.layoutMetrics;
-      frameDataArray[index++] = (RCTFrameData){layoutMetrics.frame,
-                                               layoutMetrics.layoutDirection,
-                                               shadowView.isNewView,
-                                               shadowView.superview.isNewView,
-                                               layoutMetrics.displayType};
+      frameDataArray[index++] = (RCTFrameData){
+          layoutMetrics.frame,
+          layoutMetrics.layoutDirection,
+          shadowView.isNewView,
+          shadowView.superview.isNewView,
+          layoutMetrics.displayType};
     }
   }
 
@@ -1577,7 +1581,9 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView : (NSString *)name)
     return @{};
   }
 
-  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class] bridge:self.bridge];
+  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class]
+                                                                            bridge:self.bridge
+                                                                   eventDispatcher:self.bridge.eventDispatcher];
   _componentDataByName[componentData.name] = componentData;
   NSMutableDictionary *directEvents = [NSMutableDictionary new];
   NSMutableDictionary *bubblingEvents = [NSMutableDictionary new];

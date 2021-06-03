@@ -51,13 +51,20 @@ static UIColor *defaultPlaceholderColor()
     self.textColor = [UIColor blackColor];
     // This line actually removes 5pt (default value) left and right padding in UITextView.
     self.textContainer.lineFragmentPadding = 0;
-#if !TARGET_OS_TV
     self.scrollsToTop = NO;
-#endif
     self.scrollEnabled = YES;
   }
 
   return self;
+}
+
+- (void)setDelegate:(id<UITextViewDelegate>)delegate {
+  // Delegate is set inside `[RCTBackedTextViewDelegateAdapter initWithTextView]` and
+  // it cannot be changed from outside.
+  if (super.delegate) {
+    return;
+  }
+  [super setDelegate:delegate];
 }
 
 #pragma mark - Accessibility
@@ -157,8 +164,6 @@ static UIColor *defaultPlaceholderColor()
 
   [self textDidChange];
 }
-
-#pragma mark - Overrides
 
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
 {
@@ -275,6 +280,7 @@ static UIColor *defaultPlaceholderColor()
 - (void)_updatePlaceholder
 {
   _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self _placeholderTextAttributes]];
+  [self _invalidatePlaceholderVisibility];
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
@@ -288,6 +294,17 @@ static UIColor *defaultPlaceholderColor()
   }
 
   return textAttributes;
+}
+
+#pragma mark - Caret Manipulation
+
+- (CGRect)caretRectForPosition:(UITextPosition *)position
+{
+  if (_caretHidden) {
+    return CGRectZero;
+  }
+
+  return [super caretRectForPosition:position];
 }
 
 #pragma mark - Utility Methods

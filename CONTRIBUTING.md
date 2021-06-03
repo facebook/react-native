@@ -72,12 +72,12 @@ We recommend referring to the [CONTRIBUTING](https://github.com/facebook/react-n
 
 ## Contributing Code
 
-Code-level contributions to React Native generally come in the form of [pull requests](https://help.github.com/en/articles/about-pull-requests). These are done by forking the repo and making changes locally. Directly in the repo, there is the [`RNTester` app](/RNTester) that you can install on your device (or simulators) and use to test the changes you're making to React Native sources.
+Code-level contributions to React Native generally come in the form of [pull requests](https://help.github.com/en/articles/about-pull-requests). These are done by forking the repo and making changes locally. Directly in the repo, there is the [`rn-tester` app](/packages/rn-tester) that you can install on your device (or simulators) and use to test the changes you're making to React Native sources.
 
 The process of proposing a change to React Native can be summarized as follows:
 
 1. Fork the React Native repository and create your branch from `master`.
-2. Make the desired changes to React Native sources. Use the `RNTester` app to test them out.
+2. Make the desired changes to React Native sources. Use the `packages/rn-tester` app to test them out.
 3. If you've added code that should be tested, add tests.
 4. If you've changed APIs, update the documentation, which lives in [another repo](https://github.com/facebook/react-native-website/).
 5. Ensure the test suite passes, either locally or on CI once you opened a pull request.
@@ -86,6 +86,7 @@ The process of proposing a change to React Native can be summarized as follows:
 8. Create a pull request to the React Native repository.
 9. Review and address comments on your pull request.
     1. A bot may comment with suggestions. Generally we ask you to resolve these first before a maintainer will review your code.
+    2. If changes are requested and addressed, please [request review](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/requesting-a-pull-request-review) to notify reviewers to take another look.
 10. If you haven't already, please complete the [Contributor License Agreement](https://github.com/facebook/react-native/wiki/Contributor-License-Agreement) ("CLA"). **[Complete your CLA here.](https://code.facebook.com/cla)**
 
 If all goes well, your pull request will be merged. If it is not merged, maintainers will do their best to explain the reason why.

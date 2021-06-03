@@ -9,13 +9,14 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "annotations-binary.jar",
-    sha1 = "3d015bb821875657ac8e4b808a223aae339defb2",
-    url = "https://jcenter.bintray.com/com/facebook/yoga/proguard-annotations/1.14.1/proguard-annotations-1.14.1.jar",
+    sha1 = "fcbbb39052e6490eaaf6a6959c49c3a4fbe87c63",
+    url = "mvn:com.facebook.yoga:proguard-annotations:jar:1.19.0",
 )
 
 rn_android_library(
     name = "annotations",
     srcs = glob(["*.java"]),
+    autoglob = False,
     proguard_config = "proguard_annotations.pro",
     visibility = [
         "PUBLIC",
