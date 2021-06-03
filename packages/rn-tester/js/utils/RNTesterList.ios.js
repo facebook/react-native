@@ -155,6 +155,12 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'SwipeableCardExample',
+    module: require('../examples/SwipeableCardExample/SwipeableCardExample'),
+    category: 'UI',
+    supportsTVOS: false,
+  },
+  {
     key: 'SwitchExample',
     module: require('../examples/Switch/SwitchExample'),
     category: 'UI',
