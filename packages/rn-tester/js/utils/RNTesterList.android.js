@@ -180,7 +180,7 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'Animation - GratuitousAnimation',
     category: 'UI',
-    module: require('../examples/Animated/AnimatedGratuitousApp/AnExApp'),
+    module: require('../examples/AnimatedGratuitousApp/AnExApp'),
   },
   {
     key: 'AppearanceExample',
