@@ -73,8 +73,6 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
           componentDescriptorParameters);
   providerRegistry->add(
       concreteComponentDescriptorProvider<ViewComponentDescriptor>());
-  providerRegistry->add(
-      concreteComponentDescriptorProvider<RootComponentDescriptor>());
 
   // Create Animation Driver
   auto animationDriver =
@@ -159,6 +157,13 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
       // don't bother trying to animate because this violates a bunch of our
       // assumptions in this test
       if (originalMutations.size() == 0) {
+        continue;
+      }
+
+      // If we only mutated the root... also don't bother
+      if (originalMutations.size() == 1 &&
+          (originalMutations[0].oldChildShadowView.tag == 1 ||
+           originalMutations[0].newChildShadowView.tag == 1)) {
         continue;
       }
 
