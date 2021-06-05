@@ -879,24 +879,24 @@ static NSString *RCTSemanticColorNames()
       UIColor *lightColor = [RCTConvert UIColor:light];
       id dark = [appearances objectForKey:@"dark"];
       UIColor *darkColor = [RCTConvert UIColor:dark];
-      id accessibleLight = [appearances objectForKey:@"accessibleLight"];
-      UIColor *accessibleLightColor = [RCTConvert UIColor:accessibleLight];
-      id accessibleDark = [appearances objectForKey:@"accessibleDark"];
-      UIColor *accessibleDarkColor = [RCTConvert UIColor:accessibleDark];
+      id highContrastLight = [appearances objectForKey:@"highContrastLight"];
+      UIColor *highContrastLightColor = [RCTConvert UIColor:highContrastLight];
+      id highContrastDark = [appearances objectForKey:@"highContrastDark"];
+      UIColor *highContrastDarkColor = [RCTConvert UIColor:highContrastDark];
       if (lightColor != nil && darkColor != nil) {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
           UIColor *color =
               [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(UITraitCollection *_Nonnull collection) {
                 if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-                  if (collection.accessibilityContrast == UIAccessibilityContrastHigh && accessibleDarkColor != nil) {
-                    return accessibleDarkColor;
+                  if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDarkColor != nil) {
+                    return highContrastDarkColor;
                   } else {
                     return darkColor;
                   }
                 } else {
-                  if (collection.accessibilityContrast == UIAccessibilityContrastHigh && accessibleLightColor != nil) {
-                    return accessibleLightColor;
+                  if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLightColor != nil) {
+                    return highContrastLightColor;
                   } else {
                     return lightColor;
                   }

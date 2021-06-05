@@ -13,8 +13,8 @@ import type {ColorValue} from './StyleSheet';
 export type DynamicColorIOSTuple = {
   light: ColorValue,
   dark: ColorValue,
-  accessibleLight?: ColorValue,
-  accessibleDark?: ColorValue,
+  highContrastLight?: ColorValue,
+  highContrastDark?: ColorValue,
 };
 
 export const DynamicColorIOS = (tuple: DynamicColorIOSTuple): ColorValue => {

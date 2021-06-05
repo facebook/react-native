@@ -14,15 +14,15 @@ import {DynamicColorIOSPrivate} from './PlatformColorValueTypes';
 export type DynamicColorIOSTuple = {
   light: ColorValue,
   dark: ColorValue,
-  accessibleLight?: ColorValue,
-  accessibleDark?: ColorValue,
+  highContrastLight?: ColorValue,
+  highContrastDark?: ColorValue,
 };
 
 export const DynamicColorIOS = (tuple: DynamicColorIOSTuple): ColorValue => {
   return DynamicColorIOSPrivate({
     light: tuple.light,
     dark: tuple.dark,
-    accessibleLight: tuple.accessibleLight,
-    accessibleDark: tuple.accessibleDark,
+    highContrastLight: tuple.highContrastLight,
+    highContrastDark: tuple.highContrastDark,
   });
 };

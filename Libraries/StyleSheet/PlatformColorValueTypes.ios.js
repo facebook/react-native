@@ -16,8 +16,8 @@ export opaque type NativeColorValue = {
   dynamic?: {
     light: ?(ColorValue | ProcessedColorValue),
     dark: ?(ColorValue | ProcessedColorValue),
-    accessibleLight?: ?(ColorValue | ProcessedColorValue),
-    accessibleDark?: ?(ColorValue | ProcessedColorValue),
+    highContrastLight?: ?(ColorValue | ProcessedColorValue),
+    highContrastDark?: ?(ColorValue | ProcessedColorValue),
   },
 };
 
@@ -28,8 +28,8 @@ export const PlatformColor = (...names: Array<string>): ColorValue => {
 export type DynamicColorIOSTuplePrivate = {
   light: ColorValue,
   dark: ColorValue,
-  accessibleLight?: ColorValue,
-  accessibleDark?: ColorValue,
+  highContrastLight?: ColorValue,
+  highContrastDark?: ColorValue,
 };
 
 export const DynamicColorIOSPrivate = (
@@ -39,8 +39,8 @@ export const DynamicColorIOSPrivate = (
     dynamic: {
       light: tuple.light,
       dark: tuple.dark,
-      accessibleLight: tuple.accessibleLight,
-      accessibleDark: tuple.accessibleDark,
+      highContrastLight: tuple.highContrastLight,
+      highContrastDark: tuple.highContrastDark,
     },
   };
 };
@@ -60,8 +60,8 @@ export const normalizeColorObject = (
       dynamic: {
         light: normalizeColor(dynamic.light),
         dark: normalizeColor(dynamic.dark),
-        accessibleLight: normalizeColor(dynamic.accessibleLight),
-        accessibleDark: normalizeColor(dynamic.accessibleDark),
+        highContrastLight: normalizeColor(dynamic.highContrastLight),
+        highContrastDark: normalizeColor(dynamic.highContrastDark),
       },
     };
     return dynamicColor;
@@ -80,8 +80,8 @@ export const processColorObject = (
       dynamic: {
         light: processColor(dynamic.light),
         dark: processColor(dynamic.dark),
-        accessibleLight: processColor(dynamic.accessibleLight),
-        accessibleDark: processColor(dynamic.accessibleDark),
+        highContrastLight: processColor(dynamic.highContrastLight),
+        highContrastDark: processColor(dynamic.highContrastDark),
       },
     };
     return dynamicColor;
