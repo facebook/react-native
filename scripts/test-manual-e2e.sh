@@ -40,7 +40,7 @@ rm -rf android
 
 success "Generated artifacts for Maven"
 
-npm install
+yarn
 
 success "Killing any running packagers"
 lsof -i :8081 | grep LISTEN

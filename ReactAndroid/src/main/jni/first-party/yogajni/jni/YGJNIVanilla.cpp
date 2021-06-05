@@ -367,11 +367,7 @@ static void jni_YGNodeCalculateLayoutJNI(
     void* layoutContext = nullptr;
     auto map = PtrJNodeMapVanilla{};
     if (nativePointers) {
-      size_t nativePointersSize = env->GetArrayLength(nativePointers);
-      jlong result[nativePointersSize];
-      env->GetLongArrayRegion(nativePointers, 0, nativePointersSize, result);
-
-      map = PtrJNodeMapVanilla{result, nativePointersSize, javaNodes};
+      map = PtrJNodeMapVanilla{nativePointers, javaNodes};
       layoutContext = &map;
     }
 

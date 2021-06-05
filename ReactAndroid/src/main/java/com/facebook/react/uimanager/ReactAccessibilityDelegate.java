@@ -385,18 +385,14 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         spannable.setSpan(new URLSpan(""), 0, spannable.length(), 0);
         nodeInfo.setText(spannable);
       }
-    } else if (role.equals(AccessibilityRole.SEARCH)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.search_description));
     } else if (role.equals(AccessibilityRole.IMAGE)) {
       nodeInfo.setRoleDescription(context.getString(R.string.image_description));
     } else if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
       nodeInfo.setRoleDescription(context.getString(R.string.imagebutton_description));
       nodeInfo.setClickable(true);
     } else if (role.equals(AccessibilityRole.BUTTON)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.button_description));
       nodeInfo.setClickable(true);
     } else if (role.equals(AccessibilityRole.TOGGLEBUTTON)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.toggle_button_description));
       nodeInfo.setClickable(true);
       nodeInfo.setCheckable(true);
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
