@@ -9,13 +9,16 @@ package com.facebook.react.views.text;
 
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReactTypefaceUtils {
+  private static final String TAG = "ReactTypefaceUtils";
   public static final int UNSET = -1;
 
   public static int parseFontWeight(@Nullable String fontWeightString) {
@@ -23,8 +26,8 @@ public class ReactTypefaceUtils {
         fontWeightString != null ? parseNumericFontWeight(fontWeightString) : UNSET;
     int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : Typeface.NORMAL;
 
-    if (fontWeight == 700 || "bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
-    else if (fontWeight == 400 || "normal".equals(fontWeightString)) fontWeight = Typeface.NORMAL;
+    if ("bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
+    else if ("normal".equals(fontWeightString)) fontWeight = Typeface.NORMAL;
 
     return fontWeight;
   }
@@ -81,34 +84,50 @@ public class ReactTypefaceUtils {
       AssetManager assetManager) {
     int oldStyle;
     if (typeface == null) {
-      oldStyle = 0;
+      oldStyle = Typeface.NORMAL;
     } else {
       oldStyle = typeface.getStyle();
     }
 
-    int want = 0;
-    if ((weight == Typeface.BOLD)
-        || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.BOLD;
+    int newStyle = oldStyle;
+    boolean italic = false;
+    if (weight == UNSET) weight = Typeface.NORMAL;
+    if (style == Typeface.ITALIC) italic = true;
+    boolean UNDER_SDK_28 = Build.VERSION.SDK_INT < Build.VERSION_CODES.P;
+    boolean applyNumericValues = !(weight < (Typeface.BOLD_ITALIC + 1) || family != null);
+    boolean numericBold = UNDER_SDK_28 && weight > 699 && applyNumericValues;
+    boolean numericNormal = UNDER_SDK_28 && weight < 700 && applyNumericValues;
+    if (weight == Typeface.BOLD) {
+      newStyle = (newStyle == Typeface.ITALIC) ? Typeface.BOLD_ITALIC : Typeface.BOLD;
+      typeface = Typeface.create(typeface, newStyle);
     }
-
-    if ((style == Typeface.ITALIC)
-        || ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.ITALIC;
+    if (weight == Typeface.NORMAL) {
+      typeface = Typeface.create(typeface, Typeface.NORMAL);
+      newStyle = Typeface.NORMAL;
     }
-
+    if (style == Typeface.ITALIC) {
+      newStyle = (newStyle == Typeface.BOLD) ? Typeface.BOLD_ITALIC : Typeface.ITALIC;
+      typeface = Typeface.create(typeface, newStyle);
+    }
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1 && weight > Typeface.BOLD_ITALIC) {
+      typeface = Typeface.create(typeface, weight, italic);
+    }
+    if (family != null && UNDER_SDK_28 && weight > Typeface.BOLD_ITALIC) {
+      FLog.d(
+          TAG,
+          "Support for numeric font weight numeric values with custom fonts under Android API 28 Pie is not yet supported in ReactNative.");
+    }
     if (family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(family, want, weight, assetManager);
-    } else if (typeface != null) {
-      // TODO(t9055065): Fix custom fonts getting applied to text children with different style
-      typeface = Typeface.create(typeface, want);
+      typeface = ReactFontManager.getInstance().getTypeface(family, newStyle, weight, assetManager);
     }
-
-    if (typeface != null) {
-      return typeface;
-    } else {
-      return Typeface.defaultFromStyle(want);
+    if (numericBold || numericNormal) {
+      newStyle = numericBold ? Typeface.BOLD : Typeface.NORMAL;
+      typeface = Typeface.create(typeface, newStyle);
+      FLog.d(
+          TAG,
+          "Support for numeric font weight numeric values available only from Android API 28 Pie. Android device lower then API 28 will use normal or bold.");
     }
+    return typeface;
   }
 
   /**
