@@ -64,7 +64,6 @@ exports[`<Picker /> should render as expected: should deep render when not mocke
 
 exports[`<Picker /> should render as expected: should shallow render as <Picker /> when mocked 1`] = `
 <Picker
-  mode="dialog"
   onValueChange={[MockFunction]}
   selectedValue="foo"
 >
@@ -81,7 +80,6 @@ exports[`<Picker /> should render as expected: should shallow render as <Picker 
 
 exports[`<Picker /> should render as expected: should shallow render as <Picker /> when not mocked 1`] = `
 <Picker
-  mode="dialog"
   onValueChange={[MockFunction]}
   selectedValue="foo"
 >
