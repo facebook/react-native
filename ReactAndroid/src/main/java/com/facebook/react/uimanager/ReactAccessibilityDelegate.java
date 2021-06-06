@@ -8,12 +8,14 @@
 package com.facebook.react.uimanager;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.SpannableString;
 import android.text.style.URLSpan;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.Nullable;
 import androidx.core.view.AccessibilityDelegateCompat;
@@ -107,6 +109,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     TAB,
     TABLIST,
     TIMER,
+    LIST,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
@@ -135,6 +138,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
           return "android.widget.SpinButton";
         case SWITCH:
           return "android.widget.Switch";
+        case LIST:
+          return "android.widget.AbsListView";
         case NONE:
         case LINK:
         case SUMMARY:
@@ -204,6 +209,20 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     }
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
+    final ReadableMap accessibilityCollectionInfo =
+      (ReadableMap) host.getTag(R.id.accessibility_collection_info);
+
+
+    if (accessibilityCollectionInfo != null) {
+      int rowCount = accessibilityCollectionInfo.getInt("rowCount");
+      int columnCount = accessibilityCollectionInfo.getInt("columnCount");
+      boolean hierarchical = accessibilityCollectionInfo.getBoolean("hierarchical");
+
+      AccessibilityNodeInfoCompat.CollectionInfoCompat collectionInfoCompat = AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(rowCount, columnCount, hierarchical);
+      info.setCollectionInfo(collectionInfoCompat);
+    }
+
+
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
         final ReadableMap action = accessibilityActions.getMap(i);
@@ -259,12 +278,54 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     }
   }
 
+  private boolean isViewVisible(View scrollView, View view) {
+    Rect scrollBounds = new Rect();
+    scrollView.getDrawingRect(scrollBounds);
+    float viewHeight = view.getHeight();
+    // Verify View is half visible
+    float top = view.getY() + viewHeight / 2;
+    float bottom = top + view.getHeight() - viewHeight / 2;
+
+    if (scrollBounds.top < top  && scrollBounds.bottom > bottom) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
   @Override
   public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
     super.onInitializeAccessibilityEvent(host, event);
     // Set item count and current item index on accessibility events for adjustable
     // in order to make Talkback announce the value of the adjustable
     final ReadableMap accessibilityValue = (ReadableMap) host.getTag(R.id.accessibility_value);
+    final ReadableMap accessibilityCollectionInfo = (ReadableMap) host.getTag(R.id.accessibility_collection_info);
+    if (accessibilityCollectionInfo != null) {
+      event.setItemCount(accessibilityCollectionInfo.getInt("rowCount"));
+
+      View contentView = ((ViewGroup) host).getChildAt(0);
+
+       ReadableMap firstVisible = null;
+       ReadableMap lastVisible = null;
+
+      for(int index = 0; index < ((ViewGroup) contentView).getChildCount(); index++) {
+        View nextChild = ((ViewGroup) contentView).getChildAt(index);
+        boolean isVisible = isViewVisible(host, nextChild);
+        if (isVisible == true) {
+          if(firstVisible == null) {
+            firstVisible = (ReadableMap) nextChild.getTag(R.id.accessibility_collection_item_info);
+          }
+          lastVisible = (ReadableMap) nextChild.getTag(R.id.accessibility_collection_item_info);
+        }
+
+
+        if (firstVisible != null && lastVisible != null) {
+          event.setFromIndex(firstVisible.getInt("rowIndex"));
+          event.setToIndex(lastVisible.getInt("rowIndex"));
+        }
+      }
+    }
+
     if (accessibilityValue != null
         && accessibilityValue.hasKey("min")
         && accessibilityValue.hasKey("now")

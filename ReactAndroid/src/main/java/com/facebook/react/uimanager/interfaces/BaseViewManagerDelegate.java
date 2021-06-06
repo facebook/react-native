@@ -47,6 +47,12 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
       case ViewProps.ACCESSIBILITY_STATE:
         mViewManager.setViewState(view, (ReadableMap) value);
         break;
+      case ViewProps.ACCESSIBILITY_COLLECTION_INFO:
+        mViewManager.setAccessibilityCollectionInfo(view, (ReadableMap) value);
+        break;
+      case ViewProps.ACCESSIBILITY_COLLECTION_ITEM_INFO:
+        mViewManager.setAccessibilityCollectionItemInfo(view, (ReadableMap) value);
+        break;
       case ViewProps.BACKGROUND_COLOR:
         mViewManager.setBackgroundColor(
             view, value == null ? 0 : ColorPropConverter.getColor(value, view.getContext()));
