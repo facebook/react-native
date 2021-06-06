@@ -166,22 +166,24 @@ class Picker extends React.Component<PickerProps> {
 
   static Item: typeof PickerItem = PickerItem;
 
-  render(): React.Node {
-    const {mode = MODE_DIALOG, children, ...rest} = this.props;
+  static defaultProps: {|mode: $TEMPORARY$string<'dialog'>|} = {
+    mode: MODE_DIALOG,
+  };
 
+  render(): React.Node {
     if (Platform.OS === 'ios') {
       /* $FlowFixMe[prop-missing] (>=0.81.0 site=react_native_ios_fb) This
        * suppression was added when renaming suppression sites. */
       /* $FlowFixMe[incompatible-type] (>=0.81.0 site=react_native_ios_fb) This
        * suppression was added when renaming suppression sites. */
-      return <PickerIOS {...rest}>{children}</PickerIOS>;
+      return <PickerIOS {...this.props}>{this.props.children}</PickerIOS>;
     } else if (Platform.OS === 'android') {
       return (
         /* $FlowFixMe[incompatible-type] (>=0.81.0 site=react_native_android_fb) This
          * suppression was added when renaming suppression sites. */
         /* $FlowFixMe[prop-missing] (>=0.81.0 site=react_native_android_fb) This
          * suppression was added when renaming suppression sites. */
-        <PickerAndroid mode={mode}>{children} </PickerAndroid>
+        <PickerAndroid {...this.props}>{this.props.children}</PickerAndroid>
       );
     } else {
       return <UnimplementedView />;
