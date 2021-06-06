@@ -625,6 +625,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final String componentName,
       @Nullable ReadableMap props,
       @Nullable Object stateWrapper,
+      @Nullable Object eventEmitterWrapper,
       boolean isLayoutable) {
 
     mMountItemDispatcher.addPreAllocateMountItem(
@@ -634,6 +635,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             getFabricComponentName(componentName),
             props,
             (StateWrapper) stateWrapper,
+            (EventEmitterWrapper) eventEmitterWrapper,
             isLayoutable));
   }
 
@@ -925,28 +927,26 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag,
       final int initialReactTag,
       final boolean blockNativeResponder) {
-    if (ReactFeatureFlags.enableJSResponder) {
-      mMountItemDispatcher.addMountItem(
-          new MountItem() {
-            @Override
-            public void execute(MountingManager mountingManager) {
-              SurfaceMountingManager surfaceMountingManager =
-                  mountingManager.getSurfaceManager(surfaceId);
-              if (surfaceMountingManager != null) {
-                surfaceMountingManager.setJSResponder(
-                    reactTag, initialReactTag, blockNativeResponder);
-              } else {
-                FLog.e(
-                    TAG, "setJSResponder skipped, surface no longer available [" + surfaceId + "]");
-              }
+    mMountItemDispatcher.addMountItem(
+        new MountItem() {
+          @Override
+          public void execute(MountingManager mountingManager) {
+            SurfaceMountingManager surfaceMountingManager =
+                mountingManager.getSurfaceManager(surfaceId);
+            if (surfaceMountingManager != null) {
+              surfaceMountingManager.setJSResponder(
+                  reactTag, initialReactTag, blockNativeResponder);
+            } else {
+              FLog.e(
+                  TAG, "setJSResponder skipped, surface no longer available [" + surfaceId + "]");
             }
+          }
 
-            @Override
-            public int getSurfaceId() {
-              return surfaceId;
-            }
-          });
-    }
+          @Override
+          public int getSurfaceId() {
+            return surfaceId;
+          }
+        });
   }
 
   /**
@@ -954,20 +954,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * the touch events are going to be handled by JS.
    */
   public void clearJSResponder() {
-    if (ReactFeatureFlags.enableJSResponder) {
-      mMountItemDispatcher.addMountItem(
-          new MountItem() {
-            @Override
-            public void execute(MountingManager mountingManager) {
-              mountingManager.clearJSResponder();
-            }
+    mMountItemDispatcher.addMountItem(
+        new MountItem() {
+          @Override
+          public void execute(MountingManager mountingManager) {
+            mountingManager.clearJSResponder();
+          }
 
-            @Override
-            public int getSurfaceId() {
-              return View.NO_ID;
-            }
-          });
-    }
+          @Override
+          public int getSurfaceId() {
+            return View.NO_ID;
+          }
+        });
   }
 
   @Override

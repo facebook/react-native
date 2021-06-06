@@ -153,7 +153,8 @@ module.exports = {
     return require('./Libraries/Components/TextInput/InputAccessoryView');
   },
   get KeyboardAvoidingView(): KeyboardAvoidingView {
-    return require('./Libraries/Components/Keyboard/KeyboardAvoidingView');
+    return require('./Libraries/Components/Keyboard/KeyboardAvoidingView')
+      .default;
   },
   get MaskedViewIOS(): MaskedViewIOS {
     warnOnce(

@@ -75,7 +75,7 @@ const HeaderAndroid = ({
   const theme = React.useContext(RNTesterThemeContext);
   return (
     <SafeAreaView>
-      <View style={[styles.toolbar, {backgroundColor: '#F3F8FF'}]}>
+      <View style={[styles.toolbar, {backgroundColor: theme.BackgroundColor}]}>
         <View style={styles.toolbarCenter}>
           <Text style={[styles.title, {color: theme.LabelColor}]}>{title}</Text>
           {documentationURL && (

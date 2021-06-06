@@ -129,7 +129,13 @@ const returnsTrue = () => true;
   export default App;
   ```
  */
-export default function Switch(props: Props): React.Node {
+
+const SwitchWithForwardedRef: React.AbstractComponent<
+  Props,
+  React.ElementRef<
+    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
+  >,
+> = React.forwardRef(function Switch(props, forwardedRef): React.Node {
   const {
     disabled,
     ios_backgroundColor,
@@ -144,9 +150,11 @@ export default function Switch(props: Props): React.Node {
   const trackColorForFalse = trackColor?.false;
   const trackColorForTrue = trackColor?.true;
 
-  const nativeSwitchRef = React.useRef<?React.ElementRef<
+  const nativeSwitchRef = React.useRef<React.ElementRef<
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-  >>(null);
+  > | null>(null);
+  React.useImperativeHandle(forwardedRef, () => nativeSwitchRef.current);
+
   const [native, setNative] = React.useState({value: null});
 
   const handleChange = (event: SwitchChangeEvent) => {
@@ -228,4 +236,6 @@ export default function Switch(props: Props): React.Node {
       />
     );
   }
-}
+});
+
+export default SwitchWithForwardedRef;

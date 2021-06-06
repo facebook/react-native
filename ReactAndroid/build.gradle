@@ -8,7 +8,7 @@
 plugins {
     id("com.android.library")
     id("com.facebook.react.codegen")
-    id("maven")
+    id("maven-publish")
     id("de.undercouch.download")
 }
 
@@ -18,6 +18,7 @@ import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
 
+def AAR_OUTPUT_URL = "file://${projectDir}/../android"
 // We download various C++ open-source dependencies into downloads.
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
 // After that we build native code from src/main/jni with module path pointing at third-party-ndk.
@@ -425,13 +426,13 @@ task extractJNIFiles {
     }
 }
 
+task installArchives {
+    dependsOn("publishReleasePublicationToNpmRepository")
+}
+
 android {
     compileSdkVersion 30
     ndkVersion ANDROID_NDK_VERSION
-    compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_1_8)
-        targetCompatibility(JavaVersion.VERSION_1_8)
-    }
 
     defaultConfig {
         minSdkVersion(21)
@@ -488,7 +489,7 @@ android {
 
 dependencies {
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
-    api("com.facebook.yoga:proguard-annotations:1.17.0")
+    api("com.facebook.yoga:proguard-annotations:1.19.0")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
     api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
@@ -520,8 +521,6 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
 }
 
-apply(from: "release.gradle")
-
 react {
     // TODO: The library name is chosen for parity with Fabric components & iOS
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
@@ -529,4 +528,54 @@ react {
     jsRootDir = file("../Libraries")
     reactNativeRootDir = file("$projectDir/..")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                artifactId = POM_ARTIFACT_ID
+                groupId = GROUP
+                version = VERSION_NAME
+
+                pom {
+                    name = POM_NAME
+                    description = "A framework for building native apps with React"
+                    url = "https://github.com/facebook/react-native"
+
+                    developers {
+                        developer {
+                            id = "facebook"
+                            name = "Facebook"
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = "MIT License"
+                            url = "https://github.com/facebook/react-native/blob/master/LICENSE"
+                            distribution = "repo"
+                        }
+                    }
+
+                    scm {
+                        url = "https://github.com/facebook/react-native.git"
+                        connection = "scm:git:https://github.com/facebook/react-native.git"
+                        developerConnection = "scm:git:git@github.com:facebook/react-native.git"
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "npm"
+                url = AAR_OUTPUT_URL
+            }
+        }
+    }
 }
