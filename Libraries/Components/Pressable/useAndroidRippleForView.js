@@ -42,7 +42,9 @@ export default function useAndroidRippleForView(
   onPressMove: (event: PressEvent) => void,
   onPressOut: (event: PressEvent) => void,
   viewProps: $ReadOnly<{|
-    nativeBackgroundAndroid: NativeBackgroundProp,
+    [
+      | 'nativeForegroundAndroid'
+      | 'nativeBackgroundAndroid']: NativeBackgroundProp,
   |}>,
 |}> {
   const {color, borderless, radius, useForeground} = rippleConfig ?? {};
@@ -59,19 +61,23 @@ export default function useAndroidRippleForView(
         'Unexpected color given for Ripple color',
       );
 
-      const backgroundPropKey = useForeground
-        ? 'nativeForegroundAndroid'
-        : 'nativeBackgroundAndroid';
+      let viewProps = {};
+
+      const backgroundValue = {
+        type: 'RippleAndroid',
+        color: processedColor,
+        borderless: borderless === true,
+        rippleRadius: radius,
+      };
+
+      if (useForeground === true) {
+        viewProps.nativeForegroundAndroid = backgroundValue;
+      } else {
+        viewProps.nativeBackgroundAndroid = backgroundValue;
+      }
 
       return {
-        viewProps: {
-          [backgroundPropKey]: {
-            type: 'RippleAndroid',
-            color: processedColor,
-            borderless: borderless === true,
-            rippleRadius: radius,
-          },
-        },
+        viewProps,
         onPressIn(event: PressEvent): void {
           const view = viewRef.current;
           if (view != null) {

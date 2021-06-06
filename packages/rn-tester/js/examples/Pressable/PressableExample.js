@@ -311,6 +311,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'blue',
   },
+  image: {
+    height: 100,
+    width: 100,
+  },
 });
 
 exports.displayName = (undefined: ?string);
@@ -386,10 +390,6 @@ exports.examples = [
         textAlign: 'center',
         margin: 10,
       };
-      const imageDimension = {
-        height: 100,
-        width: 100,
-      };
 
       return (
         <View>
@@ -436,13 +436,12 @@ exports.examples = [
               android_ripple={{
                 borderless: false,
                 useForeground: true,
-              }}
-              style={imageDimension}>
+              }}>
               <Image
                 source={{
                   uri: 'https://www.facebook.com/ads/pics/successstories.png',
                 }}
-                style={imageDimension}
+                style={styles.image}
               />
             </Pressable>
             <Text>use foreground</Text>
