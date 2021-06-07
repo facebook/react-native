@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<3836d5af681381d070c07bf87c303843>>
+ * @generated SignedSource<<0962b5cf17d6b982900b0deedd83fda0>>
  */
 
 'use strict';
@@ -2844,7 +2844,6 @@ var enableProfilerTimer = true;
 var enableLazyElements = false;
 var warnAboutStringRefs = false;
 var enableNewReconciler = false;
-var deferRenderPhaseUpdateToNextBatch = true;
 var enableLazyContextPropagation = false;
 
 // Don't change these two values. They're used by React Dev Tools.
@@ -4697,6 +4696,48 @@ function markRootEntangled(root, entangledLanes) {
     lanes &= ~lane;
   }
 }
+function addFiberToLanesMap(root, fiber, lanes) {
+  if (!isDevToolsPresent) {
+    return;
+  }
+
+  var pendingUpdatersLaneMap = root.pendingUpdatersLaneMap;
+
+  while (lanes > 0) {
+    var index = laneToIndex(lanes);
+    var lane = 1 << index;
+    var updaters = pendingUpdatersLaneMap[index];
+    updaters.add(fiber);
+    lanes &= ~lane;
+  }
+}
+function movePendingFibersToMemoized(root, lanes) {
+  if (!isDevToolsPresent) {
+    return;
+  }
+
+  var pendingUpdatersLaneMap = root.pendingUpdatersLaneMap;
+  var memoizedUpdaters = root.memoizedUpdaters;
+
+  while (lanes > 0) {
+    var index = laneToIndex(lanes);
+    var lane = 1 << index;
+    var updaters = pendingUpdatersLaneMap[index];
+
+    if (updaters.size > 0) {
+      updaters.forEach(function(fiber) {
+        var alternate = fiber.alternate;
+
+        if (alternate === null || !memoizedUpdaters.has(alternate)) {
+          memoizedUpdaters.add(fiber);
+        }
+      });
+      updaters.clear();
+    }
+
+    lanes &= ~lane;
+  }
+}
 var clz32 = Math.clz32 ? Math.clz32 : clz32Fallback; // Count leading zeros. Only used on lanes, so assume input is an integer.
 // Based on:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/clz32
@@ -5812,7 +5853,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-2d8d133e1";
+var ReactVersion = "17.0.3-0eea57724";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -6596,9 +6637,7 @@ function readContext(context) {
       lastContextDependency = contextItem;
       currentlyRenderingFiber.dependencies = {
         lanes: NoLanes,
-        firstContext: contextItem,
-        // TODO: This is an old field. Delete it.
-        responders: null
+        firstContext: contextItem
       };
     } else {
       // Append a new context item.
@@ -7992,7 +8031,6 @@ function mountClassInstance(workInProgress, ctor, newProps, renderLanes) {
     var fiberFlags = Update;
 
     if ((workInProgress.mode & StrictEffectsMode) !== NoMode) {
-      // Never double-invoke effects for legacy roots.
       fiberFlags |= MountLayoutDev;
     }
 
@@ -8061,7 +8099,6 @@ function resumeMountClassInstance(workInProgress, ctor, newProps, renderLanes) {
       var fiberFlags = Update;
 
       if ((workInProgress.mode & StrictEffectsMode) !== NoMode) {
-        // Never double-invoke effects for legacy roots.
         fiberFlags |= MountLayoutDev;
       }
 
@@ -8114,7 +8151,6 @@ function resumeMountClassInstance(workInProgress, ctor, newProps, renderLanes) {
       var _fiberFlags = Update;
 
       if ((workInProgress.mode & StrictEffectsMode) !== NoMode) {
-        // Never double-invoke effects for legacy roots.
         _fiberFlags |= MountLayoutDev;
       }
 
@@ -8127,7 +8163,6 @@ function resumeMountClassInstance(workInProgress, ctor, newProps, renderLanes) {
       var _fiberFlags2 = Update;
 
       if ((workInProgress.mode & StrictEffectsMode) !== NoMode) {
-        // Never double-invoke effects for legacy roots.
         _fiberFlags2 |= MountLayoutDev;
       }
 
@@ -12268,7 +12303,52 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
 
 var now$1 = Scheduler.unstable_now;
 var commitTime = 0;
+var layoutEffectStartTime = -1;
 var profilerStartTime = -1;
+var passiveEffectStartTime = -1;
+/**
+ * Tracks whether the current update was a nested/cascading update (scheduled from a layout effect).
+ *
+ * The overall sequence is:
+ *   1. render
+ *   2. commit (and call `onRender`, `onCommit`)
+ *   3. check for nested updates
+ *   4. flush passive effects (and call `onPostCommit`)
+ *
+ * Nested updates are identified in step 3 above,
+ * but step 4 still applies to the work that was just committed.
+ * We use two flags to track nested updates then:
+ * one tracks whether the upcoming update is a nested update,
+ * and the other tracks whether the current update was a nested update.
+ * The first value gets synced to the second at the start of the render phase.
+ */
+
+var currentUpdateIsNested = false;
+var nestedUpdateScheduled = false;
+
+function isCurrentUpdateNested() {
+  return currentUpdateIsNested;
+}
+
+function markNestedUpdateScheduled() {
+  {
+    nestedUpdateScheduled = true;
+  }
+}
+
+function resetNestedUpdateFlag() {
+  {
+    currentUpdateIsNested = false;
+    nestedUpdateScheduled = false;
+  }
+}
+
+function syncNestedUpdateFlag() {
+  {
+    currentUpdateIsNested = nestedUpdateScheduled;
+    nestedUpdateScheduled = false;
+  }
+}
 
 function getCommitTime() {
   return commitTime;
@@ -12303,6 +12383,77 @@ function stopProfilerTimerIfRunningAndRecordDelta(fiber, overrideBaseTime) {
   }
 }
 
+function recordLayoutEffectDuration(fiber) {
+  if (layoutEffectStartTime >= 0) {
+    var elapsedTime = now$1() - layoutEffectStartTime;
+    layoutEffectStartTime = -1; // Store duration on the next nearest Profiler ancestor
+    // Or the root (for the DevTools Profiler to read)
+
+    var parentFiber = fiber.return;
+
+    while (parentFiber !== null) {
+      switch (parentFiber.tag) {
+        case HostRoot:
+          var root = parentFiber.stateNode;
+          root.effectDuration += elapsedTime;
+          return;
+
+        case Profiler:
+          var parentStateNode = parentFiber.stateNode;
+          parentStateNode.effectDuration += elapsedTime;
+          return;
+      }
+
+      parentFiber = parentFiber.return;
+    }
+  }
+}
+
+function recordPassiveEffectDuration(fiber) {
+  if (passiveEffectStartTime >= 0) {
+    var elapsedTime = now$1() - passiveEffectStartTime;
+    passiveEffectStartTime = -1; // Store duration on the next nearest Profiler ancestor
+    // Or the root (for the DevTools Profiler to read)
+
+    var parentFiber = fiber.return;
+
+    while (parentFiber !== null) {
+      switch (parentFiber.tag) {
+        case HostRoot:
+          var root = parentFiber.stateNode;
+
+          if (root !== null) {
+            root.passiveEffectDuration += elapsedTime;
+          }
+
+          return;
+
+        case Profiler:
+          var parentStateNode = parentFiber.stateNode;
+
+          if (parentStateNode !== null) {
+            // Detached fibers have their state node cleared out.
+            // In this case, the return pointer is also cleared out,
+            // so we won't be able to report the time spent in this Profiler's subtree.
+            parentStateNode.passiveEffectDuration += elapsedTime;
+          }
+
+          return;
+      }
+
+      parentFiber = parentFiber.return;
+    }
+  }
+}
+
+function startLayoutEffectTimer() {
+  layoutEffectStartTime = now$1();
+}
+
+function startPassiveEffectTimer() {
+  passiveEffectStartTime = now$1();
+}
+
 function transferActualDuration(fiber) {
   // Transfer time spent rendering these children so we don't lose it
   // after we rerender. This is used as a helper in special cases
@@ -12313,6 +12464,473 @@ function transferActualDuration(fiber) {
     fiber.actualDuration += child.actualDuration;
     child = child.sibling;
   }
+}
+
+function createCapturedValue(value, source) {
+  // If the value is an error, call this function immediately after it is thrown
+  // so the stack is accurate.
+  return {
+    value: value,
+    source: source,
+    stack: getStackByFiberInDevAndProd(source)
+  };
+}
+
+if (
+  !(
+    typeof ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog ===
+    "function"
+  )
+) {
+  throw Error(
+    "Expected ReactFiberErrorDialog.showErrorDialog to be a function."
+  );
+}
+
+function showErrorDialog(boundary, errorInfo) {
+  var capturedError = {
+    componentStack: errorInfo.stack !== null ? errorInfo.stack : "",
+    error: errorInfo.value,
+    errorBoundary:
+      boundary !== null && boundary.tag === ClassComponent
+        ? boundary.stateNode
+        : null
+  };
+  return ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog(
+    capturedError
+  );
+}
+
+function logCapturedError(boundary, errorInfo) {
+  try {
+    var logError = showErrorDialog(boundary, errorInfo); // Allow injected showErrorDialog() to prevent default console.error logging.
+    // This enables renderers like ReactNative to better manage redbox behavior.
+
+    if (logError === false) {
+      return;
+    }
+
+    var error = errorInfo.value;
+
+    if (true) {
+      var source = errorInfo.source;
+      var stack = errorInfo.stack;
+      var componentStack = stack !== null ? stack : ""; // Browsers support silencing uncaught errors by calling
+      // `preventDefault()` in window `error` handler.
+      // We record this information as an expando on the error.
+
+      if (error != null && error._suppressLogging) {
+        if (boundary.tag === ClassComponent) {
+          // The error is recoverable and was silenced.
+          // Ignore it and don't print the stack addendum.
+          // This is handy for testing error boundaries without noise.
+          return;
+        } // The error is fatal. Since the silencing might have
+        // been accidental, we'll surface it anyway.
+        // However, the browser would have silenced the original error
+        // so we'll print it first, and then print the stack addendum.
+
+        console["error"](error); // Don't transform to our wrapper
+        // For a more detailed description of this block, see:
+        // https://github.com/facebook/react/pull/13384
+      }
+
+      var componentName = source ? getComponentNameFromFiber(source) : null;
+      var componentNameMessage = componentName
+        ? "The above error occurred in the <" + componentName + "> component:"
+        : "The above error occurred in one of your React components:";
+      var errorBoundaryMessage;
+
+      if (boundary.tag === HostRoot) {
+        errorBoundaryMessage =
+          "Consider adding an error boundary to your tree to customize error handling behavior.\n" +
+          "Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.";
+      } else {
+        var errorBoundaryName =
+          getComponentNameFromFiber(boundary) || "Anonymous";
+        errorBoundaryMessage =
+          "React will try to recreate this component tree from scratch " +
+          ("using the error boundary you provided, " + errorBoundaryName + ".");
+      }
+
+      var combinedMessage =
+        componentNameMessage +
+        "\n" +
+        componentStack +
+        "\n\n" +
+        ("" + errorBoundaryMessage); // In development, we provide our own message with just the component stack.
+      // We don't include the original error message and JS stack because the browser
+      // has already printed it. Even if the application swallows the error, it is still
+      // displayed by the browser thanks to the DEV-only fake event trick in ReactErrorUtils.
+
+      console["error"](combinedMessage); // Don't transform to our wrapper
+    } else {
+      // In production, we print the error directly.
+      // This will include the message, the JS stack, and anything the browser wants to show.
+      // We pass the error object instead of custom message so that the browser displays the error natively.
+      console["error"](error); // Don't transform to our wrapper
+    }
+  } catch (e) {
+    // This method must not throw, or React internal state will get messed up.
+    // If console.error is overridden, or logCapturedError() shows a dialog that throws,
+    // we want to report this error outside of the normal stack as a last resort.
+    // https://github.com/facebook/react/issues/13188
+    setTimeout(function() {
+      throw e;
+    });
+  }
+}
+
+var PossiblyWeakMap$1 = typeof WeakMap === "function" ? WeakMap : Map;
+
+function createRootErrorUpdate(fiber, errorInfo, lane) {
+  var update = createUpdate(NoTimestamp, lane); // Unmount the root by rendering null.
+
+  update.tag = CaptureUpdate; // Caution: React DevTools currently depends on this property
+  // being called "element".
+
+  update.payload = {
+    element: null
+  };
+  var error = errorInfo.value;
+
+  update.callback = function() {
+    onUncaughtError(error);
+    logCapturedError(fiber, errorInfo);
+  };
+
+  return update;
+}
+
+function createClassErrorUpdate(fiber, errorInfo, lane) {
+  var update = createUpdate(NoTimestamp, lane);
+  update.tag = CaptureUpdate;
+  var getDerivedStateFromError = fiber.type.getDerivedStateFromError;
+
+  if (typeof getDerivedStateFromError === "function") {
+    var error$1 = errorInfo.value;
+
+    update.payload = function() {
+      logCapturedError(fiber, errorInfo);
+      return getDerivedStateFromError(error$1);
+    };
+  }
+
+  var inst = fiber.stateNode;
+
+  if (inst !== null && typeof inst.componentDidCatch === "function") {
+    update.callback = function callback() {
+      {
+        markFailedErrorBoundaryForHotReloading(fiber);
+      }
+
+      if (typeof getDerivedStateFromError !== "function") {
+        // To preserve the preexisting retry behavior of error boundaries,
+        // we keep track of which ones already failed during this batch.
+        // This gets reset before we yield back to the browser.
+        // TODO: Warn in strict mode if getDerivedStateFromError is
+        // not defined.
+        markLegacyErrorBoundaryAsFailed(this); // Only log here if componentDidCatch is the only error boundary method defined
+
+        logCapturedError(fiber, errorInfo);
+      }
+
+      var error$1 = errorInfo.value;
+      var stack = errorInfo.stack;
+      this.componentDidCatch(error$1, {
+        componentStack: stack !== null ? stack : ""
+      });
+
+      {
+        if (typeof getDerivedStateFromError !== "function") {
+          // If componentDidCatch is the only error boundary method defined,
+          // then it needs to call setState to recover from errors.
+          // If no state update is scheduled then the boundary will swallow the error.
+          if (!includesSomeLane(fiber.lanes, SyncLane)) {
+            error(
+              "%s: Error boundaries should implement getDerivedStateFromError(). " +
+                "In that method, return a state update to display an error message or fallback UI.",
+              getComponentNameFromFiber(fiber) || "Unknown"
+            );
+          }
+        }
+      }
+    };
+  } else {
+    update.callback = function() {
+      markFailedErrorBoundaryForHotReloading(fiber);
+    };
+  }
+
+  return update;
+}
+
+function attachPingListener(root, wakeable, lanes) {
+  // Attach a listener to the promise to "ping" the root and retry. But only if
+  // one does not already exist for the lanes we're currently rendering (which
+  // acts like a "thread ID" here).
+  var pingCache = root.pingCache;
+  var threadIDs;
+
+  if (pingCache === null) {
+    pingCache = root.pingCache = new PossiblyWeakMap$1();
+    threadIDs = new Set();
+    pingCache.set(wakeable, threadIDs);
+  } else {
+    threadIDs = pingCache.get(wakeable);
+
+    if (threadIDs === undefined) {
+      threadIDs = new Set();
+      pingCache.set(wakeable, threadIDs);
+    }
+  }
+
+  if (!threadIDs.has(lanes)) {
+    // Memoize using the thread ID to prevent redundant listeners.
+    threadIDs.add(lanes);
+    var ping = pingSuspendedRoot.bind(null, root, wakeable, lanes);
+
+    {
+      if (isDevToolsPresent) {
+        // If we have pending work still, restore the original updaters
+        restorePendingUpdaters(root, lanes);
+      }
+    }
+
+    wakeable.then(ping, ping);
+  }
+}
+
+function throwException(
+  root,
+  returnFiber,
+  sourceFiber,
+  value,
+  rootRenderLanes
+) {
+  // The source fiber did not complete.
+  sourceFiber.flags |= Incomplete;
+
+  {
+    if (isDevToolsPresent) {
+      // If we have pending work still, restore the original updaters
+      restorePendingUpdaters(root, rootRenderLanes);
+    }
+  }
+
+  if (
+    value !== null &&
+    typeof value === "object" &&
+    typeof value.then === "function"
+  ) {
+    var wakeable = value;
+    // A legacy mode Suspense quirk, only relevant to hook components.
+
+    var tag = sourceFiber.tag;
+
+    if (
+      (sourceFiber.mode & ConcurrentMode) === NoMode &&
+      (tag === FunctionComponent ||
+        tag === ForwardRef ||
+        tag === SimpleMemoComponent)
+    ) {
+      var currentSource = sourceFiber.alternate;
+
+      if (currentSource) {
+        sourceFiber.updateQueue = currentSource.updateQueue;
+        sourceFiber.memoizedState = currentSource.memoizedState;
+        sourceFiber.lanes = currentSource.lanes;
+      } else {
+        sourceFiber.updateQueue = null;
+        sourceFiber.memoizedState = null;
+      }
+    }
+
+    var hasInvisibleParentBoundary = hasSuspenseContext(
+      suspenseStackCursor.current,
+      InvisibleParentSuspenseContext
+    ); // Schedule the nearest Suspense to re-render the timed out view.
+
+    var _workInProgress = returnFiber;
+
+    do {
+      if (
+        _workInProgress.tag === SuspenseComponent &&
+        shouldCaptureSuspense(_workInProgress, hasInvisibleParentBoundary)
+      ) {
+        // Found the nearest boundary.
+        // Stash the promise on the boundary fiber. If the boundary times out, we'll
+        // attach another listener to flip the boundary back to its normal state.
+        var wakeables = _workInProgress.updateQueue;
+
+        if (wakeables === null) {
+          var updateQueue = new Set();
+          updateQueue.add(wakeable);
+          _workInProgress.updateQueue = updateQueue;
+        } else {
+          wakeables.add(wakeable);
+        } // If the boundary is in legacy mode, we should *not*
+        // suspend the commit. Pretend as if the suspended component rendered
+        // null and keep rendering. In the commit phase, we'll schedule a
+        // subsequent synchronous update to re-render the Suspense.
+        //
+        // Note: It doesn't matter whether the component that suspended was
+        // inside a concurrent mode tree. If the Suspense is outside of it, we
+        // should *not* suspend the commit.
+        //
+        // If the suspense boundary suspended itself suspended, we don't have to
+        // do this trick because nothing was partially started. We can just
+        // directly do a second pass over the fallback in this render and
+        // pretend we meant to render that directly.
+
+        if (
+          (_workInProgress.mode & ConcurrentMode) === NoMode &&
+          _workInProgress !== returnFiber
+        ) {
+          _workInProgress.flags |= DidCapture;
+          sourceFiber.flags |= ForceUpdateForLegacySuspense; // We're going to commit this fiber even though it didn't complete.
+          // But we shouldn't call any lifecycle methods or callbacks. Remove
+          // all lifecycle effect tags.
+
+          sourceFiber.flags &= ~(LifecycleEffectMask | Incomplete);
+
+          if (sourceFiber.tag === ClassComponent) {
+            var _currentSourceFiber = sourceFiber.alternate;
+
+            if (_currentSourceFiber === null) {
+              // This is a new mount. Change the tag so it's not mistaken for a
+              // completed class component. For example, we should not call
+              // componentWillUnmount if it is deleted.
+              sourceFiber.tag = IncompleteClassComponent;
+            } else {
+              // When we try rendering again, we should not reuse the current fiber,
+              // since it's known to be in an inconsistent state. Use a force update to
+              // prevent a bail out.
+              var update = createUpdate(NoTimestamp, SyncLane);
+              update.tag = ForceUpdate;
+              enqueueUpdate(sourceFiber, update);
+            }
+          } // The source fiber did not complete. Mark it with Sync priority to
+          // indicate that it still has pending work.
+
+          sourceFiber.lanes = mergeLanes(sourceFiber.lanes, SyncLane); // Exit without suspending.
+
+          return;
+        } // Confirmed that the boundary is in a concurrent mode tree. Continue
+        // with the normal suspend path.
+        //
+        // After this we'll use a set of heuristics to determine whether this
+        // render pass will run to completion or restart or "suspend" the commit.
+        // The actual logic for this is spread out in different places.
+        //
+        // This first principle is that if we're going to suspend when we complete
+        // a root, then we should also restart if we get an update or ping that
+        // might unsuspend it, and vice versa. The only reason to suspend is
+        // because you think you might want to restart before committing. However,
+        // it doesn't make sense to restart only while in the period we're suspended.
+        //
+        // Restarting too aggressively is also not good because it starves out any
+        // intermediate loading state. So we use heuristics to determine when.
+        // Suspense Heuristics
+        //
+        // If nothing threw a Promise or all the same fallbacks are already showing,
+        // then don't suspend/restart.
+        //
+        // If this is an initial render of a new tree of Suspense boundaries and
+        // those trigger a fallback, then don't suspend/restart. We want to ensure
+        // that we can show the initial loading state as quickly as possible.
+        //
+        // If we hit a "Delayed" case, such as when we'd switch from content back into
+        // a fallback, then we should always suspend/restart. Transitions apply
+        // to this case. If none is defined, JND is used instead.
+        //
+        // If we're already showing a fallback and it gets "retried", allowing us to show
+        // another level, but there's still an inner boundary that would show a fallback,
+        // then we suspend/restart for 500ms since the last time we showed a fallback
+        // anywhere in the tree. This effectively throttles progressive loading into a
+        // consistent train of commits. This also gives us an opportunity to restart to
+        // get to the completed state slightly earlier.
+        //
+        // If there's ambiguity due to batching it's resolved in preference of:
+        // 1) "delayed", 2) "initial render", 3) "retry".
+        //
+        // We want to ensure that a "busy" state doesn't get force committed. We want to
+        // ensure that new initial loading states can commit as soon as possible.
+
+        attachPingListener(root, wakeable, rootRenderLanes);
+        _workInProgress.flags |= ShouldCapture;
+        _workInProgress.lanes = rootRenderLanes;
+        return;
+      } // This boundary already captured during this render. Continue to the next
+      // boundary.
+
+      _workInProgress = _workInProgress.return;
+    } while (_workInProgress !== null); // No boundary was found. Fallthrough to error mode.
+    // TODO: Use invariant so the message is stripped in prod?
+
+    value = new Error(
+      (getComponentNameFromFiber(sourceFiber) || "A React component") +
+        " suspended while rendering, but no fallback UI was specified.\n" +
+        "\n" +
+        "Add a <Suspense fallback=...> component higher in the tree to " +
+        "provide a loading indicator or placeholder to display."
+    );
+  } // We didn't find a boundary that could handle this type of exception. Start
+  // over and traverse parent path again, this time treating the exception
+  // as an error.
+
+  renderDidError();
+  value = createCapturedValue(value, sourceFiber);
+  var workInProgress = returnFiber;
+
+  do {
+    switch (workInProgress.tag) {
+      case HostRoot: {
+        var _errorInfo = value;
+        workInProgress.flags |= ShouldCapture;
+        var lane = pickArbitraryLane(rootRenderLanes);
+        workInProgress.lanes = mergeLanes(workInProgress.lanes, lane);
+
+        var _update = createRootErrorUpdate(workInProgress, _errorInfo, lane);
+
+        enqueueCapturedUpdate(workInProgress, _update);
+        return;
+      }
+
+      case ClassComponent:
+        // Capture and retry
+        var errorInfo = value;
+        var ctor = workInProgress.type;
+        var instance = workInProgress.stateNode;
+
+        if (
+          (workInProgress.flags & DidCapture) === NoFlags &&
+          (typeof ctor.getDerivedStateFromError === "function" ||
+            (instance !== null &&
+              typeof instance.componentDidCatch === "function" &&
+              !isAlreadyFailedLegacyErrorBoundary(instance)))
+        ) {
+          workInProgress.flags |= ShouldCapture;
+
+          var _lane = pickArbitraryLane(rootRenderLanes);
+
+          workInProgress.lanes = mergeLanes(workInProgress.lanes, _lane); // Schedule the error boundary to re-render using updated state
+
+          var _update2 = createClassErrorUpdate(
+            workInProgress,
+            errorInfo,
+            _lane
+          );
+
+          enqueueCapturedUpdate(workInProgress, _update2);
+          return;
+        }
+
+        break;
+    }
+
+    workInProgress = workInProgress.return;
+  } while (workInProgress !== null);
 }
 
 var ReactCurrentOwner$1 = ReactSharedInternals.ReactCurrentOwner;
@@ -12639,7 +13257,7 @@ function updateSimpleMemoComponent(
         // The pending lanes were cleared at the beginning of beginWork. We're
         // about to bail out, but there might be other lanes that weren't
         // included in the current render. Usually, the priority level of the
-        // remaining updates is accumlated during the evaluation of the
+        // remaining updates is accumulated during the evaluation of the
         // component (i.e. when processing the update queue). But since since
         // we're bailing out early *without* evaluating the component, we need
         // to account for it here, too. Reset to the value of the current fiber.
@@ -12773,6 +13391,14 @@ function updateMode(current, workInProgress, renderLanes) {
 function updateProfiler(current, workInProgress, renderLanes) {
   {
     workInProgress.flags |= Update;
+
+    {
+      // Reset effect durations for the next eventual effect phase.
+      // These are reset during render to allow the DevTools commit hook a chance to read them,
+      var stateNode = workInProgress.stateNode;
+      stateNode.effectDuration = 0;
+      stateNode.passiveEffectDuration = 0;
+    }
   }
 
   var nextProps = workInProgress.pendingProps;
@@ -12877,6 +13503,41 @@ function updateClassComponent(
   renderLanes
 ) {
   {
+    // This is used by DevTools to force a boundary to error.
+    switch (shouldError(workInProgress)) {
+      case false: {
+        var _instance = workInProgress.stateNode;
+        var ctor = workInProgress.type; // TODO This way of resetting the error boundary state is a hack.
+        // Is there a better way to do this?
+
+        var tempInstance = new ctor(
+          workInProgress.memoizedProps,
+          _instance.context
+        );
+        var state = tempInstance.state;
+
+        _instance.updater.enqueueSetState(_instance, state, null);
+
+        break;
+      }
+
+      case true: {
+        workInProgress.flags |= DidCapture;
+        workInProgress.flags |= ShouldCapture;
+        var error$1 = new Error("Simulated error coming from DevTools");
+        var lane = pickArbitraryLane(renderLanes);
+        workInProgress.lanes = mergeLanes(workInProgress.lanes, lane); // Schedule the error boundary to re-render using updated state
+
+        var update = createClassErrorUpdate(
+          workInProgress,
+          createCapturedValue(error$1, workInProgress),
+          lane
+        );
+        enqueueCapturedUpdate(workInProgress, update);
+        break;
+      }
+    }
+
     if (workInProgress.type !== workInProgress.elementType) {
       // Lazy component props can't be validated in createElement
       // because they're only guaranteed to be resolved here.
@@ -13532,7 +14193,7 @@ function validateFunctionComponentInDev(workInProgress, Component) {
         info += "\n\nCheck the render method of `" + ownerName + "`.";
       }
 
-      var warningKey = ownerName || workInProgress._debugID || "";
+      var warningKey = ownerName || "";
       var debugSource = workInProgress._debugSource;
 
       if (debugSource) {
@@ -14762,6 +15423,14 @@ function beginWork(current, workInProgress, renderLanes) {
 
             if (hasChildWork) {
               workInProgress.flags |= Update;
+            }
+
+            {
+              // Reset effect durations for the next eventual effect phase.
+              // These are reset during render to allow the DevTools commit hook a chance to read them,
+              var stateNode = workInProgress.stateNode;
+              stateNode.effectDuration = 0;
+              stateNode.passiveEffectDuration = 0;
             }
           }
 
@@ -16301,459 +16970,6 @@ function unwindInterruptedWork(interruptedWork, renderLanes) {
   }
 }
 
-function createCapturedValue(value, source) {
-  // If the value is an error, call this function immediately after it is thrown
-  // so the stack is accurate.
-  return {
-    value: value,
-    source: source,
-    stack: getStackByFiberInDevAndProd(source)
-  };
-}
-
-if (
-  !(
-    typeof ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog ===
-    "function"
-  )
-) {
-  throw Error(
-    "Expected ReactFiberErrorDialog.showErrorDialog to be a function."
-  );
-}
-
-function showErrorDialog(boundary, errorInfo) {
-  var capturedError = {
-    componentStack: errorInfo.stack !== null ? errorInfo.stack : "",
-    error: errorInfo.value,
-    errorBoundary:
-      boundary !== null && boundary.tag === ClassComponent
-        ? boundary.stateNode
-        : null
-  };
-  return ReactNativePrivateInterface.ReactFiberErrorDialog.showErrorDialog(
-    capturedError
-  );
-}
-
-function logCapturedError(boundary, errorInfo) {
-  try {
-    var logError = showErrorDialog(boundary, errorInfo); // Allow injected showErrorDialog() to prevent default console.error logging.
-    // This enables renderers like ReactNative to better manage redbox behavior.
-
-    if (logError === false) {
-      return;
-    }
-
-    var error = errorInfo.value;
-
-    if (true) {
-      var source = errorInfo.source;
-      var stack = errorInfo.stack;
-      var componentStack = stack !== null ? stack : ""; // Browsers support silencing uncaught errors by calling
-      // `preventDefault()` in window `error` handler.
-      // We record this information as an expando on the error.
-
-      if (error != null && error._suppressLogging) {
-        if (boundary.tag === ClassComponent) {
-          // The error is recoverable and was silenced.
-          // Ignore it and don't print the stack addendum.
-          // This is handy for testing error boundaries without noise.
-          return;
-        } // The error is fatal. Since the silencing might have
-        // been accidental, we'll surface it anyway.
-        // However, the browser would have silenced the original error
-        // so we'll print it first, and then print the stack addendum.
-
-        console["error"](error); // Don't transform to our wrapper
-        // For a more detailed description of this block, see:
-        // https://github.com/facebook/react/pull/13384
-      }
-
-      var componentName = source ? getComponentNameFromFiber(source) : null;
-      var componentNameMessage = componentName
-        ? "The above error occurred in the <" + componentName + "> component:"
-        : "The above error occurred in one of your React components:";
-      var errorBoundaryMessage;
-
-      if (boundary.tag === HostRoot) {
-        errorBoundaryMessage =
-          "Consider adding an error boundary to your tree to customize error handling behavior.\n" +
-          "Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.";
-      } else {
-        var errorBoundaryName =
-          getComponentNameFromFiber(boundary) || "Anonymous";
-        errorBoundaryMessage =
-          "React will try to recreate this component tree from scratch " +
-          ("using the error boundary you provided, " + errorBoundaryName + ".");
-      }
-
-      var combinedMessage =
-        componentNameMessage +
-        "\n" +
-        componentStack +
-        "\n\n" +
-        ("" + errorBoundaryMessage); // In development, we provide our own message with just the component stack.
-      // We don't include the original error message and JS stack because the browser
-      // has already printed it. Even if the application swallows the error, it is still
-      // displayed by the browser thanks to the DEV-only fake event trick in ReactErrorUtils.
-
-      console["error"](combinedMessage); // Don't transform to our wrapper
-    } else {
-      // In production, we print the error directly.
-      // This will include the message, the JS stack, and anything the browser wants to show.
-      // We pass the error object instead of custom message so that the browser displays the error natively.
-      console["error"](error); // Don't transform to our wrapper
-    }
-  } catch (e) {
-    // This method must not throw, or React internal state will get messed up.
-    // If console.error is overridden, or logCapturedError() shows a dialog that throws,
-    // we want to report this error outside of the normal stack as a last resort.
-    // https://github.com/facebook/react/issues/13188
-    setTimeout(function() {
-      throw e;
-    });
-  }
-}
-
-var PossiblyWeakMap$1 = typeof WeakMap === "function" ? WeakMap : Map;
-
-function createRootErrorUpdate(fiber, errorInfo, lane) {
-  var update = createUpdate(NoTimestamp, lane); // Unmount the root by rendering null.
-
-  update.tag = CaptureUpdate; // Caution: React DevTools currently depends on this property
-  // being called "element".
-
-  update.payload = {
-    element: null
-  };
-  var error = errorInfo.value;
-
-  update.callback = function() {
-    onUncaughtError(error);
-    logCapturedError(fiber, errorInfo);
-  };
-
-  return update;
-}
-
-function createClassErrorUpdate(fiber, errorInfo, lane) {
-  var update = createUpdate(NoTimestamp, lane);
-  update.tag = CaptureUpdate;
-  var getDerivedStateFromError = fiber.type.getDerivedStateFromError;
-
-  if (typeof getDerivedStateFromError === "function") {
-    var error$1 = errorInfo.value;
-
-    update.payload = function() {
-      logCapturedError(fiber, errorInfo);
-      return getDerivedStateFromError(error$1);
-    };
-  }
-
-  var inst = fiber.stateNode;
-
-  if (inst !== null && typeof inst.componentDidCatch === "function") {
-    update.callback = function callback() {
-      {
-        markFailedErrorBoundaryForHotReloading(fiber);
-      }
-
-      if (typeof getDerivedStateFromError !== "function") {
-        // To preserve the preexisting retry behavior of error boundaries,
-        // we keep track of which ones already failed during this batch.
-        // This gets reset before we yield back to the browser.
-        // TODO: Warn in strict mode if getDerivedStateFromError is
-        // not defined.
-        markLegacyErrorBoundaryAsFailed(this); // Only log here if componentDidCatch is the only error boundary method defined
-
-        logCapturedError(fiber, errorInfo);
-      }
-
-      var error$1 = errorInfo.value;
-      var stack = errorInfo.stack;
-      this.componentDidCatch(error$1, {
-        componentStack: stack !== null ? stack : ""
-      });
-
-      {
-        if (typeof getDerivedStateFromError !== "function") {
-          // If componentDidCatch is the only error boundary method defined,
-          // then it needs to call setState to recover from errors.
-          // If no state update is scheduled then the boundary will swallow the error.
-          if (!includesSomeLane(fiber.lanes, SyncLane)) {
-            error(
-              "%s: Error boundaries should implement getDerivedStateFromError(). " +
-                "In that method, return a state update to display an error message or fallback UI.",
-              getComponentNameFromFiber(fiber) || "Unknown"
-            );
-          }
-        }
-      }
-    };
-  } else {
-    update.callback = function() {
-      markFailedErrorBoundaryForHotReloading(fiber);
-    };
-  }
-
-  return update;
-}
-
-function attachPingListener(root, wakeable, lanes) {
-  // Attach a listener to the promise to "ping" the root and retry. But only if
-  // one does not already exist for the lanes we're currently rendering (which
-  // acts like a "thread ID" here).
-  var pingCache = root.pingCache;
-  var threadIDs;
-
-  if (pingCache === null) {
-    pingCache = root.pingCache = new PossiblyWeakMap$1();
-    threadIDs = new Set();
-    pingCache.set(wakeable, threadIDs);
-  } else {
-    threadIDs = pingCache.get(wakeable);
-
-    if (threadIDs === undefined) {
-      threadIDs = new Set();
-      pingCache.set(wakeable, threadIDs);
-    }
-  }
-
-  if (!threadIDs.has(lanes)) {
-    // Memoize using the thread ID to prevent redundant listeners.
-    threadIDs.add(lanes);
-    var ping = pingSuspendedRoot.bind(null, root, wakeable, lanes);
-
-    wakeable.then(ping, ping);
-  }
-}
-
-function throwException(
-  root,
-  returnFiber,
-  sourceFiber,
-  value,
-  rootRenderLanes
-) {
-  // The source fiber did not complete.
-  sourceFiber.flags |= Incomplete;
-
-  if (
-    value !== null &&
-    typeof value === "object" &&
-    typeof value.then === "function"
-  ) {
-    var wakeable = value;
-    // A legacy mode Suspense quirk, only relevant to hook components.
-
-    var tag = sourceFiber.tag;
-
-    if (
-      (sourceFiber.mode & ConcurrentMode) === NoMode &&
-      (tag === FunctionComponent ||
-        tag === ForwardRef ||
-        tag === SimpleMemoComponent)
-    ) {
-      var currentSource = sourceFiber.alternate;
-
-      if (currentSource) {
-        sourceFiber.updateQueue = currentSource.updateQueue;
-        sourceFiber.memoizedState = currentSource.memoizedState;
-        sourceFiber.lanes = currentSource.lanes;
-      } else {
-        sourceFiber.updateQueue = null;
-        sourceFiber.memoizedState = null;
-      }
-    }
-
-    var hasInvisibleParentBoundary = hasSuspenseContext(
-      suspenseStackCursor.current,
-      InvisibleParentSuspenseContext
-    ); // Schedule the nearest Suspense to re-render the timed out view.
-
-    var _workInProgress = returnFiber;
-
-    do {
-      if (
-        _workInProgress.tag === SuspenseComponent &&
-        shouldCaptureSuspense(_workInProgress, hasInvisibleParentBoundary)
-      ) {
-        // Found the nearest boundary.
-        // Stash the promise on the boundary fiber. If the boundary times out, we'll
-        // attach another listener to flip the boundary back to its normal state.
-        var wakeables = _workInProgress.updateQueue;
-
-        if (wakeables === null) {
-          var updateQueue = new Set();
-          updateQueue.add(wakeable);
-          _workInProgress.updateQueue = updateQueue;
-        } else {
-          wakeables.add(wakeable);
-        } // If the boundary is in legacy mode, we should *not*
-        // suspend the commit. Pretend as if the suspended component rendered
-        // null and keep rendering. In the commit phase, we'll schedule a
-        // subsequent synchronous update to re-render the Suspense.
-        //
-        // Note: It doesn't matter whether the component that suspended was
-        // inside a concurrent mode tree. If the Suspense is outside of it, we
-        // should *not* suspend the commit.
-        //
-        // If the suspense boundary suspended itself suspended, we don't have to
-        // do this trick because nothing was partially started. We can just
-        // directly do a second pass over the fallback in this render and
-        // pretend we meant to render that directly.
-
-        if (
-          (_workInProgress.mode & ConcurrentMode) === NoMode &&
-          _workInProgress !== returnFiber
-        ) {
-          _workInProgress.flags |= DidCapture;
-          sourceFiber.flags |= ForceUpdateForLegacySuspense; // We're going to commit this fiber even though it didn't complete.
-          // But we shouldn't call any lifecycle methods or callbacks. Remove
-          // all lifecycle effect tags.
-
-          sourceFiber.flags &= ~(LifecycleEffectMask | Incomplete);
-
-          if (sourceFiber.tag === ClassComponent) {
-            var _currentSourceFiber = sourceFiber.alternate;
-
-            if (_currentSourceFiber === null) {
-              // This is a new mount. Change the tag so it's not mistaken for a
-              // completed class component. For example, we should not call
-              // componentWillUnmount if it is deleted.
-              sourceFiber.tag = IncompleteClassComponent;
-            } else {
-              // When we try rendering again, we should not reuse the current fiber,
-              // since it's known to be in an inconsistent state. Use a force update to
-              // prevent a bail out.
-              var update = createUpdate(NoTimestamp, SyncLane);
-              update.tag = ForceUpdate;
-              enqueueUpdate(sourceFiber, update);
-            }
-          } // The source fiber did not complete. Mark it with Sync priority to
-          // indicate that it still has pending work.
-
-          sourceFiber.lanes = mergeLanes(sourceFiber.lanes, SyncLane); // Exit without suspending.
-
-          return;
-        } // Confirmed that the boundary is in a concurrent mode tree. Continue
-        // with the normal suspend path.
-        //
-        // After this we'll use a set of heuristics to determine whether this
-        // render pass will run to completion or restart or "suspend" the commit.
-        // The actual logic for this is spread out in different places.
-        //
-        // This first principle is that if we're going to suspend when we complete
-        // a root, then we should also restart if we get an update or ping that
-        // might unsuspend it, and vice versa. The only reason to suspend is
-        // because you think you might want to restart before committing. However,
-        // it doesn't make sense to restart only while in the period we're suspended.
-        //
-        // Restarting too aggressively is also not good because it starves out any
-        // intermediate loading state. So we use heuristics to determine when.
-        // Suspense Heuristics
-        //
-        // If nothing threw a Promise or all the same fallbacks are already showing,
-        // then don't suspend/restart.
-        //
-        // If this is an initial render of a new tree of Suspense boundaries and
-        // those trigger a fallback, then don't suspend/restart. We want to ensure
-        // that we can show the initial loading state as quickly as possible.
-        //
-        // If we hit a "Delayed" case, such as when we'd switch from content back into
-        // a fallback, then we should always suspend/restart. Transitions apply
-        // to this case. If none is defined, JND is used instead.
-        //
-        // If we're already showing a fallback and it gets "retried", allowing us to show
-        // another level, but there's still an inner boundary that would show a fallback,
-        // then we suspend/restart for 500ms since the last time we showed a fallback
-        // anywhere in the tree. This effectively throttles progressive loading into a
-        // consistent train of commits. This also gives us an opportunity to restart to
-        // get to the completed state slightly earlier.
-        //
-        // If there's ambiguity due to batching it's resolved in preference of:
-        // 1) "delayed", 2) "initial render", 3) "retry".
-        //
-        // We want to ensure that a "busy" state doesn't get force committed. We want to
-        // ensure that new initial loading states can commit as soon as possible.
-
-        attachPingListener(root, wakeable, rootRenderLanes);
-        _workInProgress.flags |= ShouldCapture;
-        _workInProgress.lanes = rootRenderLanes;
-        return;
-      } // This boundary already captured during this render. Continue to the next
-      // boundary.
-
-      _workInProgress = _workInProgress.return;
-    } while (_workInProgress !== null); // No boundary was found. Fallthrough to error mode.
-    // TODO: Use invariant so the message is stripped in prod?
-
-    value = new Error(
-      (getComponentNameFromFiber(sourceFiber) || "A React component") +
-        " suspended while rendering, but no fallback UI was specified.\n" +
-        "\n" +
-        "Add a <Suspense fallback=...> component higher in the tree to " +
-        "provide a loading indicator or placeholder to display."
-    );
-  } // We didn't find a boundary that could handle this type of exception. Start
-  // over and traverse parent path again, this time treating the exception
-  // as an error.
-
-  renderDidError();
-  value = createCapturedValue(value, sourceFiber);
-  var workInProgress = returnFiber;
-
-  do {
-    switch (workInProgress.tag) {
-      case HostRoot: {
-        var _errorInfo = value;
-        workInProgress.flags |= ShouldCapture;
-        var lane = pickArbitraryLane(rootRenderLanes);
-        workInProgress.lanes = mergeLanes(workInProgress.lanes, lane);
-
-        var _update = createRootErrorUpdate(workInProgress, _errorInfo, lane);
-
-        enqueueCapturedUpdate(workInProgress, _update);
-        return;
-      }
-
-      case ClassComponent:
-        // Capture and retry
-        var errorInfo = value;
-        var ctor = workInProgress.type;
-        var instance = workInProgress.stateNode;
-
-        if (
-          (workInProgress.flags & DidCapture) === NoFlags &&
-          (typeof ctor.getDerivedStateFromError === "function" ||
-            (instance !== null &&
-              typeof instance.componentDidCatch === "function" &&
-              !isAlreadyFailedLegacyErrorBoundary(instance)))
-        ) {
-          workInProgress.flags |= ShouldCapture;
-
-          var _lane = pickArbitraryLane(rootRenderLanes);
-
-          workInProgress.lanes = mergeLanes(workInProgress.lanes, _lane); // Schedule the error boundary to re-render using updated state
-
-          var _update2 = createClassErrorUpdate(
-            workInProgress,
-            errorInfo,
-            _lane
-          );
-
-          enqueueCapturedUpdate(workInProgress, _update2);
-          return;
-        }
-
-        break;
-    }
-
-    workInProgress = workInProgress.return;
-  } while (workInProgress !== null);
-}
-
 var didWarnAboutUndefinedSnapshotBeforeUpdate = null;
 
 {
@@ -16762,11 +16978,21 @@ var didWarnAboutUndefinedSnapshotBeforeUpdate = null;
 var PossiblyWeakSet = typeof WeakSet === "function" ? WeakSet : Set;
 var nextEffect = null; // Used for Profiling builds to track updaters.
 
+var inProgressLanes = null;
+var inProgressRoot = null;
+
 var callComponentWillUnmountWithTimer = function(current, instance) {
   instance.props = current.memoizedProps;
   instance.state = current.memoizedState;
 
-  {
+  if (current.mode & ProfileMode) {
+    try {
+      startLayoutEffectTimer();
+      instance.componentWillUnmount();
+    } finally {
+      recordLayoutEffectDuration(current);
+    }
+  } else {
     instance.componentWillUnmount();
   }
 }; // Capture errors so they don't interrupt mounting.
@@ -16798,7 +17024,11 @@ function safelyDetachRef(current, nearestMountedAncestor) {
   if (ref !== null) {
     if (typeof ref === "function") {
       {
-        {
+        if (current.mode & ProfileMode) {
+          startLayoutEffectTimer();
+          invokeGuardedCallback(null, ref, null, null);
+          recordLayoutEffectDuration(current);
+        } else {
           invokeGuardedCallback(null, ref, null, null);
         }
 
@@ -17105,6 +17335,58 @@ function commitHookEffectListMount(tag, finishedWork) {
   }
 }
 
+function commitPassiveEffectDurations(finishedRoot, finishedWork) {
+  {
+    // Only Profilers with work in their subtree will have an Update effect scheduled.
+    if ((finishedWork.flags & Update) !== NoFlags) {
+      switch (finishedWork.tag) {
+        case Profiler: {
+          var passiveEffectDuration =
+            finishedWork.stateNode.passiveEffectDuration;
+          var _finishedWork$memoize = finishedWork.memoizedProps,
+            id = _finishedWork$memoize.id,
+            onPostCommit = _finishedWork$memoize.onPostCommit; // This value will still reflect the previous commit phase.
+          // It does not get reset until the start of the next commit phase.
+
+          var commitTime = getCommitTime();
+          var phase = finishedWork.alternate === null ? "mount" : "update";
+
+          {
+            if (isCurrentUpdateNested()) {
+              phase = "nested-update";
+            }
+          }
+
+          if (typeof onPostCommit === "function") {
+            onPostCommit(id, phase, passiveEffectDuration, commitTime);
+          } // Bubble times to the next nearest ancestor Profiler.
+          // After we process that Profiler, we'll bubble further up.
+
+          var parentFiber = finishedWork.return;
+
+          outer: while (parentFiber !== null) {
+            switch (parentFiber.tag) {
+              case HostRoot:
+                var root = parentFiber.stateNode;
+                root.passiveEffectDuration += passiveEffectDuration;
+                break outer;
+
+              case Profiler:
+                var parentStateNode = parentFiber.stateNode;
+                parentStateNode.passiveEffectDuration += passiveEffectDuration;
+                break outer;
+            }
+
+            parentFiber = parentFiber.return;
+          }
+
+          break;
+        }
+      }
+    }
+  }
+}
+
 function commitLayoutEffectOnFiber(
   finishedRoot,
   current,
@@ -17120,7 +17402,14 @@ function commitLayoutEffectOnFiber(
         // This is done to prevent sibling component effects from interfering with each other,
         // e.g. a destroy function in one component should never override a ref set
         // by a create function in another component during the same commit.
-        {
+        if (finishedWork.mode & ProfileMode) {
+          try {
+            startLayoutEffectTimer();
+            commitHookEffectListMount(Layout | HasEffect, finishedWork);
+          } finally {
+            recordLayoutEffectDuration(finishedWork);
+          }
+        } else {
           commitHookEffectListMount(Layout | HasEffect, finishedWork);
         }
 
@@ -17164,7 +17453,14 @@ function commitLayoutEffectOnFiber(
               }
             }
 
-            {
+            if (finishedWork.mode & ProfileMode) {
+              try {
+                startLayoutEffectTimer();
+                instance.componentDidMount();
+              } finally {
+                recordLayoutEffectDuration(finishedWork);
+              }
+            } else {
               instance.componentDidMount();
             }
           } else {
@@ -17205,7 +17501,18 @@ function commitLayoutEffectOnFiber(
               }
             }
 
-            {
+            if (finishedWork.mode & ProfileMode) {
+              try {
+                startLayoutEffectTimer();
+                instance.componentDidUpdate(
+                  prevProps,
+                  prevState,
+                  instance.__reactInternalSnapshotBeforeUpdate
+                );
+              } finally {
+                recordLayoutEffectDuration(finishedWork);
+              }
+            } else {
               instance.componentDidUpdate(
                 prevProps,
                 prevState,
@@ -17316,6 +17623,12 @@ function commitLayoutEffectOnFiber(
           var commitTime = getCommitTime();
           var phase = current === null ? "mount" : "update";
 
+          {
+            if (isCurrentUpdateNested()) {
+              phase = "nested-update";
+            }
+          }
+
           if (typeof onRender === "function") {
             onRender(
               finishedWork.memoizedProps.id,
@@ -17325,6 +17638,40 @@ function commitLayoutEffectOnFiber(
               finishedWork.actualStartTime,
               commitTime
             );
+          }
+
+          {
+            if (typeof onCommit === "function") {
+              onCommit(
+                finishedWork.memoizedProps.id,
+                phase,
+                effectDuration,
+                commitTime
+              );
+            } // Schedule a passive effect for this Profiler to call onPostCommit hooks.
+            // This effect should be scheduled even if there is no onPostCommit callback for this Profiler,
+            // because the effect is also where times bubble to parent Profilers.
+
+            enqueuePendingPassiveProfilerEffect(finishedWork); // Propagate layout effect durations to the next nearest Profiler ancestor.
+            // Do not reset these values until the next render so DevTools has a chance to read them first.
+
+            var parentFiber = finishedWork.return;
+
+            outer: while (parentFiber !== null) {
+              switch (parentFiber.tag) {
+                case HostRoot:
+                  var root = parentFiber.stateNode;
+                  root.effectDuration += effectDuration;
+                  break outer;
+
+                case Profiler:
+                  var parentStateNode = parentFiber.stateNode;
+                  parentStateNode.effectDuration += effectDuration;
+                  break outer;
+              }
+
+              parentFiber = parentFiber.return;
+            }
           }
         }
 
@@ -17374,7 +17721,14 @@ function commitAttachRef(finishedWork) {
     } // Moved outside to ensure DCE works with this flag
 
     if (typeof ref === "function") {
-      {
+      if (finishedWork.mode & ProfileMode) {
+        try {
+          startLayoutEffectTimer();
+          ref(instanceToUse);
+        } finally {
+          recordLayoutEffectDuration(finishedWork);
+        }
+      } else {
         ref(instanceToUse);
       }
     } else {
@@ -17398,7 +17752,14 @@ function commitDetachRef(current) {
 
   if (currentRef !== null) {
     if (typeof currentRef === "function") {
-      {
+      if (current.mode & ProfileMode) {
+        try {
+          startLayoutEffectTimer();
+          currentRef(null);
+        } finally {
+          recordLayoutEffectDuration(current);
+        }
+      } else {
         currentRef(null);
       }
     } else {
@@ -17433,7 +17794,11 @@ function commitUnmount(finishedRoot, current, nearestMountedAncestor) {
 
             if (destroy !== undefined) {
               if ((tag & Layout) !== NoFlags$1) {
-                {
+                if (current.mode & ProfileMode) {
+                  startLayoutEffectTimer();
+                  safelyCallDestroy(current, nearestMountedAncestor, destroy);
+                  recordLayoutEffectDuration(current);
+                } else {
                   safelyCallDestroy(current, nearestMountedAncestor, destroy);
                 }
               }
@@ -17631,7 +17996,18 @@ function commitWork(current, finishedWork) {
         // This prevents sibling component effects from interfering with each other,
         // e.g. a destroy function in one component should never override a ref set
         // by a create function in another component during the same commit.
-        {
+        if (finishedWork.mode & ProfileMode) {
+          try {
+            startLayoutEffectTimer();
+            commitHookEffectListUnmount(
+              Layout | HasEffect,
+              finishedWork,
+              finishedWork.return
+            );
+          } finally {
+            recordLayoutEffectDuration(finishedWork);
+          }
+        } else {
           commitHookEffectListUnmount(
             Layout | HasEffect,
             finishedWork,
@@ -17701,6 +18077,19 @@ function attachSuspenseRetryListeners(finishedWork) {
       if (!retryCache.has(wakeable)) {
         retryCache.add(wakeable);
 
+        {
+          if (isDevToolsPresent) {
+            if (inProgressLanes !== null && inProgressRoot !== null) {
+              // If we have pending work still, associate the original updaters with it.
+              restorePendingUpdaters(inProgressRoot, inProgressLanes);
+            } else {
+              throw Error(
+                "Expected finished root and lanes to be set. This is a bug in React."
+              );
+            }
+          }
+        }
+
         wakeable.then(retry, retry);
       }
     });
@@ -17723,8 +18112,12 @@ function isSuspenseBoundaryBeingHidden(current, finishedWork) {
 }
 
 function commitMutationEffects(root, firstChild, committedLanes) {
+  inProgressLanes = committedLanes;
+  inProgressRoot = root;
   nextEffect = firstChild;
   commitMutationEffects_begin(root);
+  inProgressLanes = null;
+  inProgressRoot = null;
 }
 
 function commitMutationEffects_begin(root) {
@@ -17858,8 +18251,12 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
 }
 
 function commitLayoutEffects(finishedWork, root, committedLanes) {
+  inProgressLanes = committedLanes;
+  inProgressRoot = root;
   nextEffect = finishedWork;
   commitLayoutEffects_begin(finishedWork, root, committedLanes);
+  inProgressLanes = null;
+  inProgressRoot = null;
 }
 
 function commitLayoutEffects_begin(subtreeRoot, root, committedLanes) {
@@ -17992,7 +18389,15 @@ function commitPassiveMountOnFiber(finishedRoot, finishedWork) {
     case FunctionComponent:
     case ForwardRef:
     case SimpleMemoComponent: {
-      {
+      if (finishedWork.mode & ProfileMode) {
+        startPassiveEffectTimer();
+
+        try {
+          commitHookEffectListMount(Passive$1 | HasEffect, finishedWork);
+        } finally {
+          recordPassiveEffectDuration(finishedWork);
+        }
+      } else {
         commitHookEffectListMount(Passive$1 | HasEffect, finishedWork);
       }
 
@@ -18093,7 +18498,15 @@ function commitPassiveUnmountOnFiber(finishedWork) {
     case FunctionComponent:
     case ForwardRef:
     case SimpleMemoComponent: {
-      {
+      if (finishedWork.mode & ProfileMode) {
+        startPassiveEffectTimer();
+        commitHookEffectListUnmount(
+          Passive$1 | HasEffect,
+          finishedWork,
+          finishedWork.return
+        );
+        recordPassiveEffectDuration(finishedWork);
+      } else {
         commitHookEffectListUnmount(
           Passive$1 | HasEffect,
           finishedWork,
@@ -18167,7 +18580,11 @@ function commitPassiveUnmountInsideDeletedTreeOnFiber(
     case FunctionComponent:
     case ForwardRef:
     case SimpleMemoComponent: {
-      {
+      if (current.mode & ProfileMode) {
+        startPassiveEffectTimer();
+        commitHookEffectListUnmount(Passive$1, current, nearestMountedAncestor);
+        recordPassiveEffectDuration(current);
+      } else {
         commitHookEffectListUnmount(Passive$1, current, nearestMountedAncestor);
       }
 
@@ -18441,6 +18858,7 @@ var legacyErrorBoundariesThatAlreadyFailed = null; // Only used when enableProfi
 var rootDoesHavePassiveEffects = false;
 var rootWithPendingPassiveEffects = null;
 var pendingPassiveEffectsLanes = NoLanes;
+var pendingPassiveProfilerEffects = []; // Use these to prevent an infinite loop of nested updates
 
 var NESTED_UPDATE_LIMIT = 50;
 var nestedUpdateCount = 0;
@@ -18478,6 +18896,20 @@ function requestUpdateLane(fiber) {
 
   if ((mode & ConcurrentMode) === NoMode) {
     return SyncLane;
+  } else if (
+    (executionContext & RenderContext) !== NoContext &&
+    workInProgressRootRenderLanes !== NoLanes
+  ) {
+    // This is a render phase update. These are not officially supported. The
+    // old behavior is to give this the same "thread" (lanes) as
+    // whatever is currently rendering. So if you call `setState` on a component
+    // that happens later in the same render, it will flush. Ideally, we want to
+    // remove the special case and treat them as if they came from an
+    // interleaved event. Regardless, this pattern is not officially supported.
+    // This behavior is only a fallback. The flag only exists until we can roll
+    // out the setState warning, since existing code might accidentally rely on
+    // the current behavior.
+    return pickArbitraryLane(workInProgressRootRenderLanes);
   }
 
   var isTransition = requestCurrentTransition() !== NoTransition;
@@ -18507,7 +18939,7 @@ function requestUpdateLane(fiber) {
 
   if (updateLane !== NoLane) {
     return updateLane;
-  } // This update originated outside React. Ask the host environement for an
+  } // This update originated outside React. Ask the host environment for an
   // appropriate priority, based on the type of event.
   //
   // The opaque type returned by the host config is internally a lane, so we can
@@ -18542,6 +18974,12 @@ function scheduleUpdateOnFiber(fiber, lane, eventTime) {
     return null;
   }
 
+  {
+    if (isDevToolsPresent) {
+      addFiberToLanesMap(root, fiber, lane);
+    }
+  } // Mark that the root has a pending update.
+
   markRootUpdated(root, lane, eventTime);
 
   if (root === workInProgressRoot) {
@@ -18550,7 +18988,7 @@ function scheduleUpdateOnFiber(fiber, lane, eventTime) {
     // `deferRenderPhaseUpdateToNextBatch` flag is off and this is a render
     // phase update. In that case, we don't treat render phase updates as if
     // they were interleaved, for backwards compat reasons.
-    {
+    if ((executionContext & RenderContext) === NoContext) {
       workInProgressRootUpdatedLanes = mergeLanes(
         workInProgressRootUpdatedLanes,
         lane
@@ -18662,7 +19100,7 @@ function isInterleavedUpdate(fiber, lane) {
     // then don't treat this as an interleaved update. This pattern is
     // accompanied by a warning but we haven't fully deprecated it yet. We can
     // remove once the deferRenderPhaseUpdateToNextBatch flag is enabled.
-    deferRenderPhaseUpdateToNextBatch
+    (executionContext & RenderContext) === NoContext
   );
 } // Use this function to schedule a task for a root. There's only one task per
 // root; if a task was already scheduled, we'll check to make sure the priority
@@ -18773,6 +19211,9 @@ function ensureRootIsScheduled(root, currentTime) {
 // goes through Scheduler.
 
 function performConcurrentWorkOnRoot(root, didTimeout) {
+  {
+    resetNestedUpdateFlag();
+  } // Since we know we're in a React event, we can clear the current
   // event time. The next update will compute a new event time.
 
   currentEventTime = NoTimestamp;
@@ -18795,7 +19236,7 @@ function performConcurrentWorkOnRoot(root, didTimeout) {
       // there's a new task, or that there's no remaining work on this root.
       return null;
     }
-  } // Determine the next expiration time to work on, using the fields stored
+  } // Determine the next lanes to work on, using the fields stored
   // on the root.
 
   var lanes = getNextLanes(
@@ -19000,6 +19441,10 @@ function markRootSuspended$1(root, suspendedLanes) {
 // through Scheduler
 
 function performSyncWorkOnRoot(root) {
+  {
+    syncNestedUpdateFlag();
+  }
+
   if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
     throw Error("Should not already be working.");
   }
@@ -19300,6 +19745,22 @@ function renderRootSync(root, lanes) {
   // and prepare a fresh one. Otherwise we'll continue where we left off.
 
   if (workInProgressRoot !== root || workInProgressRootRenderLanes !== lanes) {
+    {
+      if (isDevToolsPresent) {
+        var memoizedUpdaters = root.memoizedUpdaters;
+
+        if (memoizedUpdaters.size > 0) {
+          restorePendingUpdaters(root, workInProgressRootRenderLanes);
+          memoizedUpdaters.clear();
+        } // At this point, move Fibers that scheduled the upcoming work from the Map to the Set.
+        // If we bailout on this work, we'll move them back (like above).
+        // It's important to move them now in case the work spawns more work at the same priority with different updaters.
+        // That way we can keep the current update and future updates separate.
+
+        movePendingFibersToMemoized(root, lanes);
+      }
+    }
+
     prepareFreshStack(root, lanes);
   }
 
@@ -19346,6 +19807,22 @@ function renderRootConcurrent(root, lanes) {
   // and prepare a fresh one. Otherwise we'll continue where we left off.
 
   if (workInProgressRoot !== root || workInProgressRootRenderLanes !== lanes) {
+    {
+      if (isDevToolsPresent) {
+        var memoizedUpdaters = root.memoizedUpdaters;
+
+        if (memoizedUpdaters.size > 0) {
+          restorePendingUpdaters(root, workInProgressRootRenderLanes);
+          memoizedUpdaters.clear();
+        } // At this point, move Fibers that scheduled the upcoming work from the Map to the Set.
+        // If we bailout on this work, we'll move them back (like above).
+        // It's important to move them now in case the work spawns more work at the same priority with different updaters.
+        // That way we can keep the current update and future updates separate.
+
+        movePendingFibersToMemoized(root, lanes);
+      }
+    }
+
     resetRenderTimer();
     prepareFreshStack(root, lanes);
   }
@@ -19446,7 +19923,7 @@ function completeUnitOfWork(unitOfWork) {
       // This fiber did not complete because something threw. Pop values off
       // the stack without entering the complete phase. If this is a boundary,
       // capture values if possible.
-      var _next = unwindWork(completedWork); // Because this fiber did not complete, don't reset its expiration time.
+      var _next = unwindWork(completedWork); // Because this fiber did not complete, don't reset its lanes.
 
       if (_next !== null) {
         // If completing this work spawned new work, do that next. We'll come
@@ -19591,7 +20068,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     }
   } // Check if there are any effects in the whole tree.
   // TODO: This is left over from the effect list implementation, where we had
-  // to check for the existence of `firstEffect` to satsify Flow. I think the
+  // to check for the existence of `firstEffect` to satisfy Flow. I think the
   // only other reason this optimization exists is because it affects profiling.
   // Reconsider whether this is necessary.
 
@@ -19630,7 +20107,7 @@ function commitRootImpl(root, renderPriorityLevel) {
       recordCommitTime();
     }
 
-    commitMutationEffects(root, finishedWork);
+    commitMutationEffects(root, finishedWork, lanes);
 
     resetAfterCommit(root.containerInfo); // The work-in-progress tree is now the current tree. This must come after
     // the mutation phase, so that the previous tree is still current during
@@ -19683,6 +20160,9 @@ function commitRootImpl(root, renderPriorityLevel) {
   }
 
   if (includesSomeLane(remainingLanes, SyncLane)) {
+    {
+      markNestedUpdateScheduled();
+    } // Count the number of times the root synchronously re-renders without
     // finishing. If there are too many, it indicates an infinite update loop.
 
     if (root === rootWithNestedUpdates) {
@@ -19696,6 +20176,12 @@ function commitRootImpl(root, renderPriorityLevel) {
   }
 
   onCommitRoot(finishedWork.stateNode, renderPriorityLevel);
+
+  {
+    if (isDevToolsPresent) {
+      root.memoizedUpdaters.clear();
+    }
+  }
   // additional work on this root is scheduled.
 
   ensureRootIsScheduled(root, now());
@@ -19759,6 +20245,19 @@ function flushPassiveEffects() {
 
   return false;
 }
+function enqueuePendingPassiveProfilerEffect(fiber) {
+  {
+    pendingPassiveProfilerEffects.push(fiber);
+
+    if (!rootDoesHavePassiveEffects) {
+      rootDoesHavePassiveEffects = true;
+      scheduleCallback(NormalPriority, function() {
+        flushPassiveEffects();
+        return null;
+      });
+    }
+  }
+}
 
 function flushPassiveEffectsImpl() {
   if (rootWithPendingPassiveEffects === null) {
@@ -19786,6 +20285,16 @@ function flushPassiveEffectsImpl() {
   commitPassiveMountEffects(root, root.current); // TODO: Move to commitPassiveMountEffects
 
   {
+    var profilerEffects = pendingPassiveProfilerEffects;
+    pendingPassiveProfilerEffects = [];
+
+    for (var i = 0; i < profilerEffects.length; i++) {
+      var _fiber = profilerEffects[i];
+      commitPassiveEffectDurations(root, _fiber);
+    }
+  }
+
+  {
     isFlushingPassiveEffects = false;
   }
 
@@ -19801,6 +20310,12 @@ function flushPassiveEffectsImpl() {
     rootWithPendingPassiveEffects === null ? 0 : nestedPassiveUpdateCount + 1; // TODO: Move to commitPassiveMountEffects
 
   onPostCommitRoot(root);
+
+  {
+    var stateNode = root.current.stateNode;
+    stateNode.effectDuration = 0;
+    stateNode.passiveEffectDuration = 0;
+  }
 
   return true;
 }
@@ -19950,7 +20465,7 @@ function retryTimedOutBoundary(boundaryFiber, retryLane) {
   // The boundary fiber (a Suspense component or SuspenseList component)
   // previously was rendered in its fallback state. One of the promises that
   // suspended it has resolved, which means at least part of the tree was
-  // likely unblocked. Try rendering again, at a new expiration time.
+  // likely unblocked. Try rendering again, at a new lanes.
   if (retryLane === NoLane) {
     // TODO: Assign this to `suspenseState.retryLane`? to avoid
     // unnecessary entanglement?
@@ -20368,6 +20883,18 @@ function warnAboutRenderPhaseUpdatesInDEV(fiber) {
     }
   }
 } // a 'shared' variable that changes when act() opens/closes in tests.
+function restorePendingUpdaters(root, lanes) {
+  {
+    if (isDevToolsPresent) {
+      var memoizedUpdaters = root.memoizedUpdaters;
+      memoizedUpdaters.forEach(function(schedulingFiber) {
+        addFiberToLanesMap(root, schedulingFiber, lanes);
+      }); // This function intentionally does not clear memoized updaters.
+      // Those may still be relevant to the current commit
+      // and a future one (e.g. Suspense).
+    }
+  }
+}
 
 var didWarnAboutUnmockedScheduler = false; // TODO Before we release concurrent mode, revisit this and decide whether a mocked
 // scheduler is the actual recommendation. The alternative could be a testing build,
@@ -20868,8 +21395,6 @@ var hasBadMapPolyfill;
   }
 }
 
-var debugCounter = 1;
-
 function FiberNode(tag, pendingProps, key, mode) {
   // Instance
   this.tag = tag;
@@ -20925,7 +21450,6 @@ function FiberNode(tag, pendingProps, key, mode) {
 
   {
     // This isn't directly used but is handy for debugging internals:
-    this._debugID = debugCounter++;
     this._debugSource = null;
     this._debugOwner = null;
     this._debugNeedsRemount = false;
@@ -21005,7 +21529,6 @@ function createWorkInProgress(current, pendingProps) {
 
     {
       // DEV-only fields
-      workInProgress._debugID = current._debugID;
       workInProgress._debugSource = current._debugSource;
       workInProgress._debugOwner = current._debugOwner;
       workInProgress._debugHookTypes = current._debugHookTypes;
@@ -21226,7 +21749,13 @@ function createFiberFromTypeAndProps(
 
       case REACT_STRICT_MODE_TYPE:
         fiberTag = Mode;
-        mode |= StrictLegacyMode | StrictEffectsMode;
+        mode |= StrictLegacyMode;
+
+        if ((mode & ConcurrentMode) !== NoMode) {
+          // Strict effects should never run on legacy roots
+          mode |= StrictEffectsMode;
+        }
+
         break;
 
       case REACT_PROFILER_TYPE:
@@ -21468,7 +21997,6 @@ function assignFiberPropertiesInDEV(target, source) {
     target.treeBaseDuration = source.treeBaseDuration;
   }
 
-  target._debugID = source._debugID;
   target._debugSource = source._debugSource;
   target._debugOwner = source._debugOwner;
   target._debugNeedsRemount = source._debugNeedsRemount;
@@ -21499,6 +22027,20 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   this.finishedLanes = NoLanes;
   this.entangledLanes = NoLanes;
   this.entanglements = createLaneMap(NoLanes);
+
+  {
+    this.effectDuration = 0;
+    this.passiveEffectDuration = 0;
+  }
+
+  {
+    this.memoizedUpdaters = new Set();
+    var pendingUpdatersLaneMap = (this.pendingUpdatersLaneMap = []);
+
+    for (var i = 0; i < TotalLanes; i++) {
+      pendingUpdatersLaneMap.push(new Set());
+    }
+  }
 
   {
     switch (tag) {
@@ -21764,6 +22306,14 @@ function getPublicRootInstance(container) {
   }
 }
 
+var shouldErrorImpl = function(fiber) {
+  return null;
+};
+
+function shouldError(fiber) {
+  return shouldErrorImpl(fiber);
+}
+
 var shouldSuspendImpl = function(fiber) {
   return false;
 };
@@ -21778,6 +22328,7 @@ var overrideProps = null;
 var overridePropsDeletePath = null;
 var overridePropsRenamePath = null;
 var scheduleUpdate = null;
+var setErrorHandler = null;
 var setSuspenseHandler = null;
 
 {
@@ -21965,6 +22516,10 @@ var setSuspenseHandler = null;
     scheduleUpdateOnFiber(fiber, SyncLane, NoTimestamp);
   };
 
+  setErrorHandler = function(newShouldErrorImpl) {
+    shouldErrorImpl = newShouldErrorImpl;
+  };
+
   setSuspenseHandler = function(newShouldSuspendImpl) {
     shouldSuspendImpl = newShouldSuspendImpl;
   };
@@ -22002,6 +22557,7 @@ function injectIntoDevTools(devToolsConfig) {
     overrideProps: overrideProps,
     overridePropsDeletePath: overridePropsDeletePath,
     overridePropsRenamePath: overridePropsRenamePath,
+    setErrorHandler: setErrorHandler,
     setSuspenseHandler: setSuspenseHandler,
     scheduleUpdate: scheduleUpdate,
     currentDispatcherRef: ReactCurrentDispatcher,

@@ -5,21 +5,9 @@
     translatable="false"
     >Link</string>
   <string
-    name="search_description"
-    translatable="false"
-    >Search Field</string>
-  <string
     name="image_description"
     translatable="false"
     >Image</string>
-  <string
-    name="button_description"
-    translatable="false"
-    >Button</string>
-  <string
-    name="toggle_button_description"
-    translatable="false"
-    >Toggle Button</string>
   <string
     name="imagebutton_description"
     translatable="false"

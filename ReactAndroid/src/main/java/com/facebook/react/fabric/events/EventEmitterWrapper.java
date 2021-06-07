@@ -64,4 +64,10 @@ public class EventEmitterWrapper {
     NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
     invokeUniqueEvent(eventName, payload, customCoalesceKey);
   }
+
+  public void destroy() {
+    if (mHybridData != null) {
+      mHybridData.resetNative();
+    }
+  }
 }

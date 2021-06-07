@@ -130,6 +130,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/StatusBar/StatusBarExample'),
   },
   {
+    key: 'SwipeableCardExample',
+    category: 'UI',
+    module: require('../examples/SwipeableCardExample/SwipeableCardExample'),
+  },
+  {
     key: 'SwitchExample',
     category: 'UI',
     module: require('../examples/Switch/SwitchExample'),

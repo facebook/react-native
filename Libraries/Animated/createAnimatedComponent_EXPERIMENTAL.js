@@ -8,6 +8,8 @@
  * @format
  */
 
+import useAnimatedProps from './useAnimatedProps';
+import useMergeRefs from '../Utilities/useMergeRefs';
 import * as React from 'react';
 
 /**
@@ -17,7 +19,12 @@ import * as React from 'react';
 export default function createAnimatedComponent<TProps: {...}, TInstance>(
   Component: React.AbstractComponent<TProps, TInstance>,
 ): React.AbstractComponent<TProps, TInstance> {
-  return React.forwardRef((props, ref) => {
-    throw new Error('createAnimatedComponent: Not yet implemented.');
+  return React.forwardRef((props, forwardedRef) => {
+    const [reducedProps, callbackRef] = useAnimatedProps<TProps, TInstance>(
+      props,
+    );
+    const ref = useMergeRefs<TInstance | null>(callbackRef, forwardedRef);
+
+    return <Component {...reducedProps} ref={ref} />;
   });
 }
