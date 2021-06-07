@@ -251,6 +251,10 @@ public class SurfaceMountingManager {
         viewState.mStateWrapper.destroyState();
         viewState.mStateWrapper = null;
       }
+      if (viewState.mEventEmitter != null) {
+        viewState.mEventEmitter.destroy();
+        viewState.mEventEmitter = null;
+      }
     }
 
     Runnable runnable =
