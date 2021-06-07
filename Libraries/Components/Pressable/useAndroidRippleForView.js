@@ -27,7 +27,7 @@ export type RippleConfig = {|
   color?: ColorValue,
   borderless?: boolean,
   radius?: number,
-  useForeground?: boolean,
+  foreground?: boolean,
 |};
 
 /**
@@ -47,7 +47,7 @@ export default function useAndroidRippleForView(
       | 'nativeBackgroundAndroid']: NativeBackgroundProp,
   |}>,
 |}> {
-  const {color, borderless, radius, useForeground} = rippleConfig ?? {};
+  const {color, borderless, radius, foreground} = rippleConfig ?? {};
 
   return useMemo(() => {
     if (
@@ -61,8 +61,6 @@ export default function useAndroidRippleForView(
         'Unexpected color given for Ripple color',
       );
 
-      let viewProps = {};
-
       const backgroundValue = {
         type: 'RippleAndroid',
         color: processedColor,
@@ -70,11 +68,10 @@ export default function useAndroidRippleForView(
         rippleRadius: radius,
       };
 
-      if (useForeground === true) {
-        viewProps.nativeForegroundAndroid = backgroundValue;
-      } else {
-        viewProps.nativeBackgroundAndroid = backgroundValue;
-      }
+      const viewProps =
+        foreground === true
+          ? {nativeForegroundAndroid: backgroundValue}
+          : {nativeBackgroundAndroid: backgroundValue};
 
       return {
         viewProps,
@@ -108,5 +105,5 @@ export default function useAndroidRippleForView(
       };
     }
     return null;
-  }, [color, borderless, radius, viewRef, useForeground]);
+  }, [borderless, color, foreground, radius, viewRef]);
 }

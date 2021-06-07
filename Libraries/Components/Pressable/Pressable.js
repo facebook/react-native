@@ -180,27 +180,27 @@ function Pressable(props: Props, forwardedRef): React.Node {
       ? {...props.accessibilityState, disabled}
       : props.accessibilityState;
 
-  let restPropsWithDefaults: React.ElementConfig<typeof View> = {
+  const androidRippleViewProps = android_rippleConfig?.viewProps
+    .nativeForegroundAndroid
+    ? {
+        nativeForegroundAndroid:
+          android_rippleConfig?.viewProps.nativeForegroundAndroid,
+      }
+    : android_rippleConfig?.viewProps.nativeBackgroundAndroid
+    ? {
+        nativeBackgroundAndroid:
+          android_rippleConfig?.viewProps.nativeBackgroundAndroid,
+      }
+    : undefined;
+
+  const restPropsWithDefaults: React.ElementConfig<typeof View> = {
     ...restProps,
     accessible: accessible !== false,
+    ...androidRippleViewProps,
     accessibilityState,
     focusable: focusable !== false,
     hitSlop,
   };
-
-  if (android_rippleConfig?.viewProps.nativeForegroundAndroid) {
-    restPropsWithDefaults = {
-      ...restPropsWithDefaults,
-      nativeForegroundAndroid:
-        android_rippleConfig?.viewProps.nativeForegroundAndroid,
-    };
-  } else if (android_rippleConfig?.viewProps.nativeBackgroundAndroid) {
-    restPropsWithDefaults = {
-      ...restPropsWithDefaults,
-      nativeBackgroundAndroid:
-        android_rippleConfig?.viewProps.nativeBackgroundAndroid,
-    };
-  }
 
   const config = useMemo(
     () => ({

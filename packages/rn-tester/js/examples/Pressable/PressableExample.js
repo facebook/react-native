@@ -435,7 +435,7 @@ exports.examples = [
             <Pressable
               android_ripple={{
                 borderless: false,
-                useForeground: true,
+                foreground: true,
               }}>
               <Image
                 source={{
