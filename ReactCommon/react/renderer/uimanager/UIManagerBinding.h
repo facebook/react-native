@@ -100,6 +100,10 @@ class UIManagerBinding : public jsi::HostObject {
   jsi::Value get(jsi::Runtime &runtime, jsi::PropNameID const &name) override;
 
  private:
+  void executeMeasure(
+      jsi::Runtime &runtime,
+      std::function<void(jsi::Runtime &)> callback) const noexcept;
+
   std::shared_ptr<UIManager> uiManager_;
   std::unique_ptr<EventHandler const> eventHandler_;
   mutable ReactEventPriority currentEventPriority_;
