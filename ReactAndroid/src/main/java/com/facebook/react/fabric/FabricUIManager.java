@@ -625,7 +625,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final String componentName,
       @Nullable ReadableMap props,
       @Nullable Object stateWrapper,
-      @Nullable Object eventEmitterWrapper,
       boolean isLayoutable) {
 
     mMountItemDispatcher.addPreAllocateMountItem(
@@ -635,7 +634,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             getFabricComponentName(componentName),
             props,
             (StateWrapper) stateWrapper,
-            (EventEmitterWrapper) eventEmitterWrapper,
             isLayoutable));
   }
 

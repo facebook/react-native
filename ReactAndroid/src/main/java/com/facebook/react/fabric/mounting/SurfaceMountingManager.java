@@ -529,7 +529,6 @@ public class SurfaceMountingManager {
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
-      @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     if (isStopped()) {
       return;
@@ -557,7 +556,6 @@ public class SurfaceMountingManager {
     ViewState viewState = new ViewState(reactTag, view, viewManager);
     viewState.mCurrentProps = propsDiffMap;
     viewState.mStateWrapper = stateWrapper;
-    viewState.mEventEmitter = eventEmitterWrapper;
 
     mTagToViewState.put(reactTag, viewState);
   }
@@ -847,7 +845,6 @@ public class SurfaceMountingManager {
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
-      @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     UiThreadUtil.assertOnUiThread();
     if (isStopped()) {
@@ -859,7 +856,7 @@ public class SurfaceMountingManager {
           "View for component " + componentName + " with tag " + reactTag + " already exists.");
     }
 
-    createView(componentName, reactTag, props, stateWrapper, eventEmitterWrapper, isLayoutable);
+    createView(componentName, reactTag, props, stateWrapper, isLayoutable);
   }
 
   @AnyThread

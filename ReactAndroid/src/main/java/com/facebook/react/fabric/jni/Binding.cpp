@@ -169,8 +169,7 @@ static inline void computeBufferSizes(
 
     batchMountItemIntsSize += getIntBufferSizeForType(mountItemType);
     if (mountItemType == CppMountItem::Type::Create) {
-      batchMountItemObjectsSize +=
-          4; // component name, props, state, event emitter
+      batchMountItemObjectsSize += 3; // component name, props, state
     }
   }
 
@@ -885,13 +884,6 @@ void Binding::schedulerDidFinishTransaction(
         cStateWrapper->state_ = mountItem.newChildShadowView.state;
       }
 
-      // Do not hold a reference to javaEventEmitter from the C++ side.
-      SharedEventEmitter eventEmitter =
-          mountItem.newChildShadowView.eventEmitter;
-      auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
-      EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
-
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = isLayoutable;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
@@ -901,7 +893,6 @@ void Binding::schedulerDidFinishTransaction(
       (*objBufferArray)[objBufferPosition++] = props.get();
       (*objBufferArray)[objBufferPosition++] =
           javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr;
-      (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
     } else if (mountItemType == CppMountItem::Type::Insert) {
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = mountItem.parentShadowView.tag;
@@ -1152,13 +1143,8 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   static auto preallocateView =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void(
-              jint,
-              jint,
-              jstring,
-              ReadableMap::javaobject,
-              jobject,
-              jobject,
-              jboolean)>("preallocateView");
+              jint, jint, jstring, ReadableMap::javaobject, jobject, jboolean)>(
+              "preallocateView");
 
   // Do not hold onto Java object from C
   // We DO want to hold onto C object from Java, since we don't know the
@@ -1169,12 +1155,6 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
     StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
     cStateWrapper->state_ = shadowView.state;
   }
-
-  // Do not hold a reference to javaEventEmitter from the C++ side.
-  SharedEventEmitter eventEmitter = shadowView.eventEmitter;
-  auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
-  EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-  cEventEmitter->eventEmitter = eventEmitter;
 
   local_ref<ReadableMap::javaobject> props = castReadableMap(
       ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
@@ -1187,7 +1167,6 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
       component.get(),
       props.get(),
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
-      javaEventEmitter.get(),
       isLayoutableShadowNode);
 }
 
