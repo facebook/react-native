@@ -12,7 +12,12 @@ import invariant from 'invariant';
 import {Commands} from '../View/ViewNativeComponent';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import {Platform, View, processColor} from 'react-native';
+import {
+  Platform,
+  View,
+  processColor,
+  TouchableNativeFeedback,
+} from 'react-native';
 import * as React from 'react';
 import {useMemo} from 'react';
 
@@ -27,6 +32,7 @@ export type RippleConfig = {|
   color?: ColorValue,
   borderless?: boolean,
   radius?: number,
+  foreground?: boolean,
 |};
 
 /**
@@ -41,10 +47,11 @@ export default function useAndroidRippleForView(
   onPressMove: (event: PressEvent) => void,
   onPressOut: (event: PressEvent) => void,
   viewProps: $ReadOnly<{|
-    nativeBackgroundAndroid: NativeBackgroundProp,
+    nativeBackgroundAndroid?: NativeBackgroundProp,
+    nativeForegroundAndroid?: NativeBackgroundProp,
   |}>,
 |}> {
-  const {color, borderless, radius} = rippleConfig ?? {};
+  const {color, borderless, foreground, radius} = rippleConfig ?? {};
 
   return useMemo(() => {
     if (
@@ -58,16 +65,19 @@ export default function useAndroidRippleForView(
         'Unexpected color given for Ripple color',
       );
 
+      const background = {
+        type: 'RippleAndroid',
+        color: processedColor,
+        borderless: borderless === true,
+        rippleRadius: radius,
+      };
+
       return {
-        viewProps: {
-          // Consider supporting `nativeForegroundAndroid`
-          nativeBackgroundAndroid: {
-            type: 'RippleAndroid',
-            color: processedColor,
-            borderless: borderless === true,
-            rippleRadius: radius,
-          },
-        },
+        viewProps:
+          foreground === true &&
+          TouchableNativeFeedback.canUseNativeForeground()
+            ? {nativeForegroundAndroid: background}
+            : {nativeBackgroundAndroid: background},
         onPressIn(event: PressEvent): void {
           const view = viewRef.current;
           if (view != null) {
@@ -98,5 +108,5 @@ export default function useAndroidRippleForView(
       };
     }
     return null;
-  }, [color, borderless, radius, viewRef]);
+  }, [color, borderless, foreground, radius, viewRef]);
 }
