@@ -3,7 +3,7 @@
 load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
 load("@fbsource//tools/build_defs:fb_xplat_cxx_library.bzl", "fb_xplat_cxx_library")
 load("@fbsource//tools/build_defs:fb_xplat_cxx_test.bzl", "fb_xplat_cxx_test")
-load("@fbsource//tools/build_defs:platform_defs.bzl", "APPLE", "CXX")
+load("@fbsource//tools/build_defs:platform_defs.bzl", "ANDROID", "APPLE", "CXX", "FBCODE", "WINDOWS")
 load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "react_native_xplat_target")
 load("@fbsource//xplat/hermes/defs:hermes.bzl", "hermes_build_mode", "hermes_optimize_flag")
 
@@ -53,6 +53,7 @@ fb_xplat_cxx_library(
     fbobjc_header_path_prefix = "hermes/inspector/chrome",
     labels = ["supermodule:xplat/default/public.hermes"],
     macosx_tests_override = [],
+    platforms = (ANDROID, APPLE, CXX, FBCODE, WINDOWS),
     tests = [":chrome-tests"],
     visibility = [
         "PUBLIC",
@@ -64,7 +65,6 @@ fb_xplat_cxx_library(
         ":inspectorlib",
         "//third-party/glog:glog",
         "//xplat/folly:futures",
-        "//xplat/folly:molly",
         "//xplat/hermes/API:HermesAPI",
         "//xplat/jsi:JSIDynamic",
         "//xplat/jsi:jsi",
@@ -83,6 +83,7 @@ fb_xplat_cxx_test(
     cxx_deps = [react_native_xplat_target("jsinspector:jsinspector")],
     fbandroid_deps = [react_native_xplat_target("jsinspector:jsinspector")],
     fbobjc_deps = [react_native_xplat_target("jsinspector:jsinspector")],
+    platforms = (ANDROID, APPLE, CXX, FBCODE, WINDOWS),
     visibility = [
         "PUBLIC",
     ],
@@ -115,18 +116,19 @@ fb_xplat_cxx_library(
     # no JNI_Onload.
     fbandroid_allow_jni_merging = False,
     fbandroid_deps = [
-        "//fbandroid/native/fb:fb",
+        "//fbandroid/libraries/fbjni:fbjni",
     ],
     fbobjc_header_path_prefix = "hermes/inspector/detail",
     labels = ["supermodule:xplat/default/public.hermes"],
     macosx_tests_override = [],
+    platforms = (ANDROID, APPLE, CXX, FBCODE, WINDOWS),
     tests = [":detail-tests"],
     visibility = [
         "PUBLIC",
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "//xplat/folly:molly",
+        "//xplat/folly:executor",
     ],
 )
 
@@ -139,6 +141,7 @@ fb_xplat_cxx_test(
         "detail/tests/*.h",
     ]),
     compiler_flags = CFLAGS_BY_MODE[hermes_build_mode()],
+    platforms = (ANDROID, APPLE, CXX, FBCODE, WINDOWS),
     visibility = [
         "PUBLIC",
     ],
@@ -193,6 +196,7 @@ fb_xplat_cxx_library(
     fbobjc_header_path_prefix = "hermes/inspector",
     labels = ["supermodule:xplat/default/public.hermes"],
     macosx_tests_override = [],
+    platforms = (ANDROID, APPLE, CXX, FBCODE, WINDOWS),
     visibility = [
         "PUBLIC",
     ],
@@ -201,7 +205,6 @@ fb_xplat_cxx_library(
         ":detail",
         "//third-party/glog:glog",
         "//xplat/folly:futures",
-        "//xplat/folly:molly",
         "//xplat/hermes/API:HermesAPI",
         "//xplat/jsi:jsi",
     ],

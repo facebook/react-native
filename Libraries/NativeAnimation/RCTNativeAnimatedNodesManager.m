@@ -55,7 +55,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   CADisplayLink *_displayLink;
 }
 
-- (instancetype)initWithBridge:(nonnull RCTBridge *)bridge surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
+- (instancetype)initWithBridge:(RCTBridge *)bridge surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 {
   if ((self = [super init])) {
     _bridge = bridge;

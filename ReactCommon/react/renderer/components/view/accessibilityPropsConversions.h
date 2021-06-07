@@ -21,7 +21,7 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
     result = AccessibilityTraits::None;
     return;
   }
-  if (string == "button") {
+  if (string == "button" || string == "togglebutton") {
     result = AccessibilityTraits::Button;
     return;
   }
@@ -189,6 +189,23 @@ inline void fromRawValue(
     }
   } else {
     LOG(ERROR) << "Unsupported ImportantForAccessiblity type";
+  }
+}
+
+inline void fromRawValue(const RawValue &value, AccessibilityAction &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto name = map.find("name");
+  react_native_assert(name != map.end() && name->second.hasType<std::string>());
+  if (name != map.end()) {
+    fromRawValue(name->second, result.name);
+  }
+
+  auto label = map.find("label");
+  if (label != map.end()) {
+    if (label->second.hasType<std::string>()) {
+      result.label = (std::string)label->second;
+    }
   }
 }
 

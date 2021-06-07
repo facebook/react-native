@@ -58,7 +58,7 @@ module.exports = {
     return require('../StyleSheet/flattenStyle');
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {
-    return require('../Core/ReactFiberErrorDialog');
+    return require('../Core/ReactFiberErrorDialog').default;
   },
   get legacySendAccessibilityEvent(): legacySendAccessibilityEvent {
     return require('../Components/AccessibilityInfo/legacySendAccessibilityEvent');

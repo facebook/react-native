@@ -12,6 +12,8 @@ const AppContainer = require('./AppContainer');
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
+import type {DisplayModeType} from './DisplayMode';
+import getCachedComponentWithDebugName from './getCachedComponentWithDebugName';
 const React = require('react');
 
 const invariant = require('invariant');
@@ -29,6 +31,7 @@ function renderApplication<Props: Object>(
   scopedPerformanceLogger?: IPerformanceLogger,
   isLogBox?: boolean,
   debugName?: string,
+  displayMode?: ?DisplayModeType,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
@@ -49,8 +52,9 @@ function renderApplication<Props: Object>(
   );
 
   if (__DEV__ && debugName) {
-    const RootComponentWithMeaningfulName = ({children}) => children;
-    RootComponentWithMeaningfulName.displayName = `${debugName}(RootComponent)`;
+    const RootComponentWithMeaningfulName = getCachedComponentWithDebugName(
+      `${debugName}(RootComponent)`,
+    );
     renderable = (
       <RootComponentWithMeaningfulName>
         {renderable}

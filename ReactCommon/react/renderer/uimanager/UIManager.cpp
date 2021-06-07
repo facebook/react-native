@@ -18,25 +18,21 @@
 
 namespace facebook::react {
 
-static std::unique_ptr<LeakChecker> constructLeakChecker(
-    RuntimeExecutor const &runtimeExecutor,
-    GarbageCollectionTrigger const &garbageCollectionTrigger) {
-  if (garbageCollectionTrigger) {
-    return std::make_unique<LeakChecker>(
-        runtimeExecutor, garbageCollectionTrigger);
-  } else {
-    return {};
-  }
+static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
+    RuntimeExecutor const &runtimeExecutor) {
+#ifdef REACT_NATIVE_DEBUG
+  return std::make_unique<LeakChecker>(runtimeExecutor);
+#else
+  return {};
+#endif
 }
 
 UIManager::UIManager(
     RuntimeExecutor const &runtimeExecutor,
-    BackgroundExecutor const &backgroundExecutor,
-    GarbageCollectionTrigger const &garbageCollectionTrigger)
+    BackgroundExecutor const &backgroundExecutor)
     : runtimeExecutor_(runtimeExecutor),
       backgroundExecutor_(backgroundExecutor),
-      leakChecker_(
-          constructLeakChecker(runtimeExecutor, garbageCollectionTrigger)) {}
+      leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
 
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
@@ -148,7 +144,8 @@ void UIManager::setIsJSResponder(
 void UIManager::startSurface(
     ShadowTree::Unique &&shadowTree,
     std::string const &moduleName,
-    folly::dynamic const &props) const {
+    folly::dynamic const &props,
+    DisplayMode displayMode) const {
   SystraceSection s("UIManager::startSurface");
 
   auto surfaceId = shadowTree->getSurfaceId();
@@ -160,7 +157,26 @@ void UIManager::startSurface(
       return;
     }
 
-    uiManagerBinding->startSurface(runtime, surfaceId, moduleName, props);
+    uiManagerBinding->startSurface(
+        runtime, surfaceId, moduleName, props, displayMode);
+  });
+}
+
+void UIManager::setSurfaceProps(
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &props,
+    DisplayMode displayMode) const {
+  SystraceSection s("UIManager::setSurfaceProps");
+
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (!uiManagerBinding) {
+      return;
+    }
+
+    uiManagerBinding->setSurfaceProps(
+        runtime, surfaceId, moduleName, props, displayMode);
   });
 }
 
@@ -344,19 +360,10 @@ UIManagerDelegate *UIManager::getDelegate() {
 void UIManager::visitBinding(
     std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
     jsi::Runtime &runtime) const {
-  if (extractUIManagerBindingOnDemand_) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (uiManagerBinding) {
-      callback(*uiManagerBinding_);
-    }
-    return;
+  auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+  if (uiManagerBinding) {
+    callback(*uiManagerBinding);
   }
-
-  if (!uiManagerBinding_) {
-    return;
-  }
-
-  callback(*uiManagerBinding_);
 }
 
 ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {

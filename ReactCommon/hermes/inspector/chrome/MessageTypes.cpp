@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<f195ef454dab0ca2be532d6cdb2ebd0a>>
+// @generated SignedSource<<522f29c54f207a4f7b5c33af07cf64d0>>
 
 #include "MessageTypes.h"
 
@@ -46,6 +46,10 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.stepOver", makeUnique<debugger::StepOverRequest>},
       {"HeapProfiler.collectGarbage",
        makeUnique<heapProfiler::CollectGarbageRequest>},
+      {"HeapProfiler.getHeapObjectId",
+       makeUnique<heapProfiler::GetHeapObjectIdRequest>},
+      {"HeapProfiler.getObjectByHeapObjectId",
+       makeUnique<heapProfiler::GetObjectByHeapObjectIdRequest>},
       {"HeapProfiler.startSampling",
        makeUnique<heapProfiler::StartSamplingRequest>},
       {"HeapProfiler.startTrackingHeapObjects",
@@ -730,6 +734,65 @@ void heapProfiler::CollectGarbageRequest::accept(
   handler.handle(*this);
 }
 
+heapProfiler::GetHeapObjectIdRequest::GetHeapObjectIdRequest()
+    : Request("HeapProfiler.getHeapObjectId") {}
+
+heapProfiler::GetHeapObjectIdRequest::GetHeapObjectIdRequest(const dynamic &obj)
+    : Request("HeapProfiler.getHeapObjectId") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(objectId, params, "objectId");
+}
+
+dynamic heapProfiler::GetHeapObjectIdRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "objectId", objectId);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::GetHeapObjectIdRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::GetObjectByHeapObjectIdRequest::GetObjectByHeapObjectIdRequest()
+    : Request("HeapProfiler.getObjectByHeapObjectId") {}
+
+heapProfiler::GetObjectByHeapObjectIdRequest::GetObjectByHeapObjectIdRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.getObjectByHeapObjectId") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(objectId, params, "objectId");
+  assign(objectGroup, params, "objectGroup");
+}
+
+dynamic heapProfiler::GetObjectByHeapObjectIdRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "objectId", objectId);
+  put(params, "objectGroup", objectGroup);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::GetObjectByHeapObjectIdRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 heapProfiler::StartSamplingRequest::StartSamplingRequest()
     : Request("HeapProfiler.startSampling") {}
 
@@ -1064,6 +1127,42 @@ debugger::SetInstrumentationBreakpointResponse::
 dynamic debugger::SetInstrumentationBreakpointResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "breakpointId", breakpointId);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+heapProfiler::GetHeapObjectIdResponse::GetHeapObjectIdResponse(
+    const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(heapSnapshotObjectId, res, "heapSnapshotObjectId");
+}
+
+dynamic heapProfiler::GetHeapObjectIdResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "heapSnapshotObjectId", heapSnapshotObjectId);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+heapProfiler::GetObjectByHeapObjectIdResponse::GetObjectByHeapObjectIdResponse(
+    const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(result, res, "result");
+}
+
+dynamic heapProfiler::GetObjectByHeapObjectIdResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "result", result);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);

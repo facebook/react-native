@@ -350,9 +350,7 @@ using namespace facebook::react;
 
   BOOL clipsToBounds = self.clipsToBounds;
 
-  if (RCTExperimentGetOptimizedHitTesting()) {
-    clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
-  }
+  clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
 
   if (clipsToBounds && !isPointInside) {
     return nil;
@@ -632,7 +630,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
   for (auto const &accessibilityAction : accessibilityActions) {
     [customActions
-        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
+        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction.name)
                                                              target:self
                                                            selector:@selector(didActivateAccessibilityCustomAction:)]];
   }

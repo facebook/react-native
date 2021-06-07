@@ -117,7 +117,8 @@ const warnOnce = require('./Libraries/Utilities/warnOnce');
 module.exports = {
   // Components
   get AccessibilityInfo(): AccessibilityInfo {
-    return require('./Libraries/Components/AccessibilityInfo/AccessibilityInfo');
+    return require('./Libraries/Components/AccessibilityInfo/AccessibilityInfo')
+      .default;
   },
   get ActivityIndicator(): ActivityIndicator {
     return require('./Libraries/Components/ActivityIndicator/ActivityIndicator');
@@ -152,7 +153,8 @@ module.exports = {
     return require('./Libraries/Components/TextInput/InputAccessoryView');
   },
   get KeyboardAvoidingView(): KeyboardAvoidingView {
-    return require('./Libraries/Components/Keyboard/KeyboardAvoidingView');
+    return require('./Libraries/Components/Keyboard/KeyboardAvoidingView')
+      .default;
   },
   get MaskedViewIOS(): MaskedViewIOS {
     warnOnce(
@@ -212,7 +214,7 @@ module.exports = {
     return require('./Libraries/Components/RefreshControl/RefreshControl');
   },
   get SafeAreaView(): SafeAreaView {
-    return require('./Libraries/Components/SafeAreaView/SafeAreaView');
+    return require('./Libraries/Components/SafeAreaView/SafeAreaView').default;
   },
   get ScrollView(): ScrollView {
     return require('./Libraries/Components/ScrollView/ScrollView');
@@ -243,7 +245,7 @@ module.exports = {
     return require('./Libraries/Components/StatusBar/StatusBar');
   },
   get Switch(): Switch {
-    return require('./Libraries/Components/Switch/Switch');
+    return require('./Libraries/Components/Switch/Switch').default;
   },
   get Text(): Text {
     return require('./Libraries/Text/Text');
@@ -478,7 +480,7 @@ module.exports = {
   ) => HostComponent<T> {
     return require('./Libraries/ReactNative/requireNativeComponent');
   },
-  get unstable_RootTagContext(): RootTagContext {
+  get RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;
   },
   get unstable_enableLogBox(): () => void {

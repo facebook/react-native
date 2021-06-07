@@ -549,7 +549,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mJavaScriptContextHolder;
   }
 
-  @Override
   public native RuntimeExecutor getRuntimeExecutor();
 
   @Override

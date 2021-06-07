@@ -18,10 +18,16 @@ RCT_EXTERN BOOL RCTExperimentGetOnDemandViewMounting(void);
 RCT_EXTERN void RCTExperimentSetOnDemandViewMounting(BOOL value);
 
 /*
- * It's an experimental feature that improves performance of hit-testing.
+ * Allows sending scroll events to Paper.
  */
-RCT_EXTERN BOOL RCTExperimentGetOptimizedHitTesting(void);
-RCT_EXTERN void RCTExperimentSetOptimizedHitTesting(BOOL value);
+RCT_EXTERN BOOL RCTExperimentGetSendScrollEventToPaper(void);
+RCT_EXTERN void RCTExperimentSetSendScrollEventToPaper(BOOL value);
+
+/*
+ * Enables a fix for data race between state and scroll event.
+ */
+RCT_EXTERN BOOL RCTExperimentGetScrollViewEventRaceFix(void);
+RCT_EXTERN void RCTExperimentSetScrollViewEventRaceFix(BOOL value);
 
 /*
  * Preemptive View Allocation

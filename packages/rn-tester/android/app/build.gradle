@@ -131,10 +131,7 @@ def useIntlJsc = false
 android {
     compileSdkVersion 29
     ndkVersion ANDROID_NDK_VERSION
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+
     dexOptions {
         javaMaxHeapSize "4g"
     }
@@ -216,6 +213,7 @@ dependencies {
     hermesDebugImplementation files(hermesPath + "hermes-debug.aar")
     hermesReleaseImplementation files(hermesPath + "hermes-release.aar")
 
+    debugImplementation("com.facebook.fresco:stetho:2.3.0")
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }
@@ -226,6 +224,7 @@ dependencies {
 
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
+        exclude group:'com.facebook.fresco', module:'stetho'
     }
 
     if (useIntlJsc) {

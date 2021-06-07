@@ -87,6 +87,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   BOOL _isUserTriggeredScrolling;
 
   BOOL _isOnDemandViewMountingEnabled;
+  BOOL _sendScrollEventToPaper;
+  BOOL _enableScrollViewEventRaceFix;
   CGPoint _contentOffsetWhenClipped;
   NSMutableArray<UIView<RCTComponentViewProtocol> *> *_childComponentViews;
 }
@@ -106,6 +108,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _props = defaultProps;
 
     _isOnDemandViewMountingEnabled = RCTExperimentGetOnDemandViewMounting();
+    _sendScrollEventToPaper = RCTExperimentGetSendScrollEventToPaper();
+    _enableScrollViewEventRaceFix = RCTExperimentGetScrollViewEventRaceFix();
     _childComponentViews = [[NSMutableArray alloc] init];
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
@@ -415,11 +419,16 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
     _lastScrollEventDispatchTime = now;
     if (_eventEmitter) {
+      if (_enableScrollViewEventRaceFix) {
+        [self _updateStateWithContentOffset];
+      }
       std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
     }
     // Once Fabric implements proper NativeAnimationDriver, this should be removed.
     // This is just a workaround to allow animations based on onScroll event.
-    RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
+    if (_sendScrollEventToPaper) {
+      RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
+    }
   }
 
   [self _remountChildrenIfNeeded];
@@ -622,10 +631,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     return;
   }
 
-  CGRect visibleFrame = CGRect{_scrollView.contentOffset, _scrollView.bounds.size};
+  CGRect visibleFrame = [_scrollView convertRect:_scrollView.bounds toView:_containerView];
   visibleFrame = CGRectInset(visibleFrame, -kClippingLeeway, -kClippingLeeway);
 
-  CGFloat scale = 1.0 / _scrollView.zoomScale;
+  // `zoomScale` is negative in RTL. Absolute value is needed.
+  CGFloat scale = 1.0 / std::abs(_scrollView.zoomScale);
   visibleFrame.origin.x *= scale;
   visibleFrame.origin.y *= scale;
   visibleFrame.size.width *= scale;

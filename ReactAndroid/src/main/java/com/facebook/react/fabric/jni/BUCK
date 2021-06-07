@@ -34,6 +34,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/scheduler:scheduler"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
+        react_native_xplat_target("react/renderer/runtimescheduler:runtimescheduler"),
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
         react_native_target("jni/react/jni:jni"),
         "//xplat/fbsystrace:fbsystrace",

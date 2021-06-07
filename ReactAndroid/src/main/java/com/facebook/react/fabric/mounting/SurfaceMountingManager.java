@@ -257,6 +257,11 @@ public class SurfaceMountingManager {
         new Runnable() {
           @Override
           public void run() {
+            // We must call `onDropViewInstance` on all remaining Views
+            for (ViewState viewState : mTagToViewState.values()) {
+              onViewStateDeleted(viewState);
+            }
+
             // Evict all views from cache and memory
             mLastSuccessfulQueryTime = System.currentTimeMillis();
             mTagSetForStoppedSurface = mTagToViewState.keySet();
@@ -524,6 +529,7 @@ public class SurfaceMountingManager {
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
+      @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     if (isStopped()) {
       return;
@@ -551,6 +557,7 @@ public class SurfaceMountingManager {
     ViewState viewState = new ViewState(reactTag, view, viewManager);
     viewState.mCurrentProps = propsDiffMap;
     viewState.mStateWrapper = stateWrapper;
+    viewState.mEventEmitter = eventEmitterWrapper;
 
     mTagToViewState.put(reactTag, viewState);
   }
@@ -795,6 +802,21 @@ public class SurfaceMountingManager {
   }
 
   @UiThread
+  private void onViewStateDeleted(ViewState viewState) {
+    // Destroy state immediately instead of waiting for Java GC.
+    if (viewState.mStateWrapper != null) {
+      viewState.mStateWrapper.destroyState();
+      viewState.mStateWrapper = null;
+    }
+
+    // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
+    ViewManager viewManager = viewState.mViewManager;
+    if (!viewState.mIsRoot && viewManager != null) {
+      viewManager.onDropViewInstance(viewState.mView);
+    }
+  }
+
+  @UiThread
   public void deleteView(int reactTag) {
     UiThreadUtil.assertOnUiThread();
     if (isStopped()) {
@@ -816,17 +838,7 @@ public class SurfaceMountingManager {
     // or StopSurface being called, so we do not handle deleting descendents of the View.
     mTagToViewState.remove(reactTag);
 
-    // Destroy state immediately instead of waiting for Java GC.
-    if (viewState.mStateWrapper != null) {
-      viewState.mStateWrapper.destroyState();
-      viewState.mStateWrapper = null;
-    }
-
-    // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-    ViewManager viewManager = viewState.mViewManager;
-    if (!viewState.mIsRoot && viewManager != null) {
-      viewManager.onDropViewInstance(viewState.mView);
-    }
+    onViewStateDeleted(viewState);
   }
 
   @UiThread
@@ -835,6 +847,7 @@ public class SurfaceMountingManager {
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
+      @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     UiThreadUtil.assertOnUiThread();
     if (isStopped()) {
@@ -846,7 +859,7 @@ public class SurfaceMountingManager {
           "View for component " + componentName + " with tag " + reactTag + " already exists.");
     }
 
-    createView(componentName, reactTag, props, stateWrapper, isLayoutable);
+    createView(componentName, reactTag, props, stateWrapper, eventEmitterWrapper, isLayoutable);
   }
 
   @AnyThread
