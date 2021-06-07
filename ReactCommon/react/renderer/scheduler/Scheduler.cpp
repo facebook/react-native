@@ -95,11 +95,23 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
+#ifdef ANDROID
+  auto asyncMeasure =
+      reactNativeConfig_->getBool("react_fabric:enable_async_measure_android");
+#else
+  auto asyncMeasure =
+      reactNativeConfig_->getBool("react_fabric:enable_async_measure_ios");
+#endif
+
   runtimeExecutor_([uiManager,
+                    asyncMeasure,
+                    runtimeExecutor = runtimeExecutor_,
                     runtimeScheduler = schedulerToolbox.runtimeScheduler](
                        jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
+    auto uiManagerBinding =
+        UIManagerBinding::createAndInstallIfNeeded(runtime, runtimeExecutor);
     uiManagerBinding->attach(uiManager);
+    uiManagerBinding->setEnableAsyncMeasure(asyncMeasure);
     if (runtimeScheduler) {
       RuntimeSchedulerBinding::createAndInstallIfNeeded(
           runtime, runtimeScheduler);

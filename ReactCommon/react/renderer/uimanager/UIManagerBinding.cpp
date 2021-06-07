@@ -58,7 +58,8 @@ static bool checkGetCallableModuleIsActive(jsi::Runtime &runtime) {
 }
 
 std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
-    jsi::Runtime &runtime) {
+    jsi::Runtime &runtime,
+    RuntimeExecutor const &runtimeExecutor) {
   auto uiManagerModuleName = "nativeFabricUIManager";
 
   auto uiManagerValue =
@@ -66,7 +67,7 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
   if (uiManagerValue.isUndefined()) {
     // The global namespace does not have an instance of the binding;
     // we need to create, install and return it.
-    auto uiManagerBinding = std::make_shared<UIManagerBinding>();
+    auto uiManagerBinding = std::make_shared<UIManagerBinding>(runtimeExecutor);
     auto object = jsi::Object::createFromHostObject(runtime, uiManagerBinding);
     runtime.global().setProperty(
         runtime, uiManagerModuleName, std::move(object));
@@ -93,6 +94,9 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
   return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
 }
 
+UIManagerBinding::UIManagerBinding(RuntimeExecutor const &runtimeExecutor)
+    : runtimeExecutor_(runtimeExecutor) {}
+
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
                << this << ").";
@@ -100,6 +104,10 @@ UIManagerBinding::~UIManagerBinding() {
 
 void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
   uiManager_ = uiManager;
+}
+
+void UIManagerBinding::setEnableAsyncMeasure(bool enable) {
+  enableAsyncMeasure_ = enable;
 }
 
 static jsi::Value callMethodOfModule(
@@ -826,8 +834,12 @@ jsi::Value UIManagerBinding::get(
 
 void UIManagerBinding::executeMeasure(
     jsi::Runtime &runtime,
-    std::function<void(jsi::Runtime &)> callback) const noexcept {
-  callback(runtime);
+    std::function<void(jsi::Runtime &)> &&callback) const noexcept {
+  if (enableAsyncMeasure_) {
+    runtimeExecutor_(std::move(callback));
+  } else {
+    callback(runtime);
+  }
 }
 
 } // namespace facebook::react
