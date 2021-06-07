@@ -27,6 +27,7 @@ executors:
   nodelts:
     <<: *defaults
     docker:
+      # Note: Version set separately for Windows builds, see below.
       - image: circleci/node:14
   nodeprevlts:
     <<: *defaults
@@ -623,6 +624,13 @@ jobs:
       - NDK_VERSION: 20.1.5948944
     steps:
       - checkout
+
+      - run:
+          name: Install Node
+          # Note: Version set separately for non-Windows builds, see above.
+          command: |
+            nvm install 14.17.0
+            nvm use 14.17.0
 
       # Setup Dependencies
       - run:
