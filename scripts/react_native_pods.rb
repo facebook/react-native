@@ -69,12 +69,14 @@ def use_react_native! (options={})
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '~> 0.75.1'
-  versions['Flipper-DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.5.3'
+  versions['Flipper'] ||= '0.91.1'
+  versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
+  versions['Flipper-DoubleConversion'] ||= '3.1.7'
+  versions['Flipper-Fmt'] ||= '7.1.7'
+  versions['Flipper-Folly'] ||= '2.6.7'
   versions['Flipper-Glog'] ||= '0.3.6'
-  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
-  versions['Flipper-RSocket'] ||= '~> 1.3'
+  versions['Flipper-PeerTalk'] ||= '0.0.4'
+  versions['Flipper-RSocket'] ||= '1.4.3'
   pod 'FlipperKit', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
@@ -83,7 +85,9 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   # List all transitive dependencies for FlipperKit pods
   # to avoid them being linked in Release builds
   pod 'Flipper', versions['Flipper'], :configurations => configurations
+  pod 'Flipper-Boost-iOSX', versions['Flipper-Boost-iOSX'], :configurations => configurations
   pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configurations => configurations
+  pod 'Flipper-Fmt', versions['Flipper-Fmt'], :configurations => configurations
   pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
   pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
   pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
