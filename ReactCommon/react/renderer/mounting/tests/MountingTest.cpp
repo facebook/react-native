@@ -242,8 +242,7 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
     }*/
 
   // Calculating mutations.
-  auto mutations1 =
-      calculateShadowViewMutations(*rootNodeV1, *rootNodeV2, true);
+  auto mutations1 = calculateShadowViewMutations(*rootNodeV1, *rootNodeV2);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.
@@ -259,8 +258,7 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   EXPECT_TRUE(mutations1[1].index == 0);
 
   // Calculating mutations.
-  auto mutations2 =
-      calculateShadowViewMutations(*rootNodeV2, *rootNodeV3, true);
+  auto mutations2 = calculateShadowViewMutations(*rootNodeV2, *rootNodeV3);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.
@@ -276,8 +274,7 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   EXPECT_TRUE(mutations2[1].oldChildShadowView.tag == 100);
 
   // Calculating mutations.
-  auto mutations3 =
-      calculateShadowViewMutations(*rootNodeV3, *rootNodeV4, true);
+  auto mutations3 = calculateShadowViewMutations(*rootNodeV3, *rootNodeV4);
   LOG(ERROR) << "Num mutations IN OLD TEST mutations3: " << mutations3.size();
 
   // The order and exact mutation instructions here may change at any time.
@@ -299,8 +296,7 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   EXPECT_TRUE(mutations3[3].index == 2);
 
   // Calculating mutations.
-  auto mutations4 =
-      calculateShadowViewMutations(*rootNodeV4, *rootNodeV5, true);
+  auto mutations4 = calculateShadowViewMutations(*rootNodeV4, *rootNodeV5);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.
@@ -325,8 +321,7 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   EXPECT_TRUE(mutations4[5].newChildShadowView.tag == 102);
   EXPECT_TRUE(mutations4[5].index == 3);
 
-  auto mutations5 =
-      calculateShadowViewMutations(*rootNodeV5, *rootNodeV6, true);
+  auto mutations5 = calculateShadowViewMutations(*rootNodeV5, *rootNodeV6);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.
@@ -345,8 +340,7 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   EXPECT_TRUE(mutations5[3].newChildShadowView.tag == 105);
   EXPECT_TRUE(mutations5[3].index == 3);
 
-  auto mutations6 =
-      calculateShadowViewMutations(*rootNodeV6, *rootNodeV7, true);
+  auto mutations6 = calculateShadowViewMutations(*rootNodeV6, *rootNodeV7);
 
   // The order and exact mutation instructions here may change at any time.
   // This test just ensures that any changes are intentional.
@@ -600,8 +594,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   rootNodeV5->sealRecursive();
 
   // Calculating mutations.
-  auto mutations1 =
-      calculateShadowViewMutations(*rootNodeV1, *rootNodeV2, true);
+  auto mutations1 = calculateShadowViewMutations(*rootNodeV1, *rootNodeV2);
 
   EXPECT_EQ(mutations1.size(), 5);
   EXPECT_EQ(mutations1[0].type, ShadowViewMutation::Update);
@@ -615,8 +608,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations1[4].type, ShadowViewMutation::Insert);
   EXPECT_EQ(mutations1[4].newChildShadowView.tag, 1000);
 
-  auto mutations2 =
-      calculateShadowViewMutations(*rootNodeV2, *rootNodeV3, true);
+  auto mutations2 = calculateShadowViewMutations(*rootNodeV2, *rootNodeV3);
 
   EXPECT_EQ(mutations2.size(), 5);
   EXPECT_EQ(mutations2[0].type, ShadowViewMutation::Update);
@@ -632,8 +624,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations2[4].type, ShadowViewMutation::Insert);
   EXPECT_EQ(mutations2[4].newChildShadowView.tag, 1000);
 
-  auto mutations3 =
-      calculateShadowViewMutations(*rootNodeV3, *rootNodeV4, true);
+  auto mutations3 = calculateShadowViewMutations(*rootNodeV3, *rootNodeV4);
 
   // between these two trees, lots of new nodes are created and inserted - this
   // is all correct, and this is the minimal amount of mutations
@@ -670,8 +661,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations3[14].type, ShadowViewMutation::Insert);
   EXPECT_EQ(mutations3[14].newChildShadowView.tag, 1000);
 
-  auto mutations4 =
-      calculateShadowViewMutations(*rootNodeV4, *rootNodeV5, true);
+  auto mutations4 = calculateShadowViewMutations(*rootNodeV4, *rootNodeV5);
 
   EXPECT_EQ(mutations4.size(), 9);
   EXPECT_EQ(mutations4[0].type, ShadowViewMutation::Update);
