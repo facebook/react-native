@@ -70,8 +70,7 @@ class ShadowTree final {
       SurfaceId surfaceId,
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
-      ShadowTreeDelegate const &delegate,
-      bool enableNewDiffer);
+      ShadowTreeDelegate const &delegate);
 
   ~ShadowTree();
 
