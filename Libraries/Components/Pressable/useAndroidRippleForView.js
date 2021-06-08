@@ -74,12 +74,12 @@ export default function useAndroidRippleForView(
         onPressIn(event: PressEvent): void {
           const view = viewRef.current;
           if (view != null) {
-            Commands.setPressed(view, true);
             Commands.hotspotUpdate(
               view,
               event.nativeEvent.locationX ?? 0,
               event.nativeEvent.locationY ?? 0,
             );
+            Commands.setPressed(view, true);
           }
         },
         onPressMove(event: PressEvent): void {
