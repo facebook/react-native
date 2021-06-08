@@ -95,11 +95,23 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
+#ifdef ANDROID
+  auto asyncMeasure =
+      reactNativeConfig_->getBool("react_fabric:enable_async_measure_android");
+#else
+  auto asyncMeasure =
+      reactNativeConfig_->getBool("react_fabric:enable_async_measure_ios");
+#endif
+
   runtimeExecutor_([uiManager,
+                    asyncMeasure,
+                    runtimeExecutor = runtimeExecutor_,
                     runtimeScheduler = schedulerToolbox.runtimeScheduler](
                        jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
+    auto uiManagerBinding =
+        UIManagerBinding::createAndInstallIfNeeded(runtime, runtimeExecutor);
     uiManagerBinding->attach(uiManager);
+    uiManagerBinding->setEnableAsyncMeasure(asyncMeasure);
     if (runtimeScheduler) {
       RuntimeSchedulerBinding::createAndInstallIfNeeded(
           runtime, runtimeScheduler);
@@ -131,14 +143,11 @@ Scheduler::Scheduler(
 #ifdef ANDROID
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
-  enableNewDiffer_ = reactNativeConfig_->getBool(
-      "react_fabric:enable_new_differ_h1_2021_android");
   Constants::setPropsForwardingEnabled(reactNativeConfig_->getBool(
       "react_fabric:enable_props_forwarding_android"));
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-  enableNewDiffer_ = true;
 #endif
 }
 
@@ -201,7 +210,6 @@ Scheduler::~Scheduler() {
 void Scheduler::registerSurface(
     SurfaceHandler const &surfaceHandler) const noexcept {
   surfaceHandler.setUIManager(uiManager_.get());
-  surfaceHandler.setEnableNewDiffer(enableNewDiffer_);
 }
 
 void Scheduler::unregisterSurface(

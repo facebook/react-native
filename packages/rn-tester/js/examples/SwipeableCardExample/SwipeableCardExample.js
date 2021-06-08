@@ -15,6 +15,7 @@ import {
   View,
   StyleSheet,
   FlatList,
+  Text,
   useWindowDimensions,
 } from 'react-native';
 
@@ -31,34 +32,88 @@ module.exports = {
       description: ('This example creates a swipeable card using PanResponder. ' +
         'Under the hood, JSResponderHandler should prevent scroll when the card is being swiped.': string),
       render: function(): React.Node {
-        return <SwipeableCard />;
+        return <SwipeableCardExample />;
       },
     },
   ],
 };
 
-function SwipeableCard() {
-  const movementX = React.useRef(new Animated.Value(0)).current;
+function SwipeableCardExample() {
+  const cardColors = ['red', 'blue', 'pink', 'aquamarine'];
+  const [currentIndex, setCurrentIndex] = React.useState(0);
 
-  const panResponder = React.useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponderCapture: (e, gestureState) => {
-        const {dx} = gestureState;
-        return Math.abs(dx) > 5;
-      },
-      onPanResponderMove: (e, gestureState) => {
-        Animated.event([null, {dx: movementX}], {
+  const nextIndex = currentIndex + 1;
+
+  const isFirstCardOnTop = currentIndex % 2 !== 0;
+
+  const incrementCurrent = () => setCurrentIndex(currentIndex + 1);
+
+  const getCardColor = index => cardColors[index % cardColors.length];
+
+  /*
+   * The cards try to reuse the views. Instead of always rebuilding the current card on top
+   * the order is configured by zIndex. This way, the native side reuses the same views for bottom
+   * and top after swiping out.
+   */
+  return (
+    <>
+      <SwipeableCard
+        zIndex={isFirstCardOnTop ? 2 : 1}
+        color={
+          isFirstCardOnTop
+            ? getCardColor(currentIndex)
+            : getCardColor(nextIndex)
+        }
+        onSwipedOut={incrementCurrent}
+      />
+      <SwipeableCard
+        zIndex={isFirstCardOnTop ? 1 : 2}
+        color={
+          isFirstCardOnTop
+            ? getCardColor(nextIndex)
+            : getCardColor(currentIndex)
+        }
+        onSwipedOut={incrementCurrent}
+      />
+    </>
+  );
+}
+
+function SwipeableCard(props: {
+  zIndex: number,
+  color: string,
+  onSwipedOut: () => void,
+}) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const movementX = React.useMemo(() => new Animated.Value(0), [props.color]);
+
+  const panResponder = React.useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponderCapture: (e, gestureState) => {
+          const {dx} = gestureState;
+          return Math.abs(dx) > 5;
+        },
+        onPanResponderMove: Animated.event([null, {dx: movementX}], {
           useNativeDriver: false,
-        })(e, gestureState);
-      },
-      onPanResponderEnd: (e, gestureState) => {
-        Animated.timing(movementX, {
-          toValue: 0,
-          useNativeDriver: true,
-        }).start();
-      },
-    }),
-  ).current;
+        }),
+        onPanResponderEnd: (e, gestureState) => {
+          const {dx} = gestureState;
+          if (Math.abs(dx) > 120) {
+            Animated.timing(movementX, {
+              toValue: dx > 0 ? 1000 : -1000,
+              useNativeDriver: true,
+            }).start(props.onSwipedOut);
+          } else {
+            Animated.timing(movementX, {
+              toValue: 0,
+              useNativeDriver: true,
+            }).start();
+          }
+        },
+      }),
+    [movementX, props.onSwipedOut],
+  );
 
   const {width} = useWindowDimensions();
   const rotation = movementX.interpolate({
@@ -68,14 +123,14 @@ function SwipeableCard() {
   });
 
   return (
-    <View style={styles.container}>
+    <View style={StyleSheet.compose(styles.container, {zIndex: props.zIndex})}>
       <Animated.View
         {...panResponder.panHandlers}
         style={{
           transform: [{translateX: movementX}, {rotateZ: rotation}],
           flex: 1,
         }}>
-        <Card />
+        <Card color={props.color} />
       </Animated.View>
     </View>
   );
@@ -83,33 +138,70 @@ function SwipeableCard() {
 
 const cardData = Array(5);
 
-function Card(props) {
+function Card(props: {color: string}) {
   const renderItem = ({item, index}) => (
-    <View style={index % 2 === 0 ? styles.cardSectionA : styles.cardSectionB} />
+    <CardSection color={props.color} index={index} />
   );
+
+  const separatorComponent = () => <View style={styles.separator} />;
+
+  const listRef = React.useRef<?React.ElementRef<typeof FlatList>>();
+
+  React.useEffect(() => {
+    listRef.current?.scrollToOffset({offset: 0, animated: false});
+  }, [props.color]);
+
   return (
     <View style={styles.card}>
-      <FlatList style={{flex: 1}} data={cardData} renderItem={renderItem} />
+      <FlatList
+        style={{flex: 1}}
+        data={cardData}
+        renderItem={renderItem}
+        ItemSeparatorComponent={separatorComponent}
+        ref={listRef}
+      />
+    </View>
+  );
+}
+
+function CardSection(props: {index: number, color: string}) {
+  return (
+    <View
+      style={StyleSheet.compose(styles.sectionBg, {
+        backgroundColor: props.color,
+      })}>
+      <Text style={styles.sectionText}>Section #{props.index}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
     padding: 10,
     paddingTop: 30,
   },
   card: {
     flex: 1,
     margin: 5,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'lightgray',
   },
-  cardSectionA: {
-    height: 200,
-    backgroundColor: 'aquamarine',
+  separator: {
+    width: '100%',
+    height: 2,
+    backgroundColor: 'white',
   },
-  cardSectionB: {
+  sectionBg: {
     height: 200,
-    backgroundColor: 'pink',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

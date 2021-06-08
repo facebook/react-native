@@ -121,7 +121,6 @@ class Scheduler final : public UIManagerDelegate {
    * Temporary flags.
    */
   bool removeOutstandingSurfacesOnDestruction_{false};
-  bool enableNewDiffer_{false};
 };
 
 } // namespace react

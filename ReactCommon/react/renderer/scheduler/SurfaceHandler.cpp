@@ -71,8 +71,7 @@ void SurfaceHandler::start() const noexcept {
         parameters.surfaceId,
         parameters.layoutConstraints,
         parameters.layoutContext,
-        *link_.uiManager,
-        enableNewDiffer_);
+        *link_.uiManager);
 
     link_.shadowTree = shadowTree.get();
 
@@ -137,11 +136,6 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
 DisplayMode SurfaceHandler::getDisplayMode() const noexcept {
   std::shared_lock<better::shared_mutex> lock(parametersMutex_);
   return parameters_.displayMode;
-}
-
-#pragma mark - Feature Flags
-void SurfaceHandler::setEnableNewDiffer(bool enabled) const noexcept {
-  enableNewDiffer_ = enabled;
 }
 
 #pragma mark - Accessors
