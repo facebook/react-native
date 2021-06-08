@@ -13,7 +13,6 @@
     "@babel/generator": "^7.14.0",
     "@babel/template": "^7.0.0",
     "@babel/types": "^7.0.0",
-    "@jest/create-cache-key-function": "^27.0.1",
     "@react-native-community/eslint-plugin": "*",
     "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
