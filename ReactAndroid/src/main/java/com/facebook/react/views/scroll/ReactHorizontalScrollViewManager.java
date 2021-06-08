@@ -316,8 +316,13 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   public void setMaintainVisibleContentPosition(ReactHorizontalScrollView view, ReadableMap value) {
     if (value != null) {
       int minIndexForVisible = value.getInt("minIndexForVisible");
-      Integer autoScrollToTopThreshold = value.hasKey("autoscrollToTopThreshold") ? value.getInt("autoscrollToTopThreshold") : null;
-      ReactScrollViewMaintainVisibleContentPositionData maintainVisibleContentPositionData = new ReactScrollViewMaintainVisibleContentPositionData(minIndexForVisible, autoScrollToTopThreshold);
+      Integer autoScrollToTopThreshold =
+          value.hasKey("autoscrollToTopThreshold")
+              ? value.getInt("autoscrollToTopThreshold")
+              : null;
+      ReactScrollViewMaintainVisibleContentPositionData maintainVisibleContentPositionData =
+          new ReactScrollViewMaintainVisibleContentPositionData(
+              minIndexForVisible, autoScrollToTopThreshold);
       view.setMaintainVisibleContentPosition(maintainVisibleContentPositionData);
     } else {
       view.setMaintainVisibleContentPosition(null);
