@@ -24,12 +24,12 @@ extern const char TextInputComponentName[];
 /*
  * `ShadowNode` for <TextInput> component.
  */
-class TextInputShadowNode : public ConcreteViewShadowNode<
-                                TextInputComponentName,
-                                TextInputProps,
-                                TextInputEventEmitter,
-                                TextInputState>,
-                            public BaseTextShadowNode {
+class TextInputShadowNode final : public ConcreteViewShadowNode<
+                                      TextInputComponentName,
+                                      TextInputProps,
+                                      TextInputEventEmitter,
+                                      TextInputState>,
+                                  public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 

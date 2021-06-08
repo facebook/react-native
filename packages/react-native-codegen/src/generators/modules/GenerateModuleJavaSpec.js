@@ -339,6 +339,7 @@ function buildGetConstantsMethod(
     return `  protected abstract Map<String, Object> getTypedExportedConstants();
 
   @Override
+  @DoNotStrip
   public final @Nullable Map<String, Object> getConstants() {
     Map<String, Object> constants = getTypedExportedConstants();
     if (ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD) {
@@ -368,6 +369,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const files = new Map();
     const nativeModules = getModules(schema);

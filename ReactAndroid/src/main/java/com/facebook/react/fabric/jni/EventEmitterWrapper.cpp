@@ -25,10 +25,20 @@ void EventEmitterWrapper::invokeEvent(
       eventName, payload->consume(), EventPriority::AsynchronousBatched);
 }
 
+void EventEmitterWrapper::invokeUniqueEvent(
+    std::string eventName,
+    NativeMap *payload,
+    int customCoalesceKey) {
+  // TODO: customCoalesceKey currently unused
+  eventEmitter->dispatchUniqueEvent(eventName, payload->consume());
+}
+
 void EventEmitterWrapper::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", EventEmitterWrapper::initHybrid),
       makeNativeMethod("invokeEvent", EventEmitterWrapper::invokeEvent),
+      makeNativeMethod(
+          "invokeUniqueEvent", EventEmitterWrapper::invokeUniqueEvent),
   });
 }
 

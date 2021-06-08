@@ -38,18 +38,6 @@ void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled)
   imagePerfInstrumentationEnabled = enabled;
 }
 
-static BOOL (^getImagePerfInstrumentationForFabricEnabled)() = (^BOOL () {
-  return NO;
-});
-
-BOOL RCTGetImageLoadingPerfInstrumentationForFabricEnabled() {
-  return getImagePerfInstrumentationForFabricEnabled();
-}
-
-void RCTSetImageLoadingPerfInstrumentationForFabricEnabledBlock(BOOL (^getMobileConfigEnabled)()) {
-  getImagePerfInstrumentationForFabricEnabled = getMobileConfigEnabled;
-}
-
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
   NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
@@ -92,8 +80,8 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
 
 @implementation RCTImageLoader
 {
-  NSArray<id<RCTImageURLLoader>> * (^_loadersProvider)(void);
-  NSArray<id<RCTImageDataDecoder>> * (^_decodersProvider)(void);
+  NSArray<id<RCTImageURLLoader>> * (^_loadersProvider)(RCTModuleRegistry *);
+  NSArray<id<RCTImageDataDecoder>> * (^_decodersProvider)(RCTModuleRegistry *);
   NSArray<id<RCTImageURLLoader>> *_loaders;
   NSArray<id<RCTImageDataDecoder>> *_decoders;
   NSOperationQueue *_imageDecodeQueue;
@@ -135,8 +123,8 @@ RCT_EXPORT_MODULE()
 }
 
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
-                         loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(void))getLoaders
-                        decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(void))getHandlers
+                         loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(RCTModuleRegistry *))getLoaders
+                        decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(RCTModuleRegistry *))getHandlers
 {
   if (self = [self initWithRedirectDelegate:redirectDelegate]) {
     _loadersProvider = getLoaders;
@@ -190,7 +178,7 @@ RCT_EXPORT_MODULE()
 
       // Get loaders, sorted in reverse priority order (highest priority first)
       if (_loadersProvider) {
-        _loaders = _loadersProvider();
+        _loaders = _loadersProvider(self.moduleRegistry);
       } else {
         RCTAssert(_bridge, @"Trying to find RCTImageURLLoaders and bridge not set.");
         _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
@@ -257,7 +245,7 @@ RCT_EXPORT_MODULE()
     // Get decoders, sorted in reverse priority order (highest priority first)
 
     if (_decodersProvider) {
-      _decoders = _decodersProvider();
+      _decoders = _decodersProvider(self.moduleRegistry);
     } else {
       RCTAssert(_bridge, @"Trying to find RCTImageDataDecoders and bridge not set.");
       _decoders = [_bridge modulesConformingToProtocol:@protocol(RCTImageDataDecoder)];

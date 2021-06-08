@@ -82,6 +82,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
   public enum AccessibilityRole {
     NONE,
     BUTTON,
+    TOGGLEBUTTON,
     LINK,
     SEARCH,
     IMAGE,
@@ -112,6 +113,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       switch (role) {
         case BUTTON:
           return "android.widget.Button";
+        case TOGGLEBUTTON:
+          return "android.widget.ToggleButton";
         case SEARCH:
           return "android.widget.EditText";
         case IMAGE:
@@ -292,7 +295,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));
       ReactContext reactContext = (ReactContext) host.getContext();
-      if (reactContext.hasActiveCatalystInstance()) {
+      if (reactContext.hasActiveReactInstance()) {
         final int reactTag = host.getId();
         final int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
         UIManager uiManager = UIManagerHelper.getUIManager(reactContext, reactTag);
@@ -382,16 +385,16 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         spannable.setSpan(new URLSpan(""), 0, spannable.length(), 0);
         nodeInfo.setText(spannable);
       }
-    } else if (role.equals(AccessibilityRole.SEARCH)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.search_description));
     } else if (role.equals(AccessibilityRole.IMAGE)) {
       nodeInfo.setRoleDescription(context.getString(R.string.image_description));
     } else if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
       nodeInfo.setRoleDescription(context.getString(R.string.imagebutton_description));
       nodeInfo.setClickable(true);
     } else if (role.equals(AccessibilityRole.BUTTON)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.button_description));
       nodeInfo.setClickable(true);
+    } else if (role.equals(AccessibilityRole.TOGGLEBUTTON)) {
+      nodeInfo.setClickable(true);
+      nodeInfo.setCheckable(true);
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
       nodeInfo.setRoleDescription(context.getString(R.string.summary_description));
     } else if (role.equals(AccessibilityRole.HEADER)) {

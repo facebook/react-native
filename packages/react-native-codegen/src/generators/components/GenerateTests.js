@@ -140,6 +140,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'Tests.cpp';
     const allImports = new Set([
@@ -166,6 +167,7 @@ module.exports = {
             const name = `${componentName}Props`;
 
             const imports = getImports(component.props);
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             imports.forEach(allImports.add, allImports);
 
             return generateTestsString(name, component);

@@ -4,30 +4,35 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
-'use strict';
+import * as React from 'react';
 
-const DeprecatedTextInputPropTypes = require('../../DeprecatedPropTypes/DeprecatedTextInputPropTypes');
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const Text = require('../../Text/Text');
-const TextAncestor = require('../../Text/TextAncestor');
-const TextInputState = require('./TextInputState');
-const TouchableWithoutFeedback = require('../Touchable/TouchableWithoutFeedback');
+import DeprecatedTextInputPropTypes from '../../DeprecatedPropTypes/DeprecatedTextInputPropTypes';
 
-const invariant = require('invariant');
-const nullthrows = require('nullthrows');
-const setAndForwardRef = require('../../Utilities/setAndForwardRef');
+import Platform from '../../Utilities/Platform';
+import StyleSheet, {
+  type TextStyleProp,
+  type ViewStyleProp,
+  type ColorValue,
+} from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import TextAncestor from '../../Text/TextAncestor';
+import TextInputState from './TextInputState';
+import invariant from 'invariant';
+import nullthrows from 'nullthrows';
+import setAndForwardRef from '../../Utilities/setAndForwardRef';
 
-import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import usePressability from '../../Pressability/usePressability';
+
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {
+  SyntheticEvent,
+  ScrollEvent,
+  PressEvent,
+} from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
@@ -842,6 +847,8 @@ function InternalTextInput(props: Props): React.Node {
   // Therefore, we ignore selections and pass them through until the selection event has
   // been sent.
   // Note that this mitigation is NOT needed for Fabric.
+  // discovered when upgrading react-hooks
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   let selection: ?Selection =
     props.selection == null
       ? null
@@ -866,13 +873,14 @@ function InternalTextInput(props: Props): React.Node {
     selection = null;
   }
 
-  let viewCommands: TextInputNativeCommands<HostComponent<any>>;
+  let viewCommands;
   if (AndroidTextInputCommands) {
     viewCommands = AndroidTextInputCommands;
   } else {
-    viewCommands = props.multiline
-      ? RCTMultilineTextInputNativeCommands
-      : RCTSinglelineTextInputNativeCommands;
+    viewCommands =
+      props.multiline === true
+        ? RCTMultilineTextInputNativeCommands
+        : RCTSinglelineTextInputNativeCommands;
   }
 
   const text =
@@ -1000,12 +1008,6 @@ function InternalTextInput(props: Props): React.Node {
     },
   });
 
-  const _onPress = (event: PressEvent) => {
-    if (props.editable || props.editable === undefined) {
-      nullthrows(inputRef.current).focus();
-    }
-  };
-
   const _onChange = (event: ChangeEvent) => {
     const text = event.nativeEvent.text;
     props.onChange && props.onChange(event);
@@ -1059,36 +1061,66 @@ function InternalTextInput(props: Props): React.Node {
   };
 
   let textInput = null;
-  let additionalTouchableProps: {|
-    rejectResponderTermination?: $PropertyType<
-      Props,
-      'rejectResponderTermination',
-    >,
-    // This is a hack to let Flow know we want an exact object
-  |} = {...null};
 
   // The default value for `blurOnSubmit` is true for single-line fields and
   // false for multi-line fields.
   const blurOnSubmit = props.blurOnSubmit ?? !props.multiline;
 
+  const accessible = props.accessible !== false;
+  const focusable = props.focusable !== false;
+
+  const config = React.useMemo(
+    () => ({
+      onPress: (event: PressEvent) => {
+        if (props.editable !== false) {
+          nullthrows(inputRef.current).focus();
+        }
+      },
+      onPressIn: props.onPressIn,
+      onPressOut: props.onPressOut,
+      cancelable:
+        Platform.OS === 'ios' ? !props.rejectResponderTermination : null,
+    }),
+    [
+      props.editable,
+      props.onPressIn,
+      props.onPressOut,
+      props.rejectResponderTermination,
+    ],
+  );
+
+  // Hide caret during test runs due to a flashing caret
+  // makes screenshot tests flakey
+  let caretHidden = props.caretHidden;
+  if (Platform.isTesting) {
+    caretHidden = true;
+  }
+
+  // TextInput handles onBlur and onFocus events
+  // so omitting onBlur and onFocus pressability handlers here.
+  const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
+
   if (Platform.OS === 'ios') {
-    const RCTTextInputView = props.multiline
-      ? RCTMultilineTextInputView
-      : RCTSinglelineTextInputView;
+    const RCTTextInputView =
+      props.multiline === true
+        ? RCTMultilineTextInputView
+        : RCTSinglelineTextInputView;
 
-    const style = props.multiline
-      ? [styles.multilineInput, props.style]
-      : props.style;
-
-    additionalTouchableProps.rejectResponderTermination =
-      props.rejectResponderTermination;
+    const style =
+      props.multiline === true
+        ? [styles.multilineInput, props.style]
+        : props.style;
 
     textInput = (
       <RCTTextInputView
         ref={_setNativeRef}
         {...props}
+        {...eventHandlers}
+        accessible={accessible}
         blurOnSubmit={blurOnSubmit}
+        caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
+        focusable={focusable}
         mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
         onChange={_onChange}
@@ -1108,7 +1140,7 @@ function InternalTextInput(props: Props): React.Node {
     let children = props.children;
     const childCount = React.Children.count(children);
     invariant(
-      !(props.value && childCount),
+      !(props.value != null && childCount),
       'Cannot specify both value and children.',
     );
     if (childCount > 1) {
@@ -1116,21 +1148,35 @@ function InternalTextInput(props: Props): React.Node {
     }
 
     textInput = (
-      /* $FlowFixMe the types for AndroidTextInput don't match up exactly with
-        the props for TextInput. This will need to get fixed */
+      /* $FlowFixMe[prop-missing] the types for AndroidTextInput don't match up
+       * exactly with the props for TextInput. This will need to get fixed */
+      /* $FlowFixMe[incompatible-type] the types for AndroidTextInput don't
+       * match up exactly with the props for TextInput. This will need to get
+       * fixed */
+      /* $FlowFixMe[incompatible-type-arg] the types for AndroidTextInput don't
+       * match up exactly with the props for TextInput. This will need to get
+       * fixed */
       <AndroidTextInput
         ref={_setNativeRef}
         {...props}
+        {...eventHandlers}
+        accessible={accessible}
         autoCapitalize={autoCapitalize}
         blurOnSubmit={blurOnSubmit}
+        caretHidden={caretHidden}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
+        focusable={focusable}
         mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
         onChange={_onChange}
         onFocus={_onFocus}
-        /* $FlowFixMe the types for AndroidTextInput don't match up exactly
-         * with the props for TextInput. This will need to get fixed */
+        /* $FlowFixMe[prop-missing] the types for AndroidTextInput don't match
+         * up exactly with the props for TextInput. This will need to get fixed
+         */
+        /* $FlowFixMe[incompatible-type-arg] the types for AndroidTextInput
+         * don't match up exactly with the props for TextInput. This will need
+         * to get fixed */
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         selection={selection}
@@ -1141,22 +1187,7 @@ function InternalTextInput(props: Props): React.Node {
     );
   }
   return (
-    <TextAncestor.Provider value={true}>
-      <TouchableWithoutFeedback
-        onLayout={props.onLayout}
-        onPress={_onPress}
-        onPressIn={props.onPressIn}
-        onPressOut={props.onPressOut}
-        accessible={props.accessible}
-        accessibilityLabel={props.accessibilityLabel}
-        accessibilityRole={props.accessibilityRole}
-        accessibilityState={props.accessibilityState}
-        nativeID={props.nativeID}
-        testID={props.testID}
-        {...additionalTouchableProps}>
-        {textInput}
-      </TouchableWithoutFeedback>
-    </TextAncestor.Provider>
+    <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
   );
 }
 
@@ -1186,10 +1217,9 @@ const ExportedForwardRef: React.AbstractComponent<
 });
 
 // TODO: Deprecate this
-// $FlowFixMe
 ExportedForwardRef.propTypes = DeprecatedTextInputPropTypes;
 
-// $FlowFixMe
+// $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
   currentlyFocusedInput: TextInputState.currentlyFocusedInput,
 
@@ -1217,6 +1247,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// $FlowFixMe[unclear-type] Unclear type. Using `any` type is not safe.
 module.exports = ((ExportedForwardRef: any): React.AbstractComponent<
   React.ElementConfig<typeof InternalTextInput>,
   $ReadOnly<{|

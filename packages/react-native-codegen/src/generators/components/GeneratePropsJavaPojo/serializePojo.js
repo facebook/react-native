@@ -225,7 +225,10 @@ function toJavaGetter(property: PojoProperty, addImport: ImportCollector) {
   const type = toJavaType(property.typeAnnotation, addImport);
   const getterName = `get${capitalize(property.name)}`;
   const memberName = toJavaMemberName(property);
-  return `public ${type} ${getterName}() {
+
+  addImport('com.facebook.proguard.annotations.DoNotStrip');
+  return `@DoNotStrip
+public ${type} ${getterName}() {
   return ${memberName};
 }`;
 }
@@ -236,9 +239,7 @@ function serializePojo(pojo: Pojo, basePackageName: string): string {
     importSet.add($import);
   };
 
-  if (pojo.isRoot) {
-    addImport('com.facebook.proguard.annotations.DoNotStrip');
-  }
+  addImport('com.facebook.proguard.annotations.DoNotStrip');
 
   const indent = ' '.repeat(2);
 
@@ -273,7 +274,8 @@ function serializePojo(pojo: Pojo, basePackageName: string): string {
 
 package ${basePackageName}.${pojo.namespace};
 ${imports === '' ? '' : `\n${imports}\n`}
-${pojo.isRoot ? '@DoNotStrip\n' : ''}public class ${pojo.name} {
+@DoNotStrip
+public class ${pojo.name} {
 ${members}
 ${getters}
 }

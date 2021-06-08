@@ -15,24 +15,12 @@ import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.common.mapbuffer.ReadableMapBufferSoLoader;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
-import com.facebook.react.fabric.events.EventEmitterWrapper;
-import com.facebook.react.fabric.events.FabricEventEmitter;
-import com.facebook.react.fabric.mounting.LayoutMetricsConversions;
-import com.facebook.react.fabric.mounting.MountingManager;
-import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
-import com.facebook.react.fabric.mounting.mountitems.DispatchIntCommandMountItem;
-import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
-import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem;
-import com.facebook.react.fabric.mounting.mountitems.MountItem;
-import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
-import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
-import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.systrace.Systrace;
 
 public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
@@ -61,8 +49,9 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
     final Binding binding = new Binding();
-    // TODO T31905686: remove this call
-    loadClasses();
+    if (ReactFeatureFlags.enableEagerInitializeMapBufferSoFile) {
+      ReadableMapBufferSoLoader.staticInit();
+    }
     MessageQueueThread jsMessageQueueThread =
         mReactApplicationContext
             .getCatalystInstance()
@@ -86,51 +75,21 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   private FabricUIManager createUIManager(@NonNull EventBeatManager eventBeatManager) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.createUIManager");
-    EventDispatcher eventDispatcher = getEventDispatcher();
-    FabricUIManager fabricUIManager =
-        new FabricUIManager(
-            mReactApplicationContext, mViewManagerRegistry, eventDispatcher, eventBeatManager);
 
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-    return fabricUIManager;
-  }
-
-  private EventDispatcher getEventDispatcher() {
-    EventDispatcher eventDispatcher;
+    FabricUIManager fabricUIManager;
     if (enableExperimentalStaticViewConfigs) {
-      eventDispatcher = new EventDispatcherImpl(mReactApplicationContext);
+      fabricUIManager =
+          new FabricUIManager(mReactApplicationContext, mViewManagerRegistry, eventBeatManager);
     } else {
+      // TODO T83943316: Remove this code once StaticViewConfigs are enabled by default
       UIManagerModule nativeModule =
           Assertions.assertNotNull(mReactApplicationContext.getNativeModule(UIManagerModule.class));
-      eventDispatcher = nativeModule.getEventDispatcher();
+      EventDispatcher eventDispatcher = nativeModule.getEventDispatcher();
+      fabricUIManager =
+          new FabricUIManager(
+              mReactApplicationContext, mViewManagerRegistry, eventDispatcher, eventBeatManager);
     }
-    return eventDispatcher;
-  }
-
-  // TODO T31905686: eager load Fabric classes, this is temporary and it will be removed
-  // in the near future
-  private static void loadClasses() {
-    EventBeatManager.class.getClass();
-    EventEmitterWrapper.class.getClass();
-    FabricEventEmitter.class.getClass();
-    DispatchCommandMountItem.class.getClass();
-    DispatchIntCommandMountItem.class.getClass();
-    DispatchStringCommandMountItem.class.getClass();
-    MountItem.class.getClass();
-    PreAllocateViewMountItem.class.getClass();
-    SendAccessibilityEvent.class.getClass();
-    LayoutMetricsConversions.class.getClass();
-    MountingManager.class.getClass();
-    Binding.class.getClass();
-    ComponentFactory.class.getClass();
-    FabricComponents.class.getClass();
-    FabricSoLoader.class.getClass();
-    FabricUIManager.class.getClass();
-    GuardedFrameCallback.class.getClass();
-    StateWrapper.class.getClass();
-    StateWrapperImpl.class.getClass();
-    BatchEventDispatchedListener.class.getClass();
-    ReactNativeConfig.class.getClass();
-    IntBufferBatchMountItem.class.getClass();
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    return fabricUIManager;
   }
 }

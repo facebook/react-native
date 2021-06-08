@@ -9,9 +9,10 @@
  */
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
+import RCTTextInputViewConfig from './RCTTextInputViewConfig';
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
 type NativeType = HostComponent<mixed>;
 
@@ -21,8 +22,10 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
-const SinglelineTextInputNativeComponent: HostComponent<mixed> = requireNativeComponent<mixed>(
+const MultilineTextInputNativeComponent: HostComponent<mixed> = NativeComponentRegistry.get<mixed>(
   'RCTMultilineTextInputView',
+  () => RCTTextInputViewConfig,
 );
 
-export default SinglelineTextInputNativeComponent;
+// flowlint-next-line unclear-type:off
+export default ((MultilineTextInputNativeComponent: any): HostComponent<mixed>);

@@ -15,6 +15,7 @@
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
 #include <jsi/JSIDynamic.h>
+#include <react/debug/react_native_assert.h>
 #include <react/jni/NativeMap.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/WritableNativeMap.h>
@@ -51,6 +52,11 @@ JavaTurboModule::~JavaTurboModule() {
   });
 }
 
+bool JavaTurboModule::useTurboModulesRAIICallbackManager_ = false;
+void JavaTurboModule::enableUseTurboModulesRAIICallbackManager(bool enable) {
+  JavaTurboModule::useTurboModulesRAIICallbackManager_ = enable;
+}
+
 namespace {
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
@@ -59,9 +65,20 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
   auto weakWrapper =
       react::CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
 
+  // This needs to be a shared_ptr because:
+  // 1. It cannot be unique_ptr. std::function is copyable but unique_ptr is
+  // not.
+  // 2. It cannot be weak_ptr since we need this object to live on.
+  // 3. It cannot be a value, because that would be deleted as soon as this
+  // function returns.
+  auto callbackWrapperOwner =
+      (JavaTurboModule::useTurboModulesRAIICallbackManager_
+           ? std::make_shared<RAIICallbackWrapperDestroyer>(weakWrapper)
+           : nullptr);
+
   std::function<void(folly::dynamic)> fn =
-      [weakWrapper,
-       wrapperWasCalled = false](folly::dynamic responses) mutable {
+      [weakWrapper, callbackWrapperOwner, wrapperWasCalled = false](
+          folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
           throw std::runtime_error(
               "callback 2 arg cannot be called more than once");
@@ -72,35 +89,41 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
           return;
         }
 
-        strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses]() {
-          auto strongWrapper2 = weakWrapper.lock();
-          if (!strongWrapper2) {
-            return;
-          }
+        strongWrapper->jsInvoker().invokeAsync(
+            [weakWrapper, callbackWrapperOwner, responses]() mutable {
+              auto strongWrapper2 = weakWrapper.lock();
+              if (!strongWrapper2) {
+                return;
+              }
 
-          // TODO (T43155926) valueFromDynamic already returns a Value array.
-          // Don't iterate again
-          jsi::Value args =
-              jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
-          auto argsArray = args.getObject(strongWrapper2->runtime())
-                               .asArray(strongWrapper2->runtime());
-          std::vector<jsi::Value> result;
-          for (size_t i = 0; i < argsArray.size(strongWrapper2->runtime());
-               i++) {
-            result.emplace_back(
-                strongWrapper2->runtime(),
-                argsArray.getValueAtIndex(strongWrapper2->runtime(), i));
-          }
-          strongWrapper2->callback().call(
-              strongWrapper2->runtime(),
-              (const jsi::Value *)result.data(),
-              result.size());
+              // TODO (T43155926) valueFromDynamic already returns a Value
+              // array. Don't iterate again
+              jsi::Value args =
+                  jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
+              auto argsArray = args.getObject(strongWrapper2->runtime())
+                                   .asArray(strongWrapper2->runtime());
+              std::vector<jsi::Value> result;
+              for (size_t i = 0; i < argsArray.size(strongWrapper2->runtime());
+                   i++) {
+                result.emplace_back(
+                    strongWrapper2->runtime(),
+                    argsArray.getValueAtIndex(strongWrapper2->runtime(), i));
+              }
+              strongWrapper2->callback().call(
+                  strongWrapper2->runtime(),
+                  (const jsi::Value *)result.data(),
+                  result.size());
 
-          strongWrapper2->destroy();
-        });
+              if (JavaTurboModule::useTurboModulesRAIICallbackManager_) {
+                callbackWrapperOwner.reset();
+              } else {
+                strongWrapper2->destroy();
+              }
+            });
 
         wrapperWasCalled = true;
       };
+
   return JCxxCallbackImpl::newObjectCxxArgs(fn);
 }
 
@@ -133,7 +156,7 @@ std::string stringifyJSIValue(const jsi::Value &v, jsi::Runtime *rt = nullptr) {
     return "a string (\"" + v.getString(*rt).utf8(*rt) + "\")";
   }
 
-  assert(v.isObject() && "Expecting object.");
+  react_native_assert(v.isObject() && "Expecting object.");
   return rt != nullptr && v.getObject(*rt).isFunction(*rt) ? "a function"
                                                            : "an object";
 }

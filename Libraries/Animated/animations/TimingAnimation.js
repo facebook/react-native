@@ -117,6 +117,7 @@ class TimingAnimation extends Animation {
           this.__startNativeAnimation(animatedValue);
         } else {
           this._animationFrame = requestAnimationFrame(
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             this.onUpdate.bind(this),
           );
         }
@@ -149,6 +150,7 @@ class TimingAnimation extends Animation {
           (this._toValue - this._fromValue),
     );
     if (this.__active) {
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       this._animationFrame = requestAnimationFrame(this.onUpdate.bind(this));
     }
   }

@@ -26,18 +26,33 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
 }
 
 /*
- * Optimized hit-testing
+ * Send scroll events to Paper.
  */
-static BOOL RCTExperimentOptimizedHitTesting = NO;
+static BOOL RCTExperimentSendScrollEventToPaper = YES;
 
-BOOL RCTExperimentGetOptimizedHitTesting()
+BOOL RCTExperimentGetSendScrollEventToPaper()
 {
-  return RCTExperimentOptimizedHitTesting;
+  return RCTExperimentSendScrollEventToPaper;
 }
 
-void RCTExperimentSetOptimizedHitTesting(BOOL value)
+void RCTExperimentSetSendScrollEventToPaper(BOOL value)
 {
-  RCTExperimentOptimizedHitTesting = value;
+  RCTExperimentSendScrollEventToPaper = value;
+}
+
+/*
+ * Enable fix for data race between state and scroll event.
+ */
+static BOOL RCTExperimentScrollViewEventRaceFix = NO;
+
+BOOL RCTExperimentGetScrollViewEventRaceFix()
+{
+  return RCTExperimentScrollViewEventRaceFix;
+}
+
+void RCTExperimentSetScrollViewEventRaceFix(BOOL value)
+{
+  RCTExperimentScrollViewEventRaceFix = value;
 }
 
 /*
@@ -53,19 +68,4 @@ BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
 void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
   RCTExperimentPreemptiveViewAllocationDisabled = value;
-}
-
-/*
- * Release resources when app enters background
- */
-static BOOL RCTExperimentReleaseResourcesWhenBackgrounded = NO;
-
-BOOL RCTExperimentGetReleaseResourcesWhenBackgrounded()
-{
-  return RCTExperimentReleaseResourcesWhenBackgrounded;
-}
-
-void RCTExperimentSetReleaseResourcesWhenBackgrounded(BOOL value)
-{
-  RCTExperimentReleaseResourcesWhenBackgrounded = value;
 }

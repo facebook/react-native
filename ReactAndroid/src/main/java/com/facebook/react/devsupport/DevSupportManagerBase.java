@@ -43,11 +43,13 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
+import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
+import com.facebook.react.devsupport.interfaces.ErrorType;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
@@ -85,12 +87,6 @@ public abstract class DevSupportManagerBase
       "flipper://null/Hermesdebuggerrn?device=React%20Native";
   private static final String FLIPPER_DEVTOOLS_URL = "flipper://null/React?device=React%20Native";
   private boolean mIsSamplingProfilerEnabled = false;
-
-  private enum ErrorType {
-    JS,
-    NATIVE
-  }
-
   private static final String EXOPACKAGE_LOCATION_FORMAT =
       "/data/local/tmp/exopackage/%s//secondary-dex";
 
@@ -124,6 +120,7 @@ public abstract class DevSupportManagerBase
   private @Nullable RedBoxHandler mRedBoxHandler;
   private @Nullable String mLastErrorTitle;
   private @Nullable StackFrame[] mLastErrorStack;
+  private @Nullable ErrorType mLastErrorType;
   private int mLastErrorCookie = 0;
   private @Nullable DevBundleDownloadListener mBundleDownloadListener;
   private @Nullable List<ErrorCustomizer> mErrorCustomizers;
@@ -132,6 +129,8 @@ public abstract class DevSupportManagerBase
   private InspectorPackagerConnection.BundleStatus mBundleStatus;
 
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
+
+  private @Nullable Activity currentActivity;
 
   public DevSupportManagerBase(
       Context applicationContext,
@@ -351,7 +350,7 @@ public abstract class DevSupportManagerBase
             updateLastErrorInfo(message, stack, errorCookie, ErrorType.JS);
             // JS errors are reported here after source mapping.
             if (mRedBoxHandler != null) {
-              mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.JS);
+              mRedBoxHandler.handleRedbox(message, stack, ErrorType.JS);
               mRedBoxDialog.resetReporting();
             }
             mRedBoxDialog.show();
@@ -392,8 +391,8 @@ public abstract class DevSupportManagerBase
         new Runnable() {
           @Override
           public void run() {
-            if (mRedBoxDialog == null) {
-              Activity context = mReactInstanceDevHelper.getCurrentActivity();
+            Activity context = mReactInstanceDevHelper.getCurrentActivity();
+            if (mRedBoxDialog == null || context != currentActivity) {
               if (context == null || context.isFinishing()) {
                 FLog.e(
                     ReactConstants.TAG,
@@ -402,7 +401,9 @@ public abstract class DevSupportManagerBase
                         + message);
                 return;
               }
-              mRedBoxDialog = new RedBoxDialog(context, DevSupportManagerBase.this, mRedBoxHandler);
+              currentActivity = context;
+              mRedBoxDialog =
+                  new RedBoxDialog(currentActivity, DevSupportManagerBase.this, mRedBoxHandler);
             }
             if (mRedBoxDialog.isShowing()) {
               // Sometimes errors cause multiple errors to be thrown in JS in quick succession. Only
@@ -416,7 +417,7 @@ public abstract class DevSupportManagerBase
             // Only report native errors here. JS errors are reported
             // inside {@link #updateJSError} after source mapping.
             if (mRedBoxHandler != null && errorType == ErrorType.NATIVE) {
-              mRedBoxHandler.handleRedbox(message, stack, RedBoxHandler.ErrorType.NATIVE);
+              mRedBoxHandler.handleRedbox(message, stack, ErrorType.NATIVE);
             }
             mRedBoxDialog.resetReporting();
             mRedBoxDialog.show();
@@ -914,8 +915,7 @@ public abstract class DevSupportManagerBase
                         });
 
                     @Nullable ReactContext context = mCurrentContext;
-                    if (context == null
-                        || (!context.isBridgeless() && !context.hasActiveCatalystInstance())) {
+                    if (context == null || !context.hasActiveReactInstance()) {
                       return;
                     }
 
@@ -999,6 +999,11 @@ public abstract class DevSupportManagerBase
   }
 
   @Override
+  public @Nullable ErrorType getLastErrorType() {
+    return mLastErrorType;
+  }
+
+  @Override
   public void onPackagerConnected() {
     // No-op
   }
@@ -1079,6 +1084,7 @@ public abstract class DevSupportManagerBase
     mLastErrorTitle = message;
     mLastErrorStack = stack;
     mLastErrorCookie = errorCookie;
+    mLastErrorType = errorType;
   }
 
   private void reloadJSInProxyMode() {
@@ -1146,11 +1152,7 @@ public abstract class DevSupportManagerBase
         });
   }
 
-  protected interface BundleLoadCallback {
-    void onSuccess();
-  }
-
-  protected void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {
+  public void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {
     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_START);
 
     mDevLoadingViewController.showForUrl(bundleURL);

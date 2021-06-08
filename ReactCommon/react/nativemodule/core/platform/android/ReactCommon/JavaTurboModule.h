@@ -51,6 +51,13 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const jsi::Value *args,
       size_t argCount);
 
+  static void enableUseTurboModulesRAIICallbackManager(bool enable);
+
+  /**
+   * Experiments
+   */
+  static bool useTurboModulesRAIICallbackManager_;
+
  private:
   jni::global_ref<JTurboModule> instance_;
   std::shared_ptr<CallInvoker> nativeInvoker_;

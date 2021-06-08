@@ -45,6 +45,7 @@ type Options = $ReadOnly<{
   schema: SchemaType,
   outputDirectory: string,
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
+  assumeNonnull: boolean,
 }>;
 
 type Generators =
@@ -152,7 +153,7 @@ function checkFilesForChanges(
 
 module.exports = {
   generate(
-    {libraryName, schema, outputDirectory, packageName}: Options,
+    {libraryName, schema, outputDirectory, packageName, assumeNonnull}: Options,
     {generators, test}: Config,
   ): boolean {
     schemaValidator.validate(schema);
@@ -160,7 +161,9 @@ module.exports = {
     const generatedFiles = [];
     for (const name of generators) {
       for (const generator of GENERATORS[name]) {
-        generatedFiles.push(...generator(libraryName, schema, packageName));
+        generatedFiles.push(
+          ...generator(libraryName, schema, packageName, assumeNonnull),
+        );
       }
     }
 

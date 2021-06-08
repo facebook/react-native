@@ -7,6 +7,7 @@
 
 #import "RCTViewManager.h"
 
+#import "RCTAssert.h"
 #import "RCTBorderStyle.h"
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
@@ -26,6 +27,7 @@ RCT_MULTI_ENUM_CONVERTER(
     (@{
       @"none" : @(UIAccessibilityTraitNone),
       @"button" : @(UIAccessibilityTraitButton),
+      @"togglebutton" : @(UIAccessibilityTraitButton),
       @"link" : @(UIAccessibilityTraitLink),
       @"header" : @(UIAccessibilityTraitHeader),
       @"search" : @(UIAccessibilityTraitSearchField),
@@ -74,6 +76,12 @@ RCT_EXPORT_MODULE()
 - (dispatch_queue_t)methodQueue
 {
   return RCTGetUIManagerQueue();
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  RCTWarnNotAllowedForNewArchitecture(self, @"RCTViewManager must not be initialized for the new architecture");
+  _bridge = bridge;
 }
 
 - (UIView *)view
@@ -291,6 +299,13 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
       view.hitTestEdgeInsets = defaultView.hitTestEdgeInsets;
     }
   }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(collapsable, BOOL, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
 }
 
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                                               \

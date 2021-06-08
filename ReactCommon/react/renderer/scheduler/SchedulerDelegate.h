@@ -50,7 +50,8 @@ class SchedulerDelegate {
    */
   virtual void schedulerDidSetIsJSResponder(
       ShadowView const &shadowView,
-      bool isJSResponder) = 0;
+      bool isJSResponder,
+      bool blockNativeResponder) = 0;
 
   virtual ~SchedulerDelegate() noexcept = default;
 };

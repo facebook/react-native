@@ -44,10 +44,14 @@ class RequestIdleCallbackTester extends React.Component<
   render() {
     return (
       <View>
+        {/* $FlowFixMe[method-unbinding] added when improving typing for this
+         * parameters */}
         <RNTesterButton onPress={this._run.bind(this, false)}>
           Run requestIdleCallback
         </RNTesterButton>
 
+        {/* $FlowFixMe[method-unbinding] added when improving typing for this
+         * parameters */}
         <RNTesterButton onPress={this._run.bind(this, true)}>
           Burn CPU inside of requestIdleCallback
         </RNTesterButton>
