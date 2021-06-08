@@ -1345,7 +1345,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     if (Math.abs(deltaX) > 1) {
       int scrollXTo = getScrollX() + deltaX;
 
-      reactScrollTo(scrollXTo, getScrollY());
+      scrollTo(scrollXTo, getScrollY());
 
       Integer autoScrollThreshold = maintainVisibleContentPositionData.autoScrollToTopThreshold;
       if (autoScrollThreshold != null) {
