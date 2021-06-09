@@ -34,6 +34,7 @@ class TextShadowNode : public ConcreteShadowNode<
 #ifdef ANDROID
     traits.set(ShadowNodeTraits::Trait::FormsView);
 #endif
+    traits.set(ShadowNodeTraits::Trait::Text);
 
     return traits;
   }
@@ -56,6 +57,37 @@ class TextShadowNode : public ConcreteShadowNode<
   }
 #endif
 };
+
+
+template <>
+inline TextShadowNode const& traitCast<TextShadowNode const&>(
+   ShadowNode const& shadowNode) {
+   bool castable =
+      shadowNode.getTraits().check(ShadowNodeTraits::Trait::Text);
+   react_native_assert(
+      castable ==
+      (dynamic_cast<TextShadowNode const*>(&shadowNode) != nullptr));
+   react_native_assert(castable);
+   (void)castable;
+   return static_cast<TextShadowNode const&>(shadowNode);
+}
+
+template <>
+inline TextShadowNode const* traitCast<TextShadowNode const*>(
+   ShadowNode const* shadowNode) {
+   if (!shadowNode) {
+      return nullptr;
+   }
+   bool castable =
+      shadowNode->getTraits().check(ShadowNodeTraits::Trait::Text);
+   react_native_assert(
+      castable ==
+      (dynamic_cast<TextShadowNode const*>(shadowNode) != nullptr));
+   if (!castable) {
+      return nullptr;
+   }
+   return static_cast<TextShadowNode const*>(shadowNode);
+}
 
 } // namespace react
 } // namespace facebook

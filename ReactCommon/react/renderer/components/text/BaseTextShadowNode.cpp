@@ -32,8 +32,7 @@ void BaseTextShadowNode::buildAttributedString(
     Attachments &outAttachments) {
   for (auto const &childNode : parentNode.getChildren()) {
     // RawShadowNode
-    auto rawTextShadowNode =
-        std::dynamic_pointer_cast<RawTextShadowNode const>(childNode);
+    auto rawTextShadowNode = traitCast<RawTextShadowNode const>(childNode);
     if (rawTextShadowNode) {
       auto fragment = AttributedString::Fragment{};
       fragment.string = rawTextShadowNode->getConcreteProps().text;
@@ -49,8 +48,7 @@ void BaseTextShadowNode::buildAttributedString(
     }
 
     // TextShadowNode
-    auto textShadowNode =
-        std::dynamic_pointer_cast<TextShadowNode const>(childNode);
+    auto textShadowNode = traitCast<TextShadowNode const>(childNode);
     if (textShadowNode) {
       auto localTextAttributes = baseTextAttributes;
       localTextAttributes.apply(
