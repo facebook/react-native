@@ -32,7 +32,8 @@ void BaseTextShadowNode::buildAttributedString(
     Attachments &outAttachments) {
   for (auto const &childNode : parentNode.getChildren()) {
     // RawShadowNode
-    auto rawTextShadowNode = traitCast<RawTextShadowNode const>(childNode);
+    auto rawTextShadowNode =
+        traitCast<RawTextShadowNode const*>(childNode.get());
     if (rawTextShadowNode) {
       auto fragment = AttributedString::Fragment{};
       fragment.string = rawTextShadowNode->getConcreteProps().text;
@@ -48,7 +49,7 @@ void BaseTextShadowNode::buildAttributedString(
     }
 
     // TextShadowNode
-    auto textShadowNode = traitCast<TextShadowNode const>(childNode);
+    auto textShadowNode = traitCast<TextShadowNode const*>(childNode.get());
     if (textShadowNode) {
       auto localTextAttributes = baseTextAttributes;
       localTextAttributes.apply(

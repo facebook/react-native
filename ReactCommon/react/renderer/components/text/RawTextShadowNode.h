@@ -21,14 +21,12 @@ extern const char RawTextComponentName[];
  * is represented as `<RawText text="Hello!"/>`.
  * <RawText> component must not have any children.
  */
-using RawTextShadowNode =
-    ConcreteShadowNode<RawTextComponentName, ShadowNode, RawTextProps>;
-
 class RawTextShadowNode : public ConcreteShadowNode<
                            RawTextComponentName,
                            ShadowNode,
                            RawTextProps> {
  public:
+  using ConcreteShadowNode::ConcreteShadowNode;
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::RawText);
