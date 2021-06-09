@@ -610,7 +610,7 @@ describe('VirtualizedList', () => {
       component = ReactTestRenderer.create(
         <VirtualizedList
           initialNumToRender={1}
-          window={1}
+          windowSize={1}
           {...baseItemProps(items)}
           {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
         />,
@@ -643,7 +643,7 @@ it('unmounts sticky headers moved below viewport', () => {
     component = ReactTestRenderer.create(
       <VirtualizedList
         initialNumToRender={1}
-        window={1}
+        windowSize={1}
         {...baseItemProps(items)}
         {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
       />,
