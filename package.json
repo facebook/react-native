@@ -122,7 +122,8 @@
   },
   "devDependencies": {
     "flow-bin": "^0.149.0",
-    "react": "17.0.2"
+    "react": "17.0.2",
+    "shelljs": "^0.7.8"
   },
   "detox": {
     "test-runner": "jest",
