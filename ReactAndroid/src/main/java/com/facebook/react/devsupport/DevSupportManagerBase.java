@@ -60,8 +60,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public abstract class DevSupportManagerBase
-    implements DevSupportManager, PackagerCommandListener, DevInternalSettings.Listener {
+public abstract class DevSupportManagerBase implements DevSupportManager, PackagerCommandListener {
 
   public interface CallbackWithBundleLoader {
     void onSuccess(JSBundleLoader bundleLoader);
@@ -135,7 +134,15 @@ public abstract class DevSupportManagerBase
     mReactInstanceDevHelper = reactInstanceDevHelper;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
-    mDevSettings = new DevInternalSettings(applicationContext, this);
+    mDevSettings =
+        new DevInternalSettings(
+            applicationContext,
+            new DevInternalSettings.Listener() {
+              @Override
+              public void onInternalSettingsChanged() {
+                reloadSettings();
+              }
+            });
     mBundleStatus = new InspectorPackagerConnection.BundleStatus();
     mDevServerHelper =
         new DevServerHelper(
@@ -809,10 +816,6 @@ public abstract class DevSupportManagerBase
             }
           });
     }
-  }
-
-  public void onInternalSettingsChanged() {
-    reloadSettings();
   }
 
   protected @Nullable ReactContext getCurrentContext() {
