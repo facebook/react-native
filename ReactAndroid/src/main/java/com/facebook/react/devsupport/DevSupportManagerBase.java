@@ -29,7 +29,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -51,7 +50,6 @@ import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -76,7 +74,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private static final String FLIPPER_DEBUGGER_URL =
       "flipper://null/Hermesdebuggerrn?device=React%20Native";
   private static final String FLIPPER_DEVTOOLS_URL = "flipper://null/React?device=React%20Native";
-  private boolean mIsSamplingProfilerEnabled = false;
   private static final String EXOPACKAGE_LOCATION_FORMAT =
       "/data/local/tmp/exopackage/%s//secondary-dex";
 
@@ -201,19 +198,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
     mRedBoxHandler = redBoxHandler;
     mDevLoadingViewController = new DevLoadingViewController(reactInstanceDevHelper);
-
-    if (mDevSettings.isStartSamplingProfilerOnInit()) {
-      // Only start the profiler. If its already running, there is an error
-      if (!mIsSamplingProfilerEnabled) {
-        toggleJSSamplingProfiler();
-      } else {
-        Toast.makeText(
-                mApplicationContext,
-                "JS Sampling Profiler was already running, so did not start the sampling profiler",
-                Toast.LENGTH_LONG)
-            .show();
-      }
-    }
   }
 
   @Override
@@ -534,17 +518,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         });
 
     options.put(
-        mIsSamplingProfilerEnabled
-            ? mApplicationContext.getString(R.string.catalyst_sample_profiler_disable)
-            : mApplicationContext.getString(R.string.catalyst_sample_profiler_enable),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            toggleJSSamplingProfiler();
-          }
-        });
-
-    options.put(
         mDevSettings.isFpsDebugEnabled()
             ? mApplicationContext.getString(R.string.catalyst_perf_monitor_stop)
             : mApplicationContext.getString(R.string.catalyst_perf_monitor),
@@ -609,52 +582,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mDevOptionsDialog.show();
     if (mCurrentContext != null) {
       mCurrentContext.getJSModule(RCTNativeAppEventEmitter.class).emit("RCTDevMenuShown", null);
-    }
-  }
-
-  /** Starts of stops the sampling profiler */
-  private void toggleJSSamplingProfiler() {
-    JavaScriptExecutorFactory javaScriptExecutorFactory =
-        mReactInstanceDevHelper.getJavaScriptExecutorFactory();
-    if (!mIsSamplingProfilerEnabled) {
-      try {
-        javaScriptExecutorFactory.startSamplingProfiler();
-        Toast.makeText(mApplicationContext, "Starting Sampling Profiler", Toast.LENGTH_SHORT)
-            .show();
-      } catch (UnsupportedOperationException e) {
-        Toast.makeText(
-                mApplicationContext,
-                javaScriptExecutorFactory.toString() + " does not support Sampling Profiler",
-                Toast.LENGTH_LONG)
-            .show();
-      } finally {
-        mIsSamplingProfilerEnabled = true;
-      }
-    } else {
-      try {
-        final String outputPath =
-            File.createTempFile(
-                    "sampling-profiler-trace", ".cpuprofile", mApplicationContext.getCacheDir())
-                .getPath();
-        javaScriptExecutorFactory.stopSamplingProfiler(outputPath);
-        Toast.makeText(
-                mApplicationContext,
-                "Saved results from Profiler to " + outputPath,
-                Toast.LENGTH_LONG)
-            .show();
-      } catch (IOException e) {
-        FLog.e(
-            ReactConstants.TAG,
-            "Could not create temporary file for saving results from Sampling Profiler");
-      } catch (UnsupportedOperationException e) {
-        Toast.makeText(
-                mApplicationContext,
-                javaScriptExecutorFactory.toString() + "does not support Sampling Profiler",
-                Toast.LENGTH_LONG)
-            .show();
-      } finally {
-        mIsSamplingProfilerEnabled = false;
-      }
     }
   }
 
