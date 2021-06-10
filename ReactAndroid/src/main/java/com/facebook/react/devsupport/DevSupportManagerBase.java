@@ -46,7 +46,6 @@ import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
-import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.ErrorType;
@@ -98,7 +97,7 @@ public abstract class DevSupportManagerBase
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
   private final BroadcastReceiver mReloadAppBroadcastReceiver;
-  protected final DevServerHelper mDevServerHelper;
+  private final DevServerHelper mDevServerHelper;
   private final LinkedHashMap<String, DevOptionHandler> mCustomDevOptions = new LinkedHashMap<>();
   private final ReactInstanceDevHelper mReactInstanceDevHelper;
   private final @Nullable String mJSAppBundleName;
@@ -869,26 +868,12 @@ public abstract class DevSupportManagerBase
     }
   }
 
-  @Override
-  public void loadSplitBundleFromServer(
-      final String bundlePath, final DevSplitBundleCallback callback) {
-    fetchSplitBundleAndCreateBundleLoader(
-        bundlePath,
-        new CallbackWithBundleLoader() {
-          @Override
-          public void onSuccess(JSBundleLoader bundleLoader) {
-            bundleLoader.loadScript(mCurrentContext.getCatalystInstance());
-            mCurrentContext
-                .getJSModule(HMRClient.class)
-                .registerBundle(mDevServerHelper.getDevServerSplitBundleURL(bundlePath));
-            callback.onSuccess();
-          }
+  protected @Nullable ReactContext getCurrentContext() {
+    return mCurrentContext;
+  }
 
-          @Override
-          public void onError(String url, Throwable cause) {
-            callback.onError(url, cause);
-          }
-        });
+  protected DevServerHelper getDevServerHelper() {
+    return mDevServerHelper;
   }
 
   public void fetchSplitBundleAndCreateBundleLoader(

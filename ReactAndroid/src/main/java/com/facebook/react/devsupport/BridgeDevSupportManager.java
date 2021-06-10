@@ -10,7 +10,9 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.packagerconnection.RequestHandler;
 import java.util.Map;
 
@@ -78,5 +80,27 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         devBundleDownloadListener,
         minNumShakes,
         customPackagerCommandHandlers);
+  }
+
+  @Override
+  public void loadSplitBundleFromServer(
+      final String bundlePath, final DevSplitBundleCallback callback) {
+    fetchSplitBundleAndCreateBundleLoader(
+        bundlePath,
+        new CallbackWithBundleLoader() {
+          @Override
+          public void onSuccess(JSBundleLoader bundleLoader) {
+            bundleLoader.loadScript(getCurrentContext().getCatalystInstance());
+            getCurrentContext()
+                .getJSModule(HMRClient.class)
+                .registerBundle(getDevServerHelper().getDevServerSplitBundleURL(bundlePath));
+            callback.onSuccess();
+          }
+
+          @Override
+          public void onError(String url, Throwable cause) {
+            callback.onError(url, cause);
+          }
+        });
   }
 }
