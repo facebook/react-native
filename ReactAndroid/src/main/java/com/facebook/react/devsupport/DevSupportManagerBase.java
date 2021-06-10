@@ -856,8 +856,7 @@ public abstract class DevSupportManagerBase
     if (mDevSettings.isRemoteJSDebugEnabled()) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Proxy");
-      mDevLoadingViewController.showForRemoteJSEnabled();
-      mDevLoadingViewVisible = true;
+      showDevLoadingViewForRemoteJSEnabled();
       reloadJSInProxyMode();
     } else {
       PrinterHolder.getPrinter()
@@ -870,6 +869,24 @@ public abstract class DevSupportManagerBase
 
   protected @Nullable ReactContext getCurrentContext() {
     return mCurrentContext;
+  }
+
+  @UiThread
+  private void showDevLoadingViewForUrl(String bundleUrl) {
+    mDevLoadingViewController.showForUrl(bundleUrl);
+    mDevLoadingViewVisible = true;
+  }
+
+  @UiThread
+  private void showDevLoadingViewForRemoteJSEnabled() {
+    mDevLoadingViewController.showForRemoteJSEnabled();
+    mDevLoadingViewVisible = true;
+  }
+
+  @UiThread
+  private void hideDevLoadingView() {
+    mDevLoadingViewController.hide();
+    mDevLoadingViewVisible = false;
   }
 
   protected DevServerHelper getDevServerHelper() {
@@ -938,16 +955,14 @@ public abstract class DevSupportManagerBase
 
   @UiThread
   private void showSplitBundleDevLoadingView(String bundleUrl) {
-    mDevLoadingViewController.showForUrl(bundleUrl);
-    mDevLoadingViewVisible = true;
+    showDevLoadingViewForUrl(bundleUrl);
     mPendingJSSplitBundleRequests++;
   }
 
   @UiThread
   private void hideSplitBundleDevLoadingView() {
     if (--mPendingJSSplitBundleRequests == 0) {
-      mDevLoadingViewController.hide();
-      mDevLoadingViewVisible = false;
+      hideDevLoadingView();
     }
   }
 
@@ -1105,14 +1120,12 @@ public abstract class DevSupportManagerBase
       @Override
       public void onSuccess() {
         future.set(true);
-        mDevLoadingViewController.hide();
-        mDevLoadingViewVisible = false;
+        hideDevLoadingView();
       }
 
       @Override
       public void onFailure(final Throwable cause) {
-        mDevLoadingViewController.hide();
-        mDevLoadingViewVisible = false;
+        hideDevLoadingView();
         FLog.e(ReactConstants.TAG, "Failed to connect to debugger!", cause);
         future.setException(
             new IOException(mApplicationContext.getString(R.string.catalyst_debug_error), cause));
@@ -1140,8 +1153,7 @@ public abstract class DevSupportManagerBase
   public void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {
     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_START);
 
-    mDevLoadingViewController.showForUrl(bundleURL);
-    mDevLoadingViewVisible = true;
+    showDevLoadingViewForUrl(bundleURL);
 
     final BundleDownloader.BundleInfo bundleInfo = new BundleDownloader.BundleInfo();
 
@@ -1149,8 +1161,7 @@ public abstract class DevSupportManagerBase
         new DevBundleDownloadListener() {
           @Override
           public void onSuccess() {
-            mDevLoadingViewController.hide();
-            mDevLoadingViewVisible = false;
+            hideDevLoadingView();
             synchronized (DevSupportManagerBase.this) {
               mBundleStatus.isLastDownloadSucess = true;
               mBundleStatus.updateTimestamp = System.currentTimeMillis();
@@ -1175,8 +1186,7 @@ public abstract class DevSupportManagerBase
 
           @Override
           public void onFailure(final Exception cause) {
-            mDevLoadingViewController.hide();
-            mDevLoadingViewVisible = false;
+            hideDevLoadingView();
             synchronized (DevSupportManagerBase.this) {
               mBundleStatus.isLastDownloadSucess = false;
             }
