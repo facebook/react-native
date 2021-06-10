@@ -40,9 +40,9 @@ import java.util.Map;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-public final class DevSupportManagerImpl extends DevSupportManagerBase {
+public final class BridgeDevSupportManager extends DevSupportManagerBase {
 
-  public DevSupportManagerImpl(
+  public BridgeDevSupportManager(
       Context applicationContext,
       ReactInstanceDevHelper reactInstanceDevHelper,
       @Nullable String packagerPathForJSBundleName,
@@ -60,7 +60,7 @@ public final class DevSupportManagerImpl extends DevSupportManagerBase {
         null);
   }
 
-  public DevSupportManagerImpl(
+  public BridgeDevSupportManager(
       Context applicationContext,
       ReactInstanceDevHelper reactInstanceManagerHelper,
       @Nullable String packagerPathForJSBundleName,
