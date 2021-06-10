@@ -813,6 +813,14 @@ public class SurfaceMountingManager {
       viewState.mStateWrapper = null;
     }
 
+    // Destroy EventEmitterWrapper immediately instead of waiting for Java GC.
+    // Notably, this is also required to ensure that the EventEmitterWrapper is deallocated
+    // before the JS VM is deallocated, since it holds onto a JSI::Pointer.
+    if (viewState.mEventEmitter != null) {
+      viewState.mEventEmitter.destroy();
+      viewState.mEventEmitter = null;
+    }
+
     // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
     ViewManager viewManager = viewState.mViewManager;
     if (!viewState.mIsRoot && viewManager != null) {
