@@ -150,6 +150,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/TextInput/TextInputExample'),
   },
   {
+    key: 'TextInputs with key prop',
+    module: require('../examples/TextInput/TextInputKeyProp'),
+  },
+  {
     key: 'TouchableExample',
     category: 'UI',
     module: require('../examples/Touchable/TouchableExample'),

@@ -30,7 +30,7 @@
       android:banner="@drawable/tv_banner"
       android:icon="@drawable/launcher_icon"
       android:label="@string/app_name"
-      android:theme="@style/Theme.ReactNative.AppCompat.Light" >
+      android:theme="@style/AppTheme">
     <activity
         android:name=".RNTesterActivity"
         android:label="@string/app_name"
