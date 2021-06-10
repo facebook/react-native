@@ -57,25 +57,6 @@ import java.util.concurrent.TimeoutException;
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
 public final class BridgeDevSupportManager extends DevSupportManagerBase {
-
-  public BridgeDevSupportManager(
-      Context applicationContext,
-      ReactInstanceDevHelper reactInstanceDevHelper,
-      @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate,
-      int minNumShakes) {
-
-    super(
-        applicationContext,
-        reactInstanceDevHelper,
-        packagerPathForJSBundleName,
-        enableOnCreate,
-        null,
-        null,
-        minNumShakes,
-        null);
-  }
-
   public BridgeDevSupportManager(
       Context applicationContext,
       ReactInstanceDevHelper reactInstanceManagerHelper,

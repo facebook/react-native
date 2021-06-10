@@ -128,24 +128,6 @@ public abstract class DevSupportManagerBase
       ReactInstanceDevHelper reactInstanceDevHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
-      int minNumShakes) {
-
-    this(
-        applicationContext,
-        reactInstanceDevHelper,
-        packagerPathForJSBundleName,
-        enableOnCreate,
-        null,
-        null,
-        minNumShakes,
-        null);
-  }
-
-  public DevSupportManagerBase(
-      Context applicationContext,
-      ReactInstanceDevHelper reactInstanceDevHelper,
-      @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate,
       @Nullable RedBoxHandler redBoxHandler,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
