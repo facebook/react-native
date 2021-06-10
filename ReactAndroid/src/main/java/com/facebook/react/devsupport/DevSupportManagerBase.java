@@ -25,13 +25,10 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
-import com.facebook.debug.holder.PrinterHolder;
-import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
@@ -41,7 +38,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.DebugServerException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
-import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -52,7 +48,6 @@ import com.facebook.react.devsupport.interfaces.ErrorType;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
-import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
@@ -64,9 +59,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public abstract class DevSupportManagerBase
     implements DevSupportManager, PackagerCommandListener, DevInternalSettings.Listener {
@@ -711,7 +703,7 @@ public abstract class DevSupportManagerBase
   }
 
   @Override
-  public DeveloperSettings getDevSettings() {
+  public DevInternalSettings getDevSettings() {
     return mDevSettings;
   }
 
@@ -841,34 +833,24 @@ public abstract class DevSupportManagerBase
     reloadSettings();
   }
 
-  @Override
-  public void handleReloadJS() {
-
-    UiThreadUtil.assertOnUiThread();
-
-    ReactMarker.logMarker(
-        ReactMarkerConstants.RELOAD,
-        mDevSettings.getPackagerConnectionSettings().getDebugServerHost());
-
-    // dismiss redbox if exists
-    hideRedboxDialog();
-
-    if (mDevSettings.isRemoteJSDebugEnabled()) {
-      PrinterHolder.getPrinter()
-          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Proxy");
-      showDevLoadingViewForRemoteJSEnabled();
-      reloadJSInProxyMode();
-    } else {
-      PrinterHolder.getPrinter()
-          .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
-      String bundleURL =
-          mDevServerHelper.getDevServerBundleURL(Assertions.assertNotNull(mJSAppBundleName));
-      reloadJSFromServer(bundleURL);
-    }
-  }
-
   protected @Nullable ReactContext getCurrentContext() {
     return mCurrentContext;
+  }
+
+  protected @Nullable String getJSAppBundleName() {
+    return mJSAppBundleName;
+  }
+
+  protected Context getApplicationContext() {
+    return mApplicationContext;
+  }
+
+  protected DevServerHelper getDevServerHelper() {
+    return mDevServerHelper;
+  }
+
+  protected ReactInstanceDevHelper getReactInstanceDevHelper() {
+    return mReactInstanceDevHelper;
   }
 
   @UiThread
@@ -878,19 +860,15 @@ public abstract class DevSupportManagerBase
   }
 
   @UiThread
-  private void showDevLoadingViewForRemoteJSEnabled() {
+  protected void showDevLoadingViewForRemoteJSEnabled() {
     mDevLoadingViewController.showForRemoteJSEnabled();
     mDevLoadingViewVisible = true;
   }
 
   @UiThread
-  private void hideDevLoadingView() {
+  protected void hideDevLoadingView() {
     mDevLoadingViewController.hide();
     mDevLoadingViewVisible = false;
-  }
-
-  protected DevServerHelper getDevServerHelper() {
-    return mDevServerHelper;
   }
 
   public void fetchSplitBundleAndCreateBundleLoader(
@@ -1085,52 +1063,6 @@ public abstract class DevSupportManagerBase
     mLastErrorStack = stack;
     mLastErrorCookie = errorCookie;
     mLastErrorType = errorType;
-  }
-
-  private void reloadJSInProxyMode() {
-    // When using js proxy, there is no need to fetch JS bundle as proxy executor will do that
-    // anyway
-    mDevServerHelper.launchJSDevtools();
-
-    JavaJSExecutor.Factory factory =
-        new JavaJSExecutor.Factory() {
-          @Override
-          public JavaJSExecutor create() throws Exception {
-            WebsocketJavaScriptExecutor executor = new WebsocketJavaScriptExecutor();
-            SimpleSettableFuture<Boolean> future = new SimpleSettableFuture<>();
-            executor.connect(
-                mDevServerHelper.getWebsocketProxyURL(), getExecutorConnectCallback(future));
-            // TODO(t9349129) Don't use timeout
-            try {
-              future.get(90, TimeUnit.SECONDS);
-              return executor;
-            } catch (ExecutionException e) {
-              throw (Exception) e.getCause();
-            } catch (InterruptedException | TimeoutException e) {
-              throw new RuntimeException(e);
-            }
-          }
-        };
-    mReactInstanceDevHelper.onReloadWithJSDebugger(factory);
-  }
-
-  private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(
-      final SimpleSettableFuture<Boolean> future) {
-    return new WebsocketJavaScriptExecutor.JSExecutorConnectCallback() {
-      @Override
-      public void onSuccess() {
-        future.set(true);
-        hideDevLoadingView();
-      }
-
-      @Override
-      public void onFailure(final Throwable cause) {
-        hideDevLoadingView();
-        FLog.e(ReactConstants.TAG, "Failed to connect to debugger!", cause);
-        future.setException(
-            new IOException(mApplicationContext.getString(R.string.catalyst_debug_error), cause));
-      }
-    };
   }
 
   public void reloadJSFromServer(final String bundleURL) {
