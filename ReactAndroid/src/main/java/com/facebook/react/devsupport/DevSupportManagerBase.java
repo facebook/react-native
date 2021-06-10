@@ -83,8 +83,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   public static final String EMOJI_HUNDRED_POINTS_SYMBOL = " \uD83D\uDCAF";
   public static final String EMOJI_FACE_WITH_NO_GOOD_GESTURE = " \uD83D\uDE45";
 
-  private final List<ExceptionLogger> mExceptionLoggers = new ArrayList<>();
-
   private final Context mApplicationContext;
   private final ShakeDetector mShakeDetector;
   private final BroadcastReceiver mReloadAppBroadcastReceiver;
@@ -204,8 +202,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mRedBoxHandler = redBoxHandler;
     mDevLoadingViewController = new DevLoadingViewController(reactInstanceDevHelper);
 
-    mExceptionLoggers.add(new JSExceptionLogger());
-
     if (mDevSettings.isStartSamplingProfilerOnInit()) {
       // Only start the profiler. If its already running, there is an error
       if (!mIsSamplingProfilerEnabled) {
@@ -223,44 +219,31 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   @Override
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
-
-      for (ExceptionLogger logger : mExceptionLoggers) {
-        logger.log(e);
-      }
-
+      logJSException(e);
     } else {
       mDefaultNativeModuleCallExceptionHandler.handleException(e);
     }
   }
 
-  private interface ExceptionLogger {
-    void log(Exception ex);
-  }
+  private void logJSException(Exception e) {
+    StringBuilder message =
+        new StringBuilder(
+            e.getMessage() == null ? "Exception in native call from JS" : e.getMessage());
+    Throwable cause = e.getCause();
+    while (cause != null) {
+      message.append("\n\n").append(cause.getMessage());
+      cause = cause.getCause();
+    }
 
-  private class JSExceptionLogger implements ExceptionLogger {
+    if (e instanceof JSException) {
+      FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
+      String stack = ((JSException) e).getStack();
+      message.append("\n\n").append(stack);
 
-    @Override
-    public void log(Exception e) {
-      StringBuilder message =
-          new StringBuilder(
-              e.getMessage() == null ? "Exception in native call from JS" : e.getMessage());
-      Throwable cause = e.getCause();
-      while (cause != null) {
-        message.append("\n\n").append(cause.getMessage());
-        cause = cause.getCause();
-      }
-
-      if (e instanceof JSException) {
-        FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-        String stack = ((JSException) e).getStack();
-        message.append("\n\n").append(stack);
-
-        // TODO #11638796: convert the stack into something useful
-        showNewError(
-            message.toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
-      } else {
-        showNewJavaError(message.toString(), e);
-      }
+      // TODO #11638796: convert the stack into something useful
+      showNewError(message.toString(), new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
+    } else {
+      showNewJavaError(message.toString(), e);
     }
   }
 
