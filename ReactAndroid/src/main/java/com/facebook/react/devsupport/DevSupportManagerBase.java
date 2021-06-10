@@ -60,7 +60,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public abstract class DevSupportManagerBase implements DevSupportManager, PackagerCommandListener {
+public abstract class DevSupportManagerBase implements DevSupportManager {
 
   public interface CallbackWithBundleLoader {
     void onSuccess(JSBundleLoader bundleLoader);
@@ -966,56 +966,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager, Packag
     return mLastErrorType;
   }
 
-  @Override
-  public void onPackagerConnected() {
-    // No-op
-  }
-
-  @Override
-  public void onPackagerDisconnected() {
-    // No-op
-  }
-
-  @Override
-  public void onPackagerReloadCommand() {
-    // Disable debugger to resume the JsVM & avoid thread locks while reloading
-    mDevServerHelper.disableDebugger();
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            handleReloadJS();
-          }
-        });
-  }
-
-  @Override
-  public void onPackagerDevMenuCommand() {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            showDevOptionsDialog();
-          }
-        });
-  }
-
-  @Override
-  public void onCaptureHeapCommand(final Responder responder) {
-    UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            handleCaptureHeap(responder);
-          }
-        });
-  }
-
-  @Override
-  public @Nullable Map<String, RequestHandler> customCommandHandlers() {
-    return mCustomPackagerCommandHandlers;
-  }
-
   private void handleCaptureHeap(final Responder responder) {
     if (mCurrentContext == null) {
       return;
@@ -1240,7 +1190,59 @@ public abstract class DevSupportManagerBase implements DevSupportManager, Packag
         mDevLoadingViewController.showMessage("Reloading...");
       }
 
-      mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
+      mDevServerHelper.openPackagerConnection(
+          this.getClass().getSimpleName(),
+          new PackagerCommandListener() {
+            @Override
+            public void onPackagerConnected() {
+              // No-op
+            }
+
+            @Override
+            public void onPackagerDisconnected() {
+              // No-op
+            }
+
+            @Override
+            public void onPackagerReloadCommand() {
+              // Disable debugger to resume the JsVM & avoid thread locks while reloading
+              mDevServerHelper.disableDebugger();
+              UiThreadUtil.runOnUiThread(
+                  new Runnable() {
+                    @Override
+                    public void run() {
+                      handleReloadJS();
+                    }
+                  });
+            }
+
+            @Override
+            public void onPackagerDevMenuCommand() {
+              UiThreadUtil.runOnUiThread(
+                  new Runnable() {
+                    @Override
+                    public void run() {
+                      showDevOptionsDialog();
+                    }
+                  });
+            }
+
+            @Override
+            public void onCaptureHeapCommand(final Responder responder) {
+              UiThreadUtil.runOnUiThread(
+                  new Runnable() {
+                    @Override
+                    public void run() {
+                      handleCaptureHeap(responder);
+                    }
+                  });
+            }
+
+            @Override
+            public @Nullable Map<String, RequestHandler> customCommandHandlers() {
+              return mCustomPackagerCommandHandlers;
+            }
+          });
     } else {
       // hide FPS debug overlay
       if (mDebugOverlayController != null) {
