@@ -21,8 +21,8 @@ type Props = $ReadOnly<{|
 |}>;
 
 export class _LogBoxInspectorContainer extends React.Component<Props> {
-  const {width, height} = Dimensions.get('window');
   render(): React.Node {
+    const {width, height} = Dimensions.get('window');
     return (
       <View style={[StyleSheet.absoluteFill, {width, height}]}>
         <LogBoxInspector
