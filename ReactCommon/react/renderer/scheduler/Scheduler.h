@@ -83,8 +83,10 @@ class Scheduler final : public UIManagerDelegate {
 
   void uiManagerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
-  void uiManagerDidCreateShadowNode(
-      const ShadowNode::Shared &shadowNode) override;
+  void uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) override;
+  void uiManagerDidCloneShadowNode(
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) override;
   void uiManagerDidDispatchCommand(
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,

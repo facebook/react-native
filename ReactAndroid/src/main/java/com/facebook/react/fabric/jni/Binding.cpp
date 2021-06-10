@@ -1128,13 +1128,9 @@ void Binding::driveCxxAnimations() {
   scheduler_->animationTick();
 }
 
-void Binding::schedulerDidRequestPreliminaryViewAllocation(
+void Binding::preallocateShadowView(
     const SurfaceId surfaceId,
     const ShadowView &shadowView) {
-  if (disablePreallocateViews_) {
-    return;
-  }
-
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR)
@@ -1143,11 +1139,6 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   }
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
-
-  if (disableVirtualNodePreallocation_ &&
-      !shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
-    return;
-  }
 
   static auto preallocateView =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
@@ -1189,6 +1180,53 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
       javaEventEmitter.get(),
       isLayoutableShadowNode);
+}
+
+void Binding::schedulerDidRequestPreliminaryViewAllocation(
+    const SurfaceId surfaceId,
+    const ShadowNode &shadowNode) {
+  if (disablePreallocateViews_) {
+    return;
+  }
+
+  auto shadowView = ShadowView(shadowNode);
+
+  if (disableVirtualNodePreallocation_ &&
+      !shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
+    return;
+  }
+
+  preallocateShadowView(surfaceId, shadowView);
+}
+
+void Binding::schedulerDidCloneShadowNode(
+    SurfaceId surfaceId,
+    const ShadowNode &oldShadowNode,
+    const ShadowNode &newShadowNode) {
+  // This is only necessary if view preallocation was skipped during
+  // createShadowNode
+  if (!disableVirtualNodePreallocation_) {
+    return;
+  }
+
+  // We may need to PreAllocate a ShadowNode at this point if this is the
+  // earliest point it is possible to do so:
+  // 1. The revision is exactly 1
+  // 2. At revision 0 (the old node), View Preallocation would have been skipped
+
+  if (newShadowNode.getProps()->revision != 1) {
+    return;
+  }
+  if (oldShadowNode.getProps()->revision != 0) {
+    return;
+  }
+
+  // If the new node is concrete and the old wasn't, we can preallocate
+  if (!oldShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView) &&
+      newShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+    auto shadowView = ShadowView(newShadowNode);
+    preallocateShadowView(surfaceId, shadowView);
+  }
 }
 
 void Binding::schedulerDidDispatchCommand(

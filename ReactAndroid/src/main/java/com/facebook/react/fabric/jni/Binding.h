@@ -135,9 +135,18 @@ class Binding : public jni::HybridClass<Binding>,
   void schedulerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
 
+  void preallocateShadowView(
+      const SurfaceId surfaceId,
+      const ShadowView &shadowView);
+
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ShadowView &shadowView) override;
+      const ShadowNode &shadowNode) override;
+
+  void schedulerDidCloneShadowNode(
+      SurfaceId surfaceId,
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) override;
 
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
