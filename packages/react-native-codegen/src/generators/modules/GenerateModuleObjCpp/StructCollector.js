@@ -144,6 +144,7 @@ class StructCollector {
     resolveAlias: AliasResolver,
     objectTypeAnnotation: NativeModuleObjectTypeAnnotation,
   ): void {
+    // $FlowFixMe[missing-type-arg]
     const properties = objectTypeAnnotation.properties.map<
       $ReadOnly<{
         name: string,

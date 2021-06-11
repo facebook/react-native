@@ -605,6 +605,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
 
 /* $FlowFixMe[class-object-subtyping] added when improving typing for this
  * parameters */
+// $FlowFixMe[method-unbinding]
 module.exports = (VirtualizedSectionList: React.AbstractComponent<
   React.ElementConfig<typeof VirtualizedSectionList>,
   $ReadOnly<{

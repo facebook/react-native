@@ -144,6 +144,7 @@ function serializeMethod(
   /**
    * Build ObjC Selector
    */
+  // $FlowFixMe[missing-type-arg]
   const selector = methodParams
     .map<string>(({paramName}) => paramName)
     .reduce(($selector, paramName, i) => {
@@ -422,6 +423,7 @@ function serializeConstantsProtocolMethods(
 
   const returnObjCType = `facebook::react::ModuleConstants<JS::${hasteModuleName}::Constants::Builder>`;
 
+  // $FlowFixMe[missing-type-arg]
   return ['constantsToExport', 'getConstants'].map<MethodSerializationOutput>(
     methodName => {
       const protocolMethod = ProtocolMethodTemplate({
