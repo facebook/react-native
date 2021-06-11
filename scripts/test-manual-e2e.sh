@@ -37,6 +37,7 @@ repo_root=$(pwd)
 
 rm -rf android
 ./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
+./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
 
 success "Generated artifacts for Maven"
 

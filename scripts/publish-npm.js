@@ -127,7 +127,7 @@ if (nightlyBuild) {
 }
 
 // -------- Generating Android Artifacts with JavaDoc
-if (exec('./gradlew :ReactAndroid:installArchives').code) {
+if (exec('./gradlew :ReactAndroid:installArchives').code || exec('./gradlew :ReactAndroid:installArchives').code) {
   echo('Could not generate artifacts');
   exit(1);
 }

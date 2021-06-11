@@ -139,6 +139,11 @@ function e2e_suite() {
         echo "Failed to compile Android binaries"
         return 1
       fi
+      if ! ./gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"
+      then
+        echo "Failed to compile Android binaries"
+        return 1
+      fi
     fi
 
     if ! npm pack

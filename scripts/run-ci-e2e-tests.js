@@ -48,6 +48,8 @@ try {
     if (
       exec(
         './gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"',
+      ).code || exec(
+        './gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"',
       ).code
     ) {
       echo('Failed to compile Android binaries');
