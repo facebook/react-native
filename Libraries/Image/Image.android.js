@@ -8,23 +8,22 @@
  * @format
  */
 
-const DeprecatedImageStylePropTypes = require('../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
-const DeprecatedStyleSheetPropType = require('../DeprecatedPropTypes/DeprecatedStyleSheetPropType');
-const DeprecatedViewPropTypes = require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
+import DeprecatedImageStylePropTypes from '../DeprecatedPropTypes/DeprecatedImageStylePropTypes';
+import DeprecatedStyleSheetPropType from '../DeprecatedPropTypes/DeprecatedStyleSheetPropType';
+import DeprecatedViewPropTypes from '../DeprecatedPropTypes/DeprecatedViewPropTypes';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
-const PropTypes = require('prop-types');
-const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const TextAncestor = require('../Text/TextAncestor');
+import PropTypes from 'prop-types';
+import * as React from 'react';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import TextAncestor from '../Text/TextAncestor';
 
-const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const resolveAssetSource = require('./resolveAssetSource');
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import resolveAssetSource from './resolveAssetSource';
 
 import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
 
-const TextInlineImageNativeComponent = require('./TextInlineImageNativeComponent');
+import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {RootTag} from '../Types/RootTagTypes';
