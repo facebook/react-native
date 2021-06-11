@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<21f28e209cfb07c744f2addfe335ba8b>>
+ * @generated SignedSource<<cc2d0b98265085526a6a2178a6cdbdf8>>
  */
 
 "use strict";
@@ -1903,6 +1903,9 @@ var _nativeFabricUIManage = nativeFabricUIManager,
   fabricMeasure = _nativeFabricUIManage.measure,
   fabricMeasureInWindow = _nativeFabricUIManage.measureInWindow,
   fabricMeasureLayout = _nativeFabricUIManage.measureLayout,
+  FabricDiscretePriority = _nativeFabricUIManage.unstable_DiscreteEventPriority,
+  fabricGetCurrentEventPriority =
+    _nativeFabricUIManage.unstable_getCurrentEventPriority,
   getViewConfigForType =
     ReactNativePrivateInterface.ReactNativeViewConfigRegistry.get,
   nextReactTag = 2;
@@ -6316,7 +6319,20 @@ function requestUpdateLane(fiber) {
       currentEventTransitionLane
     );
   fiber = currentUpdatePriority;
-  return 0 !== fiber ? fiber : 16;
+  if (0 === fiber)
+    a: {
+      fiber = fabricGetCurrentEventPriority
+        ? fabricGetCurrentEventPriority()
+        : null;
+      if (null != fiber)
+        switch (fiber) {
+          case FabricDiscretePriority:
+            fiber = 1;
+            break a;
+        }
+      fiber = 16;
+    }
+  return fiber;
 }
 function scheduleUpdateOnFiber(fiber, lane, eventTime) {
   if (50 < nestedUpdateCount)
@@ -8221,7 +8237,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_972 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "17.0.3-0eea57724",
+    version: "18.0.0-c96b78e0e",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8236,7 +8252,7 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1230 = {
+var internals$jscomp$inline_1233 = {
   bundleType: devToolsConfig$jscomp$inline_972.bundleType,
   version: devToolsConfig$jscomp$inline_972.version,
   rendererPackageName: devToolsConfig$jscomp$inline_972.rendererPackageName,
@@ -8263,19 +8279,19 @@ var internals$jscomp$inline_1230 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "17.0.3-0eea57724"
+  reconcilerVersion: "18.0.0-c96b78e0e"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1231 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1234 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1231.isDisabled &&
-    hook$jscomp$inline_1231.supportsFiber
+    !hook$jscomp$inline_1234.isDisabled &&
+    hook$jscomp$inline_1234.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1231.inject(
-        internals$jscomp$inline_1230
+      (rendererID = hook$jscomp$inline_1234.inject(
+        internals$jscomp$inline_1233
       )),
-        (injectedHook = hook$jscomp$inline_1231);
+        (injectedHook = hook$jscomp$inline_1234);
     } catch (err) {}
 }
 exports.createPortal = function(children, containerTag) {

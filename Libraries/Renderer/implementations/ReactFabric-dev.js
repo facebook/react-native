@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactFabric-dev
  * @preventMunge
- * @generated SignedSource<<74d609f93cda46b8478a82d095ab769c>>
+ * @generated SignedSource<<802b2fe3c3332e7eea4d369034929b93>>
  */
 
 'use strict';
@@ -4812,7 +4812,11 @@ var _nativeFabricUIManage = nativeFabricUIManager,
   registerEventHandler = _nativeFabricUIManage.registerEventHandler,
   fabricMeasure = _nativeFabricUIManage.measure,
   fabricMeasureInWindow = _nativeFabricUIManage.measureInWindow,
-  fabricMeasureLayout = _nativeFabricUIManage.measureLayout;
+  fabricMeasureLayout = _nativeFabricUIManage.measureLayout,
+  FabricDefaultPriority = _nativeFabricUIManage.unstable_DefaultEventPriority,
+  FabricDiscretePriority = _nativeFabricUIManage.unstable_DiscreteEventPriority,
+  fabricGetCurrentEventPriority =
+    _nativeFabricUIManage.unstable_getCurrentEventPriority;
 var getViewConfigForType =
   ReactNativePrivateInterface.ReactNativeViewConfigRegistry.get; // Counter for uniquely identifying views.
 // % 10 === 1 means it is a rootTag.
@@ -5032,6 +5036,21 @@ function shouldSetTextContent(type, props) {
   return false;
 }
 function getCurrentEventPriority() {
+  var currentEventPriority = fabricGetCurrentEventPriority
+    ? fabricGetCurrentEventPriority()
+    : null;
+
+  if (currentEventPriority != null) {
+    switch (currentEventPriority) {
+      case FabricDiscretePriority:
+        return DiscreteEventPriority;
+
+      case FabricDefaultPriority:
+      default:
+        return DefaultEventPriority;
+    }
+  }
+
   return DefaultEventPriority;
 } // The Fabric renderer is secondary to the existing React Native renderer.
 var scheduleTimeout = setTimeout;
@@ -5735,7 +5754,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-0eea57724";
+var ReactVersion = "18.0.0-c96b78e0e";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;

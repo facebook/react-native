@@ -6,7 +6,7 @@
  *
  * @format
  * @flow strict
- * @generated SignedSource<<e82e40c72e74c0f37676a3cae5cde60b>>
+ * @generated SignedSource<<51285a8509b134326b535fbea3608c87>>
  */
 
 import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
@@ -211,6 +211,7 @@ export type ReactFabricType = {
     element: Element<ElementType>,
     containerTag: number,
     callback: ?() => void,
+    concurrentRoot: ?boolean,
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   ...
