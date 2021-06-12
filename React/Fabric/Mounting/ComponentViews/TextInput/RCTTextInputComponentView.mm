@@ -258,6 +258,7 @@ using namespace facebook::react;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
   _didMoveToWindow = NO;
+  [_backedTextInputView resignFirstResponder];
 }
 
 #pragma mark - RCTBackedTextInputDelegate
