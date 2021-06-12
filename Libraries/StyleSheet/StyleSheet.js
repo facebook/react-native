@@ -338,9 +338,9 @@ module.exports = {
     let value;
 
     if (ReactNativeStyleAttributes[property] === true) {
-      value = {};
+      value = {process};
     } else if (typeof ReactNativeStyleAttributes[property] === 'object') {
-      value = ReactNativeStyleAttributes[property];
+      value = {...ReactNativeStyleAttributes[property], process};
     } else {
       console.error(`${property} is not a valid style attribute`);
       return;
@@ -350,7 +350,7 @@ module.exports = {
       console.warn(`Overwriting ${property} style attribute preprocessor`);
     }
 
-    ReactNativeStyleAttributes[property] = {...value, process};
+    ReactNativeStyleAttributes[property] = value;
   },
 
   /**
