@@ -22,9 +22,9 @@ extern const char RawTextComponentName[];
  * <RawText> component must not have any children.
  */
 class RawTextShadowNode : public ConcreteShadowNode<
-                           RawTextComponentName,
-                           ShadowNode,
-                           RawTextProps> {
+                              RawTextComponentName,
+                              ShadowNode,
+                              RawTextProps> {
  public:
   using ConcreteShadowNode::ConcreteShadowNode;
   static ShadowNodeTraits BaseTraits() {
@@ -35,35 +35,34 @@ class RawTextShadowNode : public ConcreteShadowNode<
 };
 
 template <>
-inline RawTextShadowNode const& traitCast<RawTextShadowNode const&>(
-   ShadowNode const& shadowNode) {
-   bool castable =
+inline RawTextShadowNode const &traitCast<RawTextShadowNode const &>(
+    ShadowNode const &shadowNode) {
+  bool castable =
       shadowNode.getTraits().check(ShadowNodeTraits::Trait::RawText);
-   react_native_assert(
+  react_native_assert(
       castable ==
-      (dynamic_cast<RawTextShadowNode const*>(&shadowNode) != nullptr));
-   react_native_assert(castable);
-   (void)castable;
-   return static_cast<RawTextShadowNode const&>(shadowNode);
+      (dynamic_cast<RawTextShadowNode const *>(&shadowNode) != nullptr));
+  react_native_assert(castable);
+  (void)castable;
+  return static_cast<RawTextShadowNode const &>(shadowNode);
 }
 
 template <>
-inline RawTextShadowNode const* traitCast<RawTextShadowNode const*>(
-   ShadowNode const* shadowNode) {
-   if (!shadowNode) {
-      return nullptr;
-   }
-   bool castable =
+inline RawTextShadowNode const *traitCast<RawTextShadowNode const *>(
+    ShadowNode const *shadowNode) {
+  if (!shadowNode) {
+    return nullptr;
+  }
+  bool castable =
       shadowNode->getTraits().check(ShadowNodeTraits::Trait::RawText);
-   react_native_assert(
+  react_native_assert(
       castable ==
-      (dynamic_cast<RawTextShadowNode const*>(shadowNode) != nullptr));
-   if (!castable) {
-      return nullptr;
-   }
-   return static_cast<RawTextShadowNode const*>(shadowNode);
+      (dynamic_cast<RawTextShadowNode const *>(shadowNode) != nullptr));
+  if (!castable) {
+    return nullptr;
+  }
+  return static_cast<RawTextShadowNode const *>(shadowNode);
 }
-
 
 } // namespace react
 } // namespace facebook

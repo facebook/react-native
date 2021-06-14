@@ -216,7 +216,7 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     ShadowNode::Shared node,
     Point point) {
   auto layoutableShadowNode =
-    traitCast<const LayoutableShadowNode *>(node.get());
+      traitCast<const LayoutableShadowNode *>(node.get());
 
   if (!layoutableShadowNode) {
     return nullptr;

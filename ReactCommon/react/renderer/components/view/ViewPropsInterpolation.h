@@ -24,12 +24,12 @@ static inline void interpolateViewProps(
     const SharedProps &oldPropsShared,
     const SharedProps &newPropsShared,
     SharedProps &interpolatedPropsShared) {
-
-  // Verify the static_casts below are safe        
+  // Verify the static_casts below are safe
   react_native_assert(
       dynamic_cast<ViewProps const *>(oldPropsShared.get()) != nullptr &&
       dynamic_cast<ViewProps const *>(newPropsShared.get()) != nullptr &&
-      dynamic_cast<ViewProps const *>(interpolatedPropsShared.get()) != nullptr);
+      dynamic_cast<ViewProps const *>(interpolatedPropsShared.get()) !=
+          nullptr);
 
   ViewProps const *oldViewProps =
       static_cast<ViewProps const *>(oldPropsShared.get());
