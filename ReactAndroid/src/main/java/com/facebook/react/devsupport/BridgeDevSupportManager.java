@@ -126,6 +126,11 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
   }
 
   @Override
+  protected String getUniqueTag() {
+    return "Bridge";
+  }
+
+  @Override
   public void loadSplitBundleFromServer(
       final String bundlePath, final DevSplitBundleCallback callback) {
     fetchSplitBundleAndCreateBundleLoader(

@@ -68,8 +68,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
-  private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
-  private static final String JS_SPLIT_BUNDLES_DIR_NAME = "dev_js_split_bundles";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
   private static final String FLIPPER_DEBUGGER_URL =
       "flipper://null/Hermesdebuggerrn?device=React%20Native";
@@ -87,7 +85,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private final LinkedHashMap<String, DevOptionHandler> mCustomDevOptions = new LinkedHashMap<>();
   private final ReactInstanceDevHelper mReactInstanceDevHelper;
   private final @Nullable String mJSAppBundleName;
-  private final File mJSBundleTempFile;
+  private final File mJSBundleDownloadedFile;
   private final File mJSSplitBundlesDir;
   private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
   private final DevLoadingViewController mDevLoadingViewController;
@@ -187,10 +185,12 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     // start reading first reload output while the second reload starts writing to the same
     // file. As this should only be the case in dev mode we leave it as it is.
     // TODO(6418010): Fix readers-writers problem in debug reload from HTTP server
-    mJSBundleTempFile = new File(applicationContext.getFilesDir(), JS_BUNDLE_FILE_NAME);
+    final String subclassTag = getUniqueTag();
+    final String bundleFile = subclassTag + "ReactNativeDevBundle.js";
+    mJSBundleDownloadedFile = new File(applicationContext.getFilesDir(), bundleFile);
 
-    mJSSplitBundlesDir =
-        mApplicationContext.getDir(JS_SPLIT_BUNDLES_DIR_NAME, Context.MODE_PRIVATE);
+    final String splitBundlesDir = subclassTag.toLowerCase() + "_dev_js_split_bundles";
+    mJSSplitBundlesDir = mApplicationContext.getDir(splitBundlesDir, Context.MODE_PRIVATE);
 
     mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
 
@@ -199,6 +199,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mRedBoxHandler = redBoxHandler;
     mDevLoadingViewController = new DevLoadingViewController(reactInstanceDevHelper);
   }
+
+  protected abstract String getUniqueTag();
 
   @Override
   public void handleException(Exception e) {
@@ -635,7 +637,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   @Override
   public String getDownloadedJSBundleFile() {
-    return mJSBundleTempFile.getAbsolutePath();
+    return mJSBundleDownloadedFile.getAbsolutePath();
   }
 
   /**
@@ -645,19 +647,19 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
    */
   @Override
   public boolean hasUpToDateJSBundleInCache() {
-    if (mIsDevSupportEnabled && mJSBundleTempFile.exists()) {
+    if (mIsDevSupportEnabled && mJSBundleDownloadedFile.exists()) {
       try {
         String packageName = mApplicationContext.getPackageName();
         PackageInfo thisPackage =
             mApplicationContext.getPackageManager().getPackageInfo(packageName, 0);
-        if (mJSBundleTempFile.lastModified() > thisPackage.lastUpdateTime) {
+        if (mJSBundleDownloadedFile.lastModified() > thisPackage.lastUpdateTime) {
           // Base APK has not been updated since we downloaded JS, but if app is using exopackage
           // it may only be a single dex that has been updated. We check for exopackage dir update
           // time in that case.
           File exopackageDir =
               new File(String.format(Locale.US, EXOPACKAGE_LOCATION_FORMAT, packageName));
           if (exopackageDir.exists()) {
-            return mJSBundleTempFile.lastModified() > exopackageDir.lastModified();
+            return mJSBundleDownloadedFile.lastModified() > exopackageDir.lastModified();
           }
           return true;
         }
@@ -963,7 +965,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             reportBundleLoadingFailure(cause);
           }
         },
-        mJSBundleTempFile,
+        mJSBundleDownloadedFile,
         bundleURL,
         bundleInfo);
   }
