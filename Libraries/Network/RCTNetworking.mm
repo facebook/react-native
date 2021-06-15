@@ -17,6 +17,7 @@
 #import <React/RCTUtils.h>
 
 #import <React/RCTHTTPRequestHandler.h>
+#import <React/RCTFileRequestHandler.h>
 
 #import "RCTNetworkPlugins.h"
 
@@ -154,6 +155,7 @@ static NSString *RCTGenerateFormBoundary()
 }
 
 @synthesize methodQueue = _methodQueue;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -186,6 +188,14 @@ RCT_EXPORT_MODULE()
   _handlers = nil;
   _requestHandlers = nil;
   _responseHandlers = nil;
+}
+
+// TODO (T93136931) - Investigate why this is needed. This setter shouldn't be
+// necessary, since moduleRegistry is a property on RCTEventEmitter (which this
+// class inherits from).
+- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
+{
+  _moduleRegistry = moduleRegistry;
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -393,9 +403,9 @@ RCT_EXPORT_MODULE()
   }
   NSURLRequest *request = [RCTConvert NSURLRequest:query[@"uri"]];
   if (request) {
-
     __block RCTURLRequestCancellationBlock cancellationBlock = nil;
-    RCTNetworkTask *task = [self networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+    id<RCTURLRequestHandler> handler = [self.moduleRegistry moduleForName:"FileRequestHandler"];
+    RCTNetworkTask *task = [self networkTaskWithRequest:request handler:handler completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
       dispatch_async(self->_methodQueue, ^{
         cancellationBlock = callback(error, data ? @{@"body": data, @"contentType": RCTNullIfNil(response.MIMEType)} : nil);
       });
@@ -669,6 +679,19 @@ RCT_EXPORT_MODULE()
     return nil;
   }
 
+  RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithRequest:request
+                                                         handler:handler
+                                                   callbackQueue:_methodQueue];
+  task.completionBlock = completionBlock;
+  return task;
+}
+
+- (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request handler:(id<RCTURLRequestHandler>)handler completionBlock:(RCTURLRequestCompletionBlock)completionBlock
+{
+  if (!handler) {
+    // specified handler is nil, fall back to generic method
+    return [self networkTaskWithRequest:request completionBlock:completionBlock];
+  }
   RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithRequest:request
                                                          handler:handler
                                                    callbackQueue:_methodQueue];
