@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -60,7 +62,7 @@ public class SurfaceMountingManager {
   private JSResponderHandler mJSResponderHandler;
   private ViewManagerRegistry mViewManagerRegistry;
   private RootViewManager mRootViewManager;
-  private MountingManager mMountingManager;
+  private MountItemExecutor mMountItemExecutor;
 
   // This is null *until* StopSurface is called.
   private Set<Integer> mTagSetForStoppedSurface;
@@ -72,13 +74,13 @@ public class SurfaceMountingManager {
       @NonNull JSResponderHandler jsResponderHandler,
       @NonNull ViewManagerRegistry viewManagerRegistry,
       @NonNull RootViewManager rootViewManager,
-      @NonNull MountingManager mountingManager) {
+      @NonNull MountItemExecutor mountItemExecutor) {
     mSurfaceId = surfaceId;
 
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
     mRootViewManager = rootViewManager;
-    mMountingManager = mountingManager;
+    mMountItemExecutor = mountItemExecutor;
   }
 
   public boolean isStopped() {
@@ -206,11 +208,9 @@ public class SurfaceMountingManager {
   }
 
   @UiThread
+  @ThreadConfined(UI)
   private void executeViewAttachMountItems() {
-    while (!mOnViewAttachItems.isEmpty()) {
-      MountItem item = mOnViewAttachItems.poll();
-      item.execute(mMountingManager);
-    }
+    mMountItemExecutor.executeItems(mOnViewAttachItems);
   }
 
   /**
@@ -269,7 +269,7 @@ public class SurfaceMountingManager {
             mTagToViewState = null;
             mJSResponderHandler = null;
             mRootViewManager = null;
-            mMountingManager = null;
+            mMountItemExecutor = null;
             mOnViewAttachItems.clear();
           }
         };
