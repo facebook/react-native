@@ -64,7 +64,6 @@ public class SurfaceMountingManager {
 
   // This is null *until* StopSurface is called.
   private Set<Integer> mTagSetForStoppedSurface;
-  private long mLastSuccessfulQueryTime = -1;
 
   private final int mSurfaceId;
 
@@ -139,7 +138,6 @@ public class SurfaceMountingManager {
     // deleted. This helps distinguish between scenarios where an invalid tag is referenced, vs
     // race conditions where an imperative method is called on a tag during/just after StopSurface.
     if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.contains(tag)) {
-      mLastSuccessfulQueryTime = System.currentTimeMillis();
       return true;
     }
     if (mTagToViewState == null) {
@@ -267,7 +265,6 @@ public class SurfaceMountingManager {
             }
 
             // Evict all views from cache and memory
-            mLastSuccessfulQueryTime = System.currentTimeMillis();
             mTagSetForStoppedSurface = mTagToViewState.keySet();
             mTagToViewState = null;
             mJSResponderHandler = null;
