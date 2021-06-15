@@ -17,10 +17,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.hardware.SensorManager;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -551,8 +555,18 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           "Unable to launch dev options menu because react activity " + "isn't available");
       return;
     }
+
+    final TextView textView = new TextView(getApplicationContext());
+    textView.setText("React Native DevMenu (" + getUniqueTag() + ")");
+    textView.setPadding(0, 50, 0, 0);
+    textView.setGravity(Gravity.CENTER);
+    textView.setTextColor(Color.BLACK);
+    textView.setTextSize(17);
+    textView.setTypeface(textView.getTypeface(), Typeface.BOLD);
+
     mDevOptionsDialog =
         new AlertDialog.Builder(context)
+            .setCustomTitle(textView)
             .setItems(
                 options.keySet().toArray(new String[0]),
                 new DialogInterface.OnClickListener() {
