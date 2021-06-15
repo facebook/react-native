@@ -62,7 +62,9 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
       Alert.alert('Upload failed', 'No response payload.');
       return;
     }
-    const index = xhr.responseText.indexOf('http://www.posttestserver.com/');
+    const index = xhr.responseText.indexOf(
+      'http://ptsv2.com/t/react-native/d/',
+    );
     if (index === -1) {
       Alert.alert('Upload failed', 'Invalid response payload.');
       return;
@@ -78,7 +80,7 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
 
   _upload = () => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://posttestserver.com/post.php');
+    xhr.open('POST', 'http://ptsv2.com/t/react-native/post');
     xhr.onload = () => XHRExampleBinaryUpload.handlePostTestServerUpload(xhr);
     xhr.setRequestHeader('Content-Type', 'text/plain');
 
