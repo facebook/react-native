@@ -396,6 +396,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             handleReloadJS();
           }
         });
+
     if (mDevSettings.isDeviceDebugEnabled()) {
       // For on-device debugging we link out to Flipper.
       // Since we're assuming Flipper is available, also include the DevTools.
@@ -428,21 +429,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
                   mApplicationContext.getString(R.string.catalyst_open_flipper_error));
             }
           });
-    } else {
-      // For remote debugging, we open up Chrome running the app in a web worker.
-      // Note that this requires async communication, which will not work for Turbo Modules.
-      options.put(
-          mDevSettings.isRemoteJSDebugEnabled()
-              ? mApplicationContext.getString(R.string.catalyst_debug_stop)
-              : mApplicationContext.getString(R.string.catalyst_debug),
-          new DevOptionHandler() {
-            @Override
-            public void onOptionSelected() {
-              mDevSettings.setRemoteJSDebugEnabled(!mDevSettings.isRemoteJSDebugEnabled());
-              handleReloadJS();
-            }
-          });
     }
+
     options.put(
         mApplicationContext.getString(R.string.catalyst_change_bundle_location),
         new DevOptionHandler() {
@@ -478,6 +466,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             bundleLocationDialog.show();
           }
         });
+
     options.put(
         // NOTE: `isElementInspectorEnabled` is not guaranteed to be accurate.
         mApplicationContext.getString(R.string.catalyst_inspector),
