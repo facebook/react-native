@@ -16,7 +16,7 @@ const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 const TextInlineView = require('../../components/TextInlineView');
-const TextLegend = require('../../components/TextLegend');
+import TextLegend from '../../components/TextLegend';
 
 const {LayoutAnimation, StyleSheet, Text, View} = require('react-native');
 
