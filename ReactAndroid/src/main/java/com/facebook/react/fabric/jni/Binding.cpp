@@ -564,6 +564,9 @@ void Binding::installFabricUIManager(
   disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
       "react_fabric:disable_virtual_node_preallocation");
 
+  enableEarlyEventEmitterUpdate_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_early_event_emitter_update");
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
@@ -1162,10 +1165,12 @@ void Binding::preallocateShadowView(
   }
 
   // Do not hold a reference to javaEventEmitter from the C++ side.
-  SharedEventEmitter eventEmitter = shadowView.eventEmitter;
   auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
-  EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-  cEventEmitter->eventEmitter = eventEmitter;
+  if (enableEarlyEventEmitterUpdate_) {
+    SharedEventEmitter eventEmitter = shadowView.eventEmitter;
+    EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
+    cEventEmitter->eventEmitter = eventEmitter;
+  }
 
   local_ref<ReadableMap::javaobject> props = castReadableMap(
       ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
