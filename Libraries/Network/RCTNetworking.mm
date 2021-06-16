@@ -155,7 +155,6 @@ static NSString *RCTGenerateFormBoundary()
 }
 
 @synthesize methodQueue = _methodQueue;
-@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -188,14 +187,6 @@ RCT_EXPORT_MODULE()
   _handlers = nil;
   _requestHandlers = nil;
   _responseHandlers = nil;
-}
-
-// TODO (T93136931) - Investigate why this is needed. This setter shouldn't be
-// necessary, since moduleRegistry is a property on RCTEventEmitter (which this
-// class inherits from).
-- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
-{
-  _moduleRegistry = moduleRegistry;
 }
 
 - (NSArray<NSString *> *)supportedEvents
