@@ -474,8 +474,9 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         });
 
     options.put(
-        // NOTE: `isElementInspectorEnabled` is not guaranteed to be accurate.
-        mApplicationContext.getString(R.string.catalyst_inspector),
+        mDevSettings.isElementInspectorEnabled()
+            ? mApplicationContext.getString(R.string.catalyst_inspector_stop)
+            : mApplicationContext.getString(R.string.catalyst_inspector),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
