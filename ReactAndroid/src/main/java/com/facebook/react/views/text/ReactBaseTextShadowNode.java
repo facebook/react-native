@@ -174,9 +174,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(start, end, new ReactForegroundColorSpan(textShadowNode.mColor)));
       }
       if (textShadowNode.mIsBackgroundColorSet) {
-        ops.add(
-            new SetSpanOperation(
-                start, end, new ReactBackgroundColorSpan(textShadowNode.mBackgroundColor)));
+        // @Taskadev1 Draw underline highlight
+        ops.add(new SetSpanOperation(
+                start,
+                end,
+                new UnderlineStyleSpan(textShadowNode.mBackgroundColor)));
       }
       float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
       if (!Float.isNaN(effectiveLetterSpacing)
