@@ -13,7 +13,6 @@ const React = require('react');
 const {
   Platform,
   ScrollView,
-  Picker,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -549,6 +548,7 @@ const SnapToOptions = () => {
   const [snapToInterval, setSnapToInterval] = useState(0);
   const [snapToOffsets, setSnapToOffsets] = useState([]);
   const [snapToStart, setSnapToStart] = useState(true);
+
   return (
     <View>
       <ScrollView
@@ -563,19 +563,17 @@ const SnapToOptions = () => {
       </ScrollView>
       {Platform.OS === 'ios' ? (
         <>
-          <Text style={styles.rowTitle}>Snap to Alignment Mode</Text>
-          <Picker
-            selectedValue={snapToAlignment}
-            onValueChange={value => {
-              if (value === 'start' || value === 'center' || value === 'end') {
-                setSnapToAlignment(value);
-              }
-            }}
-            itemStyle={styles.pickerItem}>
-            {snapToAlignmentModes.map(label => {
-              return <Picker.Item label={label} value={label} key={label} />;
-            })}
-          </Picker>
+          <Text style={styles.rowTitle}>Select Snap to Alignment Mode</Text>
+          <View style={styles.row}>
+            {snapToAlignmentModes.map(label => (
+              <Button
+                active={snapToAlignment === label}
+                key={label}
+                label={label}
+                onPress={() => setSnapToAlignment(label)}
+              />
+            ))}
+          </View>
         </>
       ) : null}
       <Button
@@ -752,18 +750,16 @@ const OnScrollOptions = () => {
       {Platform.OS === 'android' ? (
         <>
           <Text style={styles.rowTitle}>Over Scroll Mode</Text>
-          <Picker
-            selectedValue={overScrollMode}
-            onValueChange={value => {
-              if (value === 'always' || value === 'auto' || value === 'never') {
-                setOverScrollMode(value);
-              }
-            }}
-            itemStyle={styles.pickerItem}>
-            {overScrollModeOptions.map(label => {
-              return <Picker.Item label={label} value={label} key={label} />;
-            })}
-          </Picker>
+          <View style={styles.row}>
+            {overScrollModeOptions.map(value => (
+              <Button
+                active={value === overScrollMode}
+                label={value}
+                key={value}
+                onPress={() => setOverScrollMode(value)}
+              />
+            ))}
+          </View>
         </>
       ) : null}
     </View>
@@ -887,35 +883,27 @@ const KeyboardExample = () => {
         {ITEMS.map(createItemRow)}
       </ScrollView>
       <Text style={styles.rowTitle}>Keyboard Dismiss Mode</Text>
-      <Picker
-        selectedValue={keyboardDismissMode}
-        onValueChange={value => {
-          if (
-            value === 'none' ||
-            value === 'on-drag' ||
-            value === 'interactive'
-          ) {
-            setKeyboardDismissMode(value);
-          }
-        }}
-        itemStyle={styles.pickerItem}>
-        {dismissOptions.map(label => {
-          return <Picker.Item label={label} value={label} key={label} />;
-        })}
-      </Picker>
+      <View style={styles.row}>
+        {dismissOptions.map(value => (
+          <Button
+            active={value === keyboardDismissMode}
+            label={value}
+            key={value}
+            onPress={() => setKeyboardDismissMode(value)}
+          />
+        ))}
+      </View>
       <Text style={styles.rowTitle}>Keyboard Should Persist taps</Text>
-      <Picker
-        selectedValue={keyboardShouldPersistTaps}
-        onValueChange={value => {
-          if (value === 'never' || value === 'always' || value === 'handled') {
-            setKeyboardShouldPersistTaps(value);
-          }
-        }}
-        itemStyle={styles.pickerItem}>
-        {persistOptions.map(label => {
-          return <Picker.Item label={label} value={label} key={label} />;
-        })}
-      </Picker>
+      <View style={styles.row}>
+        {persistOptions.map(value => (
+          <Button
+            active={value === keyboardShouldPersistTaps}
+            label={value}
+            key={value}
+            onPress={() => setKeyboardShouldPersistTaps(value)}
+          />
+        ))}
+      </View>
     </View>
   );
 };
@@ -1228,12 +1216,16 @@ let ITEMS = [...Array(12)].map((_, i) => `Item ${i}`);
 const createItemRow = (msg, index) => <Item key={index} msg={msg} />;
 
 const Button = (props: {
+  active?: boolean,
   label: string,
   onPress: () => void,
   testID?: string,
 }) => (
   <TouchableOpacity
-    style={styles.button}
+    style={StyleSheet.compose(
+      styles.button,
+      props.active === true ? styles.activeButton : null,
+    )}
     onPress={props.onPress}
     testID={props.testID}>
     <Text>{props.label}</Text>
@@ -1253,7 +1245,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     margin: 5,
   },
+  activeButton: {
+    backgroundColor: 'rgba(100,215,255,.3)',
+  },
   button: {
+    flex: 1,
     margin: 5,
     padding: 5,
     alignItems: 'center',
@@ -1274,12 +1270,10 @@ const styles = StyleSheet.create({
   containerStyle: {
     backgroundColor: '#aae3b6',
   },
-  pickerItem: {
-    fontSize: 16,
-  },
   rowTitle: {
     flex: 1,
     fontWeight: 'bold',
+    alignSelf: 'center',
   },
   textInput: {
     height: 40,

@@ -703,6 +703,7 @@ jsi::Value UIManagerBinding::get(
 
                 if (layoutMetrics == EmptyLayoutMetrics) {
                   onSuccess->call(runtime, {0, 0, 0, 0, 0, 0});
+                  return;
                 }
                 auto newestCloneOfShadowNode =
                     uiManager->getNewestCloneOfShadowNode(*shadowNode);

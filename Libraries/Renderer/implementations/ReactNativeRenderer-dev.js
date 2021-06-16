@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactNativeRenderer-dev
  * @preventMunge
- * @generated SignedSource<<aa6b99a1b263885f6291e2c26acbf39b>>
+ * @generated SignedSource<<61618ec46c01f4420d0f803346bf7ac1>>
  */
 
 'use strict';
@@ -6023,7 +6023,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-experimental-0eea57724";
+var ReactVersion = "18.0.0-experimental-c96b78e0e";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;

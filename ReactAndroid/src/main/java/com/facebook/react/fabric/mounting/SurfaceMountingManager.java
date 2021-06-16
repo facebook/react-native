@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -60,11 +62,10 @@ public class SurfaceMountingManager {
   private JSResponderHandler mJSResponderHandler;
   private ViewManagerRegistry mViewManagerRegistry;
   private RootViewManager mRootViewManager;
-  private MountingManager mMountingManager;
+  private MountItemExecutor mMountItemExecutor;
 
   // This is null *until* StopSurface is called.
   private Set<Integer> mTagSetForStoppedSurface;
-  private long mLastSuccessfulQueryTime = -1;
 
   private final int mSurfaceId;
 
@@ -73,13 +74,13 @@ public class SurfaceMountingManager {
       @NonNull JSResponderHandler jsResponderHandler,
       @NonNull ViewManagerRegistry viewManagerRegistry,
       @NonNull RootViewManager rootViewManager,
-      @NonNull MountingManager mountingManager) {
+      @NonNull MountItemExecutor mountItemExecutor) {
     mSurfaceId = surfaceId;
 
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
     mRootViewManager = rootViewManager;
-    mMountingManager = mountingManager;
+    mMountItemExecutor = mountItemExecutor;
   }
 
   public boolean isStopped() {
@@ -139,7 +140,6 @@ public class SurfaceMountingManager {
     // deleted. This helps distinguish between scenarios where an invalid tag is referenced, vs
     // race conditions where an imperative method is called on a tag during/just after StopSurface.
     if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.contains(tag)) {
-      mLastSuccessfulQueryTime = System.currentTimeMillis();
       return true;
     }
     if (mTagToViewState == null) {
@@ -208,11 +208,9 @@ public class SurfaceMountingManager {
   }
 
   @UiThread
+  @ThreadConfined(UI)
   private void executeViewAttachMountItems() {
-    while (!mOnViewAttachItems.isEmpty()) {
-      MountItem item = mOnViewAttachItems.poll();
-      item.execute(mMountingManager);
-    }
+    mMountItemExecutor.executeItems(mOnViewAttachItems);
   }
 
   /**
@@ -267,12 +265,11 @@ public class SurfaceMountingManager {
             }
 
             // Evict all views from cache and memory
-            mLastSuccessfulQueryTime = System.currentTimeMillis();
             mTagSetForStoppedSurface = mTagToViewState.keySet();
             mTagToViewState = null;
             mJSResponderHandler = null;
             mRootViewManager = null;
-            mMountingManager = null;
+            mMountItemExecutor = null;
             mOnViewAttachItems.clear();
           }
         };
@@ -811,6 +808,14 @@ public class SurfaceMountingManager {
     if (viewState.mStateWrapper != null) {
       viewState.mStateWrapper.destroyState();
       viewState.mStateWrapper = null;
+    }
+
+    // Destroy EventEmitterWrapper immediately instead of waiting for Java GC.
+    // Notably, this is also required to ensure that the EventEmitterWrapper is deallocated
+    // before the JS VM is deallocated, since it holds onto a JSI::Pointer.
+    if (viewState.mEventEmitter != null) {
+      viewState.mEventEmitter.destroy();
+      viewState.mEventEmitter = null;
     }
 
     // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}

@@ -41,7 +41,7 @@ static ContextContainer::Shared RCTContextContainerFromBridge(RCTBridge *bridge)
   return contextContainer;
 }
 
-static RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
+RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
 {
   RCTAssert(bridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil.");
 

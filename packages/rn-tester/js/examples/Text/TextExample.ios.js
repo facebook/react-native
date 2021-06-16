@@ -13,7 +13,7 @@
 const React = require('react');
 const TextAncestor = require('react-native/Libraries/Text/TextAncestor');
 const TextInlineView = require('../../components/TextInlineView');
-const TextLegend = require('../../components/TextLegend');
+import TextLegend from '../../components/TextLegend';
 
 const {
   Button,
