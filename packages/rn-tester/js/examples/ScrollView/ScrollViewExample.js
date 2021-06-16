@@ -923,24 +923,26 @@ const InvertStickyHeaders = () => {
         {<Text>STICKY HEADER</Text>}
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() => setInvertStickyHeaders(!invertStickyHeaders)}
-        label={'invertStickyHeaders: ' + invertStickyHeaders.toString()}
-      />
-      <Button
-        label="Scroll to top"
-        onPress={() => {
-          nullthrows(_scrollView.current).scrollTo({y: 0});
-        }}
-        testID="scroll_to_top_button"
-      />
-      <Button
-        label="Scroll to bottom"
-        onPress={() => {
-          nullthrows(_scrollView.current).scrollToEnd({animated: true});
-        }}
-        testID="scroll_to_bottom_button"
-      />
+      <View>
+        <Button
+          onPress={() => setInvertStickyHeaders(!invertStickyHeaders)}
+          label={'invertStickyHeaders: ' + invertStickyHeaders.toString()}
+        />
+        <Button
+          label="Scroll to top"
+          onPress={() => {
+            nullthrows(_scrollView.current).scrollTo({y: 0});
+          }}
+          testID="scroll_to_top_button"
+        />
+        <Button
+          label="Scroll to bottom"
+          onPress={() => {
+            nullthrows(_scrollView.current).scrollToEnd({animated: true});
+          }}
+          testID="scroll_to_bottom_button"
+        />
+      </View>
     </View>
   );
 };
@@ -963,20 +965,22 @@ const MultipleStickyHeaders = () => {
         {<Item msg={'Sticky Header 3'} style={stickyHeaderStyle} />}
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        label="Scroll to top"
-        onPress={() => {
-          nullthrows(_scrollView.current).scrollTo({y: 0});
-        }}
-        testID="scroll_to_top_button"
-      />
-      <Button
-        label="Scroll to bottom"
-        onPress={() => {
-          nullthrows(_scrollView.current).scrollToEnd({animated: true});
-        }}
-        testID="scroll_to_bottom_button"
-      />
+      <View>
+        <Button
+          label="Scroll to top"
+          onPress={() => {
+            nullthrows(_scrollView.current).scrollTo({y: 0});
+          }}
+          testID="scroll_to_top_button"
+        />
+        <Button
+          label="Scroll to bottom"
+          onPress={() => {
+            nullthrows(_scrollView.current).scrollToEnd({animated: true});
+          }}
+          testID="scroll_to_bottom_button"
+        />
+      </View>
     </View>
   );
 };
@@ -991,14 +995,16 @@ const IndicatorStyle = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() =>
-          indicatorStyle === 'default'
-            ? setIndicatorStyle('white')
-            : setIndicatorStyle('default')
-        }
-        label={'Indicator Style: ' + indicatorStyle}
-      />
+      <View>
+        <Button
+          onPress={() =>
+            indicatorStyle === 'default'
+              ? setIndicatorStyle('white')
+              : setIndicatorStyle('default')
+          }
+          label={'Indicator Style: ' + indicatorStyle}
+        />
+      </View>
     </View>
   );
 };
@@ -1022,27 +1028,31 @@ const DisableEnable = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      {Platform.OS === 'ios' ? (
+      <View>
+        {Platform.OS === 'ios' ? (
+          <Button
+            onPress={() => setDirectionalLockEnabled(!directionalLockEnabled)}
+            label={
+              'directionalLockEnabled: ' + directionalLockEnabled.toString()
+            }
+          />
+        ) : null}
         <Button
-          onPress={() => setDirectionalLockEnabled(!directionalLockEnabled)}
-          label={'directionalLockEnabled: ' + directionalLockEnabled.toString()}
+          onPress={() => setDisableIntervalMomentum(!disableIntervalMomentum)}
+          label={
+            'setDisableIntervalMomentum: ' + disableIntervalMomentum.toString()
+          }
         />
-      ) : null}
-      <Button
-        onPress={() => setDisableIntervalMomentum(!disableIntervalMomentum)}
-        label={
-          'setDisableIntervalMomentum: ' + disableIntervalMomentum.toString()
-        }
-      />
-      <Button
-        onPress={() =>
-          setDisableScrollViewPanResponder(!disableScrollViewPanResponder)
-        }
-        label={
-          'setDisableScrollViewPanResponder: ' +
-          disableScrollViewPanResponder.toString()
-        }
-      />
+        <Button
+          onPress={() =>
+            setDisableScrollViewPanResponder(!disableScrollViewPanResponder)
+          }
+          label={
+            'setDisableScrollViewPanResponder: ' +
+            disableScrollViewPanResponder.toString()
+          }
+        />
+      </View>
     </View>
   );
 };
@@ -1057,12 +1067,16 @@ const DecelerationRateExample = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() =>
-          decelRate === 'normal' ? setDecelRate('fast') : setDecelRate('normal')
-        }
-        label={'Deceleration Rate: ' + decelRate}
-      />
+      <View>
+        <Button
+          onPress={() =>
+            decelRate === 'normal'
+              ? setDecelRate('fast')
+              : setDecelRate('normal')
+          }
+          label={'Deceleration Rate: ' + decelRate}
+        />
+      </View>
     </View>
   );
 };
@@ -1087,50 +1101,54 @@ const ContentExample = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      {Platform.OS === 'ios' ? (
-        <>
-          <Button
-            onPress={() => setCanCancelContentTouches(!canCancelContentTouches)}
-            label={
-              'canCancelContentTouches: ' + canCancelContentTouches.toString()
-            }
-          />
-          <Button
-            onPress={() =>
-              contentInsetAdjustmentBehavior === 'never'
-                ? setContentInsetAdjustmentBehavior('always')
-                : setContentInsetAdjustmentBehavior('never')
-            }
-            label={
-              contentInsetAdjustmentBehavior === 'never'
-                ? "setContentInsetAdjustmentBehavior to 'always'"
-                : 'reset content inset adjustment behavior'
-            }
-          />
-        </>
-      ) : null}
-      <Button
-        onPress={() =>
-          contentContainerStyle === null
-            ? setContentContainerStyle(styles.containerStyle)
-            : setContentContainerStyle(null)
-        }
-        label={
-          contentContainerStyle === null
-            ? 'setContentContainerStyle'
-            : 'reset content container style'
-        }
-      />
-      <Button
-        onPress={() =>
-          contentInset === null
-            ? setContentInset({top: 10, bottom: 10, left: 10, right: 10})
-            : setContentInset(null)
-        }
-        label={
-          contentInset === null ? 'setContentInset' : 'reset content inset'
-        }
-      />
+      <View>
+        {Platform.OS === 'ios' ? (
+          <>
+            <Button
+              onPress={() =>
+                setCanCancelContentTouches(!canCancelContentTouches)
+              }
+              label={
+                'canCancelContentTouches: ' + canCancelContentTouches.toString()
+              }
+            />
+            <Button
+              onPress={() =>
+                contentInsetAdjustmentBehavior === 'never'
+                  ? setContentInsetAdjustmentBehavior('always')
+                  : setContentInsetAdjustmentBehavior('never')
+              }
+              label={
+                contentInsetAdjustmentBehavior === 'never'
+                  ? "setContentInsetAdjustmentBehavior to 'always'"
+                  : 'reset content inset adjustment behavior'
+              }
+            />
+          </>
+        ) : null}
+        <Button
+          onPress={() =>
+            contentContainerStyle === null
+              ? setContentContainerStyle(styles.containerStyle)
+              : setContentContainerStyle(null)
+          }
+          label={
+            contentContainerStyle === null
+              ? 'setContentContainerStyle'
+              : 'reset content container style'
+          }
+        />
+        <Button
+          onPress={() =>
+            contentInset === null
+              ? setContentInset({top: 10, bottom: 10, left: 10, right: 10})
+              : setContentInset(null)
+          }
+          label={
+            contentInset === null ? 'setContentInset' : 'reset content inset'
+          }
+        />
+      </View>
     </View>
   );
 };
@@ -1147,14 +1165,16 @@ const BouncesExample = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() => setBounces(!bounces)}
-        label={'Bounces: ' + bounces.toString()}
-      />
-      <Button
-        onPress={() => setBouncesZoom(!bouncesZoom)}
-        label={'Bounces Zoom: ' + bouncesZoom.toString()}
-      />
+      <View>
+        <Button
+          onPress={() => setBounces(!bounces)}
+          label={'Bounces: ' + bounces.toString()}
+        />
+        <Button
+          onPress={() => setBouncesZoom(!bouncesZoom)}
+          label={'Bounces Zoom: ' + bouncesZoom.toString()}
+        />
+      </View>
     </View>
   );
 };
@@ -1171,10 +1191,12 @@ const BouncesExampleHorizontal = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() => setBounce(!bounce)}
-        label={'Always Bounce Horizontal: ' + bounce.toString()}
-      />
+      <View>
+        <Button
+          onPress={() => setBounce(!bounce)}
+          label={'Always Bounce Horizontal: ' + bounce.toString()}
+        />
+      </View>
     </View>
   );
 };
@@ -1190,10 +1212,12 @@ const BouncesExampleVertical = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() => setBounce(!bounce)}
-        label={'Always Bounce Vertical: ' + bounce.toString()}
-      />
+      <View>
+        <Button
+          onPress={() => setBounce(!bounce)}
+          label={'Always Bounce Vertical: ' + bounce.toString()}
+        />
+      </View>
     </View>
   );
 };
@@ -1255,6 +1279,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#cccccc',
     borderRadius: 3,
+    minHeight: 30,
   },
   row: {
     flexDirection: 'row',
