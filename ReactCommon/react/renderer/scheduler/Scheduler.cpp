@@ -105,17 +105,11 @@ Scheduler::Scheduler(
 
   runtimeExecutor_([uiManager,
                     asyncMeasure,
-                    runtimeExecutor = runtimeExecutor_,
-                    runtimeScheduler = schedulerToolbox.runtimeScheduler](
-                       jsi::Runtime &runtime) {
+                    runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
     auto uiManagerBinding =
         UIManagerBinding::createAndInstallIfNeeded(runtime, runtimeExecutor);
     uiManagerBinding->attach(uiManager);
     uiManagerBinding->setEnableAsyncMeasure(asyncMeasure);
-    if (runtimeScheduler) {
-      RuntimeSchedulerBinding::createAndInstallIfNeeded(
-          runtime, runtimeScheduler);
-    }
   });
 
   auto componentDescriptorRegistryKey =

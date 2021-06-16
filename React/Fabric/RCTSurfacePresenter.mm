@@ -282,16 +282,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   toolbox.contextContainer = _contextContainer;
   toolbox.componentRegistryFactory = componentRegistryFactory;
 
-  auto runtimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
-  if (runtimeScheduler.hasValue()) {
-    auto lockedRuntimeScheduler = runtimeScheduler.value().lock();
-    if (lockedRuntimeScheduler) {
-      lockedRuntimeScheduler->setEnableYielding(
-          reactNativeConfig->getBool("react_native_new_architecture:runtimescheduler_enable_yielding_ios"));
-      runtimeExecutor = [lockedRuntimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
-        lockedRuntimeScheduler->scheduleWork(std::move(callback));
-      };
-    }
+  auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
+  auto runtimeScheduler = weakRuntimeScheduler.hasValue() ? weakRuntimeScheduler.value().lock() : nullptr;
+  if (runtimeScheduler) {
+    runtimeScheduler->setEnableYielding(
+        reactNativeConfig->getBool("react_native_new_architecture:runtimescheduler_enable_yielding_ios"));
+    runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
+      runtimeScheduler->scheduleWork(std::move(callback));
+    };
   }
 
   toolbox.runtimeExecutor = runtimeExecutor;
@@ -306,7 +304,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   }
 
   toolbox.synchronousEventBeatFactory =
-      [runtimeExecutor, runtimeScheduler = toolbox.runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {
+      [runtimeExecutor, runtimeScheduler = runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {
         auto runLoopObserver =
             std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
         return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor, runtimeScheduler);
