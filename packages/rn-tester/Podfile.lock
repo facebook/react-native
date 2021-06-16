@@ -77,18 +77,18 @@ PODS:
   - RCT-Folly (2021.04.26.00):
     - boost-for-react-native
     - DoubleConversion
-    - fmt
+    - fmt (~> 6.2.1)
     - glog
     - RCT-Folly/Default (= 2021.04.26.00)
   - RCT-Folly/Default (2021.04.26.00):
     - boost-for-react-native
     - DoubleConversion
-    - fmt
+    - fmt (~> 6.2.1)
     - glog
   - RCT-Folly/Fabric (2021.04.26.00):
     - boost-for-react-native
     - DoubleConversion
-    - fmt
+    - fmt (~> 6.2.1)
     - glog
   - RCTRequired (1000.0.0)
   - RCTTypeSafety (1000.0.0):
@@ -877,7 +877,7 @@ SPEC CHECKSUMS:
   glog: 5337263514dd6f09803962437687240c5dc39aa4
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
-  RCT-Folly: 8250e510cd9fde2f292ad258682264d4a1d38bff
+  RCT-Folly: 0dd9e1eb86348ecab5ba76f910b56f4b5fef3c46
   RCTRequired: af2d6080a4b9ba0885b28ca78879a92066c71cab
   RCTTypeSafety: f5405e0143bb2addae97ce33e4c87d9284a48fe2
   React: f64c9f6db5428717922a3292ba6a448615a2e143
