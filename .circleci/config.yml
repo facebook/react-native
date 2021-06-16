@@ -510,7 +510,7 @@ jobs:
           name: Install rsync, zip
           command: |
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt-get update -y && apt-get install rsync zip -y
+            apt-get update -y && apt-get install patch rsync zip -y
 
       # Install Buck
       - install_buck_tooling
