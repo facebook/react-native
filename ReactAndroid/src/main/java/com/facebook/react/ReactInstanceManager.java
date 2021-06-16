@@ -83,7 +83,6 @@ import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
-import com.facebook.react.fabric.RuntimeSchedulerManager;
 import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -163,7 +162,6 @@ public class ReactInstanceManager {
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
   private @Nullable ComponentNameResolverManager mComponentNameResolverManager;
-  private @Nullable RuntimeSchedulerManager mRuntimeSchedulerManager;
   private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private final Object mReactContextLock = new Object();
   private @Nullable volatile ReactContext mCurrentReactContext;
@@ -720,7 +718,6 @@ public class ReactInstanceManager {
       mViewManagerNames = null;
     }
     mComponentNameResolverManager = null;
-    mRuntimeSchedulerManager = null;
     FLog.d(ReactConstants.TAG, "ReactInstanceManager has been destroyed");
   }
 
@@ -1353,10 +1350,6 @@ public class ReactInstanceManager {
               });
       catalystInstance.setGlobalVariable("__fbStaticViewConfig", "true");
     }
-    if (ReactFeatureFlags.enableRuntimeScheduler) {
-      mRuntimeSchedulerManager = new RuntimeSchedulerManager(catalystInstance.getRuntimeExecutor());
-    }
-
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
     catalystInstance.runJSBundle();
