@@ -1273,13 +1273,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(100,215,255,.3)',
   },
   button: {
-    flex: 1,
     margin: 5,
     padding: 5,
     alignItems: 'center',
     backgroundColor: '#cccccc',
     borderRadius: 3,
-    minHeight: 30,
   },
   row: {
     flexDirection: 'row',
