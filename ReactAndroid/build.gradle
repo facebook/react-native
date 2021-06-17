@@ -470,11 +470,7 @@ android {
         }
     }
 
-    tasks.withType(JavaCompile) {
-        compileTask ->
-            compileTask.dependsOn(packageReactNdkLibs)
-    }
-
+    preBuild.dependsOn(packageReactNdkLibs)
     clean.dependsOn(cleanReactNdkLib)
 
     lintOptions {
