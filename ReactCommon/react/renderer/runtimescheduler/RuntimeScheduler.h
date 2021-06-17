@@ -22,6 +22,17 @@ class RuntimeScheduler final {
       RuntimeExecutor const &runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
           RuntimeSchedulerClock::now);
+  /*
+   * Not copyable.
+   */
+  RuntimeScheduler(RuntimeScheduler const &) = delete;
+  RuntimeScheduler &operator=(RuntimeScheduler const &) = delete;
+
+  /*
+   * Not movable.
+   */
+  RuntimeScheduler(RuntimeScheduler &&) = delete;
+  RuntimeScheduler &operator=(RuntimeScheduler &&) = delete;
 
   void scheduleWork(std::function<void(jsi::Runtime &)> callback) const;
 
@@ -39,13 +50,13 @@ class RuntimeScheduler final {
       SchedulerPriority priority,
       jsi::Function callback);
 
-  void cancelTask(std::shared_ptr<Task> const &task);
+  void cancelTask(std::shared_ptr<Task> const &task) noexcept;
 
-  bool getShouldYield() const;
+  bool getShouldYield() const noexcept;
 
-  SchedulerPriority getCurrentPriorityLevel() const;
+  SchedulerPriority getCurrentPriorityLevel() const noexcept;
 
-  RuntimeSchedulerTimePoint now() const;
+  RuntimeSchedulerTimePoint now() const noexcept;
 
   void setEnableYielding(bool enableYielding);
 

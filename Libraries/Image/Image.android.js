@@ -8,23 +8,19 @@
  * @format
  */
 
-const DeprecatedImageStylePropTypes = require('../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
-const DeprecatedStyleSheetPropType = require('../DeprecatedPropTypes/DeprecatedStyleSheetPropType');
-const DeprecatedViewPropTypes = require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
+import DeprecatedImagePropType from '../DeprecatedPropTypes/DeprecatedImagePropType';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
-const PropTypes = require('prop-types');
-const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const TextAncestor = require('../Text/TextAncestor');
+import * as React from 'react';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import TextAncestor from '../Text/TextAncestor';
 
-const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const resolveAssetSource = require('./resolveAssetSource');
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import resolveAssetSource from './resolveAssetSource';
 
 import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
 
-const TextInlineImageNativeComponent = require('./TextInlineImageNativeComponent');
+import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {RootTag} from '../Types/RootTagTypes';
@@ -33,119 +29,6 @@ let _requestId = 1;
 function generateRequestId() {
   return _requestId++;
 }
-
-const ImageProps = {
-  ...DeprecatedViewPropTypes,
-  style: (DeprecatedStyleSheetPropType(
-    DeprecatedImageStylePropTypes,
-  ): ReactPropsCheckType),
-  /**
-   * See https://reactnative.dev/docs/image.html#source
-   */
-  source: (PropTypes.oneOfType([
-    PropTypes.shape({
-      uri: PropTypes.string,
-      headers: PropTypes.objectOf(PropTypes.string),
-    }),
-    // Opaque type returned by require('./image.jpg')
-    PropTypes.number,
-    // Multiple sources
-    PropTypes.arrayOf(
-      PropTypes.shape({
-        uri: PropTypes.string,
-        width: PropTypes.number,
-        height: PropTypes.number,
-        headers: PropTypes.objectOf(PropTypes.string),
-      }),
-    ),
-  ]): React$PropType$Primitive<
-    | {
-        headers?: {[string]: string, ...},
-        uri?: string,
-        ...
-      }
-    | number
-    | Array<{
-        headers?: {[string]: string, ...},
-        height?: number,
-        uri?: string,
-        width?: number,
-        ...
-      }>,
-  >),
-  /**
-   * blurRadius: the blur radius of the blur filter added to the image
-   *
-   * See https://reactnative.dev/docs/image.html#blurradius
-   */
-  blurRadius: PropTypes.number,
-  /**
-   * See https://reactnative.dev/docs/image.html#defaultsource
-   */
-  defaultSource: PropTypes.number,
-  /**
-   * See https://reactnative.dev/docs/image.html#loadingindicatorsource
-   */
-  loadingIndicatorSource: (PropTypes.oneOfType([
-    PropTypes.shape({
-      uri: PropTypes.string,
-    }),
-    // Opaque type returned by require('./image.jpg')
-    PropTypes.number,
-  ]): React$PropType$Primitive<{uri?: string, ...} | number>),
-  progressiveRenderingEnabled: PropTypes.bool,
-  fadeDuration: PropTypes.number,
-  /**
-   * Analytics Tag used by this Image
-   */
-  internal_analyticTag: PropTypes.string,
-  /**
-   * Invoked on load start
-   */
-  onLoadStart: PropTypes.func,
-  /**
-   * Invoked on load error
-   */
-  onError: PropTypes.func,
-  /**
-   * Invoked when load completes successfully
-   */
-  onLoad: PropTypes.func,
-  /**
-   * Invoked when load either succeeds or fails
-   */
-  onLoadEnd: PropTypes.func,
-  /**
-   * Used to locate this view in end-to-end tests.
-   */
-  testID: PropTypes.string,
-  /**
-   * The mechanism that should be used to resize the image when the image's dimensions
-   * differ from the image view's dimensions. Defaults to `auto`.
-   *
-   * See https://reactnative.dev/docs/image.html#resizemethod
-   */
-  resizeMethod: (PropTypes.oneOf([
-    'auto',
-    'resize',
-    'scale',
-  ]): React$PropType$Primitive<'auto' | 'resize' | 'scale'>),
-  /**
-   * Determines how to resize the image when the frame doesn't match the raw
-   * image dimensions.
-   *
-   * See https://reactnative.dev/docs/image.html#resizemode
-   */
-  resizeMode: (PropTypes.oneOf([
-    'cover',
-    'contain',
-    'stretch',
-    'repeat',
-    'center',
-  ]): React$PropType$Primitive<
-    'cover' | 'contain' | 'stretch' | 'repeat' | 'center',
-  >),
-};
 
 /**
  * Retrieve the width and height (in pixels) of an image prior to displaying it
@@ -232,7 +115,7 @@ type ImageComponentStatics = $ReadOnly<{|
   abortPrefetch: typeof abortPrefetch,
   queryCache: typeof queryCache,
   resolveAssetSource: typeof resolveAssetSource,
-  propTypes: typeof ImageProps,
+  propTypes: typeof DeprecatedImagePropType,
 |}>;
 
 /**
@@ -412,7 +295,7 @@ Image.resolveAssetSource = resolveAssetSource;
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
-Image.propTypes = ImageProps;
+Image.propTypes = DeprecatedImagePropType;
 
 const styles = StyleSheet.create({
   base: {

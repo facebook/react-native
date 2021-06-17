@@ -155,6 +155,12 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'SwipeableCardExample',
+    module: require('../examples/SwipeableCardExample/SwipeableCardExample'),
+    category: 'UI',
+    supportsTVOS: false,
+  },
+  {
     key: 'SwitchExample',
     module: require('../examples/Switch/SwitchExample'),
     category: 'UI',
@@ -216,12 +222,12 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'AnimatedExample',
-    module: require('../examples/Animated/AnimatedExample'),
+    module: require('../examples/Animated/AnimatedExample').default,
     supportsTVOS: true,
   },
   {
     key: 'AnExApp',
-    module: require('../examples/Animated/AnimatedGratuitousApp/AnExApp'),
+    module: require('../examples/AnimatedGratuitousApp/AnExApp'),
     supportsTVOS: true,
   },
   {

@@ -93,6 +93,7 @@ function getImports(
 
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       const objectImports = getImports(typeAnnotation.properties);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
     }
   });

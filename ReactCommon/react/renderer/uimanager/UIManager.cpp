@@ -73,7 +73,7 @@ SharedShadowNode UIManager::createNode(
       family);
 
   if (delegate_) {
-    delegate_->uiManagerDidCreateShadowNode(shadowNode);
+    delegate_->uiManagerDidCreateShadowNode(*shadowNode.get());
   }
   if (leakChecker_) {
     leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
@@ -98,6 +98,11 @@ SharedShadowNode UIManager::cloneNode(
                    : ShadowNodeFragment::propsPlaceholder(),
           /* .children = */ children,
       });
+
+  if (delegate_) {
+    delegate_->uiManagerDidCloneShadowNode(
+        *shadowNode.get(), *clonedShadowNode.get());
+  }
 
   return clonedShadowNode;
 }

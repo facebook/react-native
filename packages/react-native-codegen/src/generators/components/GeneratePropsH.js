@@ -535,7 +535,9 @@ function getLocalImports(
       const objectProps = typeAnnotation.elementType.properties;
       const objectImports = getImports(objectProps);
       const localImports = getLocalImports(objectProps);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       localImports.forEach(imports.add, imports);
     }
 
@@ -543,7 +545,9 @@ function getLocalImports(
       imports.add('#include <react/renderer/core/propsConversions.h>');
       const objectImports = getImports(typeAnnotation.properties);
       const localImports = getLocalImports(typeAnnotation.properties);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       localImports.forEach(imports.add, imports);
     }
   });
@@ -796,7 +800,9 @@ module.exports = {
             const extendsImports = getExtendsImports(component.extendsProps);
             const imports = getLocalImports(component.props);
 
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             extendsImports.forEach(allImports.add, allImports);
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             imports.forEach(allImports.add, allImports);
 
             const replacedTemplate = classTemplate

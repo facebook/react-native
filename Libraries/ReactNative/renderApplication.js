@@ -32,6 +32,7 @@ function renderApplication<Props: Object>(
   isLogBox?: boolean,
   debugName?: string,
   displayMode?: ?DisplayModeType,
+  useConcurrentRoot?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
@@ -64,9 +65,13 @@ function renderApplication<Props: Object>(
 
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
-
   if (fabric) {
-    require('../Renderer/shims/ReactFabric').render(renderable, rootTag);
+    require('../Renderer/shims/ReactFabric').render(
+      renderable,
+      rootTag,
+      null,
+      useConcurrentRoot,
+    );
   } else {
     require('../Renderer/shims/ReactNative').render(renderable, rootTag);
   }

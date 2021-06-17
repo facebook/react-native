@@ -15,12 +15,12 @@ const React = require('react');
 const {
   Alert,
   Linking,
-  Picker,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
 } = require('react-native');
+import RNTOption from '../../components/RNTOption';
 
 const BINARY_TYPES = {
   String,
@@ -62,7 +62,9 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
       Alert.alert('Upload failed', 'No response payload.');
       return;
     }
-    const index = xhr.responseText.indexOf('http://www.posttestserver.com/');
+    const index = xhr.responseText.indexOf(
+      'http://ptsv2.com/t/react-native/d/',
+    );
     if (index === -1) {
       Alert.alert('Upload failed', 'Invalid response payload.');
       return;
@@ -78,7 +80,7 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
 
   _upload = () => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://posttestserver.com/post.php');
+    xhr.open('POST', 'http://ptsv2.com/t/react-native/post');
     xhr.onload = () => XHRExampleBinaryUpload.handlePostTestServerUpload(xhr);
     xhr.setRequestHeader('Content-Type', 'text/plain');
 
@@ -108,14 +110,20 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
   render(): React.Node {
     return (
       <View>
-        <Text>Upload 255 bytes as...</Text>
-        <Picker
-          selectedValue={this.state.type}
-          onValueChange={type => this.setState({type})}>
-          {Object.keys(BINARY_TYPES).map(type => (
-            <Picker.Item key={type} label={type} value={type} />
-          ))}
-        </Picker>
+        <View style={styles.block}>
+          <Text style={styles.title}>Upload 255 bytes as ...</Text>
+          <View style={styles.row}>
+            {Object.keys(BINARY_TYPES).map(type => (
+              <RNTOption
+                selected={this.state.type === type}
+                key={type}
+                label={type}
+                onPress={() => this.setState({type})}
+                style={styles.option}
+              />
+            ))}
+          </View>
+        </View>
         <View style={styles.uploadButton}>
           <TouchableHighlight onPress={this._upload}>
             <View style={styles.uploadButtonBox}>
@@ -129,6 +137,19 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
 }
 
 const styles = StyleSheet.create({
+  block: {
+    borderColor: 'rgba(0,0,0, 0.1)',
+    borderBottomWidth: 1,
+    padding: 6,
+  },
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  title: {
+    fontWeight: 'bold',
+  },
+  option: {margin: 6},
   uploadButton: {
     marginTop: 16,
   },

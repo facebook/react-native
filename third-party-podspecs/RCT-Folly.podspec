@@ -17,7 +17,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'boost-for-react-native'
   spec.dependency 'DoubleConversion'
   spec.dependency 'glog'
-  spec.dependency 'fmt'
+  spec.dependency 'fmt' , '~> 6.2.1'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation'
   spec.source_files = 'folly/String.cpp',
                       'folly/Conv.cpp',
