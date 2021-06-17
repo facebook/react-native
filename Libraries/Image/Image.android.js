@@ -13,7 +13,7 @@ import ImageViewNativeComponent from './ImageViewNativeComponent';
 import * as React from 'react';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
-
+import ImageSourceInjection from './ImageSourceInjection';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import resolveAssetSource from './resolveAssetSource';
@@ -132,8 +132,13 @@ let Image = (props: ImagePropsType, forwardedRef) => {
     props.loadingIndicatorSource,
   );
 
-  if (source && source.uri === '') {
-    console.warn('source.uri should not be an empty string');
+  if (source) {
+    const uri = source.uri;
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
+    } else if (ImageSourceInjection.unstable_enableUriAnalytics) {
+      ImageSourceInjection.unstable_enableUriAnalytics(uri);
+    }
   }
 
   if (props.src) {
