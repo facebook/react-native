@@ -36,7 +36,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:3.2
+      - image: reactnativecommunity/react-native-android:4.0
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -503,14 +503,6 @@ jobs:
           name: Launch Android Virtual Device in Background
           command: source scripts/android-setup.sh && launchAVD
           background: true
-
-      # Keep configuring Android dependencies while AVD boots up
-      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
-      - run:
-          name: Install rsync, zip
-          command: |
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt-get update -y && apt-get install patch rsync zip -y
 
       # Install Buck
       - install_buck_tooling
