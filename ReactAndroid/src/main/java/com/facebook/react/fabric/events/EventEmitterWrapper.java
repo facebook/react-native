@@ -48,11 +48,13 @@ public class EventEmitterWrapper {
    * @param params {@link WritableMap} payload of the event
    */
   public void invoke(@NonNull String eventName, @Nullable WritableMap params) {
-    if (!isValid()) {
-      return;
+    synchronized (mHybridData) {
+      if (!isValid()) {
+        return;
+      }
+      NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
+      invokeEvent(eventName, payload);
     }
-    NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
-    invokeEvent(eventName, payload);
   }
 
   /**
@@ -64,16 +66,20 @@ public class EventEmitterWrapper {
    */
   public void invokeUnique(
       @NonNull String eventName, @Nullable WritableMap params, int customCoalesceKey) {
-    if (!isValid()) {
-      return;
+    synchronized (mHybridData) {
+      if (!isValid()) {
+        return;
+      }
+      NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
+      invokeUniqueEvent(eventName, payload, customCoalesceKey);
     }
-    NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
-    invokeUniqueEvent(eventName, payload, customCoalesceKey);
   }
 
   public void destroy() {
-    if (mHybridData != null) {
-      mHybridData.resetNative();
+    synchronized (mHybridData) {
+      if (mHybridData != null) {
+        mHybridData.resetNative();
+      }
     }
   }
 
