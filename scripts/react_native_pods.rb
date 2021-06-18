@@ -69,7 +69,7 @@ def use_react_native! (options={})
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '0.91.1'
+  versions['Flipper'] ||= '0.93.0'
   versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
   versions['Flipper-DoubleConversion'] ||= '3.1.7'
   versions['Flipper-Fmt'] ||= '7.1.7'
