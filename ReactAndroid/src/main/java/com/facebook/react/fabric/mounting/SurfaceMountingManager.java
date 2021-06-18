@@ -19,6 +19,7 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -535,10 +536,44 @@ public class SurfaceMountingManager {
     if (isStopped()) {
       return;
     }
+    // We treat this as a perf problem and not a logical error. View Preallocation or unexpected
+    // changes to Differ or C++ Binding could cause some redundant Create instructions.
+    // This is a NoCrash soft exception because we know there are cases where preallocation happens
+    // and a node is recreated: if a node is preallocated and then committed with revision 2+,
+    // an extra CREATE instruction will be generated.
+    // This represents a perf issue only, not a correctness issue. In the future we need to
+    // refactor View preallocation to correct the currently incorrect assumptions.
     if (getNullableViewState(reactTag) != null) {
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Cannot CREATE view with tag [" + reactTag + "], already exists."));
       return;
     }
 
+    createViewUnsafe(
+        componentName, reactTag, props, stateWrapper, eventEmitterWrapper, isLayoutable);
+  }
+
+  /**
+   * Perform view creation without any safety checks. You must ensure safety before calling this
+   * method (see existing callsites).
+   *
+   * @param componentName
+   * @param reactTag
+   * @param props
+   * @param stateWrapper
+   * @param eventEmitterWrapper
+   * @param isLayoutable
+   */
+  @UiThread
+  public void createViewUnsafe(
+      @NonNull String componentName,
+      int reactTag,
+      @Nullable ReadableMap props,
+      @Nullable StateWrapper stateWrapper,
+      @Nullable EventEmitterWrapper eventEmitterWrapper,
+      boolean isLayoutable) {
     View view = null;
     ViewManager viewManager = null;
 
@@ -859,16 +894,22 @@ public class SurfaceMountingManager {
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     UiThreadUtil.assertOnUiThread();
+
     if (isStopped()) {
       return;
     }
-
+    // We treat this as a perf problem and not a logical error. View Preallocation or unexpected
+    // changes to Differ or C++ Binding could cause some redundant Create instructions.
     if (getNullableViewState(reactTag) != null) {
-      throw new IllegalStateException(
-          "View for component " + componentName + " with tag " + reactTag + " already exists.");
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Cannot Preallocate view with tag [" + reactTag + "], already exists."));
+      return;
     }
 
-    createView(componentName, reactTag, props, stateWrapper, eventEmitterWrapper, isLayoutable);
+    createViewUnsafe(
+        componentName, reactTag, props, stateWrapper, eventEmitterWrapper, isLayoutable);
   }
 
   @AnyThread
