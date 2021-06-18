@@ -345,8 +345,9 @@ void UIManager::configureNextLayoutAnimation(
     RawValue const &config,
     jsi::Value const &successCallback,
     jsi::Value const &failureCallback) const {
-  if (animationDelegate_) {
-    animationDelegate_->uiManagerDidConfigureNextLayoutAnimation(
+  auto animationDelegate = animationDelegate_.load();
+  if (animationDelegate) {
+    animationDelegate->uiManagerDidConfigureNextLayoutAnimation(
         runtime,
         config,
         std::move(successCallback),
@@ -435,14 +436,15 @@ void UIManager::setAnimationDelegate(UIManagerAnimationDelegate *delegate) {
 }
 
 void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
-  if (animationDelegate_ != nullptr) {
-    animationDelegate_->stopSurface(surfaceId);
+  auto animationDelegate = animationDelegate_.load();
+  if (animationDelegate) {
+    animationDelegate->stopSurface(surfaceId);
   }
 }
 
 void UIManager::animationTick() {
-  if (animationDelegate_ != nullptr &&
-      animationDelegate_->shouldAnimateFrame()) {
+  auto animationDelegate = animationDelegate_.load();
+  if (animationDelegate && animationDelegate->shouldAnimateFrame()) {
     shadowTreeRegistry_.enumerate(
         [&](ShadowTree const &shadowTree, bool &stop) {
           shadowTree.notifyDelegatesOfUpdates();
