@@ -137,7 +137,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         case SWITCH:
           return "android.widget.Switch";
         case LIST:
-          return "android.widget.ListView";
+          return "android.widget.AbsListView";
         case NONE:
         case LINK:
         case SUMMARY:
