@@ -30,6 +30,7 @@ import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MountItemDispatcher {
@@ -143,6 +144,32 @@ public class MountItemDispatcher {
     }
     mReDispatchCounter = 0;
     return didDispatchItems;
+  }
+
+  @UiThread
+  @ThreadConfined(UI)
+  public void dispatchMountItems(Queue<MountItem> mountItems) {
+    while (!mountItems.isEmpty()) {
+      MountItem item = mountItems.poll();
+      try {
+        item.execute(mMountingManager);
+      } catch (RetryableMountingLayerException e) {
+        if (item instanceof DispatchCommandMountItem) {
+          // Only DispatchCommandMountItem supports retries
+          DispatchCommandMountItem mountItem = (DispatchCommandMountItem) item;
+          // Retrying exactly once
+          if (mountItem.getRetries() == 0) {
+            mountItem.incrementRetries();
+            // In case we haven't retried executing this item yet, execute in the next batch of
+            // items
+            dispatchCommandMountItem(mountItem);
+          }
+        } else {
+          printMountItem(
+              item, "dispatchExternalMountItems: mounting failed with " + e.getMessage());
+        }
+      }
+    }
   }
 
   @UiThread

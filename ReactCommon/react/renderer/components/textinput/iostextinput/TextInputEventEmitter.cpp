@@ -72,8 +72,7 @@ void TextInputEventEmitter::onBlur(
 
 void TextInputEventEmitter::onChange(
     TextInputMetrics const &textInputMetrics) const {
-  dispatchTextInputEvent(
-      "change", textInputMetrics, EventPriority::SynchronousUnbatched);
+  dispatchTextInputEvent("change", textInputMetrics);
 }
 
 void TextInputEventEmitter::onChangeText(

@@ -110,6 +110,7 @@ function PlatformColorsExample() {
         {label: 'systemGray6', color: PlatformColor('systemGray6')},
         // Transparent Color
         {label: 'clear', color: PlatformColor('clear')},
+        {label: 'customColor', color: PlatformColor('customColor')},
       ];
     } else if (Platform.OS === 'android') {
       colors = [

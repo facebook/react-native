@@ -913,6 +913,13 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         bool haveComponentDescriptor =
             hasComponentDescriptorForShadowView(baselineShadowView);
 
+        // Immediately execute any mutations on a root node
+        if (baselineShadowView.traits.check(
+                ShadowNodeTraits::Trait::RootNodeKind)) {
+          immediateMutations.push_back(mutation);
+          continue;
+        }
+
         better::optional<ShadowViewMutation> executeMutationImmediately{};
 
         bool isRemoveReinserted =
@@ -1709,6 +1716,8 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   react_native_assert(startingView.tag > 0);
   react_native_assert(finalView.tag > 0);
   if (!hasComponentDescriptorForShadowView(startingView)) {
+    LOG(ERROR) << "No ComponentDescriptor for ShadowView being animated: ["
+               << startingView.tag << "]";
     react_native_assert(false);
     return finalView;
   }

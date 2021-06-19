@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.text.Spannable;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -34,6 +36,7 @@ import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -56,10 +59,20 @@ public class MountingManager {
 
   @NonNull private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
+  @NonNull private final MountItemExecutor mMountItemExecutor;
   @NonNull private final RootViewManager mRootViewManager = new RootViewManager();
 
-  public MountingManager(@NonNull ViewManagerRegistry viewManagerRegistry) {
+  public interface MountItemExecutor {
+    @UiThread
+    @ThreadConfined(UI)
+    void executeItems(Queue<MountItem> items);
+  }
+
+  public MountingManager(
+      @NonNull ViewManagerRegistry viewManagerRegistry,
+      @NonNull MountItemExecutor mountItemExecutor) {
     mViewManagerRegistry = viewManagerRegistry;
+    mMountItemExecutor = mountItemExecutor;
   }
 
   /** Starts surface and attaches the root view. */
@@ -78,7 +91,11 @@ public class MountingManager {
   public SurfaceMountingManager startSurface(final int surfaceId) {
     SurfaceMountingManager surfaceMountingManager =
         new SurfaceMountingManager(
-            surfaceId, mJSResponderHandler, mViewManagerRegistry, mRootViewManager, this);
+            surfaceId,
+            mJSResponderHandler,
+            mViewManagerRegistry,
+            mRootViewManager,
+            mMountItemExecutor);
 
     // There could technically be a race condition here if addRootView is called twice from
     // different threads, though this is (probably) extremely unlikely, and likely an error.
@@ -149,7 +166,10 @@ public class MountingManager {
         && mMostRecentSurfaceMountingManager.getSurfaceId() == surfaceId) {
       return mMostRecentSurfaceMountingManager;
     }
-    return mSurfaceIdToManager.get(surfaceId);
+
+    SurfaceMountingManager surfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+    mLastQueriedSurfaceMountingManager = surfaceMountingManager;
+    return surfaceMountingManager;
   }
 
   @NonNull

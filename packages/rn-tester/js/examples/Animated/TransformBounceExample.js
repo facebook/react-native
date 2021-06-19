@@ -33,11 +33,14 @@ export default ({
     'an interpolation to convert the value into the ' +
     'right range and units.': string),
   render: function(): React.Node {
+    // $FlowFixMe[incompatible-use]
+    // $FlowFixMe[incompatible-type]
     this.anim = this.anim || new Animated.Value(0);
     return (
       <View>
         <RNTesterButton
           onPress={() => {
+            // $FlowFixMe[incompatible-use]
             Animated.spring(this.anim, {
               // Returns to the start
               toValue: 0,
@@ -69,12 +72,14 @@ export default ({
                   }),
                 },
                 {
+                  // $FlowFixMe[incompatible-use]
                   translateX: this.anim.interpolate({
                     inputRange: [0, 1],
                     outputRange: [0, 500],
                   }),
                 },
                 {
+                  // $FlowFixMe[incompatible-use]
                   rotate: this.anim.interpolate({
                     inputRange: [0, 1],
                     outputRange: [

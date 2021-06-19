@@ -108,6 +108,7 @@ using namespace facebook::react;
 {
   [super prepareForRecycle];
   _state.reset();
+  _accessibilityProvider = nil;
 }
 
 - (void)drawRect:(CGRect)rect

@@ -407,6 +407,8 @@ export function withSubscription(
     }
 
     componentDidCatch(err: Error, errorInfo: {componentStack: string, ...}) {
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
       reportLogBoxError(err, errorInfo.componentStack);
     }
 

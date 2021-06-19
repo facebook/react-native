@@ -25,7 +25,6 @@
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
-#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -169,7 +168,8 @@ static inline void computeBufferSizes(
 
     batchMountItemIntsSize += getIntBufferSizeForType(mountItemType);
     if (mountItemType == CppMountItem::Type::Create) {
-      batchMountItemObjectsSize += 3; // component name, props, state
+      batchMountItemObjectsSize +=
+          4; // component name, props, state, event emitter
     }
   }
 
@@ -500,18 +500,6 @@ void Binding::installFabricUIManager(
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
-  std::shared_ptr<RuntimeScheduler> runtimeScheduler;
-
-  if (config->getBool("react_fabric:enable_runtimescheduler_android")) {
-    runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
-
-    auto originalRuntimeExecutor = runtimeExecutorHolder->cthis()->get();
-    runtimeExecutor =
-        [originalRuntimeExecutor, runtimeScheduler](
-            std::function<void(jsi::Runtime & runtime)> &&callback) {
-          runtimeScheduler->scheduleWork(std::move(callback));
-        };
-  }
 
   auto enableV2AsynchronousEventBeat =
       config->getBool("react_fabric:enable_asynchronous_event_beat_v2_android");
@@ -560,11 +548,16 @@ void Binding::installFabricUIManager(
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 
+  disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
+      "react_fabric:disable_virtual_node_preallocation");
+
+  enableEarlyEventEmitterUpdate_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_early_event_emitter_update");
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
   toolbox.runtimeExecutor = runtimeExecutor;
-  toolbox.runtimeScheduler = runtimeScheduler;
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
@@ -676,24 +669,6 @@ void Binding::schedulerDidFinishTransaction(
             newChildShadowView.props->revision > 1) {
           cppCommonMountItems.push_back(
               CppMountItem::CreateMountItem(newChildShadowView));
-
-          // Generally, DELETE operations can always safely execute at the end
-          // of a MountItem batch. The usual expected order would be REMOVE and
-          // then DELETE, for instance. However... in specific cases with
-          // LayoutAnimations especially, a DELETE and CREATE may happen for a
-          // View - in that order. The inverse is NOT possible - for example, we
-          // do not expect a CREATE...DELETE in the same batch. That would
-          // contradict itself - a node cannot be in the tree (CREATE) and
-          // removed from the tree (DELETE) at the same time.
-          cppDeleteMountItems.erase(
-              std::remove_if(
-                  cppDeleteMountItems.begin(),
-                  cppDeleteMountItems.end(),
-                  [&](const CppMountItem &mountItem) {
-                    return mountItem.oldChildShadowView.tag ==
-                        newChildShadowView.tag;
-                  }),
-              cppDeleteMountItems.end());
         }
         break;
       }
@@ -899,6 +874,13 @@ void Binding::schedulerDidFinishTransaction(
         cStateWrapper->state_ = mountItem.newChildShadowView.state;
       }
 
+      // Do not hold a reference to javaEventEmitter from the C++ side.
+      SharedEventEmitter eventEmitter =
+          mountItem.newChildShadowView.eventEmitter;
+      auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
+      EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
+      cEventEmitter->eventEmitter = eventEmitter;
+
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = isLayoutable;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
@@ -908,6 +890,7 @@ void Binding::schedulerDidFinishTransaction(
       (*objBufferArray)[objBufferPosition++] = props.get();
       (*objBufferArray)[objBufferPosition++] =
           javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr;
+      (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
     } else if (mountItemType == CppMountItem::Type::Insert) {
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = mountItem.parentShadowView.tag;
@@ -1134,13 +1117,9 @@ void Binding::driveCxxAnimations() {
   scheduler_->animationTick();
 }
 
-void Binding::schedulerDidRequestPreliminaryViewAllocation(
+void Binding::preallocateShadowView(
     const SurfaceId surfaceId,
     const ShadowView &shadowView) {
-  if (disablePreallocateViews_) {
-    return;
-  }
-
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR)
@@ -1150,15 +1129,16 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
 
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
-  if (disableVirtualNodePreallocation_ && !isLayoutableShadowNode) {
-    return;
-  }
-
   static auto preallocateView =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<void(
-              jint, jint, jstring, ReadableMap::javaobject, jobject, jboolean)>(
-              "preallocateView");
+              jint,
+              jint,
+              jstring,
+              ReadableMap::javaobject,
+              jobject,
+              jobject,
+              jboolean)>("preallocateView");
 
   // Do not hold onto Java object from C
   // We DO want to hold onto C object from Java, since we don't know the
@@ -1168,6 +1148,14 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
     javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
     StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
     cStateWrapper->state_ = shadowView.state;
+  }
+
+  // Do not hold a reference to javaEventEmitter from the C++ side.
+  auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
+  if (enableEarlyEventEmitterUpdate_) {
+    SharedEventEmitter eventEmitter = shadowView.eventEmitter;
+    EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
+    cEventEmitter->eventEmitter = eventEmitter;
   }
 
   local_ref<ReadableMap::javaobject> props = castReadableMap(
@@ -1181,7 +1169,55 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
       component.get(),
       props.get(),
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
+      javaEventEmitter.get(),
       isLayoutableShadowNode);
+}
+
+void Binding::schedulerDidRequestPreliminaryViewAllocation(
+    const SurfaceId surfaceId,
+    const ShadowNode &shadowNode) {
+  if (disablePreallocateViews_) {
+    return;
+  }
+
+  auto shadowView = ShadowView(shadowNode);
+
+  if (disableVirtualNodePreallocation_ &&
+      !shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
+    return;
+  }
+
+  preallocateShadowView(surfaceId, shadowView);
+}
+
+void Binding::schedulerDidCloneShadowNode(
+    SurfaceId surfaceId,
+    const ShadowNode &oldShadowNode,
+    const ShadowNode &newShadowNode) {
+  // This is only necessary if view preallocation was skipped during
+  // createShadowNode
+  if (!disableVirtualNodePreallocation_) {
+    return;
+  }
+
+  // We may need to PreAllocate a ShadowNode at this point if this is the
+  // earliest point it is possible to do so:
+  // 1. The revision is exactly 1
+  // 2. At revision 0 (the old node), View Preallocation would have been skipped
+
+  if (newShadowNode.getProps()->revision != 1) {
+    return;
+  }
+  if (oldShadowNode.getProps()->revision != 0) {
+    return;
+  }
+
+  // If the new node is concrete and the old wasn't, we can preallocate
+  if (!oldShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView) &&
+      newShadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+    auto shadowView = ShadowView(newShadowNode);
+    preallocateShadowView(surfaceId, shadowView);
+  }
 }
 
 void Binding::schedulerDidDispatchCommand(
