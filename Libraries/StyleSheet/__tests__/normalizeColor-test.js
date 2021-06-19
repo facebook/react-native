@@ -43,6 +43,25 @@ describe('iOS', () => {
       expect(normalizedColor).toEqual(expectedColor);
     });
 
+    it('should normalize iOS Dynamic colors with accessible colors', () => {
+      const color = DynamicColorIOS({
+        light: 'black',
+        dark: 'white',
+        highContrastLight: 'red',
+        highContrastDark: 'blue',
+      });
+      const normalizedColor = normalizeColor(color);
+      const expectedColor = {
+        dynamic: {
+          light: 'black',
+          dark: 'white',
+          highContrastLight: 'red',
+          highContrastDark: 'blue',
+        },
+      };
+      expect(normalizedColor).toEqual(expectedColor);
+    });
+
     it('should normalize iOS Dynamic colors with PlatformColor colors', () => {
       const color = DynamicColorIOS({
         light: PlatformColor('systemBlackColor'),

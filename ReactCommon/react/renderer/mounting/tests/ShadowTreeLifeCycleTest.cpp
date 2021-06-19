@@ -79,7 +79,7 @@ static void testShadowNodeTreeLifeCycle(
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
     viewTree.mutate(
-        calculateShadowViewMutations(*emptyRootNode, *currentRootNode, true));
+        calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
     for (int j = 0; j < stages; j++) {
       auto nextRootNode = currentRootNode;
@@ -106,7 +106,7 @@ static void testShadowNodeTreeLifeCycle(
 
       // Calculating mutations.
       auto mutations =
-          calculateShadowViewMutations(*currentRootNode, *nextRootNode, true);
+          calculateShadowViewMutations(*currentRootNode, *nextRootNode);
 
       // Make sure that in a single frame, a DELETE for a
       // view is not followed by a CREATE for the same view.
@@ -226,7 +226,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
     viewTree.mutate(
-        calculateShadowViewMutations(*emptyRootNode, *currentRootNode, true));
+        calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
     for (int j = 0; j < stages; j++) {
       auto nextRootNode = currentRootNode;
@@ -254,7 +254,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 
       // Calculating mutations.
       auto mutations =
-          calculateShadowViewMutations(*currentRootNode, *nextRootNode, true);
+          calculateShadowViewMutations(*currentRootNode, *nextRootNode);
 
       // Make sure that in a single frame, a DELETE for a
       // view is not followed by a CREATE for the same view.

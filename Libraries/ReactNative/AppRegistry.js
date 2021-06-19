@@ -128,6 +128,7 @@ const AppRegistry = {
           appKey === 'LogBox',
           appKey,
           coerceDisplayMode(displayMode),
+          appParameters.concurrentRoot,
         );
       },
     };

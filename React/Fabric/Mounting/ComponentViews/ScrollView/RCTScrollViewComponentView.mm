@@ -563,31 +563,29 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 - (void)scrollTo:(double)x y:(double)y animated:(BOOL)animated
 {
   CGPoint offset = CGPointMake(x, y);
-  if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
-    CGRect maxRect = CGRectMake(
-        fmin(-_scrollView.contentInset.left, 0),
-        fmin(-_scrollView.contentInset.top, 0),
-        fmax(
-            _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right +
-                fmax(_scrollView.contentInset.left, 0),
-            0.01),
-        fmax(
-            _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom +
-                fmax(_scrollView.contentInset.top, 0),
-            0.01)); // Make width and height greater than 0
+  CGRect maxRect = CGRectMake(
+      fmin(-_scrollView.contentInset.left, 0),
+      fmin(-_scrollView.contentInset.top, 0),
+      fmax(
+          _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right +
+              fmax(_scrollView.contentInset.left, 0),
+          0.01),
+      fmax(
+          _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom +
+              fmax(_scrollView.contentInset.top, 0),
+          0.01)); // Make width and height greater than 0
 
-    const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
-    if (!CGRectContainsPoint(maxRect, offset) && !props.scrollToOverflowEnabled) {
-      CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
-      localX = fmin(localX, CGRectGetMaxX(maxRect));
-      CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
-      localY = fmin(localY, CGRectGetMaxY(maxRect));
-      offset = CGPointMake(localX, localY);
-    }
-
-    [self _forceDispatchNextScrollEvent];
-    [_scrollView setContentOffset:offset animated:animated];
+  const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
+  if (!CGRectContainsPoint(maxRect, offset) && !props.scrollToOverflowEnabled) {
+    CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
+    localX = fmin(localX, CGRectGetMaxX(maxRect));
+    CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
+    localY = fmin(localY, CGRectGetMaxY(maxRect));
+    offset = CGPointMake(localX, localY);
   }
+
+  [self _forceDispatchNextScrollEvent];
+  [self scrollToOffset:offset animated:animated];
 }
 
 - (void)scrollToEnd:(BOOL)animated
@@ -602,7 +600,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     offset = CGPointMake(0, fmax(offsetY, 0));
   }
 
-  [_scrollView setContentOffset:offset animated:animated];
+  [self scrollToOffset:offset animated:animated];
 }
 
 #pragma mark - Child views mounting
@@ -707,7 +705,13 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
   [self _forceDispatchNextScrollEvent];
-  [self.scrollView setContentOffset:offset animated:animated];
+
+  if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
+    // Adjusting offset.x in right to left layout direction.
+    offset.x = self.contentSize.width - _scrollView.frame.size.width - offset.x;
+  }
+
+  [_scrollView setContentOffset:offset animated:animated];
 }
 
 - (void)zoomToRect:(CGRect)rect animated:(BOOL)animated

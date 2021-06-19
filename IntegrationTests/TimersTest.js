@@ -262,6 +262,7 @@ class TimersTest extends React.Component<Props, State> {
         this.clearInterval(this._interval);
         this._interval = null;
       }
+      // $FlowFixMe[method-unbinding]
       this.setState({count: 0}, this._nextTest);
       return;
     }

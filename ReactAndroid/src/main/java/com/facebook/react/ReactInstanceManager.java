@@ -1340,7 +1340,12 @@ public class ReactInstanceManager {
               new ComponentNameResolver() {
                 @Override
                 public String[] getComponentNames() {
-                  return getViewManagerNames().toArray(new String[0]);
+                  List<String> viewManagerNames = getViewManagerNames();
+                  if (viewManagerNames == null) {
+                    FLog.e(TAG, "No ViewManager names found");
+                    return new String[0];
+                  }
+                  return viewManagerNames.toArray(new String[0]);
                 }
               });
       catalystInstance.setGlobalVariable("__fbStaticViewConfig", "true");
