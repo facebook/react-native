@@ -850,7 +850,11 @@ static NSString *RCTSemanticColorNames()
     if ((value = [dictionary objectForKey:@"semantic"])) {
       if ([value isKindOfClass:[NSString class]]) {
         NSString *semanticName = value;
-        UIColor *color = RCTColorFromSemanticColorName(semanticName);
+        UIColor *color = [UIColor colorNamed:semanticName];
+        if (color != nil) {
+          return color;
+        }
+        color = RCTColorFromSemanticColorName(semanticName);
         if (color == nil) {
           RCTLogConvertError(
               json,
@@ -859,7 +863,11 @@ static NSString *RCTSemanticColorNames()
         return color;
       } else if ([value isKindOfClass:[NSArray class]]) {
         for (id name in value) {
-          UIColor *color = RCTColorFromSemanticColorName(name);
+          UIColor *color = [UIColor colorNamed:name];
+          if (color != nil) {
+            return color;
+          }
+          color = RCTColorFromSemanticColorName(name);
           if (color != nil) {
             return color;
           }
@@ -879,13 +887,29 @@ static NSString *RCTSemanticColorNames()
       UIColor *lightColor = [RCTConvert UIColor:light];
       id dark = [appearances objectForKey:@"dark"];
       UIColor *darkColor = [RCTConvert UIColor:dark];
+      id highContrastLight = [appearances objectForKey:@"highContrastLight"];
+      UIColor *highContrastLightColor = [RCTConvert UIColor:highContrastLight];
+      id highContrastDark = [appearances objectForKey:@"highContrastDark"];
+      UIColor *highContrastDarkColor = [RCTConvert UIColor:highContrastDark];
       if (lightColor != nil && darkColor != nil) {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
-          UIColor *color =
-              [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(UITraitCollection *_Nonnull collection) {
-                return collection.userInterfaceStyle == UIUserInterfaceStyleDark ? darkColor : lightColor;
-              }];
+          UIColor *color = [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(
+                                        UITraitCollection *_Nonnull collection) {
+            if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+              if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDarkColor != nil) {
+                return highContrastDarkColor;
+              } else {
+                return darkColor;
+              }
+            } else {
+              if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLightColor != nil) {
+                return highContrastLightColor;
+              } else {
+                return lightColor;
+              }
+            }
+          }];
           return color;
         } else {
 #endif

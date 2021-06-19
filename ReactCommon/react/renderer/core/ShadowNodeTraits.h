@@ -21,7 +21,7 @@ class ShadowNodeTraits {
  public:
   /*
    * Underlying type for the traits.
-   * The first 16 bits are reserved for Core.
+   * The first 18 bits are reserved for Core.
    */
   enum Trait : int32_t {
     None = 0,
@@ -82,6 +82,12 @@ class ShadowNodeTraits {
     // Indicates that `children` list is shared between nodes and need
     // to be cloned before the first mutation.
     ChildrenAreShared = 1 << 15,
+
+    // Inherits 'RawTextShadowNode'
+    RawText = 1 << 16,
+
+    // Inherits 'TextShadowNode'
+    Text = 1 << 17,
   };
 
   /*

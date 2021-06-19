@@ -20,6 +20,8 @@ import type {TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   AccessibilityRole,
   AccessibilityState,
+  AccessibilityActionInfo,
+  AccessibilityActionEvent,
 } from '../Components/View/ViewAccessibility';
 
 export type PressRetentionOffset = $ReadOnly<{|
@@ -39,6 +41,8 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text.html#accessible
    */
   accessible?: ?boolean,
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityHint?: ?Stringish,
   accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,

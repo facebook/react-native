@@ -18,6 +18,11 @@ import UnimplementedView from '../UnimplementedViews/UnimplementedView';
 
 import type {TextStyleProp, ColorValue} from '../../StyleSheet/StyleSheet';
 
+import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+} from '../View/ViewAccessibility';
+
 const MODE_DIALOG = 'dialog';
 const MODE_DROPDOWN = 'dropdown';
 
@@ -115,6 +120,27 @@ type PickerProps = $ReadOnly<{|
    * The string used for the accessibility label. Will be read once focused on the picker but not on change.
    */
   accessibilityLabel?: ?string,
+
+  /**
+   * When `true`, indicates that the view is an accessibility element.
+   * By default, all the touchable elements are accessible.
+   *
+   * See https://reactnative.dev/docs/view.html#accessible
+   */
+  accessible?: ?boolean,
+
+  /**
+   * Provides an array of custom actions available for accessibility.
+   *
+   */
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+
+  /**
+   * When `accessible` is true, the system will try to invoke this function
+   * when the user performs an accessibility custom action.
+   *
+   */
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
 |}>;
 
 /**
@@ -140,24 +166,24 @@ class Picker extends React.Component<PickerProps> {
 
   static Item: typeof PickerItem = PickerItem;
 
-  static defaultProps: {|mode: $TEMPORARY$string<'dialog'>|} = {
-    mode: MODE_DIALOG,
-  };
-
   render(): React.Node {
+    const {mode = MODE_DIALOG, children, ...rest} = this.props;
+
     if (Platform.OS === 'ios') {
       /* $FlowFixMe[prop-missing] (>=0.81.0 site=react_native_ios_fb) This
        * suppression was added when renaming suppression sites. */
       /* $FlowFixMe[incompatible-type] (>=0.81.0 site=react_native_ios_fb) This
        * suppression was added when renaming suppression sites. */
-      return <PickerIOS {...this.props}>{this.props.children}</PickerIOS>;
+      return <PickerIOS {...rest}>{children}</PickerIOS>;
     } else if (Platform.OS === 'android') {
       return (
         /* $FlowFixMe[incompatible-type] (>=0.81.0 site=react_native_android_fb) This
          * suppression was added when renaming suppression sites. */
         /* $FlowFixMe[prop-missing] (>=0.81.0 site=react_native_android_fb) This
          * suppression was added when renaming suppression sites. */
-        <PickerAndroid {...this.props}>{this.props.children}</PickerAndroid>
+        <PickerAndroid mode={mode} {...rest}>
+          {children}
+        </PickerAndroid>
       );
     } else {
       return <UnimplementedView />;

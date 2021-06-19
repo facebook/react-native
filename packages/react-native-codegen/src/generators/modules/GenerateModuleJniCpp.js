@@ -421,6 +421,7 @@ module.exports = {
       })
       .join('\n');
 
+    // $FlowFixMe[missing-type-arg]
     const moduleLookups = Object.keys(nativeModules)
       .filter(hasteModuleName => {
         const module = nativeModules[hasteModuleName];

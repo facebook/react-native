@@ -52,24 +52,35 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
   return task;
 }
 
-bool RuntimeScheduler::getShouldYield() const {
+bool RuntimeScheduler::getShouldYield() const noexcept {
   return shouldYield_;
 }
 
-void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
+void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) noexcept {
   task->callback.reset();
 }
 
-SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const {
+SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const noexcept {
   return currentPriority_;
 }
 
-RuntimeSchedulerTimePoint RuntimeScheduler::now() const {
+RuntimeSchedulerTimePoint RuntimeScheduler::now() const noexcept {
   return now_();
 }
 
 void RuntimeScheduler::setEnableYielding(bool enableYielding) {
   enableYielding_ = enableYielding;
+}
+
+void RuntimeScheduler::executeNowOnTheSameThread(
+    std::function<void(jsi::Runtime &runtime)> callback) const {
+  shouldYield_ = true;
+  executeSynchronouslyOnSameThread_CAN_DEADLOCK(
+      runtimeExecutor_,
+      [callback = std::move(callback)](jsi::Runtime &runtime) {
+        callback(runtime);
+      });
+  shouldYield_ = false;
 }
 
 #pragma mark - Private
