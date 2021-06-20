@@ -110,6 +110,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     TABLIST,
     TIMER,
     LIST,
+    GRID,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
@@ -140,6 +141,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
           return "android.widget.Switch";
         case LIST:
           return "android.widget.AbsListView";
+        case GRID:
+          return "android.widget.GridView";
         case NONE:
         case LINK:
         case SUMMARY:
@@ -209,19 +212,19 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     }
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
-    final ReadableMap accessibilityCollectionInfo =
-      (ReadableMap) host.getTag(R.id.accessibility_collection_info);
 
+    final ReadableMap accessibilityCollectionItemInfo =
+      (ReadableMap) host.getTag(R.id.accessibility_collection_item_info);
+    if (accessibilityCollectionItemInfo != null) {
+      int rowIndex = accessibilityCollectionItemInfo.getInt("rowIndex");
+      int columnIndex = accessibilityCollectionItemInfo.getInt("columnIndex");
+      int rowSpan = accessibilityCollectionItemInfo.getInt("rowSpan");
+      int columnSpan = accessibilityCollectionItemInfo.getInt("columnSpan");
+      boolean heading = accessibilityCollectionItemInfo.getBoolean("heading");
 
-    if (accessibilityCollectionInfo != null) {
-      int rowCount = accessibilityCollectionInfo.getInt("rowCount");
-      int columnCount = accessibilityCollectionInfo.getInt("columnCount");
-      boolean hierarchical = accessibilityCollectionInfo.getBoolean("hierarchical");
-
-      AccessibilityNodeInfoCompat.CollectionInfoCompat collectionInfoCompat = AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(rowCount, columnCount, hierarchical);
-      info.setCollectionInfo(collectionInfoCompat);
+      AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemInfoCompat = AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(rowIndex, rowSpan, columnIndex, columnSpan, heading);
+      info.setCollectionItemInfo(collectionItemInfoCompat);
     }
-
 
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
@@ -278,53 +281,13 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     }
   }
 
-  private boolean isViewVisible(View scrollView, View view) {
-    Rect scrollBounds = new Rect();
-    scrollView.getDrawingRect(scrollBounds);
-    float viewHeight = view.getHeight();
-    // Verify View is half visible
-    float top = view.getY() + viewHeight / 2;
-    float bottom = top + view.getHeight() - viewHeight / 2;
 
-    if (scrollBounds.top < top  && scrollBounds.bottom > bottom) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  
   @Override
   public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
     super.onInitializeAccessibilityEvent(host, event);
     // Set item count and current item index on accessibility events for adjustable
     // in order to make Talkback announce the value of the adjustable
     final ReadableMap accessibilityValue = (ReadableMap) host.getTag(R.id.accessibility_value);
-    final ReadableMap accessibilityCollectionInfo = (ReadableMap) host.getTag(R.id.accessibility_collection_info);
-    if (accessibilityCollectionInfo != null) {
-      event.setItemCount(accessibilityCollectionInfo.getInt("rowCount"));
-
-      View contentView = ((ViewGroup) host).getChildAt(0);
-
-       ReadableMap firstVisible = null;
-       ReadableMap lastVisible = null;
-
-      for(int index = 0; index < ((ViewGroup) contentView).getChildCount(); index++) {
-        View nextChild = ((ViewGroup) contentView).getChildAt(index);
-        boolean isVisible = isViewVisible(host, nextChild);
-        if (isVisible == true) {
-          if(firstVisible == null) {
-            firstVisible = (ReadableMap) nextChild.getTag(R.id.accessibility_collection_item_info);
-          }
-          lastVisible = (ReadableMap) nextChild.getTag(R.id.accessibility_collection_item_info);
-        }
-
-
-        if (firstVisible != null && lastVisible != null) {
-          event.setFromIndex(firstVisible.getInt("rowIndex"));
-          event.setToIndex(lastVisible.getInt("rowIndex"));
-        }
-      }
-    }
 
     if (accessibilityValue != null
         && accessibilityValue.hasKey("min")
@@ -499,7 +462,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         && (view.getTag(R.id.accessibility_role) != null
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
-            || view.getTag(R.id.react_test_id) != null)) {
+            || view.getTag(R.id.react_test_id) != null
+            || view.getTag(R.id.accessibility_collection_item_info) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());
     }
   }

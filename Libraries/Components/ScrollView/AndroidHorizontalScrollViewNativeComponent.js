@@ -36,6 +36,7 @@ const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> = NativeC
       snapToStart: true,
       snapToOffsets: true,
       contentOffset: true,
+      accessibilityCollectionInfo: true,
     },
   }),
 );
