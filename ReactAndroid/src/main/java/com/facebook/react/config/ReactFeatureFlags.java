@@ -66,6 +66,8 @@ public class ReactFeatureFlags {
 
   public static boolean enableLockFreeEventDispatcher = false;
 
+  public static boolean enableAggressiveEventEmitterCleanup = false;
+
   //
   // ScrollView C++ UpdateState vs onScroll race fixes
   //

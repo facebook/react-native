@@ -21,8 +21,13 @@ EventEmitterWrapper::initHybrid(jni::alias_ref<jclass>) {
 void EventEmitterWrapper::invokeEvent(
     std::string eventName,
     NativeMap *payload) {
-  eventEmitter->dispatchEvent(
-      eventName, payload->consume(), EventPriority::AsynchronousBatched);
+  // It is marginal, but possible for this to be constructed without a valid
+  // EventEmitter. In those cases, make sure we noop/blackhole events instead of
+  // crashing.
+  if (eventEmitter != nullptr) {
+    eventEmitter->dispatchEvent(
+        eventName, payload->consume(), EventPriority::AsynchronousBatched);
+  }
 }
 
 void EventEmitterWrapper::invokeUniqueEvent(
@@ -30,7 +35,12 @@ void EventEmitterWrapper::invokeUniqueEvent(
     NativeMap *payload,
     int customCoalesceKey) {
   // TODO: customCoalesceKey currently unused
-  eventEmitter->dispatchUniqueEvent(eventName, payload->consume());
+  // It is marginal, but possible for this to be constructed without a valid
+  // EventEmitter. In those cases, make sure we noop/blackhole events instead of
+  // crashing.
+  if (eventEmitter != nullptr) {
+    eventEmitter->dispatchUniqueEvent(eventName, payload->consume());
+  }
 }
 
 void EventEmitterWrapper::registerNatives() {

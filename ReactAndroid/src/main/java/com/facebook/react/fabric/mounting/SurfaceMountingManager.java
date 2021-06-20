@@ -27,6 +27,7 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -250,9 +251,11 @@ public class SurfaceMountingManager {
         viewState.mStateWrapper.destroyState();
         viewState.mStateWrapper = null;
       }
-      if (viewState.mEventEmitter != null) {
-        viewState.mEventEmitter.destroy();
-        viewState.mEventEmitter = null;
+      if (ReactFeatureFlags.enableAggressiveEventEmitterCleanup) {
+        if (viewState.mEventEmitter != null) {
+          viewState.mEventEmitter.destroy();
+          viewState.mEventEmitter = null;
+        }
       }
     }
 
