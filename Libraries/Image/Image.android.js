@@ -13,7 +13,7 @@ import ImageViewNativeComponent from './ImageViewNativeComponent';
 import * as React from 'react';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import TextAncestor from '../Text/TextAncestor';
-import ImageSourceInjection from './ImageSourceInjection';
+import ImageInjection from './ImageInjection';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import resolveAssetSource from './resolveAssetSource';
@@ -136,8 +136,6 @@ let Image = (props: ImagePropsType, forwardedRef) => {
     const uri = source.uri;
     if (uri === '') {
       console.warn('source.uri should not be an empty string');
-    } else if (ImageSourceInjection.unstable_enableUriAnalytics) {
-      ImageSourceInjection.unstable_enableUriAnalytics(uri);
     }
   }
 
@@ -221,6 +219,10 @@ Image = React.forwardRef<
   | React.ElementRef<typeof TextInlineImageNativeComponent>
   | React.ElementRef<typeof ImageViewNativeComponent>,
 >(Image);
+
+if (ImageInjection.unstable_createImageComponent != null) {
+  Image = ImageInjection.unstable_createImageComponent(Image);
+}
 
 Image.displayName = 'Image';
 
