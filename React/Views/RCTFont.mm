@@ -53,12 +53,13 @@ static RCTFontWeight weightOfFont(UIFont *font)
   });
 
   NSString *fontName = font.fontName;
-  auto index = [weightSuffixes indexOfObjectPassingTest:^(NSString *suffix, NSUInteger, BOOL *) {
+  NSInteger i = 0;
+  for (NSString *suffix in weightSuffixes) {
     auto options = NSAnchoredSearch | NSBackwardsSearch | NSCaseInsensitiveSearch;
-    return [fontName rangeOfString:suffix options:options].location != NSNotFound;
-  }];
-  if (index != NSNotFound) {
-    return (RCTFontWeight)fontWeights[index].doubleValue;
+    if ([fontName rangeOfString:suffix options:options].location != NSNotFound) {
+      return (RCTFontWeight)fontWeights[i].doubleValue;
+    }
+    i++;
   }
 
   NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
