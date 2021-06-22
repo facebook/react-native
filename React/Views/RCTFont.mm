@@ -11,18 +11,16 @@
 
 #import <CoreText/CoreText.h>
 
-#import <mutex>
-
 typedef CGFloat RCTFontWeight;
 static RCTFontWeight weightOfFont(UIFont *font)
 {
-  static NSArray *fontNames;
-  static NSArray *fontWeights;
+  static NSArray<NSString *> *weightSuffixes;
+  static NSArray<NSNumber *> *fontWeights;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     // We use two arrays instead of one map because
     // the order is important for suffix matching.
-    fontNames = @[
+    weightSuffixes = @[
       @"normal",
       @"ultralight",
       @"thin",
@@ -54,10 +52,13 @@ static RCTFontWeight weightOfFont(UIFont *font)
     ];
   });
 
-  for (NSInteger i = 0; i < 0 || i < (unsigned)fontNames.count; i++) {
-    if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
-      return (RCTFontWeight)[fontWeights[i] doubleValue];
-    }
+  NSString *fontName = font.fontName;
+  auto index = [weightSuffixes indexOfObjectPassingTest:^(NSString *suffix, NSUInteger, BOOL *) {
+    auto options = NSAnchoredSearch | NSBackwardsSearch | NSCaseInsensitiveSearch;
+    return [fontName rangeOfString:suffix options:options].location != NSNotFound;
+  }];
+  if (index != NSNotFound) {
+    return (RCTFontWeight)fontWeights[index].doubleValue;
   }
 
   NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
@@ -130,18 +131,16 @@ static NSString *FontWeightDescriptionFromUIFontWeight(UIFontWeight fontWeight)
 
 static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
 {
-  static NSCache *fontCache;
-  static std::mutex *fontCacheMutex = new std::mutex;
+  static NSCache<NSValue *, UIFont *> *fontCache = [NSCache new];
 
-  NSString *cacheKey = [NSString stringWithFormat:@"%.1f/%.2f", size, weight];
-  UIFont *font;
-  {
-    std::lock_guard<std::mutex> lock(*fontCacheMutex);
-    if (!fontCache) {
-      fontCache = [NSCache new];
-    }
-    font = [fontCache objectForKey:cacheKey];
-  }
+  struct CacheKey {
+    CGFloat size;
+    RCTFontWeight weight;
+  };
+  
+  CacheKey key{size, weight};
+  NSValue* cacheKey = [[NSValue alloc] initWithBytes:&key objCType:@encode(CacheKey)];
+  UIFont *font = [fontCache objectForKey:cacheKey];
 
   if (!font) {
     if (defaultFontHandler) {
@@ -151,10 +150,7 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
       font = [UIFont systemFontOfSize:size weight:weight];
     }
 
-    {
-      std::lock_guard<std::mutex> lock(*fontCacheMutex);
-      [fontCache setObject:font forKey:cacheKey];
-    }
+    [fontCache setObject:font forKey:cacheKey];
   }
 
   return font;
