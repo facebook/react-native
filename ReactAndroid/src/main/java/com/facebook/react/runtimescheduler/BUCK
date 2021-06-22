@@ -11,7 +11,6 @@ rn_android_library(
     ],
     deps = [
         react_native_target("java/com/facebook/react/runtimescheduler/jni:jni"),
-        "//fbandroid/java/com/facebook/proguard/annotations:annotations",
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("libraries/fbjni:java"),
