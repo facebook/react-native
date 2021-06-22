@@ -46,14 +46,6 @@ struct JMountItem : public JavaClass<JMountItem> {
       "Lcom/facebook/react/fabric/mounting/mountitems/MountItem;";
 };
 
-struct RemoveDeleteMetadata {
-  Tag tag;
-  Tag parentTag;
-  int index;
-  bool shouldRemove;
-  bool shouldDelete;
-};
-
 } // namespace
 
 CppMountItem CppMountItem::CreateMountItem(ShadowView shadowView) {
