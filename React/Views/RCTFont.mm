@@ -62,22 +62,18 @@ static RCTFontWeight weightOfFont(UIFont *font)
     i++;
   }
 
-  auto traits = (__bridge NSDictionary *)CTFontCopyAttribute((CTFontRef)font, kCTFontTraitsAttribute);
+  auto traits = (__bridge NSDictionary *)CTFontCopyTraits((CTFontRef)font);
   return (RCTFontWeight)[traits[UIFontWeightTrait] doubleValue];
 }
 
 static BOOL isItalicFont(UIFont *font)
 {
-  auto traits = (__bridge NSDictionary *)CTFontCopyAttribute((CTFontRef)font, kCTFontTraitsAttribute);
-  auto symbolic = [traits[UIFontSymbolicTrait] unsignedIntValue];
-  return (symbolic & UIFontDescriptorTraitItalic) != 0;
+  return (CTFontGetSymbolicTraits((CTFontRef)font) & kCTFontTraitItalic) != 0;
 }
 
 static BOOL isCondensedFont(UIFont *font)
 {
-  auto traits = (__bridge NSDictionary *)CTFontCopyAttribute((CTFontRef)font, kCTFontTraitsAttribute);
-  auto symbolic = [traits[UIFontSymbolicTrait] unsignedIntValue];
-  return (symbolic & UIFontDescriptorTraitCondensed) != 0;
+  return (CTFontGetSymbolicTraits((CTFontRef)font) & kCTFontTraitCondensed) != 0;
 }
 
 static RCTFontHandler defaultFontHandler;
