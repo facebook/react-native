@@ -154,6 +154,31 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
   return font;
 }
 
+// Caching wrapper around expensive +[UIFont fontNamesForFamilyName:]
+static NSArray<NSString *> *fontNamesForFamilyName(NSString *familyName) {
+  static NSCache<NSString *, NSArray<NSString *> *> *cache;
+  static id ncObserver;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    cache = [NSCache new];
+    ncObserver =
+    [NSNotificationCenter.defaultCenter
+     addObserverForName:(NSNotificationName)kCTFontManagerRegisteredFontsChangedNotification
+     object:nil
+     queue:nil
+     usingBlock:^(NSNotification *) {
+      [cache removeAllObjects];
+    }];
+  });
+
+  auto names = [cache objectForKey:familyName];
+  if (!names) {
+    names = [UIFont fontNamesForFamilyName:familyName];
+    [cache setObject:names forKey:familyName];
+  }
+  return names;
+}
+
 @implementation RCTConvert (RCTFont)
 
 + (UIFont *)UIFont:(id)json
@@ -309,7 +334,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // Gracefully handle being given a font name rather than font family, for
   // example: "Helvetica Light Oblique" rather than just "Helvetica".
-  if (!didFindFont && [UIFont fontNamesForFamilyName:familyName].count == 0) {
+  if (!didFindFont && fontNamesForFamilyName(familyName).count == 0) {
     font = [UIFont fontWithName:familyName size:fontSize];
     if (font) {
       // It's actually a font name, not a font family name,
@@ -333,7 +358,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // Get the closest font that matches the given weight for the fontFamily
   CGFloat closestWeight = INFINITY;
-  for (NSString *name in [UIFont fontNamesForFamilyName:familyName]) {
+  for (NSString *name in fontNamesForFamilyName(familyName)) {
     UIFont *match = [UIFont fontWithName:name size:fontSize];
     if (isItalic == isItalicFont(match) && isCondensed == isCondensedFont(match)) {
       CGFloat testWeight = weightOfFont(match);
@@ -347,7 +372,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
   // If we still don't have a match at least return the first font in the fontFamily
   // This is to support built-in font Zapfino and other custom single font families like Impact
   if (!font) {
-    NSArray *names = [UIFont fontNamesForFamilyName:familyName];
+    NSArray *names = fontNamesForFamilyName(familyName);
     if (names.count > 0) {
       font = [UIFont fontWithName:names[0] size:fontSize];
     }
