@@ -55,8 +55,9 @@ static RCTFontWeight weightOfFont(UIFont *font)
   NSString *fontName = font.fontName;
   NSInteger i = 0;
   for (NSString *suffix in weightSuffixes) {
-    auto options = NSAnchoredSearch | NSBackwardsSearch | NSCaseInsensitiveSearch;
-    if ([fontName rangeOfString:suffix options:options].location != NSNotFound) {
+    // CFStringFind is much faster than any variant of rangeOfString: because it does not use a locale.
+    auto options = kCFCompareCaseInsensitive | kCFCompareAnchored | kCFCompareBackwards;
+    if (CFStringFind((CFStringRef)fontName, (CFStringRef)suffix, options).location != NSNotFound) {
       return (RCTFontWeight)fontWeights[i].doubleValue;
     }
     i++;
