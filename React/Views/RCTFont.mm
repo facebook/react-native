@@ -358,7 +358,8 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // Get the closest font that matches the given weight for the fontFamily
   CGFloat closestWeight = INFINITY;
-  for (NSString *name in fontNamesForFamilyName(familyName)) {
+  NSArray<NSString *> *names = fontNamesForFamilyName(familyName);
+  for (NSString *name in names) {
     UIFont *match = [UIFont fontWithName:name size:fontSize];
     if (isItalic == isItalicFont(match) && isCondensed == isCondensedFont(match)) {
       CGFloat testWeight = weightOfFont(match);
@@ -371,11 +372,8 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // If we still don't have a match at least return the first font in the fontFamily
   // This is to support built-in font Zapfino and other custom single font families like Impact
-  if (!font) {
-    NSArray *names = fontNamesForFamilyName(familyName);
-    if (names.count > 0) {
-      font = [UIFont fontWithName:names[0] size:fontSize];
-    }
+  if (!font && names.count > 0) {
+    font = [UIFont fontWithName:names[0] size:fontSize];
   }
 
   // Apply font variants to font object
