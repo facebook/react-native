@@ -26,21 +26,6 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
 }
 
 /*
- * Send scroll events to Paper.
- */
-static BOOL RCTExperimentSendScrollEventToPaper = YES;
-
-BOOL RCTExperimentGetSendScrollEventToPaper()
-{
-  return RCTExperimentSendScrollEventToPaper;
-}
-
-void RCTExperimentSetSendScrollEventToPaper(BOOL value)
-{
-  RCTExperimentSendScrollEventToPaper = value;
-}
-
-/*
  * Enable fix for data race between state and scroll event.
  */
 static BOOL RCTExperimentScrollViewEventRaceFix = NO;

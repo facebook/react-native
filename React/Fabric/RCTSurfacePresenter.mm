@@ -256,10 +256,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetOnDemandViewMounting(YES);
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_sending_scroll_events_to_paper")) {
-    RCTExperimentSetSendScrollEventToPaper(NO);
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_state_scroll_data_race_ios")) {
     RCTExperimentSetScrollViewEventRaceFix(YES);
   }

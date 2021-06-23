@@ -18,12 +18,6 @@ RCT_EXTERN BOOL RCTExperimentGetOnDemandViewMounting(void);
 RCT_EXTERN void RCTExperimentSetOnDemandViewMounting(BOOL value);
 
 /*
- * Allows sending scroll events to Paper.
- */
-RCT_EXTERN BOOL RCTExperimentGetSendScrollEventToPaper(void);
-RCT_EXTERN void RCTExperimentSetSendScrollEventToPaper(BOOL value);
-
-/*
  * Enables a fix for data race between state and scroll event.
  */
 RCT_EXTERN BOOL RCTExperimentGetScrollViewEventRaceFix(void);
