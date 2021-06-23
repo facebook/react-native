@@ -134,7 +134,7 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
 {
   static NSCache<NSValue *, UIFont *> *fontCache = [NSCache new];
 
-  struct CacheKey {
+  struct __attribute__((__packed__)) CacheKey {
     CGFloat size;
     RCTFontWeight weight;
   };
