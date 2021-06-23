@@ -17,7 +17,6 @@
 #import <React/RCTUtils.h>
 
 #import <React/RCTHTTPRequestHandler.h>
-#import <React/RCTFileRequestHandler.h>
 
 #import "RCTNetworkPlugins.h"
 
@@ -394,9 +393,9 @@ RCT_EXPORT_MODULE()
   }
   NSURLRequest *request = [RCTConvert NSURLRequest:query[@"uri"]];
   if (request) {
+
     __block RCTURLRequestCancellationBlock cancellationBlock = nil;
-    id<RCTURLRequestHandler> handler = [self.moduleRegistry moduleForName:"FileRequestHandler"];
-    RCTNetworkTask *task = [self networkTaskWithRequest:request handler:handler completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+    RCTNetworkTask *task = [self networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
       dispatch_async(self->_methodQueue, ^{
         cancellationBlock = callback(error, data ? @{@"body": data, @"contentType": RCTNullIfNil(response.MIMEType)} : nil);
       });
@@ -670,19 +669,6 @@ RCT_EXPORT_MODULE()
     return nil;
   }
 
-  RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithRequest:request
-                                                         handler:handler
-                                                   callbackQueue:_methodQueue];
-  task.completionBlock = completionBlock;
-  return task;
-}
-
-- (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request handler:(id<RCTURLRequestHandler>)handler completionBlock:(RCTURLRequestCompletionBlock)completionBlock
-{
-  if (!handler) {
-    // specified handler is nil, fall back to generic method
-    return [self networkTaskWithRequest:request completionBlock:completionBlock];
-  }
   RCTNetworkTask *task = [[RCTNetworkTask alloc] initWithRequest:request
                                                          handler:handler
                                                    callbackQueue:_methodQueue];
