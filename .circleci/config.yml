@@ -36,7 +36,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:3.2
+      - image: reactnativecommunity/react-native-android:4.0
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -504,14 +504,6 @@ jobs:
           command: source scripts/android-setup.sh && launchAVD
           background: true
 
-      # Keep configuring Android dependencies while AVD boots up
-      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
-      - run:
-          name: Install rsync, zip
-          command: |
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt-get update -y && apt-get install rsync zip -y
-
       # Install Buck
       - install_buck_tooling
 
@@ -621,7 +613,7 @@ jobs:
       - ANDROID_BUILD_VERSION: 30
       - ANDROID_TOOLS_VERSION: 30.0.2
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
-      - NDK_VERSION: 20.1.5948944
+      - NDK_VERSION: 21.4.7075529
     steps:
       - checkout
 

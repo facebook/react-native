@@ -240,6 +240,20 @@ function DynamicColorsExample() {
       <View style={styles.row}>
         <Text style={styles.labelCell}>
           DynamicColorIOS({'{\n'}
+          {'  '}light: 'red', dark: 'blue'{'\n'}
+          {'}'})
+        </Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            borderColor: DynamicColorIOS({light: 'red', dark: 'blue'}),
+            borderWidth: 1,
+          }}
+        />
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>
+          DynamicColorIOS({'{\n'}
           {'  '}light: PlatformColor('systemBlueColor'),{'\n'}
           {'  '}dark: PlatformColor('systemRedColor'),{'\n'}
           {'}'})

@@ -87,7 +87,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   BOOL _isUserTriggeredScrolling;
 
   BOOL _isOnDemandViewMountingEnabled;
-  BOOL _sendScrollEventToPaper;
   BOOL _enableScrollViewEventRaceFix;
   CGPoint _contentOffsetWhenClipped;
   NSMutableArray<UIView<RCTComponentViewProtocol> *> *_childComponentViews;
@@ -108,7 +107,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _props = defaultProps;
 
     _isOnDemandViewMountingEnabled = RCTExperimentGetOnDemandViewMounting();
-    _sendScrollEventToPaper = RCTExperimentGetSendScrollEventToPaper();
     _enableScrollViewEventRaceFix = RCTExperimentGetScrollViewEventRaceFix();
     _childComponentViews = [[NSMutableArray alloc] init];
 
@@ -426,9 +424,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     }
     // Once Fabric implements proper NativeAnimationDriver, this should be removed.
     // This is just a workaround to allow animations based on onScroll event.
-    if (_sendScrollEventToPaper) {
-      RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
-    }
+    RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
   }
 
   [self _remountChildrenIfNeeded];

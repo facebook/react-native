@@ -8,7 +8,7 @@
  * @nolint
  * @providesModule ReactNativeRenderer-profiling
  * @preventMunge
- * @generated SignedSource<<e5210e86a6ecc813ee97d20857523e8c>>
+ * @generated SignedSource<<e309b1b38209da9f75a51da45c8c373c>>
  */
 
 "use strict";
@@ -1392,18 +1392,6 @@ function findCurrentHostFiberImpl(node) {
     node = node.sibling;
   }
   return null;
-}
-function doesFiberContain(parentFiber, childFiber) {
-  for (
-    var parentFiberAlternate = parentFiber.alternate;
-    null !== childFiber;
-
-  ) {
-    if (childFiber === parentFiber || childFiber === parentFiberAlternate)
-      return !0;
-    childFiber = childFiber.return;
-  }
-  return !1;
 }
 var emptyObject = {},
   removedKeys = null,
@@ -5558,8 +5546,8 @@ function safelyDetachRef(current, nearestMountedAncestor) {
             recordLayoutEffectDuration(current);
           }
         else ref(null);
-      } catch (refError) {
-        captureCommitPhaseError(current, nearestMountedAncestor, refError);
+      } catch (error) {
+        captureCommitPhaseError(current, nearestMountedAncestor, error);
       }
     else ref.current = null;
 }
@@ -5570,49 +5558,21 @@ function safelyCallDestroy(current, nearestMountedAncestor, destroy) {
     captureCommitPhaseError(current, nearestMountedAncestor, error);
   }
 }
-var focusedInstanceHandle = null,
-  shouldFireAfterActiveInstanceBlur = !1;
+var shouldFireAfterActiveInstanceBlur = !1;
 function commitBeforeMutationEffects(root, firstChild) {
-  focusedInstanceHandle = null;
-  for (nextEffect = firstChild; null !== nextEffect; ) {
-    root = nextEffect;
-    firstChild = root.deletions;
-    if (null !== firstChild)
-      for (var i = 0; i < firstChild.length; i++)
-        doesFiberContain(firstChild[i], focusedInstanceHandle) &&
-          (shouldFireAfterActiveInstanceBlur = !0);
-    firstChild = root.child;
-    if (0 !== (root.subtreeFlags & 516) && null !== firstChild)
+  for (nextEffect = firstChild; null !== nextEffect; )
+    if (
+      ((root = nextEffect),
+      (firstChild = root.child),
+      0 !== (root.subtreeFlags & 516) && null !== firstChild)
+    )
       (firstChild.return = root), (nextEffect = firstChild);
     else
       for (; null !== nextEffect; ) {
         root = nextEffect;
         try {
-          var current = root.alternate,
-            flags = root.flags;
-          if (
-            !shouldFireAfterActiveInstanceBlur &&
-            null !== focusedInstanceHandle
-          ) {
-            var JSCompiler_temp;
-            if ((JSCompiler_temp = 13 === root.tag))
-              a: {
-                if (null !== current) {
-                  var oldState = current.memoizedState;
-                  if (null === oldState || null !== oldState.dehydrated) {
-                    var newState = root.memoizedState;
-                    JSCompiler_temp =
-                      null !== newState && null === newState.dehydrated;
-                    break a;
-                  }
-                }
-                JSCompiler_temp = !1;
-              }
-            JSCompiler_temp &&
-              doesFiberContain(root, focusedInstanceHandle) &&
-              (shouldFireAfterActiveInstanceBlur = !0);
-          }
-          if (0 !== (flags & 512))
+          var current = root.alternate;
+          if (0 !== (root.flags & 512))
             switch (root.tag) {
               case 0:
               case 11:
@@ -5655,10 +5615,8 @@ function commitBeforeMutationEffects(root, firstChild) {
         }
         nextEffect = root.return;
       }
-  }
   current = shouldFireAfterActiveInstanceBlur;
   shouldFireAfterActiveInstanceBlur = !1;
-  focusedInstanceHandle = null;
   return current;
 }
 function commitHookEffectListUnmount(
@@ -5825,11 +5783,13 @@ function detachFiberAfterEffects(fiber) {
     ((fiber.alternate = null), detachFiberAfterEffects(alternate));
   fiber.child = null;
   fiber.deletions = null;
+  fiber.sibling = null;
+  fiber.stateNode = null;
+  fiber.return = null;
   fiber.dependencies = null;
   fiber.memoizedProps = null;
   fiber.memoizedState = null;
   fiber.pendingProps = null;
-  fiber.sibling = null;
   fiber.stateNode = null;
   fiber.updateQueue = null;
 }
@@ -7322,8 +7282,8 @@ function flushPassiveEffects() {
                       fiber$jscomp$0 = nextEffect;
                       var sibling = fiber$jscomp$0.sibling,
                         returnFiber = fiber$jscomp$0.return;
+                      detachFiberAfterEffects(fiber$jscomp$0);
                       if (fiber$jscomp$0 === fiberToDelete) {
-                        detachFiberAfterEffects(fiber$jscomp$0);
                         nextEffect = null;
                         break;
                       }
@@ -8425,10 +8385,10 @@ batchedUpdatesImpl = function(fn, a) {
   }
 };
 var roots = new Map(),
-  devToolsConfig$jscomp$inline_1016 = {
+  devToolsConfig$jscomp$inline_1013 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "18.0.0-experimental-c96b78e0e",
+    version: "18.0.0-experimental-568dc3532",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8443,11 +8403,11 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1293 = {
-  bundleType: devToolsConfig$jscomp$inline_1016.bundleType,
-  version: devToolsConfig$jscomp$inline_1016.version,
-  rendererPackageName: devToolsConfig$jscomp$inline_1016.rendererPackageName,
-  rendererConfig: devToolsConfig$jscomp$inline_1016.rendererConfig,
+var internals$jscomp$inline_1287 = {
+  bundleType: devToolsConfig$jscomp$inline_1013.bundleType,
+  version: devToolsConfig$jscomp$inline_1013.version,
+  rendererPackageName: devToolsConfig$jscomp$inline_1013.rendererPackageName,
+  rendererConfig: devToolsConfig$jscomp$inline_1013.rendererConfig,
   overrideHookState: null,
   overrideHookStateDeletePath: null,
   overrideHookStateRenamePath: null,
@@ -8463,26 +8423,26 @@ var internals$jscomp$inline_1293 = {
     return null === fiber ? null : fiber.stateNode;
   },
   findFiberByHostInstance:
-    devToolsConfig$jscomp$inline_1016.findFiberByHostInstance ||
+    devToolsConfig$jscomp$inline_1013.findFiberByHostInstance ||
     emptyFindFiberByHostInstance,
   findHostInstancesForRefresh: null,
   scheduleRefresh: null,
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-experimental-c96b78e0e"
+  reconcilerVersion: "18.0.0-experimental-568dc3532"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1294 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1288 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1294.isDisabled &&
-    hook$jscomp$inline_1294.supportsFiber
+    !hook$jscomp$inline_1288.isDisabled &&
+    hook$jscomp$inline_1288.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1294.inject(
-        internals$jscomp$inline_1293
+      (rendererID = hook$jscomp$inline_1288.inject(
+        internals$jscomp$inline_1287
       )),
-        (injectedHook = hook$jscomp$inline_1294);
+        (injectedHook = hook$jscomp$inline_1288);
     } catch (err) {}
 }
 exports.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {

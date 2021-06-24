@@ -829,9 +829,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
 
     if (canCoalesceEvent) {
-      eventEmitter.invoke(eventName, params);
-    } else {
       eventEmitter.invokeUnique(eventName, params, customCoalesceKey);
+    } else {
+      eventEmitter.invoke(eventName, params);
     }
   }
 

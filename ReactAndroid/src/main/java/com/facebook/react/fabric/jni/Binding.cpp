@@ -46,14 +46,6 @@ struct JMountItem : public JavaClass<JMountItem> {
       "Lcom/facebook/react/fabric/mounting/mountitems/MountItem;";
 };
 
-struct RemoveDeleteMetadata {
-  Tag tag;
-  Tag parentTag;
-  int index;
-  bool shouldRemove;
-  bool shouldDelete;
-};
-
 } // namespace
 
 CppMountItem CppMountItem::CreateMountItem(ShadowView shadowView) {
@@ -1151,11 +1143,14 @@ void Binding::preallocateShadowView(
   }
 
   // Do not hold a reference to javaEventEmitter from the C++ side.
-  auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
+  local_ref<EventEmitterWrapper::JavaPart> javaEventEmitter = nullptr;
   if (enableEarlyEventEmitterUpdate_) {
     SharedEventEmitter eventEmitter = shadowView.eventEmitter;
-    EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-    cEventEmitter->eventEmitter = eventEmitter;
+    if (eventEmitter != nullptr) {
+      javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
+      EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
+      cEventEmitter->eventEmitter = eventEmitter;
+    }
   }
 
   local_ref<ReadableMap::javaobject> props = castReadableMap(
@@ -1169,7 +1164,7 @@ void Binding::preallocateShadowView(
       component.get(),
       props.get(),
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
-      javaEventEmitter.get(),
+      (javaEventEmitter != nullptr ? javaEventEmitter.get() : nullptr),
       isLayoutableShadowNode);
 }
 
