@@ -8,15 +8,11 @@
  * @format
  */
 
-'use strict';
-
 const Systrace = require('../Performance/Systrace');
 
 const infoLog = require('./infoLog');
-const performanceNow: () => number =
-  global.nativeQPLTimestamp ?? global.performance.now.bind(global.performance);
 
-type Timespan = {
+export type Timespan = {
   startTime: number,
   endTime?: number,
   totalTime?: number,
@@ -25,9 +21,9 @@ type Timespan = {
 };
 
 // Extra values should be serializable primitives
-type ExtraValue = number | string | boolean;
+export type ExtraValue = number | string | boolean;
 
-type Extras = {[key: string]: ExtraValue};
+export type Extras = {[key: string]: ExtraValue};
 
 export interface IPerformanceLogger {
   addTimespan(
@@ -52,13 +48,16 @@ export interface IPerformanceLogger {
   markPoint(key: string, timestamp?: number, extras?: Extras): void;
   removeExtra(key: string): ?ExtraValue;
   setExtra(key: string, value: ExtraValue): void;
-  startTimespan(key: string, extras?: Extras): void;
-  stopTimespan(key: string, extras?: Extras): void;
+  startTimespan(key: string, timestamp?: number, extras?: Extras): void;
+  stopTimespan(key: string, timestamp?: number, extras?: Extras): void;
 }
 
 const _cookies: {[key: string]: number, ...} = {};
 
 const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
+
+export const getCurrentTimestamp: () => number =
+  global.nativeQPLTimestamp ?? global.performance.now.bind(global.performance);
 
 class PerformanceLogger implements IPerformanceLogger {
   _timespans: {[key: string]: ?Timespan} = {};
@@ -139,7 +138,7 @@ class PerformanceLogger implements IPerformanceLogger {
   }
 
   currentTimestamp() {
-    return performanceNow();
+    return getCurrentTimestamp();
   }
 
   getExtras() {
@@ -187,7 +186,11 @@ class PerformanceLogger implements IPerformanceLogger {
     }
   }
 
-  markPoint(key: string, timestamp?: number, extras?: Extras) {
+  markPoint(
+    key: string,
+    timestamp?: number = getCurrentTimestamp(),
+    extras?: Extras,
+  ) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog('PerformanceLogger: markPoint - has closed ignoring: ', key);
@@ -203,7 +206,7 @@ class PerformanceLogger implements IPerformanceLogger {
       }
       return;
     }
-    this._points[key] = timestamp ?? performanceNow();
+    this._points[key] = timestamp;
     if (extras) {
       this._pointExtras[key] = extras;
     }
@@ -235,7 +238,11 @@ class PerformanceLogger implements IPerformanceLogger {
     this._extras[key] = value;
   }
 
-  startTimespan(key: string, extras?: Extras) {
+  startTimespan(
+    key: string,
+    timestamp?: number = getCurrentTimestamp(),
+    extras?: Extras,
+  ) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog(
@@ -257,7 +264,7 @@ class PerformanceLogger implements IPerformanceLogger {
     }
 
     this._timespans[key] = {
-      startTime: performanceNow(),
+      startTime: timestamp,
       startExtras: extras,
     };
     _cookies[key] = Systrace.beginAsyncEvent(key);
@@ -266,7 +273,11 @@ class PerformanceLogger implements IPerformanceLogger {
     }
   }
 
-  stopTimespan(key: string, extras?: Extras) {
+  stopTimespan(
+    key: string,
+    timestamp?: number = getCurrentTimestamp(),
+    extras?: Extras,
+  ) {
     if (this._closed) {
       if (PRINT_TO_CONSOLE && __DEV__) {
         infoLog('PerformanceLogger: stopTimespan - has closed ignoring: ', key);
@@ -295,7 +306,7 @@ class PerformanceLogger implements IPerformanceLogger {
     }
 
     timespan.endExtras = extras;
-    timespan.endTime = performanceNow();
+    timespan.endTime = timestamp;
     timespan.totalTime = timespan.endTime - (timespan.startTime || 0);
     if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'end: ' + key);
@@ -313,8 +324,6 @@ class PerformanceLogger implements IPerformanceLogger {
  * various performance data such as timespans, points and extras.
  * The loggers need to have minimal overhead since they're used in production.
  */
-function createPerformanceLogger(): IPerformanceLogger {
+export default function createPerformanceLogger(): IPerformanceLogger {
   return new PerformanceLogger();
 }
-
-module.exports = createPerformanceLogger;

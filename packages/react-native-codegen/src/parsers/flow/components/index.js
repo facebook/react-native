@@ -16,6 +16,7 @@ const {getEvents} = require('./events');
 const {getProps, getPropProperties} = require('./props');
 const {getCommandOptions, getOptions} = require('./options');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
+const {getTypes} = require('../utils');
 
 function findComponentConfig(ast) {
   const foundConfigs = [];
@@ -166,8 +167,8 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
   return properties;
 }
 
-// $FlowFixMe there's no flowtype for AST
-function buildComponentSchema(ast, types): ComponentSchemaBuilderConfig {
+// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const {
     componentName,
     propsTypeName,
@@ -175,6 +176,8 @@ function buildComponentSchema(ast, types): ComponentSchemaBuilderConfig {
     commandOptionsExpression,
     optionsExpression,
   } = findComponentConfig(ast);
+
+  const types = getTypes(ast);
 
   const propProperties = getPropProperties(propsTypeName, types);
   const commandOptions = getCommandOptions(commandOptionsExpression);

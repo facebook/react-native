@@ -23,15 +23,15 @@ const {serializeModuleSource} = require('./source/serializeModule');
 type FilesOutput = Map<string, string>;
 
 const ModuleDeclarationTemplate = ({
-  moduleName,
+  hasteModuleName,
   structDeclarations,
   protocolMethods,
-}: $ReadOnly<{|
-  moduleName: string,
+}: $ReadOnly<{
+  hasteModuleName: string,
   structDeclarations: string,
   protocolMethods: string,
-|}>) => `${structDeclarations}
-@protocol Native${moduleName}Spec <RCTBridgeModule, RCTTurboModule>
+}>) => `${structDeclarations}
+@protocol ${hasteModuleName}Spec <RCTBridgeModule, RCTTurboModule>
 
 ${protocolMethods}
 
@@ -39,11 +39,11 @@ ${protocolMethods}
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module '${moduleName}'
+     * ObjC++ class for module '${hasteModuleName}'
      */
-    class JSI_EXPORT Native${moduleName}SpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT ${hasteModuleName}SpecJSI : public ObjCTurboModule {
     public:
-      Native${moduleName}SpecJSI(const ObjCTurboModule::InitParams &params);
+      ${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook`;
@@ -51,10 +51,13 @@ namespace facebook {
 const HeaderFileTemplate = ({
   moduleDeclarations,
   structInlineMethods,
-}: $ReadOnly<{|
+  assumeNonnull,
+}: $ReadOnly<{
   moduleDeclarations: string,
   structInlineMethods: string,
-|}>) => `/**
+  assumeNonnull: boolean,
+}>) =>
+  `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -81,17 +84,20 @@ const HeaderFileTemplate = ({
 #import <folly/Optional.h>
 #import <vector>
 
-${moduleDeclarations}
-${structInlineMethods}
-`;
+` +
+  (assumeNonnull ? '\nNS_ASSUME_NONNULL_BEGIN\n' : '') +
+  moduleDeclarations +
+  '\n' +
+  structInlineMethods +
+  (assumeNonnull ? '\nNS_ASSUME_NONNULL_END\n' : '\n');
 
 const SourceFileTemplate = ({
   headerFileName,
   moduleImplementations,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   headerFileName: string,
   moduleImplementations: string,
-|}>) => `/**
+}>) => `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -113,7 +119,8 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
+    packageName?: string,
+    assumeNonnull: boolean,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
@@ -121,9 +128,16 @@ module.exports = {
     const structInlineMethods: Array<string> = [];
     const moduleImplementations: Array<string> = [];
 
-    const moduleNames: Array<string> = Object.keys(nativeModules).sort();
-    for (const moduleName of moduleNames) {
-      const {aliases, properties} = nativeModules[moduleName];
+    const hasteModuleNames: Array<string> = Object.keys(nativeModules).sort();
+    for (const hasteModuleName of hasteModuleNames) {
+      const {
+        aliases,
+        excludedPlatforms,
+        spec: {properties},
+      } = nativeModules[hasteModuleName];
+      if (excludedPlatforms != null && excludedPlatforms.includes('iOS')) {
+        continue;
+      }
       const resolveAlias = createAliasResolver(aliases);
       const structCollector = new StructCollector();
 
@@ -131,7 +145,7 @@ module.exports = {
       const serializeProperty = property => {
         methodSerializations.push(
           ...serializeMethod(
-            moduleName,
+            hasteModuleName,
             property,
             structCollector,
             resolveAlias,
@@ -155,14 +169,14 @@ module.exports = {
       const methodStrs = [];
 
       for (const struct of generatedStructs) {
-        const {methods, declaration} = serializeStruct(moduleName, struct);
+        const {methods, declaration} = serializeStruct(hasteModuleName, struct);
         structStrs.push(declaration);
         methodStrs.push(methods);
       }
 
       moduleDeclarations.push(
         ModuleDeclarationTemplate({
-          moduleName: moduleName,
+          hasteModuleName: hasteModuleName,
           structDeclarations: structStrs.join('\n'),
           protocolMethods: methodSerializations
             .map(({protocolMethod}) => protocolMethod)
@@ -174,7 +188,7 @@ module.exports = {
 
       moduleImplementations.push(
         serializeModuleSource(
-          moduleName,
+          hasteModuleName,
           generatedStructs,
           methodSerializations.filter(
             ({selector}) => selector !== '@selector(constantsToExport)',
@@ -183,13 +197,14 @@ module.exports = {
       );
     }
 
-    const headerFileName = `${moduleSpecName}.h`;
+    const headerFileName = `${libraryName}.h`;
     const headerFile = HeaderFileTemplate({
       moduleDeclarations: moduleDeclarations.join('\n'),
       structInlineMethods: structInlineMethods.join('\n'),
+      assumeNonnull,
     });
 
-    const sourceFileName = `${moduleSpecName}-generated.mm`;
+    const sourceFileName = `${libraryName}-generated.mm`;
     const sourceFile = SourceFileTemplate({
       headerFileName,
       moduleImplementations: moduleImplementations.join('\n'),

@@ -11,7 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema.js';
-// $FlowFixMe there's no flowtype flow-parser
+// $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 const fs = require('fs');
 const path = require('path');
@@ -19,120 +19,103 @@ const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
 const {wrapModuleSchema} = require('./modules/schema');
+const {
+  createParserErrorCapturer,
+  visit,
+  isModuleRegistryCall,
+} = require('./utils');
+const invariant = require('invariant');
 
-import type {TypeDeclarationMap} from './utils';
+function getConfigType(
+  // TODO(T71778680): Flow-type this node.
+  ast: $FlowFixMe,
+): 'module' | 'component' | 'none' {
+  let isComponent = false;
+  let isModule = false;
 
-function getTypes(ast): TypeDeclarationMap {
-  return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
+  visit(ast, {
+    CallExpression(node) {
       if (
-        node.declaration.type === 'TypeAlias' ||
-        node.declaration.type === 'InterfaceDeclaration'
+        node.callee.type === 'Identifier' &&
+        node.callee.name === 'codegenNativeComponent'
       ) {
-        types[node.declaration.id.name] = node.declaration;
+        isComponent = true;
       }
-    } else if (
-      node.type === 'TypeAlias' ||
-      node.type === 'InterfaceDeclaration'
-    ) {
-      types[node.id.name] = node;
-    }
-    return types;
-  }, {});
-}
 
-function isComponent(ast) {
-  const defaultExports = ast.body.filter(
-    node => node.type === 'ExportDefaultDeclaration',
-  );
-
-  if (defaultExports.length === 0) {
-    return false;
-  }
-
-  let declaration = defaultExports[0].declaration;
-  // codegenNativeComponent can be nested inside a cast
-  // expression so we need to go one level deeper
-  if (declaration.type === 'TypeCastExpression') {
-    declaration = declaration.expression;
-  }
-
-  if (declaration.type !== 'CallExpression') {
-    return false;
-  }
-
-  return (
-    declaration.callee.type === 'Identifier' &&
-    declaration.callee.name === 'codegenNativeComponent'
-  );
-}
-
-function isModule(types: TypeDeclarationMap) {
-  const declaredModuleNames: Array<string> = Object.keys(types).filter(
-    (typeName: string) => {
-      const declaration = types[typeName];
-      return (
-        declaration.type === 'InterfaceDeclaration' &&
-        declaration.extends.length === 1 &&
-        declaration.extends[0].type === 'InterfaceExtends' &&
-        declaration.extends[0].id.name === 'TurboModule'
-      );
+      if (isModuleRegistryCall(node)) {
+        isModule = true;
+      }
     },
-  );
+    InterfaceExtends(node) {
+      if (node.id.name === 'TurboModule') {
+        isModule = true;
+      }
+    },
+  });
 
-  if (declaredModuleNames.length === 0) {
-    return false;
-  }
-
-  if (declaredModuleNames.length > 1) {
-    throw new Error(
-      'File contains declarations of more than one module: ' +
-        declaredModuleNames.join(', ') +
-        '. Please declare exactly one module in this file.',
-    );
-  }
-
-  return true;
-}
-
-function getConfigType(ast, types: TypeDeclarationMap): 'module' | 'component' {
-  const isConfigAComponent = isComponent(ast);
-  const isConfigAModule = isModule(types);
-
-  if (isConfigAModule && isConfigAComponent) {
+  if (isModule && isComponent) {
     throw new Error(
       'Found type extending "TurboModule" and exported "codegenNativeComponent" declaration in one file. Split them into separated files.',
     );
   }
 
-  if (isConfigAModule) {
+  if (isModule) {
     return 'module';
-  } else if (isConfigAComponent) {
+  } else if (isComponent) {
     return 'component';
   } else {
-    throw new Error(
-      'File neither contains a module declaration, nor a component declaration. ' +
-        'For module declarations, please make sure your file has an InterfaceDeclaration extending TurboModule. ' +
-        'For component declarations, please make sure your file has a default export calling the codegenNativeComponent<Props>(...) macro.',
-    );
+    return 'none';
   }
 }
 
 function buildSchema(contents: string, filename: ?string): SchemaType {
+  // Early return for non-Spec JavaScript files
+  if (
+    !contents.includes('codegenNativeComponent') &&
+    !contents.includes('TurboModule')
+  ) {
+    return {modules: {}};
+  }
+
   const ast = flowParser.parse(contents);
+  const configType = getConfigType(ast);
 
-  const types = getTypes(ast);
-
-  const configType = getConfigType(ast, types);
-
-  if (configType === 'component') {
-    return wrapComponentSchema(buildComponentSchema(ast, types));
-  } else {
-    if (filename === undefined || filename === null) {
-      throw new Error('Filepath expected while parasing a module');
+  switch (configType) {
+    case 'component': {
+      return wrapComponentSchema(buildComponentSchema(ast));
     }
-    const moduleName = path.basename(filename).slice(6, -3);
-    return wrapModuleSchema(buildModuleSchema(moduleName, types), moduleName);
+    case 'module': {
+      if (filename === undefined || filename === null) {
+        throw new Error('Filepath expected while parasing a module');
+      }
+      const hasteModuleName = path.basename(filename).replace(/\.js$/, '');
+
+      const [parsingErrors, tryParse] = createParserErrorCapturer();
+      const schema = tryParse(() =>
+        buildModuleSchema(hasteModuleName, ast, tryParse),
+      );
+
+      if (parsingErrors.length > 0) {
+        /**
+         * TODO(T77968131): We have two options:
+         *  - Throw the first error, but indicate there are more then one errors.
+         *  - Display all errors, nicely formatted.
+         *
+         * For the time being, we're just throw the first error.
+         **/
+
+        throw parsingErrors[0];
+      }
+
+      invariant(
+        schema != null,
+        'When there are no parsing errors, the schema should not be null',
+      );
+
+      return wrapModuleSchema(schema, hasteModuleName);
+    }
+    default:
+      return {modules: {}};
   }
 }
 

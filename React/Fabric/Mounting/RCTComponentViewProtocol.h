@@ -111,12 +111,19 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  */
 - (void)prepareForRecycle;
 
-/**
+/*
  * Read the last props used to update the view.
  */
 - (facebook::react::SharedProps)props;
 
-- (void)setPropKeysManagedByAnimated:(nullable NSSet<NSString *> *)propKeys;
+- (BOOL)isJSResponder;
+- (void)setIsJSResponder:(BOOL)isJSResponder;
+
+/*
+ * This is broken. Do not use.
+ */
+- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)props;
+- (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 
 @end
 

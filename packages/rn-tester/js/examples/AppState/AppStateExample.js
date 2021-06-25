@@ -12,7 +12,8 @@
 
 const React = require('react');
 
-const {AppState, Text, View} = require('react-native');
+import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+const {AppState, Text, View, Platform} = require('react-native');
 
 class AppStateSubscription extends React.Component<
   $FlowFixMeProps,
@@ -22,20 +23,46 @@ class AppStateSubscription extends React.Component<
     appState: AppState.currentState,
     previousAppStates: [],
     memoryWarnings: 0,
+    eventsDetected: [],
   };
 
+  _subscriptions: ?Array<EventSubscription>;
+
   componentDidMount() {
-    AppState.addEventListener('change', this._handleAppStateChange);
-    AppState.addEventListener('memoryWarning', this._handleMemoryWarning);
+    this._subscriptions = [
+      AppState.addEventListener('change', this._handleAppStateChange),
+      AppState.addEventListener('memoryWarning', this._handleMemoryWarning),
+    ];
+    if (Platform.OS === 'android') {
+      this._subscriptions.push(
+        AppState.addEventListener('focus', this._handleFocus),
+        AppState.addEventListener('blur', this._handleBlur),
+      );
+    }
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener('change', this._handleAppStateChange);
-    AppState.removeEventListener('memoryWarning', this._handleMemoryWarning);
+    if (this._subscriptions != null) {
+      for (const subscription of this._subscriptions) {
+        subscription.remove();
+      }
+    }
   }
 
   _handleMemoryWarning = () => {
     this.setState({memoryWarnings: this.state.memoryWarnings + 1});
+  };
+
+  _handleBlur = () => {
+    const eventsDetected = this.state.eventsDetected.slice();
+    eventsDetected.push('blur');
+    this.setState({eventsDetected});
+  };
+
+  _handleFocus = () => {
+    const eventsDetected = this.state.eventsDetected.slice();
+    eventsDetected.push('focus');
+    this.setState({eventsDetected});
   };
 
   _handleAppStateChange = appState => {
@@ -59,6 +86,13 @@ class AppStateSubscription extends React.Component<
       return (
         <View>
           <Text>{this.state.appState}</Text>
+        </View>
+      );
+    }
+    if (this.props.detectEvents) {
+      return (
+        <View>
+          <Text>{JSON.stringify(this.state.eventsDetected)}</Text>
         </View>
       );
     }
@@ -103,6 +137,15 @@ exports.examples = [
       'In the IOS simulator, hit Shift+Command+M to simulate a memory warning.',
     render(): React.Element<any> {
       return <AppStateSubscription showMemoryWarnings={true} />;
+    },
+  },
+  {
+    platform: 'android',
+    title: 'Focus/Blur Events',
+    description:
+      'In the Android simulator, toggle the notification drawer to fire events.',
+    render(): React.Element<any> {
+      return <AppStateSubscription detectEvents={true} />;
     },
   },
 ];

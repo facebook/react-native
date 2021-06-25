@@ -52,7 +52,6 @@ export interface Spec extends TurboModule {
   |}) => Promise<Permissions>;
   +abandonPermissions: () => void;
   +checkPermissions: (callback: (permissions: Permissions) => void) => void;
-  // eslint-disable-next-line @react-native/codegen/react-native-modules
   +presentLocalNotification: (notification: Notification) => void;
   +scheduleLocalNotification: (notification: Notification) => void;
   +cancelAllLocalNotifications: () => void;
@@ -65,6 +64,9 @@ export interface Spec extends TurboModule {
   +removeDeliveredNotifications: (identifiers: Array<string>) => void;
   +getDeliveredNotifications: (
     callback: (notification: Array<Notification>) => void,
+  ) => void;
+  +getAuthorizationStatus: (
+    callback: (authorizationStatus: number) => void,
   ) => void;
   +addListener: (eventType: string) => void;
   +removeListeners: (count: number) => void;

@@ -11,9 +11,9 @@
 'use strict';
 
 const DeprecatedColorPropType = require('./DeprecatedColorPropType');
+const DeprecatedTextPropTypes = require('./DeprecatedTextPropTypes');
 const DeprecatedViewPropTypes = require('./DeprecatedViewPropTypes');
 const PropTypes = require('prop-types');
-const Text = require('../Text/Text');
 
 const DataDetectorTypes = [
   'phoneNumber',
@@ -466,7 +466,8 @@ module.exports = {
    *
    * [Styles](docs/style.html)
    */
-  style: Text.propTypes.style,
+  // $FlowFixMe[incompatible-use]
+  style: DeprecatedTextPropTypes.style,
   /**
    * The color of the `TextInput` underline.
    * @platform android

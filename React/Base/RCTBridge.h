@@ -15,7 +15,6 @@
 
 @class JSValue;
 @class RCTBridge;
-@class RCTEventDispatcher;
 @class RCTPerformanceLogger;
 
 /**
@@ -161,10 +160,6 @@ RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
 RCT_EXTERN BOOL RCTTurboModuleSharedMutexInitEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleSharedMutexInit(BOOL enabled);
 
-// Turn on TurboModule block copy
-RCT_EXTERN BOOL RCTTurboModuleBlockCopyEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleBlockCopy(BOOL enabled);
-
 /**
  * Async batched bridge used to communicate with the JavaScript application.
  */
@@ -231,6 +226,13 @@ RCT_EXTERN void RCTEnableTurboModuleBlockCopy(BOOL enabled);
  * the TurboModuleRegistry.
  */
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
+
+/**
+ * This hook is called by the TurboModule infra with every TurboModule that's created.
+ * It allows the bridge to attach properties to TurboModules that give TurboModules
+ * access to Bridge APIs.
+ */
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.

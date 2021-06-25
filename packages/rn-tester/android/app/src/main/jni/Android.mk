@@ -18,9 +18,9 @@ LOCAL_MODULE := rntester_appmodules
 LOCAL_C_INCLUDES := $(LOCAL_PATH) $(GENERATED_SRC_DIR)/codegen/jni
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(GENERATED_SRC_DIR)/codegen/jni/*.cpp)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(GENERATED_SRC_DIR)/codegen/jni
-LOCAL_SHARED_LIBRARIES := libfbjni libreact_nativemodule_core libturbomodulejsijni libreact_codegen_reactandroidspec
+LOCAL_SHARED_LIBRARIES := libfbjni libglog libfolly_json libyoga libreact_nativemodule_core libturbomodulejsijni librrc_view libreact_render_core libreact_render_graphics libreact_codegen_rncore
 LOCAL_STATIC_LIBRARIES := libsampleturbomodule
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 include $(BUILD_SHARED_LIBRARY)

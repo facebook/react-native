@@ -72,13 +72,16 @@ class MessageQueue {
     }
 
     // $FlowFixMe[cannot-write]
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this.callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(
       this,
     );
     // $FlowFixMe[cannot-write]
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this.flushedQueue = this.flushedQueue.bind(this);
 
     // $FlowFixMe[cannot-write]
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this.invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(
       this,
     );
@@ -145,14 +148,16 @@ class MessageQueue {
     this._lazyCallableModules[name] = () => module;
   }
 
-  registerLazyCallableModule(name: string, factory: void => {...}) {
-    let module: {...};
-    let getValue: ?(void) => {...} = factory;
+  registerLazyCallableModule(name: string, factory: void => interface {}) {
+    let module: interface {};
+    let getValue: ?(void) => interface {} = factory;
     this._lazyCallableModules[name] = () => {
       if (getValue) {
         module = getValue();
         getValue = null;
       }
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
       return module;
     };
   }
@@ -376,7 +381,7 @@ class MessageQueue {
   // can be configured by the VM or any Inspector
   __shouldPauseOnThrow(): boolean {
     return (
-      // $FlowFixMe
+      // $FlowFixMe[cannot-resolve-name]
       typeof DebuggerInternal !== 'undefined' &&
       DebuggerInternal.shouldPauseOnThrow === true // eslint-disable-line no-undef
     );

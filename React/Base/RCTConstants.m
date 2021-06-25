@@ -26,31 +26,31 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
 }
 
 /*
- * Sync performance flag
+ * Enable fix for data race between state and scroll event.
  */
-static BOOL RCTExperimentSyncPerformanceFlag = NO;
+static BOOL RCTExperimentScrollViewEventRaceFix = NO;
 
-BOOL RCTExperimentGetSyncPerformanceFlag()
+BOOL RCTExperimentGetScrollViewEventRaceFix()
 {
-  return RCTExperimentSyncPerformanceFlag;
+  return RCTExperimentScrollViewEventRaceFix;
 }
 
-void RCTExperimentSetSyncPerformanceFlag(BOOL value)
+void RCTExperimentSetScrollViewEventRaceFix(BOOL value)
 {
-  RCTExperimentSyncPerformanceFlag = value;
+  RCTExperimentScrollViewEventRaceFix = value;
 }
 
 /*
- * Optimized hit-testing
+ * Preemptive View Allocation
  */
-static BOOL RCTExperimentOptimizedHitTesting = NO;
+static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
 
-BOOL RCTExperimentGetOptimizedHitTesting()
+BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
 {
-  return RCTExperimentOptimizedHitTesting;
+  return RCTExperimentPreemptiveViewAllocationDisabled;
 }
 
-void RCTExperimentSetOptimizedHitTesting(BOOL value)
+void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
-  RCTExperimentOptimizedHitTesting = value;
+  RCTExperimentPreemptiveViewAllocationDisabled = value;
 }

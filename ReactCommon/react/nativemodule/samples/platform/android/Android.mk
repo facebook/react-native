@@ -13,6 +13,6 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_SHARED_LIBRARIES := libfbjni libreact_nativemodule_core
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_STATIC_LIBRARY)

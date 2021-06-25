@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
-#include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/element/ComponentBuilder.h>
 #include <react/renderer/element/Element.h>
@@ -24,6 +23,13 @@ using namespace facebook::react;
 
 class DummyShadowTreeDelegate : public ShadowTreeDelegate {
  public:
+  virtual RootShadowNode::Unshared shadowTreeWillCommit(
+      ShadowTree const &shadowTree,
+      RootShadowNode::Shared const &oldRootShadowNode,
+      RootShadowNode::Unshared const &newRootShadowNode) const override {
+    return newRootShadowNode;
+  };
+
   virtual void shadowTreeDidFinishTransaction(
       ShadowTree const &shadowTree,
       MountingCoordinator::Shared const &mountingCoordinator) const override{};
@@ -71,11 +77,14 @@ TEST(StateReconciliationTest, testStateReconciliation) {
             .reference(shadowNodeAB)
             .children({
               Element<ViewShadowNode>()
-                .reference(shadowNodeABA),
-              Element<ViewShadowNode>()
-                .reference(shadowNodeABB),
-              Element<ViewShadowNode>()
-                .reference(shadowNodeABC)
+              .children({
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABA),
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABB),
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABC)
+              })
             })
         });
   // clang-format on
@@ -88,21 +97,14 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   auto &family = shadowNodeAB->getFamily();
   auto state1 = shadowNodeAB->getState();
   auto shadowTreeDelegate = DummyShadowTreeDelegate{};
-  auto eventDispatcher = EventDispatcher::Shared{};
-  auto rootComponentDescriptor =
-      ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr};
-  ShadowTree shadowTree{SurfaceId{11},
-                        LayoutConstraints{},
-                        LayoutContext{},
-                        rootComponentDescriptor,
-                        shadowTreeDelegate,
-                        {}};
+  ShadowTree shadowTree{
+      SurfaceId{11}, LayoutConstraints{}, LayoutContext{}, shadowTreeDelegate};
 
   shadowTree.commit(
       [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState1);
       },
-      true);
+      {true});
 
   EXPECT_EQ(state1->getMostRecentState(), state1);
 
@@ -114,9 +116,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
 
   auto rootShadowNodeState2 =
       shadowNode->cloneTree(family, [&](ShadowNode const &oldShadowNode) {
-        return oldShadowNode.clone({ShadowNodeFragment::propsPlaceholder(),
-                                    ShadowNodeFragment::childrenPlaceholder(),
-                                    state2});
+        return oldShadowNode.clone(
+            {ShadowNodeFragment::propsPlaceholder(),
+             ShadowNodeFragment::childrenPlaceholder(),
+             state2});
       });
 
   EXPECT_EQ(
@@ -126,7 +129,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
-      true);
+      {true});
 
   EXPECT_EQ(state1->getMostRecentState(), state2);
   EXPECT_EQ(state2->getMostRecentState(), state2);
@@ -136,9 +139,10 @@ TEST(StateReconciliationTest, testStateReconciliation) {
 
   auto rootShadowNodeState3 = rootShadowNodeState2->cloneTree(
       family, [&](ShadowNode const &oldShadowNode) {
-        return oldShadowNode.clone({ShadowNodeFragment::propsPlaceholder(),
-                                    ShadowNodeFragment::childrenPlaceholder(),
-                                    state3});
+        return oldShadowNode.clone(
+            {ShadowNodeFragment::propsPlaceholder(),
+             ShadowNodeFragment::childrenPlaceholder(),
+             state3});
       });
 
   EXPECT_EQ(
@@ -148,7 +152,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState3);
       },
-      true);
+      {true});
 
   EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state3);
 
@@ -163,7 +167,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       [&](RootShadowNode const &oldRootShadowNode) {
         return std::static_pointer_cast<RootShadowNode>(rootShadowNodeState2);
       },
-      true);
+      {true});
 
   EXPECT_EQ(findDescendantNode(shadowTree, family)->getState(), state3);
 }

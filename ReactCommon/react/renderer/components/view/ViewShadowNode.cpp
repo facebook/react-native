@@ -28,14 +28,6 @@ ViewShadowNode::ViewShadowNode(
   initialize();
 }
 
-static bool isColorMeaningful(SharedColor const &color) noexcept {
-  if (!color) {
-    return false;
-  }
-
-  return colorComponentsFromColor(color).alpha > 0;
-}
-
 void ViewShadowNode::initialize() noexcept {
   auto &viewProps = static_cast<ViewProps const &>(*props_);
 
@@ -54,16 +46,10 @@ void ViewShadowNode::initialize() noexcept {
 
   bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||
-      !(viewProps.yogaStyle.border() == YGStyle::Edges{});
+      !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
+      !viewProps.testId.empty();
 
   formsView = formsView || formsStackingContext;
-
-#ifdef ANDROID
-  // Force `formsStackingContext` trait for nodes which have `formsView`.
-  // TODO: T63560216 Investigate why/how `formsView` entangled with
-  // `formsStackingContext`.
-  formsStackingContext = formsStackingContext || formsView;
-#endif
 
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);

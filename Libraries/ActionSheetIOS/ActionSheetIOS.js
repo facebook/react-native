@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import RCTActionSheetManager from './NativeActionSheetManager';
 
 const invariant = require('invariant');
@@ -33,6 +31,7 @@ const ActionSheetIOS = {
    * - `destructiveButtonIndex` (int or array of ints) - index or indices of destructive buttons in `options`
    * - `title` (string) - a title to show above the action sheet
    * - `message` (string) - a message to show below the title
+   * - `disabledButtonIndices` (array of numbers) - a list of button indices which should be disabled
    *
    * The 'callback' function takes one parameter, the zero-based index
    * of the selected item.
@@ -49,6 +48,7 @@ const ActionSheetIOS = {
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
+      +disabledButtonIndices?: Array<number>,
     |},
     callback: (buttonIndex: number) => void,
   ) {

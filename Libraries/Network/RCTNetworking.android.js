@@ -8,14 +8,13 @@
  * @flow
  */
 
-'use strict';
-
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeNetworkingAndroid from './NativeNetworkingAndroid';
 import convertRequestBody from './convertRequestBody';
 import type {RequestBody} from './convertRequestBody';
+import Platform from '../Utilities/Platform';
 
 type Header = [string, string];
 
@@ -38,9 +37,14 @@ function generateRequestId(): number {
  * This class is a wrapper around the native RCTNetworking module. It adds a necessary unique
  * requestId to each network request that can be used to abort that request later on.
  */
-class RCTNetworking extends NativeEventEmitter {
+// FIXME: use typed events
+class RCTNetworking extends NativeEventEmitter<$FlowFixMe> {
   constructor() {
-    super(NativeNetworkingAndroid);
+    super(
+      // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+      // If you want to use the native module on other platforms, please remove this condition and test its behavior
+      Platform.OS !== 'ios' ? null : NativeNetworkingAndroid,
+    );
   }
 
   sendRequest(

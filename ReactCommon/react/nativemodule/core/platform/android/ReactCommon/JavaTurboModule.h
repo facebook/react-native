@@ -42,6 +42,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
 
   JavaTurboModule(const InitParams &params);
   virtual ~JavaTurboModule();
+
   jsi::Value invokeJavaMethod(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
@@ -50,16 +51,16 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const jsi::Value *args,
       size_t argCount);
 
-  static void enablePromiseAsyncDispatch(bool enable);
-
- private:
-  jni::global_ref<JTurboModule> instance_;
-  std::shared_ptr<CallInvoker> nativeInvoker_;
+  static void enableUseTurboModulesRAIICallbackManager(bool enable);
 
   /**
    * Experiments
    */
-  static bool isPromiseAsyncDispatchEnabled_;
+  static bool useTurboModulesRAIICallbackManager_;
+
+ private:
+  jni::global_ref<JTurboModule> instance_;
+  std::shared_ptr<CallInvoker> nativeInvoker_;
 
   JNIArgs convertJSIArgsToJNIArgs(
       JNIEnv *env,

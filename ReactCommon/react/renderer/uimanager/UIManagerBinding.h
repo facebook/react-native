@@ -7,14 +7,14 @@
 
 #pragma once
 
+#import <ReactCommon/RuntimeExecutor.h>
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Exposes UIManager to JavaScript realm.
@@ -29,7 +29,16 @@ class UIManagerBinding : public jsi::HostObject {
    * Thread synchronization must be enforced externally.
    */
   static std::shared_ptr<UIManagerBinding> createAndInstallIfNeeded(
-      jsi::Runtime &runtime);
+      jsi::Runtime &runtime,
+      RuntimeExecutor const &runtimeExecutor);
+
+  /*
+   * Returns a pointer to UIManagerBinding previously installed into a runtime.
+   * Thread synchronization must be enforced externally.
+   */
+  static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime &runtime);
+
+  UIManagerBinding(RuntimeExecutor const &runtimeExecutor);
 
   ~UIManagerBinding();
 
@@ -40,6 +49,8 @@ class UIManagerBinding : public jsi::HostObject {
    */
   void attach(std::shared_ptr<UIManager> const &uiManager);
 
+  void setEnableAsyncMeasure(bool enable);
+
   /*
    * Starts React Native Surface with given id, moduleName, and props.
    * Thread synchronization must be enforced externally.
@@ -48,7 +59,20 @@ class UIManagerBinding : public jsi::HostObject {
       jsi::Runtime &runtime,
       SurfaceId surfaceId,
       std::string const &moduleName,
-      folly::dynamic const &initalProps) const;
+      folly::dynamic const &initalProps,
+      DisplayMode displayMode) const;
+
+  /*
+   * Updates the React Native Surface identified with surfaceId and moduleName
+   * with the given props.
+   * Thread synchronization must be enforced externally.
+   */
+  void setSurfaceProps(
+      jsi::Runtime &runtime,
+      SurfaceId surfaceId,
+      std::string const &moduleName,
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
 
   /*
    * Stops React Native Surface with given id.
@@ -64,6 +88,7 @@ class UIManagerBinding : public jsi::HostObject {
       jsi::Runtime &runtime,
       EventTarget const *eventTarget,
       std::string const &type,
+      ReactEventPriority priority,
       ValueFactory const &payloadFactory) const;
 
   /*
@@ -81,9 +106,16 @@ class UIManagerBinding : public jsi::HostObject {
   jsi::Value get(jsi::Runtime &runtime, jsi::PropNameID const &name) override;
 
  private:
+  void executeMeasure(
+      jsi::Runtime &runtime,
+      std::function<void(jsi::Runtime &)> &&callback) const noexcept;
+
   std::shared_ptr<UIManager> uiManager_;
   std::unique_ptr<EventHandler const> eventHandler_;
+  mutable ReactEventPriority currentEventPriority_;
+
+  bool enableAsyncMeasure_;
+  RuntimeExecutor runtimeExecutor_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

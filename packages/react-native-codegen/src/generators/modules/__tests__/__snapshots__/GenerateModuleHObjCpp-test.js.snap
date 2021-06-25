@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleHObjCpp can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "COMPLEX_OBJECTS.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -146,7 +146,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SampleTurboModule'
+     * ObjC++ class for module 'NativeSampleTurboModule'
      */
     class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -171,7 +171,7 @@ inline NSString *JS::NativeSampleTurboModule::SpecDifficultAE::F() const
 }
 inline double JS::NativeSampleTurboModule::SpecDifficultAE::id_() const
 {
-  id const p = _v[@\\"id_\\"];
+  id const p = _v[@\\"id\\"];
   return RCTBridgingToDouble(p);
 }
 inline bool JS::NativeSampleTurboModule::SpecDifficultA::D() const
@@ -260,7 +260,7 @@ inline facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOpt
 
 exports[`GenerateModuleHObjCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "EMPTY_NATIVE_MODULES.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -296,7 +296,7 @@ Map {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SampleTurboModule'
+     * ObjC++ class for module 'NativeSampleTurboModule'
      */
     class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -311,7 +311,7 @@ namespace facebook {
 
 exports[`GenerateModuleHObjCpp can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "NATIVE_MODULES_WITH_TYPE_ALIASES.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -339,7 +339,7 @@ Map {
 #import <vector>
 
 namespace JS {
-  namespace NativeAliasTurboModule {
+  namespace AliasTurboModule {
     struct OptionsOffset {
       double x() const;
       double y() const;
@@ -351,11 +351,11 @@ namespace JS {
   }
 }
 
-@interface RCTCxxConvert (NativeAliasTurboModule_OptionsOffset)
-+ (RCTManagedPointer *)JS_NativeAliasTurboModule_OptionsOffset:(id)json;
+@interface RCTCxxConvert (AliasTurboModule_OptionsOffset)
++ (RCTManagedPointer *)JS_AliasTurboModule_OptionsOffset:(id)json;
 @end
 namespace JS {
-  namespace NativeAliasTurboModule {
+  namespace AliasTurboModule {
     struct OptionsSize {
       double width() const;
       double height() const;
@@ -367,11 +367,11 @@ namespace JS {
   }
 }
 
-@interface RCTCxxConvert (NativeAliasTurboModule_OptionsSize)
-+ (RCTManagedPointer *)JS_NativeAliasTurboModule_OptionsSize:(id)json;
+@interface RCTCxxConvert (AliasTurboModule_OptionsSize)
++ (RCTManagedPointer *)JS_AliasTurboModule_OptionsSize:(id)json;
 @end
 namespace JS {
-  namespace NativeAliasTurboModule {
+  namespace AliasTurboModule {
     struct OptionsDisplaySize {
       double width() const;
       double height() const;
@@ -383,15 +383,15 @@ namespace JS {
   }
 }
 
-@interface RCTCxxConvert (NativeAliasTurboModule_OptionsDisplaySize)
-+ (RCTManagedPointer *)JS_NativeAliasTurboModule_OptionsDisplaySize:(id)json;
+@interface RCTCxxConvert (AliasTurboModule_OptionsDisplaySize)
++ (RCTManagedPointer *)JS_AliasTurboModule_OptionsDisplaySize:(id)json;
 @end
 namespace JS {
-  namespace NativeAliasTurboModule {
+  namespace AliasTurboModule {
     struct Options {
-      JS::NativeAliasTurboModule::OptionsOffset offset() const;
-      JS::NativeAliasTurboModule::OptionsSize size() const;
-      folly::Optional<JS::NativeAliasTurboModule::OptionsDisplaySize> displaySize() const;
+      JS::AliasTurboModule::OptionsOffset offset() const;
+      JS::AliasTurboModule::OptionsSize size() const;
+      folly::Optional<JS::AliasTurboModule::OptionsDisplaySize> displaySize() const;
       NSString *resizeMode() const;
       folly::Optional<bool> allowExternalStorage() const;
 
@@ -402,12 +402,12 @@ namespace JS {
   }
 }
 
-@interface RCTCxxConvert (NativeAliasTurboModule_Options)
-+ (RCTManagedPointer *)JS_NativeAliasTurboModule_Options:(id)json;
+@interface RCTCxxConvert (AliasTurboModule_Options)
++ (RCTManagedPointer *)JS_AliasTurboModule_Options:(id)json;
 @end
-@protocol NativeAliasTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+@protocol AliasTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
-- (void)cropImage:(JS::NativeAliasTurboModule::Options &)cropData;
+- (void)cropImage:(JS::AliasTurboModule::Options &)cropData;
 
 @end
 namespace facebook {
@@ -415,63 +415,63 @@ namespace facebook {
     /**
      * ObjC++ class for module 'AliasTurboModule'
      */
-    class JSI_EXPORT NativeAliasTurboModuleSpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT AliasTurboModuleSpecJSI : public ObjCTurboModule {
     public:
-      NativeAliasTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+      AliasTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook
-inline double JS::NativeAliasTurboModule::OptionsOffset::x() const
+inline double JS::AliasTurboModule::OptionsOffset::x() const
 {
   id const p = _v[@\\"x\\"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeAliasTurboModule::OptionsOffset::y() const
+inline double JS::AliasTurboModule::OptionsOffset::y() const
 {
   id const p = _v[@\\"y\\"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeAliasTurboModule::OptionsSize::width() const
+inline double JS::AliasTurboModule::OptionsSize::width() const
 {
   id const p = _v[@\\"width\\"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeAliasTurboModule::OptionsSize::height() const
+inline double JS::AliasTurboModule::OptionsSize::height() const
 {
   id const p = _v[@\\"height\\"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeAliasTurboModule::OptionsDisplaySize::width() const
+inline double JS::AliasTurboModule::OptionsDisplaySize::width() const
 {
   id const p = _v[@\\"width\\"];
   return RCTBridgingToDouble(p);
 }
-inline double JS::NativeAliasTurboModule::OptionsDisplaySize::height() const
+inline double JS::AliasTurboModule::OptionsDisplaySize::height() const
 {
   id const p = _v[@\\"height\\"];
   return RCTBridgingToDouble(p);
 }
-inline JS::NativeAliasTurboModule::OptionsOffset JS::NativeAliasTurboModule::Options::offset() const
+inline JS::AliasTurboModule::OptionsOffset JS::AliasTurboModule::Options::offset() const
 {
   id const p = _v[@\\"offset\\"];
-  return JS::NativeAliasTurboModule::OptionsOffset(p);
+  return JS::AliasTurboModule::OptionsOffset(p);
 }
-inline JS::NativeAliasTurboModule::OptionsSize JS::NativeAliasTurboModule::Options::size() const
+inline JS::AliasTurboModule::OptionsSize JS::AliasTurboModule::Options::size() const
 {
   id const p = _v[@\\"size\\"];
-  return JS::NativeAliasTurboModule::OptionsSize(p);
+  return JS::AliasTurboModule::OptionsSize(p);
 }
-inline folly::Optional<JS::NativeAliasTurboModule::OptionsDisplaySize> JS::NativeAliasTurboModule::Options::displaySize() const
+inline folly::Optional<JS::AliasTurboModule::OptionsDisplaySize> JS::AliasTurboModule::Options::displaySize() const
 {
   id const p = _v[@\\"displaySize\\"];
-  return (p == nil ? folly::none : folly::make_optional(JS::NativeAliasTurboModule::OptionsDisplaySize(p)));
+  return (p == nil ? folly::none : folly::make_optional(JS::AliasTurboModule::OptionsDisplaySize(p)));
 }
-inline NSString *JS::NativeAliasTurboModule::Options::resizeMode() const
+inline NSString *JS::AliasTurboModule::Options::resizeMode() const
 {
   id const p = _v[@\\"resizeMode\\"];
   return RCTBridgingToOptionalString(p);
 }
-inline folly::Optional<bool> JS::NativeAliasTurboModule::Options::allowExternalStorage() const
+inline folly::Optional<bool> JS::AliasTurboModule::Options::allowExternalStorage() const
 {
   id const p = _v[@\\"allowExternalStorage\\"];
   return RCTBridgingToOptionalBool(p);
@@ -482,7 +482,7 @@ inline folly::Optional<bool> JS::NativeAliasTurboModule::Options::allowExternalS
 
 exports[`GenerateModuleHObjCpp can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "REAL_MODULE_EXAMPLE.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -547,7 +547,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'CameraRollManager'
+     * ObjC++ class for module 'NativeCameraRollManager'
      */
     class JSI_EXPORT NativeCameraRollManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -614,7 +614,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ExceptionsManager'
+     * ObjC++ class for module 'NativeExceptionsManager'
      */
     class JSI_EXPORT NativeExceptionsManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -648,7 +648,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ImagePickerIOS'
+     * ObjC++ class for module 'NativeImagePickerIOS'
      */
     class JSI_EXPORT NativeImagePickerIOSSpecJSI : public ObjCTurboModule {
     public:
@@ -743,7 +743,7 @@ inline facebook::react::LazyVector<JS::NativeExceptionsManager::StackFrame> JS::
 }
 inline double JS::NativeExceptionsManager::ExceptionData::id_() const
 {
-  id const p = _v[@\\"id_\\"];
+  id const p = _v[@\\"id\\"];
   return RCTBridgingToDouble(p);
 }
 inline bool JS::NativeExceptionsManager::ExceptionData::isFatal() const
@@ -772,7 +772,7 @@ inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::videoMode() co
 
 exports[`GenerateModuleHObjCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "SIMPLE_NATIVE_MODULES.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -851,7 +851,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SampleTurboModule'
+     * ObjC++ class for module 'NativeSampleTurboModule'
      */
     class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -878,7 +878,7 @@ inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i) : _
 
 exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "TWO_MODULES_DIFFERENT_FILES.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -906,23 +906,6 @@ Map {
 #import <vector>
 
 
-@protocol NativeSample2TurboModuleSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)voidFunc;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'Sample2TurboModule'
-     */
-    class JSI_EXPORT NativeSample2TurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSample2TurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
-
 @protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)voidFunc;
@@ -931,7 +914,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SampleTurboModule'
+     * ObjC++ class for module 'NativeSampleTurboModule'
      */
     class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -940,42 +923,7 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-
-",
-}
-`;
-
-exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_SAME_FILE 1`] = `
-Map {
-  "SampleSpec.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @generated by codegen project: GenerateModuleObjCpp
- *
- * We create an umbrella header (and corresponding implementation) here since
- * Cxx compilation in BUCK has a limitation: source-code producing genrule()s
- * must have a single output. More files => more genrule()s => slower builds.
- */
-
-#ifndef __cplusplus
-#error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
-#endif
-#import <Foundation/Foundation.h>
-#import <RCTRequired/RCTRequired.h>
-#import <RCTTypeSafety/RCTConvertHelpers.h>
-#import <RCTTypeSafety/RCTTypedModuleConstants.h>
-#import <React/RCTBridgeModule.h>
-#import <React/RCTCxxConvert.h>
-#import <React/RCTManagedPointer.h>
-#import <ReactCommon/RCTTurboModule.h>
-#import <folly/Optional.h>
-#import <vector>
-
-
-@protocol NativeSample2TurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+@protocol NativeSampleTurboModule2Spec <RCTBridgeModule, RCTTurboModule>
 
 - (void)voidFunc;
 
@@ -983,28 +931,11 @@ Map {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'Sample2TurboModule'
+     * ObjC++ class for module 'NativeSampleTurboModule2'
      */
-    class JSI_EXPORT NativeSample2TurboModuleSpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT NativeSampleTurboModule2SpecJSI : public ObjCTurboModule {
     public:
-      NativeSample2TurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
-
-@protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)voidFunc;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'SampleTurboModule'
-     */
-    class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
-    public:
-      NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+      NativeSampleTurboModule2SpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook

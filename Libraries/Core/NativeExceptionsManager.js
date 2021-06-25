@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
@@ -47,7 +45,6 @@ export interface Spec extends TurboModule {
     stack: Array<StackFrame>,
     exceptionId: number,
   ) => void;
-  // eslint-disable-next-line @react-native/codegen/react-native-modules
   +reportException?: (data: ExceptionData) => void;
   +updateExceptionMessage: (
     message: string,

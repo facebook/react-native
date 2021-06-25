@@ -13,8 +13,7 @@ import java.util.StringTokenizer;
 import org.gradle.api.Project;
 
 public class CodegenPluginExtension {
-  // TODO: Remove beta.
-  public String codegenJavaPackageName = "com.facebook.fbreact.specs.beta";
+  public String codegenJavaPackageName = "com.facebook.fbreact.specs";
   public File jsRootDir;
   public String libraryName;
   public String[] nodeExecutableAndArgs = {"node"};
@@ -35,7 +34,7 @@ public class CodegenPluginExtension {
   }
 
   public File codegenGenerateNativeModuleSpecsCLI() {
-    return new File(this.reactNativeRootDir, "scripts/generate-native-modules-specs-cli.js");
+    return new File(this.reactNativeRootDir, "scripts/generate-specs-cli.js");
   }
 
   private String projectPathToLibraryName(final String projectPath) {

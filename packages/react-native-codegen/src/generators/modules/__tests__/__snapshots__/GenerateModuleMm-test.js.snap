@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleMm can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "COMPLEX_OBJECTS-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,7 +15,7 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"COMPLEX_OBJECTS.h\\"
 
 @implementation RCTCxxConvert (NativeSampleTurboModule_SpecDifficultAE)
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecDifficultAE:(id)json
@@ -95,7 +95,7 @@ namespace facebook {
 
 exports[`GenerateModuleMm can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "EMPTY_NATIVE_MODULES-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -108,7 +108,7 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"EMPTY_NATIVE_MODULES.h\\"
 
 
 namespace facebook {
@@ -127,7 +127,7 @@ namespace facebook {
 
 exports[`GenerateModuleMm can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "NATIVE_MODULES_WITH_TYPE_ALIASES-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -140,44 +140,44 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"NATIVE_MODULES_WITH_TYPE_ALIASES.h\\"
 
-@implementation RCTCxxConvert (NativeAliasTurboModule_OptionsOffset)
-+ (RCTManagedPointer *)JS_NativeAliasTurboModule_OptionsOffset:(id)json
+@implementation RCTCxxConvert (AliasTurboModule_OptionsOffset)
++ (RCTManagedPointer *)JS_AliasTurboModule_OptionsOffset:(id)json
 {
-  return facebook::react::managedPointer<JS::NativeAliasTurboModule::OptionsOffset>(json);
+  return facebook::react::managedPointer<JS::AliasTurboModule::OptionsOffset>(json);
 }
 @end
-@implementation RCTCxxConvert (NativeAliasTurboModule_OptionsSize)
-+ (RCTManagedPointer *)JS_NativeAliasTurboModule_OptionsSize:(id)json
+@implementation RCTCxxConvert (AliasTurboModule_OptionsSize)
++ (RCTManagedPointer *)JS_AliasTurboModule_OptionsSize:(id)json
 {
-  return facebook::react::managedPointer<JS::NativeAliasTurboModule::OptionsSize>(json);
+  return facebook::react::managedPointer<JS::AliasTurboModule::OptionsSize>(json);
 }
 @end
-@implementation RCTCxxConvert (NativeAliasTurboModule_OptionsDisplaySize)
-+ (RCTManagedPointer *)JS_NativeAliasTurboModule_OptionsDisplaySize:(id)json
+@implementation RCTCxxConvert (AliasTurboModule_OptionsDisplaySize)
++ (RCTManagedPointer *)JS_AliasTurboModule_OptionsDisplaySize:(id)json
 {
-  return facebook::react::managedPointer<JS::NativeAliasTurboModule::OptionsDisplaySize>(json);
+  return facebook::react::managedPointer<JS::AliasTurboModule::OptionsDisplaySize>(json);
 }
 @end
-@implementation RCTCxxConvert (NativeAliasTurboModule_Options)
-+ (RCTManagedPointer *)JS_NativeAliasTurboModule_Options:(id)json
+@implementation RCTCxxConvert (AliasTurboModule_Options)
++ (RCTManagedPointer *)JS_AliasTurboModule_Options:(id)json
 {
-  return facebook::react::managedPointer<JS::NativeAliasTurboModule::Options>(json);
+  return facebook::react::managedPointer<JS::AliasTurboModule::Options>(json);
 }
 @end
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeAliasTurboModuleSpecJSI_cropImage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_AliasTurboModuleSpecJSI_cropImage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"cropImage\\", @selector(cropImage:), args, count);
     }
 
-    NativeAliasTurboModuleSpecJSI::NativeAliasTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    AliasTurboModuleSpecJSI::AliasTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"cropImage\\"] = MethodMetadata {1, __hostFunction_NativeAliasTurboModuleSpecJSI_cropImage};
-        setMethodArgConversionSelector(@\\"cropImage\\", 0, @\\"JS_NativeAliasTurboModule_Options:\\");
+        methodMap_[\\"cropImage\\"] = MethodMetadata {1, __hostFunction_AliasTurboModuleSpecJSI_cropImage};
+        setMethodArgConversionSelector(@\\"cropImage\\", 0, @\\"JS_AliasTurboModule_Options:\\");
     }
   } // namespace react
 } // namespace facebook
@@ -187,7 +187,7 @@ namespace facebook {
 
 exports[`GenerateModuleMm can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "REAL_MODULE_EXAMPLE-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -200,7 +200,7 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"REAL_MODULE_EXAMPLE.h\\"
 
 @implementation RCTCxxConvert (NativeCameraRollManager_GetPhotosParams)
 + (RCTManagedPointer *)JS_NativeCameraRollManager_GetPhotosParams:(id)json
@@ -319,7 +319,7 @@ namespace facebook {
 
 exports[`GenerateModuleMm can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "SIMPLE_NATIVE_MODULES-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -332,7 +332,7 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"SIMPLE_NATIVE_MODULES.h\\"
 
 
 namespace facebook {
@@ -343,7 +343,7 @@ namespace facebook {
     }
 
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getBool(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, NumberKind, \\"getBool\\", @selector(getBool:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, BooleanKind, \\"getBool\\", @selector(getBool:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -426,7 +426,7 @@ namespace facebook {
 
 exports[`GenerateModuleMm can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "SampleSpec-generated.mm" => "/**
+  "TWO_MODULES_DIFFERENT_FILES-generated.mm" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -439,24 +439,8 @@ Map {
  * must have a single output. More files => more genrule()s => slower builds.
  */
 
-#import \\"SampleSpec.h\\"
+#import \\"TWO_MODULES_DIFFERENT_FILES.h\\"
 
-
-namespace facebook {
-  namespace react {
-    
-    static facebook::jsi::Value __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
-    }
-
-    NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
-        
-    }
-  } // namespace react
-} // namespace facebook
 
 namespace facebook {
   namespace react {
@@ -473,55 +457,18 @@ namespace facebook {
     }
   } // namespace react
 } // namespace facebook
-",
-}
-`;
-
-exports[`GenerateModuleMm can generate fixture TWO_MODULES_SAME_FILE 1`] = `
-Map {
-  "SampleSpec-generated.mm" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @generated by codegen project: GenerateModuleObjCpp
- *
- * We create an umbrella header (and corresponding implementation) here since
- * Cxx compilation in BUCK has a limitation: source-code producing genrule()s
- * must have a single output. More files => more genrule()s => slower builds.
- */
-
-#import \\"SampleSpec.h\\"
-
 
 namespace facebook {
   namespace react {
     
-    static facebook::jsi::Value __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModule2SpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
     }
 
-    NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
+    NativeSampleTurboModule2SpecJSI::NativeSampleTurboModule2SpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
-        
-    }
-  } // namespace react
-} // namespace facebook
-
-namespace facebook {
-  namespace react {
-    
-    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
-    }
-
-    NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
-      : ObjCTurboModule(params) {
-        
-        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
+        methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModule2SpecJSI_voidFunc};
         
     }
   } // namespace react

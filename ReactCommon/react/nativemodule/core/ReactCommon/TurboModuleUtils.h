@@ -10,7 +10,6 @@
 #include <cassert>
 #include <string>
 
-#include <folly/Optional.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/CallInvoker.h>
@@ -83,6 +82,24 @@ class CallbackWrapper : public LongLivedObject {
   CallInvoker &jsInvoker() {
     return *(jsInvoker_);
   }
+};
+
+class RAIICallbackWrapperDestroyer {
+ public:
+  RAIICallbackWrapperDestroyer(std::weak_ptr<CallbackWrapper> callbackWrapper)
+      : callbackWrapper_(callbackWrapper) {}
+
+  ~RAIICallbackWrapperDestroyer() {
+    auto strongWrapper = callbackWrapper_.lock();
+    if (!strongWrapper) {
+      return;
+    }
+
+    strongWrapper->destroy();
+  }
+
+ private:
+  std::weak_ptr<CallbackWrapper> callbackWrapper_;
 };
 
 } // namespace react

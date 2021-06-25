@@ -47,7 +47,7 @@ function removeKnownExtends(
   );
 }
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type PropsAST = Object;
 
 function getExtendsProps(

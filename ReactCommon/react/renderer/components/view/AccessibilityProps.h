@@ -29,7 +29,7 @@ class AccessibilityProps {
   AccessibilityState accessibilityState;
   std::string accessibilityLabel{""};
   std::string accessibilityHint{""};
-  std::vector<std::string> accessibilityActions{};
+  std::vector<AccessibilityAction> accessibilityActions{};
   bool accessibilityViewIsModal{false};
   bool accessibilityElementsHidden{false};
   bool accessibilityIgnoresInvertColors{false};

@@ -43,6 +43,7 @@ require('./setUpSegmentFetcher');
 if (__DEV__) {
   require('./checkNativeVersion');
   require('./setUpDeveloperTools');
+  require('../LogBox/LogBox').install();
 }
 
 const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');

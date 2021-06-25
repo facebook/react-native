@@ -40,25 +40,30 @@ const schemaValidator = require('../SchemaValidator.js');
 
 import type {SchemaType} from '../CodegenSchema';
 
-type Options = $ReadOnly<{|
+type Options = $ReadOnly<{
   libraryName: string,
   schema: SchemaType,
   outputDirectory: string,
-  moduleSpecName: string,
-|}>;
+  packageName?: string, // Some platforms have a notion of package, which should be configurable.
+  assumeNonnull: boolean,
+}>;
 
 type Generators =
+  | 'componentsAndroid'
+  | 'componentsIOS'
   | 'descriptors'
   | 'events'
   | 'props'
   | 'tests'
   | 'shadow-nodes'
-  | 'modules';
+  | 'modulesAndroid'
+  | 'modulesCxx'
+  | 'modulesIOS';
 
-type Config = $ReadOnly<{|
+type Config = $ReadOnly<{
   generators: Array<Generators>,
   test?: boolean,
-|}>;
+}>;
 
 const GENERATORS = {
   descriptors: [generateComponentDescriptorH.generate],
@@ -70,17 +75,37 @@ const GENERATORS = {
     generatePropsJavaInterface.generate,
     generatePropsJavaDelegate.generate,
   ],
-  modules: [
-    generateModuleCpp.generate,
-    generateModuleH.generate,
-    generateModuleObjCpp.generate,
+  // TODO: Refactor this to consolidate various C++ output variation instead of forking per platform.
+  componentsAndroid: [
+    // JNI/C++ files
+    generateComponentDescriptorH.generate,
+    generateEventEmitterCpp.generate,
+    generateEventEmitterH.generate,
+    generatePropsCpp.generate,
+    generatePropsH.generate,
+    generateShadowNodeCpp.generate,
+    generateShadowNodeH.generate,
+    // Java files
+    generatePropsJavaInterface.generate,
+    generatePropsJavaDelegate.generate,
   ],
-  // TODO: Refactor this to consolidate various C++ output variation instead of forking Android.
+  componentsIOS: [
+    generateComponentDescriptorH.generate,
+    generateEventEmitterCpp.generate,
+    generateEventEmitterH.generate,
+    generateComponentHObjCpp.generate,
+    generatePropsCpp.generate,
+    generatePropsH.generate,
+    generateShadowNodeCpp.generate,
+    generateShadowNodeH.generate,
+  ],
   modulesAndroid: [
     GenerateModuleJniCpp.generate,
     GenerateModuleJniH.generate,
     generateModuleJavaSpec.generate,
   ],
+  modulesCxx: [generateModuleCpp.generate, generateModuleH.generate],
+  modulesIOS: [generateModuleObjCpp.generate],
   tests: [generateTests.generate],
   'shadow-nodes': [
     generateShadowNodeCpp.generate,
@@ -93,6 +118,10 @@ function writeMapToFiles(map: Map<string, string>, outputDir: string) {
   map.forEach((contents: string, fileName: string) => {
     try {
       const location = path.join(outputDir, fileName);
+      const dirName = path.dirname(location);
+      if (!fs.existsSync(dirName)) {
+        fs.mkdirSync(dirName, {recursive: true});
+      }
       fs.writeFileSync(location, contents);
     } catch (error) {
       success = false;
@@ -124,7 +153,7 @@ function checkFilesForChanges(
 
 module.exports = {
   generate(
-    {libraryName, schema, outputDirectory, moduleSpecName}: Options,
+    {libraryName, schema, outputDirectory, packageName, assumeNonnull}: Options,
     {generators, test}: Config,
   ): boolean {
     schemaValidator.validate(schema);
@@ -132,7 +161,9 @@ module.exports = {
     const generatedFiles = [];
     for (const name of generators) {
       for (const generator of GENERATORS[name]) {
-        generatedFiles.push(...generator(libraryName, schema, moduleSpecName));
+        generatedFiles.push(
+          ...generator(libraryName, schema, packageName, assumeNonnull),
+        );
       }
     }
 

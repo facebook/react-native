@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const BatchedBridge = require('../BatchedBridge/BatchedBridge');
 const TaskQueue = require('./TaskQueue');
 
@@ -21,7 +19,10 @@ import EventEmitter from '../vendor/emitter/EventEmitter';
 export type Handle = number;
 import type {Task} from './TaskQueue';
 
-const _emitter = new EventEmitter();
+const _emitter = new EventEmitter<{
+  interactionComplete: [],
+  interactionStart: [],
+}>();
 
 const DEBUG_DELAY: 0 = 0;
 const DEBUG: false = false;
@@ -109,8 +110,10 @@ const InteractionManager = {
       _taskQueue.enqueueTasks(tasks);
     });
     return {
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       then: promise.then.bind(promise),
       done: (...args) => {
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         if (promise.done) {
           return promise.done(...args);
         } else {
@@ -147,6 +150,7 @@ const InteractionManager = {
     _deleteInteractionSet.add(handle);
   },
 
+  // $FlowFixMe[method-unbinding] added when improving typing for this parameters
   addListener: (_emitter.addListener.bind(_emitter): $FlowFixMe),
 
   /**
@@ -173,9 +177,6 @@ let _deadline = -1;
 function _scheduleUpdate() {
   if (!_nextUpdateHandle) {
     if (_deadline > 0) {
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
       _nextUpdateHandle = setTimeout(_processUpdate, 0 + DEBUG_DELAY);
     } else {
       _nextUpdateHandle = setImmediate(_processUpdate);

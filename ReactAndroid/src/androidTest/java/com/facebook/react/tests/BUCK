@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_int
 rn_android_library(
     name = "tests",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     visibility = [
         "PUBLIC",
@@ -32,7 +33,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/uimanager/util:util"),
-        react_native_target("java/com/facebook/react/views/picker:picker"),
         react_native_target("java/com/facebook/react/views/progressbar:progressbar"),
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
         react_native_target("java/com/facebook/react/views/slider:slider"),

@@ -41,7 +41,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -52,11 +51,12 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
@@ -85,7 +85,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private @Nullable String mInitialUITemplate;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
-  private int mRootViewTag;
+  private int mRootViewTag =
+      0; /* This should be View.NO_ID, but for legacy reasons we haven't migrated yet */
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
   private @Nullable JSTouchDispatcher mJSTouchDispatcher;
@@ -99,6 +100,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private int mLastOffsetX = Integer.MIN_VALUE;
   private int mLastOffsetY = Integer.MIN_VALUE;
   private @UIManagerType int mUIManagerType = DEFAULT;
+  private final AtomicInteger mState = new AtomicInteger(STATE_STOPPED);
 
   public ReactRootView(Context context) {
     super(context);
@@ -122,6 +124,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.onMeasure");
+    ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ON_MEASURE_START);
     try {
       boolean measureSpecsUpdated =
           widthMeasureSpec != mWidthMeasureSpec || heightMeasureSpec != mHeightMeasureSpec;
@@ -171,6 +174,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mLastHeight = height;
 
     } finally {
+      ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ON_MEASURE_END);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
@@ -188,7 +192,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
@@ -276,7 +280,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
@@ -412,18 +416,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return appProperties != null ? appProperties.getString("surfaceID") : null;
   }
 
-  public static Point getViewportOffset(View v) {
-    int[] locationInWindow = new int[2];
-    v.getLocationInWindow(locationInWindow);
-
-    // we need to subtract visibleWindowCoords - to subtract possible window insets, split
-    // screen or multi window
-    Rect visibleWindowFrame = new Rect();
-    v.getWindowVisibleDisplayFrame(visibleWindowFrame);
-    locationInWindow[0] -= visibleWindowFrame.left;
-    locationInWindow[1] -= visibleWindowFrame.top;
-
-    return new Point(locationInWindow[0], locationInWindow[1]);
+  public AtomicInteger getState() {
+    return mState;
   }
 
   /**
@@ -437,10 +431,20 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
    */
   private void updateRootLayoutSpecs(
       boolean measureSpecsChanged, final int widthMeasureSpec, final int heightMeasureSpec) {
+    ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_START);
     if (mReactInstanceManager == null) {
+      ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_END);
       FLog.w(TAG, "Unable to update root layout specs for uninitialized ReactInstanceManager");
       return;
     }
+    // In Fabric we cannot call `updateRootLayoutSpecs` until a SurfaceId has been set.
+    // Sometimes,
+    if (getUIManagerType() == FABRIC && !isRootViewTagSet()) {
+      ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_END);
+      FLog.e(TAG, "Unable to update root layout specs for ReactRootView: no rootViewTag set yet");
+      return;
+    }
+
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
 
     if (reactApplicationContext != null) {
@@ -453,7 +457,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         int offsetX = 0;
         int offsetY = 0;
         if (getUIManagerType() == FABRIC) {
-          Point viewportOffset = getViewportOffset(this);
+          Point viewportOffset = RootViewUtil.getViewportOffset(this);
           offsetX = viewportOffset.x;
           offsetY = viewportOffset.y;
         }
@@ -466,6 +470,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         mLastOffsetY = offsetY;
       }
     }
+
+    ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_END);
   }
 
   /**
@@ -483,21 +489,30 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     // to be committed via the Scheduler, which will cause mounting instructions
     // to be queued up and synchronously executed to delete and remove
     // all the views in the hierarchy.
-    if (mReactInstanceManager != null && ReactFeatureFlags.enableStopSurfaceOnRootViewUnmount) {
+    if (mReactInstanceManager != null) {
       final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
       if (reactApplicationContext != null && getUIManagerType() == FABRIC) {
         @Nullable
         UIManager uiManager =
             UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
         if (uiManager != null) {
-          FLog.e(TAG, "stopSurface for surfaceId: " + this.getId());
-          if (getId() == NO_ID) {
+          final int surfaceId = this.getId();
+
+          // In case of "retry" or error dialogues being shown, this ReactRootView could be
+          // reused (with the same surfaceId, or a different one). Ensure the ReactRootView
+          // is marked as unused in case of that.
+          setId(NO_ID);
+
+          // Remove all children from ReactRootView
+          removeAllViews();
+
+          if (surfaceId == NO_ID) {
             ReactSoftException.logSoftException(
                 TAG,
                 new RuntimeException(
                     "unmountReactApplication called on ReactRootView with invalid id"));
           } else {
-            uiManager.stopSurface(this.getId());
+            uiManager.stopSurface(surfaceId);
           }
         }
       }
@@ -533,7 +548,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
   }
 
-  public void setEventListener(ReactRootViewEventListener eventListener) {
+  public void setEventListener(@Nullable ReactRootViewEventListener eventListener) {
     mRootViewEventListener = eventListener;
   }
 
@@ -556,7 +571,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   public void setAppProperties(@Nullable Bundle appProperties) {
     UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
-    if (getRootViewTag() != 0) {
+    if (isRootViewTagSet()) {
       runApplication();
     }
   }
@@ -619,16 +634,28 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   private void attachToReactInstanceManager() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachToReactInstanceManager");
+    ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ATTACH_TO_REACT_INSTANCE_MANAGER_START);
 
-    if (mIsAttachedToInstance) {
-      return;
+    // React Native requires that the RootView id be managed entirely by React Native, and will
+    // crash in addRootView/startSurface if the native View id isn't set to NO_ID.
+    if (getId() != View.NO_ID) {
+      throw new IllegalViewOperationException(
+          "Trying to attach a ReactRootView with an explicit id already set to ["
+              + getId()
+              + "]. React Native uses the id field to track react tags and will overwrite this"
+              + " field. If that is fine, explicitly overwrite the id field to View.NO_ID.");
     }
 
     try {
+      if (mIsAttachedToInstance) {
+        return;
+      }
+
       mIsAttachedToInstance = true;
       Assertions.assertNotNull(mReactInstanceManager).attachRootView(this);
       getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
     } finally {
+      ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_ATTACH_TO_REACT_INSTANCE_MANAGER_END);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
@@ -647,6 +674,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   public int getRootViewTag() {
     return mRootViewTag;
+  }
+
+  private boolean isRootViewTagSet() {
+    return mRootViewTag != 0 && mRootViewTag != NO_ID;
   }
 
   public void setRootViewTag(int rootViewTag) {
@@ -752,6 +783,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         return;
       }
       mDeviceRotation = rotation;
+      DisplayMetricsHolder.initDisplayMetrics(getContext().getApplicationContext());
       emitOrientationChanged(rotation);
     }
 

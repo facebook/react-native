@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const RNTesterComponentTitle = require('./RNTesterComponentTitle');
 const React = require('react');
@@ -39,6 +37,7 @@ const ExampleCard = ({
   const onAndroid = !platform || platform === 'android';
   return (
     <TouchableHighlight
+      testID={item.module.title}
       onShowUnderlay={onShowUnderlay}
       onHideUnderlay={onHideUnderlay}
       accessibilityLabel={item.module.title + ' ' + item.module.description}
@@ -151,6 +150,7 @@ const RNTesterExampleList: React$AbstractComponent<any, void> = React.memo(
           page="components_page"
           sections={sections}
           filter={filter}
+          hideFilterPills={true}
           render={({filteredSections}) => (
             <SectionList
               sections={filteredSections}

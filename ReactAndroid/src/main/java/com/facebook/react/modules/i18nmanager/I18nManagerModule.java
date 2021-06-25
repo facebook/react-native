@@ -8,9 +8,9 @@
 package com.facebook.react.modules.i18nmanager;
 
 import android.content.Context;
-import com.facebook.react.bridge.ContextBaseJavaModule;
+import com.facebook.fbreact.specs.NativeI18nManagerSpec;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.Locale;
@@ -18,13 +18,13 @@ import java.util.Map;
 
 /** {@link NativeModule} that allows JS to set allowRTL and get isRTL status. */
 @ReactModule(name = I18nManagerModule.NAME)
-public class I18nManagerModule extends ContextBaseJavaModule {
+public class I18nManagerModule extends NativeI18nManagerSpec {
 
   public static final String NAME = "I18nManager";
 
   private final I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
 
-  public I18nManagerModule(Context context) {
+  public I18nManagerModule(ReactApplicationContext context) {
     super(context);
   }
 
@@ -34,8 +34,8 @@ public class I18nManagerModule extends ContextBaseJavaModule {
   }
 
   @Override
-  public Map<String, Object> getConstants() {
-    final Context context = getContext();
+  public Map<String, Object> getTypedExportedConstants() {
+    final Context context = getReactApplicationContext();
     final Locale locale = context.getResources().getConfiguration().locale;
 
     final Map<String, Object> constants = MapBuilder.newHashMap();
@@ -46,18 +46,18 @@ public class I18nManagerModule extends ContextBaseJavaModule {
     return constants;
   }
 
-  @ReactMethod
+  @Override
   public void allowRTL(boolean value) {
-    sharedI18nUtilInstance.allowRTL(getContext(), value);
+    sharedI18nUtilInstance.allowRTL(getReactApplicationContext(), value);
   }
 
-  @ReactMethod
+  @Override
   public void forceRTL(boolean value) {
-    sharedI18nUtilInstance.forceRTL(getContext(), value);
+    sharedI18nUtilInstance.forceRTL(getReactApplicationContext(), value);
   }
 
-  @ReactMethod
+  @Override
   public void swapLeftAndRightInRTL(boolean value) {
-    sharedI18nUtilInstance.swapLeftAndRightInRTL(getContext(), value);
+    sharedI18nUtilInstance.swapLeftAndRightInRTL(getReactApplicationContext(), value);
   }
 }

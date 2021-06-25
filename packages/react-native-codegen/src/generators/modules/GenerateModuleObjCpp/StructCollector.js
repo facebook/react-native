@@ -20,7 +20,7 @@ import type {
   NativeModuleFloatTypeAnnotation,
   NativeModuleBooleanTypeAnnotation,
   NativeModuleGenericObjectTypeAnnotation,
-  NativeModuleReservedFunctionValueTypeAnnotation,
+  ReservedTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   NativeModuleArrayTypeAnnotation,
   NativeModuleBaseTypeAnnotation,
@@ -28,7 +28,7 @@ import type {
 
 import type {AliasResolver} from '../Utils';
 
-const {capitalize} = require('./Utils');
+const {capitalize} = require('../../Utils');
 const {
   unwrapNullable,
   wrapNullable,
@@ -36,25 +36,25 @@ const {
 
 type StructContext = 'CONSTANTS' | 'REGULAR';
 
-export type RegularStruct = $ReadOnly<{|
+export type RegularStruct = $ReadOnly<{
   context: 'REGULAR',
   name: string,
   properties: $ReadOnlyArray<StructProperty>,
-|}>;
+}>;
 
-export type ConstantsStruct = $ReadOnly<{|
+export type ConstantsStruct = $ReadOnly<{
   context: 'CONSTANTS',
   name: string,
   properties: $ReadOnlyArray<StructProperty>,
-|}>;
+}>;
 
 export type Struct = RegularStruct | ConstantsStruct;
 
-export type StructProperty = $ReadOnly<{|
+export type StructProperty = $ReadOnly<{
   name: string,
   optional: boolean,
   typeAnnotation: Nullable<StructTypeAnnotation>,
-|}>;
+}>;
 
 export type StructTypeAnnotation =
   | NativeModuleStringTypeAnnotation
@@ -64,7 +64,7 @@ export type StructTypeAnnotation =
   | NativeModuleFloatTypeAnnotation
   | NativeModuleBooleanTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
-  | NativeModuleReservedFunctionValueTypeAnnotation
+  | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleArrayTypeAnnotation<Nullable<StructTypeAnnotation>>;
 
@@ -144,6 +144,7 @@ class StructCollector {
     resolveAlias: AliasResolver,
     objectTypeAnnotation: NativeModuleObjectTypeAnnotation,
   ): void {
+    // $FlowFixMe[missing-type-arg]
     const properties = objectTypeAnnotation.properties.map<
       $ReadOnly<{
         name: string,

@@ -45,11 +45,26 @@ RCT_EXPORT_MODULE();
   return self;
 }
 
+- (void)initialize
+{
+  if (self.bridge) {
+    _surfacePresenter = self.bridge.surfacePresenter;
+    _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:_surfacePresenter];
+    [self.bridge.uiManager.observerCoordinator addObserver:self];
+  } else {
+    // _surfacePresenter set in setSurfacePresenter:
+    _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:nil surfacePresenter:_surfacePresenter];
+  }
+
+  [_surfacePresenter addObserver:self];
+  [[self.moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
+}
+
 - (void)invalidate
 {
   [super invalidate];
   [_nodesManager stopAnimationLoop];
-  [self.bridge.eventDispatcher removeDispatchObserver:self];
+  [[self.moduleRegistry moduleForName:"EventDispatcher"] removeDispatchObserver:self];
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
   [_surfacePresenter removeObserver:self];
 }
@@ -62,16 +77,6 @@ RCT_EXPORT_MODULE();
   return RCTGetUIManagerQueue();
 }
 
-- (void)setBridge:(RCTBridge *)bridge
-{
-  [super setBridge:bridge];
-  _surfacePresenter = bridge.surfacePresenter;
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:_surfacePresenter];
-  [bridge.eventDispatcher addDispatchObserver:self];
-  [bridge.uiManager.observerCoordinator addObserver:self];
-  [_surfacePresenter addObserver:self];
-}
-
 /*
  * In bridgeless mode, `setBridge` is never called during initializtion. Instead this selector is invoked via
  * BridgelessTurboModuleSetup.
@@ -79,8 +84,6 @@ RCT_EXPORT_MODULE();
 - (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
   _surfacePresenter = surfacePresenter;
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:_surfacePresenter];
-  [_surfacePresenter addObserver:self];
 }
 
 #pragma mark -- API

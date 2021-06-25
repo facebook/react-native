@@ -8,6 +8,7 @@
 #pragma once
 
 #include <better/optional.h>
+#include <cmath>
 
 #include <react/renderer/graphics/ColorComponents.h>
 #include <react/renderer/graphics/Float.h>
@@ -19,6 +20,7 @@ using Color = int32_t;
 
 using SharedColor = better::optional<Color>;
 
+bool isColorMeaningful(SharedColor const &color) noexcept;
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
 

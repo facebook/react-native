@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <chrono>
 #include <iosfwd>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 
 #include <jsi/jsi.h>
@@ -54,12 +56,38 @@ class JSI_EXPORT Instrumentation {
   ///   logs.
   virtual void collectGarbage(std::string cause) = 0;
 
+  /// A HeapStatsUpdate is a tuple of the fragment index, the number of objects
+  /// in that fragment, and the number of bytes used by those objects.
+  /// A "fragment" is a view of all objects allocated within a time slice.
+  using HeapStatsUpdate = std::tuple<uint64_t, uint64_t, uint64_t>;
+
   /// Start capturing JS stack-traces for all JS heap allocated objects. These
   /// can be accessed via \c ::createSnapshotToFile().
-  virtual void startTrackingHeapObjectStackTraces() = 0;
+  /// \param fragmentCallback If present, invoke this callback every so often
+  ///   with the most recently seen object ID, and a list of fragments that have
+  ///   been updated. This callback will be invoked on the same thread that the
+  ///   runtime is using.
+  virtual void startTrackingHeapObjectStackTraces(
+      std::function<void(
+          uint64_t lastSeenObjectID,
+          std::chrono::microseconds timestamp,
+          std::vector<HeapStatsUpdate> stats)> fragmentCallback) = 0;
 
   /// Stop capture JS stack-traces for JS heap allocated objects.
   virtual void stopTrackingHeapObjectStackTraces() = 0;
+
+  /// Start a heap sampling profiler that will sample heap allocations, and the
+  /// stack trace they were allocated at. Reports a summary of which functions
+  /// allocated the most.
+  /// \param samplingInterval The number of bytes allocated to wait between
+  ///   samples. This will be used as the expected value of a poisson
+  ///   distribution.
+  virtual void startHeapSampling(size_t samplingInterval) = 0;
+
+  /// Turns off the heap sampling profiler previously enabled via
+  /// \c startHeapSampling. Writes the output of the sampling heap profiler to
+  /// \p os. The output is a JSON formatted string.
+  virtual void stopHeapSampling(std::ostream& os) = 0;
 
   /// Captures the heap to a file
   ///

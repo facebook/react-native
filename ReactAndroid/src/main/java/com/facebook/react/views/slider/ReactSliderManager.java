@@ -26,10 +26,11 @@ import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.viewmanagers.SliderManagerDelegate;
 import com.facebook.react.viewmanagers.SliderManagerInterface;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -95,16 +96,13 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
         @Override
         public void onProgressChanged(SeekBar seekbar, int progress, boolean fromUser) {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
-          UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+          EventDispatcher eventDispatcher =
+              UIManagerHelper.getEventDispatcherForReactTag(reactContext, seekbar.getId());
 
-          if (uiManager != null) {
-            uiManager
-                .getEventDispatcher()
-                .dispatchEvent(
-                    new ReactSliderEvent(
-                        seekbar.getId(),
-                        ((ReactSlider) seekbar).toRealProgress(progress),
-                        fromUser));
+          if (eventDispatcher != null) {
+            eventDispatcher.dispatchEvent(
+                new ReactSliderEvent(
+                    seekbar.getId(), ((ReactSlider) seekbar).toRealProgress(progress), fromUser));
           }
         }
 
@@ -114,15 +112,15 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
         @Override
         public void onStopTrackingTouch(SeekBar seekbar) {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
-          UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+          EventDispatcher eventDispatcher =
+              UIManagerHelper.getEventDispatcherForReactTag(reactContext, seekbar.getId());
 
-          if (uiManager != null) {
-            uiManager
-                .getEventDispatcher()
-                .dispatchEvent(
-                    new ReactSlidingCompleteEvent(
-                        seekbar.getId(),
-                        ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
+          if (eventDispatcher != null) {
+            eventDispatcher.dispatchEvent(
+                new ReactSlidingCompleteEvent(
+                    UIManagerHelper.getSurfaceId(seekbar),
+                    seekbar.getId(),
+                    ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
           }
         }
       };

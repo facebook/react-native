@@ -32,10 +32,11 @@ using namespace facebook::react;
 {
   RCTAssert(
       childComponentView.superview == nil,
-      @"Attempt to mount already mounted component view. (parent: %@, child: %@, index: %@)",
+      @"Attempt to mount already mounted component view. (parent: %@, child: %@, index: %@, existing parent: %@)",
       self,
       childComponentView,
-      @(index));
+      @(index),
+      @([childComponentView.superview tag]));
   [self insertSubview:childComponentView atIndex:index];
 }
 
@@ -49,10 +50,12 @@ using namespace facebook::react;
       @(index));
   RCTAssert(
       (self.subviews.count > index) && [self.subviews objectAtIndex:index] == childComponentView,
-      @"Attempt to unmount a view which has a different index. (parent: %@, child: %@, index: %@)",
+      @"Attempt to unmount a view which has a different index. (parent: %@, child: %@, index: %@, actual index: %@, tag at index: %@)",
       self,
       childComponentView,
-      @(index));
+      @(index),
+      @([self.subviews indexOfObject:childComponentView]),
+      @([[self.subviews objectAtIndex:index] tag]));
 
   [childComponentView removeFromSuperview];
 }
@@ -132,9 +135,25 @@ using namespace facebook::react;
   return nullptr;
 }
 
-- (void)setPropKeysManagedByAnimated:(nullable NSSet<NSString *> *)propKeys
+- (BOOL)isJSResponder
+{
+  // Default implementation always returns `NO`.
+  return NO;
+}
+
+- (void)setIsJSResponder:(BOOL)isJSResponder
 {
   // Default implementation does nothing.
+}
+
+- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)propKeys
+{
+  // Default implementation does nothing.
+}
+
+- (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return nil;
 }
 
 @end

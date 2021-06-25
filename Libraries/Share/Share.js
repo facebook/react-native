@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');

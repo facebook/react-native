@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const React = require('react');
 const RNTesterListFilters = require('./RNTesterListFilters');
 const {
@@ -108,7 +106,11 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       <RNTesterThemeContext.Consumer>
         {theme => {
           return (
-            <View style={[styles.searchRow, {backgroundColor: '#F3F8FF'}]}>
+            <View
+              style={[
+                styles.searchRow,
+                {backgroundColor: theme.BackgroundColor},
+              ]}>
               <View style={styles.textInputStyle}>
                 <Image
                   source={require('../assets/search-icon.png')}

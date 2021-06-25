@@ -15,8 +15,8 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.react.TurboReactPackage;
-import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.JSIModuleSpec;
@@ -33,7 +33,7 @@ import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
-import com.facebook.react.turbomodule.core.TurboModuleManager;
+import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
@@ -109,6 +109,13 @@ public class RNTesterApplication extends Application implements ReactApplication
 
         @Nullable
         @Override
+        protected ReactPackageTurboModuleManagerDelegate.Builder
+            getReactPackageTurboModuleManagerDelegateBuilder() {
+          return new RNTesterTurboModuleManagerDelegate.Builder();
+        }
+
+        @Nullable
+        @Override
         protected JSIModulePackage getJSIModulePackage() {
           if (!BuildConfig.ENABLE_FABRIC && !ReactFeatureFlags.useTurboModules) {
             return null;
@@ -120,40 +127,6 @@ public class RNTesterApplication extends Application implements ReactApplication
                 final ReactApplicationContext reactApplicationContext,
                 final JavaScriptContextHolder jsContext) {
               final List<JSIModuleSpec> specs = new ArrayList<>();
-
-              // Install the new native module system.
-              if (ReactFeatureFlags.useTurboModules) {
-                specs.add(
-                    new JSIModuleSpec() {
-                      @Override
-                      public JSIModuleType getJSIModuleType() {
-                        return JSIModuleType.TurboModuleManager;
-                      }
-
-                      @Override
-                      public JSIModuleProvider getJSIModuleProvider() {
-                        return new JSIModuleProvider() {
-                          @Override
-                          public JSIModule get() {
-                            final ReactInstanceManager reactInstanceManager =
-                                getReactInstanceManager();
-                            final List<ReactPackage> packages = reactInstanceManager.getPackages();
-
-                            return new TurboModuleManager(
-                                jsContext,
-                                new RNTesterTurboModuleManagerDelegate(
-                                    reactApplicationContext, packages),
-                                reactApplicationContext
-                                    .getCatalystInstance()
-                                    .getJSCallInvokerHolder(),
-                                reactApplicationContext
-                                    .getCatalystInstance()
-                                    .getNativeCallInvokerHolder());
-                          }
-                        };
-                      }
-                    });
-              }
 
               // Install the new renderer.
               if (BuildConfig.ENABLE_FABRIC) {
@@ -168,6 +141,13 @@ public class RNTesterApplication extends Application implements ReactApplication
                       public JSIModuleProvider<UIManager> getJSIModuleProvider() {
                         final ComponentFactory ComponentFactory = new ComponentFactory();
                         CoreComponentsRegistry.register(ComponentFactory);
+                        final ReactInstanceManager reactInstanceManager = getReactInstanceManager();
+
+                        ViewManagerRegistry viewManagerRegistry =
+                            new ViewManagerRegistry(
+                                reactInstanceManager.getOrCreateViewManagers(
+                                    reactApplicationContext));
+
                         return new FabricJSIModuleProvider(
                             reactApplicationContext,
                             ComponentFactory,
@@ -192,7 +172,8 @@ public class RNTesterApplication extends Application implements ReactApplication
                               public double getDouble(final String s) {
                                 return 0;
                               }
-                            });
+                            },
+                            viewManagerRegistry);
                       }
                     });
               }
@@ -205,7 +186,6 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   public void onCreate() {
-    // Set `USE_CODEGEN` env var when building RNTester to enable TurboModule.
     ReactFeatureFlags.useTurboModules = BuildConfig.ENABLE_TURBOMODULE;
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();

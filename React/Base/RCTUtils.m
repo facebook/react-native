@@ -167,8 +167,12 @@ id RCTJSONClean(id object)
   static dispatch_once_t onceToken;
   static NSSet<Class> *validLeafTypes;
   dispatch_once(&onceToken, ^{
-    validLeafTypes =
-        [[NSSet alloc] initWithArray:@ [[NSString class], [NSMutableString class], [NSNumber class], [NSNull class], ]];
+    validLeafTypes = [[NSSet alloc] initWithArray:@[
+      [NSString class],
+      [NSMutableString class],
+      [NSNumber class],
+      [NSNull class],
+    ]];
   });
 
   if ([validLeafTypes containsObject:[object classForCoder]]) {

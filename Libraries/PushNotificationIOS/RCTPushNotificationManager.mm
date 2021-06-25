@@ -12,7 +12,6 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
 
 #import "RCTPushNotificationPlugins.h"
@@ -472,6 +471,14 @@ RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
   }];
 }
 
+RCT_EXPORT_METHOD(getAuthorizationStatus:(RCTResponseSenderBlock)callback)
+{
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings)  {
+    callback(@[@(settings.authorizationStatus)]);
+  }];
+}
+
 #else // TARGET_OS_UIKITFORMAC
 
 RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString *)notificationId fetchResult:(NSString *)fetchResult)
@@ -548,6 +555,11 @@ RCT_EXPORT_METHOD(removeDeliveredNotifications:(NSArray<NSString *> *)identifier
 }
 
 RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
+{
+  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
+}
+
+RCT_EXPORT_METHOD(getAuthorizationStatus:(RCTResponseSenderBlock)callback)
 {
   RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
 }
