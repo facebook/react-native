@@ -191,9 +191,10 @@ TEST(RawPropsTest, handleRawPropsSingleIntGetManyTimes) {
 }
 
 TEST(RawPropsTest, handleRawPropsPrimitiveTypes) {
-  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  const auto &raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue",
+          (float)66.67)("stringValue", "helloworld")("boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -209,9 +210,10 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypes) {
 }
 
 TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetTwice) {
-  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  const auto &raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue",
+          (float)66.67)("stringValue", "helloworld")("boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -235,9 +237,10 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetTwice) {
 }
 
 TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetOutOfOrder) {
-  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  const auto &raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue",
+          (float)66.67)("stringValue", "helloworld")("boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();

@@ -188,8 +188,9 @@ export function FlatList_onViewableItemsChanged(props: {
   viewabilityConfig: ViewabilityConfig,
   offScreen?: ?boolean,
   horizontal?: ?boolean,
+  useScrollRefScroll?: ?boolean,
 }): React.Node {
-  const {viewabilityConfig, offScreen, horizontal} = props;
+  const {viewabilityConfig, offScreen, horizontal, useScrollRefScroll} = props;
   const [output, setOutput] = React.useState('');
   const onViewableItemsChanged = React.useCallback(
     info =>
@@ -207,9 +208,19 @@ export function FlatList_onViewableItemsChanged(props: {
     horizontal,
   };
 
+  const ref = React.useRef(null);
+  const onTest =
+    useScrollRefScroll === true
+      ? () => {
+          ref?.current?.getScrollResponder()?.scrollToEnd();
+        }
+      : null;
+
   return (
     <FlatListExampleWithForwardedRef
+      ref={ref}
       exampleProps={exampleProps}
+      onTest={onTest}
       testOutput={output}>
       {offScreen === true ? <View style={styles.offScreen} /> : null}
     </FlatListExampleWithForwardedRef>
@@ -230,7 +241,7 @@ const FlatListExampleWithForwardedRef = React.forwardRef(
       <View style={styles.container}>
         {props.testOutput != null ? (
           <View testID="test_container" style={styles.testContainer}>
-            <Text numberOfLines={1} testID="output">
+            <Text style={styles.output} numberOfLines={1} testID="output">
               {props.testOutput}
             </Text>
             {props.onTest != null ? (
@@ -290,11 +301,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#f2f2f7ff',
-    padding: 4,
     height: 40,
   },
   output: {
     fontSize: 12,
+    width: '80%',
   },
   separator: {
     height: 12,

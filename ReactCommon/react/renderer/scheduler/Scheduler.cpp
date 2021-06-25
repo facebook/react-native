@@ -13,10 +13,12 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/Constants.h>
+#include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/templateprocessor/UITemplateProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -44,9 +46,7 @@ Scheduler::Scheduler(
       std::make_shared<better::optional<EventDispatcher const>>();
 
   auto uiManager = std::make_shared<UIManager>(
-      runtimeExecutor_,
-      schedulerToolbox.backgroundExecutor,
-      schedulerToolbox.garbageCollectionTrigger);
+      runtimeExecutor_, schedulerToolbox.backgroundExecutor);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -54,11 +54,12 @@ Scheduler::Scheduler(
                        jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
                        const std::string &type,
+                       ReactEventPriority priority,
                        const ValueFactory &payloadFactory) {
     uiManager->visitBinding(
         [&](UIManagerBinding const &uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
-              runtime, eventTarget, type, payloadFactory);
+              runtime, eventTarget, type, priority, payloadFactory);
         },
         runtime);
   };
@@ -67,14 +68,22 @@ Scheduler::Scheduler(
     uiManager->updateState(stateUpdate);
   };
 
+#ifdef ANDROID
+  auto unbatchedQueuesOnly =
+      reactNativeConfig_->getBool("react_fabric:unbatched_queues_only_android");
+#else
+  auto unbatchedQueuesOnly =
+      reactNativeConfig_->getBool("react_fabric:unbatched_queues_only_ios");
+#endif
+
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
-      eventPipe,
-      statePipe,
+      EventQueueProcessor(eventPipe, statePipe),
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox);
+      eventOwnerBox,
+      unbatchedQueuesOnly);
 
   // Casting to `std::shared_ptr<EventDispatcher const>`.
   auto eventDispatcher =
@@ -86,9 +95,21 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
+#ifdef ANDROID
+  auto asyncMeasure =
+      reactNativeConfig_->getBool("react_fabric:enable_async_measure_android");
+#else
+  auto asyncMeasure =
+      reactNativeConfig_->getBool("react_fabric:enable_async_measure_ios");
+#endif
+
+  runtimeExecutor_([uiManager,
+                    asyncMeasure,
+                    runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
+    auto uiManagerBinding =
+        UIManagerBinding::createAndInstallIfNeeded(runtime, runtimeExecutor);
     uiManagerBinding->attach(uiManager);
+    uiManagerBinding->setEnableAsyncMeasure(asyncMeasure);
   });
 
   auto componentDescriptorRegistryKey =
@@ -122,9 +143,6 @@ Scheduler::Scheduler(
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
-
-  uiManager->extractUIManagerBindingOnDemand_ = reactNativeConfig_->getBool(
-      "react_fabric:extract_uimanagerbinding_on_demand");
 }
 
 Scheduler::~Scheduler() {
@@ -150,9 +168,10 @@ Scheduler::~Scheduler() {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
-  react_native_assert(
-      surfaceIds.empty() &&
-      "Scheduler was destroyed with outstanding Surfaces.");
+  // TODO(T88046056): Fix Android memory leak before uncommenting changes
+  //  react_native_assert(
+  //      surfaceIds.empty() &&
+  //      "Scheduler was destroyed with outstanding Surfaces.");
 
   if (surfaceIds.empty()) {
     return;
@@ -262,14 +281,23 @@ void Scheduler::uiManagerDidFinishTransaction(
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
 }
-void Scheduler::uiManagerDidCreateShadowNode(
-    const ShadowNode::Shared &shadowNode) {
+void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
   if (delegate_) {
-    auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getSurfaceId(), shadowView);
+        shadowNode.getSurfaceId(), shadowNode);
+  }
+}
+
+void Scheduler::uiManagerDidCloneShadowNode(
+    const ShadowNode &oldShadowNode,
+    const ShadowNode &newShadowNode) {
+  SystraceSection s("Scheduler::uiManagerDidCloneShadowNode");
+
+  if (delegate_) {
+    delegate_->schedulerDidCloneShadowNode(
+        newShadowNode.getSurfaceId(), oldShadowNode, newShadowNode);
   }
 }
 

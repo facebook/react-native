@@ -30,6 +30,7 @@ import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MountItemDispatcher {
@@ -147,6 +148,32 @@ public class MountItemDispatcher {
 
   @UiThread
   @ThreadConfined(UI)
+  public void dispatchMountItems(Queue<MountItem> mountItems) {
+    while (!mountItems.isEmpty()) {
+      MountItem item = mountItems.poll();
+      try {
+        item.execute(mMountingManager);
+      } catch (RetryableMountingLayerException e) {
+        if (item instanceof DispatchCommandMountItem) {
+          // Only DispatchCommandMountItem supports retries
+          DispatchCommandMountItem mountItem = (DispatchCommandMountItem) item;
+          // Retrying exactly once
+          if (mountItem.getRetries() == 0) {
+            mountItem.incrementRetries();
+            // In case we haven't retried executing this item yet, execute in the next batch of
+            // items
+            dispatchCommandMountItem(mountItem);
+          }
+        } else {
+          printMountItem(
+              item, "dispatchExternalMountItems: mounting failed with " + e.getMessage());
+        }
+      }
+    }
+  }
+
+  @UiThread
+  @ThreadConfined(UI)
   /** Nothing should call this directly except for `tryDispatchMountItems`. */
   private boolean dispatchMountItems() {
     if (mReDispatchCounter == 0) {
@@ -183,7 +210,7 @@ public class MountItemDispatcher {
           printMountItem(command, "dispatchMountItems: Executing viewCommandMountItem");
         }
         try {
-          command.execute(mMountingManager);
+          executeOrEnqueue(command);
         } catch (RetryableMountingLayerException e) {
           // If the exception is marked as Retryable, we retry the viewcommand exactly once, after
           // the current batch of mount items has finished executing.
@@ -225,7 +252,7 @@ public class MountItemDispatcher {
               + preMountItemsToDispatch.size());
 
       for (PreAllocateViewMountItem preMountItem : preMountItemsToDispatch) {
-        preMountItem.execute(mMountingManager);
+        executeOrEnqueue(preMountItem);
       }
 
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -244,7 +271,7 @@ public class MountItemDispatcher {
         }
 
         try {
-          mountItem.execute(mMountingManager);
+          executeOrEnqueue(mountItem);
         } catch (Throwable e) {
           // If there's an exception, we want to log diagnostics in prod and rethrow.
           FLog.e(TAG, "dispatchMountItems: caught exception, displaying all MountItems", e);
@@ -282,19 +309,40 @@ public class MountItemDispatcher {
         }
 
         PreAllocateViewMountItem preMountItemToDispatch = mPreMountItems.poll();
-
         // If list is empty, `poll` will return null, or var will never be set
         if (preMountItemToDispatch == null) {
           break;
         }
 
-        preMountItemToDispatch.execute(mMountingManager);
+        if (ENABLE_FABRIC_LOGS) {
+          printMountItem(
+              preMountItemToDispatch,
+              "dispatchPreMountItems: Dispatching PreAllocateViewMountItem");
+        }
+
+        executeOrEnqueue(preMountItemToDispatch);
       }
     } finally {
       mInDispatch = false;
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  private void executeOrEnqueue(MountItem item) {
+    if (mMountingManager.isWaitingForViewAttach(item.getSurfaceId())) {
+      if (ENABLE_FABRIC_LOGS) {
+        FLog.e(
+            TAG,
+            "executeOrEnqueue: Item execution delayed, surface %s is not ready yet",
+            item.getSurfaceId());
+      }
+      SurfaceMountingManager surfaceMountingManager =
+          mMountingManager.getSurfaceManager(item.getSurfaceId());
+      surfaceMountingManager.executeOnViewAttach(item);
+    } else {
+      item.execute(mMountingManager);
+    }
   }
 
   @Nullable

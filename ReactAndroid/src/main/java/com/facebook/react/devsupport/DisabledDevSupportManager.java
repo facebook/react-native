@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -130,6 +131,9 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public void reloadJSFromServer(String bundleURL) {}
+
+  @Override
+  public void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {}
 
   @Override
   public void loadSplitBundleFromServer(String bundlePath, DevSplitBundleCallback callback) {}

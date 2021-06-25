@@ -15,7 +15,6 @@ namespace facebook {
 namespace react {
 
 using Status = SurfaceHandler::Status;
-using DisplayMode = SurfaceHandler::DisplayMode;
 
 SurfaceHandler::SurfaceHandler(
     std::string const &moduleName,
@@ -77,7 +76,10 @@ void SurfaceHandler::start() const noexcept {
     link_.shadowTree = shadowTree.get();
 
     link_.uiManager->startSurface(
-        std::move(shadowTree), parameters.moduleName, parameters.props);
+        std::move(shadowTree),
+        parameters.moduleName,
+        parameters.props,
+        parameters_.displayMode);
 
     link_.status = Status::Running;
 
@@ -120,6 +122,12 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
     if (link_.status != Status::Running) {
       return;
     }
+
+    link_.uiManager->setSurfaceProps(
+        parameters_.surfaceId,
+        parameters_.moduleName,
+        parameters_.props,
+        parameters_.displayMode);
 
     applyDisplayMode(displayMode);
   }
@@ -278,9 +286,11 @@ void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
 }
 
 SurfaceHandler::~SurfaceHandler() noexcept {
-  react_native_assert(
-      link_.status == Status::Unregistered &&
-      "`SurfaceHandler` must be unregistered (or moved-from) before deallocation.");
+  // TODO(T88046056): Fix Android memory leak before uncommenting changes
+  //  react_native_assert(
+  //      link_.status == Status::Unregistered &&
+  //      "`SurfaceHandler` must be unregistered (or moved-from) before
+  //      deallocation.");
 }
 
 } // namespace react

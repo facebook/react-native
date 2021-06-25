@@ -71,6 +71,7 @@ class Animation {
         this.__nativeId,
         animatedValue.__getNativeTag(),
         this.__getNativeAnimationConfig(),
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this.__debouncedOnEnd.bind(this),
       );
     } catch (e) {

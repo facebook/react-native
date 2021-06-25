@@ -26,18 +26,18 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
 }
 
 /*
- * Optimized hit-testing
+ * Enable fix for data race between state and scroll event.
  */
-static BOOL RCTExperimentOptimizedHitTesting = NO;
+static BOOL RCTExperimentScrollViewEventRaceFix = NO;
 
-BOOL RCTExperimentGetOptimizedHitTesting()
+BOOL RCTExperimentGetScrollViewEventRaceFix()
 {
-  return RCTExperimentOptimizedHitTesting;
+  return RCTExperimentScrollViewEventRaceFix;
 }
 
-void RCTExperimentSetOptimizedHitTesting(BOOL value)
+void RCTExperimentSetScrollViewEventRaceFix(BOOL value)
 {
-  RCTExperimentOptimizedHitTesting = value;
+  RCTExperimentScrollViewEventRaceFix = value;
 }
 
 /*
@@ -53,19 +53,4 @@ BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
 void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
   RCTExperimentPreemptiveViewAllocationDisabled = value;
-}
-
-/*
- * Release resources when app enters background
- */
-static BOOL RCTExperimentReleaseResourcesWhenBackgrounded = NO;
-
-BOOL RCTExperimentGetReleaseResourcesWhenBackgrounded()
-{
-  return RCTExperimentReleaseResourcesWhenBackgrounded;
-}
-
-void RCTExperimentSetReleaseResourcesWhenBackgrounded(BOOL value)
-{
-  RCTExperimentReleaseResourcesWhenBackgrounded = value;
 }

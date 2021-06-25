@@ -18,19 +18,13 @@ RCT_EXTERN BOOL RCTExperimentGetOnDemandViewMounting(void);
 RCT_EXTERN void RCTExperimentSetOnDemandViewMounting(BOOL value);
 
 /*
- * It's an experimental feature that improves performance of hit-testing.
+ * Enables a fix for data race between state and scroll event.
  */
-RCT_EXTERN BOOL RCTExperimentGetOptimizedHitTesting(void);
-RCT_EXTERN void RCTExperimentSetOptimizedHitTesting(BOOL value);
+RCT_EXTERN BOOL RCTExperimentGetScrollViewEventRaceFix(void);
+RCT_EXTERN void RCTExperimentSetScrollViewEventRaceFix(BOOL value);
 
 /*
  * Preemptive View Allocation
  */
 RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);
 RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);
-
-/*
- * Release resources when app enters background
- */
-RCT_EXTERN BOOL RCTExperimentGetReleaseResourcesWhenBackgrounded(void);
-RCT_EXTERN void RCTExperimentSetReleaseResourcesWhenBackgrounded(BOOL value);

@@ -124,6 +124,19 @@ inline static SurfaceId surfaceIdFromValue(
   return (SurfaceId)value.getNumber();
 }
 
+inline static int displayModeToInt(DisplayMode const value) {
+  // the result of this method should be in sync with
+  // Libraries/ReactNative/DisplayMode.js
+  switch (value) {
+    case DisplayMode::Visible:
+      return 1;
+    case DisplayMode::Suspended:
+      return 2;
+    case DisplayMode::Hidden:
+      return 3;
+  }
+}
+
 inline static std::string stringFromValue(
     jsi::Runtime &runtime,
     jsi::Value const &value) {

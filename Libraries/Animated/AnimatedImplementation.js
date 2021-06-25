@@ -706,6 +706,4 @@ module.exports = {
    * Expose Event class, so it can be used as a type for type checkers.
    */
   Event: AnimatedEvent,
-
-  __PropsOnlyForTests: AnimatedProps,
 };

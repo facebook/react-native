@@ -75,7 +75,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNode;
   }
 
-  UnsharedShadowNode cloneShadowNode(
+  ShadowNode::Unshared cloneShadowNode(
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment) const override {
     react_native_assert(
@@ -183,7 +183,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
  protected:
-  virtual void adopt(UnsharedShadowNode shadowNode) const {
+  virtual void adopt(ShadowNode::Unshared const &shadowNode) const {
     // Default implementation does nothing.
     react_native_assert(
         shadowNode->getComponentHandle() == getComponentHandle());

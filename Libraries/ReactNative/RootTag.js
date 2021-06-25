@@ -11,7 +11,7 @@
 import * as React from 'react';
 
 // TODO: Make this into an opaque type.
-export type RootTag = number;
+export opaque type RootTag = number;
 
 export const RootTagContext: React$Context<RootTag> = React.createContext<RootTag>(
   0,
@@ -24,6 +24,6 @@ if (__DEV__) {
 /**
  * Intended to only be used by `AppContainer`.
  */
-export function createRootTag(rootTag: number): RootTag {
+export function createRootTag(rootTag: number | RootTag): RootTag {
   return rootTag;
 }

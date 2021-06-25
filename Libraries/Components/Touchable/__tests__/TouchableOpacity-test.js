@@ -11,15 +11,34 @@
 'use strict';
 
 const React = require('react');
+const ReactTestRenderer = require('react-test-renderer');
 const Text = require('../../../Text/Text');
 const TouchableOpacity = require('../TouchableOpacity');
 
-const render = require('../../../../jest/renderer');
-
 describe('TouchableOpacity', () => {
   it('renders correctly', () => {
-    const instance = render.create(
-      <TouchableOpacity style={{}}>
+    const instance = ReactTestRenderer.create(
+      <TouchableOpacity>
+        <Text>Touchable</Text>
+      </TouchableOpacity>,
+    );
+
+    expect(instance.toJSON()).toMatchSnapshot();
+  });
+
+  it('renders in disabled state when a disabled prop is passed', () => {
+    const instance = ReactTestRenderer.create(
+      <TouchableOpacity disabled={true}>
+        <Text>Touchable</Text>
+      </TouchableOpacity>,
+    );
+
+    expect(instance.toJSON()).toMatchSnapshot();
+  });
+
+  it('renders in disabled state when a key disabled in accessibilityState is passed', () => {
+    const instance = ReactTestRenderer.create(
+      <TouchableOpacity accessibilityState={{disabled: true}}>
         <Text>Touchable</Text>
       </TouchableOpacity>,
     );

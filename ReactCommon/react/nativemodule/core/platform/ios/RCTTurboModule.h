@@ -101,19 +101,8 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 } // namespace facebook
 
 @protocol RCTTurboModule <NSObject>
-@optional
-/**
- * Used by TurboModules to get access to other TurboModules.
- *
- * Usage:
- * Place `@synthesize turboModuleRegistry = _turboModuleRegistry`
- * in the @implementation section of your TurboModule.
- */
-@property (nonatomic, weak) id<RCTTurboModuleRegistry> turboModuleRegistry;
-
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params;
-
 @end
 
 /**
