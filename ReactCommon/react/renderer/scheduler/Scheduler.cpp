@@ -13,6 +13,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/Constants.h>
+#include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
@@ -53,11 +54,12 @@ Scheduler::Scheduler(
                        jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
                        const std::string &type,
+                       ReactEventPriority priority,
                        const ValueFactory &payloadFactory) {
     uiManager->visitBinding(
         [&](UIManagerBinding const &uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
-              runtime, eventTarget, type, payloadFactory);
+              runtime, eventTarget, type, priority, payloadFactory);
         },
         runtime);
   };
@@ -77,8 +79,7 @@ Scheduler::Scheduler(
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
-      eventPipe,
-      statePipe,
+      EventQueueProcessor(eventPipe, statePipe),
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
       eventOwnerBox,
@@ -94,15 +95,21 @@ Scheduler::Scheduler(
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
+#ifdef ANDROID
+  auto asyncMeasure =
+      reactNativeConfig_->getBool("react_fabric:enable_async_measure_android");
+#else
+  auto asyncMeasure =
+      reactNativeConfig_->getBool("react_fabric:enable_async_measure_ios");
+#endif
+
   runtimeExecutor_([uiManager,
-                    runtimeScheduler = schedulerToolbox.runtimeScheduler](
-                       jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
+                    asyncMeasure,
+                    runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
+    auto uiManagerBinding =
+        UIManagerBinding::createAndInstallIfNeeded(runtime, runtimeExecutor);
     uiManagerBinding->attach(uiManager);
-    if (runtimeScheduler) {
-      RuntimeSchedulerBinding::createAndInstallIfNeeded(
-          runtime, runtimeScheduler);
-    }
+    uiManagerBinding->setEnableAsyncMeasure(asyncMeasure);
   });
 
   auto componentDescriptorRegistryKey =
@@ -130,14 +137,11 @@ Scheduler::Scheduler(
 #ifdef ANDROID
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
-  enableNewDiffer_ = reactNativeConfig_->getBool(
-      "react_fabric:enable_new_differ_h1_2021_android");
   Constants::setPropsForwardingEnabled(reactNativeConfig_->getBool(
       "react_fabric:enable_props_forwarding_android"));
 #else
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-  enableNewDiffer_ = true;
 #endif
 }
 
@@ -200,7 +204,6 @@ Scheduler::~Scheduler() {
 void Scheduler::registerSurface(
     SurfaceHandler const &surfaceHandler) const noexcept {
   surfaceHandler.setUIManager(uiManager_.get());
-  surfaceHandler.setEnableNewDiffer(enableNewDiffer_);
 }
 
 void Scheduler::unregisterSurface(
@@ -278,14 +281,23 @@ void Scheduler::uiManagerDidFinishTransaction(
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
 }
-void Scheduler::uiManagerDidCreateShadowNode(
-    const ShadowNode::Shared &shadowNode) {
+void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
   if (delegate_) {
-    auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getSurfaceId(), shadowView);
+        shadowNode.getSurfaceId(), shadowNode);
+  }
+}
+
+void Scheduler::uiManagerDidCloneShadowNode(
+    const ShadowNode &oldShadowNode,
+    const ShadowNode &newShadowNode) {
+  SystraceSection s("Scheduler::uiManagerDidCloneShadowNode");
+
+  if (delegate_) {
+    delegate_->schedulerDidCloneShadowNode(
+        newShadowNode.getSurfaceId(), oldShadowNode, newShadowNode);
   }
 }
 

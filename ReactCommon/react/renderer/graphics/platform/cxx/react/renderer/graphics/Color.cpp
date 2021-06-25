@@ -11,7 +11,7 @@ namespace facebook {
 namespace react {
 
 bool isColorMeaningful(SharedColor const &color) noexcept {
-    if (!color) {
+  if (!color) {
     return false;
   }
 

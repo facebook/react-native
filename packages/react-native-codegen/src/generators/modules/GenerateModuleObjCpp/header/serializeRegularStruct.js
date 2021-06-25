@@ -223,6 +223,7 @@ function serializeRegularStruct(
       .join('\n      '),
   });
 
+  // $FlowFixMe[missing-type-arg]
   const methods = struct.properties
     .map<string>(property => {
       const {typeAnnotation, optional, name: propName} = property;

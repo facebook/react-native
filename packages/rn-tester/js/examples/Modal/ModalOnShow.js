@@ -13,50 +13,65 @@ import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 
 function ModalOnShowOnDismiss(): React.Node {
+  const [modalShowComponent, setModalShowComponent] = React.useState(true);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [onShowCount, setOnShowCount] = React.useState(0);
   const [onDismissCount, setOnDismissCount] = React.useState(0);
 
   return (
     <View style={styles.container}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onShow={() => {
-          setOnShowCount(onShowCount + 1);
-        }}
-        onDismiss={() => {
-          setOnDismissCount(onDismissCount + 1);
-        }}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}>
-        <View style={[styles.centeredView, styles.modalBackdrop]}>
-          <View style={styles.modalView}>
-            <Text testID="modal-on-show-count">
-              onShow is called {onShowCount} times
-            </Text>
-            <Text testID="modal-on-dismiss-count">
-              onDismiss is called {onDismissCount} times
-            </Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(false)}>
-              <Text testID="dismiss-modal" style={styles.textStyle}>
-                Hide Modal
+      {modalShowComponent && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onShow={() => {
+            setOnShowCount(onShowCount + 1);
+          }}
+          onDismiss={() => {
+            setOnDismissCount(onDismissCount + 1);
+          }}
+          onRequestClose={() => {
+            setModalVisible(false);
+          }}>
+          <View style={[styles.centeredView, styles.modalBackdrop]}>
+            <View style={styles.modalView}>
+              <Text testID="modal-on-show-count">
+                onShow is called {onShowCount} times
               </Text>
-            </Pressable>
+              <Text testID="modal-on-dismiss-count">
+                onDismiss is called {onDismissCount} times
+              </Text>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(false)}>
+                <Text testID="dismiss-modal" style={styles.textStyle}>
+                  Hide modal by setting visible to false
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalShowComponent(false)}>
+                <Text
+                  testID="dismiss-modal-by-removing-component"
+                  style={styles.textStyle}>
+                  Hide modal by removing component
+                </Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      )}
       <Text testID="on-show-count">onShow is called {onShowCount} times</Text>
       <Text testID="on-dismiss-count">
         onDismiss is called {onDismissCount} times
       </Text>
       <Pressable
         style={[styles.button, styles.buttonOpen]}
-        onPress={() => setModalVisible(true)}>
+        onPress={() => {
+          setModalShowComponent(true);
+          setModalVisible(true);
+        }}>
         <Text testID="open-modal" style={styles.textStyle}>
           Show Modal
         </Text>

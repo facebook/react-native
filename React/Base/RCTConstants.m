@@ -26,18 +26,18 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
 }
 
 /*
- * Send scroll events to Paper.
+ * Enable fix for data race between state and scroll event.
  */
-static BOOL RCTExperimentSendScrollEventToPaper = YES;
+static BOOL RCTExperimentScrollViewEventRaceFix = NO;
 
-BOOL RCTExperimentGetSendScrollEventToPaper()
+BOOL RCTExperimentGetScrollViewEventRaceFix()
 {
-  return RCTExperimentSendScrollEventToPaper;
+  return RCTExperimentScrollViewEventRaceFix;
 }
 
-void RCTExperimentSetSendScrollEventToPaper(BOOL value)
+void RCTExperimentSetScrollViewEventRaceFix(BOOL value)
 {
-  RCTExperimentSendScrollEventToPaper = value;
+  RCTExperimentScrollViewEventRaceFix = value;
 }
 
 /*

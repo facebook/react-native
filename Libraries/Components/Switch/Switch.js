@@ -12,6 +12,7 @@
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
+import useMergeRefs from '../../Utilities/useMergeRefs';
 
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,
@@ -129,7 +130,13 @@ const returnsTrue = () => true;
   export default App;
   ```
  */
-export default function Switch(props: Props): React.Node {
+
+const SwitchWithForwardedRef: React.AbstractComponent<
+  Props,
+  React.ElementRef<
+    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
+  >,
+> = React.forwardRef(function Switch(props, forwardedRef): React.Node {
   const {
     disabled,
     ios_backgroundColor,
@@ -144,9 +151,12 @@ export default function Switch(props: Props): React.Node {
   const trackColorForFalse = trackColor?.false;
   const trackColorForTrue = trackColor?.true;
 
-  const nativeSwitchRef = React.useRef<?React.ElementRef<
+  const nativeSwitchRef = React.useRef<React.ElementRef<
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-  >>(null);
+  > | null>(null);
+
+  const ref = useMergeRefs(nativeSwitchRef, forwardedRef);
+
   const [native, setNative] = React.useState({value: null});
 
   const handleChange = (event: SwitchChangeEvent) => {
@@ -192,7 +202,7 @@ export default function Switch(props: Props): React.Node {
         onChange={handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}
-        ref={nativeSwitchRef}
+        ref={ref}
       />
     );
   } else {
@@ -224,8 +234,10 @@ export default function Switch(props: Props): React.Node {
         onChange={handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}
-        ref={nativeSwitchRef}
+        ref={ref}
       />
     );
   }
-}
+});
+
+export default SwitchWithForwardedRef;

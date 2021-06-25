@@ -17,27 +17,22 @@ namespace facebook {
 namespace react {
 
 EventDispatcher::EventDispatcher(
-    EventPipe const &eventPipe,
-    StatePipe const &statePipe,
+    EventQueueProcessor eventProcessor,
     EventBeat::Factory const &synchonousEventBeatFactory,
     EventBeat::Factory const &asynchonousEventBeatFactory,
     EventBeat::SharedOwnerBox const &ownerBox,
     bool unbatchedQueuesOnly)
     : synchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
-          eventPipe,
-          statePipe,
+          eventProcessor,
           synchonousEventBeatFactory(ownerBox))),
       synchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
-          eventPipe,
-          statePipe,
+          eventProcessor,
           synchonousEventBeatFactory(ownerBox))),
       asynchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
-          eventPipe,
-          statePipe,
+          eventProcessor,
           asynchonousEventBeatFactory(ownerBox))),
       asynchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
-          eventPipe,
-          statePipe,
+          eventProcessor,
           asynchonousEventBeatFactory(ownerBox))),
       unbatchedQueuesOnly_(unbatchedQueuesOnly) {}
 

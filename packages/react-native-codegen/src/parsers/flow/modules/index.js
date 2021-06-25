@@ -219,6 +219,7 @@ function translateTypeAnnotation(
     case 'ObjectTypeAnnotation': {
       const objectTypeAnnotation = {
         type: 'ObjectTypeAnnotation',
+        // $FlowFixMe[missing-type-arg]
         properties: (typeAnnotation.properties: Array<$FlowFixMe>)
           .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
             property => {
@@ -669,6 +670,7 @@ function buildModuleSchema(
     }
   });
 
+  // $FlowFixMe[missing-type-arg]
   return (moduleSpec.body.properties: $ReadOnlyArray<$FlowFixMe>)
     .filter(property => property.type === 'ObjectTypeProperty')
     .map<?{

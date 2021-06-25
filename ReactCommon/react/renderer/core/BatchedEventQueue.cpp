@@ -11,10 +11,9 @@ namespace facebook {
 namespace react {
 
 BatchedEventQueue::BatchedEventQueue(
-    EventPipe eventPipe,
-    StatePipe statePipe,
+    EventQueueProcessor eventProcessor,
     std::unique_ptr<EventBeat> eventBeat)
-    : EventQueue(eventPipe, statePipe, std::move(eventBeat)) {}
+    : EventQueue(std::move(eventProcessor), std::move(eventBeat)) {}
 
 void BatchedEventQueue::onEnqueue() const {
   eventBeat_->request();
