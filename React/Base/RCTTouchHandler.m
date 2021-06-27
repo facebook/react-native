@@ -172,7 +172,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   // TODO: force for a 'normal' touch is usually 1.0;
   // should we expose a `normalTouchForce` constant somewhere (which would
   // have a value of `1.0 / nativeTouch.maximumPossibleForce`)?
-  if (RCTForceTouchAvailable()) {
+  if (RCTForceTouchAvailable() || nativeTouch.type == UITouchTypePencil) {
     reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
   }
 }
