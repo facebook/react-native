@@ -1073,7 +1073,9 @@ function InternalTextInput(props: Props): React.Node {
     () => ({
       onPress: (event: PressEvent) => {
         if (props.editable !== false) {
-          nullthrows(inputRef.current).focus();
+          if (inputRef.current != null) {
+            inputRef.current.focus();
+          }
         }
       },
       onPressIn: props.onPressIn,

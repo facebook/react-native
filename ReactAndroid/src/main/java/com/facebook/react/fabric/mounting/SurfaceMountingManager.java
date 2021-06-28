@@ -805,7 +805,13 @@ public class SurfaceMountingManager {
       viewState = new ViewState(reactTag, null, null);
       mTagToViewState.put(reactTag, viewState);
     }
+    EventEmitterWrapper previousEventEmitterWrapper = viewState.mEventEmitter;
     viewState.mEventEmitter = eventEmitter;
+
+    // Immediately destroy native side of wrapper, instead of waiting for Java GC.
+    if (previousEventEmitterWrapper != eventEmitter && previousEventEmitterWrapper != null) {
+      previousEventEmitterWrapper.destroy();
+    }
   }
 
   @UiThread
