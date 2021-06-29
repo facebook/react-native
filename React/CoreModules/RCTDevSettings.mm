@@ -18,6 +18,7 @@
 #import <React/RCTProfile.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
+#import <atomic>
 
 #import "CoreModulesPlugins.h"
 
@@ -113,10 +114,15 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
 
 @end
 
+#if ENABLE_PACKAGER_CONNECTION
+static RCTHandlerToken reloadToken;
+static std::atomic<int> numInitializedModules{0};
+#endif
+
 @interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec, RCTDevSettingsInspectable> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
-  RCTHandlerToken _reloadToken;
+  RCTHandlerToken _bridgeExecutorOverrideToken;
 #endif
 }
 
@@ -171,11 +177,19 @@ RCT_EXPORT_MODULE()
 #if ENABLE_PACKAGER_CONNECTION
   if (self.bridge) {
     RCTBridge *__weak weakBridge = self.bridge;
-    _reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
+    _bridgeExecutorOverrideToken = [[RCTPackagerConnection sharedPackagerConnection]
         addNotificationHandler:^(id params) {
           if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
             weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
           }
+        }
+                         queue:dispatch_get_main_queue()
+                     forMethod:@"reload"];
+  }
+
+  if (numInitializedModules++ == 0) {
+    reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
+        addNotificationHandler:^(id params) {
           RCTTriggerReloadCommandListeners(@"Global hotkey");
         }
                          queue:dispatch_get_main_queue()
@@ -214,7 +228,13 @@ RCT_EXPORT_MODULE()
 {
   [super invalidate];
 #if ENABLE_PACKAGER_CONNECTION
-  [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_reloadToken];
+  if (self.bridge) {
+    [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_bridgeExecutorOverrideToken];
+  }
+
+  if (--numInitializedModules == 0) {
+    [[RCTPackagerConnection sharedPackagerConnection] removeHandler:reloadToken];
+  }
 #endif
 }
 
