@@ -72,7 +72,7 @@ public final class BlobProvider extends ContentProvider {
       throw new RuntimeException("No blob module associated with BlobProvider");
     }
 
-    byte[] data = blobModule.resolve(uri);
+    final byte[] data = blobModule.resolve(uri);
     if (data == null) {
       throw new FileNotFoundException("Cannot open " + uri.toString() + ", blob not found.");
     }
@@ -84,7 +84,7 @@ public final class BlobProvider extends ContentProvider {
       return null;
     }
     ParcelFileDescriptor readSide = pipe[0];
-    ParcelFileDescriptor writeSide = pipe[1];
+    final ParcelFileDescriptor writeSide = pipe[1];
 
     Thread writer = new Thread() {
       public void run() {
