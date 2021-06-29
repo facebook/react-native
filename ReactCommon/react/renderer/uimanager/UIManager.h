@@ -33,8 +33,7 @@ class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
       RuntimeExecutor const &runtimeExecutor,
-      BackgroundExecutor const &backgroundExecutor,
-      GarbageCollectionTrigger const &garbageCollectionTrigger);
+      BackgroundExecutor const &backgroundExecutor);
 
   ~UIManager();
 
@@ -185,8 +184,8 @@ class UIManager final : public ShadowTreeDelegate {
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  UIManagerDelegate *delegate_;
-  UIManagerAnimationDelegate *animationDelegate_{nullptr};
+  std::atomic<UIManagerDelegate *> delegate_;
+  std::atomic<UIManagerAnimationDelegate *> animationDelegate_{nullptr};
   RuntimeExecutor const runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor const backgroundExecutor_{};

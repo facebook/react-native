@@ -98,11 +98,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   auto state1 = shadowNodeAB->getState();
   auto shadowTreeDelegate = DummyShadowTreeDelegate{};
   ShadowTree shadowTree{
-      SurfaceId{11},
-      LayoutConstraints{},
-      LayoutContext{},
-      shadowTreeDelegate,
-      true};
+      SurfaceId{11}, LayoutConstraints{}, LayoutContext{}, shadowTreeDelegate};
 
   shadowTree.commit(
       [&](RootShadowNode const &oldRootShadowNode) {

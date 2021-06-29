@@ -73,8 +73,6 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
           componentDescriptorParameters);
   providerRegistry->add(
       concreteComponentDescriptorProvider<ViewComponentDescriptor>());
-  providerRegistry->add(
-      concreteComponentDescriptorProvider<RootComponentDescriptor>());
 
   // Create Animation Driver
   auto animationDriver =
@@ -126,7 +124,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
     viewTree.mutate(
-        calculateShadowViewMutations(*emptyRootNode, *currentRootNode, true));
+        calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
     for (int j = 0; j < stages; j++) {
       auto nextRootNode = currentRootNode;
@@ -153,12 +151,19 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
       // Calculating mutations.
       auto originalMutations =
-          calculateShadowViewMutations(*currentRootNode, *nextRootNode, true);
+          calculateShadowViewMutations(*currentRootNode, *nextRootNode);
 
       // If tree randomization produced no changes in the form of mutations,
       // don't bother trying to animate because this violates a bunch of our
       // assumptions in this test
       if (originalMutations.size() == 0) {
+        continue;
+      }
+
+      // If we only mutated the root... also don't bother
+      if (originalMutations.size() == 1 &&
+          (originalMutations[0].oldChildShadowView.tag == 1 ||
+           originalMutations[0].newChildShadowView.tag == 1)) {
         continue;
       }
 

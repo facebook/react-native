@@ -207,7 +207,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
 
     kwargs["deps"] = kwargs.pop("deps", []) + [
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
-        react_native_dep("third-party/java/robolectric/4.4:robolectric"),
+        react_native_dep("third-party/java/robolectric:robolectric"),
         react_native_tests_target("resources:robolectric"),
         react_native_xplat_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock2"),
     ]
@@ -216,8 +216,8 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
         "-XX:+UseConcMarkSweepGC",  # required by -XX:+CMSClassUnloadingEnabled
         "-XX:+CMSClassUnloadingEnabled",
         "-XX:ReservedCodeCacheSize=150M",
-        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.4",
-        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.4/*.jar",
+        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric",
+        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/*.jar",
         "-Drobolectric.logging.enabled=true",
         "-XX:MaxPermSize=620m",
         "-Drobolectric.offline=true",

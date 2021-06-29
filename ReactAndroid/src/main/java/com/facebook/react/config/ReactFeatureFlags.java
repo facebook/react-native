@@ -18,7 +18,6 @@ import com.facebook.proguard.annotations.DoNotStripAny;
  */
 @DoNotStripAny
 public class ReactFeatureFlags {
-
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
@@ -39,38 +38,19 @@ public class ReactFeatureFlags {
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
-  /**
-   * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
-   * remove this when bug is fixed
-   */
-  public static boolean enableTransitionLayoutOnlyViewCleanup = false;
-
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
-
-  /** Feature flag to configure eager initialization classes of Fabric */
-  public static boolean eagerInitializeFabricClasses = false;
 
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
 
+  public static boolean enableRuntimeScheduler = false;
+
   /** Enables a more aggressive cleanup during destruction of ReactContext */
   public static boolean enableReactContextCleanupFix = false;
 
-  /** Enables JS Responder in Fabric */
-  public static boolean enableJSResponder = false;
-
-  /** An interface used to compute flags on demand. */
-  public interface FlagProvider {
-    boolean get();
-  }
-
-  /** Should the RuntimeExecutor call JSIExecutor::flush()? */
-  private static FlagProvider enableRuntimeExecutorFlushingProvider = null;
-
-  public static void setEnableRuntimeExecutorFlushingFlagProvider(FlagProvider provider) {
-    enableRuntimeExecutorFlushingProvider = provider;
-  }
+  /** Feature flag to configure eager initialization of MapBuffer So file */
+  public static boolean enableEagerInitializeMapBufferSoFile = false;
 
   private static boolean mapBufferSerializationEnabled = false;
 
@@ -83,14 +63,23 @@ public class ReactFeatureFlags {
     return mapBufferSerializationEnabled;
   }
 
-  public static boolean enableRuntimeExecutorFlushing() {
-    if (enableRuntimeExecutorFlushingProvider != null) {
-      return enableRuntimeExecutorFlushingProvider.get();
-    }
-
-    return false;
-  }
-
   /** Enables Fabric for LogBox */
   public static boolean enableFabricInLogBox = false;
+
+  public static boolean enableLockFreeEventDispatcher = false;
+
+  public static boolean enableAggressiveEventEmitterCleanup = false;
+
+  //
+  // ScrollView C++ UpdateState vs onScroll race fixes
+  //
+
+  /* Enables a "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter */
+  public static boolean enableScrollViewStateEventRaceFix = false;
+
+  /* Enables another "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter. Races a StateUpdate with every onScroll event. */
+  public static boolean enableScrollViewStateEventAlwaysRace = false;
+
+  /* Configure a min scroll delta for UpdateState to be called while still actively scrolling. */
+  public static int scrollViewUpdateStateMinScrollDelta = 0;
 }

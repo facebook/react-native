@@ -18,25 +18,21 @@
 
 namespace facebook::react {
 
-static std::unique_ptr<LeakChecker> constructLeakChecker(
-    RuntimeExecutor const &runtimeExecutor,
-    GarbageCollectionTrigger const &garbageCollectionTrigger) {
-  if (garbageCollectionTrigger) {
-    return std::make_unique<LeakChecker>(
-        runtimeExecutor, garbageCollectionTrigger);
-  } else {
-    return {};
-  }
+static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
+    RuntimeExecutor const &runtimeExecutor) {
+#ifdef REACT_NATIVE_DEBUG
+  return std::make_unique<LeakChecker>(runtimeExecutor);
+#else
+  return {};
+#endif
 }
 
 UIManager::UIManager(
     RuntimeExecutor const &runtimeExecutor,
-    BackgroundExecutor const &backgroundExecutor,
-    GarbageCollectionTrigger const &garbageCollectionTrigger)
+    BackgroundExecutor const &backgroundExecutor)
     : runtimeExecutor_(runtimeExecutor),
       backgroundExecutor_(backgroundExecutor),
-      leakChecker_(
-          constructLeakChecker(runtimeExecutor, garbageCollectionTrigger)) {}
+      leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
 
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
@@ -76,8 +72,9 @@ SharedShadowNode UIManager::createNode(
       },
       family);
 
-  if (delegate_) {
-    delegate_->uiManagerDidCreateShadowNode(shadowNode);
+  auto delegate = delegate_.load();
+  if (delegate) {
+    delegate->uiManagerDidCreateShadowNode(*shadowNode.get());
   }
   if (leakChecker_) {
     leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
@@ -102,6 +99,12 @@ SharedShadowNode UIManager::cloneNode(
                    : ShadowNodeFragment::propsPlaceholder(),
           /* .children = */ children,
       });
+
+  auto delegate = delegate_.load();
+  if (delegate) {
+    delegate->uiManagerDidCloneShadowNode(
+        *shadowNode.get(), *clonedShadowNode.get());
+  }
 
   return clonedShadowNode;
 }
@@ -139,8 +142,9 @@ void UIManager::setIsJSResponder(
     ShadowNode::Shared const &shadowNode,
     bool isJSResponder,
     bool blockNativeResponder) const {
-  if (delegate_) {
-    delegate_->uiManagerDidSetIsJSResponder(
+  auto delegate = delegate_.load();
+  if (delegate) {
+    delegate->uiManagerDidSetIsJSResponder(
         shadowNode, isJSResponder, blockNativeResponder);
   }
 }
@@ -321,16 +325,18 @@ void UIManager::dispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
     folly::dynamic const args) const {
-  if (delegate_) {
-    delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
+  auto delegate = delegate_.load();
+  if (delegate) {
+    delegate->uiManagerDidDispatchCommand(shadowNode, commandName, args);
   }
 }
 
 void UIManager::sendAccessibilityEvent(
     const ShadowNode::Shared &shadowNode,
     std::string const &eventType) {
-  if (delegate_) {
-    delegate_->uiManagerDidSendAccessibilityEvent(shadowNode, eventType);
+  auto delegate = delegate_.load();
+  if (delegate) {
+    delegate->uiManagerDidSendAccessibilityEvent(shadowNode, eventType);
   }
 }
 
@@ -339,8 +345,9 @@ void UIManager::configureNextLayoutAnimation(
     RawValue const &config,
     jsi::Value const &successCallback,
     jsi::Value const &failureCallback) const {
-  if (animationDelegate_) {
-    animationDelegate_->uiManagerDidConfigureNextLayoutAnimation(
+  auto animationDelegate = animationDelegate_.load();
+  if (animationDelegate) {
+    animationDelegate->uiManagerDidConfigureNextLayoutAnimation(
         runtime,
         config,
         std::move(successCallback),
@@ -416,8 +423,9 @@ void UIManager::shadowTreeDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) const {
   SystraceSection s("UIManager::shadowTreeDidFinishTransaction");
 
-  if (delegate_) {
-    delegate_->uiManagerDidFinishTransaction(mountingCoordinator);
+  auto delegate = delegate_.load();
+  if (delegate) {
+    delegate->uiManagerDidFinishTransaction(mountingCoordinator);
   }
 }
 
@@ -428,14 +436,15 @@ void UIManager::setAnimationDelegate(UIManagerAnimationDelegate *delegate) {
 }
 
 void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
-  if (animationDelegate_ != nullptr) {
-    animationDelegate_->stopSurface(surfaceId);
+  auto animationDelegate = animationDelegate_.load();
+  if (animationDelegate) {
+    animationDelegate->stopSurface(surfaceId);
   }
 }
 
 void UIManager::animationTick() {
-  if (animationDelegate_ != nullptr &&
-      animationDelegate_->shouldAnimateFrame()) {
+  auto animationDelegate = animationDelegate_.load();
+  if (animationDelegate && animationDelegate->shouldAnimateFrame()) {
     shadowTreeRegistry_.enumerate(
         [&](ShadowTree const &shadowTree, bool &stop) {
           shadowTree.notifyDelegatesOfUpdates();

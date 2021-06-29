@@ -60,6 +60,19 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
   }
 
   @Override
+  public void receiveEvent(
+      int surfaceId,
+      int targetTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      int customCoalesceKey,
+      @Nullable WritableMap event) {
+    // The two additional params here, `canCoalesceEvent` and `customCoalesceKey`, have no
+    // meaning outside of Fabric.
+    receiveEvent(surfaceId, targetTag, eventName, event);
+  }
+
+  @Override
   public void receiveTouches(
       String eventName, WritableArray touches, WritableArray changedIndices) {
     Assertions.assertCondition(touches.size() > 0);

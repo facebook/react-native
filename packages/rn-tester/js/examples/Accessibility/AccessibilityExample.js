@@ -22,6 +22,7 @@ const {
   TouchableWithoutFeedback,
   Alert,
   StyleSheet,
+  Slider,
   Platform,
 } = require('react-native');
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
@@ -161,6 +162,18 @@ class AccessibilityExample extends React.Component<{}> {
           </TouchableOpacity>
         </RNTesterBlock>
 
+        <RNTesterBlock title="Disabled TouchableOpacity">
+          <TouchableOpacity
+            onPress={() => Alert.alert('Disabled Button has been pressed!')}
+            accessibilityLabel={'You are pressing Disabled TouchableOpacity'}
+            accessibilityState={{disabled: true}}>
+            <View>
+              <Text>
+                I am disabled. Clicking me will not trigger any action.
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </RNTesterBlock>
         <RNTesterBlock title="View with multiple states">
           <View
             accessible={true}
@@ -651,7 +664,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
           </View>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Button with custom accessibility actions">
+        <RNTesterBlock title="TouchableWithoutFeedback with custom accessibility actions">
           <TouchableWithoutFeedback
             accessible={true}
             accessibilityActions={[
@@ -679,9 +692,84 @@ class AccessibilityActionsExample extends React.Component<{}> {
             </View>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
+
+        <RNTesterBlock title="Button with accessibility actions">
+          <Button
+            accessible={true}
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessiblity action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}
+            onPress={() => Alert.alert('Button has been pressed!')}
+            title="Button with accessiblity action"
+          />
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Text with custom accessibility actions">
+          <Text
+            accessible={true}
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessiblity action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}>
+            Text
+          </Text>
+        </RNTesterBlock>
       </View>
     );
   }
+}
+
+function SliderAccessibilityExample(): React.Node {
+  return (
+    <View>
+      <RNTesterBlock
+        title="Disabled Slider via disabled"
+        description="Verify with TalkBack/VoiceOver announces Slider as disabled">
+        <Slider value={25} maximumValue={100} minimumValue={0} disabled />
+      </RNTesterBlock>
+      <RNTesterBlock
+        title="Disabled Slider via accessibiltyState"
+        description="Verify with TalkBack/VoiceOver announces Slider as disabled">
+        <Slider
+          value={75}
+          maximumValue={100}
+          minimumValue={0}
+          accessibilityState={{disabled: true}}
+        />
+      </RNTesterBlock>
+      <RNTesterBlock
+        title="Selected Slider"
+        description="Verify with TalkBack/VoiceOver announces Slider as selected">
+        <Slider
+          value={75}
+          maximumValue={100}
+          minimumValue={0}
+          accessibilityState={{selected: true}}
+        />
+      </RNTesterBlock>
+    </View>
+  );
 }
 
 type FakeSliderExampleState = {
@@ -956,6 +1044,12 @@ exports.examples = [
     title: 'Accessibility action examples',
     render(): React.Element<typeof AccessibilityActionsExample> {
       return <AccessibilityActionsExample />;
+    },
+  },
+  {
+    title: 'Slider Accessibility Examples',
+    render(): React.Element<typeof SliderAccessibilityExample> {
+      return <SliderAccessibilityExample />;
     },
   },
   {

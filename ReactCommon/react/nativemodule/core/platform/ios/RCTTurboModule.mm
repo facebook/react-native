@@ -251,20 +251,17 @@ jsi::Value ObjCTurboModule::createPromise(
         __block BOOL resolveWasCalled = NO;
         __block BOOL rejectWasCalled = NO;
 
-        RCTBlockGuard *blockGuard;
-        if (RCTTurboModulePromisesBlockGuardEnabled()) {
-          blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
-            auto strongResolveWrapper = weakResolveWrapper.lock();
-            if (strongResolveWrapper) {
-              strongResolveWrapper->destroy();
-            }
+        RCTBlockGuard *blockGuard = [[RCTBlockGuard alloc] initWithCleanup:^() {
+          auto strongResolveWrapper = weakResolveWrapper.lock();
+          if (strongResolveWrapper) {
+            strongResolveWrapper->destroy();
+          }
 
-            auto strongRejectWrapper = weakRejectWrapper.lock();
-            if (strongRejectWrapper) {
-              strongRejectWrapper->destroy();
-            }
-          }];
-        }
+          auto strongRejectWrapper = weakRejectWrapper.lock();
+          if (strongRejectWrapper) {
+            strongRejectWrapper->destroy();
+          }
+        }];
 
         RCTPromiseResolveBlock resolveBlock = ^(id result) {
           if (rejectWasCalled) {

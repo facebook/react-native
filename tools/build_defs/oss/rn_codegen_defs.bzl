@@ -22,6 +22,7 @@ rn_codegen_modules = _rn_codegen_modules
 
 def rn_codegen(
         name,
+        ios_assume_nonnull,
         native_module_spec_name = None,
         android_package_name = None,
         codegen_components = False,
@@ -57,6 +58,7 @@ def rn_codegen(
         rn_codegen_modules(
             name = native_module_spec_name,
             android_package_name = android_package_name,
+            ios_assume_nonnull = ios_assume_nonnull,
             schema_target = ":{}".format(module_schema_target),
             library_labels = library_labels,
         )

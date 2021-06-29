@@ -42,13 +42,12 @@ static uint16_t RCTUniqueCoalescingKeyGenerator = 0;
 
 @synthesize bridge = _bridge;
 @synthesize dispatchToJSThread = _dispatchToJSThread;
-@synthesize invokeJS = _invokeJS;
+@synthesize callableJSModules = _callableJSModules;
 
 RCT_EXPORT_MODULE()
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)initialize
 {
-  _bridge = bridge;
   _events = [NSMutableDictionary new];
   _eventQueue = [NSMutableArray new];
   _eventQueueLock = [NSLock new];
@@ -59,26 +58,14 @@ RCT_EXPORT_MODULE()
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {
-  if (_bridge) {
-    [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter"
-                    method:@"emit"
-                      args:body ? @[ name, body ] : @[ name ]
-                completion:NULL];
-  } else if (_invokeJS) {
-    _invokeJS(@"RCTNativeAppEventEmitter", @"emit", body ? @[ name, body ] : @[ name ]);
-  }
+  [_callableJSModules invokeModule:@"RCTNativeAppEventEmitter"
+                            method:@"emit"
+                          withArgs:body ? @[ name, body ] : @[ name ]];
 }
 
 - (void)sendDeviceEventWithName:(NSString *)name body:(id)body
 {
-  if (_bridge) {
-    [_bridge enqueueJSCall:@"RCTDeviceEventEmitter"
-                    method:@"emit"
-                      args:body ? @[ name, body ] : @[ name ]
-                completion:NULL];
-  } else if (_invokeJS) {
-    _invokeJS(@"RCTDeviceEventEmitter", @"emit", body ? @[ name, body ] : @[ name ]);
-  }
+  [_callableJSModules invokeModule:@"RCTDeviceEventEmitter" method:@"emit" withArgs:body ? @[ name, body ] : @[ name ]];
 }
 
 - (void)sendTextEventWithType:(RCTTextEventType)type
@@ -195,15 +182,12 @@ RCT_EXPORT_MODULE()
 
 - (void)dispatchEvent:(id<RCTEvent>)event
 {
-  if (_bridge) {
-    [_bridge enqueueJSCall:[[event class] moduleDotMethod] args:[event arguments]];
-  } else if (_invokeJS) {
-    NSString *moduleDotMethod = [[event class] moduleDotMethod];
-    NSArray<NSString *> *const components = [moduleDotMethod componentsSeparatedByString:@"."];
-    NSString *const moduleName = components[0];
-    NSString *const methodName = components[1];
-    _invokeJS(moduleName, methodName, [event arguments]);
-  }
+  NSString *moduleDotMethod = [[event class] moduleDotMethod];
+  NSArray<NSString *> *const components = [moduleDotMethod componentsSeparatedByString:@"."];
+  NSString *const moduleName = components[0];
+  NSString *const methodName = components[1];
+
+  [_callableJSModules invokeModule:moduleName method:methodName withArgs:[event arguments]];
 }
 
 - (dispatch_queue_t)methodQueue

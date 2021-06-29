@@ -18,6 +18,7 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxModule.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
@@ -606,6 +607,13 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   /**
+   * If the TurboModule conforms to RCTInitializing, invoke its initialize method.
+   */
+  if ([module respondsToSelector:@selector(initialize)]) {
+    [(id<RCTInitializing>)module initialize];
+  }
+
+  /**
    * Attach method queue to id<RCTTurboModule> object.
    * This is necessary because the id<RCTTurboModule> object can be eagerly created/initialized before the method
    * queue is required. The method queue is required for an id<RCTTurboModule> for JS -> Native calls. So, we need it
@@ -625,7 +633,8 @@ static Class getFallbackClassFromName(const char *name)
                                                                  bridge:_bridge
                                                          moduleRegistry:_moduleRegistry
                                                 viewRegistry_DEPRECATED:nil
-                                                          bundleManager:nil];
+                                                          bundleManager:nil
+                                                      callableJSModules:nil];
     [_bridge registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:data];
   }
 

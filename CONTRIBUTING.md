@@ -30,8 +30,8 @@ We use GitHub issues and pull requests to keep track of bug reports and contribu
 
 You can learn more about the contribution process in the following documents:
 
-* [Issues](https://github.com/facebook/react-native/wiki/Issues)
-* [Pull Requests](https://github.com/facebook/react-native/wiki/Pull-Requests)
+* [Issues](https://github.com/facebook/react-native/wiki/Triaging-GitHub-Issues)
+* [Pull Requests](https://github.com/facebook/react-native/wiki/Managing-Pull-Requests)
 
 We also have a thriving community of contributors who would be happy to help you get set up. You can reach out to us through [@ReactNative](http://twitter.com/reactnative) (the React Native team) and [@ReactNativeComm](http://twitter.com/reactnativecomm) (the React Native Community organization).
 
@@ -86,6 +86,7 @@ The process of proposing a change to React Native can be summarized as follows:
 8. Create a pull request to the React Native repository.
 9. Review and address comments on your pull request.
     1. A bot may comment with suggestions. Generally we ask you to resolve these first before a maintainer will review your code.
+    2. If changes are requested and addressed, please [request review](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/requesting-a-pull-request-review) to notify reviewers to take another look.
 10. If you haven't already, please complete the [Contributor License Agreement](https://github.com/facebook/react-native/wiki/Contributor-License-Agreement) ("CLA"). **[Complete your CLA here.](https://code.facebook.com/cla)**
 
 If all goes well, your pull request will be merged. If it is not merged, maintainers will do their best to explain the reason why.

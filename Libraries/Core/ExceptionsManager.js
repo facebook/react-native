@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ExtendedError} from './Devtools/parseErrorStack';
+import type {ExtendedError} from './ExtendedError';
 import type {ExceptionData} from './NativeExceptionsManager';
 
 class SyntheticError extends Error {
@@ -112,28 +112,30 @@ function reportException(
       });
     }
 
-    NativeExceptionsManager.reportException(data);
+    if (isFatal || e.type !== 'warn') {
+      NativeExceptionsManager.reportException(data);
 
-    if (__DEV__ && !global.RN$Express) {
-      if (e.preventSymbolication === true) {
-        return;
+      if (__DEV__ && !global.RN$Express) {
+        if (e.preventSymbolication === true) {
+          return;
+        }
+        const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
+        symbolicateStackTrace(stack)
+          .then(({stack: prettyStack}) => {
+            if (prettyStack) {
+              NativeExceptionsManager.updateExceptionMessage(
+                data.message,
+                prettyStack,
+                currentExceptionID,
+              );
+            } else {
+              throw new Error('The stack is null');
+            }
+          })
+          .catch(error => {
+            console.log('Unable to symbolicate stack trace: ' + error.message);
+          });
       }
-      const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
-      symbolicateStackTrace(stack)
-        .then(({stack: prettyStack}) => {
-          if (prettyStack) {
-            NativeExceptionsManager.updateExceptionMessage(
-              data.message,
-              prettyStack,
-              currentExceptionID,
-            );
-          } else {
-            throw new Error('The stack is null');
-          }
-        })
-        .catch(error => {
-          console.log('Unable to symbolicate stack trace: ' + error.message);
-        });
     }
   } else if (reportToConsole) {
     // we feed back into console.error, to make sure any methods that are
@@ -169,15 +171,17 @@ function handleException(e: mixed, isFatal: boolean) {
   }
   try {
     inExceptionHandler = true;
+    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+     * parameters */
     reportException(error, isFatal, /*reportToConsole*/ true);
   } finally {
     inExceptionHandler = false;
   }
 }
 
-function reactConsoleErrorHandler() {
+function reactConsoleErrorHandler(...args) {
   // bubble up to any original handlers
-  console._errorOriginal.apply(console, arguments);
+  console._errorOriginal(...args);
   if (!console.reportErrorsAsExceptions) {
     return;
   }
@@ -213,31 +217,35 @@ function reactConsoleErrorHandler() {
     return;
   }
 
-  if (arguments[0] && arguments[0].stack) {
+  let error;
+
+  const firstArg = args[0];
+  if (firstArg?.stack) {
     // reportException will console.error this with high enough fidelity.
-    reportException(
-      arguments[0],
-      /* isFatal */ false,
-      /*reportToConsole*/ false,
-    );
+    error = firstArg;
   } else {
     const stringifySafe = require('../Utilities/stringifySafe').default;
-    const str = Array.prototype.map
-      .call(arguments, value =>
-        typeof value === 'string' ? value : stringifySafe(value),
-      )
-      .join(' ');
-
-    if (str.slice(0, 9) === 'Warning: ') {
+    if (typeof firstArg === 'string' && firstArg.startsWith('Warning: ')) {
       // React warnings use console.error so that a stack trace is shown, but
       // we don't (currently) want these to show a redbox
       // (Note: Logic duplicated in polyfills/console.js.)
       return;
     }
-    const error: ExtendedError = new SyntheticError(str);
+    const message = args
+      .map(arg => (typeof arg === 'string' ? arg : stringifySafe(arg)))
+      .join(' ');
+
+    error = new SyntheticError(message);
     error.name = 'console.error';
-    reportException(error, /* isFatal */ false, /*reportToConsole*/ false);
   }
+
+  reportException(
+    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+     * parameters */
+    error,
+    false, // isFatal
+    false, // reportToConsole
+  );
 }
 
 /**

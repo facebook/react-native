@@ -146,6 +146,4 @@ RCT_EXTERN void RCTRegisterModule(Class);
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
-- (void)forceGarbageCollection;
-
 @end

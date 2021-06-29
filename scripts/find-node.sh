@@ -6,6 +6,12 @@
 
 set -e
 
+# Support Homebrew on M1
+HOMEBREW_M1_BIN=/opt/homebrew/bin
+if [[ -d $HOMEBREW_M1_BIN && ! $PATH =~ $HOMEBREW_M1_BIN ]]; then
+  export PATH="$HOMEBREW_M1_BIN:$PATH"
+fi
+
 # Define NVM_DIR and source the nvm.sh setup script
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 

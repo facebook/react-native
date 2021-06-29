@@ -10,6 +10,7 @@
 
 import * as React from 'react';
 import {StyleSheet, View, Text} from 'react-native';
+import {RNTesterThemeContext} from './RNTesterTheme';
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -22,9 +23,11 @@ type Props = $ReadOnly<{|
 
 export default function ExamplePage(props: Props): React.Node {
   const description = props.description ?? '';
+  const theme = React.useContext(RNTesterThemeContext);
   return (
     <>
-      <View style={styles.titleView}>
+      <View
+        style={[styles.titleView, {backgroundColor: theme.BackgroundColor}]}>
         <Text style={styles.title}>{props.title}</Text>
         <Text style={styles.description}>{description}</Text>
       </View>
@@ -35,7 +38,6 @@ export default function ExamplePage(props: Props): React.Node {
 
 const styles = StyleSheet.create({
   titleView: {
-    backgroundColor: '#F3F8FF',
     paddingHorizontal: 25,
     paddingTop: 4,
     paddingBottom: 8,
