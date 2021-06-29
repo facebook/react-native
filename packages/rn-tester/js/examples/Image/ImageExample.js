@@ -48,7 +48,7 @@ class BlobImageExample extends React.Component<
     objectURL: null,
   };
 
-  componentDidMount() {
+  UNSAFE_componentWillMount() {
     (async () => {
       const result = await fetch(this.props.url);
       const blob = await result.blob();
@@ -58,7 +58,7 @@ class BlobImageExample extends React.Component<
   }
 
   render() {
-    return this.state.objectURL ? (
+    return this.state.objectURL !== null ? (
       <Image source={{uri: this.state.objectURL}} style={styles.base} />
     ) : (
       <Text>Object URL not created yet</Text>
@@ -647,7 +647,9 @@ exports.examples = [
     description: ('If the `source` prop `uri` property is an object URL, ' +
       'then it will be resolved using `BlobProvider` (Android) or `RCTBlobManager` (iOS).': string),
     render: function(): React.Node {
-      return <BlobImageExample url={fullImage.uri} />;
+      return (
+        <BlobImageExample url="https://www.facebook.com/ads/pics/successstories.png" />
+      );
     },
   },
   {
