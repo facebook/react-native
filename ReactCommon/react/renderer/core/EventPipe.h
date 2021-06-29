@@ -12,6 +12,7 @@
 
 #include <jsi/jsi.h>
 #include <react/renderer/core/EventTarget.h>
+#include <react/renderer/core/ReactEventPriority.h>
 #include <react/renderer/core/ValueFactory.h>
 
 namespace facebook {
@@ -21,6 +22,7 @@ using EventPipe = std::function<void(
     jsi::Runtime &runtime,
     const EventTarget *eventTarget,
     const std::string &type,
+    ReactEventPriority priority,
     const ValueFactory &payloadFactory)>;
 
 } // namespace react

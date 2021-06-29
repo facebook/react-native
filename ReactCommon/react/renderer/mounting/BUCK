@@ -88,5 +88,6 @@ fb_xplat_cxx_test(
         react_native_xplat_target("react/renderer/components/root:root"),
         react_native_xplat_target("react/renderer/components/view:view"),
         react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
+        react_native_xplat_target("react/test_utils:test_utils"),
     ],
 )

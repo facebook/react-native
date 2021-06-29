@@ -69,12 +69,14 @@ def use_react_native! (options={})
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '~> 0.75.1'
-  versions['Flipper-DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.5'
+  versions['Flipper'] ||= '0.93.0'
+  versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
+  versions['Flipper-DoubleConversion'] ||= '3.1.7'
+  versions['Flipper-Fmt'] ||= '7.1.7'
+  versions['Flipper-Folly'] ||= '2.6.7'
   versions['Flipper-Glog'] ||= '0.3.6'
-  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
-  versions['Flipper-RSocket'] ||= '~> 1.3'
+  versions['Flipper-PeerTalk'] ||= '0.0.4'
+  versions['Flipper-RSocket'] ||= '1.4.3'
   pod 'FlipperKit', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
@@ -83,7 +85,9 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   # List all transitive dependencies for FlipperKit pods
   # to avoid them being linked in Release builds
   pod 'Flipper', versions['Flipper'], :configurations => configurations
+  pod 'Flipper-Boost-iOSX', versions['Flipper-Boost-iOSX'], :configurations => configurations
   pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configurations => configurations
+  pod 'Flipper-Fmt', versions['Flipper-Fmt'], :configurations => configurations
   pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
   pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
   pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
@@ -159,9 +163,9 @@ def use_react_native_codegen!(spec, options={})
   modules_output_dir = "React/#{modules_library_name}/#{modules_library_name}"
 
   # Run the codegen as part of the Xcode build pipeline.
-  env_vars = "SRCS_DIR=#{js_srcs}"
-  env_vars += " MODULES_OUTPUT_DIR=#{prefix}/#{modules_output_dir}"
-  env_vars += " MODULES_LIBRARY_NAME=#{modules_library_name}"
+  env_vars = "SRCS_DIR='#{js_srcs}'"
+  env_vars += " MODULES_OUTPUT_DIR='#{prefix}/#{modules_output_dir}'"
+  env_vars += " MODULES_LIBRARY_NAME='#{modules_library_name}'"
 
   generated_dirs = [ modules_output_dir ]
   generated_filenames = [ "#{modules_library_name}.h", "#{modules_library_name}-generated.mm" ]
@@ -172,7 +176,7 @@ def use_react_native_codegen!(spec, options={})
     # Eventually, we want these to be part of the same library as #{modules_library_name} above.
     components_output_dir = "ReactCommon/react/renderer/components/rncore/"
     generated_dirs.push components_output_dir
-    env_vars += " COMPONENTS_OUTPUT_DIR=#{prefix}/#{components_output_dir}"
+    env_vars += " COMPONENTS_OUTPUT_DIR='#{prefix}/#{components_output_dir}'"
     components_generated_filenames = [
       "ComponentDescriptors.h",
       "EventEmitters.cpp",
@@ -194,5 +198,5 @@ def use_react_native_codegen!(spec, options={})
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
-  spec.prepare_command = "mkdir -p #{generated_dirs.reduce("") { |str, dir| "#{str} ../../#{dir}" }} && touch #{generated_files.reduce("") { |str, filename| "#{str} ../../#{filename}" }}"
+  spec.prepare_command = "mkdir -p #{generated_dirs.map {|dir| "'../../#{dir}'"}.join(" ")} && touch #{generated_files.map {|file| "'../../#{file}'"}.join(" ")}"
 end

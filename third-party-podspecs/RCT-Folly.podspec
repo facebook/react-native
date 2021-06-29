@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |spec|
   spec.name = 'RCT-Folly'
-  spec.version = '2020.01.13.00'
+  spec.version = '2021.04.26.00'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
@@ -17,6 +17,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'boost-for-react-native'
   spec.dependency 'DoubleConversion'
   spec.dependency 'glog'
+  spec.dependency 'fmt' , '~> 6.2.1'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation'
   spec.source_files = 'folly/String.cpp',
                       'folly/Conv.cpp',
@@ -24,6 +25,7 @@ Pod::Spec.new do |spec|
                       'folly/FileUtil.cpp',
                       'folly/Format.cpp',
                       'folly/lang/SafeAssert.cpp',
+                      'folly/lang/ToAscii.cpp',
                       'folly/ScopeGuard.cpp',
                       'folly/Unicode.cpp',
                       'folly/dynamic.cpp',
@@ -38,6 +40,8 @@ Pod::Spec.new do |spec|
                       'folly/memory/detail/MallocImpl.cpp',
                       'folly/net/NetOps.cpp',
                       'folly/portability/SysUio.cpp',
+                      'folly/system/ThreadId.h',
+                      'folly/system/ThreadId.cpp',
                       'folly/*.h',
                       'folly/container/*.h',
                       'folly/container/detail/*.h',
@@ -84,6 +88,7 @@ Pod::Spec.new do |spec|
                           'folly/detail/Futex.cpp',
                           'folly/synchronization/ParkingLot.cpp',
                           'folly/portability/Malloc.cpp'
+
     fabric.preserve_paths = 'folly/concurrency/CacheLocality.h',
                             'folly/synchronization/ParkingLot.h',
                             'folly/synchronization/SanitizeThread.h',
@@ -102,16 +107,27 @@ Pod::Spec.new do |spec|
                            'folly/system/{ThreadId,ThreadName,HardwareConcurrency}.{h,cpp}',
                            'folly/synchronization/*.{h,cpp}',
                            'folly/synchronization/detail/*.{h,cpp}',
+                           'folly/Try.cpp',
+                           'folly/concurrency/CacheLocality.cpp',
                            'folly/experimental/{ExecutionObserver,ReadMostlySharedPtr,SingleWriterFixedHashMap,TLRefCount}.{h,cpp}',
-                           'folly/io/async/{AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseManager,EventBaseBackendBase,EventHandler,EventUtil,HHWheelTimer,HHWheelTimer-fwd,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
+                           'folly/io/async/{AtomicNotificationQueue,AtomicNotificationQueue-inl,AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseManager,EventBaseAtomicNotificationQueue,EventBaseAtomicNotificationQueue-inl,EventBaseBackendBase,EventHandler,EventUtil,HHWheelTimer,HHWheelTimer-fwd,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
                            'folly/io/{Cursor,Cursor-inl,IOBuf,IOBufQueue}.{h,cpp}',
                            'folly/tracing/StaticTracepoint.{h,cpp}',
-                           'folly/{Executor,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
+                           'folly/tracing/AsyncStack.{h,cpp}',
+                           'folly/tracing/AsyncStack-inl.h',
+                           'folly/{Executor,ExceptionString,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
                            'folly/detail/{AsyncTrace,AtFork,Futex,Futex-inl,MemoryIdler,SingletonStackTrace,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
                            'folly/lang/SafeAssert.{h,cpp}',
                            'folly/memory/MallctlHelper.{h,cpp}',
                            'folly/portability/{GFlags,SysUio}.{h,cpp}',
-                           'folly/chrono/Hardware.{h,cpp}'
+                           'folly/portability/SysMembarrier.cpp',
+                           'folly/chrono/Hardware.{h,cpp}',
+                           'folly/experimental/coro/Traits.{h,cpp}',
+                           'folly/fibers/*.{h,cpp}',
+                           'folly/experimental/coro/Coroutine.{h,cpp}',
+                           'folly/fibers/Baton-inl.h',
+                           'folly/experimental/**/*.h',
+                           'folly/system/Pid.{h,cpp}'
                           # TODO: Perhaps some of the wildcards above can be further trimmed down with some of these:
                           #
                           #  'folly/executors/{DrivableExecutor,InlineExecutor,QueuedImmediateExecutor,TimedDrivableExecutor}.{h,cpp}',

@@ -118,7 +118,6 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private boolean mBatchingControlledByJS = false; // TODO T71377544: delete
   private volatile long mCurrentFrameNumber; // TODO T71377544: delete
   private volatile long mCurrentBatchNumber;
-  private volatile boolean mIsInBatch = false;
 
   private boolean mInitializedForFabric = false;
   private boolean mInitializedForNonFabric = false;
@@ -174,7 +173,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   private void addOperation(UIThreadOperation operation) {
-    operation.setBatchNumber(getCurrentBatchNumber());
+    operation.setBatchNumber(mCurrentBatchNumber);
     mOperations.add(operation);
   }
 
@@ -184,7 +183,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   private void addPreOperation(UIThreadOperation operation) {
-    operation.setBatchNumber(getCurrentBatchNumber());
+    operation.setBatchNumber(mCurrentBatchNumber);
     mPreOperations.add(operation);
   }
 
@@ -342,13 +341,6 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
             ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mAnimatedFrameCallback);
   }
 
-  private long getCurrentBatchNumber() {
-    if (mBatchingControlledByJS && !mIsInBatch) {
-      return -1;
-    }
-    return mCurrentBatchNumber;
-  }
-
   @VisibleForTesting
   public void setNodesManager(NativeAnimatedNodesManager nodesManager) {
     mNodesManager.set(nodesManager);
@@ -433,21 +425,13 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @Override
   public void startOperationBatch() {
-    if (ANIMATED_MODULE_DEBUG) {
-      FLog.d(NAME, "Start JS operation batch " + mCurrentBatchNumber);
-    }
     mBatchingControlledByJS = true;
-    mIsInBatch = true;
     mCurrentBatchNumber++;
   }
 
   @Override
   public void finishOperationBatch() {
-    if (ANIMATED_MODULE_DEBUG) {
-      FLog.d(NAME, "Finish JS operation batch " + mCurrentBatchNumber);
-    }
     mBatchingControlledByJS = true;
-    mIsInBatch = false;
     mCurrentBatchNumber++;
   }
 

@@ -26,18 +26,18 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
 }
 
 /*
- * Optimized hit-testing
+ * Enable fix for data race between state and scroll event.
  */
-static BOOL RCTExperimentOptimizedHitTesting = NO;
+static BOOL RCTExperimentScrollViewEventRaceFix = NO;
 
-BOOL RCTExperimentGetOptimizedHitTesting()
+BOOL RCTExperimentGetScrollViewEventRaceFix()
 {
-  return RCTExperimentOptimizedHitTesting;
+  return RCTExperimentScrollViewEventRaceFix;
 }
 
-void RCTExperimentSetOptimizedHitTesting(BOOL value)
+void RCTExperimentSetScrollViewEventRaceFix(BOOL value)
 {
-  RCTExperimentOptimizedHitTesting = value;
+  RCTExperimentScrollViewEventRaceFix = value;
 }
 
 /*

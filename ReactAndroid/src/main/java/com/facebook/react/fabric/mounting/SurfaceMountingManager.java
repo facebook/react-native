@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -25,7 +27,9 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -60,11 +64,10 @@ public class SurfaceMountingManager {
   private JSResponderHandler mJSResponderHandler;
   private ViewManagerRegistry mViewManagerRegistry;
   private RootViewManager mRootViewManager;
-  private MountingManager mMountingManager;
+  private MountItemExecutor mMountItemExecutor;
 
   // This is null *until* StopSurface is called.
   private Set<Integer> mTagSetForStoppedSurface;
-  private long mLastSuccessfulQueryTime = -1;
 
   private final int mSurfaceId;
 
@@ -73,13 +76,13 @@ public class SurfaceMountingManager {
       @NonNull JSResponderHandler jsResponderHandler,
       @NonNull ViewManagerRegistry viewManagerRegistry,
       @NonNull RootViewManager rootViewManager,
-      @NonNull MountingManager mountingManager) {
+      @NonNull MountItemExecutor mountItemExecutor) {
     mSurfaceId = surfaceId;
 
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
     mRootViewManager = rootViewManager;
-    mMountingManager = mountingManager;
+    mMountItemExecutor = mountItemExecutor;
   }
 
   public boolean isStopped() {
@@ -139,7 +142,6 @@ public class SurfaceMountingManager {
     // deleted. This helps distinguish between scenarios where an invalid tag is referenced, vs
     // race conditions where an imperative method is called on a tag during/just after StopSurface.
     if (mTagSetForStoppedSurface != null && mTagSetForStoppedSurface.contains(tag)) {
-      mLastSuccessfulQueryTime = System.currentTimeMillis();
       return true;
     }
     if (mTagToViewState == null) {
@@ -208,11 +210,9 @@ public class SurfaceMountingManager {
   }
 
   @UiThread
+  @ThreadConfined(UI)
   private void executeViewAttachMountItems() {
-    while (!mOnViewAttachItems.isEmpty()) {
-      MountItem item = mOnViewAttachItems.poll();
-      item.execute(mMountingManager);
-    }
+    mMountItemExecutor.executeItems(mOnViewAttachItems);
   }
 
   /**
@@ -251,19 +251,29 @@ public class SurfaceMountingManager {
         viewState.mStateWrapper.destroyState();
         viewState.mStateWrapper = null;
       }
+      if (ReactFeatureFlags.enableAggressiveEventEmitterCleanup) {
+        if (viewState.mEventEmitter != null) {
+          viewState.mEventEmitter.destroy();
+          viewState.mEventEmitter = null;
+        }
+      }
     }
 
     Runnable runnable =
         new Runnable() {
           @Override
           public void run() {
+            // We must call `onDropViewInstance` on all remaining Views
+            for (ViewState viewState : mTagToViewState.values()) {
+              onViewStateDeleted(viewState);
+            }
+
             // Evict all views from cache and memory
-            mLastSuccessfulQueryTime = System.currentTimeMillis();
             mTagSetForStoppedSurface = mTagToViewState.keySet();
             mTagToViewState = null;
             mJSResponderHandler = null;
             mRootViewManager = null;
-            mMountingManager = null;
+            mMountItemExecutor = null;
             mOnViewAttachItems.clear();
           }
         };
@@ -524,14 +534,49 @@ public class SurfaceMountingManager {
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
+      @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     if (isStopped()) {
       return;
     }
+    // We treat this as a perf problem and not a logical error. View Preallocation or unexpected
+    // changes to Differ or C++ Binding could cause some redundant Create instructions.
+    // This is a NoCrash soft exception because we know there are cases where preallocation happens
+    // and a node is recreated: if a node is preallocated and then committed with revision 2+,
+    // an extra CREATE instruction will be generated.
+    // This represents a perf issue only, not a correctness issue. In the future we need to
+    // refactor View preallocation to correct the currently incorrect assumptions.
     if (getNullableViewState(reactTag) != null) {
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Cannot CREATE view with tag [" + reactTag + "], already exists."));
       return;
     }
 
+    createViewUnsafe(
+        componentName, reactTag, props, stateWrapper, eventEmitterWrapper, isLayoutable);
+  }
+
+  /**
+   * Perform view creation without any safety checks. You must ensure safety before calling this
+   * method (see existing callsites).
+   *
+   * @param componentName
+   * @param reactTag
+   * @param props
+   * @param stateWrapper
+   * @param eventEmitterWrapper
+   * @param isLayoutable
+   */
+  @UiThread
+  public void createViewUnsafe(
+      @NonNull String componentName,
+      int reactTag,
+      @Nullable ReadableMap props,
+      @Nullable StateWrapper stateWrapper,
+      @Nullable EventEmitterWrapper eventEmitterWrapper,
+      boolean isLayoutable) {
     View view = null;
     ViewManager viewManager = null;
 
@@ -551,6 +596,7 @@ public class SurfaceMountingManager {
     ViewState viewState = new ViewState(reactTag, view, viewManager);
     viewState.mCurrentProps = propsDiffMap;
     viewState.mStateWrapper = stateWrapper;
+    viewState.mEventEmitter = eventEmitterWrapper;
 
     mTagToViewState.put(reactTag, viewState);
   }
@@ -759,7 +805,13 @@ public class SurfaceMountingManager {
       viewState = new ViewState(reactTag, null, null);
       mTagToViewState.put(reactTag, viewState);
     }
+    EventEmitterWrapper previousEventEmitterWrapper = viewState.mEventEmitter;
     viewState.mEventEmitter = eventEmitter;
+
+    // Immediately destroy native side of wrapper, instead of waiting for Java GC.
+    if (previousEventEmitterWrapper != eventEmitter && previousEventEmitterWrapper != null) {
+      previousEventEmitterWrapper.destroy();
+    }
   }
 
   @UiThread
@@ -795,6 +847,29 @@ public class SurfaceMountingManager {
   }
 
   @UiThread
+  private void onViewStateDeleted(ViewState viewState) {
+    // Destroy state immediately instead of waiting for Java GC.
+    if (viewState.mStateWrapper != null) {
+      viewState.mStateWrapper.destroyState();
+      viewState.mStateWrapper = null;
+    }
+
+    // Destroy EventEmitterWrapper immediately instead of waiting for Java GC.
+    // Notably, this is also required to ensure that the EventEmitterWrapper is deallocated
+    // before the JS VM is deallocated, since it holds onto a JSI::Pointer.
+    if (viewState.mEventEmitter != null) {
+      viewState.mEventEmitter.destroy();
+      viewState.mEventEmitter = null;
+    }
+
+    // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
+    ViewManager viewManager = viewState.mViewManager;
+    if (!viewState.mIsRoot && viewManager != null) {
+      viewManager.onDropViewInstance(viewState.mView);
+    }
+  }
+
+  @UiThread
   public void deleteView(int reactTag) {
     UiThreadUtil.assertOnUiThread();
     if (isStopped()) {
@@ -816,17 +891,7 @@ public class SurfaceMountingManager {
     // or StopSurface being called, so we do not handle deleting descendents of the View.
     mTagToViewState.remove(reactTag);
 
-    // Destroy state immediately instead of waiting for Java GC.
-    if (viewState.mStateWrapper != null) {
-      viewState.mStateWrapper.destroyState();
-      viewState.mStateWrapper = null;
-    }
-
-    // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-    ViewManager viewManager = viewState.mViewManager;
-    if (!viewState.mIsRoot && viewManager != null) {
-      viewManager.onDropViewInstance(viewState.mView);
-    }
+    onViewStateDeleted(viewState);
   }
 
   @UiThread
@@ -835,18 +900,25 @@ public class SurfaceMountingManager {
       int reactTag,
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
+      @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     UiThreadUtil.assertOnUiThread();
+
     if (isStopped()) {
       return;
     }
-
+    // We treat this as a perf problem and not a logical error. View Preallocation or unexpected
+    // changes to Differ or C++ Binding could cause some redundant Create instructions.
     if (getNullableViewState(reactTag) != null) {
-      throw new IllegalStateException(
-          "View for component " + componentName + " with tag " + reactTag + " already exists.");
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Cannot Preallocate view with tag [" + reactTag + "], already exists."));
+      return;
     }
 
-    createView(componentName, reactTag, props, stateWrapper, isLayoutable);
+    createViewUnsafe(
+        componentName, reactTag, props, stateWrapper, eventEmitterWrapper, isLayoutable);
   }
 
   @AnyThread

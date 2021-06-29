@@ -138,17 +138,6 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
-static BOOL turboModuleBlockGuardEnabled = NO;
-BOOL RCTTurboModuleBlockGuardEnabled(void)
-{
-  return turboModuleBlockGuardEnabled;
-}
-
-void RCTEnableTurboModuleBlockGuard(BOOL enabled)
-{
-  turboModuleBlockGuardEnabled = enabled;
-}
-
 @interface RCTBridge () <RCTReloadListener>
 @end
 
@@ -228,6 +217,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
   [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
+}
+
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+{
+  [self.batchedBridge attachBridgeAPIsToTurboModule:module];
 }
 
 - (void)didReceiveReloadCommand

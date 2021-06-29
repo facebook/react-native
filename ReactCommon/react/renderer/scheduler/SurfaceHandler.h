@@ -138,9 +138,6 @@ class SurfaceHandler final {
   LayoutConstraints getLayoutConstraints() const noexcept;
   LayoutContext getLayoutContext() const noexcept;
 
-#pragma mark - Feature Flags
-  void setEnableNewDiffer(bool enabled) const noexcept;
-
  private:
   friend class Scheduler;
 
@@ -198,11 +195,6 @@ class SurfaceHandler final {
    */
   mutable better::shared_mutex parametersMutex_;
   mutable Parameters parameters_;
-
-  /**
-   * Feature flags.
-   */
-  mutable bool enableNewDiffer_{false};
 };
 
 } // namespace react
