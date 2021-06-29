@@ -86,11 +86,20 @@ public final class BlobProvider extends ContentProvider {
     ParcelFileDescriptor readSide = pipe[0];
     ParcelFileDescriptor writeSide = pipe[1];
 
-    try (OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
-      outputStream.write(data);
-    } catch (IOException exception) {
-      return null;
-    }
+    Thread writer = new Thread() {
+      public void run() {
+        try (OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
+          // If the blob data is larger than pipe capacity (64 KB), a synchronous write call
+          // would fill up the whole buffer and block until the bytes are read (i.e. never).
+          // Writing from a separate thread allows us to return the read side descriptor
+          // immediately so that the reader can start reading.
+          outputStream.write(data);
+        } catch (IOException exception) {
+          // no-op
+        }
+      }
+    };
+    writer.start();
 
     return readSide;
   }
