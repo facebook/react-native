@@ -90,6 +90,10 @@ public class ReactEditText extends AppCompatEditText
   protected int mNativeEventCount;
 
   private static final int UNSET = -1;
+  private static final int LEFT = -1;
+  private static final int UP = -1;
+  private static final int RIGHT = 1;
+  private static final int DOWN = 1;
 
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
@@ -111,6 +115,8 @@ public class ReactEditText extends AppCompatEditText
   private int mFontStyle = ReactTypefaceUtils.UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
+  private float mPreviousYCoordinates;
+  private float mPreviousXCoordinates;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -202,20 +208,31 @@ public class ReactEditText extends AppCompatEditText
   public boolean onTouchEvent(MotionEvent ev) {
     switch (ev.getAction()) {
       case MotionEvent.ACTION_DOWN:
+        mPreviousYCoordinates = ev.getY();
+        mPreviousXCoordinates = ev.getX();
         mDetectScrollMovement = true;
         // Disallow parent views to intercept touch events, until we can detect if we should be
         // capturing these touches or not.
         this.getParent().requestDisallowInterceptTouchEvent(true);
         break;
       case MotionEvent.ACTION_MOVE:
-        if (mDetectScrollMovement) {
-          if (!canScrollVertically(-1)
-              && !canScrollVertically(1)
-              && !canScrollHorizontally(-1)
-              && !canScrollHorizontally(1)) {
-            // We cannot scroll, let parent views take care of these touches.
-            this.getParent().requestDisallowInterceptTouchEvent(false);
-          }
+        float horizontalScroll = mPreviousXCoordinates - ev.getX();
+        float verticalScroll = mPreviousYCoordinates - ev.getY();
+        boolean enableParentScroll = false;
+        boolean isSwipeVertical = Math.abs(verticalScroll) > Math.abs(horizontalScroll);
+        if (isSwipeVertical) {
+          boolean scrollDirectionUp = verticalScroll < 0;
+          boolean enableParentScrollUp = scrollDirectionUp && !canScrollVertically(UP);
+          boolean enableParentScrollDown = !scrollDirectionUp && !canScrollVertically(DOWN);
+          enableParentScroll = enableParentScrollDown || enableParentScrollUp;
+        } else {
+          boolean scrollDirectionRight = horizontalScroll > 0;
+          boolean enableParentScrollRight = scrollDirectionRight && !canScrollHorizontally(RIGHT);
+          boolean enableParentScrollLeft = !scrollDirectionRight && !canScrollHorizontally(LEFT);
+          enableParentScroll = enableParentScrollRight || enableParentScrollLeft;
+        }
+        if (mDetectScrollMovement && enableParentScroll) {
+          this.getParent().requestDisallowInterceptTouchEvent(false);
           mDetectScrollMovement = false;
         }
         break;
