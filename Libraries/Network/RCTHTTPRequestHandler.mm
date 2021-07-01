@@ -18,6 +18,12 @@
 
 @end
 
+static NSURLSessionConfigurationProvider urlSessionConfigurationProvider;
+
+void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfigurationProvider provider) {
+  urlSessionConfigurationProvider = provider;
+}
+
 @implementation RCTHTTPRequestHandler
 {
   NSMapTable *_delegates;
@@ -75,14 +81,20 @@ RCT_EXPORT_MODULE()
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
     callbackQueue.underlyingQueue = [[_moduleRegistry moduleForName:"Networking"] methodQueue];
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    // Set allowsCellularAccess to NO ONLY if key ReactNetworkForceWifiOnly exists AND its value is YES
-    if (useWifiOnly) {
-      configuration.allowsCellularAccess = ![useWifiOnly boolValue];
+    NSURLSessionConfiguration *configuration;
+    if (urlSessionConfigurationProvider) {
+      configuration = urlSessionConfigurationProvider();
+    } else {
+      configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+      // Set allowsCellularAccess to NO ONLY if key ReactNetworkForceWifiOnly exists AND its value is YES
+      if (useWifiOnly) {
+        configuration.allowsCellularAccess = ![useWifiOnly boolValue];
+      }
+      [configuration setHTTPShouldSetCookies:YES];
+      [configuration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+      [configuration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
     }
-    [configuration setHTTPShouldSetCookies:YES];
-    [configuration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-    [configuration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
+    assert(configuration != nil);
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
                                         delegateQueue:callbackQueue];

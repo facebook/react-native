@@ -160,10 +160,6 @@ RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
 RCT_EXTERN BOOL RCTTurboModuleSharedMutexInitEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleSharedMutexInit(BOOL enabled);
 
-// Turn on TurboModule shared mutex initialization
-RCT_EXTERN BOOL RCTTurboModuleBlockGuardEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleBlockGuard(BOOL enabled);
-
 /**
  * Async batched bridge used to communicate with the JavaScript application.
  */
@@ -230,6 +226,13 @@ RCT_EXTERN void RCTEnableTurboModuleBlockGuard(BOOL enabled);
  * the TurboModuleRegistry.
  */
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
+
+/**
+ * This hook is called by the TurboModule infra with every TurboModule that's created.
+ * It allows the bridge to attach properties to TurboModules that give TurboModules
+ * access to Bridge APIs.
+ */
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.

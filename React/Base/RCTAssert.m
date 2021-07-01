@@ -243,7 +243,11 @@ static BOOL newArchitectureViolationReporting = NO;
 
 void RCTEnableNewArchitectureViolationReporting(BOOL enabled)
 {
+#if RCT_NEW_ARCHITECTURE
+  // Cannot disable the reporting in this mode.
+#else
   newArchitectureViolationReporting = enabled;
+#endif
 }
 
 static NSString *getNewArchitectureViolationMessage(id context, NSString *extra)

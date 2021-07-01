@@ -55,7 +55,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/drawer:drawer"),
         react_native_target("java/com/facebook/react/views/image:image"),
         react_native_target("java/com/facebook/react/views/modal:modal"),
-        react_native_target("java/com/facebook/react/views/picker:picker"),
         react_native_target("java/com/facebook/react/views/progressbar:progressbar"),
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
         react_native_target("java/com/facebook/react/views/slider:slider"),

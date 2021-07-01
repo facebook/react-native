@@ -535,7 +535,7 @@ import java.util.Queue;
         return;
       }
       UIManager uiManager =
-          UIManagerHelper.getUIManagerForReactTag(mReactApplicationContext, event.getViewTag());
+          UIManagerHelper.getUIManager(mReactApplicationContext, event.getUIManagerType());
       if (uiManager == null) {
         return;
       }

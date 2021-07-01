@@ -43,6 +43,7 @@ class BugReporting {
     if (!BugReporting._subscription) {
       BugReporting._subscription = RCTDeviceEventEmitter.addListener(
         'collectBugExtraData',
+        // $FlowFixMe[method-unbinding]
         BugReporting.collectExtraData,
         null,
       );
@@ -52,6 +53,7 @@ class BugReporting {
     if (!BugReporting._redboxSubscription) {
       BugReporting._redboxSubscription = RCTDeviceEventEmitter.addListener(
         'collectRedBoxExtraData',
+        // $FlowFixMe[method-unbinding]
         BugReporting.collectExtraData,
         null,
       );

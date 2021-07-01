@@ -125,12 +125,6 @@ public class ScrollEvent extends Event<ScrollEvent> {
   }
 
   @Override
-  public short getCoalescingKey() {
-    // All scroll events for a given view can be coalesced
-    return 0;
-  }
-
-  @Override
   public boolean canCoalesce() {
     // Only SCROLL events can be coalesced, all others can not be
     if (mScrollEventType == ScrollEventType.SCROLL) {

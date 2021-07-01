@@ -40,10 +40,8 @@ RCT_EXPORT_MODULE(BlobModule)
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize methodQueue = _methodQueue;
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)initialize
 {
-  _bridge = bridge;
-
   std::lock_guard<std::mutex> lock(_blobsMutex);
   _blobs = [NSMutableDictionary new];
 

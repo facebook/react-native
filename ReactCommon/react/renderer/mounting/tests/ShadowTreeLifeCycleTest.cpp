@@ -16,8 +16,12 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/stubs.h>
 
-#include "Entropy.h"
-#include "shadowTreeGeneration.h"
+#include <react/test_utils/Entropy.h>
+#include <react/test_utils/shadowTreeGeneration.h>
+
+// Uncomment when random test blocks are uncommented below.
+// #include <algorithm>
+// #include <random>
 
 namespace facebook {
 namespace react {
@@ -75,7 +79,7 @@ static void testShadowNodeTreeLifeCycle(
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
     viewTree.mutate(
-        calculateShadowViewMutations(*emptyRootNode, *currentRootNode, true));
+        calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
     for (int j = 0; j < stages; j++) {
       auto nextRootNode = currentRootNode;
@@ -102,7 +106,7 @@ static void testShadowNodeTreeLifeCycle(
 
       // Calculating mutations.
       auto mutations =
-          calculateShadowViewMutations(*currentRootNode, *nextRootNode, true);
+          calculateShadowViewMutations(*currentRootNode, *nextRootNode);
 
       // Make sure that in a single frame, a DELETE for a
       // view is not followed by a CREATE for the same view.
@@ -121,7 +125,7 @@ static void testShadowNodeTreeLifeCycle(
                     mutation.newChildShadowView.tag) != deletedTags.end()) {
               LOG(ERROR) << "Deleted tag was recreated in mutations list: ["
                          << mutation.newChildShadowView.tag << "]";
-              FAIL();
+              react_native_assert(false);
             }
           }
         }
@@ -159,7 +163,7 @@ static void testShadowNodeTreeLifeCycle(
                    << getDebugDescription(mutations, {});
 #endif
 
-        FAIL();
+        react_native_assert(false);
       }
 
       currentRootNode = nextRootNode;
@@ -222,7 +226,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
     viewTree.mutate(
-        calculateShadowViewMutations(*emptyRootNode, *currentRootNode, true));
+        calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
     for (int j = 0; j < stages; j++) {
       auto nextRootNode = currentRootNode;
@@ -250,7 +254,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 
       // Calculating mutations.
       auto mutations =
-          calculateShadowViewMutations(*currentRootNode, *nextRootNode, true);
+          calculateShadowViewMutations(*currentRootNode, *nextRootNode);
 
       // Make sure that in a single frame, a DELETE for a
       // view is not followed by a CREATE for the same view.
@@ -269,7 +273,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
                     mutation.newChildShadowView.tag) != deletedTags.end()) {
               LOG(ERROR) << "Deleted tag was recreated in mutations list: ["
                          << mutation.newChildShadowView.tag << "]";
-              FAIL();
+              react_native_assert(false);
             }
           }
         }
@@ -307,7 +311,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
                    << getDebugDescription(mutations, {});
 #endif
 
-        FAIL();
+        react_native_assert(false);
       }
 
       currentRootNode = nextRootNode;
@@ -381,3 +385,31 @@ TEST(
       /* repeats */ 512,
       /* stages */ 32);
 }
+
+// failing test case found 4-25-2021
+TEST(
+    ShadowTreeLifecyleTest,
+    unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflattening_1167342011) {
+  testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
+      /* seed */ 1167342011,
+      /* size */ 32,
+      /* repeats */ 512,
+      /* stages */ 32);
+}
+
+// You may uncomment this - locally only! - to generate failing seeds.
+// TEST(
+//     ShadowTreeLifecyleTest,
+//     unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflatteningManyRandom)
+//     {
+//   std::random_device device;
+//   for (int i = 0; i < 10; i++) {
+//     uint_fast32_t seed = device();
+//     LOG(ERROR) << "Seed: " << seed;
+//     testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
+//         /* seed */ seed,
+//         /* size */ 32,
+//         /* repeats */ 512,
+//         /* stages */ 32);
+//   }
+// }

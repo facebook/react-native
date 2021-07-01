@@ -87,6 +87,7 @@ fb_xplat_cxx_test(
         "//xplat/third-party/gmock:gtest",
         react_native_xplat_target("react/renderer/components/view:view"),
         ":core",
+        "//xplat/hermes/API:HermesAPI",
     ],
 )
 

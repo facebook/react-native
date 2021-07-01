@@ -60,9 +60,9 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 
   auto it = _registryByName.find(unifiedComponentName);
   if (it == _registryByName.end()) {
-    mutex_.unlock_shared();
+    lock.unlock();
     providerRegistry_.request(unifiedComponentName.c_str());
-    mutex_.lock_shared();
+    lock.lock();
 
     it = _registryByName.find(unifiedComponentName);
 

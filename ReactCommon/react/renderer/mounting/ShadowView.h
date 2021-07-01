@@ -43,6 +43,7 @@ struct ShadowView final {
   ComponentHandle componentHandle{};
   SurfaceId surfaceId{};
   Tag tag{};
+  ShadowNodeTraits traits{};
   Props::Shared props{};
   EventEmitter::Shared eventEmitter{};
   LayoutMetrics layoutMetrics{EmptyLayoutMetrics};
@@ -83,7 +84,7 @@ struct ShadowViewNodePair final {
    * rely on this more heavily to simplify the diffing algorithm
    * overall?
    */
-  ShadowViewNodePair const *otherTreePair{nullptr};
+  mutable ShadowViewNodePair const *otherTreePair{nullptr};
 
   /*
    * The stored pointer to `ShadowNode` represents an identity of the pair.

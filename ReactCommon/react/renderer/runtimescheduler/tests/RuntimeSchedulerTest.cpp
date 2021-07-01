@@ -42,7 +42,8 @@ class RuntimeSchedulerTest : public testing::Test {
         std::make_unique<RuntimeScheduler>(runtimeExecutor, stubNow);
   }
 
-  jsi::Function createHostFunctionFromLambda(std::function<void()> callback) {
+  jsi::Function createHostFunctionFromLambda(
+      std::function<jsi::Value(bool)> callback) {
     return jsi::Function::createFromHostFunction(
         *runtime_,
         jsi::PropNameID::forUtf8(*runtime_, ""),
@@ -50,11 +51,11 @@ class RuntimeSchedulerTest : public testing::Test {
         [this, callback = std::move(callback)](
             jsi::Runtime &,
             jsi::Value const &,
-            jsi::Value const *,
+            jsi::Value const *arguments,
             size_t) noexcept -> jsi::Value {
           ++hostFunctionCallCount_;
-          callback();
-          return jsi::Value::undefined();
+          auto didUserCallbackTimeout = arguments[0].getBool();
+          return callback(didUserCallbackTimeout);
         });
   }
 
@@ -88,7 +89,11 @@ TEST_F(RuntimeSchedulerTest, getShouldYield) {
 TEST_F(RuntimeSchedulerTest, scheduleSingleTask) {
   bool didRunTask = false;
   auto callback =
-      createHostFunctionFromLambda([&didRunTask]() { didRunTask = true; });
+      createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
+        didRunTask = true;
+        EXPECT_FALSE(didUserCallbackTimeout);
+        return jsi::Value::undefined();
+      });
 
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));
@@ -102,11 +107,59 @@ TEST_F(RuntimeSchedulerTest, scheduleSingleTask) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
+TEST_F(RuntimeSchedulerTest, scheduleImmediatePriorityTask) {
+  bool didRunTask = false;
+  auto callback =
+      createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
+        didRunTask = true;
+        EXPECT_FALSE(didUserCallbackTimeout);
+        return jsi::Value::undefined();
+      });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::ImmediatePriority, std::move(callback));
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, taskExpiration) {
+  bool didRunTask = false;
+  auto callback =
+      createHostFunctionFromLambda([&didRunTask](bool didUserCallbackTimeout) {
+        didRunTask = true;
+        // Task has timed out but the parameter is deprecated and `false` is
+        // hardcoded.
+        EXPECT_FALSE(didUserCallbackTimeout);
+        return jsi::Value::undefined();
+      });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  // Task with normal priority has 5s timeout.
+  stubClock_->advanceTimeBy(6s);
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
 TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
   uint firstTaskCallOrder;
   auto callbackOne =
-      createHostFunctionFromLambda([this, &firstTaskCallOrder]() {
+      createHostFunctionFromLambda([this, &firstTaskCallOrder](bool) {
         firstTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -114,8 +167,9 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
 
   uint secondTaskCallOrder;
   auto callbackTwo =
-      createHostFunctionFromLambda([this, &secondTaskCallOrder]() {
+      createHostFunctionFromLambda([this, &secondTaskCallOrder](bool) {
         secondTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -136,8 +190,9 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
 TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
   uint lowPriorityTaskCallOrder;
   auto callbackOne =
-      createHostFunctionFromLambda([this, &lowPriorityTaskCallOrder]() {
+      createHostFunctionFromLambda([this, &lowPriorityTaskCallOrder](bool) {
         lowPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -145,8 +200,9 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
 
   uint userBlockingPriorityTaskCallOrder;
   auto callbackTwo = createHostFunctionFromLambda(
-      [this, &userBlockingPriorityTaskCallOrder]() {
+      [this, &userBlockingPriorityTaskCallOrder](bool) {
         userBlockingPriorityTaskCallOrder = hostFunctionCallCount_;
+        return jsi::Value::undefined();
       });
 
   runtimeScheduler_->scheduleTask(
@@ -166,8 +222,10 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
 
 TEST_F(RuntimeSchedulerTest, cancelTask) {
   bool didRunTask = false;
-  auto callback =
-      createHostFunctionFromLambda([&didRunTask]() { didRunTask = true; });
+  auto callback = createHostFunctionFromLambda([&didRunTask](bool) {
+    didRunTask = true;
+    return jsi::Value::undefined();
+  });
 
   auto task = runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));
@@ -180,6 +238,200 @@ TEST_F(RuntimeSchedulerTest, cancelTask) {
   stubQueue_->tick();
 
   EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, continuationTask) {
+  bool didRunTask = false;
+  bool didContinuationTask = false;
+
+  auto callback = createHostFunctionFromLambda([&](bool) {
+    didRunTask = true;
+    return jsi::Function::createFromHostFunction(
+        *runtime_,
+        jsi::PropNameID::forUtf8(*runtime_, ""),
+        1,
+        [&](jsi::Runtime &runtime,
+            jsi::Value const &,
+            jsi::Value const *arguments,
+            size_t) noexcept -> jsi::Value {
+          didContinuationTask = true;
+          return jsi::Value::undefined();
+        });
+  });
+
+  auto task = runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  EXPECT_FALSE(didRunTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunTask);
+  EXPECT_TRUE(didContinuationTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, getCurrentPriorityLevel) {
+  auto callback =
+      createHostFunctionFromLambda([this](bool didUserCallbackTimeout) {
+        EXPECT_EQ(
+            runtimeScheduler_->getCurrentPriorityLevel(),
+            SchedulerPriority::ImmediatePriority);
+        return jsi::Value::undefined();
+      });
+
+  EXPECT_EQ(
+      runtimeScheduler_->getCurrentPriorityLevel(),
+      SchedulerPriority::NormalPriority);
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::ImmediatePriority, std::move(callback));
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(
+      runtimeScheduler_->getCurrentPriorityLevel(),
+      SchedulerPriority::NormalPriority);
+
+  callback = createHostFunctionFromLambda([this](bool didUserCallbackTimeout) {
+    EXPECT_EQ(
+        runtimeScheduler_->getCurrentPriorityLevel(),
+        SchedulerPriority::IdlePriority);
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::IdlePriority, std::move(callback));
+
+  stubQueue_->tick();
+
+  EXPECT_EQ(
+      runtimeScheduler_->getCurrentPriorityLevel(),
+      SchedulerPriority::NormalPriority);
+}
+
+TEST_F(RuntimeSchedulerTest, scheduleWork) {
+  bool wasCalled = false;
+  runtimeScheduler_->scheduleWork(
+      [&](jsi::Runtime const &) { wasCalled = true; });
+
+  EXPECT_FALSE(wasCalled);
+
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(wasCalled);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
+  runtimeScheduler_->setEnableYielding(true);
+  bool wasCalled = false;
+  runtimeScheduler_->scheduleWork(
+      [&](jsi::Runtime const &) { wasCalled = true; });
+
+  EXPECT_FALSE(wasCalled);
+
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(wasCalled);
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
+  runtimeScheduler_->setEnableYielding(true);
+
+  bool didRunJavaScriptTask = false;
+  bool didRunPlatformWork = false;
+
+  auto callback = createHostFunctionFromLambda([&](bool) {
+    didRunJavaScriptTask = true;
+    EXPECT_TRUE(didRunPlatformWork);
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  runtimeScheduler_->scheduleWork([&](jsi::Runtime const &) {
+    didRunPlatformWork = true;
+    EXPECT_FALSE(didRunJavaScriptTask);
+    EXPECT_FALSE(runtimeScheduler_->getShouldYield());
+  });
+
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 2);
+
+  stubQueue_->flush();
+
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
+  runtimeScheduler_->setEnableYielding(true);
+
+  bool didRunJavaScriptTask = false;
+  bool didRunPlatformWork = false;
+
+  auto callback = createHostFunctionFromLambda([&](bool) {
+    didRunJavaScriptTask = true;
+    EXPECT_FALSE(didRunPlatformWork);
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(callback));
+
+  runtimeScheduler_->scheduleWork([&](jsi::Runtime const &) {
+    didRunPlatformWork = true;
+    EXPECT_TRUE(didRunJavaScriptTask);
+  });
+
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 2);
+
+  stubClock_->advanceTimeBy(6s);
+
+  stubQueue_->flush();
+
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
+  runtimeScheduler_->setEnableYielding(true);
+
+  bool didRunJavaScriptTask = false;
+  bool didRunPlatformWork = false;
+
+  auto callback = createHostFunctionFromLambda([&](bool) {
+    didRunJavaScriptTask = true;
+    EXPECT_FALSE(didRunPlatformWork);
+    return jsi::Value::undefined();
+  });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::ImmediatePriority, std::move(callback));
+
+  runtimeScheduler_->scheduleWork([&](jsi::Runtime const &) {
+    didRunPlatformWork = true;
+    EXPECT_TRUE(didRunJavaScriptTask);
+  });
+
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 2);
+
+  stubQueue_->flush();
+
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 

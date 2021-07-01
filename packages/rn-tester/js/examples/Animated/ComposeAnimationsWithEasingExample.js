@@ -30,6 +30,8 @@ export default ({
   description: ('Sequence, parallel, delay, and ' +
     'stagger with different easing functions.': string),
   render: function(): React.Node {
+    // $FlowFixMe[incompatible-use]
+    // $FlowFixMe[incompatible-type]
     this.anims = this.anims || [1, 2, 3].map(() => new Animated.Value(0));
     return (
       <View>
@@ -38,12 +40,15 @@ export default ({
             const timing = Animated.timing;
             Animated.sequence([
               // One after the other
+              // $FlowFixMe[incompatible-use]
               timing(this.anims[0], {
                 toValue: 200,
+                // $FlowFixMe[method-unbinding]
                 easing: Easing.linear,
                 useNativeDriver: false,
               }),
               Animated.delay(400), // Use with sequence
+              // $FlowFixMe[incompatible-use]
               timing(this.anims[0], {
                 toValue: 0,
 
@@ -55,6 +60,7 @@ export default ({
               Animated.delay(400),
               Animated.stagger(
                 200,
+                // $FlowFixMe[incompatible-use]
                 this.anims
                   .map(anim =>
                     timing(anim, {
@@ -63,6 +69,7 @@ export default ({
                     }),
                   )
                   .concat(
+                    // $FlowFixMe[incompatible-use]
                     this.anims.map(anim =>
                       timing(anim, {
                         toValue: 0,
@@ -74,12 +81,15 @@ export default ({
               Animated.delay(400),
               Animated.parallel(
                 [
+                  // $FlowFixMe[method-unbinding]
                   Easing.inOut(Easing.quad), // Symmetric
                   Easing.back(1.5), // Goes backwards first
                   Easing.ease, // Default bezier
                 ].map((easing, ii) =>
+                  // $FlowFixMe[incompatible-use]
                   timing(this.anims[ii], {
                     toValue: 320,
+                    // $FlowFixMe[method-unbinding]
                     easing,
                     duration: 3000,
                     useNativeDriver: false,
@@ -89,11 +99,13 @@ export default ({
               Animated.delay(400),
               Animated.stagger(
                 200,
+                // $FlowFixMe[incompatible-use]
                 this.anims.map(anim =>
                   timing(anim, {
                     toValue: 0,
 
                     // Like a ball
+                    // $FlowFixMe[method-unbinding]
                     easing: Easing.bounce,
 
                     duration: 2000,
@@ -111,6 +123,7 @@ export default ({
             style={[
               styles.content,
               {
+                // $FlowFixMe[incompatible-use]
                 left: this.anims[ii],
               },
             ]}>

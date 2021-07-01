@@ -38,6 +38,9 @@ public class EventEmitterWrapper {
 
   private native void invokeEvent(@NonNull String eventName, @NonNull NativeMap params);
 
+  private native void invokeUniqueEvent(
+      @NonNull String eventName, @NonNull NativeMap params, int customCoalesceKey);
+
   /**
    * Invokes the execution of the C++ EventEmitter.
    *
@@ -45,7 +48,39 @@ public class EventEmitterWrapper {
    * @param params {@link WritableMap} payload of the event
    */
   public void invoke(@NonNull String eventName, @Nullable WritableMap params) {
+    if (!isValid()) {
+      return;
+    }
     NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
     invokeEvent(eventName, payload);
+  }
+
+  /**
+   * Invokes the execution of the C++ EventEmitter. C++ will coalesce events sent to the same
+   * target.
+   *
+   * @param eventName {@link String} name of the event to execute.
+   * @param params {@link WritableMap} payload of the event
+   */
+  public void invokeUnique(
+      @NonNull String eventName, @Nullable WritableMap params, int customCoalesceKey) {
+    if (!isValid()) {
+      return;
+    }
+    NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
+    invokeUniqueEvent(eventName, payload, customCoalesceKey);
+  }
+
+  public void destroy() {
+    if (mHybridData != null) {
+      mHybridData.resetNative();
+    }
+  }
+
+  private boolean isValid() {
+    if (mHybridData != null) {
+      return mHybridData.isValid();
+    }
+    return false;
   }
 }

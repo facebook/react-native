@@ -30,6 +30,7 @@ import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MountItemDispatcher {
@@ -143,6 +144,32 @@ public class MountItemDispatcher {
     }
     mReDispatchCounter = 0;
     return didDispatchItems;
+  }
+
+  @UiThread
+  @ThreadConfined(UI)
+  public void dispatchMountItems(Queue<MountItem> mountItems) {
+    while (!mountItems.isEmpty()) {
+      MountItem item = mountItems.poll();
+      try {
+        item.execute(mMountingManager);
+      } catch (RetryableMountingLayerException e) {
+        if (item instanceof DispatchCommandMountItem) {
+          // Only DispatchCommandMountItem supports retries
+          DispatchCommandMountItem mountItem = (DispatchCommandMountItem) item;
+          // Retrying exactly once
+          if (mountItem.getRetries() == 0) {
+            mountItem.incrementRetries();
+            // In case we haven't retried executing this item yet, execute in the next batch of
+            // items
+            dispatchCommandMountItem(mountItem);
+          }
+        } else {
+          printMountItem(
+              item, "dispatchExternalMountItems: mounting failed with " + e.getMessage());
+        }
+      }
+    }
   }
 
   @UiThread
@@ -282,10 +309,15 @@ public class MountItemDispatcher {
         }
 
         PreAllocateViewMountItem preMountItemToDispatch = mPreMountItems.poll();
-
         // If list is empty, `poll` will return null, or var will never be set
         if (preMountItemToDispatch == null) {
           break;
+        }
+
+        if (ENABLE_FABRIC_LOGS) {
+          printMountItem(
+              preMountItemToDispatch,
+              "dispatchPreMountItems: Dispatching PreAllocateViewMountItem");
         }
 
         executeOrEnqueue(preMountItemToDispatch);
@@ -299,6 +331,12 @@ public class MountItemDispatcher {
 
   private void executeOrEnqueue(MountItem item) {
     if (mMountingManager.isWaitingForViewAttach(item.getSurfaceId())) {
+      if (ENABLE_FABRIC_LOGS) {
+        FLog.e(
+            TAG,
+            "executeOrEnqueue: Item execution delayed, surface %s is not ready yet",
+            item.getSurfaceId());
+      }
       SurfaceMountingManager surfaceMountingManager =
           mMountingManager.getSurfaceManager(item.getSurfaceId());
       surfaceMountingManager.executeOnViewAttach(item);

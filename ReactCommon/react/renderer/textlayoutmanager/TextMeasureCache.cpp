@@ -34,7 +34,8 @@ LineMeasurement::LineMeasurement(
       frame(frame),
       descender(descender),
       capHeight(capHeight),
-      ascender(ascender) {}
+      ascender(ascender),
+      xHeight(xHeight) {}
 
 LineMeasurement::LineMeasurement(folly::dynamic const &data)
     : text(data.getDefault("text", "").getString()),
