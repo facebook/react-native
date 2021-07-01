@@ -849,15 +849,14 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
   stickyHeaderIndices={
     Array [
       0,
-      3,
-      6,
-      9,
-      12,
-      15,
-      18,
+      2,
+      4,
+      7,
+      10,
+      13,
     ]
   }
-  window={1}
+  windowSize={1}
 >
   <View>
     <View
@@ -869,41 +868,12 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
       />
     </View>
     <View
-      style={null}
-    >
-      <MockCellItem
-        value={1}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={2}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        sticky={true}
-        value={3}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={4}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={5}
-      />
-    </View>
+      style={
+        Object {
+          "height": 50,
+        }
+      }
+    />
     <View
       style={null}
     >
@@ -913,19 +883,12 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
       />
     </View>
     <View
-      style={null}
-    >
-      <MockCellItem
-        value={7}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={8}
-      />
-    </View>
+      style={
+        Object {
+          "height": 20,
+        }
+      }
+    />
     <View
       style={null}
     >
@@ -4641,14 +4604,9 @@ exports[`unmounts sticky headers moved below viewport 1`] = `
     Array [
       0,
       3,
-      6,
-      9,
-      12,
-      15,
-      18,
     ]
   }
-  window={1}
+  windowSize={1}
 >
   <View>
     <View
@@ -4689,115 +4647,12 @@ exports[`unmounts sticky headers moved below viewport 1`] = `
       />
     </View>
     <View
-      style={null}
-    >
-      <MockCellItem
-        value={5}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        sticky={true}
-        value={6}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={7}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={8}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        sticky={true}
-        value={9}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={10}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={11}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        sticky={true}
-        value={12}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={13}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={14}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        sticky={true}
-        value={15}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={16}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={17}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        sticky={true}
-        value={18}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={19}
-      />
-    </View>
+      style={
+        Object {
+          "height": 150,
+        }
+      }
+    />
   </View>
 </RCTScrollView>
 `;
