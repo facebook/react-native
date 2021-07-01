@@ -9,7 +9,7 @@
  */
 
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
-const RNTesterComponentTitle = require('./RNTesterComponentTitle');
+import RNTPressableRow from './RNTPressableRow';
 const React = require('react');
 
 const {
@@ -35,43 +35,32 @@ const ExampleModuleRow = ({
   const platform = item.module.platform;
   const onIos = !platform || platform === 'ios';
   const onAndroid = !platform || platform === 'android';
-  return (
+  const rightAddOn = (
     <TouchableHighlight
-      testID={item.module.title}
-      onShowUnderlay={onShowUnderlay}
-      onHideUnderlay={onHideUnderlay}
-      accessibilityLabel={item.module.title + ' ' + item.module.description}
-      style={styles.listItem}
-      underlayColor={'rgb(242,242,242)'}
+      style={styles.imageViewStyle}
       onPress={() =>
-        handlePress({exampleType: item.exampleType, key: item.key})
+        toggleBookmark({exampleType: item.exampleType, key: item.key})
       }>
-      <View
-        style={[styles.row, {backgroundColor: theme.SystemBackgroundColor}]}>
-        <View style={styles.topRowStyle}>
-          <RNTesterComponentTitle>{item.module.title}</RNTesterComponentTitle>
-          <TouchableHighlight
-            style={styles.imageViewStyle}
-            onPress={() =>
-              toggleBookmark({exampleType: item.exampleType, key: item.key})
-            }>
-            <Image
-              style={styles.imageStyle}
-              source={
-                item.isBookmarked
-                  ? require('../assets/bookmark-outline-blue.png')
-                  : require('../assets/bookmark-outline-gray.png')
-              }
-            />
-          </TouchableHighlight>
-        </View>
-        <Text
-          style={[
-            styles.rowDetailText,
-            {color: theme.SecondaryLabelColor, marginBottom: 5},
-          ]}>
-          {item.module.description}
-        </Text>
+      <Image
+        style={styles.imageStyle}
+        source={
+          item.isBookmarked
+            ? require('../assets/bookmark-outline-blue.png')
+            : require('../assets/bookmark-outline-gray.png')
+        }
+      />
+    </TouchableHighlight>
+  );
+  return (
+    <RNTPressableRow
+      title={item.module.title}
+      description={item.module.description}
+      testID={item.module.title}
+      onPressIn={onShowUnderlay}
+      onPressOut={onHideUnderlay}
+      accessibilityLabel={item.module.title + ' ' + item.module.description}
+      rightAddOn={rightAddOn}
+      bottomAddOn={
         <View style={styles.bottomRowStyle}>
           <Text style={{color: theme.SecondaryLabelColor, width: 65}}>
             {item.module.category || 'Other'}
@@ -93,8 +82,11 @@ const ExampleModuleRow = ({
             </Text>
           </View>
         </View>
-      </View>
-    </TouchableHighlight>
+      }
+      onPress={() =>
+        handlePress({exampleType: item.exampleType, key: item.key})
+      }
+    />
   );
 };
 
@@ -225,10 +217,6 @@ const styles = StyleSheet.create({
   bottomRowStyle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  rowDetailText: {
-    fontSize: 12,
-    lineHeight: 20,
   },
   imageViewStyle: {
     height: 30,
