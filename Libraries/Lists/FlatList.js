@@ -619,7 +619,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   render(): React.Node {
-    const {numColumns = 1, columnWrapperStyle, ...restProps} = this.props;
+    const {columnWrapperStyle, ...restProps} = this.props;
 
     return (
       <VirtualizedList
