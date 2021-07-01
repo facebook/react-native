@@ -609,7 +609,7 @@ describe('VirtualizedList', () => {
 
     // A windowSize of 1 means we will render just the viewport height (50dip).
     // Expect 5 10dip items to eventually be rendered, with sticky headers in
-    // the first 5 propagated. 
+    // the first 5 propagated.
     expect(component).toMatchSnapshot();
   });
 
@@ -966,7 +966,7 @@ it('renders no spacers up to initialScrollIndex on first render when virtualizat
 
   // There should be no spacers present in an offset initial render with
   // virtualiztion disabled. Only initialNumToRender items starting at
-  // initialScrollIndex. 
+  // initialScrollIndex.
   expect(component).toMatchSnapshot();
 });
 
@@ -989,7 +989,7 @@ it('expands first in viewport to render up to maxToRenderPerBatch on initial ren
 
   // When virtualization is disabled we may render items before initialItemIndex
   // if initialItemIndex + initialNumToRender < maToRenderPerBatch. Expect cells
-  // 0-3 to be rendered in this example, even though initialScrollIndex is 4. 
+  // 0-3 to be rendered in this example, even though initialScrollIndex is 4.
   expect(component).toMatchSnapshot();
 });
 
