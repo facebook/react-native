@@ -145,7 +145,7 @@ const Components: Array<RNTesterModuleInfo> = [
   },
   {
     key: 'SectionListExample',
-    module: require('../examples/SectionList/SectionListExample'),
+    module: require('../examples/SectionList/SectionListIndex'),
     category: 'ListView',
     supportsTVOS: true,
   },

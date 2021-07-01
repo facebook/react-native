@@ -122,7 +122,7 @@ const Components: Array<RNTesterModuleInfo> = [
   {
     key: 'SectionListExample',
     category: 'ListView',
-    module: require('../examples/SectionList/SectionListExample'),
+    module: require('../examples/SectionList/SectionListIndex'),
   },
   {
     key: 'StatusBarExample',
