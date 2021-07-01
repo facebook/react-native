@@ -128,6 +128,12 @@ type OptionalProps<ItemT> = {|
    */
   numColumns: number,
   /**
+   * Note: may have bugs (missing content) in some circumstances - use at your own risk.
+   *
+   * This may improve scroll performance for large lists.
+   */
+  removeClippedSubviews?: boolean,
+  /**
    * See `ScrollView` for flow type and further documentation.
    */
   fadingEdgeLength?: ?number,
@@ -155,17 +161,6 @@ export type Props<ItemT> = {
   ...FlatListProps<ItemT>,
   ...
 };
-
-const defaultProps = {
-  numColumns: 1,
-  /**
-   * Enabling this prop on Android greatly improves scrolling performance with no known issues.
-   * The alternative is that scrolling on Android is unusably bad. Enabling it on iOS has a few
-   * known issues.
-   */
-  removeClippedSubviews: Platform.OS === 'android',
-};
-export type DefaultProps = typeof defaultProps;
 
 /**
  * A performant interface for rendering simple, flat lists, supporting the most handy features:
@@ -276,7 +271,6 @@ export type DefaultProps = typeof defaultProps;
  * Also inherits [ScrollView Props](docs/scrollview.html#props), unless it is nested in another FlatList of same orientation.
  */
 class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
-  static defaultProps: DefaultProps = defaultProps;
   props: Props<ItemT>;
   /**
    * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
@@ -453,7 +447,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       // $FlowFixMe[prop-missing] this prop doesn't exist, is only used for an invariant
       getItemCount,
       horizontal,
-      numColumns,
+      numColumns = 1,
       columnWrapperStyle,
       onViewableItemsChanged,
       viewabilityConfigCallbackPairs,
@@ -478,7 +472,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   _getItem = (data: Array<ItemT>, index: number) => {
-    const {numColumns} = this.props;
+    const {numColumns = 1} = this.props;
     if (numColumns > 1) {
       const ret = [];
       for (let kk = 0; kk < numColumns; kk++) {
@@ -495,7 +489,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
   _getItemCount = (data: ?Array<ItemT>): number => {
     if (data) {
-      const {numColumns} = this.props;
+      const {numColumns = 1} = this.props;
       return numColumns > 1 ? Math.ceil(data.length / numColumns) : data.length;
     } else {
       return 0;
@@ -503,7 +497,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   _keyExtractor = (items: ItemT | Array<ItemT>, index: number) => {
-    const {numColumns} = this.props;
+    const {numColumns = 1} = this.props;
     const keyExtractor = this.props.keyExtractor ?? defaultKeyExtractor;
 
     if (numColumns > 1) {
@@ -528,7 +522,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   _pushMultiColumnViewable(arr: Array<ViewToken>, v: ViewToken): void {
-    const {numColumns} = this.props;
+    const {numColumns = 1} = this.props;
     const keyExtractor = this.props.keyExtractor ?? defaultKeyExtractor;
     v.item.forEach((item, ii) => {
       invariant(v.index != null, 'Missing index!');
@@ -549,7 +543,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       changed: Array<ViewToken>,
       ...
     }) => {
-      const {numColumns} = this.props;
+      const {numColumns = 1} = this.props;
       if (onViewableItemsChanged) {
         if (numColumns > 1) {
           const changed = [];
@@ -625,7 +619,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   render(): React.Node {
-    const {numColumns, columnWrapperStyle, ...restProps} = this.props;
+    const {numColumns = 1, columnWrapperStyle, ...restProps} = this.props;
 
     return (
       <VirtualizedList
@@ -635,6 +629,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         keyExtractor={this._keyExtractor}
         ref={this._captureRef}
         viewabilityConfigCallbackPairs={this._virtualizedListPairs}
+        removeClippedSubviews={this.props.removeClippedSubviews || Platform.OS === 'android'}
         {...this._renderer()}
       />
     );
