@@ -37,8 +37,8 @@ export default function RNTPressableRow({
   rightAddOn,
   bottomAddOn,
   onPress,
-  accessibilityLabel,
   style,
+  accessibilityLabel,
 }: Props): React.Node {
   const theme = React.useContext(RNTesterThemeContext);
   const label = accessibilityLabel ?? `${title} ${description ?? ''}`;

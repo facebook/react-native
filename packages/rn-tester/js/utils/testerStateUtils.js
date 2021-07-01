@@ -26,6 +26,7 @@ export const Screens = {
 
 export const initialState: RNTesterState = {
   activeModuleKey: null,
+  activeModuleExampleKey: null,
   screen: null,
   bookmarks: null,
   recentlyUsed: null,
@@ -134,6 +135,7 @@ export const getInitialStateFromAsyncStorage = async (
   if (!initialStateString) {
     return {
       activeModuleKey: null,
+      activeModuleExampleKey: null,
       screen: Screens.COMPONENTS,
       bookmarks: {components: [], apis: []},
       recentlyUsed: {components: [], apis: []},

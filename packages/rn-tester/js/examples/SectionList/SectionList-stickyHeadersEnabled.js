@@ -44,6 +44,7 @@ export function SectionList_stickySectionHeadersEnabled(): React.Node {
 export default {
   title: 'SectionList Sticky Headers Enabled',
   name: 'SectionList-stickyHeadersEnabled',
+  description: 'Toggle sticky headers on/off',
   render: function(): React.Element<
     typeof SectionList_stickySectionHeadersEnabled,
   > {

@@ -16,6 +16,7 @@ export const RNTesterActionsType = {
   BOOKMARK_PRESS: 'BOOKMARK_PRESS',
   BACK_BUTTON_PRESS: 'BACK_BUTTON_PRESS',
   MODULE_CARD_PRESS: 'MODULE_CARD_PRESS',
+  EXAMPLE_CARD_PRESS: 'EXAMPLE_CARD_PRESS',
 };
 
 const getUpdatedBookmarks = ({
@@ -77,17 +78,24 @@ export const RNTesterReducer = (
       return {
         ...state,
         activeModuleKey: null,
+        activeModuleExampleKey: null,
         screen: action.data.screen,
       };
     case RNTesterActionsType.MODULE_CARD_PRESS:
       return {
         ...state,
         activeModuleKey: action.data.key,
+        activeModuleExampleKey: null,
         recentlyUsed: getUpdatedRecentlyUsed({
           exampleType: action.data.exampleType,
           key: action.data.key,
           recentlyUsed: state.recentlyUsed,
         }),
+      };
+    case RNTesterActionsType.EXAMPLE_CARD_PRESS:
+      return {
+        ...state,
+        activeModuleExampleKey: action.data.key,
       };
     case RNTesterActionsType.BOOKMARK_PRESS:
       return {
@@ -102,7 +110,9 @@ export const RNTesterReducer = (
       // Go back to module or list
       return {
         ...state,
-        activeModuleKey: null,
+        activeModuleExampleKey: null,
+        activeModuleKey:
+          state.activeModuleExampleKey != null ? state.activeModuleKey : null,
       };
     default:
       throw new Error(`Invalid action type ${action.type}`);

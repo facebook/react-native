@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     height: 40,
   },
   output: {
-    width: '80%',
+    flex: 1,
     fontSize: 12,
   },
   list: {

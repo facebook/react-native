@@ -111,7 +111,13 @@ const RNTesterApp = (): React.Node => {
   );
   const colorScheme = useColorScheme();
 
-  const {activeModuleKey, screen, bookmarks, recentlyUsed} = state;
+  const {
+    activeModuleKey,
+    activeModuleExampleKey,
+    screen,
+    bookmarks,
+    recentlyUsed,
+  } = state;
 
   React.useEffect(() => {
     getInitialStateFromAsyncStorage(APP_STATE_KEY).then(
@@ -166,6 +172,16 @@ const RNTesterApp = (): React.Node => {
     [dispatch],
   );
 
+  const handleModuleExampleCardPress = React.useCallback(
+    exampleName => {
+      dispatch({
+        type: RNTesterActionsType.EXAMPLE_CARD_PRESS,
+        data: {key: exampleName},
+      });
+    },
+    [dispatch],
+  );
+
   const toggleBookmark = React.useCallback(
     ({exampleType, key}) => {
       dispatch({
@@ -194,6 +210,10 @@ const RNTesterApp = (): React.Node => {
 
   const activeModule =
     activeModuleKey != null ? RNTesterList.Modules[activeModuleKey] : null;
+  const activeModuleExample =
+    activeModuleExampleKey != null
+      ? activeModule?.examples.find(e => e.name === activeModuleExampleKey)
+      : null;
   const title = Screens.COMPONENTS
     ? 'Components'
     : Screens.APIS
@@ -210,7 +230,11 @@ const RNTesterApp = (): React.Node => {
             theme={theme}
             documentationURL={activeModule.documentationURL}
           />
-          <RNTesterModuleContainer module={activeModule} />
+          <RNTesterModuleContainer
+            module={activeModule}
+            example={activeModuleExample}
+            onExampleCardPress={handleModuleExampleCardPress}
+          />
         </View>
       ) : (
         <ModuleListsContainer

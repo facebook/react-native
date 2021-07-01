@@ -39,6 +39,7 @@ export function SectionList_onEndReached(): React.Node {
 export default {
   title: 'SectionList Inverted',
   name: 'SectionList-onEndReached',
+  description: 'Test onEndReached behavior',
   render: function(): React.Element<typeof SectionList_onEndReached> {
     return <SectionList_onEndReached />;
   },
