@@ -2654,7 +2654,6 @@ exports[`expands first in viewport to render up to maxToRenderPerBatch on initia
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  windowSize={1}
 >
   <View>
     <View
@@ -3184,8 +3183,8 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
   getItemCount={[Function]}
   getItemLayout={[Function]}
   initialNumToRender={1}
-  initialScrollIndex={4}
-  maxToRenderPerBatch={10}
+  initialScrollIndex={5}
+  maxToRenderPerBatch={1}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
@@ -3196,7 +3195,6 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  windowSize={1}
 >
   <View>
     <View
@@ -3246,27 +3244,6 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
     >
       <MockCellItem
         value={6}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={7}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={8}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={9}
       />
     </View>
   </View>
@@ -3326,7 +3303,6 @@ exports[`renders no spacers up to initialScrollIndex on first render when virtua
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  windowSize={1}
 >
   <View>
     <View

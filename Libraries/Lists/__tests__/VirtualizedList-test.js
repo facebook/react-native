@@ -539,6 +539,9 @@ describe('VirtualizedList', () => {
       />,
     );
 
+    // The initial render is specified to be the length of items provided.
+    // Expect that all sticky items (1 every 3) are passed to the underlying
+    // scrollview.
     expect(component).toMatchSnapshot();
   });
 
@@ -555,6 +558,9 @@ describe('VirtualizedList', () => {
       />,
     );
 
+    // The initial render is specified to be the length of items provided.
+    // Expect that all sticky items (1 every 3) are passed to the underlying
+    // scrollview, indices offset by 1 to account for the the header component.
     expect(component).toMatchSnapshot();
   });
 
@@ -571,6 +577,9 @@ describe('VirtualizedList', () => {
       />,
     );
 
+    // The initial render is specified to be half the length of items provided.
+    // Expect that all sticky items of index < 5 are passed to the underlying
+    // scrollview.
     expect(component).toMatchSnapshot();
   });
 
@@ -593,11 +602,14 @@ describe('VirtualizedList', () => {
     ReactTestRenderer.act(() => {
       simulateLayout(component, {
         viewport: {width: 10, height: 50},
-        content: {width: 10, height: 200},
+        content: {width: 10, height: 100},
       });
       performAllBatches();
     });
 
+    // A windowSize of 1 means we will render just the viewport height (50dip).
+    // Expect 5 10dip items to eventually be rendered, with sticky headers in
+    // the first 5 propagated. 
     expect(component).toMatchSnapshot();
   });
 
@@ -630,6 +642,11 @@ describe('VirtualizedList', () => {
       performAllBatches();
     });
 
+    // Scroll to the bottom 50 dip (last five items) of the content. Expect the
+    // last five items to be rendered, along with every sticky header above,
+    // even though they are out of the viewport window in layout coordinates.
+    // This is because they will remain rendered even once scrolled-past in
+    // layout space.
     expect(component).toMatchSnapshot();
   });
 });
@@ -668,6 +685,9 @@ it('unmounts sticky headers moved below viewport', () => {
     performAllBatches();
   });
 
+  // Scroll to the bottom 50 dip (last five items) of the content, then back up
+  // to the first 5. Ensure that sticky items are unmounted once they are below
+  // the render area.
   expect(component).toMatchSnapshot();
 });
 
@@ -684,6 +704,7 @@ it('renders offset cells in initial render when initialScrollIndex set', () => {
     />,
   );
 
+  // Check that the first render respects initialScrollIndex
   expect(component).toMatchSnapshot();
 });
 
@@ -700,6 +721,8 @@ it('does not over-render when there is less than initialNumToRender cells', () =
     />,
   );
 
+  // Check that the first render clamps to the last item when intialNumToRender
+  // goes over it.
   expect(component).toMatchSnapshot();
 });
 
@@ -733,6 +756,9 @@ it('retains intitial render if initialScrollIndex == 0', () => {
     performAllBatches();
   });
 
+  // If initialScrollIndex is 0 (the default), we should never unmount the top
+  // initialNumToRender as part of the "scroll to top optimization", even after
+  // scrolling to the bottom five items.
   expect(component).toMatchSnapshot();
 });
 
@@ -762,16 +788,12 @@ it('discards intitial render if initialScrollIndex != 0', () => {
   });
 
   ReactTestRenderer.act(() => {
-    component.getInstance()._onScroll({
-      nativeEvent: {
-        contentOffset: {x: 0, y: 150},
-        contentSize: {width: 10, height: 200},
-        layoutMeasurement: {width: 10, height: 50},
-      },
-    });
+    simulateScroll(component, {x: 0, y: 150});
     performAllBatches();
   });
 
+  // If initialScrollIndex is not 0, we do not enable retaining initial render
+  // as part of "scroll to top" optimization.
   expect(component).toMatchSnapshot();
 });
 
@@ -803,6 +825,11 @@ it('expands render area by maxToRenderPerBatch on tick', () => {
     performNextBatch();
   });
 
+  // We start by rendering 5 items in the initial render, but have default
+  // windowSize, enabling eventual rendering up to 20 viewports worth of
+  // content. We limit this to rendering 2 items per-batch via
+  // maxToRenderPerBatch, so we should only have 7 items rendered after the
+  // initial timer tick.
   expect(component).toMatchSnapshot();
 });
 
@@ -828,6 +855,9 @@ it('does not adjust render area until content area layed out', () => {
     performAllBatches();
   });
 
+  // We should not start layout-based logic to expand rendered area until
+  // content is layed out. Expect only the 5 initial items to be rendered after
+  // processing all batch work, even though the windowSize allows for more.
   expect(component).toMatchSnapshot();
 });
 
@@ -857,6 +887,10 @@ it('does not adjust render area with non-zero initialScrollIndex until scrolled'
     performAllBatches();
   });
 
+  // Layout information from before the time we scroll to initial index may not
+  // correspond to the area "initialScrollIndex" points to. Expect only the 5
+  // initial items (starting at initialScrollIndex) to be rendered after
+  // processing all batch work, even though the windowSize allows for more.
   expect(component).toMatchSnapshot();
 });
 
@@ -884,10 +918,12 @@ it('adjusts render area with non-zero initialScrollIndex after scrolled', () => 
       content: {width: 10, height: 200},
     });
 
-    simulateScroll(component, {x: 0, y: 150});
+    simulateScroll(component, {x: 0, y: 10});
     performAllBatches();
   });
 
+  // We should expand the render area after receiving a message indcating we
+  // arrived at initialScrollIndex.
   expect(component).toMatchSnapshot();
 });
 
@@ -905,6 +941,8 @@ it('renders initialNumToRender cells when virtualization disabled', () => {
     />,
   );
 
+  // We should render initialNumToRender items with no spacers on initial render
+  // when virtualization is disabled
   expect(component).toMatchSnapshot();
 });
 
@@ -918,7 +956,6 @@ it('renders no spacers up to initialScrollIndex on first render when virtualizat
       <VirtualizedList
         initialNumToRender={2}
         initialScrollIndex={4}
-        windowSize={1}
         maxToRenderPerBatch={1}
         disableVirtualization
         {...baseItemProps(items)}
@@ -927,6 +964,9 @@ it('renders no spacers up to initialScrollIndex on first render when virtualizat
     );
   });
 
+  // There should be no spacers present in an offset initial render with
+  // virtualiztion disabled. Only initialNumToRender items starting at
+  // initialScrollIndex. 
   expect(component).toMatchSnapshot();
 });
 
@@ -940,7 +980,6 @@ it('expands first in viewport to render up to maxToRenderPerBatch on initial ren
       <VirtualizedList
         initialNumToRender={2}
         initialScrollIndex={4}
-        windowSize={1}
         maxToRenderPerBatch={10}
         {...baseItemProps(items)}
         {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
@@ -948,6 +987,9 @@ it('expands first in viewport to render up to maxToRenderPerBatch on initial ren
     );
   });
 
+  // When virtualization is disabled we may render items before initialItemIndex
+  // if initialItemIndex + initialNumToRender < maToRenderPerBatch. Expect cells
+  // 0-3 to be rendered in this example, even though initialScrollIndex is 4. 
   expect(component).toMatchSnapshot();
 });
 
@@ -960,9 +1002,8 @@ it('renders items before initialScrollIndex on first batch tick when virtualizat
     component = ReactTestRenderer.create(
       <VirtualizedList
         initialNumToRender={1}
-        initialScrollIndex={4}
-        windowSize={1}
-        maxToRenderPerBatch={10}
+        initialScrollIndex={5}
+        maxToRenderPerBatch={1}
         disableVirtualization
         {...baseItemProps(items)}
         {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
@@ -978,6 +1019,11 @@ it('renders items before initialScrollIndex on first batch tick when virtualizat
     performNextBatch();
   });
 
+  // When virtualization is disabled, we render "maxToRenderPerBatch" items
+  // sequentially per batch tick. Any items not yet rendered before
+  // initialScrollIndex are currently rendered at this time. Expect the first
+  // tick to render all items before initialScrollIndex, along with
+  // maxToRenderPerBatch after.
   expect(component).toMatchSnapshot();
 });
 
@@ -1008,6 +1054,8 @@ it('eventually renders all items when virtualization disabled', () => {
     performAllBatches();
   });
 
+  // After all batch ticks, all items should eventually be rendered when\
+  // virtualization is disabled.
   expect(component).toMatchSnapshot();
 });
 
@@ -1037,6 +1085,9 @@ it('retains initial render region when an item is appended', () => {
     );
   });
 
+  // Adding an item to the list before batch render should keep the existing
+  // rendered items rendered. Expect the first 3 items rendered, and a spacer
+  // for 8 items (including the 11th, added item).
   expect(component).toMatchSnapshot();
 });
 
@@ -1076,6 +1127,10 @@ it('retains batch render region when an item is appended', () => {
     );
   });
 
+  // Adding an item to the list after batch render should keep the existing
+  // rendered items rendered. We batch render 10 items, then add an 11th. Expect
+  // the first ten items to be present, with a spacer for the 11th until the
+  // next batch render.
   expect(component).toMatchSnapshot();
 });
 
@@ -1115,6 +1170,9 @@ it('constrains batch render region when an item is removed', () => {
     );
   });
 
+  // If the number of items is reduced, we should remove the corresponding
+  // already rendered items. Expect there to be 5 items present. New items in a
+  // previously occupied index may also be immediately rendered.
   expect(component).toMatchSnapshot();
 });
 
@@ -1125,6 +1183,9 @@ it('renders a zero-height tail spacer on initial render if getItemLayout not def
     <VirtualizedList initialNumToRender={3} {...baseItemProps(items)} />,
   );
 
+  // Do not add space for out-of-viewport content on initial render when we do
+  // not yet know how large it should be (no getItemLayout and cell onLayout not
+  // yet called). Expect the tail spacer not to occupy space.
   expect(component).toMatchSnapshot();
 });
 
@@ -1151,6 +1212,9 @@ it('renders zero-height tail spacer on batch render if cells not yet measured an
     performNextBatch();
   });
 
+  // Do not add space for out-of-viewport content unless the cell has previously
+  // been layed out and measurements cached. Expect the tail spacer not to
+  // occupy space.
   expect(component).toMatchSnapshot();
 });
 
@@ -1187,6 +1251,10 @@ it('renders tail spacer up to last measured index if getItemLayout not defined',
     performNextBatch();
   });
 
+  // If cells in the out-of-viewport area have been measured, their space can be
+  // incorporated into the tail spacer, without space for the cells we can not
+  // measure until layout. Expect there to be a tail spacer occupying the space
+  // for measured, but not yet rendered items (up to and including item 6).
   expect(component).toMatchSnapshot();
 });
 
@@ -1226,6 +1294,10 @@ it('renders tail spacer up to last measured with irregular layout when getItemLa
     performNextBatch();
   });
 
+  // If cells in the out-of-viewport area have been measured, their space can be
+  // incorporated into the tail spacer, without space for the cells we can not
+  // measure until layout. Expect there to be a tail spacer occupying the space
+  // for measured, but not yet rendered items (up to and including item 6).
   expect(component).toMatchSnapshot();
 });
 
@@ -1262,6 +1334,8 @@ it('renders full tail spacer if all cells measured', () => {
     performNextBatch();
   });
 
+  // The tail-spacer should occupy the space of all non-rendered items if all
+  // items have been measured.
   expect(component).toMatchSnapshot();
 });
 
@@ -1290,6 +1364,10 @@ it('renders windowSize derived region at top', () => {
     performAllBatches();
   });
 
+  // A windowSize of 3 means that we should render a viewport's worth of content
+  // above and below the current. A 20 dip viewport at the top of the list means
+  // we should render the top 4 10-dip items (for the current viewport, and
+  // 20dip below).
   expect(component).toMatchSnapshot();
 });
 
@@ -1323,6 +1401,11 @@ it('renders windowSize derived region in middle', () => {
     performAllBatches();
   });
 
+  // A windowSize of 3 means that we should render a viewport's worth of content
+  // above and below the current. A 20 dip viewport in the top of the list means
+  // we should render the 6 10-dip items (for the current viewport, 20 dip above
+  // and below), along with retaining the top initialNumToRenderItems. We seem
+  // to actually render 7 in the middle due to rounding at the moment.
   expect(component).toMatchSnapshot();
 });
 
@@ -1356,6 +1439,11 @@ it('renders windowSize derived region at bottom', () => {
     performAllBatches();
   });
 
+  // A windowSize of 3 means that we should render a viewport's worth of content
+  // above and below the current. A 20 dip viewport at the bottom of the list
+  // means we should render the bottom 4 10-dip items (for the current viewport,
+  // and 20dip above), along with retaining the top initialNumToRenderItems. We
+  // seem to actually render 4 at the bottom due to rounding at the moment.
   expect(component).toMatchSnapshot();
 });
 
