@@ -10,10 +10,24 @@
 
 'use strict';
 
-import SectionList_Scrollable from './SectionList-scrollable';
+import Scrollable from './SectionList-scrollable';
+import ContentInset from './SectionList-contentInset';
+import onEndReached from './SectionList-onEndReached';
+import onViewableItemsChanged from './SectionList-onViewableItemsChanged';
+import withSeparators from './SectionList-withSeparators';
+import stickyHeadersEnabled from './SectionList-stickyHeadersEnabled';
+import inverted from './SectionList-inverted';
 
 exports.title = 'SectionList';
 exports.category = 'ListView';
 exports.documentationURL = 'https://reactnative.dev/docs/sectionlist';
 exports.description = 'Performant, scrollable list of data.';
-exports.examples = [SectionList_Scrollable];
+exports.examples = [
+  ContentInset,
+  onEndReached,
+  onViewableItemsChanged,
+  withSeparators,
+  stickyHeadersEnabled,
+  inverted,
+  Scrollable,
+];
