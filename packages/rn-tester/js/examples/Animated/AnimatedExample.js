@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RNTesterExampleModule} from '../../types/RNTesterTypes';
+import type {RNTesterModule} from '../../types/RNTesterTypes';
 import RotatingImagesExample from './RotatingImagesExample';
 import ContinuousInteractionsExample from './ContinuousInteractionsExample';
 import LoopingExample from './LoopingExample';
@@ -34,4 +34,4 @@ export default ({
     LoopingExample,
     ContinuousInteractionsExample,
   ],
-}: RNTesterExampleModule);
+}: RNTesterModule);

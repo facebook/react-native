@@ -11,7 +11,7 @@
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import {Animated, View, StyleSheet} from 'react-native';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 const styles = StyleSheet.create({
   rotatingImage: {
@@ -88,4 +88,4 @@ export default ({
   title: 'Rotating Images',
   description: 'Simple Animated.Image rotation.',
   render: RotatingImagesExample,
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);

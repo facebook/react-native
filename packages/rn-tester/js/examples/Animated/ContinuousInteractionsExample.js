@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
 import {Text} from 'react-native';
 
@@ -18,4 +18,4 @@ export default ({
     'values, interrupting and transitioning ' +
     'animations, etc.': string),
   render: (): React.Node => <Text>Checkout the Gratuitous Animation App!</Text>,
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);

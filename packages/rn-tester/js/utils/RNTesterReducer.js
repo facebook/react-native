@@ -13,9 +13,9 @@ import type {RNTesterState, ComponentList} from '../types/RNTesterTypes';
 export const RNTesterActionsType = {
   INIT_FROM_STORAGE: 'INIT_FROM_STORAGE',
   NAVBAR_PRESS: 'NAVBAR_PRESS',
-  EXAMPLE_CARD_PRESS: 'EXAMPLE_CARD_PRESS',
   BOOKMARK_PRESS: 'BOOKMARK_PRESS',
   BACK_BUTTON_PRESS: 'BACK_BUTTON_PRESS',
+  MODULE_CARD_PRESS: 'MODULE_CARD_PRESS',
 };
 
 const getUpdatedBookmarks = ({
@@ -76,13 +76,13 @@ export const RNTesterReducer = (
     case RNTesterActionsType.NAVBAR_PRESS:
       return {
         ...state,
-        openExample: null,
+        activeModuleKey: null,
         screen: action.data.screen,
       };
-    case RNTesterActionsType.EXAMPLE_CARD_PRESS:
+    case RNTesterActionsType.MODULE_CARD_PRESS:
       return {
         ...state,
-        openExample: action.data.key,
+        activeModuleKey: action.data.key,
         recentlyUsed: getUpdatedRecentlyUsed({
           exampleType: action.data.exampleType,
           key: action.data.key,
@@ -99,9 +99,10 @@ export const RNTesterReducer = (
         }),
       };
     case RNTesterActionsType.BACK_BUTTON_PRESS:
+      // Go back to module or list
       return {
         ...state,
-        openExample: null,
+        activeModuleKey: null,
       };
     default:
       throw new Error(`Invalid action type ${action.type}`);

@@ -25,7 +25,7 @@ export const Screens = {
 };
 
 export const initialState: RNTesterState = {
-  openExample: null,
+  activeModuleKey: null,
   screen: null,
   bookmarks: null,
   recentlyUsed: null,
@@ -56,7 +56,7 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
     return null;
   }
 
-  const components = RNTesterList.ComponentExamples.map(componentExample => ({
+  const components = RNTesterList.Components.map(componentExample => ({
     ...componentExample,
     isBookmarked: bookmarks.components.includes(componentExample.key),
     exampleType: Screens.COMPONENTS,
@@ -72,7 +72,7 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
     component => component.isBookmarked,
   );
 
-  const apis = RNTesterList.APIExamples.map(apiExample => ({
+  const apis = RNTesterList.APIs.map(apiExample => ({
     ...apiExample,
     isBookmarked: bookmarks.apis.includes(apiExample.key),
     exampleType: Screens.APIS,
@@ -133,7 +133,7 @@ export const getInitialStateFromAsyncStorage = async (
 
   if (!initialStateString) {
     return {
-      openExample: null,
+      activeModuleKey: null,
       screen: Screens.COMPONENTS,
       bookmarks: {components: [], apis: []},
       recentlyUsed: {components: [], apis: []},

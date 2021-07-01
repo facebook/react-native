@@ -17,8 +17,8 @@ import {
 } from 'react-native';
 import * as React from 'react';
 
-import RNTesterExampleContainer from './components/RNTesterExampleContainer';
-import RNTesterExampleList from './components/RNTesterExampleList';
+import RNTesterModuleContainer from './components/RNTesterModuleContainer';
+import RNTesterModuleList from './components/RNTesterModuleList';
 import RNTesterNavBar from './components/RNTesterNavbar';
 import RNTesterList from './utils/RNTesterList';
 import {
@@ -56,17 +56,17 @@ type ExampleListsContainerProps = $ReadOnly<{|
   title: string,
   examplesList: ExamplesList,
   toggleBookmark: (args: {exampleType: string, key: string}) => mixed,
-  handleExampleCardPress: (args: {exampleType: string, key: string}) => mixed,
+  handleModuleCardPress: (args: {exampleType: string, key: string}) => mixed,
   isVisible: boolean,
 |}>;
 
-const ExampleListsContainer = ({
+const ModuleListsContainer = ({
   theme,
   screen,
   title,
   examplesList,
   toggleBookmark,
-  handleExampleCardPress,
+  handleModuleCardPress,
   isVisible,
 }: ExampleListsContainerProps) => {
   const isBookmarkEmpty = examplesList.bookmarks.length === 0;
@@ -75,27 +75,27 @@ const ExampleListsContainer = ({
     <DisplayIfVisible isVisible={isVisible}>
       <Header title={title} theme={theme} />
       <DisplayIfVisible isVisible={screen === Screens.COMPONENTS}>
-        <RNTesterExampleList
+        <RNTesterModuleList
           sections={examplesList.components}
           toggleBookmark={toggleBookmark}
-          handleExampleCardPress={handleExampleCardPress}
+          handleModuleCardPress={handleModuleCardPress}
         />
       </DisplayIfVisible>
       <DisplayIfVisible isVisible={screen === Screens.APIS}>
-        <RNTesterExampleList
+        <RNTesterModuleList
           sections={examplesList.apis}
           toggleBookmark={toggleBookmark}
-          handleExampleCardPress={handleExampleCardPress}
+          handleModuleCardPress={handleModuleCardPress}
         />
       </DisplayIfVisible>
       <DisplayIfVisible isVisible={screen === Screens.BOOKMARKS}>
         {isBookmarkEmpty ? (
           <RNTesterEmptyBookmarksState />
         ) : (
-          <RNTesterExampleList
+          <RNTesterModuleList
             sections={examplesList.bookmarks}
             toggleBookmark={toggleBookmark}
-            handleExampleCardPress={handleExampleCardPress}
+            handleModuleCardPress={handleModuleCardPress}
           />
         )}
       </DisplayIfVisible>
@@ -111,7 +111,7 @@ const RNTesterApp = (): React.Node => {
   );
   const colorScheme = useColorScheme();
 
-  const {openExample, screen, bookmarks, recentlyUsed} = state;
+  const {activeModuleKey, screen, bookmarks, recentlyUsed} = state;
 
   React.useEffect(() => {
     getInitialStateFromAsyncStorage(APP_STATE_KEY).then(
@@ -131,15 +131,15 @@ const RNTesterApp = (): React.Node => {
   );
 
   const handleBackPress = React.useCallback(() => {
-    if (openExample) {
+    if (activeModuleKey != null) {
       dispatch({type: RNTesterActionsType.BACK_BUTTON_PRESS});
     }
-  }, [dispatch, openExample]);
+  }, [dispatch, activeModuleKey]);
 
   // Setup hardware back button press listener
   React.useEffect(() => {
     const handleHardwareBackPress = () => {
-      if (openExample) {
+      if (activeModuleKey) {
         handleBackPress();
         return true;
       }
@@ -154,12 +154,12 @@ const RNTesterApp = (): React.Node => {
         handleHardwareBackPress,
       );
     };
-  }, [openExample, handleBackPress]);
+  }, [activeModuleKey, handleBackPress]);
 
-  const handleExampleCardPress = React.useCallback(
+  const handleModuleCardPress = React.useCallback(
     ({exampleType, key}) => {
       dispatch({
-        type: RNTesterActionsType.EXAMPLE_CARD_PRESS,
+        type: RNTesterActionsType.MODULE_CARD_PRESS,
         data: {exampleType, key},
       });
     },
@@ -192,7 +192,8 @@ const RNTesterApp = (): React.Node => {
     return null;
   }
 
-  const ExampleModule = openExample && RNTesterList.Modules[openExample];
+  const activeModule =
+    activeModuleKey != null ? RNTesterList.Modules[activeModuleKey] : null;
   const title = Screens.COMPONENTS
     ? 'Components'
     : Screens.APIS
@@ -201,31 +202,31 @@ const RNTesterApp = (): React.Node => {
 
   return (
     <RNTesterThemeContext.Provider value={theme}>
-      {ExampleModule && (
+      {activeModule != null ? (
         <View style={styles.container}>
           <Header
             onBack={handleBackPress}
             title={title}
             theme={theme}
-            documentationURL={ExampleModule.documentationURL}
+            documentationURL={activeModule.documentationURL}
           />
-          <RNTesterExampleContainer module={ExampleModule} />
+          <RNTesterModuleContainer module={activeModule} />
         </View>
+      ) : (
+        <ModuleListsContainer
+          isVisible={!activeModule}
+          screen={screen || Screens.COMPONENTS}
+          title={title}
+          theme={theme}
+          examplesList={examplesList}
+          handleModuleCardPress={handleModuleCardPress}
+          toggleBookmark={toggleBookmark}
+        />
       )}
-
-      <ExampleListsContainer
-        isVisible={!ExampleModule}
-        screen={screen || Screens.COMPONENTS}
-        title={title}
-        theme={theme}
-        examplesList={examplesList}
-        handleExampleCardPress={handleExampleCardPress}
-        toggleBookmark={toggleBookmark}
-      />
       <View style={styles.bottomNavbar}>
         <RNTesterNavBar
           screen={screen || Screens.COMPONENTS}
-          isExamplePageOpen={!!ExampleModule}
+          isExamplePageOpen={!!activeModule}
           handleNavBarPress={handleNavBarPress}
         />
       </View>

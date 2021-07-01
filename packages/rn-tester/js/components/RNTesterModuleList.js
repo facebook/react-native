@@ -24,7 +24,7 @@ const {
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 
-const ExampleCard = ({
+const ExampleModuleRow = ({
   onShowUnderlay,
   onHideUnderlay,
   item,
@@ -117,8 +117,8 @@ const renderSectionHeader = ({section}) => (
   </RNTesterThemeContext.Consumer>
 );
 
-const RNTesterExampleList: React$AbstractComponent<any, void> = React.memo(
-  ({sections, toggleBookmark, handleExampleCardPress}) => {
+const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
+  ({sections, toggleBookmark, handleModuleCardPress}) => {
     const theme = React.useContext(RNTesterThemeContext);
 
     const filter = ({example, filterRegex, category}) =>
@@ -128,13 +128,13 @@ const RNTesterExampleList: React$AbstractComponent<any, void> = React.memo(
 
     const renderListItem = ({item, section, separators}) => {
       return (
-        <ExampleCard
+        <ExampleModuleRow
           item={item}
           section={section}
           onShowUnderlay={separators.highlight}
           onHideUnderlay={separators.unhighlight}
           toggleBookmark={toggleBookmark}
-          handlePress={handleExampleCardPress}
+          handlePress={handleModuleCardPress}
         />
       );
     };
@@ -250,4 +250,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = RNTesterExampleList;
+module.exports = RNTesterModuleList;

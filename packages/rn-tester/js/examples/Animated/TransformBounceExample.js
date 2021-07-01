@@ -11,7 +11,7 @@
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import {Text, StyleSheet, View, Animated} from 'react-native';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 const styles = StyleSheet.create({
   content: {
@@ -96,4 +96,4 @@ export default ({
       </View>
     );
   },
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);

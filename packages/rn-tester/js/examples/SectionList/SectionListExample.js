@@ -342,6 +342,7 @@ exports.title = 'SectionList';
 exports.category = 'ListView';
 exports.documentationURL = 'https://reactnative.dev/docs/sectionlist';
 exports.description = 'Performant, scrollable list of data.';
+exports.showIndividualExamples = true;
 exports.examples = [
   {
     title: 'Simple scrollable list',

@@ -24,7 +24,7 @@ import {
 import nullthrows from 'nullthrows';
 
 import {useState, useCallback} from 'react';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
 
@@ -266,7 +266,7 @@ exports.examples = ([
       return <SnapToOptions />;
     },
   },
-]: Array<RNTesterExampleModuleItem>);
+]: Array<RNTesterModuleExample>);
 
 if (Platform.OS === 'ios') {
   exports.examples.push({
