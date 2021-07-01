@@ -126,7 +126,7 @@ type OptionalProps<ItemT> = {|
    * Multiple columns can only be rendered with `horizontal={false}` and will zig-zag like a
    * `flexWrap` layout. Items should all be the same height - masonry layouts are not supported.
    */
-  numColumns: number,
+  numColumns?: number,
   /**
    * Note: may have bugs (missing content) in some circumstances - use at your own risk.
    *
@@ -564,7 +564,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     const {
       ListItemComponent,
       renderItem,
-      numColumns,
+      numColumns = 1,
       columnWrapperStyle,
     } = this.props;
 
@@ -629,7 +629,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         keyExtractor={this._keyExtractor}
         ref={this._captureRef}
         viewabilityConfigCallbackPairs={this._virtualizedListPairs}
-        removeClippedSubviews={this.props.removeClippedSubviews || Platform.OS === 'android'}
+        removeClippedSubviews={
+          this.props.removeClippedSubviews || Platform.OS === 'android'
+        }
         {...this._renderer()}
       />
     );
