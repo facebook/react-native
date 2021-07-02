@@ -160,10 +160,6 @@ RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
 RCT_EXTERN BOOL RCTTurboModuleSharedMutexInitEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleSharedMutexInit(BOOL enabled);
 
-// Turn on TurboModule block guard for promises.
-RCT_EXTERN BOOL RCTTurboModulePromisesBlockGuardEnabled(void);
-RCT_EXTERN void RCTEnableTurboModulePromisesBlockGuard(BOOL enabled);
-
 /**
  * Async batched bridge used to communicate with the JavaScript application.
  */

@@ -138,17 +138,6 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
-static BOOL turboModulePromisesBlockGuardEnabled = NO;
-BOOL RCTTurboModulePromisesBlockGuardEnabled(void)
-{
-  return turboModulePromisesBlockGuardEnabled;
-}
-
-void RCTEnableTurboModulePromisesBlockGuard(BOOL enabled)
-{
-  turboModulePromisesBlockGuardEnabled = enabled;
-}
-
 @interface RCTBridge () <RCTReloadListener>
 @end
 

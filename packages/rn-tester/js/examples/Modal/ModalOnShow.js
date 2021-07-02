@@ -10,7 +10,7 @@
 
 import * as React from 'react';
 import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 function ModalOnShowOnDismiss(): React.Node {
   const [modalShowComponent, setModalShowComponent] = React.useState(true);
@@ -134,4 +134,4 @@ export default ({
   description:
     'onShow and onDismiss (iOS only) callbacks are called when modals is shown/dissmissed',
   render: (): React.Node => <ModalOnShowOnDismiss />,
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);

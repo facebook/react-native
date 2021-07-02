@@ -48,6 +48,7 @@ let _easeInOut;
 function easeInOut() {
   if (!_easeInOut) {
     const Easing = require('../Easing');
+    // $FlowFixMe[method-unbinding]
     _easeInOut = Easing.inOut(Easing.ease);
   }
   return _easeInOut;

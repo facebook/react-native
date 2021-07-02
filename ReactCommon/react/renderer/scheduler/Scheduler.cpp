@@ -105,17 +105,11 @@ Scheduler::Scheduler(
 
   runtimeExecutor_([uiManager,
                     asyncMeasure,
-                    runtimeExecutor = runtimeExecutor_,
-                    runtimeScheduler = schedulerToolbox.runtimeScheduler](
-                       jsi::Runtime &runtime) {
+                    runtimeExecutor = runtimeExecutor_](jsi::Runtime &runtime) {
     auto uiManagerBinding =
         UIManagerBinding::createAndInstallIfNeeded(runtime, runtimeExecutor);
     uiManagerBinding->attach(uiManager);
     uiManagerBinding->setEnableAsyncMeasure(asyncMeasure);
-    if (runtimeScheduler) {
-      RuntimeSchedulerBinding::createAndInstallIfNeeded(
-          runtime, runtimeScheduler);
-    }
   });
 
   auto componentDescriptorRegistryKey =
@@ -287,14 +281,23 @@ void Scheduler::uiManagerDidFinishTransaction(
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
 }
-void Scheduler::uiManagerDidCreateShadowNode(
-    const ShadowNode::Shared &shadowNode) {
+void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
   if (delegate_) {
-    auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getSurfaceId(), shadowView);
+        shadowNode.getSurfaceId(), shadowNode);
+  }
+}
+
+void Scheduler::uiManagerDidCloneShadowNode(
+    const ShadowNode &oldShadowNode,
+    const ShadowNode &newShadowNode) {
+  SystraceSection s("Scheduler::uiManagerDidCloneShadowNode");
+
+  if (delegate_) {
+    delegate_->schedulerDidCloneShadowNode(
+        newShadowNode.getSurfaceId(), oldShadowNode, newShadowNode);
   }
 }
 

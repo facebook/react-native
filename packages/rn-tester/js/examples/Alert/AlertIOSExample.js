@@ -21,7 +21,7 @@ const {
 
 const {examples: SharedAlertExamples} = require('./AlertExample');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 type Props = $ReadOnly<{||}>;
 type State = {|promptValue: ?string|};
@@ -64,6 +64,7 @@ class PromptOptions extends React.Component<Props, State> {
         <TouchableHighlight
           style={styles.wrapper}
           // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+          // $FlowFixMe[incompatible-call]
           onPress={() => Alert.prompt('Type a value', null, this.saveResponse)}>
           <View style={styles.button}>
             <Text>prompt with title & callback</Text>
@@ -104,6 +105,7 @@ class PromptOptions extends React.Component<Props, State> {
               'Type a value',
               null,
               // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+              // $FlowFixMe[incompatible-call]
               this.saveResponse,
               undefined,
               'Default value',
@@ -203,4 +205,4 @@ exports.examples = ([
       );
     },
   },
-]: RNTesterExampleModuleItem[]);
+]: Array<RNTesterModuleExample>);

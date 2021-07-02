@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import {Text, StyleSheet, View, Animated} from 'react-native';
@@ -52,82 +52,65 @@ const styles = StyleSheet.create({
 });
 
 type Props = $ReadOnly<{||}>;
-type State = {|boxVisible: boolean|};
 
-class MovingBoxExample extends React.Component<Props, State> {
-  x: Animated.Value;
-  constructor(props) {
-    super(props);
-    this.x = new Animated.Value(0);
-    this.state = {
-      boxVisible: true,
-    };
-  }
+function MovingBoxExample(props: Props): React.Node {
+  const x = React.useRef(new Animated.Value(0));
+  const [boxVisible, setBoxVisible] = React.useState(true);
 
-  render() {
-    const {boxVisible} = this.state;
-    const toggleText = boxVisible ? 'Hide' : 'Show';
-    return (
-      <View style={styles.container}>
-        {this.renderBox()}
-        <View style={styles.buttonsContainer}>
-          <RNTesterButton
-            testID="move-left-button"
-            onPress={() => this.moveTo(0)}>
-            {'<-'}
-          </RNTesterButton>
-          <RNTesterButton onPress={this.toggleVisibility}>
-            {toggleText}
-          </RNTesterButton>
-          <RNTesterButton
-            testID="move-right-button"
-            onPress={() => this.moveTo(containerWidth - boxSize)}>
-            {'->'}
-          </RNTesterButton>
-        </View>
-      </View>
-    );
-  }
-
-  renderBox = () => {
-    if (this.state.boxVisible) {
-      const horizontalLocation = {transform: [{translateX: this.x}]};
-      return (
-        <View style={styles.boxContainer}>
-          <Animated.View
-            testID="moving-view"
-            style={[styles.content, styles.box, horizontalLocation]}
-          />
-        </View>
-      );
-    } else {
-      return (
-        <View style={styles.boxContainer}>
-          <Text>The box view is not being rendered</Text>
-        </View>
-      );
-    }
-  };
-
-  moveTo = x => {
-    Animated.timing(this.x, {
-      toValue: x,
+  const moveTo = (pos: number) => {
+    Animated.timing(x.current, {
+      toValue: pos,
       duration: 1000,
       useNativeDriver: true,
     }).start();
   };
 
-  toggleVisibility = () => {
-    const {boxVisible} = this.state;
-    this.setState({boxVisible: !boxVisible});
+  const toggleVisibility = () => {
+    setBoxVisible(!boxVisible);
   };
+  const toggleText = boxVisible ? 'Hide' : 'Show';
+  const onReset = () => {
+    x.current.resetAnimation();
+  };
+
+  return (
+    <View style={styles.container}>
+      {boxVisible ? (
+        <View style={styles.boxContainer}>
+          <Animated.View
+            testID="moving-view"
+            style={[
+              styles.content,
+              styles.box,
+              {transform: [{translateX: x.current}]},
+            ]}
+          />
+        </View>
+      ) : (
+        <View style={styles.boxContainer}>
+          <Text>The box view is not being rendered</Text>
+        </View>
+      )}
+      <View style={styles.buttonsContainer}>
+        <RNTesterButton testID="move-left-button" onPress={() => moveTo(0)}>
+          {'<-'}
+        </RNTesterButton>
+        <RNTesterButton onPress={toggleVisibility}>{toggleText}</RNTesterButton>
+        <RNTesterButton onPress={onReset}>Reset</RNTesterButton>
+        <RNTesterButton
+          testID="move-right-button"
+          onPress={() => moveTo(containerWidth - boxSize)}>
+          {'->'}
+        </RNTesterButton>
+      </View>
+    </View>
+  );
 }
 
 export default ({
   title: 'Moving box example',
   name: 'movingView',
-  description: ('Click arrow buttons to move the box.' +
-    'Then hide the box and reveal it again.' +
-    'After that the box position will reset to initial position.': string),
+  description:
+    'Click arrow buttons to move the box. Then hide the box and reveal it again. The box will stay its last position. Reset will reset the animation to its starting position',
   render: (): React.Node => <MovingBoxExample />,
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);

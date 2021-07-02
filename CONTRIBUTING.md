@@ -30,8 +30,8 @@ We use GitHub issues and pull requests to keep track of bug reports and contribu
 
 You can learn more about the contribution process in the following documents:
 
-* [Issues](https://github.com/facebook/react-native/wiki/Issues)
-* [Pull Requests](https://github.com/facebook/react-native/wiki/Pull-Requests)
+* [Issues](https://github.com/facebook/react-native/wiki/Triaging-GitHub-Issues)
+* [Pull Requests](https://github.com/facebook/react-native/wiki/Managing-Pull-Requests)
 
 We also have a thriving community of contributors who would be happy to help you get set up. You can reach out to us through [@ReactNative](http://twitter.com/reactnative) (the React Native team) and [@ReactNativeComm](http://twitter.com/reactnativecomm) (the React Native Community organization).
 

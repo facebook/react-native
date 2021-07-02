@@ -9,7 +9,7 @@
  */
 
 import RNTesterButton from '../../components/RNTesterButton';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
@@ -19,7 +19,7 @@ export default ({
   name: 'loopingView',
   description: 'Native looping animation that shrinks and fades out a view.',
   render: () => <LoopingExample />,
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);
 
 function LoopingExample(props: {}): React.Node {
   const [running, setRunning] = useState(false);

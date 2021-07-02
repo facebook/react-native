@@ -14,7 +14,6 @@ const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
 const AnimatedImplementation = require('./AnimatedImplementation');
 const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
 const AnimatedNode = require('./nodes/AnimatedNode');
-const AnimatedProps = require('./nodes/AnimatedProps');
 const AnimatedValue = require('./nodes/AnimatedValue');
 const AnimatedValueXY = require('./nodes/AnimatedValueXY');
 
@@ -24,7 +23,6 @@ import type {EndCallback} from './animations/Animation';
 import type {TimingAnimationConfig} from './animations/TimingAnimation';
 import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
-import type {Mapping, EventConfig} from './AnimatedEvent';
 
 /**
  * Animations are a source of flakiness in snapshot testing. This mock replaces
@@ -123,10 +121,6 @@ const loop = function(
   return emptyAnimation;
 };
 
-const event = function(argMapping: Array<?Mapping>, config: EventConfig): any {
-  return null;
-};
-
 module.exports = {
   Value: AnimatedValue,
   ValueXY: AnimatedValueXY,
@@ -146,7 +140,7 @@ module.exports = {
   parallel,
   stagger,
   loop,
-  event,
+  event: AnimatedImplementation.event,
   createAnimatedComponent,
   attachNativeEvent,
   forkEvent: AnimatedImplementation.forkEvent,

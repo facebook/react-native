@@ -12,6 +12,7 @@
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
+import useMergeRefs from '../../Utilities/useMergeRefs';
 
 import AndroidSwitchNativeComponent, {
   Commands as AndroidSwitchCommands,
@@ -153,7 +154,8 @@ const SwitchWithForwardedRef: React.AbstractComponent<
   const nativeSwitchRef = React.useRef<React.ElementRef<
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
   > | null>(null);
-  React.useImperativeHandle(forwardedRef, () => nativeSwitchRef.current);
+
+  const ref = useMergeRefs(nativeSwitchRef, forwardedRef);
 
   const [native, setNative] = React.useState({value: null});
 
@@ -200,7 +202,7 @@ const SwitchWithForwardedRef: React.AbstractComponent<
         onChange={handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}
-        ref={nativeSwitchRef}
+        ref={ref}
       />
     );
   } else {
@@ -232,7 +234,7 @@ const SwitchWithForwardedRef: React.AbstractComponent<
         onChange={handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}
-        ref={nativeSwitchRef}
+        ref={ref}
       />
     );
   }

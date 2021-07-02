@@ -1,0 +1,20 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
+
+rn_android_library(
+    name = "runtimescheduler",
+    srcs = glob(["**/*.java"]),
+    autoglob = False,
+    is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_target("java/com/facebook/react/runtimescheduler/jni:jni"),
+        react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("libraries/fbjni:java"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
+    ],
+)

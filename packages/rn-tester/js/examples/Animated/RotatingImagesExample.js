@@ -11,7 +11,7 @@
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import {Animated, View, StyleSheet} from 'react-native';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 const styles = StyleSheet.create({
   rotatingImage: {
@@ -21,11 +21,14 @@ const styles = StyleSheet.create({
 });
 
 function RotatingImagesExample(): React.Node {
+  // $FlowFixMe[incompatible-use]
+  // $FlowFixMe[incompatible-type]
   this.anim = this.anim || new Animated.Value(0);
   return (
     <View>
       <RNTesterButton
         onPress={() => {
+          // $FlowFixMe[incompatible-use]
           Animated.spring(this.anim, {
             // Returns to the start
             toValue: 0,
@@ -57,12 +60,14 @@ function RotatingImagesExample(): React.Node {
                 }),
               },
               {
+                // $FlowFixMe[incompatible-use]
                 translateX: this.anim.interpolate({
                   inputRange: [0, 1],
                   outputRange: [0, 100],
                 }),
               },
               {
+                // $FlowFixMe[incompatible-use]
                 rotate: this.anim.interpolate({
                   inputRange: [0, 1],
                   outputRange: [
@@ -83,4 +88,4 @@ export default ({
   title: 'Rotating Images',
   description: 'Simple Animated.Image rotation.',
   render: RotatingImagesExample,
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);

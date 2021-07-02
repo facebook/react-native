@@ -27,7 +27,7 @@ import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/Tex
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
@@ -816,4 +816,4 @@ exports.examples = ([
       );
     },
   },
-]: Array<RNTesterExampleModuleItem>);
+]: Array<RNTesterModuleExample>);

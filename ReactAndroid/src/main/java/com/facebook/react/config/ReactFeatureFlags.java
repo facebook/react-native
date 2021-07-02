@@ -44,6 +44,8 @@ public class ReactFeatureFlags {
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
 
+  public static boolean enableRuntimeScheduler = false;
+
   /** Enables a more aggressive cleanup during destruction of ReactContext */
   public static boolean enableReactContextCleanupFix = false;
 
@@ -65,6 +67,8 @@ public class ReactFeatureFlags {
   public static boolean enableFabricInLogBox = false;
 
   public static boolean enableLockFreeEventDispatcher = false;
+
+  public static boolean enableAggressiveEventEmitterCleanup = false;
 
   //
   // ScrollView C++ UpdateState vs onScroll race fixes

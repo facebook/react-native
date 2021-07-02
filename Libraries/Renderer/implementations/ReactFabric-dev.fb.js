@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<0962b5cf17d6b982900b0deedd83fda0>>
+ * @generated SignedSource<<5e044cc6ca6afb37524e2b0f1b24bab5>>
  */
 
 'use strict';
@@ -2841,6 +2841,7 @@ function getComponentNameFromFiber(fiber) {
 
 // The rest of the flags are static for better dead code elimination.
 var enableProfilerTimer = true;
+var enableProfilerCommitHooks = true;
 var enableLazyElements = false;
 var warnAboutStringRefs = false;
 var enableNewReconciler = false;
@@ -3214,20 +3215,6 @@ function findCurrentHostFiberImpl(node) {
   }
 
   return null;
-}
-function doesFiberContain(parentFiber, childFiber) {
-  var node = childFiber;
-  var parentFiberAlternate = parentFiber.alternate;
-
-  while (node !== null) {
-    if (node === parentFiber || node === parentFiberAlternate) {
-      return true;
-    }
-
-    node = node.return;
-  }
-
-  return false;
 }
 
 /**
@@ -4833,7 +4820,11 @@ var _nativeFabricUIManage = nativeFabricUIManager,
   registerEventHandler = _nativeFabricUIManage.registerEventHandler,
   fabricMeasure = _nativeFabricUIManage.measure,
   fabricMeasureInWindow = _nativeFabricUIManage.measureInWindow,
-  fabricMeasureLayout = _nativeFabricUIManage.measureLayout;
+  fabricMeasureLayout = _nativeFabricUIManage.measureLayout,
+  FabricDefaultPriority = _nativeFabricUIManage.unstable_DefaultEventPriority,
+  FabricDiscretePriority = _nativeFabricUIManage.unstable_DiscreteEventPriority,
+  fabricGetCurrentEventPriority =
+    _nativeFabricUIManage.unstable_getCurrentEventPriority;
 var getViewConfigForType =
   ReactNativePrivateInterface.ReactNativeViewConfigRegistry.get; // Counter for uniquely identifying views.
 // % 10 === 1 means it is a rootTag.
@@ -5053,6 +5044,21 @@ function shouldSetTextContent(type, props) {
   return false;
 }
 function getCurrentEventPriority() {
+  var currentEventPriority = fabricGetCurrentEventPriority
+    ? fabricGetCurrentEventPriority()
+    : null;
+
+  if (currentEventPriority != null) {
+    switch (currentEventPriority) {
+      case FabricDiscretePriority:
+        return DiscreteEventPriority;
+
+      case FabricDefaultPriority:
+      default:
+        return DefaultEventPriority;
+    }
+  }
+
   return DefaultEventPriority;
 } // The Fabric renderer is secondary to the existing React Native renderer.
 var scheduleTimeout = setTimeout;
@@ -5853,7 +5859,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "17.0.3-0eea57724";
+var ReactVersion = "18.0.0-568dc3532";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -17002,19 +17008,10 @@ function safelyCallComponentWillUnmount(
   nearestMountedAncestor,
   instance
 ) {
-  {
-    invokeGuardedCallback(
-      null,
-      callComponentWillUnmountWithTimer,
-      null,
-      current,
-      instance
-    );
-
-    if (hasCaughtError()) {
-      var unmountError = clearCaughtError();
-      captureCommitPhaseError(current, nearestMountedAncestor, unmountError);
-    }
+  try {
+    callComponentWillUnmountWithTimer(current, instance);
+  } catch (unmountError) {
+    captureCommitPhaseError(current, nearestMountedAncestor, unmountError);
   }
 } // Capture errors so they don't interrupt mounting.
 
@@ -17023,19 +17020,23 @@ function safelyDetachRef(current, nearestMountedAncestor) {
 
   if (ref !== null) {
     if (typeof ref === "function") {
-      {
-        if (current.mode & ProfileMode) {
-          startLayoutEffectTimer();
-          invokeGuardedCallback(null, ref, null, null);
-          recordLayoutEffectDuration(current);
+      try {
+        if (
+          enableProfilerTimer &&
+          enableProfilerCommitHooks &&
+          current.mode & ProfileMode
+        ) {
+          try {
+            startLayoutEffectTimer();
+            ref(null);
+          } finally {
+            recordLayoutEffectDuration(current);
+          }
         } else {
-          invokeGuardedCallback(null, ref, null, null);
+          ref(null);
         }
-
-        if (hasCaughtError()) {
-          var refError = clearCaughtError();
-          captureCommitPhaseError(current, nearestMountedAncestor, refError);
-        }
+      } catch (error) {
+        captureCommitPhaseError(current, nearestMountedAncestor, error);
       }
     } else {
       ref.current = null;
@@ -17044,13 +17045,10 @@ function safelyDetachRef(current, nearestMountedAncestor) {
 }
 
 function safelyCallDestroy(current, nearestMountedAncestor, destroy) {
-  {
-    invokeGuardedCallback(null, destroy, null);
-
-    if (hasCaughtError()) {
-      var error = clearCaughtError();
-      captureCommitPhaseError(current, nearestMountedAncestor, error);
-    }
+  try {
+    destroy();
+  } catch (error) {
+    captureCommitPhaseError(current, nearestMountedAncestor, error);
   }
 }
 
@@ -17069,16 +17067,7 @@ function commitBeforeMutationEffects(root, firstChild) {
 
 function commitBeforeMutationEffects_begin() {
   while (nextEffect !== null) {
-    var fiber = nextEffect; // TODO: Should wrap this in flags check, too, as optimization
-
-    var deletions = fiber.deletions;
-
-    if (deletions !== null) {
-      for (var i = 0; i < deletions.length; i++) {
-        var deletion = deletions[i];
-        commitBeforeMutationEffectsDeletion(deletion);
-      }
-    }
+    var fiber = nextEffect; // This phase is only used for beforeActiveInstanceBlur.
 
     var child = fiber.child;
 
@@ -17097,24 +17086,15 @@ function commitBeforeMutationEffects_begin() {
 function commitBeforeMutationEffects_complete() {
   while (nextEffect !== null) {
     var fiber = nextEffect;
+    setCurrentFiber(fiber);
 
-    {
-      setCurrentFiber(fiber);
-      invokeGuardedCallback(
-        null,
-        commitBeforeMutationEffectsOnFiber,
-        null,
-        fiber
-      );
-
-      if (hasCaughtError()) {
-        var error = clearCaughtError();
-        captureCommitPhaseError(fiber, fiber.return, error);
-      }
-
-      resetCurrentFiber();
+    try {
+      commitBeforeMutationEffectsOnFiber(fiber);
+    } catch (error) {
+      captureCommitPhaseError(fiber, fiber.return, error);
     }
 
+    resetCurrentFiber();
     var sibling = fiber.sibling;
 
     if (sibling !== null) {
@@ -17130,18 +17110,6 @@ function commitBeforeMutationEffects_complete() {
 function commitBeforeMutationEffectsOnFiber(finishedWork) {
   var current = finishedWork.alternate;
   var flags = finishedWork.flags;
-
-  if (!shouldFireAfterActiveInstanceBlur && focusedInstanceHandle !== null) {
-    // Check to see if the focused element was inside of a hidden (Suspense) subtree.
-    // TODO: Move this out of the hot path using a dedicated effect tag.
-    if (
-      finishedWork.tag === SuspenseComponent &&
-      isSuspenseBoundaryBeingHidden(current, finishedWork) &&
-      doesFiberContain(finishedWork, focusedInstanceHandle)
-    ) {
-      shouldFireAfterActiveInstanceBlur = true;
-    }
-  }
 
   if ((flags & Snapshot) !== NoFlags) {
     setCurrentFiber(finishedWork);
@@ -17238,16 +17206,6 @@ function commitBeforeMutationEffectsOnFiber(finishedWork) {
     }
 
     resetCurrentFiber();
-  }
-}
-
-function commitBeforeMutationEffectsDeletion(deletion) {
-  // TODO (effects) It would be nice to avoid calling doesFiberContain()
-  // Maybe we can repurpose one of the subtreeFlags positions for this instead?
-  // Use it to store which part of the tree the focused instance is in?
-  // This assumes we can safely determine that instance during the "render" phase.
-  if (doesFiberContain(deletion, focusedInstanceHandle)) {
-    shouldFireAfterActiveInstanceBlur = true;
   }
 }
 
@@ -17928,19 +17886,49 @@ function detachFiberAfterEffects(fiber) {
   // `deletedTreeCleanUpLevel` is undefined.
 
   {
-    // This is the default branch (level 0).
+    // Clear cyclical Fiber fields. This level alone is designed to roughly
+    // approximate the planned Fiber refactor. In that world, `setState` will be
+    // bound to a special "instance" object instead of a Fiber. The Instance
+    // object will not have any of these fields. It will only be connected to
+    // the fiber tree via a single link at the root. So if this level alone is
+    // sufficient to fix memory issues, that bodes well for our plans.
     fiber.child = null;
     fiber.deletions = null;
-    fiber.dependencies = null;
-    fiber.memoizedProps = null;
-    fiber.memoizedState = null;
-    fiber.pendingProps = null;
-    fiber.sibling = null;
-    fiber.stateNode = null;
-    fiber.updateQueue = null;
+    fiber.sibling = null; // The `stateNode` is cyclical because on host nodes it points to the host
+    // tree, which has its own pointers to children, parents, and siblings.
+    // The other host nodes also point back to fibers, so we should detach that
+    // one, too.
+
+    if (fiber.tag === HostComponent) {
+      var hostInstance = fiber.stateNode;
+    }
+
+    fiber.stateNode = null; // I'm intentionally not clearing the `return` field in this level. We
+    // already disconnect the `return` pointer at the root of the deleted
+    // subtree (in `detachFiberMutation`). Besides, `return` by itself is not
+    // cyclical — it's only cyclical when combined with `child`, `sibling`, and
+    // `alternate`. But we'll clear it in the next level anyway, just in case.
 
     {
       fiber._debugOwner = null;
+    }
+
+    {
+      // Theoretically, nothing in here should be necessary, because we already
+      // disconnected the fiber from the tree. So even if something leaks this
+      // particular fiber, it won't leak anything else
+      //
+      // The purpose of this branch is to be super aggressive so we can measure
+      // if there's any difference in memory impact. If there is, that could
+      // indicate a React leak we don't know about.
+      fiber.return = null;
+      fiber.dependencies = null;
+      fiber.memoizedProps = null;
+      fiber.memoizedState = null;
+      fiber.pendingProps = null;
+      fiber.stateNode = null; // TODO: Move to `commitPassiveUnmountInsideDeletedTreeOnFiber` instead.
+
+      fiber.updateQueue = null;
     }
   }
 }
@@ -18095,21 +18083,6 @@ function attachSuspenseRetryListeners(finishedWork) {
     });
   }
 } // This function detects when a Suspense boundary goes from visible to hidden.
-// It returns false if the boundary is already hidden.
-// TODO: Use an effect tag.
-
-function isSuspenseBoundaryBeingHidden(current, finishedWork) {
-  if (current !== null) {
-    var oldState = current.memoizedState;
-
-    if (oldState === null || oldState.dehydrated !== null) {
-      var newState = finishedWork.memoizedState;
-      return newState !== null && newState.dehydrated === null;
-    }
-  }
-
-  return false;
-}
 
 function commitMutationEffects(root, firstChild, committedLanes) {
   inProgressLanes = committedLanes;
@@ -18130,20 +18103,10 @@ function commitMutationEffects_begin(root) {
       for (var i = 0; i < deletions.length; i++) {
         var childToDelete = deletions[i];
 
-        {
-          invokeGuardedCallback(
-            null,
-            commitDeletion,
-            null,
-            root,
-            childToDelete,
-            fiber
-          );
-
-          if (hasCaughtError()) {
-            var error = clearCaughtError();
-            captureCommitPhaseError(childToDelete, fiber, error);
-          }
+        try {
+          commitDeletion(root, childToDelete, fiber);
+        } catch (error) {
+          captureCommitPhaseError(childToDelete, fiber, error);
         }
       }
     }
@@ -18162,25 +18125,15 @@ function commitMutationEffects_begin(root) {
 function commitMutationEffects_complete(root) {
   while (nextEffect !== null) {
     var fiber = nextEffect;
+    setCurrentFiber(fiber);
 
-    {
-      setCurrentFiber(fiber);
-      invokeGuardedCallback(
-        null,
-        commitMutationEffectsOnFiber,
-        null,
-        fiber,
-        root
-      );
-
-      if (hasCaughtError()) {
-        var error = clearCaughtError();
-        captureCommitPhaseError(fiber, fiber.return, error);
-      }
-
-      resetCurrentFiber();
+    try {
+      commitMutationEffectsOnFiber(fiber, root);
+    } catch (error) {
+      captureCommitPhaseError(fiber, fiber.return, error);
     }
 
+    resetCurrentFiber();
     var sibling = fiber.sibling;
 
     if (sibling !== null) {
@@ -18285,26 +18238,15 @@ function commitLayoutMountEffects_complete(subtreeRoot, root, committedLanes) {
 
     if ((fiber.flags & LayoutMask) !== NoFlags) {
       var current = fiber.alternate;
+      setCurrentFiber(fiber);
 
-      {
-        setCurrentFiber(fiber);
-        invokeGuardedCallback(
-          null,
-          commitLayoutEffectOnFiber,
-          null,
-          root,
-          current,
-          fiber,
-          committedLanes
-        );
-
-        if (hasCaughtError()) {
-          var error = clearCaughtError();
-          captureCommitPhaseError(fiber, fiber.return, error);
-        }
-
-        resetCurrentFiber();
+      try {
+        commitLayoutEffectOnFiber(root, current, fiber, committedLanes);
+      } catch (error) {
+        captureCommitPhaseError(fiber, fiber.return, error);
       }
+
+      resetCurrentFiber();
     }
 
     if (fiber === subtreeRoot) {
@@ -18348,23 +18290,15 @@ function commitPassiveMountEffects_complete(subtreeRoot, root) {
     var fiber = nextEffect;
 
     if ((fiber.flags & Passive) !== NoFlags) {
-      {
-        setCurrentFiber(fiber);
-        invokeGuardedCallback(
-          null,
-          commitPassiveMountOnFiber,
-          null,
-          root,
-          fiber
-        );
+      setCurrentFiber(fiber);
 
-        if (hasCaughtError()) {
-          var error = clearCaughtError();
-          captureCommitPhaseError(fiber, fiber.return, error);
-        }
-
-        resetCurrentFiber();
+      try {
+        commitPassiveMountOnFiber(root, fiber);
+      } catch (error) {
+        captureCommitPhaseError(fiber, fiber.return, error);
       }
+
+      resetCurrentFiber();
     }
 
     if (fiber === subtreeRoot) {
@@ -18553,10 +18487,12 @@ function commitPassiveUnmountEffectsInsideOfDeletedTree_complete(
     var returnFiber = fiber.return;
 
     {
-      // This is the default branch (level 0). We do not recursively clear all
-      // the fiber fields. Only the root of the deleted subtree.
+      // Recursively traverse the entire deleted tree and clean up fiber fields.
+      // This is more aggressive than ideal, and the long term goal is to only
+      // have to detach the deleted tree at the root.
+      detachFiberAfterEffects(fiber);
+
       if (fiber === deletedSubtreeRoot) {
-        detachFiberAfterEffects(fiber);
         nextEffect = null;
         return;
       }
@@ -18618,17 +18554,10 @@ function invokeLayoutEffectMountInDEV(fiber) {
       case FunctionComponent:
       case ForwardRef:
       case SimpleMemoComponent: {
-        invokeGuardedCallback(
-          null,
-          commitHookEffectListMount,
-          null,
-          Layout | HasEffect,
-          fiber
-        );
-
-        if (hasCaughtError()) {
-          var mountError = clearCaughtError();
-          captureCommitPhaseError(fiber, fiber.return, mountError);
+        try {
+          commitHookEffectListMount(Layout | HasEffect, fiber);
+        } catch (error) {
+          captureCommitPhaseError(fiber, fiber.return, error);
         }
 
         break;
@@ -18636,12 +18565,11 @@ function invokeLayoutEffectMountInDEV(fiber) {
 
       case ClassComponent: {
         var instance = fiber.stateNode;
-        invokeGuardedCallback(null, instance.componentDidMount, instance);
 
-        if (hasCaughtError()) {
-          var _mountError = clearCaughtError();
-
-          captureCommitPhaseError(fiber, fiber.return, _mountError);
+        try {
+          instance.componentDidMount();
+        } catch (error) {
+          captureCommitPhaseError(fiber, fiber.return, error);
         }
 
         break;
@@ -18658,17 +18586,10 @@ function invokePassiveEffectMountInDEV(fiber) {
       case FunctionComponent:
       case ForwardRef:
       case SimpleMemoComponent: {
-        invokeGuardedCallback(
-          null,
-          commitHookEffectListMount,
-          null,
-          Passive$1 | HasEffect,
-          fiber
-        );
-
-        if (hasCaughtError()) {
-          var mountError = clearCaughtError();
-          captureCommitPhaseError(fiber, fiber.return, mountError);
+        try {
+          commitHookEffectListMount(Passive$1 | HasEffect, fiber);
+        } catch (error) {
+          captureCommitPhaseError(fiber, fiber.return, error);
         }
 
         break;
@@ -18685,18 +18606,10 @@ function invokeLayoutEffectUnmountInDEV(fiber) {
       case FunctionComponent:
       case ForwardRef:
       case SimpleMemoComponent: {
-        invokeGuardedCallback(
-          null,
-          commitHookEffectListUnmount,
-          null,
-          Layout | HasEffect,
-          fiber,
-          fiber.return
-        );
-
-        if (hasCaughtError()) {
-          var unmountError = clearCaughtError();
-          captureCommitPhaseError(fiber, fiber.return, unmountError);
+        try {
+          commitHookEffectListUnmount(Layout | HasEffect, fiber, fiber.return);
+        } catch (error) {
+          captureCommitPhaseError(fiber, fiber.return, error);
         }
 
         break;
@@ -18706,20 +18619,7 @@ function invokeLayoutEffectUnmountInDEV(fiber) {
         var instance = fiber.stateNode;
 
         if (typeof instance.componentWillUnmount === "function") {
-          invokeGuardedCallback(
-            null,
-            safelyCallComponentWillUnmount,
-            null,
-            fiber,
-            fiber.return,
-            instance
-          );
-
-          if (hasCaughtError()) {
-            var _unmountError = clearCaughtError();
-
-            captureCommitPhaseError(fiber, fiber.return, _unmountError);
-          }
+          safelyCallComponentWillUnmount(fiber, fiber.return, instance);
         }
 
         break;
@@ -18736,21 +18636,15 @@ function invokePassiveEffectUnmountInDEV(fiber) {
       case FunctionComponent:
       case ForwardRef:
       case SimpleMemoComponent: {
-        invokeGuardedCallback(
-          null,
-          commitHookEffectListUnmount,
-          null,
-          Passive$1 | HasEffect,
-          fiber,
-          fiber.return
-        );
-
-        if (hasCaughtError()) {
-          var unmountError = clearCaughtError();
-          captureCommitPhaseError(fiber, fiber.return, unmountError);
+        try {
+          commitHookEffectListUnmount(
+            Passive$1 | HasEffect,
+            fiber,
+            fiber.return
+          );
+        } catch (error) {
+          captureCommitPhaseError(fiber, fiber.return, error);
         }
-
-        break;
       }
     }
   }

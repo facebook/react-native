@@ -32,7 +32,6 @@
 #import <react/renderer/core/LayoutContext.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
-#import <react/renderer/scheduler/AsynchronousEventBeatV2.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/renderer/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
@@ -257,10 +256,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetOnDemandViewMounting(YES);
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_sending_scroll_events_to_paper")) {
-    RCTExperimentSetSendScrollEventToPaper(NO);
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_state_scroll_data_race_ios")) {
     RCTExperimentSetScrollViewEventRaceFix(YES);
   }
@@ -282,11 +277,11 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   toolbox.contextContainer = _contextContainer;
   toolbox.componentRegistryFactory = componentRegistryFactory;
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_runtimescheduler_ios")) {
-    auto runtimeScheduler = std::make_shared<RuntimeScheduler>(_runtimeExecutor);
+  auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
+  auto runtimeScheduler = weakRuntimeScheduler.hasValue() ? weakRuntimeScheduler.value().lock() : nullptr;
+  if (runtimeScheduler) {
     runtimeScheduler->setEnableYielding(
         reactNativeConfig->getBool("react_native_new_architecture:runtimescheduler_enable_yielding_ios"));
-    toolbox.runtimeScheduler = runtimeScheduler;
     runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
       runtimeScheduler->scheduleWork(std::move(callback));
     };
@@ -304,24 +299,17 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   }
 
   toolbox.synchronousEventBeatFactory =
-      [runtimeExecutor, runtimeScheduler = toolbox.runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {
+      [runtimeExecutor, runtimeScheduler = runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {
         auto runLoopObserver =
             std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
         return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor, runtimeScheduler);
       };
 
-  auto enableV2AsynchronousEventBeat =
-      reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_asynchronous_event_beat_v2_ios");
-
-  toolbox.asynchronousEventBeatFactory = [runtimeExecutor, enableV2AsynchronousEventBeat](
-                                             EventBeat::SharedOwnerBox const &ownerBox) -> std::unique_ptr<EventBeat> {
+  toolbox.asynchronousEventBeatFactory =
+      [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
         std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-    if (enableV2AsynchronousEventBeat) {
-      return std::make_unique<AsynchronousEventBeatV2>(std::move(runLoopObserver), runtimeExecutor);
-    } else {
-      return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
-    }
+    return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
   };
 
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
