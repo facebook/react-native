@@ -137,7 +137,7 @@ module.exports = {
    * - `email-address`
    * - `phone-pad`
    * - `url`
-   * 
+   *
    * *iOS Only*
    *
    * The following values work on iOS only:
