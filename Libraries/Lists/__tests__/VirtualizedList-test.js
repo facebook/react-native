@@ -643,10 +643,11 @@ describe('VirtualizedList', () => {
     });
 
     // Scroll to the bottom 50 dip (last five items) of the content. Expect the
-    // last five items to be rendered, along with every sticky header above,
-    // even though they are out of the viewport window in layout coordinates.
-    // This is because they will remain rendered even once scrolled-past in
-    // layout space.
+    // last five items to be rendered (possibly more if realization window is
+    // larger), along with the most recent sticky header above the realization
+    // region, even though they are out of the viewport window in layout
+    // coordinates. This is because they will remain rendered even once
+    // scrolled-past in layout space.
     expect(component).toMatchSnapshot();
   });
 });
