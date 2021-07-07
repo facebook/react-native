@@ -69,17 +69,4 @@ public class ReactFeatureFlags {
   public static boolean enableLockFreeEventDispatcher = false;
 
   public static boolean enableAggressiveEventEmitterCleanup = false;
-
-  //
-  // ScrollView C++ UpdateState vs onScroll race fixes
-  //
-
-  /* Enables a "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter */
-  public static boolean enableScrollViewStateEventRaceFix = false;
-
-  /* Enables another "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter. Races a StateUpdate with every onScroll event. */
-  public static boolean enableScrollViewStateEventAlwaysRace = false;
-
-  /* Configure a min scroll delta for UpdateState to be called while still actively scrolling. */
-  public static int scrollViewUpdateStateMinScrollDelta = 0;
 }
