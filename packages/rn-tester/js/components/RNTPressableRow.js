@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
   },
   pressed: {
     backgroundColor: 'rgb(242,242,242)',
+    elevation: 3,
   },
   topRowStyle: {
     flexDirection: 'row',

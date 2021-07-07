@@ -13,7 +13,7 @@ import * as React from 'react';
 export type RNTesterModuleExample = $ReadOnly<{|
   name?: string,
   title: string,
-  platform?: string,
+  platform?: 'ios' | 'android',
   description?: string,
   render: () => React.Node,
 |}>;
