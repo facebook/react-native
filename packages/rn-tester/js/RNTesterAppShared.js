@@ -33,75 +33,12 @@ import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import {Header} from './components/RNTesterHeader';
 import {RNTesterEmptyBookmarksState} from './components/RNTesterEmptyBookmarksState';
 
-import type {RNTesterTheme} from './components/RNTesterTheme';
-import type {ExamplesList} from './types/RNTesterTypes';
-
 const APP_STATE_KEY = 'RNTesterAppState.v3';
 
 // RNTester App currently uses AsyncStorage from react-native for storing navigation state
 // and bookmark items.
 // TODO: Vendor AsyncStorage or create our own.
 LogBox.ignoreLogs([/AsyncStorage has been extracted from react-native/]);
-
-const DisplayIfVisible = ({isVisible, children}) =>
-  isVisible ? (
-    <View style={[styles.container, !isVisible && styles.hidden]}>
-      {children}
-    </View>
-  ) : null;
-
-type ExampleListsContainerProps = $ReadOnly<{|
-  theme: RNTesterTheme,
-  screen: string,
-  title: string,
-  examplesList: ExamplesList,
-  toggleBookmark: (args: {exampleType: string, key: string}) => mixed,
-  handleModuleCardPress: (args: {exampleType: string, key: string}) => mixed,
-  isVisible: boolean,
-|}>;
-
-const ModuleListsContainer = ({
-  theme,
-  screen,
-  title,
-  examplesList,
-  toggleBookmark,
-  handleModuleCardPress,
-  isVisible,
-}: ExampleListsContainerProps) => {
-  const isBookmarkEmpty = examplesList.bookmarks.length === 0;
-
-  return (
-    <DisplayIfVisible isVisible={isVisible}>
-      <Header title={title} theme={theme} />
-      <DisplayIfVisible isVisible={screen === Screens.COMPONENTS}>
-        <RNTesterModuleList
-          sections={examplesList.components}
-          toggleBookmark={toggleBookmark}
-          handleModuleCardPress={handleModuleCardPress}
-        />
-      </DisplayIfVisible>
-      <DisplayIfVisible isVisible={screen === Screens.APIS}>
-        <RNTesterModuleList
-          sections={examplesList.apis}
-          toggleBookmark={toggleBookmark}
-          handleModuleCardPress={handleModuleCardPress}
-        />
-      </DisplayIfVisible>
-      <DisplayIfVisible isVisible={screen === Screens.BOOKMARKS}>
-        {isBookmarkEmpty ? (
-          <RNTesterEmptyBookmarksState />
-        ) : (
-          <RNTesterModuleList
-            sections={examplesList.bookmarks}
-            toggleBookmark={toggleBookmark}
-            handleModuleCardPress={handleModuleCardPress}
-          />
-        )}
-      </DisplayIfVisible>
-    </DisplayIfVisible>
-  );
-};
 
 const RNTesterApp = (): React.Node => {
   const [state, dispatch] = useAsyncStorageReducer(
@@ -220,31 +157,35 @@ const RNTesterApp = (): React.Node => {
     ? 'APIs'
     : 'Bookmarks';
 
+  const activeExampleList =
+    screen === Screens.COMPONENTS
+      ? examplesList.components
+      : screen === Screens.APIS
+      ? examplesList.apis
+      : examplesList.bookmarks;
+
   return (
     <RNTesterThemeContext.Provider value={theme}>
+      <Header
+        title={title}
+        theme={theme}
+        onBack={activeModule ? handleBackPress : null}
+        documentationURL={activeModule?.documentationURL}
+      />
       {activeModule != null ? (
-        <View style={styles.container}>
-          <Header
-            onBack={handleBackPress}
-            title={title}
-            theme={theme}
-            documentationURL={activeModule.documentationURL}
-          />
-          <RNTesterModuleContainer
-            module={activeModule}
-            example={activeModuleExample}
-            onExampleCardPress={handleModuleExampleCardPress}
-          />
-        </View>
+        <RNTesterModuleContainer
+          module={activeModule}
+          example={activeModuleExample}
+          onExampleCardPress={handleModuleExampleCardPress}
+        />
+      ) : screen === Screens.BOOKMARKS &&
+        examplesList.bookmarks.length === 0 ? (
+        <RNTesterEmptyBookmarksState />
       ) : (
-        <ModuleListsContainer
-          isVisible={!activeModule}
-          screen={screen || Screens.COMPONENTS}
-          title={title}
-          theme={theme}
-          examplesList={examplesList}
-          handleModuleCardPress={handleModuleCardPress}
+        <RNTesterModuleList
+          sections={activeExampleList}
           toggleBookmark={toggleBookmark}
+          handleModuleCardPress={handleModuleCardPress}
         />
       )}
       <View style={styles.bottomNavbar}>
