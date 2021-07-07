@@ -50,6 +50,7 @@ const RNTesterApp = (): React.Node => {
 
   const {
     activeModuleKey,
+    activeModuleTitle,
     activeModuleExampleKey,
     screen,
     bookmarks,
@@ -100,10 +101,10 @@ const RNTesterApp = (): React.Node => {
   }, [activeModuleKey, handleBackPress]);
 
   const handleModuleCardPress = React.useCallback(
-    ({exampleType, key}) => {
+    ({exampleType, key, title}) => {
       dispatch({
         type: RNTesterActionsType.MODULE_CARD_PRESS,
-        data: {exampleType, key},
+        data: {exampleType, key, title},
       });
     },
     [dispatch],
@@ -151,11 +152,14 @@ const RNTesterApp = (): React.Node => {
     activeModuleExampleKey != null
       ? activeModule?.examples.find(e => e.name === activeModuleExampleKey)
       : null;
-  const title = Screens.COMPONENTS
-    ? 'Components'
-    : Screens.APIS
-    ? 'APIs'
-    : 'Bookmarks';
+  const title =
+    activeModuleTitle != null
+      ? activeModuleTitle
+      : screen === Screens.COMPONENTS
+      ? 'Components'
+      : screen === Screens.APIS
+      ? 'APIs'
+      : 'Bookmarks';
 
   const activeExampleList =
     screen === Screens.COMPONENTS

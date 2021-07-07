@@ -61,6 +61,7 @@ export type ComponentList = null | {components: string[], apis: string[]};
 
 export type RNTesterState = {
   activeModuleKey: null | string,
+  activeModuleTitle: null | string,
   activeModuleExampleKey: null | string,
   screen: ScreenTypes,
   bookmarks: ComponentList,
