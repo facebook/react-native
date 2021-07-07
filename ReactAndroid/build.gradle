@@ -96,12 +96,6 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/folly")
-    doLast {
-        ant.patch(
-            patchfile: "src/main/jni/third-party/folly/FileUtil.cpp.patch",
-            originalFile: "$thirdPartyNdkDir/folly/folly/FileUtil.cpp"
-        )
-    }
 }
 
 task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {

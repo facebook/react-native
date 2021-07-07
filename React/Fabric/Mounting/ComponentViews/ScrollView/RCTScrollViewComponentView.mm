@@ -87,7 +87,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   BOOL _isUserTriggeredScrolling;
 
   BOOL _isOnDemandViewMountingEnabled;
-  BOOL _enableScrollViewEventRaceFix;
+
   CGPoint _contentOffsetWhenClipped;
   NSMutableArray<UIView<RCTComponentViewProtocol> *> *_childComponentViews;
 }
@@ -107,7 +107,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _props = defaultProps;
 
     _isOnDemandViewMountingEnabled = RCTExperimentGetOnDemandViewMounting();
-    _enableScrollViewEventRaceFix = RCTExperimentGetScrollViewEventRaceFix();
     _childComponentViews = [[NSMutableArray alloc] init];
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
@@ -417,9 +416,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
     _lastScrollEventDispatchTime = now;
     if (_eventEmitter) {
-      if (_enableScrollViewEventRaceFix) {
-        [self _updateStateWithContentOffset];
-      }
       std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
     }
     // Once Fabric implements proper NativeAnimationDriver, this should be removed.

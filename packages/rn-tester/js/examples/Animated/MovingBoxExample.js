@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import {Text, StyleSheet, View, Animated} from 'react-native';
@@ -113,4 +113,4 @@ export default ({
   description:
     'Click arrow buttons to move the box. Then hide the box and reveal it again. The box will stay its last position. Reset will reset the animation to its starting position',
   render: (): React.Node => <MovingBoxExample />,
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);

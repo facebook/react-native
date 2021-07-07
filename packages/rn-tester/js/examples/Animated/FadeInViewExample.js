@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import {Text, StyleSheet, View, Animated} from 'react-native';
@@ -79,4 +79,4 @@ export default ({
     'bring opacity from 0 to 1 when the component ' +
     'mounts.': string),
   render: (): React.Node => <FadeInExample />,
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);

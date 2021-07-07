@@ -21,7 +21,7 @@ const {
   StyleSheet,
 } = require('react-native');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 const styles = StyleSheet.create({
   default: {
@@ -666,4 +666,4 @@ module.exports = ([
       );
     },
   },
-]: Array<RNTesterExampleModuleItem>);
+]: Array<RNTesterModuleExample>);

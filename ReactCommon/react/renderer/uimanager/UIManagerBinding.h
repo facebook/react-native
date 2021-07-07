@@ -7,7 +7,7 @@
 
 #pragma once
 
-#import <ReactCommon/RuntimeExecutor.h>
+#include <ReactCommon/RuntimeExecutor.h>
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/core/RawValue.h>
