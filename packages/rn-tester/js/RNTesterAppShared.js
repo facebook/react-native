@@ -30,7 +30,7 @@ import {
 import {useAsyncStorageReducer} from './utils/useAsyncStorageReducer';
 import {RNTesterReducer, RNTesterActionsType} from './utils/RNTesterReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
-import {Header} from './components/RNTesterHeader';
+import RNTTitleBar from './components/RNTTitleBar';
 import {RNTesterEmptyBookmarksState} from './components/RNTesterEmptyBookmarksState';
 
 const APP_STATE_KEY = 'RNTesterAppState.v3';
@@ -170,7 +170,7 @@ const RNTesterApp = (): React.Node => {
 
   return (
     <RNTesterThemeContext.Provider value={theme}>
-      <Header
+      <RNTTitleBar
         title={title}
         theme={theme}
         onBack={activeModule ? handleBackPress : null}

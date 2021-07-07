@@ -82,7 +82,7 @@ const HeaderAndroid = ({
   );
 };
 
-export const Header = ({
+export default function RNTTitleBar({
   onBack,
   title,
   documentationURL,
@@ -93,8 +93,8 @@ export const Header = ({
   documentationURL?: string,
   theme: RNTesterTheme,
   ...
-}): React.Node =>
-  Platform.OS === 'ios' ? (
+}): React.Node {
+  return Platform.OS === 'ios' ? (
     <HeaderIOS
       documentationURL={documentationURL}
       title={title}
@@ -108,6 +108,7 @@ export const Header = ({
       theme={theme}
     />
   );
+}
 
 const styles = StyleSheet.create({
   headerContainer: {
