@@ -150,7 +150,7 @@ type OptionalProps<ItemT> = {|
 
 // removeClippedSubviewsOrDefault(this.props.removeClippedSubviews)
 function removeClippedSubviewsOrDefault(removeClippedSubviews: ?boolean) {
-  return removeClippedSubviews || Platform.OS === 'android';
+  return removeClippedSubviews ?? Platform.OS === 'android';
 }
 
 // numColumnsOrDefault(this.props.numColumns)
