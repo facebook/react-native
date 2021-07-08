@@ -96,6 +96,7 @@ const RCTTextInputViewConfig = {
     textShadowColor: {process: require('../../StyleSheet/processColor')},
     editable: true,
     inputAccessoryViewID: true,
+    softInputViewID: true,
     caretHidden: true,
     enablesReturnKeyAutomatically: true,
     placeholderTextColor: {process: require('../../StyleSheet/processColor')},

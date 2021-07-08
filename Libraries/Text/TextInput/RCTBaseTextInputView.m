@@ -16,6 +16,8 @@
 
 #import <React/RCTInputAccessoryView.h>
 #import <React/RCTInputAccessoryViewContent.h>
+#import <React/RCTSoftInputView.h>
+#import <React/RCTSoftInputViewContent.h>
 #import <React/RCTTextAttributes.h>
 #import <React/RCTTextSelection.h>
 
@@ -306,8 +308,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   (void)_showSoftInputOnFocus;
   if (showSoftInputOnFocus) {
-    // Resets to default keyboard.
-    self.backedTextInputView.inputView = nil;
+    if (self.softInputViewID) {
+      // Resets to custom soft input view 
+      [self setCustomSoftInputViewWithNativeID:self.softInputViewID];
+    } else {
+      // Resets to default keyboard.
+      [self setDefaultSoftInputView];
+    }
   } else {
     // Hides keyboard, but keeps blinking cursor.
     self.backedTextInputView.inputView = [[UIView alloc] init];
@@ -567,7 +574,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   _didMoveToWindow = YES;
 }
 
-#pragma mark - Custom Input Accessory View
+#pragma mark - Custom Input Accessory View and Soft Input View
 
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
@@ -575,6 +582,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     [self setCustomInputAccessoryViewWithNativeID:self.inputAccessoryViewID];
   } else if (!self.inputAccessoryViewID) {
     [self setDefaultInputAccessoryView];
+  }
+
+  if ([changedProps containsObject:@"softInputViewID"]) {
+    if (self.showSoftInputOnFocus) {
+      if (self.softInputViewID) {
+        [self setCustomSoftInputViewWithNativeID:self.softInputViewID];
+      } else {
+        [self setDefaultSoftInputView];
+      }
+    }
   }
 }
 
@@ -649,6 +666,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   if ([self textInputShouldReturn]) {
     [self.backedTextInputView endEditing:YES];
   }
+}
+
+- (void)setCustomSoftInputViewWithNativeID:(NSString*)nativeID
+{
+  __weak RCTBaseTextInputView *weakSelf = self;
+  [_bridge.uiManager rootViewForReactTag:self.reactTag withCompletion:^(UIView *rootView) {
+    RCTBaseTextInputView *strongSelf = weakSelf;
+    if (rootView) {
+      UIView *softInputView = [strongSelf->_bridge.uiManager viewForNativeID:nativeID
+                                                                 withRootTag:rootView.reactTag];
+      if (softInputView && [softInputView isKindOfClass:[RCTSoftInputView class]]) {
+        strongSelf.backedTextInputView.inputView = ((RCTSoftInputView *)softInputView).inputView;
+        [strongSelf reloadInputViewsIfNecessary];
+      }
+    }
+  }];
+}
+
+- (void)setDefaultSoftInputView
+{
+  // Default soft input view should be default keyboard.
+  self.backedTextInputView.inputView = nil;
 }
 
 #pragma mark - Helpers

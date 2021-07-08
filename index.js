@@ -32,6 +32,7 @@ import typeof ScrollView from './Libraries/Components/ScrollView/ScrollView';
 import typeof SectionList from './Libraries/Lists/SectionList';
 import typeof SegmentedControlIOS from './Libraries/Components/SegmentedControlIOS/SegmentedControlIOS';
 import typeof Slider from './Libraries/Components/Slider/Slider';
+import typeof SoftInputView from './Libraries/Components/TextInput/SoftInputView';
 import typeof StatusBar from './Libraries/Components/StatusBar/StatusBar';
 import typeof Switch from './Libraries/Components/Switch/Switch';
 import typeof Text from './Libraries/Text/Text';
@@ -219,6 +220,9 @@ module.exports = {
         'See https://github.com/callstack/react-native-slider',
     );
     return require('./Libraries/Components/Slider/Slider');
+  },
+  get SoftInputView(): SoftInputView {
+    return require('./Libraries/Components/TextInput/SoftInputView');
   },
   get StatusBar(): StatusBar {
     return require('./Libraries/Components/StatusBar/StatusBar');

@@ -57,10 +57,20 @@ TextInputProps::TextInputProps(
           {})),
       autoFocus(
           convertRawProp(rawProps, "autoFocus", sourceProps.autoFocus, {})),
+      showSoftInputOnFocus(convertRawProp(
+          rawProps,
+          "showSoftInputOnFocus",
+          sourceProps.showSoftInputOnFocus,
+          {})),
       inputAccessoryViewID(convertRawProp(
           rawProps,
           "inputAccessoryViewID",
           sourceProps.inputAccessoryViewID,
+          {})),
+      softInputViewID(convertRawProp(
+          rawProps,
+          "softInputViewID",
+          sourceProps.softInputViewID,
           {})){};
 
 TextAttributes TextInputProps::getEffectiveTextAttributes(

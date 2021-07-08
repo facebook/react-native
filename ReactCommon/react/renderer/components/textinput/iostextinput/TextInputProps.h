@@ -54,8 +54,10 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   int const mostRecentEventCount{0};
 
   bool autoFocus{false};
+  const bool showSoftInputOnFocus{true};
 
   std::string const inputAccessoryViewID{};
+  std::string const softInputViewID{};
 
   /*
    * Accessors
