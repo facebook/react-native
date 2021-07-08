@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "jsi"
   s.default_subspec        = "Default"
 
-  s.dependency "boost-for-react-native", "1.63.0"
+  s.dependency "boost-for-react-native", "1.76.0"
   s.dependency "DoubleConversion"
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
