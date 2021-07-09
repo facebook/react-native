@@ -19,6 +19,8 @@ type SegmentedControlIOSProps = $ReadOnly<{|
   ...ViewProps,
   /**
    * The labels for the control's segment buttons, in order.
+   *
+   * The default value is an empty array.
    */
   values?: $ReadOnlyArray<string>,
   /**
@@ -27,6 +29,8 @@ type SegmentedControlIOSProps = $ReadOnly<{|
   selectedIndex?: ?number,
   /**
    * If false the user won't be able to interact with the control.
+   *
+   * The default value is true.
    */
   enabled?: boolean,
   /**
@@ -53,6 +57,21 @@ type Props = $ReadOnly<{|
   ...SegmentedControlIOSProps,
   forwardedRef: ?React.Ref<typeof RCTSegmentedControlNativeComponent>,
 |}>;
+
+/**
+ * Default Props Helper Functions
+ * Use the following helper functions for default values
+ */
+
+// enabledOrDefault(this.props.enabled)
+function enabledOrDefault(enabled: ?boolean) {
+  return enabled ?? true;
+}
+
+// valuesOrDefault(this.props.values)
+function valuesOrDefault(values: ?$ReadOnlyArray<string>) {
+  return values ?? [];
+}
 
 /**
  * Use `SegmentedControlIOS` to render a UISegmentedControl iOS.
@@ -83,12 +102,21 @@ class SegmentedControlIOS extends React.Component<Props> {
   };
 
   render() {
-    const {forwardedRef, onValueChange, style, ...props} = this.props;
+    const {
+      forwardedRef,
+      enabled: _enabled,
+      values: _values,
+      onValueChange,
+      style,
+      ...props
+    } = this.props;
     return (
       <RCTSegmentedControlNativeComponent
         {...props}
         ref={forwardedRef}
         style={[styles.segmentedControl, style]}
+        enabled={enabledOrDefault(_enabled)}
+        values={valuesOrDefault(_values)}
         onChange={this._onChange}
       />
     );
@@ -106,14 +134,7 @@ const SegmentedControlIOSWithRef = React.forwardRef(
     props: SegmentedControlIOSProps,
     forwardedRef: ?React.Ref<typeof RCTSegmentedControlNativeComponent>,
   ) => {
-    return (
-      <SegmentedControlIOS
-        {...props}
-        enabled={props.enabled === undefined ? true : props.enabled}
-        values={props.values === undefined ? [] : props.values}
-        forwardedRef={forwardedRef}
-      />
-    );
+    return <SegmentedControlIOS {...props} forwardedRef={forwardedRef} />;
   },
 );
 
