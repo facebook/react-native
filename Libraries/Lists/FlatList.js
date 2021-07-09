@@ -634,19 +634,23 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   render(): React.Node {
-    const {columnWrapperStyle, ...restProps} = this.props;
+    const {
+      numColumns,
+      columnWrapperStyle,
+      removeClippedSubviews: _removeClippedSubviews,
+      ...restProps
+    } = this.props;
 
     return (
       <VirtualizedList
         {...restProps}
-        numColumns={undefined}
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}
         ref={this._captureRef}
         viewabilityConfigCallbackPairs={this._virtualizedListPairs}
         removeClippedSubviews={removeClippedSubviewsOrDefault(
-          this.props.removeClippedSubviews,
+          _removeClippedSubviews,
         )}
         {...this._renderer()}
       />
