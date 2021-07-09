@@ -23,20 +23,20 @@ public class PackagerConnectionSettings {
   private final SharedPreferences mPreferences;
   private final String mPackageName;
   private final Context mAppContext;
+  private String mDebugServerHost;
 
   public PackagerConnectionSettings(Context applicationContext) {
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPackageName = applicationContext.getPackageName();
     mAppContext = applicationContext;
+    mDebugServerHost = mPreferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null);
   }
 
   public String getDebugServerHost() {
     // Check host setting first. If empty try to detect emulator type and use default
     // hostname for those
-    String hostFromSettings = mPreferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null);
-
-    if (!TextUtils.isEmpty(hostFromSettings)) {
-      return Assertions.assertNotNull(hostFromSettings);
+    if (!TextUtils.isEmpty(mDebugServerHost)) {
+      return Assertions.assertNotNull(mDebugServerHost);
     }
 
     String host = AndroidInfoHelpers.getServerHost(mAppContext);
@@ -53,11 +53,24 @@ public class PackagerConnectionSettings {
     return host;
   }
 
-  public void setDebugServerHost(String host) {
-    mPreferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply();
+  public void setDebugServerHost(final String host) {
+    setDebugServerHost(host, true);
+  }
+
+  public void setDebugServerHost(final String host, final boolean savePrefs) {
+    mDebugServerHost = host;
+    if (savePrefs) {
+      mPreferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply();
+    }
   }
 
   public String getInspectorServerHost() {
+    // Check host setting first. If empty try to detect emulator type and use default
+    // hostname for those
+    if (!TextUtils.isEmpty(mDebugServerHost)) {
+      return Assertions.assertNotNull(mDebugServerHost);
+    }
+
     return AndroidInfoHelpers.getInspectorProxyHost(mAppContext);
   }
 
