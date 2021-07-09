@@ -1,5 +1,5 @@
 PODS:
-  - boost-for-react-native (1.63.0)
+  - boost (1.63.0)
   - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
   - FBLazyVector (1000.0.0)
@@ -75,18 +75,18 @@ PODS:
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.180)
   - RCT-Folly (2021.04.26.00):
-    - boost-for-react-native
+    - boost
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
     - RCT-Folly/Default (= 2021.04.26.00)
   - RCT-Folly/Default (2021.04.26.00):
-    - boost-for-react-native
+    - boost
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
   - RCT-Folly/Fabric (2021.04.26.00):
-    - boost-for-react-native
+    - boost
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
@@ -255,7 +255,7 @@ PODS:
     - React-RCTImage (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-cxxreact (1000.0.0):
-    - boost-for-react-native (= 1.63.0)
+    - boost (= 1.63.0)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.04.26.00)
@@ -584,18 +584,18 @@ PODS:
   - React-graphics (1000.0.0):
     - RCT-Folly/Fabric (= 2021.04.26.00)
   - React-jsi (1000.0.0):
-    - boost-for-react-native (= 1.63.0)
+    - boost (= 1.63.0)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.04.26.00)
     - React-jsi/Default (= 1000.0.0)
   - React-jsi/Default (1000.0.0):
-    - boost-for-react-native (= 1.63.0)
+    - boost (= 1.63.0)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.04.26.00)
   - React-jsi/Fabric (1000.0.0):
-    - boost-for-react-native (= 1.63.0)
+    - boost (= 1.63.0)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.04.26.00)
@@ -765,7 +765,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - boost-for-react-native
+    - boost
     - CocoaAsyncSocket
     - Flipper
     - Flipper-Boost-iOSX
@@ -850,7 +850,7 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  boost: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   FBLazyVector: b81a2b70c72d8b0aefb652cea22c11e9ffd02949

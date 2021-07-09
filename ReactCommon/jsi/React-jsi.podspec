@@ -33,11 +33,11 @@ Pod::Spec.new do |s|
   s.exclude_files          = "**/test/*"
   s.framework              = "JavaScriptCore"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
   s.header_dir             = "jsi"
   s.default_subspec        = "Default"
 
-  s.dependency "boost-for-react-native", "1.76.0"
+  s.dependency "boost", "1.76.0"
   s.dependency "DoubleConversion"
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"

@@ -82,7 +82,7 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/core/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/core/tests"
     ss.header_dir           = "react/renderer/core"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
   s.subspec "componentregistry" do |ss|

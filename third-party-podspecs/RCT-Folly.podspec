@@ -14,7 +14,7 @@ Pod::Spec.new do |spec|
                   :tag => "v#{spec.version}" }
   spec.module_name = 'folly'
   spec.header_mappings_dir = '.'
-  spec.dependency 'boost-for-react-native'
+  spec.dependency 'boost'
   spec.dependency 'DoubleConversion'
   spec.dependency 'glog'
   spec.dependency 'fmt' , '~> 6.2.1'
@@ -72,10 +72,10 @@ Pod::Spec.new do |spec|
   spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include/\"" }
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include/\"" }
 
   # TODO: The boost spec should really be selecting these files so that dependents of Folly can also access the required headers.
-  spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\"" }
+  spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"" }
 
   spec.default_subspec = 'Default'
 
