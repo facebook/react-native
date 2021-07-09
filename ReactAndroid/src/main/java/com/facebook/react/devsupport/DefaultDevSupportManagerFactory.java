@@ -11,6 +11,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManagerFactory;
 import com.facebook.react.packagerconnection.RequestHandler;
 import java.lang.reflect.Constructor;
 import java.util.Map;
@@ -21,12 +22,12 @@ import java.util.Map;
  * class and its dependencies in release builds. If the class isn't found, {@link
  * DisabledDevSupportManager} is returned instead.
  */
-public class DevSupportManagerFactory {
+public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory {
 
   private static final String DEVSUPPORT_IMPL_PACKAGE = "com.facebook.react.devsupport";
   private static final String DEVSUPPORT_IMPL_CLASS = "BridgeDevSupportManager";
 
-  public static DevSupportManager create(
+  public DevSupportManager create(
       Context applicationContext,
       ReactInstanceDevHelper reactInstanceDevHelper,
       @Nullable String packagerPathForJSBundleName,
@@ -44,7 +45,8 @@ public class DevSupportManagerFactory {
         null);
   }
 
-  public static DevSupportManager create(
+  @Override
+  public DevSupportManager create(
       Context applicationContext,
       ReactInstanceDevHelper reactInstanceManagerHelper,
       @Nullable String packagerPathForJSBundleName,

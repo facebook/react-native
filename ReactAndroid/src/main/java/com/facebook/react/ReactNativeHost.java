@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
+import com.facebook.react.devsupport.interfaces.DevSupportManagerFactory;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.List;
 
@@ -68,6 +69,7 @@ public abstract class ReactNativeHost {
             .setApplication(mApplication)
             .setJSMainModulePath(getJSMainModuleName())
             .setUseDeveloperSupport(getUseDeveloperSupport())
+            .setDevSupportManagerFactory(getDevSupportManagerFactory())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
             .setUIImplementationProvider(getUIImplementationProvider())
@@ -153,6 +155,11 @@ public abstract class ReactNativeHost {
 
   /** Returns whether dev mode should be enabled. This enables e.g. the dev menu. */
   public abstract boolean getUseDeveloperSupport();
+
+  /** Get the {@link DevSupportManagerFactory}. Override this to use a custom dev support manager */
+  protected @Nullable DevSupportManagerFactory getDevSupportManagerFactory() {
+    return null;
+  }
 
   /**
    * Returns a list of {@link ReactPackage} used by the app. You'll most likely want to return at
