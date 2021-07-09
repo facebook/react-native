@@ -18,6 +18,7 @@ const {
   TouchableOpacity,
   ToastAndroid,
   View,
+  ScrollView,
 } = require('react-native');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
@@ -71,7 +72,7 @@ class SendIntentButton extends React.Component<Props> {
 class IntentAndroidExample extends React.Component {
   render() {
     return (
-      <View>
+      <ScrollView>
         <RNTesterBlock title="Open external URLs">
           <OpenURLButton url={'https://www.facebook.com'} />
           <OpenURLButton url={'http://www.facebook.com'} />
@@ -79,6 +80,13 @@ class IntentAndroidExample extends React.Component {
           <OpenURLButton url={'fb://notifications'} />
           <OpenURLButton url={'geo:37.484847,-122.148386'} />
           <OpenURLButton url={'tel:9876543210'} />
+          {Platform.OS === 'android' && (
+            <OpenURLButton
+              url={
+                'intent://notifications#Intent;scheme=fb;S.browser_fallback_url=https%3A%2F%2Ffacebook.com;end'
+              }
+            />
+          )}
         </RNTesterBlock>
         {Platform.OS === 'android' && (
           <RNTesterBlock title="Send intents">
@@ -94,7 +102,7 @@ class IntentAndroidExample extends React.Component {
             />
           </RNTesterBlock>
         )}
-      </View>
+      </ScrollView>
     );
   }
 }

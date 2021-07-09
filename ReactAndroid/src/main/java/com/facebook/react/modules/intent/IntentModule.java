@@ -23,11 +23,13 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.module.annotations.ReactModule;
+import java.net.URISyntaxException;
 
 /** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = IntentModule.NAME)
 public class IntentModule extends NativeIntentAndroidSpec {
 
+  private static final String EXTRA_BROWSER_FALLBACK_URL = "browser_fallback_url";
   public static final String NAME = "IntentAndroid";
 
   public IntentModule(ReactApplicationContext reactContext) {
@@ -87,11 +89,22 @@ public class IntentModule extends NativeIntentAndroidSpec {
 
     try {
       Activity currentActivity = getCurrentActivity();
-      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url).normalizeScheme());
+      Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
 
       String selfPackageName = getReactApplicationContext().getPackageName();
       ComponentName componentName =
           intent.resolveActivity(getReactApplicationContext().getPackageManager());
+
+      // Check if browser fallback url is present if no app can handle the url
+      if (componentName == null) {
+        String fallback = intent.getStringExtra(EXTRA_BROWSER_FALLBACK_URL);
+        if (fallback != null) {
+          intent = Intent.parseUri(fallback, 0);
+          componentName =
+            intent.resolveActivity(getReactApplicationContext().getPackageManager());
+        }
+      }
+
       String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
 
       // If there is no currentActivity or we are launching to a different package we need to set
@@ -128,12 +141,23 @@ public class IntentModule extends NativeIntentAndroidSpec {
     }
 
     try {
-      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+      Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
       // We need Intent.FLAG_ACTIVITY_NEW_TASK since getReactApplicationContext() returns
       // the ApplicationContext instead of the Activity context.
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       boolean canOpen =
           intent.resolveActivity(getReactApplicationContext().getPackageManager()) != null;
+
+      // Check if browser fallback url is present if no app can handle the url
+      if (!canOpen) {
+        String fallback = intent.getStringExtra(EXTRA_BROWSER_FALLBACK_URL);
+        if (fallback != null) {
+          intent = Intent.parseUri(fallback, 0);
+          canOpen =
+            intent.resolveActivity(getReactApplicationContext().getPackageManager()) != null;
+        }
+      }
+
       promise.resolve(canOpen);
     } catch (Exception e) {
       promise.reject(
