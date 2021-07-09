@@ -13,7 +13,7 @@ import * as React from 'react';
 export type RNTesterModuleExample = $ReadOnly<{|
   name?: string,
   title: string,
-  platform?: string,
+  platform?: 'ios' | 'android',
   description?: string,
   render: () => React.Node,
 |}>;
@@ -61,6 +61,7 @@ export type ComponentList = null | {components: string[], apis: string[]};
 
 export type RNTesterState = {
   activeModuleKey: null | string,
+  activeModuleTitle: null | string,
   activeModuleExampleKey: null | string,
   screen: ScreenTypes,
   bookmarks: ComponentList,

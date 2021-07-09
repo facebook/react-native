@@ -119,6 +119,10 @@ const Components: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
   {
+    key: 'ScrollViewIndicatorInsetsExample',
+    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
+  },
+  {
     key: 'SectionListExample',
     module: require('../examples/SectionList/SectionListIndex'),
     category: 'ListView',

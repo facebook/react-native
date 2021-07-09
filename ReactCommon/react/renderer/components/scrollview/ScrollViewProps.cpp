@@ -51,6 +51,11 @@ ScrollViewProps::ScrollViewProps(
           "automaticallyAdjustContentInsets",
           sourceProps.automaticallyAdjustContentInsets,
           {})),
+      automaticallyAdjustsScrollIndicatorInsets(convertRawProp(
+          rawProps,
+          "automaticallyAdjustsScrollIndicatorInsets",
+          sourceProps.automaticallyAdjustsScrollIndicatorInsets,
+          true)),
       decelerationRate(convertRawProp(
           rawProps,
           "decelerationRate",
@@ -206,6 +211,10 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
               "automaticallyAdjustContentInsets",
               automaticallyAdjustContentInsets,
               defaultScrollViewProps.automaticallyAdjustContentInsets),
+          debugStringConvertibleItem(
+              "automaticallyAdjustsScrollIndicatorInsets",
+              automaticallyAdjustsScrollIndicatorInsets,
+              defaultScrollViewProps.automaticallyAdjustsScrollIndicatorInsets),
           debugStringConvertibleItem(
               "decelerationRate",
               decelerationRate,
