@@ -23,7 +23,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.module.annotations.ReactModule;
-import java.net.URISyntaxException;
 
 /** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = IntentModule.NAME)
@@ -100,8 +99,7 @@ public class IntentModule extends NativeIntentAndroidSpec {
         String fallback = intent.getStringExtra(EXTRA_BROWSER_FALLBACK_URL);
         if (fallback != null) {
           intent = Intent.parseUri(fallback, 0);
-          componentName =
-            intent.resolveActivity(getReactApplicationContext().getPackageManager());
+          componentName = intent.resolveActivity(getReactApplicationContext().getPackageManager());
         }
       }
 
@@ -154,7 +152,7 @@ public class IntentModule extends NativeIntentAndroidSpec {
         if (fallback != null) {
           intent = Intent.parseUri(fallback, 0);
           canOpen =
-            intent.resolveActivity(getReactApplicationContext().getPackageManager()) != null;
+              intent.resolveActivity(getReactApplicationContext().getPackageManager()) != null;
         }
       }
 
