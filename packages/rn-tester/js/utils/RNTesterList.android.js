@@ -44,6 +44,11 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'ListView',
   },
   {
+    key: 'FlatList-nested',
+    module: require('../examples/FlatList/FlatList-nested'),
+    category: 'ListView',
+  },
+  {
     key: 'ImageExample',
     category: 'Basic',
     module: require('../examples/Image/ImageExample'),

@@ -9,8 +9,10 @@ package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
 import android.util.DisplayMetrics;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
@@ -162,6 +164,11 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = "pagingEnabled")
   public void setPagingEnabled(ReactHorizontalScrollView view, boolean pagingEnabled) {
     view.setPagingEnabled(pagingEnabled);
+  }
+
+  @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION_INFO)
+  public void setAccessibilityCollectionInfo(ReactHorizontalScrollView view, @Nullable ReadableMap accessibilityCollectionInfo) {
+    view.setTag(R.id.accessibility_collection_info, accessibilityCollectionInfo);
   }
 
   /** Controls overScroll behaviour */

@@ -8,12 +8,14 @@
 package com.facebook.react.uimanager;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.SpannableString;
 import android.text.style.URLSpan;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.Nullable;
 import androidx.core.view.AccessibilityDelegateCompat;
@@ -107,6 +109,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     TAB,
     TABLIST,
     TIMER,
+    LIST,
+    GRID,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
@@ -135,6 +139,10 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
           return "android.widget.SpinButton";
         case SWITCH:
           return "android.widget.Switch";
+        case LIST:
+          return "android.widget.AbsListView";
+        case GRID:
+          return "android.widget.GridView";
         case NONE:
         case LINK:
         case SUMMARY:
@@ -204,6 +212,20 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     }
     final ReadableArray accessibilityActions =
         (ReadableArray) host.getTag(R.id.accessibility_actions);
+
+    final ReadableMap accessibilityCollectionItemInfo =
+      (ReadableMap) host.getTag(R.id.accessibility_collection_item_info);
+    if (accessibilityCollectionItemInfo != null) {
+      int rowIndex = accessibilityCollectionItemInfo.getInt("rowIndex");
+      int columnIndex = accessibilityCollectionItemInfo.getInt("columnIndex");
+      int rowSpan = accessibilityCollectionItemInfo.getInt("rowSpan");
+      int columnSpan = accessibilityCollectionItemInfo.getInt("columnSpan");
+      boolean heading = accessibilityCollectionItemInfo.getBoolean("heading");
+
+      AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemInfoCompat = AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(rowIndex, rowSpan, columnIndex, columnSpan, heading);
+      info.setCollectionItemInfo(collectionItemInfoCompat);
+    }
+
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
         final ReadableMap action = accessibilityActions.getMap(i);
@@ -259,12 +281,14 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     }
   }
 
+
   @Override
   public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
     super.onInitializeAccessibilityEvent(host, event);
     // Set item count and current item index on accessibility events for adjustable
     // in order to make Talkback announce the value of the adjustable
     final ReadableMap accessibilityValue = (ReadableMap) host.getTag(R.id.accessibility_value);
+
     if (accessibilityValue != null
         && accessibilityValue.hasKey("min")
         && accessibilityValue.hasKey("now")
@@ -438,7 +462,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         && (view.getTag(R.id.accessibility_role) != null
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
-            || view.getTag(R.id.react_test_id) != null)) {
+            || view.getTag(R.id.react_test_id) != null
+            || view.getTag(R.id.accessibility_collection_item_info) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());
     }
   }
