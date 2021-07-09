@@ -30,7 +30,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PixelUtil;
@@ -101,7 +100,6 @@ public class ReactScrollView extends ScrollView
 
   private int mScrollAwayPaddingTop = 0;
 
-  private boolean mWaitingForStateUpdateRoundTrip = false;
   private int mLastStateUpdateScrollX = -1;
   private int mLastStateUpdateScrollY = -1;
 
@@ -288,22 +286,16 @@ public class ReactScrollView extends ScrollView
         updateClippingRect();
       }
 
-      // Another potential UpdateState vs onScroll fix: race an UpdateState with every onScroll
-      // TODO T91209139: if this mechanism works well, port it to HorizontalScrollView
-      if (ReactFeatureFlags.enableScrollViewStateEventAlwaysRace) {
-        updateStateOnScroll();
-      }
+      // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
+      // when JS processes the scroll event, the C++ ShadowNode representation will have a
+      // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
+      // the error as much as possible.
+      updateStateOnScroll();
 
-      // TODO T91209139: if this mechanism works well, port it to HorizontalScrollView
-      boolean deferEvent =
-          ReactFeatureFlags.enableScrollViewStateEventRaceFix
-              && (mWaitingForStateUpdateRoundTrip || updateStateOnScroll());
-      if (!deferEvent) {
-        ReactScrollViewHelper.emitScrollEvent(
-            this,
-            mOnScrollDispatchHelper.getXFlingVelocity(),
-            mOnScrollDispatchHelper.getYFlingVelocity());
-      }
+      ReactScrollViewHelper.emitScrollEvent(
+          this,
+          mOnScrollDispatchHelper.getXFlingVelocity(),
+          mOnScrollDispatchHelper.getYFlingVelocity());
     }
   }
 
@@ -1014,23 +1006,6 @@ public class ReactScrollView extends ScrollView
   }
 
   /**
-   * If we know we are sending a State update, we defer emitting scroll events until the State
-   * update makes it back to Java. When that happens, we should immediately emit the scroll event.
-   */
-  void onStateUpdate() {
-    mWaitingForStateUpdateRoundTrip = false;
-
-    // For now we don't dedupe these - we want to send an event whenever the metrics have changed
-    // from the perspective of C++
-    if (ReactFeatureFlags.enableScrollViewStateEventRaceFix) {
-      ReactScrollViewHelper.emitScrollEvent(
-          this,
-          mOnScrollDispatchHelper.getXFlingVelocity(),
-          mOnScrollDispatchHelper.getYFlingVelocity());
-    }
-  }
-
-  /**
    * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
    */
   private boolean updateStateOnScroll(final int scrollX, final int scrollY) {
@@ -1043,20 +1018,9 @@ public class ReactScrollView extends ScrollView
       return false;
     }
 
-    // Require a certain delta if we're still scrolling
-    if (mActivelyScrolling) {
-      int MIN_DELTA_TO_UPDATE_SCROLL_STATE = ReactFeatureFlags.scrollViewUpdateStateMinScrollDelta;
-      int deltaX = Math.abs(mLastStateUpdateScrollX - scrollX);
-      int deltaY = Math.abs(mLastStateUpdateScrollY - scrollY);
-      if (deltaX < MIN_DELTA_TO_UPDATE_SCROLL_STATE && deltaY < MIN_DELTA_TO_UPDATE_SCROLL_STATE) {
-        return false;
-      }
-    }
-
     mLastStateUpdateScrollX = scrollX;
     mLastStateUpdateScrollY = scrollY;
 
-    mWaitingForStateUpdateRoundTrip = true;
     forceUpdateState();
 
     return true;

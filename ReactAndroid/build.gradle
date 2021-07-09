@@ -433,6 +433,9 @@ task installArchives {
 android {
     compileSdkVersion 30
     ndkVersion ANDROID_NDK_VERSION
+    if (ANDROID_NDK_PATH != null) {
+        ndkPath ANDROID_NDK_PATH
+    }
 
     defaultConfig {
         minSdkVersion(21)

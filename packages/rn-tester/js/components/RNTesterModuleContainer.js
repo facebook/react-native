@@ -136,6 +136,6 @@ const styles = StyleSheet.create({
       ios: StyleSheet.hairlineWidth,
       android: 0,
     }),
-    marginHorizontal: Platform.select({ios: 15, android: 0}),
+    marginHorizontal: 15,
   },
 });

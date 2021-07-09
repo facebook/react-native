@@ -13,7 +13,16 @@
 import AnimatedProps from './nodes/AnimatedProps';
 import {AnimatedEvent} from './AnimatedEvent';
 import useRefEffect from '../Utilities/useRefEffect';
-import {useCallback, useLayoutEffect, useMemo, useReducer, useRef} from 'react';
+import NativeAnimatedHelper from './NativeAnimatedHelper';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 
 type ReducedProps<TProps> = {
   ...TProps,
@@ -21,6 +30,8 @@ type ReducedProps<TProps> = {
   ...
 };
 type CallbackRef<T> = T => mixed;
+
+let animatedComponentNextId = 1;
 
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
@@ -128,6 +139,18 @@ function reduceAnimatedProps<TProps>(
 function useAnimatedPropsLifecycle(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
+
+  const [animatedComponentId] = useState(
+    () => `${animatedComponentNextId++}:animatedComponent`,
+  );
+
+  useLayoutEffect(() => {
+    NativeAnimatedHelper.API.setWaitingForIdentifier(animatedComponentId);
+  });
+
+  useEffect(() => {
+    NativeAnimatedHelper.API.unsetWaitingForIdentifier(animatedComponentId);
+  });
 
   useLayoutEffect(() => {
     isUnmountingRef.current = false;

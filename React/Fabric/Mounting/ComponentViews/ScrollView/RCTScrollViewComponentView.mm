@@ -251,6 +251,14 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     scrollView.snapToOffsets = snapToOffsets;
   }
 
+  if (@available(iOS 13.0, *)) {
+    if (oldScrollViewProps.automaticallyAdjustsScrollIndicatorInsets !=
+        newScrollViewProps.automaticallyAdjustsScrollIndicatorInsets) {
+      scrollView.automaticallyAdjustsScrollIndicatorInsets =
+          newScrollViewProps.automaticallyAdjustsScrollIndicatorInsets;
+    }
+  }
+
   if (@available(iOS 11.0, *)) {
     if (oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) {
       auto const contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;

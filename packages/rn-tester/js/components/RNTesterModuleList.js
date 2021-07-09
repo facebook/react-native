@@ -39,7 +39,10 @@ const ExampleModuleRow = ({
     <TouchableHighlight
       style={styles.imageViewStyle}
       onPress={() =>
-        toggleBookmark({exampleType: item.exampleType, key: item.key})
+        toggleBookmark({
+          exampleType: item.exampleType,
+          key: item.key,
+        })
       }>
       <Image
         style={styles.imageStyle}
@@ -84,7 +87,11 @@ const ExampleModuleRow = ({
         </View>
       }
       onPress={() =>
-        handlePress({exampleType: item.exampleType, key: item.key})
+        handlePress({
+          exampleType: item.exampleType,
+          key: item.key,
+          title: item.module.title,
+        })
       }
     />
   );
