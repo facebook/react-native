@@ -8,13 +8,10 @@
 package com.facebook.react.devsupport.interfaces;
 
 import android.content.Context;
-
 import androidx.annotation.Nullable;
-
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
-
 import java.util.Map;
 
 public interface DevSupportManagerFactory {

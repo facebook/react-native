@@ -175,8 +175,8 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
-   * Set the custom {@link DevSupportManagerFactory}. If not set, will use
-   * {@link DefaultDevSupportManagerFactory}.
+   * Set the custom {@link DevSupportManagerFactory}. If not set, will use {@link
+   * DefaultDevSupportManagerFactory}.
    */
   public ReactInstanceManagerBuilder setDevSupportManagerFactory(
       final DevSupportManagerFactory devSupportManagerFactory) {
