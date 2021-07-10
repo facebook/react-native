@@ -275,6 +275,7 @@ export function SectionList_scrollable(Props: {
         ItemSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
         )}
+        accessibilityRole="list"
         debug={debug}
         inverted={inverted}
         disableVirtualization={!virtualized}

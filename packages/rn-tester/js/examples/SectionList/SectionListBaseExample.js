@@ -95,6 +95,7 @@ const SectionListBaseExample: React.AbstractComponent<
       <SectionList
         ref={ref}
         testID="section_list"
+        accessibilityRole="list"
         sections={DATA}
         keyExtractor={(item, index) => item + index}
         style={styles.list}
