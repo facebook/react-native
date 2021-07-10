@@ -107,6 +107,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     TAB,
     TABLIST,
     TIMER,
+    LIST,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
@@ -135,6 +136,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
           return "android.widget.SpinButton";
         case SWITCH:
           return "android.widget.Switch";
+        case LIST:
+          return "android.widget.AbsListView";
         case NONE:
         case LINK:
         case SUMMARY:
