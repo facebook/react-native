@@ -36,8 +36,10 @@ allprojects {
         mavenCentral()
     }
 
-    // used to override ndk path on CI
+    // used to override ndk path/version from env variables on CI
+    ext["ANDROID_NDK_PATH"] = null
     if (System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
         setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
+        ext["ANDROID_NDK_PATH"] =  System.getenv("ANDROID_NDK")
     }
 }

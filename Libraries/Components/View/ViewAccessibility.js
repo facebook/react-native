@@ -41,6 +41,7 @@ export type AccessibilityRole =
   | 'tab'
   | 'tablist'
   | 'timer'
+  | 'list'
   | 'toolbar';
 
 // the info associated with an accessibility action

@@ -78,6 +78,7 @@ export const RNTesterReducer = (
       return {
         ...state,
         activeModuleKey: null,
+        activeModuleTitle: null,
         activeModuleExampleKey: null,
         screen: action.data.screen,
       };
@@ -85,6 +86,7 @@ export const RNTesterReducer = (
       return {
         ...state,
         activeModuleKey: action.data.key,
+        activeModuleTitle: action.data.title,
         activeModuleExampleKey: null,
         recentlyUsed: getUpdatedRecentlyUsed({
           exampleType: action.data.exampleType,
@@ -113,6 +115,8 @@ export const RNTesterReducer = (
         activeModuleExampleKey: null,
         activeModuleKey:
           state.activeModuleExampleKey != null ? state.activeModuleKey : null,
+        activeModuleTitle:
+          state.activeModuleExampleKey != null ? state.activeModuleTitle : null,
       };
     default:
       throw new Error(`Invalid action type ${action.type}`);
