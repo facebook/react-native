@@ -160,16 +160,18 @@ def use_react_native_codegen!(spec, options={})
 
   # Library name (e.g. FBReactNativeSpec)
   modules_library_name = spec.name
+
+   # Output dir, relative to podspec that invoked this method
   modules_output_dir = "React/#{modules_library_name}/#{modules_library_name}"
+
+  generated_dirs = [ modules_output_dir ]
+  generated_filenames = [ "#{modules_library_name}.h", "#{modules_library_name}-generated.mm" ]
+  generated_files = generated_filenames.map { |filename| "#{modules_output_dir}/#{filename}" }
 
   # Run the codegen as part of the Xcode build pipeline.
   env_vars = "SRCS_DIR='#{js_srcs}'"
   env_vars += " MODULES_OUTPUT_DIR='#{prefix}/#{modules_output_dir}'"
   env_vars += " MODULES_LIBRARY_NAME='#{modules_library_name}'"
-
-  generated_dirs = [ modules_output_dir ]
-  generated_filenames = [ "#{modules_library_name}.h", "#{modules_library_name}-generated.mm" ]
-  generated_files = generated_filenames.map { |filename| "#{modules_output_dir}/#{filename}" }
 
   if ENV['USE_FABRIC'] == '1'
     # We use a different library name for components, as well as an additional set of files.
@@ -190,13 +192,17 @@ def use_react_native_codegen!(spec, options={})
     generated_files = generated_files.concat(components_generated_filenames.map { |filename| "#{components_output_dir}/#{filename}" })
   end
 
+  # Prepare filesystem by creating empty files that will be picked up as references by CocoaPods.
+  spec.prepare_command = "mkdir -p #{generated_dirs.map {|dir| "'../../#{dir}'"}.join(" ")} && touch #{generated_files.map {|file| "'../../#{file}'"}.join(" ")}"
+
   spec.script_phase = {
     :name => 'Generate Specs',
     :input_files => [js_srcs],
     :output_files => ["${DERIVED_FILE_DIR}/codegen-#{modules_library_name}.log"].concat(generated_files.map { |filename| "#{prefix}/#{filename}"} ),
-    :script => "set -o pipefail\n\nbash -l -c '#{env_vars} ${PODS_TARGET_SRCROOT}/../../scripts/generate-specs.sh' 2>&1 | tee \"${SCRIPT_OUTPUT_FILE_0}\"",
+    # The final generated files will be created when this script is invoked at Xcode build time.
+    :script => %{set -o pipefail
+bash -l -c '#{env_vars} $\{PODS_TARGET_SRCROOT\}/../../scripts/generate-specs.sh' 2>&1 | tee "${SCRIPT_OUTPUT_FILE_0}"},
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
-  spec.prepare_command = "mkdir -p #{generated_dirs.map {|dir| "'../../#{dir}'"}.join(" ")} && touch #{generated_files.map {|file| "'../../#{file}'"}.join(" ")}"
 end
