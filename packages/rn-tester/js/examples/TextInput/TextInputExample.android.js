@@ -201,6 +201,38 @@ exports.examples = ([
     },
   },
   {
+    title: 'Font Weight',
+    render: function(): React.Node {
+      return (
+        <View>
+          <TextInput
+            defaultValue="Font Weight (default)"
+            style={[styles.singleLine]}
+          />
+          {[
+            'normal',
+            'bold',
+            '900',
+            '800',
+            '700',
+            '600',
+            '500',
+            '400',
+            '300',
+            '200',
+            '100',
+          ].map(fontWeight => (
+            <TextInput
+              defaultValue={`Font Weight (${fontWeight})`}
+              key={fontWeight}
+              style={[styles.singleLine, {fontWeight}]}
+            />
+          ))}
+        </View>
+      );
+    },
+  },
+  {
     title: 'Text input, themes and heights',
     render: function(): React.Node {
       return (

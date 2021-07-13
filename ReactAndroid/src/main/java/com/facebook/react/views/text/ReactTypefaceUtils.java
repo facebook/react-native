@@ -9,38 +9,54 @@ package com.facebook.react.views.text;
 
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import java.util.ArrayList;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactTypefaceUtils {
-  private static final String TAG = "ReactTypefaceUtils";
-  public static final int UNSET = -1;
 
   public static int parseFontWeight(@Nullable String fontWeightString) {
-    int fontWeightNumeric =
-        fontWeightString != null ? parseNumericFontWeight(fontWeightString) : UNSET;
-    int fontWeight = fontWeightNumeric != UNSET ? fontWeightNumeric : Typeface.NORMAL;
-
-    if ("bold".equals(fontWeightString)) fontWeight = Typeface.BOLD;
-    else if ("normal".equals(fontWeightString)) fontWeight = Typeface.NORMAL;
-
-    return fontWeight;
+    if (fontWeightString != null) {
+      switch (fontWeightString) {
+        case "100":
+          return 100;
+        case "200":
+          return 200;
+        case "300":
+          return 300;
+        case "normal":
+        case "400":
+          return 400;
+        case "500":
+          return 500;
+        case "600":
+          return 600;
+        case "bold":
+        case "700":
+          return 700;
+        case "800":
+          return 800;
+        case "900":
+          return 900;
+      }
+    }
+    return ReactBaseTextShadowNode.UNSET;
   }
 
   public static int parseFontStyle(@Nullable String fontStyleString) {
-    int fontStyle = UNSET;
-    if ("italic".equals(fontStyleString)) {
-      fontStyle = Typeface.ITALIC;
-    } else if ("normal".equals(fontStyleString)) {
-      fontStyle = Typeface.NORMAL;
+    if (fontStyleString != null) {
+      if ("italic".equals(fontStyleString)) {
+        return Typeface.ITALIC;
+      }
+      if ("normal".equals(fontStyleString)) {
+        return Typeface.NORMAL;
+      }
     }
-
-    return fontStyle;
+    return ReactBaseTextShadowNode.UNSET;
   }
 
   public static @Nullable String parseFontVariant(@Nullable ReadableArray fontVariantArray) {
@@ -80,67 +96,14 @@ public class ReactTypefaceUtils {
       @Nullable Typeface typeface,
       int style,
       int weight,
-      @Nullable String family,
+      @Nullable String fontFamilyName,
       AssetManager assetManager) {
-    int oldStyle;
-    if (typeface == null) {
-      oldStyle = Typeface.NORMAL;
+    TypefaceStyle typefaceStyle = new TypefaceStyle(style, weight);
+    if (fontFamilyName == null) {
+      return typefaceStyle.apply(typeface == null ? Typeface.DEFAULT : typeface);
     } else {
-      oldStyle = typeface.getStyle();
+      return ReactFontManager.getInstance()
+          .getTypeface(fontFamilyName, typefaceStyle, assetManager);
     }
-
-    int newStyle = oldStyle;
-    boolean italic = false;
-    if (weight == UNSET) weight = Typeface.NORMAL;
-    if (style == Typeface.ITALIC) italic = true;
-    boolean UNDER_SDK_28 = Build.VERSION.SDK_INT < Build.VERSION_CODES.P;
-    boolean applyNumericValues = !(weight < (Typeface.BOLD_ITALIC + 1) || family != null);
-    boolean numericBold = UNDER_SDK_28 && weight > 699 && applyNumericValues;
-    boolean numericNormal = UNDER_SDK_28 && weight < 700 && applyNumericValues;
-    if (weight == Typeface.BOLD) {
-      newStyle = (newStyle == Typeface.ITALIC) ? Typeface.BOLD_ITALIC : Typeface.BOLD;
-      typeface = Typeface.create(typeface, newStyle);
-    }
-    if (weight == Typeface.NORMAL) {
-      typeface = Typeface.create(typeface, Typeface.NORMAL);
-      newStyle = Typeface.NORMAL;
-    }
-    if (style == Typeface.ITALIC) {
-      newStyle = (newStyle == Typeface.BOLD) ? Typeface.BOLD_ITALIC : Typeface.ITALIC;
-      typeface = Typeface.create(typeface, newStyle);
-    }
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1 && weight > Typeface.BOLD_ITALIC) {
-      typeface = Typeface.create(typeface, weight, italic);
-    }
-    if (family != null && UNDER_SDK_28 && weight > Typeface.BOLD_ITALIC) {
-      FLog.d(
-          TAG,
-          "Support for numeric font weight numeric values with custom fonts under Android API 28 Pie is not yet supported in ReactNative.");
-    }
-    if (family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(family, newStyle, weight, assetManager);
-    }
-    if (numericBold || numericNormal) {
-      newStyle = numericBold ? Typeface.BOLD : Typeface.NORMAL;
-      typeface = Typeface.create(typeface, newStyle);
-      FLog.d(
-          TAG,
-          "Support for numeric font weight numeric values available only from Android API 28 Pie. Android device lower then API 28 will use normal or bold.");
-    }
-    return typeface;
-  }
-
-  /**
-   * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
-   * return the weight.
-   */
-  private static int parseNumericFontWeight(String fontWeightString) {
-    // This should be much faster than using regex to verify input and Integer.parseInt
-    return fontWeightString.length() == 3
-            && fontWeightString.endsWith("00")
-            && fontWeightString.charAt(0) <= '9'
-            && fontWeightString.charAt(0) >= '1'
-        ? 100 * (fontWeightString.charAt(0) - '0')
-        : UNSET;
   }
 }
