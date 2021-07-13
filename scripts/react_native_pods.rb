@@ -152,33 +152,33 @@ end
 def use_react_native_codegen!(spec, options={})
   return if ENV['DISABLE_CODEGEN'] == '1'
 
-  # The path to react-native
-  prefix = options[:path] ||= "${PODS_TARGET_SRCROOT}/../.."
+  # The prefix to react-native
+  prefix = options[:react_native_path] ||= "../.."
 
   # The path to JavaScript files
   js_srcs = options[:js_srcs_dir] ||= "#{prefix}/Libraries"
 
   # Library name (e.g. FBReactNativeSpec)
-  modules_library_name = spec.name
+  modules_library_name = options[:library_name] ||= spec.name
 
-   # Output dir, relative to podspec that invoked this method
-  modules_output_dir = "React/#{modules_library_name}/#{modules_library_name}"
+  # Output dir, relative to podspec that invoked this method
+  modules_output_dir = options[:modules_output_dir] ||= "#{prefix}/React/#{modules_library_name}/#{modules_library_name}"
 
   generated_dirs = [ modules_output_dir ]
   generated_filenames = [ "#{modules_library_name}.h", "#{modules_library_name}-generated.mm" ]
   generated_files = generated_filenames.map { |filename| "#{modules_output_dir}/#{filename}" }
 
   # Run the codegen as part of the Xcode build pipeline.
-  env_vars = "SRCS_DIR='#{js_srcs}'"
-  env_vars += " MODULES_OUTPUT_DIR='#{prefix}/#{modules_output_dir}'"
+  env_vars = "SRCS_DIR='${PODS_TARGET_SRCROOT}/#{js_srcs}'"
+  env_vars += " MODULES_OUTPUT_DIR='${PODS_TARGET_SRCROOT}/#{modules_output_dir}'"
   env_vars += " MODULES_LIBRARY_NAME='#{modules_library_name}'"
 
   if ENV['USE_FABRIC'] == '1'
     # We use a different library name for components, as well as an additional set of files.
     # Eventually, we want these to be part of the same library as #{modules_library_name} above.
-    components_output_dir = "ReactCommon/react/renderer/components/rncore/"
+    components_output_dir = options[:components_output_dir] ||= "#{prefix}/ReactCommon/react/renderer/components/rncore/"
     generated_dirs.push components_output_dir
-    env_vars += " COMPONENTS_OUTPUT_DIR='#{prefix}/#{components_output_dir}'"
+    env_vars += " COMPONENTS_OUTPUT_DIR='${PODS_TARGET_SRCROOT}/#{components_output_dir}'"
     components_generated_filenames = [
       "ComponentDescriptors.h",
       "EventEmitters.cpp",
@@ -193,15 +193,17 @@ def use_react_native_codegen!(spec, options={})
   end
 
   # Prepare filesystem by creating empty files that will be picked up as references by CocoaPods.
-  spec.prepare_command = "mkdir -p #{generated_dirs.map {|dir| "'../../#{dir}'"}.join(" ")} && touch #{generated_files.map {|file| "'../../#{file}'"}.join(" ")}"
+  spec.prepare_command = "mkdir -p #{generated_dirs.join(" ")} && touch #{generated_files.join(" ")}"
 
   spec.script_phase = {
     :name => 'Generate Specs',
-    :input_files => [js_srcs],
-    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{modules_library_name}.log"].concat(generated_files.map { |filename| "#{prefix}/#{filename}"} ),
+    :input_files => [ "${PODS_TARGET_SRCROOT}/#{js_srcs}" ], # This also needs to be relative to Xcode
+    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{modules_library_name}.log"].concat(generated_files.map { |filename| " ${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
     :script => %{set -o pipefail
-bash -l -c '#{env_vars} $\{PODS_TARGET_SRCROOT\}/../../scripts/generate-specs.sh' 2>&1 | tee "${SCRIPT_OUTPUT_FILE_0}"},
+
+bash -l -c '#{env_vars} $\{PODS_TARGET_SRCROOT\}/#{prefix}/scripts/generate-specs.sh' 2>&1 | tee "${SCRIPT_OUTPUT_FILE_0}"
+    },
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
