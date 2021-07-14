@@ -40,6 +40,7 @@ module.exports = {
     'tab',
     'tablist',
     'timer',
+    'list',
     'toolbar',
   ],
 };

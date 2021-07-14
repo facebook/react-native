@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import {Text, Easing, StyleSheet, View, Animated} from 'react-native';
@@ -133,4 +133,4 @@ export default ({
       </View>
     );
   },
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);

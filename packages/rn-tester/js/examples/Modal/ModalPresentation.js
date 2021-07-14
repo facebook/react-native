@@ -10,7 +10,7 @@
 
 import * as React from 'react';
 import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import RNTOption from '../../components/RNTOption';
 const RNTesterButton = require('../../components/RNTesterButton');
 
@@ -258,4 +258,4 @@ export default ({
   name: 'basic',
   description: 'Modals can be presented with or without animation',
   render: (): React.Node => <ModalPresentation />,
-}: RNTesterExampleModuleItem);
+}: RNTesterModuleExample);

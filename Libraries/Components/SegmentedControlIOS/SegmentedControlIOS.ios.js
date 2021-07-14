@@ -19,6 +19,8 @@ type SegmentedControlIOSProps = $ReadOnly<{|
   ...ViewProps,
   /**
    * The labels for the control's segment buttons, in order.
+   *
+   * The default value is an empty array.
    */
   values?: $ReadOnlyArray<string>,
   /**
@@ -27,6 +29,8 @@ type SegmentedControlIOSProps = $ReadOnly<{|
   selectedIndex?: ?number,
   /**
    * If false the user won't be able to interact with the control.
+   *
+   * The default value is true.
    */
   enabled?: boolean,
   /**
@@ -76,11 +80,6 @@ type Props = $ReadOnly<{|
  */
 
 class SegmentedControlIOS extends React.Component<Props> {
-  static defaultProps = {
-    values: [],
-    enabled: true,
-  };
-
   _onChange = (event: SyntheticEvent<OnChangeEvent>) => {
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange &&
@@ -88,12 +87,21 @@ class SegmentedControlIOS extends React.Component<Props> {
   };
 
   render() {
-    const {forwardedRef, onValueChange, style, ...props} = this.props;
+    const {
+      enabled,
+      forwardedRef,
+      onValueChange,
+      style,
+      values,
+      ...props
+    } = this.props;
     return (
       <RCTSegmentedControlNativeComponent
         {...props}
         ref={forwardedRef}
         style={[styles.segmentedControl, style]}
+        enabled={enabled !== false}
+        values={values ?? []}
         onChange={this._onChange}
       />
     );

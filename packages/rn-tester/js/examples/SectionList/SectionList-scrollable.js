@@ -146,7 +146,9 @@ const onScrollToIndexFailed = (info: {
    */
 };
 
-function SectionListExample(Props: {...}): React.Element<typeof RNTesterPage> {
+export function SectionList_scrollable(Props: {
+  ...,
+}): React.Element<typeof RNTesterPage> {
   const scrollPos = new Animated.Value(0);
   const scrollSinkY = Animated.event(
     [{nativeEvent: {contentOffset: {y: scrollPos}}}],
@@ -273,6 +275,7 @@ function SectionListExample(Props: {...}): React.Element<typeof RNTesterPage> {
         ItemSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
         )}
+        accessibilityRole="list"
         debug={debug}
         inverted={inverted}
         disableVirtualization={!virtualized}
@@ -338,15 +341,10 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'SectionList';
-exports.category = 'ListView';
-exports.documentationURL = 'https://reactnative.dev/docs/sectionlist';
-exports.description = 'Performant, scrollable list of data.';
-exports.examples = [
-  {
-    title: 'Simple scrollable list',
-    render: function(): React.Element<typeof SectionListExample> {
-      return <SectionListExample />;
-    },
+export default {
+  title: 'SectionList scrollable',
+  name: 'SectionList-scrollable',
+  render: function(): React.Element<typeof SectionList_scrollable> {
+    return <SectionList_scrollable />;
   },
-];
+};

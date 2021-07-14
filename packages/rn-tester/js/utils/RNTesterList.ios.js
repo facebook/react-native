@@ -10,9 +10,9 @@
 
 'use strict';
 
-import type {RNTesterExample} from '../types/RNTesterTypes';
+import type {RNTesterModuleInfo} from '../types/RNTesterTypes';
 
-const ComponentExamples: Array<RNTesterExample> = [
+const Components: Array<RNTesterModuleInfo> = [
   {
     key: 'ActivityIndicatorExample',
     category: 'UI',
@@ -119,33 +119,12 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'SectionList-inverted',
-    module: require('../examples/SectionList/SectionList-inverted'),
-    category: 'ListView',
-  },
-  {
-    key: 'SectionList-stickyHeadersEnabled',
-    module: require('../examples/SectionList/SectionList-stickyHeadersEnabled'),
-    category: 'ListView',
-  },
-  {
-    key: 'SectionList-withSeparators',
-    module: require('../examples/SectionList/SectionList-withSeparators'),
-    category: 'ListView',
-  },
-  {
-    key: 'SectionList-onEndReached',
-    module: require('../examples/SectionList/SectionList-onEndReached'),
-    category: 'ListView',
-  },
-  {
-    key: 'SectionList-onViewableItemsChanged',
-    module: require('../examples/SectionList/SectionList-onViewableItemsChanged'),
-    category: 'ListView',
+    key: 'ScrollViewIndicatorInsetsExample',
+    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
   },
   {
     key: 'SectionListExample',
-    module: require('../examples/SectionList/SectionListExample'),
+    module: require('../examples/SectionList/SectionListIndex'),
     category: 'ListView',
     supportsTVOS: true,
   },
@@ -196,7 +175,7 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
 ];
 
-const APIExamples: Array<RNTesterExample> = [
+const APIs: Array<RNTesterModuleInfo> = [
   {
     key: 'AccessibilityExample',
     module: require('../examples/Accessibility/AccessibilityExample'),
@@ -358,13 +337,13 @@ const APIExamples: Array<RNTesterExample> = [
 
 const Modules: {...} = {};
 
-APIExamples.concat(ComponentExamples).forEach(Example => {
+APIs.concat(Components).forEach(Example => {
   Modules[Example.key] = Example.module;
 });
 
 const RNTesterList = {
-  APIExamples,
-  ComponentExamples,
+  APIs,
+  Components,
   Modules,
 };
 

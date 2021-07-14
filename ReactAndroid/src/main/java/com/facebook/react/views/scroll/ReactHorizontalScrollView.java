@@ -417,6 +417,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         updateClippingRect();
       }
 
+      // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
+      // when JS processes the scroll event, the C++ ShadowNode representation will have a
+      // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
+      // the error as much as possible.
+      updateStateOnScroll();
+
       ReactScrollViewHelper.emitScrollEvent(
           this,
           mOnScrollDispatchHelper.getXFlingVelocity(),
