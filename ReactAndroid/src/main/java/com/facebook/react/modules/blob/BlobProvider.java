@@ -20,10 +20,14 @@ import com.facebook.react.bridge.ReactContext;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class BlobProvider extends ContentProvider {
 
   private static final int PIPE_CAPACITY = 65536;
+
+  private ExecutorService executor = Executors.newSingleThreadExecutor();
 
   @Override
   public boolean onCreate() {
@@ -102,8 +106,8 @@ public final class BlobProvider extends ContentProvider {
       // Writing from a separate thread allows us to return the read side descriptor
       // immediately so that both writer and reader can work concurrently.
       // Reading from the pipe empties the buffer and allows the next chunks to be written.
-      Thread writer =
-          new Thread() {
+      Runnable writer =
+          new Runnable() {
             public void run() {
               try (OutputStream outputStream =
                   new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
@@ -113,7 +117,7 @@ public final class BlobProvider extends ContentProvider {
               }
             }
           };
-      writer.start();
+      executor.submit(writer);
     }
 
     return readSide;
