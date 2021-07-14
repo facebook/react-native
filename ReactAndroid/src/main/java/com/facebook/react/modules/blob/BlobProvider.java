@@ -23,6 +23,8 @@ import java.io.OutputStream;
 
 public final class BlobProvider extends ContentProvider {
 
+  private final static int PIPE_CAPACITY = 65536;
+
   @Override
   public boolean onCreate() {
     return true;
@@ -86,22 +88,33 @@ public final class BlobProvider extends ContentProvider {
     ParcelFileDescriptor readSide = pipe[0];
     final ParcelFileDescriptor writeSide = pipe[1];
 
-    Thread writer =
+    if (data.length <= PIPE_CAPACITY) {
+      // If the blob length is less than or equal to pipe capacity (64 KB),
+      // we can write the data synchronously to the pipe buffer.
+      try (OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
+        outputStream.write(data);
+      } catch (IOException exception) {
+        return null;
+      }
+    } else {
+      // For blobs larger than 64 KB, a synchronous write would fill up the whole buffer
+      // and block forever, because there are no readers to empty the buffer.
+      // Writing from a separate thread allows us to return the read side descriptor
+      // immediately so that both writer and reader can work concurrently.
+      // Reading from the pipe empties the buffer and allows the next chunks to be written.
+      Thread writer =
         new Thread() {
           public void run() {
             try (OutputStream outputStream =
                 new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
-              // If the blob data is larger than pipe capacity (64 KB), a synchronous write call
-              // would fill up the whole buffer and block until the bytes are read (i.e. never).
-              // Writing from a separate thread allows us to return the read side descriptor
-              // immediately so that the reader can start reading.
               outputStream.write(data);
             } catch (IOException exception) {
               // no-op
             }
           }
         };
-    writer.start();
+      writer.start();
+    }
 
     return readSide;
   }

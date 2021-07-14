@@ -32,18 +32,15 @@ type ImageSource = $ReadOnly<{|
   uri: string,
 |}>;
 
-type BlobImageExampleState = {|
+type BlobImageState = {|
   objectURL: ?string,
 |};
 
-type BlobImageExampleProps = $ReadOnly<{|
+type BlobImageProps = $ReadOnly<{|
   url: string,
 |}>;
 
-class BlobImageExample extends React.Component<
-  BlobImageExampleProps,
-  BlobImageExampleState,
-> {
+class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
   state = {
     objectURL: null,
   };
@@ -62,6 +59,27 @@ class BlobImageExample extends React.Component<
       <Image source={{uri: this.state.objectURL}} style={styles.base} />
     ) : (
       <Text>Object URL not created yet</Text>
+    );
+  }
+}
+
+type BlobImageExampleState = {||};
+
+type BlobImageExampleProps = $ReadOnly<{|
+  urls: string[],
+|}>;
+
+class BlobImageExample extends React.Component<
+  BlobImageExampleProps,
+  BlobImageExampleState,
+> {
+  render() {
+    return (
+      <View style={styles.horizontal}>
+        {this.props.urls.map(url => (
+          <BlobImage key={url} url={url} />
+        ))}
+      </View>
     );
   }
 }
@@ -648,7 +666,12 @@ exports.examples = [
       'then it will be resolved using `BlobProvider` (Android) or `RCTBlobManager` (iOS).': string),
     render: function(): React.Node {
       return (
-        <BlobImageExample url="https://www.facebook.com/ads/pics/successstories.png" />
+        <BlobImageExample
+          urls={[
+            'https://www.facebook.com/favicon.ico',
+            'https://www.facebook.com/ads/pics/successstories.png',
+          ]}
+        />
       );
     },
   },
