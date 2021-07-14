@@ -125,21 +125,21 @@ RCT_NOT_IMPLEMENTED(-init)
         RCT_ARG_BLOCK( id value = json; )
       }
     };
-
+    
     for (NSUInteger i = 2; i < numberOfArguments; i++) {
       const char *argumentType = [_methodSignature getArgumentTypeAtIndex:i];
-
+      
       NSString *argumentName = argumentNames[i - 2];
       // `selector` 是指 RCTConvert 中的方法选择器
       SEL selector = NSSelectorFromString([argumentName stringByAppendingString:@":"]);
       if ([RCTConvert respondsToSelector:selector]) {
         switch (argumentType[0]) {
-
+            
 #define RCT_CONVERT_CASE(_value, _type) \
 case _value: { \
-  _type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
-  RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
-  break; \
+_type (*convert)(id, SEL, id) = (typeof(convert))objc_msgSend; \
+RCT_ARG_BLOCK( _type value = convert([RCTConvert class], selector, json); ) \
+break; \
 }
             // RCT_CONVERT_CASE(':', SEL) 展开后代码如下：
             // 这个宏中最终的目的就是为了调用 `[invocation setArgument:&value atIndex:index]`，为了外部方便调用所以才用 block 包装起来
@@ -170,91 +170,94 @@ case _value: { \
             RCT_CONVERT_CASE('B', BOOL)
             RCT_CONVERT_CASE('@', id)
             RCT_CONVERT_CASE('^', void *)
-
-            case '{': {
-              [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) {
-                NSMethodSignature *methodSignature = [RCTConvert methodSignatureForSelector:selector];
-                void *returnValue = malloc(methodSignature.methodReturnLength);
-                NSInvocation *_invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-                [_invocation setTarget:[RCTConvert class]];
-                [_invocation setSelector:selector];
-                [_invocation setArgument:&json atIndex:2];
-                [_invocation invoke];
-                [_invocation getReturnValue:returnValue];
-
-                [invocation setArgument:returnValue atIndex:index];
-                  free(returnValue);
-                }];
-                break;
-              }
-
-            default:
-              defaultCase(argumentType);
+            
+          case '{': {
+            [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSInvocation *invocation, NSUInteger index, id json) {
+              NSMethodSignature *methodSignature = [RCTConvert methodSignatureForSelector:selector];
+              void *returnValue = malloc(methodSignature.methodReturnLength);
+              NSInvocation *_invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+              [_invocation setTarget:[RCTConvert class]];
+              [_invocation setSelector:selector];
+              [_invocation setArgument:&json atIndex:2];
+              [_invocation invoke];
+              [_invocation getReturnValue:returnValue];
+              
+              [invocation setArgument:returnValue atIndex:index];
+              free(returnValue);
+            }];
+            break;
           }
-        } else if ([argumentName isEqualToString:@"RCTResponseSenderBlock"]) {
-          addBlockArgument();
-        } else if ([argumentName isEqualToString:@"RCTResponseErrorBlock"]) {
-          RCT_ARG_BLOCK(
-
-            if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
-              RCTLogError(@"Argument %tu (%@) of %@.%@ should be a number", index,
-                          json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
-              return;
-            }
-
-            // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-            __autoreleasing id value = (json ? ^(NSError *error) {
-              [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                       method:@"invokeCallbackAndReturnFlushedQueue"
-                                    arguments:@[json, @[RCTJSErrorFromNSError(error)]]];
-            } : ^(__unused NSError *error) {});
-          )
-        } else if ([argumentName isEqualToString:@"RCTPromiseResolveBlock"]) {
-          RCTAssert(i == numberOfArguments - 2,
-                    @"The RCTPromiseResolveBlock must be the second to last parameter in -[%@ %@]",
-                    _moduleClassName, objCMethodName);
-          RCT_ARG_BLOCK(
-            if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
-              RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise resolver ID", index,
-                          json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
-              return;
-            }
-
-            // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-            __autoreleasing RCTPromiseResolveBlock value = (^(id result) {
-              NSArray *arguments = result ? @[result] : @[];
-              [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                       method:@"invokeCallbackAndReturnFlushedQueue"
-                                    arguments:@[json, arguments]];
-            });
-          )
-          _functionKind = RCTJavaScriptFunctionKindAsync;
-        } else if ([argumentName isEqualToString:@"RCTPromiseRejectBlock"]) {
-          RCTAssert(i == numberOfArguments - 1,
-                    @"The RCTPromiseRejectBlock must be the last parameter in -[%@ %@]",
-                    _moduleClassName, objCMethodName);
-          RCT_ARG_BLOCK(
-            if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
-              RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise rejecter ID", index,
-                          json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
-              return;
-            }
-
-            // Marked as autoreleasing, because NSInvocation doesn't retain arguments
-            __autoreleasing RCTPromiseRejectBlock value = (^(NSError *error) {
-              NSDictionary *errorJSON = RCTJSErrorFromNSError(error);
-              [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                       method:@"invokeCallbackAndReturnFlushedQueue"
-                                    arguments:@[json, @[errorJSON]]];
-            });
-          )
-          _functionKind = RCTJavaScriptFunctionKindAsync;
-        } else {
-
-          // Unknown argument type
-          RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert"
-              " to support this type.", argumentName, [self methodName]);
+            
+          default:
+            defaultCase(argumentType);
         }
+      } else if ([argumentName isEqualToString:@"RCTResponseSenderBlock"]) {
+        addBlockArgument();
+      } else if ([argumentName isEqualToString:@"RCTResponseErrorBlock"]) {
+        RCT_ARG_BLOCK(
+                      
+                      if (RCT_DEBUG && json && ![json isKindOfClass:[NSNumber class]]) {
+          RCTLogError(@"Argument %tu (%@) of %@.%@ should be a number", index,
+                      json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+          return;
+        }
+                      
+                      // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+                      __autoreleasing id value = (json ? ^(NSError *error) {
+          [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                   method:@"invokeCallbackAndReturnFlushedQueue"
+                                arguments:@[json, @[RCTJSErrorFromNSError(error)]]];
+        } : ^(__unused NSError *error) {});
+                      )
+      } else if ([argumentName isEqualToString:@"RCTPromiseResolveBlock"]) {
+        RCTAssert(i == numberOfArguments - 2,
+                  @"The RCTPromiseResolveBlock must be the second to last parameter in -[%@ %@]",
+                  _moduleClassName, objCMethodName);
+        RCT_ARG_BLOCK(
+                      if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
+          RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise resolver ID", index,
+                      json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+          return;
+        }
+                      
+        // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+                      __autoreleasing RCTPromiseResolveBlock value = (^(id result) {
+            NSArray *arguments = result ? @[result] : @[];
+            [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                   method:@"invokeCallbackAndReturnFlushedQueue"
+                                arguments:@[json, arguments]];
+          });
+                      
+                      // macro
+                      // [invocation setArgument:&value atIndex:index];
+        )
+        _functionKind = RCTJavaScriptFunctionKindAsync;
+      } else if ([argumentName isEqualToString:@"RCTPromiseRejectBlock"]) {
+        RCTAssert(i == numberOfArguments - 1,
+                  @"The RCTPromiseRejectBlock must be the last parameter in -[%@ %@]",
+                  _moduleClassName, objCMethodName);
+        RCT_ARG_BLOCK(
+                      if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
+          RCTLogError(@"Argument %tu (%@) of %@.%@ must be a promise rejecter ID", index,
+                      json, RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+          return;
+        }
+                      
+                      // Marked as autoreleasing, because NSInvocation doesn't retain arguments
+                      __autoreleasing RCTPromiseRejectBlock value = (^(NSError *error) {
+          NSDictionary *errorJSON = RCTJSErrorFromNSError(error);
+          [bridge _invokeAndProcessModule:@"BatchedBridge"
+                                   method:@"invokeCallbackAndReturnFlushedQueue"
+                                arguments:@[json, @[errorJSON]]];
+        });
+                      )
+        _functionKind = RCTJavaScriptFunctionKindAsync;
+      } else {
+        
+        // Unknown argument type
+        RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert"
+                    " to support this type.", argumentName, [self methodName]);
+      }
     }
 
     _argumentBlocks = [argumentBlocks copy];
