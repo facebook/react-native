@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -575,7 +576,7 @@ public class ReactViewGroup extends ViewGroup
               if (!child.isShown()) {
                 ReactSoftException.logSoftException(
                     TAG,
-                    new IllegalViewOperationException(
+                    new ReactNoCrashSoftException(
                         "Child view has been added to Parent view in which it is clipped and not visible."
                             + " This is not legal for this particular child view. Child: ["
                             + child.getId()
