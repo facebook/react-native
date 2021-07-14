@@ -76,11 +76,6 @@ type Props = $ReadOnly<{|
  */
 
 class SegmentedControlIOS extends React.Component<Props> {
-  static defaultProps = {
-    values: [],
-    enabled: true,
-  };
-
   _onChange = (event: SyntheticEvent<OnChangeEvent>) => {
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange &&
@@ -88,12 +83,21 @@ class SegmentedControlIOS extends React.Component<Props> {
   };
 
   render() {
-    const {forwardedRef, onValueChange, style, ...props} = this.props;
+    const {
+      forwardedRef,
+      onValueChange,
+      values = [],
+      enabled = true,
+      style,
+      ...props
+    } = this.props;
     return (
       <RCTSegmentedControlNativeComponent
         {...props}
         ref={forwardedRef}
         style={[styles.segmentedControl, style]}
+        values={values}
+        enabled={enabled}
         onChange={this._onChange}
       />
     );
