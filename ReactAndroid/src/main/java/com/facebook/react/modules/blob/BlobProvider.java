@@ -23,7 +23,7 @@ import java.io.OutputStream;
 
 public final class BlobProvider extends ContentProvider {
 
-  private final static int PIPE_CAPACITY = 65536;
+  private static final int PIPE_CAPACITY = 65536;
 
   @Override
   public boolean onCreate() {
@@ -103,16 +103,16 @@ public final class BlobProvider extends ContentProvider {
       // immediately so that both writer and reader can work concurrently.
       // Reading from the pipe empties the buffer and allows the next chunks to be written.
       Thread writer =
-        new Thread() {
-          public void run() {
-            try (OutputStream outputStream =
-                new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
-              outputStream.write(data);
-            } catch (IOException exception) {
-              // no-op
+          new Thread() {
+            public void run() {
+              try (OutputStream outputStream =
+                  new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
+                outputStream.write(data);
+              } catch (IOException exception) {
+                // no-op
+              }
             }
-          }
-        };
+          };
       writer.start();
     }
 
