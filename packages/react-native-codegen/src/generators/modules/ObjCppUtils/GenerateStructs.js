@@ -66,9 +66,7 @@ function getInlineMethodSignature(
     case 'AnyTypeAnnotation':
       return `id<NSObject> ${property.name}() const;`;
     case 'ArrayTypeAnnotation':
-      return `facebook::react::LazyVector<id<NSObject>> ${
-        property.name
-      }() const;`;
+      return `facebook::react::LazyVector<id<NSObject>> ${property.name}() const;`;
     case 'FunctionTypeAnnotation':
     default:
       throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);

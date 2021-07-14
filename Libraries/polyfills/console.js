@@ -65,9 +65,7 @@ const inspect = (function() {
   function formatValue(ctx, value, recurseTimes) {
     ctx.formatValueCalls++;
     if (ctx.formatValueCalls > 200) {
-      return `[TOO BIG formatValueCalls ${
-        ctx.formatValueCalls
-      } exceeded limit of 200]`;
+      return `[TOO BIG formatValueCalls ${ctx.formatValueCalls} exceeded limit of 200]`;
     }
 
     // Primitive types cannot have properties

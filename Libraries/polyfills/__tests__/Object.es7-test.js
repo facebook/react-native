@@ -48,7 +48,10 @@ describe('Object (ES7)', () => {
       expect(Object.entries(foo)).toEqual([['x', 10]]);
 
       const bar = {x: 10, y: 20};
-      expect(Object.entries(bar)).toEqual([['x', 10], ['y', 20]]);
+      expect(Object.entries(bar)).toEqual([
+        ['x', 10],
+        ['y', 20],
+      ]);
     });
 
     it('should work with proto-less objects', () => {
@@ -73,7 +76,10 @@ describe('Object (ES7)', () => {
     });
 
     it('should convert to object primitive string', () => {
-      expect(Object.entries('ab')).toEqual([['0', 'a'], ['1', 'b']]);
+      expect(Object.entries('ab')).toEqual([
+        ['0', 'a'],
+        ['1', 'b'],
+      ]);
     });
   });
 

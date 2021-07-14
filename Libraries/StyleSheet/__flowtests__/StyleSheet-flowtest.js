@@ -18,53 +18,29 @@ const textStyle = {color: 'rgb(0, 0, 0)'};
 
 module.exports = {
   testGoodCompose() {
-    (StyleSheet.compose(
-      imageStyle,
-      imageStyle,
-    ): ImageStyleProp);
+    (StyleSheet.compose(imageStyle, imageStyle): ImageStyleProp);
 
-    (StyleSheet.compose(
-      textStyle,
-      textStyle,
-    ): TextStyleProp);
+    (StyleSheet.compose(textStyle, textStyle): TextStyleProp);
 
-    (StyleSheet.compose(
-      null,
-      null,
-    ): TextStyleProp);
+    (StyleSheet.compose(null, null): TextStyleProp);
 
-    (StyleSheet.compose(
-      textStyle,
-      null,
-    ): TextStyleProp);
+    (StyleSheet.compose(textStyle, null): TextStyleProp);
 
     (StyleSheet.compose(
       textStyle,
       Math.random() < 0.5 ? textStyle : null,
     ): TextStyleProp);
 
-    (StyleSheet.compose(
-      [textStyle],
-      null,
-    ): TextStyleProp);
+    (StyleSheet.compose([textStyle], null): TextStyleProp);
 
-    (StyleSheet.compose(
-      [textStyle],
-      null,
-    ): TextStyleProp);
+    (StyleSheet.compose([textStyle], null): TextStyleProp);
 
-    (StyleSheet.compose(
-      [textStyle],
-      [textStyle],
-    ): TextStyleProp);
+    (StyleSheet.compose([textStyle], [textStyle]): TextStyleProp);
   },
 
   testBadCompose() {
     // $FlowExpectedError - Incompatible type.
-    (StyleSheet.compose(
-      textStyle,
-      textStyle,
-    ): ImageStyleProp);
+    (StyleSheet.compose(textStyle, textStyle): ImageStyleProp);
 
     // $FlowExpectedError - Incompatible type.
     (StyleSheet.compose(

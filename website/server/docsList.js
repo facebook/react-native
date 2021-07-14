@@ -10,7 +10,6 @@
 const components = [
   '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
   '../Libraries/Components/Button.js',
-  '../Libraries/Components/CheckBox/CheckBox.android.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DatePickerMacOS/DatePickerMacOS.macos.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',

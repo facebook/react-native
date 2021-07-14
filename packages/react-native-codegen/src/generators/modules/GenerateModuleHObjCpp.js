@@ -201,9 +201,7 @@ module.exports = {
                 } else {
                   paramObjCType = translatePrimitiveJSTypeToObjCType(
                     param,
-                    `Unspopported type for param "${param.name}" in ${
-                      prop.name
-                    }. Found: ${param.typeAnnotation.type}`,
+                    `Unspopported type for param "${param.name}" in ${prop.name}. Found: ${param.typeAnnotation.type}`,
                   );
                 }
                 return `${i === 0 ? '' : param.name}:(${paramObjCType})${
@@ -232,9 +230,7 @@ module.exports = {
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToObjCTypeForReturn(
                   returnTypeAnnotation,
-                  `Unspopported return type for ${prop.name}. Found: ${
-                    prop.typeAnnotation.returnTypeAnnotation.type
-                  }`,
+                  `Unspopported return type for ${prop.name}. Found: ${prop.typeAnnotation.returnTypeAnnotation.type}`,
                 ),
               )
               .replace('::_ARGS_::', nativeArgs);

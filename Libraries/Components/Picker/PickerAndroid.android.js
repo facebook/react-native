@@ -121,10 +121,7 @@ function PickerAndroid(props: Props): React.Node {
     prompt: props.prompt,
     ref: pickerRef,
     selected,
-    style: StyleSheet.compose(
-      styles.pickerAndroid,
-      props.style,
-    ),
+    style: StyleSheet.compose(styles.pickerAndroid, props.style),
     backgroundColor: props.backgroundColor,
     testID: props.testID,
   };
