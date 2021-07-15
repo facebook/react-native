@@ -123,7 +123,7 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
-    super.onInitializeAccessibilityNodeInfo(info)
+    super.onInitializeAccessibilityNodeInfo(info);
 
     // Expose the testID prop as the resource-id name of the view. Black-box E2E/UI testing
     // frameworks, which interact with the UI through the accessibility framework, do not have
