@@ -130,7 +130,7 @@ public class ReactScrollView extends ScrollView
     // access to view tags. This allows developers/testers to avoid polluting the
     // content-description with test identifiers.
     final String testId = (String) this.getTag(R.id.react_test_id);
-    if (testId != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (testId != null) {
       info.setViewIdResourceName(testId);
     }
   }
