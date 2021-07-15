@@ -159,7 +159,7 @@ type ButtonProps = $ReadOnly<{|
   [button:examples].
 
   [button:source]:
-  https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js
+  https://github.com/facebook/react-native/blob/HEAD/Libraries/Components/Button.js
 
   [button:examples]:
   https://js.coach/?menu%5Bcollections%5D=React%20Native&page=1&query=button

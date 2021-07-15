@@ -565,7 +565,7 @@ afterEvaluate {
                     licenses {
                         license {
                             name = "MIT License"
-                            url = "https://github.com/facebook/react-native/blob/master/LICENSE"
+                            url = "https://github.com/facebook/react-native/blob/HEAD/LICENSE"
                             distribution = "repo"
                         }
                     }
