@@ -900,7 +900,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
     jobs:
       - nightly_job
 
