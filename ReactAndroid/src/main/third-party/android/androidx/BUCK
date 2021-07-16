@@ -36,7 +36,6 @@ fb_native.android_library(
     name = "autofill",
     visibility = ["PUBLIC"],
     exported_deps = [
-        ":annotation",
         ":autofill-binary",
         ":core",
     ],
@@ -160,7 +159,6 @@ fb_native.android_library(
     exported_deps = [
         ":annotation",
         ":asynclayoutinflater",
-        ":autofill",
         ":coordinatorlayout",
         ":core",
         ":cursoradapter",
