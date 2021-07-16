@@ -341,7 +341,6 @@ PODS:
     - React-Fabric/components/inputaccessory (= 1000.0.0)
     - React-Fabric/components/legacyviewmanagerinterop (= 1000.0.0)
     - React-Fabric/components/modal (= 1000.0.0)
-    - React-Fabric/components/picker (= 1000.0.0)
     - React-Fabric/components/rncore (= 1000.0.0)
     - React-Fabric/components/root (= 1000.0.0)
     - React-Fabric/components/safeareaview (= 1000.0.0)
@@ -388,14 +387,6 @@ PODS:
     - React-jsiexecutor (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-Fabric/components/modal (1000.0.0):
-    - RCT-Folly/Fabric (= 2021.04.26.00)
-    - RCTRequired (= 1000.0.0)
-    - RCTTypeSafety (= 1000.0.0)
-    - React-graphics (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-jsiexecutor (= 1000.0.0)
-    - ReactCommon/turbomodule/core (= 1000.0.0)
-  - React-Fabric/components/picker (1000.0.0):
     - RCT-Folly/Fabric (= 2021.04.26.00)
     - RCTRequired (= 1000.0.0)
     - RCTTypeSafety (= 1000.0.0)
@@ -885,7 +876,7 @@ SPEC CHECKSUMS:
   React-Core: f5b65410a2ecdbb4560f23dc4525588390b0b3b1
   React-CoreModules: 818e75a3eb8f431be8fc3d8c8eb15206b3f52e81
   React-cxxreact: fa0884110d142f7e1600a86ae769d5fd43ec8a69
-  React-Fabric: ee21f85af985320ca427353e95821a5b4d6f4f46
+  React-Fabric: f31c68913f46481d01e09a6f44a5a6bc8664cfdd
   React-graphics: 57cb7ea16c092a9953c96549a29b49d5e207c25c
   React-jsi: 93fc7d193c0499a9b10157655e6f1e755f67b3d0
   React-jsiexecutor: 1e995bed2de8965703917c562fe35ec023a68ae5

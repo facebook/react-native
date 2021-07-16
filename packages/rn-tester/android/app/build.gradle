@@ -128,9 +128,17 @@ def enableFabric = project.ext.react.enableFabric
  */
 def useIntlJsc = false
 
+/**
+ * Architectures to build native code for in debug.
+ */
+def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
+
 android {
     compileSdkVersion 29
     ndkVersion ANDROID_NDK_VERSION
+    if (ANDROID_NDK_PATH != null) {
+        ndkPath ANDROID_NDK_PATH
+    }
 
     dexOptions {
         javaMaxHeapSize "4g"
@@ -176,6 +184,11 @@ android {
         debug {
             debuggable true
             signingConfig signingConfigs.release
+            if (nativeArchitectures) {
+                ndk {
+                    abiFilters nativeArchitectures.split(',')
+                }
+            }
         }
         release {
             debuggable false
@@ -251,7 +264,6 @@ if (enableCodegen) {
         defaultConfig {
             externalNativeBuild {
                 ndkBuild {
-                    abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
                     arguments "APP_PLATFORM=android-21",
                             "APP_STL=c++_shared",
                             "NDK_TOOLCHAIN_VERSION=clang",

@@ -65,6 +65,7 @@ const QuickPerformanceLogger = {
     markerId: number,
     instanceKey?: number = DUMMY_INSTANCE_KEY,
   ): void {
+    // $FlowFixMe[object-this-reference]
     this.markerDrop(markerId, instanceKey);
   },
 

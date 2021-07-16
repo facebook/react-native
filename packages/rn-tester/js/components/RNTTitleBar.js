@@ -18,27 +18,21 @@ import {
 } from 'react-native';
 import * as React from 'react';
 import RNTesterDocumentationURL from './RNTesterDocumentationURL';
-import {RNTesterThemeContext} from './RNTesterTheme';
+import {type RNTesterTheme} from './RNTesterTheme';
 
 const HeaderIOS = ({
   onBack,
   title,
   documentationURL,
+  theme,
 }: {
-  onBack?: () => mixed,
+  onBack?: ?() => mixed,
   title: string,
   documentationURL?: string,
+  theme: RNTesterTheme,
 }) => {
-  const theme = React.useContext(RNTesterThemeContext);
   return (
-    <SafeAreaView
-      style={[
-        styles.headerContainer,
-        {
-          borderBottomColor: theme.SeparatorColor,
-          backgroundColor: theme.TertiarySystemBackgroundColor,
-        },
-      ]}>
+    <SafeAreaView>
       <View style={styles.header}>
         <View style={styles.headerCenter}>
           <Text style={{...styles.title, ...{color: theme.LabelColor}}}>
@@ -48,7 +42,7 @@ const HeaderIOS = ({
             <RNTesterDocumentationURL documentationURL={documentationURL} />
           )}
         </View>
-        {onBack && (
+        {onBack != null && (
           <View>
             <Button
               title="Back"
@@ -68,11 +62,12 @@ const HeaderIOS = ({
 const HeaderAndroid = ({
   title,
   documentationURL,
+  theme,
 }: {
   title: string,
   documentationURL?: string,
+  theme: RNTesterTheme,
 }) => {
-  const theme = React.useContext(RNTesterThemeContext);
   return (
     <SafeAreaView>
       <View style={[styles.toolbar, {backgroundColor: theme.BackgroundColor}]}>
@@ -87,25 +82,33 @@ const HeaderAndroid = ({
   );
 };
 
-export const Header = ({
+export default function RNTTitleBar({
   onBack,
   title,
   documentationURL,
+  theme,
 }: {
-  onBack?: () => mixed,
+  onBack?: ?() => mixed,
   title: string,
   documentationURL?: string,
+  theme: RNTesterTheme,
   ...
-}): React.Node =>
-  Platform.OS === 'ios' ? (
+}): React.Node {
+  return Platform.OS === 'ios' ? (
     <HeaderIOS
       documentationURL={documentationURL}
       title={title}
       onBack={onBack}
+      theme={theme}
     />
   ) : (
-    <HeaderAndroid documentationURL={documentationURL} title={title} />
+    <HeaderAndroid
+      documentationURL={documentationURL}
+      title={title}
+      theme={theme}
+    />
   );
+}
 
 const styles = StyleSheet.create({
   headerContainer: {

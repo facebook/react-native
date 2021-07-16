@@ -23,10 +23,12 @@ const Settings = {
     NativeSettingsManager.getConstants().settings: any),
 
   get(key: string): mixed {
+    // $FlowFixMe[object-this-reference]
     return this._settings[key];
   },
 
   set(settings: Object) {
+    // $FlowFixMe[object-this-reference]
     this._settings = Object.assign(this._settings, settings);
     NativeSettingsManager.setValues(settings);
   },
@@ -55,7 +57,9 @@ const Settings = {
   _sendObservations(body: Object) {
     Object.keys(body).forEach(key => {
       const newValue = body[key];
+      // $FlowFixMe[object-this-reference]
       const didChange = this._settings[key] !== newValue;
+      // $FlowFixMe[object-this-reference]
       this._settings[key] = newValue;
 
       if (didChange) {

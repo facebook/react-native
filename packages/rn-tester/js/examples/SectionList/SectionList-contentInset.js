@@ -59,7 +59,7 @@ export function SectionList_contentInset(): React.Node {
 const styles = StyleSheet.create({
   titleContainer: {
     position: 'absolute',
-    top: 45,
+    top: 40,
     left: 0,
     right: 0,
     justifyContent: 'flex-end',
@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
 
 export default {
   title: 'SectionList Content Inset',
+  platform: 'ios',
   name: 'SectionList-contentInset',
   render: function(): React.Element<typeof SectionList_contentInset> {
     return <SectionList_contentInset />;

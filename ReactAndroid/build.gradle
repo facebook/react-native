@@ -96,12 +96,6 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/folly")
-    doLast {
-        ant.patch(
-            patchfile: "src/main/jni/third-party/folly/FileUtil.cpp.patch",
-            originalFile: "$thirdPartyNdkDir/folly/folly/FileUtil.cpp"
-        )
-    }
 }
 
 task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {
@@ -332,6 +326,14 @@ def reactNativeInspectorProxyPort() {
     return value != null ? value : reactNativeDevServerPort()
 }
 
+def reactNativeArchitectures() {
+    def isDebug = gradle.startParameter.taskRequests.any {
+        it.args.any { it.endsWith("Debug") }
+    }
+    def value = project.getProperties().get("reactNativeDebugArchitectures")
+    return value != null && isDebug ? value : "all"
+}
+
 def getNdkBuildFullPath() {
     def ndkBuildFullPath = findNdkBuildFullPath()
     if (ndkBuildFullPath == null) {
@@ -361,6 +363,7 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
     inputs.dir("src/main/java/com/facebook/react/modules/blob")
     outputs.dir("$buildDir/react-ndk/all")
     commandLine(getNdkBuildFullPath(),
+            "APP_ABI=${reactNativeArchitectures()}",
             "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),
             "NDK_PROJECT_PATH=null",
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
@@ -439,6 +442,9 @@ task installArchives {
 android {
     compileSdkVersion 30
     ndkVersion ANDROID_NDK_VERSION
+    if (ANDROID_NDK_PATH != null) {
+        ndkPath ANDROID_NDK_PATH
+    }
 
     defaultConfig {
         minSdkVersion(21)
@@ -490,7 +496,7 @@ android {
 }
 
 dependencies {
-    api("com.facebook.infer.annotation:infer-annotation:0.11.2")
+    api("com.facebook.infer.annotation:infer-annotation:0.18.0")
     api("com.facebook.yoga:proguard-annotations:1.19.0")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
