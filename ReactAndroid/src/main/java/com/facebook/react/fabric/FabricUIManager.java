@@ -158,6 +158,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   // TODO T83943316: Deprecate and delete this constructor once StaticViewConfigs are enabled by
   // default
+  @Deprecated
   public FabricUIManager(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagerRegistry,
