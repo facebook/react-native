@@ -7,12 +7,13 @@
  * @format
  */
 
-const React = require('react');
+import * as React from 'react';
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 import RNTPressableRow from './RNTPressableRow';
-import {RNTesterThemeContext} from './RNTesterTheme';
+import {RNTesterThemeContext, type RNTesterTheme} from './RNTesterTheme';
 import {View, Text, StyleSheet, Platform} from 'react-native';
+import RNTTestDetails from './RNTTestDetails';
 
 import type {
   RNTesterModule,
@@ -80,30 +81,36 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
     },
   ];
 
-  return (
-    <View style={styles.examplesContainer}>
-      {module.showIndividualExamples === true && example != null ? (
-        example.render()
-      ) : (
-        <>
-          <Header
-            description={module.description}
-            noBottomPadding
-            theme={theme}
-          />
-          <RNTesterExampleFilter
-            testID="example_search"
-            page="examples_page"
-            hideFilterPills={true}
-            sections={sections}
-            filter={filter}
-            render={({filteredSections}) =>
-              filteredSections[0].data.map(renderExample)
-            }
-          />
-        </>
-      )}
-    </View>
+  const showIndividualExamples =
+    module.showIndividualExamples === true && example != null;
+
+  return showIndividualExamples ? (
+    <>
+      <RNTTestDetails
+        title={example.title}
+        description={example.description}
+        test={example.test}
+        expect={example.expect}
+        theme={theme}
+      />
+      <View style={styles.examplesContainer}>{example.render()}</View>
+    </>
+  ) : (
+    <>
+      <Header description={module.description} noBottomPadding theme={theme} />
+      <View style={styles.examplesContainer}>
+        <RNTesterExampleFilter
+          testID="example_search"
+          page="examples_page"
+          hideFilterPills={true}
+          sections={sections}
+          filter={filter}
+          render={({filteredSections}) =>
+            filteredSections[0].data.map(renderExample)
+          }
+        />
+      </View>
+    </>
   );
 }
 
