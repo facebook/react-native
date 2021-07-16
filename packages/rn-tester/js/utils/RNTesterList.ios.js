@@ -122,6 +122,7 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'ScrollViewExpandingExample',
     module: require('../examples/ScrollView/ScrollViewExpandingExample'),
   },
+  {
     key: 'ScrollViewIndicatorInsetsExample',
     module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
   },
