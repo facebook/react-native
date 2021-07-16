@@ -86,6 +86,7 @@ function RotatingImagesExample(): React.Node {
 
 export default ({
   title: 'Rotating Images',
+  name: 'rotatingImages',
   description: 'Simple Animated.Image rotation.',
   render: RotatingImagesExample,
 }: RNTesterModuleExample);

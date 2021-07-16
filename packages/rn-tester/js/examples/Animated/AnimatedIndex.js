@@ -25,6 +25,7 @@ export default ({
   description:
     'Library designed to make animations fluid, powerful, and painless to ' +
     'build and maintain.',
+  showIndividualExamples: true,
   examples: [
     FadeInViewExample,
     ComposeAnimationsWithEasingExample,

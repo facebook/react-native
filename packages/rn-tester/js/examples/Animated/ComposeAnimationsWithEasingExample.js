@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
 
 export default ({
   title: 'Composite Animations with Easing',
+  name: 'compositeAnimationsWithEasing',
   description: ('Sequence, parallel, delay, and ' +
     'stagger with different easing functions.': string),
   render: function(): React.Node {

@@ -153,9 +153,9 @@ const APIs: Array<RNTesterModuleInfo> = [
     module: require('../examples/Alert/AlertExample'),
   },
   {
-    key: 'AnimatedExample',
+    key: 'AnimatedIndex',
     category: 'UI',
-    module: require('../examples/Animated/AnimatedExample').default,
+    module: require('../examples/Animated/AnimatedIndex').default,
   },
   {
     key: 'Animation - GratuitousAnimation',

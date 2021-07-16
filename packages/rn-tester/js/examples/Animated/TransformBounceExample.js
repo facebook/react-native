@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
 
 export default ({
   title: 'Transform Bounce',
+  name: 'transformBounce',
   description: ('One `Animated.Value` is driven by a ' +
     'spring with custom constants and mapped to an ' +
     'ordered set of transforms.  Each transform has ' +
