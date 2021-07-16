@@ -148,7 +148,6 @@ exports.category = 'Basic';
 exports.documentationURL = 'https://reactnative.dev/docs/panresponder';
 exports.description =
   'Shows the Use of PanResponder to provide basic gesture handling';
-exports.simpleExampleContainer = true;
 exports.examples = [
   {
     title: 'Basic gesture handling',

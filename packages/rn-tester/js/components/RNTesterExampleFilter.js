@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 6,
     alignItems: 'center',
   },
   searchTextInput: {

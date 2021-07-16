@@ -12,10 +12,8 @@ const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 import RNTPressableRow from './RNTPressableRow';
 import {RNTesterThemeContext} from './RNTesterTheme';
-import {StyleSheet, Platform} from 'react-native';
+import {View, Text, StyleSheet, Platform} from 'react-native';
 
-const invariant = require('invariant');
-import ExamplePage from './ExamplePage';
 import type {
   RNTesterModule,
   RNTesterModuleExample,
@@ -62,35 +60,13 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
     );
   };
 
-  if (module.simpleExampleContainer) {
-    invariant(
-      module.examples.length === 1,
-      'If noExampleContainer is specified, only one example is allowed',
-    );
-    return (
-      <ExamplePage
-        title={module.title}
-        description={module.description}
-        android={!module.platform || module.platform === 'android'}
-        ios={!module.platform || module.platform === 'ios'}
-        documentationURL={module.documentationURL}
-        category={module.category}>
-        {module.examples[0].render()}
-      </ExamplePage>
-    );
-  }
-
   if (module.examples.length === 1) {
+    const description = module.examples[0].description ?? module.description;
     return (
-      <ExamplePage
-        title={module.testTitle || module.title}
-        description={module.description}
-        android={!module.platform || module.platform === 'android'}
-        ios={!module.platform || module.platform === 'ios'}
-        documentationURL={module.documentationURL}
-        category={module.category}>
+      <>
+        <Header description={description} theme={theme} />
         {module.examples[0].render()}
-      </ExamplePage>
+      </>
     );
   }
 
@@ -105,32 +81,65 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
   ];
 
   return (
-    <ExamplePage
-      title={module.title}
-      description={module.description}
-      android={!module.platform || module.platform === 'android'}
-      ios={!module.platform || module.platform === 'ios'}
-      documentationURL={module.documentationURL}
-      category={module.category}>
+    <View style={styles.examplesContainer}>
       {module.showIndividualExamples === true && example != null ? (
         example.render()
       ) : (
-        <RNTesterExampleFilter
-          testID="example_search"
-          page="examples_page"
-          hideFilterPills={true}
-          sections={sections}
-          filter={filter}
-          render={({filteredSections}) =>
-            filteredSections[0].data.map(renderExample)
-          }
-        />
+        <>
+          <Header
+            description={module.description}
+            noBottomPadding
+            theme={theme}
+          />
+          <RNTesterExampleFilter
+            testID="example_search"
+            page="examples_page"
+            hideFilterPills={true}
+            sections={sections}
+            filter={filter}
+            render={({filteredSections}) =>
+              filteredSections[0].data.map(renderExample)
+            }
+          />
+        </>
       )}
-    </ExamplePage>
+    </View>
+  );
+}
+
+function Header(props: {
+  description: string,
+  theme: RNTesterTheme,
+  noBottomPadding?: ?boolean,
+}) {
+  return (
+    <View
+      style={[
+        styles.headerContainer,
+        props.noBottomPadding === true ? styles.headerNoBottomPadding : null,
+        {backgroundColor: props.theme.BackgroundColor},
+      ]}>
+      <Text style={styles.headerDescription}>{props.description}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    paddingHorizontal: Platform.OS === 'android' ? 15 : 6,
+    paddingVertical: 6,
+    alignItems: 'center',
+  },
+  headerDescription: {
+    fontSize: 14,
+  },
+  headerNoBottomPadding: {
+    paddingBottom: 0,
+  },
+  examplesContainer: {
+    flexGrow: 1,
+    flex: 1,
+  },
   separator: {
     borderBottomWidth: Platform.select({
       ios: StyleSheet.hairlineWidth,
