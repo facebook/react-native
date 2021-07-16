@@ -42,7 +42,11 @@ RCT_REMAP_VIEW_PROPERTY(keyboardAppearance, backedTextInputView.keyboardAppearan
 RCT_REMAP_VIEW_PROPERTY(placeholder, backedTextInputView.placeholder, NSString)
 RCT_REMAP_VIEW_PROPERTY(placeholderTextColor, backedTextInputView.placeholderColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(returnKeyType, backedTextInputView.returnKeyType, UIReturnKeyType)
+#if TARGET_OS_MACCATALYST
+RCT_REMAP_VIEW_PROPERTY(selectionColor, backedTextInputView.textInputTraits.insertionPointColor, UIColor)
+#else
 RCT_REMAP_VIEW_PROPERTY(selectionColor, backedTextInputView.tintColor, UIColor)
+#endif
 RCT_REMAP_VIEW_PROPERTY(spellCheck, backedTextInputView.spellCheckingType, UITextSpellCheckingType)
 RCT_REMAP_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UITextFieldViewMode)
