@@ -36,6 +36,7 @@ fb_native.android_library(
     name = "autofill",
     visibility = ["PUBLIC"],
     exported_deps = [
+        ":annotation",
         ":autofill-binary",
         ":core",
     ],
@@ -518,8 +519,8 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "autofill-binary-aar",
-    sha1 = "d95a6e3b895ad8f037dd01d88c87138b6d5eb507",
-    url = "mvn:androidx.autofill:autofill:aar:1.0.0",
+    sha1 = "d9cdaa22b9c373ba75a35dcc33ee8871543164e5",
+    url = "mvn:androidx.autofill:autofill:aar:1.1.0",
 )
 
 fb_native.remote_file(
