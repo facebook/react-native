@@ -109,6 +109,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_NUMBER_PAD = "number-pad";
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
+  private static final String KEYBOARD_TYPE_URI = "url";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
 
@@ -478,8 +479,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  private static boolean shouldHideCursorForEmailTextInput() {
+    String manufacturer = Build.MANUFACTURER.toLowerCase();
+    return (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q && manufacturer.contains("xiaomi"));
+  }
+
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public void setCaretHidden(ReactEditText view, boolean caretHidden) {
+    if (view.getStagedInputType() == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        && shouldHideCursorForEmailTextInput()) {
+      return;
+    }
     view.setCursorVisible(!caretHidden);
   }
 
@@ -754,7 +764,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     updateStagedInputTypeFlag(
         view,
         password
-            ? 0
+            ? InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             : InputType.TYPE_NUMBER_VARIATION_PASSWORD | InputType.TYPE_TEXT_VARIATION_PASSWORD,
         password ? InputType.TYPE_TEXT_VARIATION_PASSWORD : 0);
     checkPasswordType(view);
@@ -797,12 +807,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       flagsToSet = INPUT_TYPE_KEYBOARD_DECIMAL_PAD;
     } else if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT;
+
+      // Set cursor's visibility to False to fix a crash on some Xiaomi devices with Android Q. This
+      // crash happens when focusing on a email EditText, during which a prompt will be triggered
+      // but
+      // the system fail to locate it properly. Here is an example post discussing about this
+      // issue: https://github.com/facebook/react-native/issues/27204
+      if (shouldHideCursorForEmailTextInput()) {
+        view.setCursorVisible(false);
+      }
     } else if (KEYBOARD_TYPE_PHONE_PAD.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_CLASS_PHONE;
     } else if (KEYBOARD_TYPE_VISIBLE_PASSWORD.equalsIgnoreCase(keyboardType)) {
       // This will supercede secureTextEntry={false}. If it doesn't, due to the way
       //  the flags work out, the underlying field will end up a URI-type field.
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+    } else if (KEYBOARD_TYPE_URI.equalsIgnoreCase(keyboardType)) {
+      flagsToSet = InputType.TYPE_TEXT_VARIATION_URI;
     }
 
     updateStagedInputTypeFlag(view, InputType.TYPE_MASK_CLASS, flagsToSet);
@@ -926,12 +947,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private EventDispatcher mEventDispatcher;
     private ReactEditText mEditText;
     private String mPreviousText;
+    private int mSurfaceId;
 
     public ReactTextInputTextWatcher(
         final ReactContext reactContext, final ReactEditText editText) {
       mEventDispatcher = getEventDispatcher(reactContext, editText);
       mEditText = editText;
       mPreviousText = null;
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -960,7 +983,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      // Fabric: update representation of AttributedString
       if (mEditText.getFabricViewStateManager().hasStateWrapper()) {
         // Fabric: communicate to C++ layer that text has changed
         // We need to call `incrementAndGetEventCounter` here explicitly because this
@@ -985,10 +1007,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
-              mEditText.getId(), s.toString(), mEditText.incrementAndGetEventCounter()));
+              mSurfaceId,
+              mEditText.getId(),
+              s.toString(),
+              mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(
-          new ReactTextInputEvent(mEditText.getId(), newText, oldText, start, start + before));
+          new ReactTextInputEvent(
+              mSurfaceId, mEditText.getId(), newText, oldText, start, start + before));
     }
 
     @Override
@@ -998,19 +1024,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Override
   protected void addEventEmitters(
       final ThemedReactContext reactContext, final ReactEditText editText) {
+    editText.setEventDispatcher(getEventDispatcher(reactContext, editText));
     editText.addTextChangedListener(new ReactTextInputTextWatcher(reactContext, editText));
     editText.setOnFocusChangeListener(
         new View.OnFocusChangeListener() {
           public void onFocusChange(View v, boolean hasFocus) {
+            int surfaceId = reactContext.getSurfaceId();
             EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
             if (hasFocus) {
-              eventDispatcher.dispatchEvent(new ReactTextInputFocusEvent(editText.getId()));
+              eventDispatcher.dispatchEvent(
+                  new ReactTextInputFocusEvent(surfaceId, editText.getId()));
             } else {
-              eventDispatcher.dispatchEvent(new ReactTextInputBlurEvent(editText.getId()));
+              eventDispatcher.dispatchEvent(
+                  new ReactTextInputBlurEvent(surfaceId, editText.getId()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
-                      editText.getId(), editText.getText().toString()));
+                      surfaceId, editText.getId(), editText.getText().toString()));
             }
           }
         });
@@ -1035,7 +1065,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
-                      editText.getId(), editText.getText().toString()));
+                      reactContext.getSurfaceId(),
+                      editText.getId(),
+                      editText.getText().toString()));
 
               if (blurOnSubmit) {
                 editText.clearFocus();
@@ -1068,11 +1100,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private @Nullable EventDispatcher mEventDispatcher;
     private int mPreviousContentWidth = 0;
     private int mPreviousContentHeight = 0;
+    private int mSurfaceId;
 
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -1102,6 +1136,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         mEventDispatcher.dispatchEvent(
             new ReactContentSizeChangedEvent(
+                mSurfaceId,
                 mEditText.getId(),
                 PixelUtil.toDIPFromPixel(contentWidth),
                 PixelUtil.toDIPFromPixel(contentHeight)));
@@ -1115,12 +1150,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private EventDispatcher mEventDispatcher;
     private int mPreviousSelectionStart;
     private int mPreviousSelectionEnd;
+    private int mSurfaceId;
 
     public ReactSelectionWatcher(ReactEditText editText) {
       mReactEditText = editText;
 
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -1136,7 +1173,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       if (mPreviousSelectionStart != realStart || mPreviousSelectionEnd != realEnd) {
         mEventDispatcher.dispatchEvent(
-            new ReactTextInputSelectionEvent(mReactEditText.getId(), realStart, realEnd));
+            new ReactTextInputSelectionEvent(
+                mSurfaceId, mReactEditText.getId(), realStart, realEnd));
 
         mPreviousSelectionStart = realStart;
         mPreviousSelectionEnd = realEnd;
@@ -1150,11 +1188,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private EventDispatcher mEventDispatcher;
     private int mPreviousHoriz;
     private int mPreviousVert;
+    private int mSurfaceId;
 
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -1162,6 +1202,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (mPreviousHoriz != horiz || mPreviousVert != vert) {
         ScrollEvent event =
             ScrollEvent.obtain(
+                mSurfaceId,
                 mReactEditText.getId(),
                 ScrollEventType.SCROLL,
                 horiz,
@@ -1213,9 +1254,21 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   public Object updateState(
       ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
 
+    if (ReactEditText.DEBUG_MODE) {
+      FLog.e(TAG, "updateState: [" + view.getId() + "]");
+    }
+
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
 
-    ReadableNativeMap state = stateWrapper.getState();
+    if (stateWrapper == null) {
+      return null;
+    }
+
+    ReadableNativeMap state = stateWrapper.getStateData();
+
+    if (state == null) {
+      return null;
+    }
 
     if (!state.hasKey("attributedString")) {
       return null;
@@ -1231,6 +1284,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
+    boolean containsMultipleFragments =
+        attributedString.getArray("fragments").toArrayList().size() > 1;
+
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
@@ -1240,6 +1296,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),
-        attributedString);
+        containsMultipleFragments);
   }
 }

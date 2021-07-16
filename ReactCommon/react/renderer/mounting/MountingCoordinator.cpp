@@ -14,22 +14,19 @@
 
 #include <condition_variable>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {
 
-MountingCoordinator::MountingCoordinator(
-    ShadowTreeRevision baseRevision,
-    std::weak_ptr<MountingOverrideDelegate const> delegate,
-    bool enableReparentingDetection)
-    : surfaceId_(baseRevision.getRootShadowNode().getSurfaceId()),
+MountingCoordinator::MountingCoordinator(ShadowTreeRevision baseRevision)
+    : surfaceId_(baseRevision.rootShadowNode->getSurfaceId()),
       baseRevision_(baseRevision),
-      mountingOverrideDelegate_(delegate),
-      telemetryController_(*this),
-      enableReparentingDetection_(enableReparentingDetection) {
+      telemetryController_(*this) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
-  stubViewTree_ = stubViewTreeFromShadowNode(baseRevision_.getRootShadowNode());
+  stubViewTree_ = buildStubViewTreeWithoutUsingDifferentiator(
+      *baseRevision_.rootShadowNode);
 #endif
 }
 
@@ -37,17 +34,15 @@ SurfaceId MountingCoordinator::getSurfaceId() const {
   return surfaceId_;
 }
 
-void MountingCoordinator::push(ShadowTreeRevision &&revision) const {
+void MountingCoordinator::push(ShadowTreeRevision const &revision) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    assert(
-        !lastRevision_.has_value() ||
-        revision.getNumber() != lastRevision_->getNumber());
+    react_native_assert(
+        !lastRevision_.has_value() || revision.number != lastRevision_->number);
 
-    if (!lastRevision_.has_value() ||
-        lastRevision_->getNumber() < revision.getNumber()) {
-      lastRevision_ = std::move(revision);
+    if (!lastRevision_.has_value() || lastRevision_->number < revision.number) {
+      lastRevision_ = revision;
     }
   }
 
@@ -60,7 +55,7 @@ void MountingCoordinator::revoke() const {
   // 1. We need to stop retaining `ShadowNode`s to not prolong their lifetime
   // to prevent them from overliving `ComponentDescriptor`s.
   // 2. A possible call to `pullTransaction()` should return empty optional.
-  baseRevision_.rootShadowNode_.reset();
+  baseRevision_.rootShadowNode.reset();
   lastRevision_.reset();
 }
 
@@ -80,104 +75,115 @@ void MountingCoordinator::resetLatestRevision() const {
   lastRevision_.reset();
 }
 
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-void MountingCoordinator::validateTransactionAgainstStubViewTree(
-    ShadowViewMutationList const &mutations,
-    bool assertEquality) const {
-  std::string line;
-
-  std::stringstream ssMutations(getDebugDescription(mutations, {}));
-  while (std::getline(ssMutations, line, '\n')) {
-    LOG(ERROR) << "Mutations:" << line;
-  }
-
-  stubViewTree_.mutate(mutations);
-  auto stubViewTree =
-      stubViewTreeFromShadowNode(lastRevision_->getRootShadowNode());
-
-  std::stringstream ssOldTree(
-      baseRevision_.getRootShadowNode().getDebugDescription());
-  while (std::getline(ssOldTree, line, '\n')) {
-    LOG(ERROR) << "Old tree:" << line;
-  }
-
-  std::stringstream ssNewTree(
-      lastRevision_->getRootShadowNode().getDebugDescription());
-  while (std::getline(ssNewTree, line, '\n')) {
-    LOG(ERROR) << "New tree:" << line;
-  }
-
-  if (assertEquality) {
-    assert(stubViewTree_ == stubViewTree);
-  }
-}
-#endif
-
 better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  auto mountingOverrideDelegate = mountingOverrideDelegate_.lock();
+  auto transaction = better::optional<MountingTransaction>{};
 
-  bool shouldOverridePullTransaction = mountingOverrideDelegate &&
+  // Base case
+  if (lastRevision_.has_value()) {
+    number_++;
+
+    auto telemetry = lastRevision_->telemetry;
+
+    telemetry.willDiff();
+
+    auto mutations = calculateShadowViewMutations(
+        *baseRevision_.rootShadowNode, *lastRevision_->rootShadowNode);
+
+    telemetry.didDiff();
+
+    transaction = MountingTransaction{
+        surfaceId_, number_, std::move(mutations), telemetry};
+  }
+
+  // Override case
+  auto mountingOverrideDelegate = mountingOverrideDelegate_.lock();
+  auto shouldOverridePullTransaction = mountingOverrideDelegate &&
       mountingOverrideDelegate->shouldOverridePullTransaction();
 
-  if (!shouldOverridePullTransaction && !lastRevision_.has_value()) {
-    return {};
-  }
-
-  number_++;
-
-  ShadowViewMutation::List diffMutations{};
-  auto telemetry =
-      (lastRevision_.hasValue() ? lastRevision_->getTelemetry()
-                                : MountingTelemetry{});
-  if (!lastRevision_.hasValue()) {
-    telemetry.willLayout();
-    telemetry.didLayout();
-    telemetry.willCommit();
-    telemetry.didCommit();
-  }
-  telemetry.willDiff();
-  if (lastRevision_.hasValue()) {
-    diffMutations = calculateShadowViewMutations(
-        baseRevision_.getRootShadowNode(),
-        lastRevision_->getRootShadowNode(),
-        enableReparentingDetection_);
-  }
-  telemetry.didDiff();
-
-  better::optional<MountingTransaction> transaction{};
-
-  // The override delegate can provide custom mounting instructions,
-  // even if there's no `lastRevision_`. Consider cases of animation frames
-  // in between React tree updates.
   if (shouldOverridePullTransaction) {
+    auto mutations = ShadowViewMutation::List{};
+    auto telemetry = TransactionTelemetry{};
+
+    if (transaction.has_value()) {
+      mutations = transaction->getMutations();
+      telemetry = transaction->getTelemetry();
+    } else {
+      number_++;
+      telemetry.willLayout();
+      telemetry.didLayout();
+      telemetry.willCommit();
+      telemetry.didCommit();
+      telemetry.willDiff();
+      telemetry.didDiff();
+    }
+
     transaction = mountingOverrideDelegate->pullTransaction(
-        surfaceId_, number_, telemetry, std::move(diffMutations));
-  } else if (lastRevision_.hasValue()) {
-    transaction = MountingTransaction{
-        surfaceId_, number_, std::move(diffMutations), telemetry};
+        surfaceId_, number_, telemetry, std::move(mutations));
   }
 
-  if (lastRevision_.hasValue()) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
-    // Only validate non-animated transactions - it's garbage to validate
-    // animated transactions, since the stub view tree likely won't match
-    // the committed tree during an animation.
-    this->validateTransactionAgainstStubViewTree(
-        transaction->getMutations(), !shouldOverridePullTransaction);
+  if (transaction.has_value()) {
+    // We have something to validate.
+    auto mutations = transaction->getMutations();
+
+    // No matter what the source of the transaction is, it must be able to
+    // mutate the existing stub view tree.
+    stubViewTree_.mutate(mutations);
+
+    // If the transaction was overridden, we don't have a model of the shadow
+    // tree therefore we cannot validate the validity of the mutation
+    // instructions.
+    if (!shouldOverridePullTransaction && lastRevision_.has_value()) {
+      auto stubViewTree = buildStubViewTreeWithoutUsingDifferentiator(
+          *lastRevision_->rootShadowNode);
+
+      bool treesEqual = stubViewTree_ == stubViewTree;
+
+      if (!treesEqual) {
+        // Display debug info
+        auto line = std::string{};
+        std::stringstream ssOldTree(
+            baseRevision_.rootShadowNode->getDebugDescription());
+        while (std::getline(ssOldTree, line, '\n')) {
+          LOG(ERROR) << "Old tree:" << line;
+        }
+
+        std::stringstream ssMutations(getDebugDescription(mutations, {}));
+        while (std::getline(ssMutations, line, '\n')) {
+          LOG(ERROR) << "Mutations:" << line;
+        }
+
+        std::stringstream ssNewTree(
+            lastRevision_->rootShadowNode->getDebugDescription());
+        while (std::getline(ssNewTree, line, '\n')) {
+          LOG(ERROR) << "New tree:" << line;
+        }
+      }
+
+      react_native_assert(
+          (treesEqual) && "Incorrect set of mutations detected.");
+    }
+  }
 #endif
 
+  if (lastRevision_.has_value()) {
     baseRevision_ = std::move(*lastRevision_);
     lastRevision_.reset();
   }
-
   return transaction;
 }
 
 TelemetryController const &MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
+}
+
+void MountingCoordinator::setMountingOverrideDelegate(
+    std::weak_ptr<MountingOverrideDelegate const> delegate) const {
+  std::lock_guard<std::mutex> lock(mutex_);
+  mountingOverrideDelegate_ = delegate;
 }
 
 } // namespace react

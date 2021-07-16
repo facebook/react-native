@@ -57,6 +57,7 @@ module.exports = [
   'AccessibilityEventTypes',
   'UIView',
   'getViewManagerConfig',
+  'hasViewManagerConfig',
   'blur',
   'focus',
   'genericBubblingEventTypes',

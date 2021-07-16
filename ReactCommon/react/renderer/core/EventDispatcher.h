@@ -7,21 +7,17 @@
 
 #pragma once
 
-#include <array>
-#include <memory>
-
 #include <react/renderer/core/BatchedEventQueue.h>
 #include <react/renderer/core/EventBeat.h>
-#include <react/renderer/core/EventPipe.h>
 #include <react/renderer/core/EventPriority.h>
-#include <react/renderer/core/StatePipe.h>
+#include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/StateUpdate.h>
 #include <react/renderer/core/UnbatchedEventQueue.h>
 
 namespace facebook {
 namespace react {
 
-class RawEvent;
+struct RawEvent;
 
 /*
  * Represents event-delivery infrastructure.
@@ -33,23 +29,23 @@ class EventDispatcher {
   using Weak = std::weak_ptr<EventDispatcher const>;
 
   EventDispatcher(
-      EventPipe const &eventPipe,
-      StatePipe const &statePipe,
+      EventQueueProcessor eventProcessor,
       EventBeat::Factory const &synchonousEventBeatFactory,
       EventBeat::Factory const &asynchonousEventBeatFactory,
-      EventBeat::SharedOwnerBox const &ownerBox);
+      EventBeat::SharedOwnerBox const &ownerBox,
+      bool unbatchedQueuesOnly);
 
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
    */
-  void dispatchEvent(RawEvent const &rawEvent, EventPriority priority) const;
+  void dispatchEvent(RawEvent &&rawEvent, EventPriority priority) const;
 
   /*
    * Dispatches a raw event with asynchronous batched priority. Before the
    * dispatch we make sure that no other RawEvent of same type and same target
    * is on the queue.
    */
-  void dispatchUniqueEvent(RawEvent const &rawEvent) const;
+  void dispatchUniqueEvent(RawEvent &&rawEvent) const;
 
   /*
    * Dispatches a state update with given priority.
@@ -64,6 +60,8 @@ class EventDispatcher {
   std::unique_ptr<BatchedEventQueue> synchronousBatchedQueue_;
   std::unique_ptr<UnbatchedEventQueue> asynchronousUnbatchedQueue_;
   std::unique_ptr<BatchedEventQueue> asynchronousBatchedQueue_;
+
+  bool const unbatchedQueuesOnly_;
 };
 
 } // namespace react

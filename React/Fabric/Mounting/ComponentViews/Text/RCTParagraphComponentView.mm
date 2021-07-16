@@ -8,6 +8,7 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
+#import <MobileCoreServices/UTCoreTypes.h>
 #import <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #import <react/renderer/components/text/ParagraphProps.h>
 #import <react/renderer/components/text/ParagraphState.h>
@@ -25,9 +26,10 @@
 using namespace facebook::react;
 
 @implementation RCTParagraphComponentView {
-  ParagraphShadowNode::ConcreteStateTeller _stateTeller;
+  ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
+  UILongPressGestureRecognizer *_longPressGestureRecognizer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -36,7 +38,6 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const ParagraphProps>();
     _props = defaultProps;
 
-    self.isAccessibilityElement = YES;
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
@@ -58,12 +59,11 @@ using namespace facebook::react;
 
 - (NSAttributedString *_Nullable)attributedText
 {
-  auto data = _stateTeller.getData();
-  if (!data.hasValue()) {
+  if (!_state) {
     return nil;
   }
 
-  return RCTNSAttributedStringFromAttributedString(data.value().attributedString);
+  return RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -75,41 +75,49 @@ using namespace facebook::react;
 
 + (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders
 {
-  return {concreteComponentDescriptorProvider<RawTextComponentDescriptor>(),
-          concreteComponentDescriptorProvider<TextComponentDescriptor>()};
+  return {
+      concreteComponentDescriptorProvider<RawTextComponentDescriptor>(),
+      concreteComponentDescriptorProvider<TextComponentDescriptor>()};
 }
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &paragraphProps = std::static_pointer_cast<const ParagraphProps>(props);
+  auto const &oldParagraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+  auto const &newParagraphProps = *std::static_pointer_cast<ParagraphProps const>(props);
 
-  assert(paragraphProps);
-  _paragraphAttributes = paragraphProps->paragraphAttributes;
+  _paragraphAttributes = newParagraphProps.paragraphAttributes;
+
+  if (newParagraphProps.isSelectable != oldParagraphProps.isSelectable) {
+    if (newParagraphProps.isSelectable) {
+      [self enableContextMenu];
+    } else {
+      [self disableContextMenu];
+    }
+  }
 
   [super updateProps:props oldProps:oldProps];
 }
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _stateTeller.setConcreteState(state);
+  _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
   [self setNeedsDisplay];
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _stateTeller.invalidate();
+  _state.reset();
+  _accessibilityProvider = nil;
 }
 
 - (void)drawRect:(CGRect)rect
 {
-  auto data = _stateTeller.getData();
-  if (!data.hasValue()) {
+  if (!_state) {
     return;
   }
 
-  auto textLayoutManager = data.value().layoutManager;
-  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
+  auto textLayoutManager = _state->getData().layoutManager.lock();
 
   if (!textLayoutManager) {
     return;
@@ -120,7 +128,7 @@ using namespace facebook::react;
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  [nativeTextLayoutManager drawAttributedString:data.value().attributedString
+  [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame];
 }
@@ -129,35 +137,45 @@ using namespace facebook::react;
 
 - (NSString *)accessibilityLabel
 {
-  NSString *superAccessibilityLabel = RCTNSStringFromStringNilIfEmpty(_props->accessibilityLabel);
-  if (superAccessibilityLabel) {
-    return superAccessibilityLabel;
-  }
+  return self.attributedText.string;
+}
 
-  auto data = _stateTeller.getData();
-
-  if (!data.hasValue()) {
-    return nil;
-  }
-
-  return RCTNSStringFromString(data.value().attributedString.getString());
+- (BOOL)isAccessibilityElement
+{
+  // All accessibility functionality of the component is implemented in `accessibilityElements` method below.
+  // Hence to avoid calling all other methods from `UIAccessibilityContainer` protocol (most of them have default
+  // implementations), we return here `NO`.
+  return NO;
 }
 
 - (NSArray *)accessibilityElements
 {
-  auto data = _stateTeller.getData().value();
-  if (![_accessibilityProvider isUpToDate:data.attributedString]) {
-    RCTTextLayoutManager *textLayoutManager =
-        (RCTTextLayoutManager *)unwrapManagedObject(data.layoutManager->getNativeTextLayoutManager());
-    CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
-    _accessibilityProvider = [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
-                                                                                  layoutManager:textLayoutManager
-                                                                            paragraphAttributes:data.paragraphAttributes
-                                                                                          frame:frame
-                                                                                           view:self];
+  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+
+  // If the component is not `accessible`, we return an empty array.
+  // We do this because logically all nested <Text> components represent the content of the <Paragraph> component;
+  // in other words, all nested <Text> components individually have no sense without the <Paragraph>.
+  if (!_state || !paragraphProps.accessible) {
+    return [NSArray new];
   }
 
-  self.isAccessibilityElement = NO;
+  auto &data = _state->getData();
+
+  if (![_accessibilityProvider isUpToDate:data.attributedString]) {
+    auto textLayoutManager = data.layoutManager.lock();
+    if (textLayoutManager) {
+      RCTTextLayoutManager *nativeTextLayoutManager =
+          (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
+      CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+      _accessibilityProvider =
+          [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
+                                                               layoutManager:nativeTextLayoutManager
+                                                         paragraphAttributes:data.paragraphAttributes
+                                                                       frame:frame
+                                                                        view:self];
+    }
+  }
+
   return _accessibilityProvider.accessibilityElements;
 }
 
@@ -166,16 +184,15 @@ using namespace facebook::react;
   return [super accessibilityTraits] | UIAccessibilityTraitStaticText;
 }
 
+#pragma mark - RCTTouchableComponentViewProtocol
+
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {
-  auto data = _stateTeller.getData();
-  if (!data.hasValue()) {
+  if (!_state) {
     return _eventEmitter;
   }
 
-  auto textLayoutManager = data.value().layoutManager;
-
-  assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
+  auto textLayoutManager = _state->getData().layoutManager.lock();
 
   if (!textLayoutManager) {
     return _eventEmitter;
@@ -185,7 +202,7 @@ using namespace facebook::react;
       (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:data.value().attributedString
+  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
                                                               paragraphAttributes:_paragraphAttributes
                                                                             frame:frame
                                                                           atPoint:point];
@@ -196,6 +213,77 @@ using namespace facebook::react;
 
   assert(std::dynamic_pointer_cast<const TouchEventEmitter>(eventEmitter));
   return std::static_pointer_cast<const TouchEventEmitter>(eventEmitter);
+}
+
+#pragma mark - Context Menu
+
+- (void)enableContextMenu
+{
+  _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                              action:@selector(handleLongPress:)];
+  [self addGestureRecognizer:_longPressGestureRecognizer];
+}
+
+- (void)disableContextMenu
+{
+  [self removeGestureRecognizer:_longPressGestureRecognizer];
+  _longPressGestureRecognizer = nil;
+}
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
+{
+  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
+#if !TARGET_OS_UIKITFORMAC
+  UIMenuController *menuController = [UIMenuController sharedMenuController];
+
+  if (menuController.isMenuVisible) {
+    return;
+  }
+
+  if (!self.isFirstResponder) {
+    [self becomeFirstResponder];
+  }
+
+  [menuController setTargetRect:self.bounds inView:self];
+  [menuController setMenuVisible:YES animated:YES];
+#endif
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+  return paragraphProps.isSelectable;
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+
+  if (paragraphProps.isSelectable && action == @selector(copy:)) {
+    return YES;
+  }
+
+  return [self.nextResponder canPerformAction:action withSender:sender];
+}
+
+- (void)copy:(id)sender
+{
+  NSAttributedString *attributedText = self.attributedText;
+
+  NSMutableDictionary *item = [NSMutableDictionary new];
+
+  NSData *rtf = [attributedText dataFromRange:NSMakeRange(0, attributedText.length)
+                           documentAttributes:@{NSDocumentTypeDocumentAttribute : NSRTFDTextDocumentType}
+                                        error:nil];
+
+  if (rtf) {
+    [item setObject:rtf forKey:(id)kUTTypeFlatRTFD];
+  }
+
+  [item setObject:attributedText.string forKey:(id)kUTTypeUTF8PlainText];
+
+  UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+  pasteboard.items = @[ item ];
 }
 
 @end

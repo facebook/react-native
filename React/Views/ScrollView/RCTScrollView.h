@@ -8,7 +8,8 @@
 #import <UIKit/UIScrollView.h>
 
 #import <React/RCTAutoInsetsProtocol.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTDefines.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTScrollableProtocol.h>
 #import <React/RCTView.h>
 
@@ -16,7 +17,7 @@
 
 @interface RCTScrollView : RCTView <UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
 /**
  * The `RCTScrollView` may have at most one single subview. This will ensure
@@ -26,12 +27,6 @@
  * layout system.
  */
 @property (nonatomic, readonly) UIView *contentView;
-
-/**
- * If the `contentSize` is not specified (or is specified as {0, 0}, then the
- * `contentSize` will automatically be determined by the size of the subview.
- */
-@property (nonatomic, assign) CGSize contentSize;
 
 /**
  * The underlying scrollView (TODO: can we remove this?)
@@ -67,15 +62,8 @@
 
 @interface RCTScrollView (Internal)
 
-- (void)updateContentOffsetIfNeeded;
+- (void)updateContentSizeIfNeeded;
 
 @end
 
-@interface RCTEventDispatcher (RCTScrollView)
-
-/**
- * Send a fake scroll event.
- */
-- (void)sendFakeScrollEvent:(NSNumber *)reactTag;
-
-@end
+RCT_EXTERN void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNumber *reactTag);

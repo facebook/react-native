@@ -12,7 +12,7 @@
 'use strict';
 
 const fixtures = require('../__test_fixtures__/fixtures.js');
-const generator = require('../GenerateModuleMm.js');
+const generator = require('../GenerateModuleObjCpp');
 
 describe('GenerateModuleMm', () => {
   Object.keys(fixtures)
@@ -21,8 +21,19 @@ describe('GenerateModuleMm', () => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {
+        const output = generator.generate(
+          fixtureName,
+          fixture,
+          'com.facebook.fbreact.specs',
+          false,
+        );
         expect(
-          generator.generate(fixtureName, fixture, 'SampleSpec'),
+          new Map([
+            [
+              `${fixtureName}-generated.mm`,
+              output.get(`${fixtureName}-generated.mm`),
+            ],
+          ]),
         ).toMatchSnapshot();
       });
     });

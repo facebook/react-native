@@ -10,6 +10,9 @@
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
+/*
+ * On-demand view mounting
+ */
 static BOOL RCTExperimentOnDemandViewMounting = NO;
 
 BOOL RCTExperimentGetOnDemandViewMounting()
@@ -22,14 +25,17 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
   RCTExperimentOnDemandViewMounting = value;
 }
 
-static BOOL RCTExperimentSyncPerformanceFlag = NO;
+/*
+ * Preemptive View Allocation
+ */
+static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
 
-BOOL RCTExperimentGetSyncPerformanceFlag()
+BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
 {
-  return RCTExperimentSyncPerformanceFlag;
+  return RCTExperimentPreemptiveViewAllocationDisabled;
 }
 
-void RCTExperimentSetSyncPerformanceFlag(BOOL value)
+void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
-  RCTExperimentSyncPerformanceFlag = value;
+  RCTExperimentPreemptiveViewAllocationDisabled = value;
 }

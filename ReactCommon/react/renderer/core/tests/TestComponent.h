@@ -33,7 +33,7 @@ static const char TestComponentName[] = "Test";
 
 class TestProps : public ViewProps {
  public:
-  using ViewProps::ViewProps;
+  TestProps() = default;
 
   TestProps(const TestProps &sourceProps, const RawProps &rawProps)
       : ViewProps(sourceProps, rawProps) {}
@@ -45,11 +45,11 @@ class TestShadowNode;
 
 using SharedTestShadowNode = std::shared_ptr<const TestShadowNode>;
 
-class TestShadowNode : public ConcreteViewShadowNode<
-                           TestComponentName,
-                           TestProps,
-                           ViewEventEmitter,
-                           TestState> {
+class TestShadowNode final : public ConcreteViewShadowNode<
+                                 TestComponentName,
+                                 TestProps,
+                                 ViewEventEmitter,
+                                 TestState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 

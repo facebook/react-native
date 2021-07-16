@@ -16,12 +16,12 @@ const {getImports, toSafeCppString} = require('./CppHelpers');
 type FilesOutput = Map<string, string>;
 type PropValueType = string | number | boolean;
 
-type TestCase = $ReadOnly<{|
+type TestCase = $ReadOnly<{
   propName: string,
   propValue: ?PropValueType,
   testName?: string,
   raw?: boolean,
-|}>;
+}>;
 
 const fileTemplate = `
 /**
@@ -58,8 +58,8 @@ function getTestCasesForProp(propName, typeAnnotation) {
     typeAnnotation.options.forEach(option =>
       cases.push({
         propName,
-        testName: `${propName}_${toSafeCppString(option.name)}`,
-        propValue: option.name,
+        testName: `${propName}_${toSafeCppString(option)}`,
+        propValue: option,
       }),
     );
   } else if (typeAnnotation.type === 'StringTypeAnnotation') {
@@ -75,6 +75,7 @@ function getTestCasesForProp(propName, typeAnnotation) {
       propName: propName,
       propValue: typeAnnotation.default != null ? typeAnnotation.default : true,
     });
+    // $FlowFixMe[incompatible-type]
   } else if (typeAnnotation.type === 'IntegerTypeAnnotation') {
     cases.push({
       propName,
@@ -138,7 +139,8 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
+    packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'Tests.cpp';
     const allImports = new Set([
@@ -149,7 +151,12 @@ module.exports = {
 
     const componentTests = Object.keys(schema.modules)
       .map(moduleName => {
-        const components = schema.modules[moduleName].components;
+        const module = schema.modules[moduleName];
+        if (module.type !== 'Component') {
+          return;
+        }
+
+        const {components} = module;
         if (components == null) {
           return null;
         }
@@ -160,6 +167,7 @@ module.exports = {
             const name = `${componentName}Props`;
 
             const imports = getImports(component.props);
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             imports.forEach(allImports.add, allImports);
 
             return generateTestsString(name, component);

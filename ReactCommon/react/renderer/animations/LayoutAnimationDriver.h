@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/core/EventTarget.h>
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
@@ -35,10 +36,6 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
       SurfaceId surfaceId,
       ShadowViewMutation::List &mutationsList,
       uint64_t now) const override;
-  virtual double getProgressThroughAnimation(
-      AnimationKeyFrame const &keyFrame,
-      LayoutAnimation const *layoutAnimation,
-      ShadowView const &animationStateView) const override;
 };
 
 } // namespace react

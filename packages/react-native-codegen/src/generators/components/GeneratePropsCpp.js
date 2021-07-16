@@ -85,7 +85,8 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
+    packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'Props.cpp';
     const allImports: Set<string> = new Set([
@@ -94,7 +95,12 @@ module.exports = {
 
     const componentProps = Object.keys(schema.modules)
       .map(moduleName => {
-        const components = schema.modules[moduleName].components;
+        const module = schema.modules[moduleName];
+        if (module.type !== 'Component') {
+          return;
+        }
+
+        const {components} = module;
         // No components in this module
         if (components == null) {
           return null;
@@ -116,6 +122,7 @@ module.exports = {
             const extendString = getClassExtendString(component);
 
             const imports = getImports(component.props);
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             imports.forEach(allImports.add, allImports);
 
             const replacedTemplate = componentTemplate

@@ -23,7 +23,8 @@ const {
 
 import type {
   ExtendsPropsShape,
-  PropTypeShape,
+  NamedShape,
+  PropTypeAnnotation,
   SchemaType,
 } from '../../CodegenSchema';
 
@@ -289,9 +290,8 @@ function convertValueToEnumOption(value: string): string {
 function generateArrayEnumString(
   componentName: string,
   name: string,
-  enumOptions,
+  options: $ReadOnlyArray<string>,
 ): string {
-  const options = enumOptions.map(option => option.name);
   const enumName = getEnumName(componentName, name);
 
   const values = options
@@ -328,9 +328,7 @@ function generateArrayEnumString(
 function generateStringEnum(componentName, prop) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
-    const values: $ReadOnlyArray<string> = typeAnnotation.options.map(
-      option => option.name,
-    );
+    const values: $ReadOnlyArray<string> = typeAnnotation.options;
     const enumName = getEnumName(componentName, prop.name);
 
     const fromCases = values
@@ -364,9 +362,7 @@ function generateStringEnum(componentName, prop) {
 function generateIntEnum(componentName, prop) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'Int32EnumTypeAnnotation') {
-    const values: $ReadOnlyArray<number> = typeAnnotation.options.map(
-      option => option.value,
-    );
+    const values: $ReadOnlyArray<number> = typeAnnotation.options;
     const enumName = getEnumName(componentName, prop.name);
 
     const fromCases = values
@@ -447,7 +443,7 @@ function generateEnumString(componentName: string, component): string {
 
 function generatePropsString(
   componentName: string,
-  props: $ReadOnlyArray<PropTypeShape>,
+  props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
 ) {
   return props
     .map(prop => {
@@ -487,7 +483,7 @@ function getExtendsImports(
 }
 
 function getLocalImports(
-  properties: $ReadOnlyArray<PropTypeShape>,
+  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
 ): Set<string> {
   const imports: Set<string> = new Set();
 
@@ -539,7 +535,9 @@ function getLocalImports(
       const objectProps = typeAnnotation.elementType.properties;
       const objectImports = getImports(objectProps);
       const localImports = getLocalImports(objectProps);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       localImports.forEach(imports.add, imports);
     }
 
@@ -547,7 +545,9 @@ function getLocalImports(
       imports.add('#include <react/renderer/core/propsConversions.h>');
       const objectImports = getImports(typeAnnotation.properties);
       const localImports = getLocalImports(typeAnnotation.properties);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       localImports.forEach(imports.add, imports);
     }
   });
@@ -677,7 +677,7 @@ function generateStruct(
   structs: StructsMap,
   componentName: string,
   nameParts: $ReadOnlyArray<string>,
-  properties: $ReadOnlyArray<PropTypeShape>,
+  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
 ): void {
   const structNameParts = nameParts;
   const structName = generateStructName(componentName, structNameParts);
@@ -692,7 +692,7 @@ function generateStruct(
     })
     .join('\n' + '  ');
 
-  properties.forEach((property: PropTypeShape) => {
+  properties.forEach((property: NamedShape<PropTypeAnnotation>) => {
     const name = property.name;
     switch (property.typeAnnotation.type) {
       case 'BooleanTypeAnnotation':
@@ -755,7 +755,8 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
+    packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'Props.h';
 
@@ -763,7 +764,12 @@ module.exports = {
 
     const componentClasses = Object.keys(schema.modules)
       .map(moduleName => {
-        const components = schema.modules[moduleName].components;
+        const module = schema.modules[moduleName];
+        if (module.type !== 'Component') {
+          return;
+        }
+
+        const {components} = module;
         // No components in this module
         if (components == null) {
           return null;
@@ -794,7 +800,9 @@ module.exports = {
             const extendsImports = getExtendsImports(component.extendsProps);
             const imports = getLocalImports(component.props);
 
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             extendsImports.forEach(allImports.add, allImports);
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             imports.forEach(allImports.add, allImports);
 
             const replacedTemplate = classTemplate

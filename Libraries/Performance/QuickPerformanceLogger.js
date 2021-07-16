@@ -65,9 +65,8 @@ const QuickPerformanceLogger = {
     markerId: number,
     instanceKey?: number = DUMMY_INSTANCE_KEY,
   ): void {
-    if (global.nativeQPLMarkerCancel) {
-      global.nativeQPLMarkerCancel(markerId, instanceKey);
-    }
+    // $FlowFixMe[object-this-reference]
+    this.markerDrop(markerId, instanceKey);
   },
 
   markerPoint(

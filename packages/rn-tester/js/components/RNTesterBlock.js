@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import * as React from 'react';
 import {RNTesterThemeContext} from './RNTesterTheme';
 import {StyleSheet, Text, View} from 'react-native';
@@ -20,16 +18,26 @@ type Props = $ReadOnly<{|
   description?: ?string,
 |}>;
 
-/** functional component for generating example blocks */
-const RNTesterBlock = (props: Props): React.Node => {
-  const {description, title, children} = props;
+const RNTesterBlock = ({description, title, children}: Props): React.Node => {
   const theme = React.useContext(RNTesterThemeContext);
   return (
-    <View style={[[styles.container], {borderColor: theme.SeparatorColor}]}>
+    <View
+      style={[
+        [styles.container],
+        {
+          borderColor: theme.SeparatorColor,
+          backgroundColor: theme.SystemBackgroundColor,
+        },
+      ]}>
       <View style={[styles.titleContainer]}>
-        <Text style={[styles.titleText]}>{title}</Text>
+        <Text style={[styles.titleText, {color: theme.LabelColor}]}>
+          {title}
+        </Text>
         <Text
-          style={[styles.descriptionText, {marginTop: description ? 10 : 0}]}>
+          style={[
+            styles.descriptionText,
+            {color: theme.LabelColor, marginTop: description ? 10 : 0},
+          ]}>
           {description}
         </Text>
       </View>
@@ -44,7 +52,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: 30,
     marginHorizontal: 20,
-    backgroundColor: 'white',
   },
   titleText: {
     fontSize: 18,
@@ -57,12 +64,10 @@ const styles = StyleSheet.create({
   descriptionText: {
     fontSize: 12,
     opacity: 0.5,
-    color: 'black',
   },
   children: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    margin: 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
 });
 

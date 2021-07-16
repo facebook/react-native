@@ -13,6 +13,8 @@
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook {
@@ -32,14 +34,19 @@ class ModalHostViewState final {
   ModalHostViewState(
       ModalHostViewState const &previousState,
       folly::dynamic data)
-      : screenSize(Size{(Float)data["screenWidth"].getDouble(),
-                        (Float)data["screenHeight"].getDouble()}){};
+      : screenSize(Size{
+            (Float)data["screenWidth"].getDouble(),
+            (Float)data["screenHeight"].getDouble()}){};
 #endif
 
   const Size screenSize{};
 
 #ifdef ANDROID
   folly::dynamic getDynamic() const;
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
+
 #endif
 
 #pragma mark - Getters

@@ -167,8 +167,12 @@ id RCTJSONClean(id object)
   static dispatch_once_t onceToken;
   static NSSet<Class> *validLeafTypes;
   dispatch_once(&onceToken, ^{
-    validLeafTypes =
-        [[NSSet alloc] initWithArray:@ [[NSString class], [NSMutableString class], [NSNumber class], [NSNull class], ]];
+    validLeafTypes = [[NSSet alloc] initWithArray:@[
+      [NSString class],
+      [NSMutableString class],
+      [NSNumber class],
+      [NSNull class],
+    ]];
   });
 
   if ([validLeafTypes containsObject:[object classForCoder]]) {
@@ -578,6 +582,16 @@ BOOL RCTForceTouchAvailable(void)
 NSError *RCTErrorWithMessage(NSString *message)
 {
   NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey : message};
+  return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
+}
+
+NSError *RCTErrorWithNSException(NSException *exception)
+{
+  NSString *message = [NSString stringWithFormat:@"NSException: %@; trace: %@.",
+                                                 exception,
+                                                 [[exception callStackSymbols] componentsJoinedByString:@";"]];
+  NSDictionary<NSString *, id> *errorInfo =
+      @{NSLocalizedDescriptionKey : message, RCTObjCStackTraceKey : [exception callStackSymbols]};
   return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 }
 

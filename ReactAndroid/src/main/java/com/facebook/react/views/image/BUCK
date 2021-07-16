@@ -7,6 +7,7 @@ IMAGE_EVENT_FILES = [
 rn_android_library(
     name = "imageevents",
     srcs = IMAGE_EVENT_FILES,
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
@@ -31,6 +32,7 @@ rn_android_library(
         ["*.java"],
         exclude = IMAGE_EVENT_FILES,
     ),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [

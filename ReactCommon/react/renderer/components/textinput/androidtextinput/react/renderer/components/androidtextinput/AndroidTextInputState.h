@@ -13,6 +13,8 @@
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook {
@@ -29,7 +31,7 @@ class AndroidTextInputState final {
    * Stores an opaque cache ID used on the Java side to refer to a specific
    * AttributedString for measurement purposes only.
    */
-  int cachedAttributedStringId{0};
+  int64_t cachedAttributedStringId{0};
 
   /*
    * All content of <TextInput> component represented as an `AttributedString`.
@@ -66,13 +68,6 @@ class AndroidTextInputState final {
    */
   ShadowView defaultParentShadowView;
 
-  /*
-   * `TextLayoutManager` provides a connection to platform-specific
-   * text rendering infrastructure which is capable to render the
-   * `AttributedString`.
-   */
-  SharedTextLayoutManager layoutManager{};
-
   /**
    * Communicates Android theme padding back to the ShadowNode / Component
    * Descriptor for layout.
@@ -89,58 +84,19 @@ class AndroidTextInputState final {
       ParagraphAttributes const &paragraphAttributes,
       TextAttributes const &defaultTextAttributes,
       ShadowView const &defaultParentShadowView,
-      SharedTextLayoutManager const &layoutManager,
       float defaultThemePaddingStart,
       float defaultThemePaddingEnd,
       float defaultThemePaddingTop,
-      float defaultThemePaddingBottom)
-      : mostRecentEventCount(mostRecentEventCount),
-        cachedAttributedStringId(0),
-        attributedString(attributedString),
-        reactTreeAttributedString(reactTreeAttributedString),
-        paragraphAttributes(paragraphAttributes),
-        defaultTextAttributes(defaultTextAttributes),
-        defaultParentShadowView(defaultParentShadowView),
-        layoutManager(layoutManager),
-        defaultThemePaddingStart(defaultThemePaddingStart),
-        defaultThemePaddingEnd(defaultThemePaddingEnd),
-        defaultThemePaddingTop(defaultThemePaddingTop),
-        defaultThemePaddingBottom(defaultThemePaddingBottom) {}
+      float defaultThemePaddingBottom);
+
   AndroidTextInputState() = default;
   AndroidTextInputState(
       AndroidTextInputState const &previousState,
-      folly::dynamic const &data)
-      : mostRecentEventCount(data.getDefault(
-                                     "mostRecentEventCount",
-                                     previousState.mostRecentEventCount)
-                                 .getInt()),
-        cachedAttributedStringId(
-            data.getDefault("cacheId", previousState.cachedAttributedStringId)
-                .getInt()),
-        attributedString(previousState.attributedString),
-        reactTreeAttributedString(previousState.reactTreeAttributedString),
-        paragraphAttributes(previousState.paragraphAttributes),
-        defaultTextAttributes(previousState.defaultTextAttributes),
-        defaultParentShadowView(previousState.defaultParentShadowView),
-        layoutManager(previousState.layoutManager),
-        defaultThemePaddingStart(data.getDefault(
-                                         "themePaddingStart",
-                                         previousState.defaultThemePaddingStart)
-                                     .getDouble()),
-        defaultThemePaddingEnd(data.getDefault(
-                                       "themePaddingEnd",
-                                       previousState.defaultThemePaddingEnd)
-                                   .getDouble()),
-        defaultThemePaddingTop(data.getDefault(
-                                       "themePaddingTop",
-                                       previousState.defaultThemePaddingTop)
-                                   .getDouble()),
-        defaultThemePaddingBottom(
-            data.getDefault(
-                    "themePaddingBottom",
-                    previousState.defaultThemePaddingBottom)
-                .getDouble()){};
+      folly::dynamic const &data);
   folly::dynamic getDynamic() const;
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
+  };
 };
 
 } // namespace react

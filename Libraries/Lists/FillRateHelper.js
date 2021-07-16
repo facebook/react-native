@@ -10,8 +10,6 @@
 
 'use strict';
 
-const warning = require('fbjs/lib/warning');
-
 export type FillRateInfo = Info;
 
 class Info {
@@ -137,7 +135,7 @@ class FillRateHelper {
     props: {
       data: any,
       getItemCount: (data: any) => number,
-      initialNumToRender: number,
+      initialNumToRender?: ?number,
       ...
     },
     state: {

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTPropsAnimatedNode.h"
+#import <React/RCTPropsAnimatedNode.h>
 
 #import <React/RCTAnimationUtils.h>
 #import <React/RCTLog.h>

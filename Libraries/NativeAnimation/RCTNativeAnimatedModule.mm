@@ -46,8 +46,9 @@ RCT_EXPORT_MODULE();
 
 - (void)invalidate
 {
+  [super invalidate];
   [_nodesManager stopAnimationLoop];
-  [self.bridge.eventDispatcher removeDispatchObserver:self];
+  [[self.moduleRegistry moduleForName:"EventDispatcher"] removeDispatchObserver:self];
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
   [self.bridge.surfacePresenter removeObserver:self];
 }
@@ -64,9 +65,14 @@ RCT_EXPORT_MODULE();
 {
   [super setBridge:bridge];
   _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:bridge.surfacePresenter];
-  [bridge.eventDispatcher addDispatchObserver:self];
   [bridge.uiManager.observerCoordinator addObserver:self];
   [bridge.surfacePresenter addObserver:self];
+}
+
+- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
+{
+  [super setModuleRegistry:moduleRegistry];
+  [[moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
 }
 
 /*
