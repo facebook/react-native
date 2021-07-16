@@ -7,7 +7,6 @@
 
 package com.facebook.react.fabric;
 
-
 import androidx.annotation.NonNull;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
