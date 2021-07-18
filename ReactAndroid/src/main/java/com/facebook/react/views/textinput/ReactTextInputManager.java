@@ -112,9 +112,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           put("password-new", HintConstants.AUTOFILL_HINT_NEW_PASSWORD);
           put("postal-address", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS);
           put("postal-address-country", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_COUNTRY);
-          put("postal-address-extended",
+          put(
+              "postal-address-extended",
               HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_EXTENDED_ADDRESS);
-          put("postal-address-extended-postal-code",
+          put(
+              "postal-address-extended-postal-code",
               HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_EXTENDED_POSTAL_CODE);
           put("postal-address-locality", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_LOCALITY);
           put("postal-address-region", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_REGION);
