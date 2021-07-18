@@ -92,7 +92,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     put("birthdate-month", HintConstants.AUTOFILL_HINT_BIRTH_DATE_MONTH);
     put("birthdate-year", HintConstants.AUTOFILL_HINT_BIRTH_DATE_YEAR);
     put("cc-csc", HintConstants.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
-    put("cc-exo", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
+    put("cc-exp", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
     put("cc-exp-day", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DAY);
     put("cc-exp-month", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
     put("cc-exp-year", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
