@@ -15,7 +15,7 @@ describe('Object (ES7)', () => {
     delete Object.entries;
     delete Object.values;
     jest.resetModules();
-    require('../Object.es7');
+    require('../Object.es8');
   });
 
   describe('Object.entries', () => {
