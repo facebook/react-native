@@ -418,7 +418,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   private void updateViewAccessibility(@NonNull T view) {
-    ReactAccessibilityDelegate.setDelegate(view);
+    ReactAccessibilityDelegate.setDelegate(
+        view, view.isFocusable(), view.getImportantForAccessibility());
   }
 
   @Override
