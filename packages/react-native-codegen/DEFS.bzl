@@ -254,6 +254,7 @@ def rn_codegen_modules(
             srcs = [
                 ":{}".format(generate_module_mm_name),
             ],
+            autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
             exported_deps = [
