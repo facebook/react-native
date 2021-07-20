@@ -97,7 +97,7 @@ export type NativeProps = $ReadOnly<{|
    *
    * @platform android
    */
-  autoCompleteType?: WithDefault<
+  autoComplete?: WithDefault<
     | 'cc-csc'
     | 'cc-exp'
     | 'cc-exp-month'
