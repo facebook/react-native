@@ -41,9 +41,9 @@ end
 
 target 'RNTester' do
   pods()
-  if !USE_FRAMEWORKS
-    use_flipper!
-  end
+#  if !USE_FRAMEWORKS
+#    use_flipper!
+#  end
 end
 
 target 'RNTesterUnitTests' do

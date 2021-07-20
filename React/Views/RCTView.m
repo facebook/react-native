@@ -490,7 +490,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   while (view) {
     UIViewController *controller = view.reactViewController;
     if (controller) {
-        return controller.view.safeAreaInsets;
+      return controller.view.safeAreaInsets;
     }
     view = view.superview;
   }
