@@ -7,6 +7,7 @@
  *
  * @format
  */
+
 'use strict';
 
 const {composeSourceMaps} = require('metro-source-map');

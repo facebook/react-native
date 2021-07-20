@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -22,7 +22,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)textInputShouldReturn; // May be called right before `textInputShouldEndEditing` if "Return" button was pressed.
 - (void)textInputDidReturn;
 
-- (BOOL)textInputShouldChangeTextInRange:(NSRange)range replacementText:(NSString *)string; // Return NO to not change text.
+/*
+ * Called before any change in the TextInput. The delegate has the opportunity to change the replacement string or reject the change completely.
+ * To change the replacement, return the changed version of the `text`.
+ * To accept the change, return `text` argument as-is.
+ * To reject the change, return `nil`.
+ */
+- (NSString *)textInputShouldChangeText:(NSString *)text inRange:(NSRange)range;
 - (void)textInputDidChange;
 
 - (void)textInputDidChangeSelection;

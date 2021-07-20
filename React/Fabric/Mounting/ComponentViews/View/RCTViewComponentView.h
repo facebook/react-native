@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,13 +8,14 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponentViewProtocol.h>
+#import <React/RCTConstants.h>
 #import <React/RCTTouchableComponentViewProtocol.h>
 #import <React/UIView+ComponentViewProtocol.h>
-#import <react/components/view/ViewEventEmitter.h>
-#import <react/components/view/ViewProps.h>
-#import <react/core/EventEmitter.h>
-#import <react/core/LayoutMetrics.h>
-#import <react/core/Props.h>
+#import <react/renderer/components/view/ViewEventEmitter.h>
+#import <react/renderer/components/view/ViewProps.h>
+#import <react/renderer/core/EventEmitter.h>
+#import <react/renderer/core/LayoutMetrics.h>
+#import <react/renderer/core/Props.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

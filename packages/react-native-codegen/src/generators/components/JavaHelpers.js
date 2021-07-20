@@ -16,6 +16,14 @@ function upperCaseFirst(inString: string): string {
   return inString[0].toUpperCase() + inString.slice(1);
 }
 
+function getInterfaceJavaClassName(componentName: string): string {
+  return `${componentName.replace(/^RCT/, '')}ManagerInterface`;
+}
+
+function getDelegateJavaClassName(componentName: string): string {
+  return `${componentName.replace(/^RCT/, '')}ManagerDelegate`;
+}
+
 function toSafeJavaString(
   input: string,
   shouldUpperCaseFirst?: boolean,
@@ -29,7 +37,10 @@ function toSafeJavaString(
   return parts.map(upperCaseFirst).join('');
 }
 
-function getImports(component: ComponentShape): Set<string> {
+function getImports(
+  component: ComponentShape,
+  type: 'interface' | 'delegate',
+): Set<string> {
   const imports: Set<string> = new Set();
 
   component.extendsProps.forEach(extendProps => {
@@ -52,6 +63,9 @@ function getImports(component: ComponentShape): Set<string> {
   function addImportsForNativeName(name) {
     switch (name) {
       case 'ColorPrimitive':
+        if (type === 'delegate') {
+          imports.add('import com.facebook.react.bridge.ColorPropConverter;');
+        }
         return;
       case 'ImageSourcePrimitive':
         imports.add('import com.facebook.react.bridge.ReadableMap;');
@@ -59,23 +73,28 @@ function getImports(component: ComponentShape): Set<string> {
       case 'PointPrimitive':
         imports.add('import com.facebook.react.bridge.ReadableMap;');
         return;
+      case 'EdgeInsetsPrimitive':
+        imports.add('import com.facebook.react.bridge.ReadableMap;');
+        return;
       default:
         (name: empty);
-        throw new Error(
-          `Invalid NativePrimitiveTypeAnnotation name, got ${name}`,
-        );
+        throw new Error(`Invalid ReservedPropTypeAnnotation name, got ${name}`);
     }
   }
 
   component.props.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
-    if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
+    if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
       addImportsForNativeName(typeAnnotation.name);
     }
 
     if (typeAnnotation.type === 'ArrayTypeAnnotation') {
       imports.add('import com.facebook.react.bridge.ReadableArray;');
+    }
+
+    if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+      imports.add('import com.facebook.react.bridge.ReadableMap;');
     }
   });
 
@@ -83,6 +102,8 @@ function getImports(component: ComponentShape): Set<string> {
 }
 
 module.exports = {
+  getInterfaceJavaClassName,
+  getDelegateJavaClassName,
   toSafeJavaString,
   getImports,
 };

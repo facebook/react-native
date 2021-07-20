@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -63,13 +63,11 @@ BOOL RCTParseArgumentIdentifier(const char **input, NSString **string)
       (*input)++;
     }
 
-  // allow namespace resolution operator
+    // allow namespace resolution operator
   } while (RCTReadString(input, "::"));
 
   if (string) {
-    *string = [[NSString alloc] initWithBytes:start
-                                       length:(NSInteger)(*input - start)
-                                     encoding:NSASCIIStringEncoding];
+    *string = [[NSString alloc] initWithBytes:start length:(NSInteger)(*input - start) encoding:NSASCIIStringEncoding];
   }
   return YES;
 }
@@ -85,9 +83,7 @@ BOOL RCTParseSelectorIdentifier(const char **input, NSString **string)
     (*input)++;
   }
   if (string) {
-    *string = [[NSString alloc] initWithBytes:start
-                                       length:(NSInteger)(*input - start)
-                                     encoding:NSASCIIStringEncoding];
+    *string = [[NSString alloc] initWithBytes:start length:(NSInteger)(*input - start) encoding:NSASCIIStringEncoding];
   }
   return YES;
 }
@@ -97,8 +93,7 @@ static BOOL RCTIsCollectionType(NSString *type)
   static NSSet *collectionTypes;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    collectionTypes = [[NSSet alloc] initWithObjects:
-                       @"NSArray", @"NSSet", @"NSDictionary", nil];
+    collectionTypes = [[NSSet alloc] initWithObjects:@"NSArray", @"NSSet", @"NSDictionary", nil];
   });
   return [collectionTypes containsObject:type];
 }
@@ -124,8 +119,7 @@ NSString *RCTParseType(const char **input)
         subtype = RCTParseType(input);
       }
       if (![subtype isEqualToString:@"id"]) {
-        type = [type stringByReplacingCharactersInRange:(NSRange){0, 2 /* "NS" */}
-                                             withString:subtype];
+        type = [type stringByReplacingCharactersInRange:(NSRange){0, 2 /* "NS" */} withString:subtype];
       }
     } else {
       // It's a protocol rather than a generic collection - ignore it

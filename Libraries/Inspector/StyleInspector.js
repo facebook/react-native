@@ -33,13 +33,12 @@ class StyleInspector extends React.Component<$FlowFixMeProps> {
 
         <View>
           {names.map(name => {
-            const value =
-              typeof this.props.style[name] === 'object'
-                ? JSON.stringify(this.props.style[name])
-                : this.props.style[name];
+            const value = this.props.style[name];
             return (
               <Text key={name} style={styles.value}>
-                {value}
+                {typeof value !== 'string' && typeof value !== 'number'
+                  ? JSON.stringify(value)
+                  : value}
               </Text>
             );
           })}

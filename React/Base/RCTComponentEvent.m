@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,8 +9,7 @@
 
 #import "RCTAssert.h"
 
-@implementation RCTComponentEvent
-{
+@implementation RCTComponentEvent {
   NSArray *_arguments;
 }
 
@@ -25,12 +24,12 @@
 
     _eventName = RCTNormalizeInputEventName(name);
     _viewTag = viewTag;
-    _arguments = @[_viewTag, _eventName, mutableBody];
+    _arguments = @[ _viewTag, _eventName, mutableBody ];
   }
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSArray *)arguments
 {

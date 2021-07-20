@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.animated;
 
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
@@ -41,13 +42,23 @@ import com.facebook.react.bridge.ReadableMap;
         }
         if (value == 0) {
           throw new JSApplicationCausedNativeException(
-              "Detected a division by zero in " + "Animated.divide node");
+              "Detected a division by zero in Animated.divide node with Animated ID " + mTag);
         }
         mValue /= value;
       } else {
         throw new JSApplicationCausedNativeException(
-            "Illegal node ID set as an input for " + "Animated.divide node");
+            "Illegal node ID set as an input for Animated.divide node with Animated ID " + mTag);
       }
     }
+  }
+
+  @Override
+  public String prettyPrint() {
+    return "DivisionAnimatedNode["
+        + mTag
+        + "]: input nodes: "
+        + (mInputNodes != null ? mInputNodes.toString() : "null")
+        + " - super: "
+        + super.prettyPrint();
   }
 }

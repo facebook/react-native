@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -27,6 +27,7 @@ typedef NS_ENUM(NSUInteger, RCTPLTag) {
   RCTPLBridgeStartup,
   RCTPLTTI,
   RCTPLBundleSize,
+  RCTPLReactInstanceInit,
   RCTPLSize // This is used to count the size
 };
 

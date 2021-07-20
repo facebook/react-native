@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "Inspector.h"
 #include "Exceptions.h"
@@ -11,19 +16,21 @@
 #include <hermes/inspector/detail/SerialExecutor.h>
 #include <hermes/inspector/detail/Thread.h>
 
+#ifdef HERMES_INSPECTOR_FOLLY_KLUDGE
 // <kludge> This is here, instead of linking against
 // folly/futures/Future.cpp, to avoid pulling in another pile of
 // dependencies, including the separate dependency libevent.  This is
 // likely specific to the version of folly RN uses, so may need to be
 // changed.  Even better, perhaps folly can be refactored to simplify
-// this.
+// this.  Providing a RN-specific Timekeeper impl may also help.
 
 template class folly::Future<folly::Unit>;
+template class folly::Future<bool>;
 
 namespace folly {
 namespace futures {
 
-Future<Unit> sleep(Duration dur, Timekeeper *tk) {
+SemiFuture<Unit> sleep(Duration, Timekeeper *) {
   LOG(FATAL) << "folly::futures::sleep() not implemented";
 }
 
@@ -39,6 +46,7 @@ std::shared_ptr<Timekeeper> getTimekeeperSingleton() {
 } // namespace folly
 
 // </kludge>
+#endif
 
 namespace facebook {
 namespace hermes {
@@ -77,7 +85,7 @@ namespace debugger = ::facebook::hermes::debugger;
  */
 
 // TODO: read this out of an env variable or config
-static constexpr bool kShouldLog = true;
+static constexpr bool kShouldLog = false;
 
 // Logging state transitions is done outside of transition() in a macro so that
 // function and line numbers in the log will be accurate.
@@ -100,17 +108,19 @@ Inspector::Inspector(
     InspectorObserver &observer,
     bool pauseOnFirstStatement)
     : adapter_(adapter),
-      debugger_(adapter->getRuntime().getDebugger()),
+      debugger_(adapter->getDebugger()),
       observer_(observer),
       executor_(std::make_unique<detail::SerialExecutor>("hermes-inspector")) {
   // TODO (t26491391): make tickleJs a real Hermes runtime API
-  const char *src = "function __tickleJs() { return Math.random(); }";
-  adapter->getRuntime().debugJavaScript(src, "__tickleJsHackUrl", {});
+  std::string src = "function __tickleJs() { return Math.random(); }";
+  adapter->getRuntime().evaluateJavaScript(
+      std::make_shared<jsi::StringBuffer>(src), "__tickleJsHackUrl");
 
   {
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (pauseOnFirstStatement) {
+      awaitingDebuggerOnStart_ = true;
       TRANSITION(std::make_unique<InspectorState::RunningWaitEnable>(*this));
     } else {
       TRANSITION(std::make_unique<InspectorState::RunningDetached>(*this));
@@ -122,12 +132,35 @@ Inspector::Inspector(
 }
 
 Inspector::~Inspector() {
-  // TODO: think about expected detach flow
   debugger_.setEventObserver(nullptr);
+}
+
+static bool toBoolean(jsi::Runtime &runtime, const jsi::Value &val) {
+  // Based on Operations.cpp:toBoolean in the Hermes VM.
+  if (val.isUndefined() || val.isNull()) {
+    return false;
+  }
+  if (val.isBool()) {
+    return val.getBool();
+  }
+  if (val.isNumber()) {
+    double m = val.getNumber();
+    return m != 0 && !std::isnan(m);
+  }
+  if (val.isSymbol() || val.isObject()) {
+    return true;
+  }
+  if (val.isString()) {
+    std::string s = val.getString(runtime).utf8(runtime);
+    return !s.empty();
+  }
+  assert(false && "All cases should be covered");
+  return false;
 }
 
 void Inspector::installConsoleFunction(
     jsi::Object &console,
+    std::shared_ptr<jsi::Object> &originalConsole,
     const std::string &name,
     const std::string &chromeTypeDefault = "") {
   jsi::Runtime &rt = adapter_->getRuntime();
@@ -141,17 +174,47 @@ void Inspector::installConsoleFunction(
           rt,
           nameID,
           1,
-          [weakInspector, chromeType](
+          [weakInspector, originalConsole, name, chromeType](
               jsi::Runtime &runtime,
               const jsi::Value &thisVal,
               const jsi::Value *args,
               size_t count) {
+            if (originalConsole) {
+              auto val = originalConsole->getProperty(runtime, name.c_str());
+              if (val.isObject()) {
+                auto obj = val.getObject(runtime);
+                if (obj.isFunction(runtime)) {
+                  auto func = obj.getFunction(runtime);
+                  func.callWithThis(runtime, *originalConsole, args, count);
+                }
+              }
+            }
+
             if (auto inspector = weakInspector.lock()) {
-              jsi::Array argsArray(runtime, count);
-              for (size_t index = 0; index < count; ++index)
-                argsArray.setValueAtIndex(runtime, index, args[index]);
-              inspector->logMessage(
-                  ConsoleMessageInfo{chromeType, std::move(argsArray)});
+              if (name != "assert") {
+                // All cases other than assert just log a simple message.
+                jsi::Array argsArray(runtime, count);
+                for (size_t index = 0; index < count; ++index)
+                  argsArray.setValueAtIndex(runtime, index, args[index]);
+                inspector->logMessage(
+                    ConsoleMessageInfo{chromeType, std::move(argsArray)});
+                return jsi::Value::undefined();
+              }
+              // console.assert needs to check the first parameter before
+              // logging.
+              if (count == 0) {
+                // No parameters, throw a blank assertion failed message.
+                inspector->logMessage(
+                    ConsoleMessageInfo{chromeType, jsi::Array(runtime, 0)});
+              } else if (!toBoolean(runtime, args[0])) {
+                // Shift the message array down by one to not include the
+                // condition.
+                jsi::Array argsArray(runtime, count - 1);
+                for (size_t index = 1; index < count; ++index)
+                  argsArray.setValueAtIndex(runtime, index, args[index]);
+                inspector->logMessage(
+                    ConsoleMessageInfo{chromeType, std::move(argsArray)});
+              }
             }
 
             return jsi::Value::undefined();
@@ -161,22 +224,28 @@ void Inspector::installConsoleFunction(
 void Inspector::installLogHandler() {
   jsi::Runtime &rt = adapter_->getRuntime();
   auto console = jsi::Object(rt);
-  installConsoleFunction(console, "assert");
-  installConsoleFunction(console, "clear");
-  installConsoleFunction(console, "debug");
-  installConsoleFunction(console, "dir");
-  installConsoleFunction(console, "dirxml");
-  installConsoleFunction(console, "error");
-  installConsoleFunction(console, "group", "startGroup");
-  installConsoleFunction(console, "groupCollapsed", "startGroupCollapsed");
-  installConsoleFunction(console, "groupEnd", "endGroup");
-  installConsoleFunction(console, "info");
-  installConsoleFunction(console, "log");
-  installConsoleFunction(console, "profile");
-  installConsoleFunction(console, "profileEnd");
-  installConsoleFunction(console, "table");
-  installConsoleFunction(console, "trace");
-  installConsoleFunction(console, "warn", "warning");
+  auto val = rt.global().getProperty(rt, "console");
+  std::shared_ptr<jsi::Object> originalConsole;
+  if (val.isObject()) {
+    originalConsole = std::make_shared<jsi::Object>(val.getObject(rt));
+  }
+  installConsoleFunction(console, originalConsole, "assert");
+  installConsoleFunction(console, originalConsole, "clear");
+  installConsoleFunction(console, originalConsole, "debug");
+  installConsoleFunction(console, originalConsole, "dir");
+  installConsoleFunction(console, originalConsole, "dirxml");
+  installConsoleFunction(console, originalConsole, "error");
+  installConsoleFunction(console, originalConsole, "group", "startGroup");
+  installConsoleFunction(
+      console, originalConsole, "groupCollapsed", "startGroupCollapsed");
+  installConsoleFunction(console, originalConsole, "groupEnd", "endGroup");
+  installConsoleFunction(console, originalConsole, "info");
+  installConsoleFunction(console, originalConsole, "log");
+  installConsoleFunction(console, originalConsole, "profile");
+  installConsoleFunction(console, originalConsole, "profileEnd");
+  installConsoleFunction(console, originalConsole, "table");
+  installConsoleFunction(console, originalConsole, "trace");
+  installConsoleFunction(console, originalConsole, "warn", "warning");
   rt.global().setProperty(rt, "console", console);
 }
 
@@ -184,7 +253,10 @@ void Inspector::triggerAsyncPause(bool andTickle) {
   // In order to ensure that we pause soon, we both set the async pause flag on
   // the runtime, and we run a bit of dummy JS to ensure we enter the Hermes
   // interpreter loop.
-  debugger_.triggerAsyncPause();
+  debugger_.triggerAsyncPause(
+      pendingPauseState_ == AsyncPauseState::Implicit
+          ? debugger::AsyncPauseKind::Implicit
+          : debugger::AsyncPauseKind::Explicit);
 
   if (andTickle) {
     // We run the dummy JS on a background thread to avoid any reentrancy issues
@@ -205,8 +277,7 @@ ScriptInfo Inspector::getScriptInfoFromTopCallFrame() {
   auto stackTrace = debugger_.getProgramState().getStackTrace();
 
   if (stackTrace.callFrameCount() > 0) {
-    uint32_t i = stackTrace.callFrameCount() - 1;
-    debugger::SourceLocation loc = stackTrace.callFrameForIndex(i).location;
+    debugger::SourceLocation loc = stackTrace.callFrameForIndex(0).location;
 
     info.fileId = loc.fileId;
     info.fileName = loc.fileName;
@@ -220,6 +291,7 @@ void Inspector::addCurrentScriptToLoadedScripts() {
   ScriptInfo info = getScriptInfoFromTopCallFrame();
 
   if (!loadedScripts_.count(info.fileId)) {
+    loadedScriptIdByName_[info.fileName] = info.fileId;
     loadedScripts_[info.fileId] = LoadedScriptInfo{std::move(info), false};
   }
 }
@@ -278,6 +350,9 @@ folly::Future<debugger::BreakpointInfo> Inspector::setBreakpoint(
     debugger::SourceLocation loc,
     folly::Optional<std::string> condition) {
   auto promise = std::make_shared<folly::Promise<debugger::BreakpointInfo>>();
+  // Automatically re-enable breakpoints since the user presumably wants this
+  // to start triggering.
+  breakpointsActive_ = true;
 
   executor_->add([this, loc, condition, promise] {
     setBreakpointOnExecutor(loc, condition, promise);
@@ -368,6 +443,43 @@ folly::Future<folly::Unit> Inspector::setPauseOnExceptions(
   });
 
   return promise->getFuture();
+};
+
+folly::Future<folly::Unit> Inspector::setPauseOnLoads(
+    const PauseOnLoadMode mode) {
+  // This flag does not touch the runtime, so it doesn't need the executor.
+  // Return a future anyways for consistency.
+  auto promise = std::make_shared<folly::Promise<Unit>>();
+  pauseOnLoadMode_ = mode;
+  promise->setValue();
+  return promise->getFuture();
+};
+
+folly::Future<folly::Unit> Inspector::setBreakpointsActive(bool active) {
+  // Same logic as setPauseOnLoads.
+  auto promise = std::make_shared<folly::Promise<Unit>>();
+  breakpointsActive_ = active;
+  promise->setValue();
+  return promise->getFuture();
+};
+
+bool Inspector::shouldPauseOnThisScriptLoad() {
+  switch (pauseOnLoadMode_) {
+    case None:
+      return false;
+    case All:
+      return true;
+    case Smart:
+      // If we don't have active breakpoints, there's nothing to set or update.
+      if (debugger_.getBreakpoints().size() == 0) {
+        return false;
+      }
+      // If there's no source map URL, it's probably not a file we care about.
+      if (getScriptInfoFromTopCallFrame().sourceMappingUrl.size() == 0) {
+        return false;
+      }
+      return true;
+  }
 };
 
 debugger::Command Inspector::didPause(debugger::Debugger &debugger) {
@@ -575,6 +687,53 @@ void Inspector::setPauseOnExceptionsOnExecutor(
     debugger_.setPauseOnThrowMode(mode);
     promise->setValue();
   });
+}
+
+static const char *kSuppressionVariable = "_hermes_suppress_superseded_warning";
+void Inspector::alertIfPausedInSupersededFile() {
+  if (isExecutingSupersededFile() &&
+      !shouldSuppressAlertAboutSupersededFiles()) {
+    ScriptInfo info = getScriptInfoFromTopCallFrame();
+    std::string warning =
+        "You have loaded the current file multiple times, and you are "
+        "now paused in one of the previous instances. The source "
+        "code you see may not correspond to what's being executed "
+        "(set JS variable " +
+        std::string(kSuppressionVariable) +
+        "=true to "
+        "suppress this warning. Filename: " +
+        info.fileName + ").";
+    jsi::Array jsiArray(adapter_->getRuntime(), 1);
+    jsiArray.setValueAtIndex(adapter_->getRuntime(), 0, warning);
+
+    ConsoleMessageInfo logMessage("warning", std::move(jsiArray));
+    observer_.onMessageAdded(*this, logMessage);
+  }
+}
+
+bool Inspector::shouldSuppressAlertAboutSupersededFiles() {
+  jsi::Runtime &rt = adapter_->getRuntime();
+  jsi::Value setting = rt.global().getProperty(rt, kSuppressionVariable);
+
+  if (setting.isUndefined() || !setting.isBool())
+    return false;
+  return setting.getBool();
+}
+
+bool Inspector::isExecutingSupersededFile() {
+  ScriptInfo info = getScriptInfoFromTopCallFrame();
+  if (info.fileName.empty())
+    return false;
+
+  auto it = loadedScriptIdByName_.find(info.fileName);
+  if (it != loadedScriptIdByName_.end()) {
+    return it->second > info.fileId;
+  }
+  return false;
+}
+
+bool Inspector::isAwaitingDebuggerOnStart() {
+  return awaitingDebuggerOnStart_;
 }
 
 } // namespace inspector

@@ -70,6 +70,10 @@ module.exports = {
         jest: true,
         'jest/globals': true,
       },
+      rules: {
+        'react-native/no-inline-styles': 0,
+        quotes: [1, 'single', {avoidEscape: true, allowTemplateLiterals: true}],
+      },
     },
   ],
 
@@ -78,6 +82,7 @@ module.exports = {
     __DEV__: true,
     __dirname: false,
     __fbBatchedBridgeConfig: false,
+    AbortController: false,
     alert: false,
     cancelAnimationFrame: false,
     cancelIdleCallback: false,
@@ -92,8 +97,11 @@ module.exports = {
     EventTarget: false,
     exports: false,
     fetch: false,
+    FileReader: false,
     FormData: false,
     global: false,
+    Headers: false,
+    Intl: false,
     Map: true,
     module: false,
     navigator: false,
@@ -106,6 +114,9 @@ module.exports = {
     setImmediate: true,
     setInterval: false,
     setTimeout: false,
+    URL: false,
+    URLSearchParams: false,
+    WebSocket: true,
     window: false,
     XMLHttpRequest: false,
   },
@@ -179,6 +190,7 @@ module.exports = {
     'no-self-compare': 1, // disallow comparisons where both sides are exactly the same (off by default)
     'no-sequences': 1, // disallow use of comma operator
     'no-unused-expressions': 0, // disallow usage of expressions in statement position
+    'no-useless-escape': 1, // disallow escapes that don't have any effect in literals
     'no-void': 1, // disallow use of void operator (off by default)
     'no-warning-comments': 0, // disallow usage of configurable warning terms in comments": 1,                        // e.g. TODO or FIXME (off by default)
     'no-with': 1, // disallow use of the with statement
@@ -276,7 +288,7 @@ module.exports = {
 
     'react/display-name': 0,
     'react/jsx-boolean-value': 0,
-    'react/jsx-no-comment-textnodes': 1,
+    'react/jsx-no-comment-textnodes': 2,
     'react/jsx-no-duplicate-props': 2,
     'react/jsx-no-undef': 2,
     'react/jsx-sort-props': 0,

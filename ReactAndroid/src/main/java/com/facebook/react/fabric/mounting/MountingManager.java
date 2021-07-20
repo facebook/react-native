@@ -1,455 +1,429 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.fabric.mounting;
 
-import android.content.Context;
+import static com.facebook.infer.annotation.ThreadConfined.ANY;
+import static com.facebook.infer.annotation.ThreadConfined.UI;
+
+import android.text.Spannable;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.bridge.SoftAssertions;
+import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
-import com.facebook.react.uimanager.IllegalViewOperationException;
-import com.facebook.react.uimanager.ReactStylesDiffMap;
-import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewManager;
-import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.views.text.ReactTextViewManagerCallback;
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.yoga.YogaMeasureMode;
+import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class responsible for actually dispatching view updates enqueued via {@link
- * FabricUIManager#scheduleMountItems(int, MountItem[])} on the UI thread.
+ * FabricUIManager#scheduleMountItem} on the UI thread.
  */
 public class MountingManager {
+  public static final String TAG = MountingManager.class.getSimpleName();
+  private static final int MAX_STOPPED_SURFACE_IDS_LENGTH = 15;
 
-  private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
-  private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
-  private final ViewManagerRegistry mViewManagerRegistry;
-  private final RootViewManager mRootViewManager = new RootViewManager();
+  @NonNull
+  private final ConcurrentHashMap<Integer, SurfaceMountingManager> mSurfaceIdToManager =
+      new ConcurrentHashMap<>(); // any thread
 
-  public MountingManager(ViewManagerRegistry viewManagerRegistry) {
-    mTagToViewState = new ConcurrentHashMap<>();
+  private final CopyOnWriteArrayList<Integer> mStoppedSurfaceIds = new CopyOnWriteArrayList<>();
+
+  @Nullable private SurfaceMountingManager mMostRecentSurfaceMountingManager;
+  @Nullable private SurfaceMountingManager mLastQueriedSurfaceMountingManager;
+
+  @NonNull private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
+  @NonNull private final ViewManagerRegistry mViewManagerRegistry;
+  @NonNull private final MountItemExecutor mMountItemExecutor;
+  @NonNull private final RootViewManager mRootViewManager = new RootViewManager();
+
+  public interface MountItemExecutor {
+    @UiThread
+    @ThreadConfined(UI)
+    void executeItems(Queue<MountItem> items);
+  }
+
+  public MountingManager(
+      @NonNull ViewManagerRegistry viewManagerRegistry,
+      @NonNull MountItemExecutor mountItemExecutor) {
     mViewManagerRegistry = viewManagerRegistry;
+    mMountItemExecutor = mountItemExecutor;
   }
 
-  public void addRootView(int reactRootTag, View rootView) {
-    if (rootView.getId() != View.NO_ID) {
-      throw new IllegalViewOperationException(
-          "Trying to add a root view with an explicit id already set. React Native uses "
-              + "the id field to track react tags and will overwrite this field. If that is fine, "
-              + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
-    }
-
-    mTagToViewState.put(
-        reactRootTag, new ViewState(reactRootTag, rootView, mRootViewManager, true));
-    rootView.setId(reactRootTag);
+  /** Starts surface and attaches the root view. */
+  @AnyThread
+  public void startSurface(
+      final int surfaceId, @NonNull final View rootView, ThemedReactContext themedReactContext) {
+    SurfaceMountingManager mountingManager = startSurface(surfaceId);
+    mountingManager.attachRootView(rootView, themedReactContext);
   }
 
-  /** Releases all references to given native View. */
-  @UiThread
-  private void dropView(View view) {
-    UiThreadUtil.assertOnUiThread();
+  /**
+   * Starts surface without attaching the view. All view operations executed against that surface
+   * will be queued until the view is attached.
+   */
+  @AnyThread
+  public SurfaceMountingManager startSurface(final int surfaceId) {
+    SurfaceMountingManager surfaceMountingManager =
+        new SurfaceMountingManager(
+            surfaceId,
+            mJSResponderHandler,
+            mViewManagerRegistry,
+            mRootViewManager,
+            mMountItemExecutor);
 
-    int reactTag = view.getId();
-    ViewState state = getViewState(reactTag);
-    ViewManager viewManager = state.mViewManager;
-
-    if (!state.mIsRoot && viewManager != null) {
-      // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-      viewManager.onDropViewInstance(view);
+    // There could technically be a race condition here if addRootView is called twice from
+    // different threads, though this is (probably) extremely unlikely, and likely an error.
+    // This logic to protect against race conditions is a holdover from older code, and we don't
+    // know if it actually happens in practice - so, we're logging soft exceptions for now.
+    // This *will* crash in Debug mode, but not in production.
+    mSurfaceIdToManager.putIfAbsent(surfaceId, surfaceMountingManager);
+    if (mSurfaceIdToManager.get(surfaceId) != surfaceMountingManager) {
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Called startSurface more than once for the SurfaceId [" + surfaceId + "]"));
     }
-    if (view instanceof ViewGroup && viewManager instanceof ViewGroupManager) {
-      ViewGroup viewGroup = (ViewGroup) view;
-      ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(state);
-      for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
-        View child = viewGroupManager.getChildAt(viewGroup, i);
-        if (mTagToViewState.get(child.getId()) != null) {
-          dropView(child);
+
+    mMostRecentSurfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+    return surfaceMountingManager;
+  }
+
+  @AnyThread
+  public void attachRootView(
+      final int surfaceId, @NonNull final View rootView, ThemedReactContext themedReactContext) {
+    SurfaceMountingManager surfaceMountingManager =
+        getSurfaceManagerEnforced(surfaceId, "attachView");
+
+    if (surfaceMountingManager.isStopped()) {
+      ReactSoftException.logSoftException(
+          TAG, new IllegalStateException("Trying to attach a view to a stopped surface"));
+      return;
+    }
+
+    surfaceMountingManager.attachRootView(rootView, themedReactContext);
+  }
+
+  @AnyThread
+  public void stopSurface(final int surfaceId) {
+    SurfaceMountingManager surfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+    if (surfaceMountingManager != null) {
+      // Maximum number of stopped surfaces to keep track of
+      while (mStoppedSurfaceIds.size() >= MAX_STOPPED_SURFACE_IDS_LENGTH) {
+        Integer staleStoppedId = mStoppedSurfaceIds.get(0);
+        mSurfaceIdToManager.remove(staleStoppedId.intValue());
+        mStoppedSurfaceIds.remove(staleStoppedId);
+        FLog.d(TAG, "Removing stale SurfaceMountingManager: [%d]", staleStoppedId.intValue());
+      }
+      mStoppedSurfaceIds.add(surfaceId);
+
+      surfaceMountingManager.stopSurface();
+
+      if (surfaceMountingManager == mMostRecentSurfaceMountingManager) {
+        mMostRecentSurfaceMountingManager = null;
+      }
+    } else {
+      ReactSoftException.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Cannot call stopSurface on non-existent surface: [" + surfaceId + "]"));
+    }
+  }
+
+  @Nullable
+  public SurfaceMountingManager getSurfaceManager(int surfaceId) {
+    if (mLastQueriedSurfaceMountingManager != null
+        && mLastQueriedSurfaceMountingManager.getSurfaceId() == surfaceId) {
+      return mLastQueriedSurfaceMountingManager;
+    }
+
+    if (mMostRecentSurfaceMountingManager != null
+        && mMostRecentSurfaceMountingManager.getSurfaceId() == surfaceId) {
+      return mMostRecentSurfaceMountingManager;
+    }
+
+    SurfaceMountingManager surfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+    mLastQueriedSurfaceMountingManager = surfaceMountingManager;
+    return surfaceMountingManager;
+  }
+
+  @NonNull
+  public SurfaceMountingManager getSurfaceManagerEnforced(int surfaceId, String context) {
+    SurfaceMountingManager surfaceMountingManager = getSurfaceManager(surfaceId);
+
+    if (surfaceMountingManager == null) {
+      throw new RetryableMountingLayerException(
+          "Unable to find SurfaceMountingManager for surfaceId: ["
+              + surfaceId
+              + "]. Context: "
+              + context);
+    }
+
+    return surfaceMountingManager;
+  }
+
+  public boolean surfaceIsStopped(int surfaceId) {
+    if (mStoppedSurfaceIds.contains(surfaceId)) {
+      return true;
+    }
+
+    SurfaceMountingManager surfaceMountingManager = getSurfaceManager(surfaceId);
+    if (surfaceMountingManager != null && surfaceMountingManager.isStopped()) {
+      return true;
+    }
+
+    return false;
+  }
+
+  public boolean isWaitingForViewAttach(int surfaceId) {
+    SurfaceMountingManager mountingManager = getSurfaceManager(surfaceId);
+    if (mountingManager == null) {
+      return false;
+    }
+
+    if (mountingManager.isStopped()) {
+      return false;
+    }
+
+    return !mountingManager.isRootViewAttached();
+  }
+
+  /**
+   * Get SurfaceMountingManager associated with a ReactTag. Unfortunately, this requires lookups
+   * over N maps, where N is the number of active or recently-stopped Surfaces. Each lookup will
+   * cost `log(M)` operations where M is the number of reactTags in the surface, so the total cost
+   * per lookup is `O(N * log(M))`.
+   *
+   * <p>To mitigate this cost, we attempt to keep track of the "most recent" SurfaceMountingManager
+   * and do lookups in it first. For the vast majority of use-cases, except for events or operations
+   * sent to off-screen surfaces, or use-cases where multiple surfaces are visible and interactable,
+   * this will reduce the lookup time to `O(log(M))`. Someone smarter than me could probably figure
+   * out an amortized time.
+   *
+   * @param reactTag
+   * @return
+   */
+  @Nullable
+  public SurfaceMountingManager getSurfaceManagerForView(int reactTag) {
+    if (mMostRecentSurfaceMountingManager != null
+        && mMostRecentSurfaceMountingManager.getViewExists(reactTag)) {
+      return mMostRecentSurfaceMountingManager;
+    }
+
+    for (Map.Entry<Integer, SurfaceMountingManager> entry : mSurfaceIdToManager.entrySet()) {
+      SurfaceMountingManager smm = entry.getValue();
+      if (smm != mMostRecentSurfaceMountingManager && smm.getViewExists(reactTag)) {
+        if (mMostRecentSurfaceMountingManager == null) {
+          mMostRecentSurfaceMountingManager = smm;
         }
-        viewGroupManager.removeViewAt(viewGroup, i);
+        return smm;
       }
     }
-
-    mTagToViewState.remove(reactTag);
+    return null;
   }
 
-  @UiThread
-  public void addViewAt(int parentTag, int tag, int index) {
-    UiThreadUtil.assertOnUiThread();
-    ViewState parentViewState = getViewState(parentTag);
-    final ViewGroup parentView = (ViewGroup) parentViewState.mView;
-    ViewState viewState = getViewState(tag);
-    final View view = viewState.mView;
-    if (view == null) {
-      throw new IllegalStateException(
-          "Unable to find view for viewState " + viewState + " and tag " + tag);
+  @NonNull
+  @AnyThread
+  public SurfaceMountingManager getSurfaceManagerForViewEnforced(int reactTag) {
+    SurfaceMountingManager surfaceMountingManager = getSurfaceManagerForView(reactTag);
+
+    if (surfaceMountingManager == null) {
+      throw new RetryableMountingLayerException(
+          "Unable to find SurfaceMountingManager for tag: [" + reactTag + "]");
     }
-    getViewGroupManager(parentViewState).addView(parentView, view, index);
+
+    return surfaceMountingManager;
   }
 
-  private ViewState getViewState(int tag) {
-    ViewState viewState = mTagToViewState.get(tag);
-    if (viewState == null) {
-      throw new IllegalStateException("Unable to find viewState view for tag " + tag);
-    }
-    return viewState;
+  public boolean getViewExists(int reactTag) {
+    return getSurfaceManagerForView(reactTag) != null;
   }
 
   @Deprecated
-  public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    ViewState viewState = getViewState(reactTag);
-
-    if (viewState.mViewManager == null) {
-      throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
-    }
-
-    if (viewState.mView == null) {
-      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
-    }
-
-    viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
-  }
-
-  public void receiveCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
-    ViewState viewState = getViewState(reactTag);
-
-    if (viewState.mViewManager == null) {
-      throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
-    }
-
-    if (viewState.mView == null) {
-      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
-    }
-
-    viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
-  }
-
-  @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type
-  private static ViewGroupManager<ViewGroup> getViewGroupManager(ViewState viewState) {
-    if (viewState.mViewManager == null) {
-      throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
-    }
-    return (ViewGroupManager<ViewGroup>) viewState.mViewManager;
-  }
-
-  @UiThread
-  public void removeViewAt(int parentTag, int index) {
+  public void receiveCommand(
+      int surfaceId, int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     UiThreadUtil.assertOnUiThread();
-    ViewState viewState = getViewState(parentTag);
-    final ViewGroup parentView = (ViewGroup) viewState.mView;
-    if (parentView == null) {
-      throw new IllegalStateException("Unable to find view for tag " + parentTag);
-    }
+    getSurfaceManagerEnforced(surfaceId, "receiveCommand:int")
+        .receiveCommand(reactTag, commandId, commandArgs);
+  }
 
-    getViewGroupManager(viewState).removeViewAt(parentView, index);
+  public void receiveCommand(
+      int surfaceId, int reactTag, @NonNull String commandId, @Nullable ReadableArray commandArgs) {
+    UiThreadUtil.assertOnUiThread();
+    getSurfaceManagerEnforced(surfaceId, "receiveCommand:string")
+        .receiveCommand(reactTag, commandId, commandArgs);
+  }
+
+  /**
+   * Send an accessibility eventType to a Native View. eventType is any valid `AccessibilityEvent.X`
+   * value.
+   *
+   * <p>Why accept `-1` SurfaceId? Currently there are calls to UIManager.sendAccessibilityEvent
+   * which is a legacy API and accepts only reactTag. We will have to investigate and migrate away
+   * from those calls over time.
+   *
+   * @param surfaceId {@link int} that identifies the surface or -1 to temporarily support backward
+   *     compatibility.
+   * @param reactTag {@link int} that identifies the react Tag of the view.
+   * @param eventType {@link int} that identifies Android eventType. see {@link
+   *     View#sendAccessibilityEvent}
+   */
+  public void sendAccessibilityEvent(int surfaceId, int reactTag, int eventType) {
+    UiThreadUtil.assertOnUiThread();
+    if (surfaceId == View.NO_ID) {
+      getSurfaceManagerForViewEnforced(reactTag).sendAccessibilityEvent(reactTag, eventType);
+    } else {
+      getSurfaceManagerEnforced(surfaceId, "sendAccessibilityEvent")
+          .sendAccessibilityEvent(reactTag, eventType);
+    }
   }
 
   @UiThread
-  public void createView(
-      ThemedReactContext themedReactContext,
-      String componentName,
-      int reactTag,
-      @Nullable ReadableMap props,
-      @Nullable StateWrapper stateWrapper,
-      boolean isLayoutable) {
-    if (mTagToViewState.get(reactTag) != null) {
-      return;
-    }
-
-    View view = null;
-    ViewManager viewManager = null;
-
-    ReactStylesDiffMap propsDiffMap = null;
-    if (props != null) {
-      propsDiffMap = new ReactStylesDiffMap(props);
-    }
-
-    if (isLayoutable) {
-      viewManager = mViewManagerRegistry.get(componentName);
-      // View Managers are responsible for dealing with initial state and props.
-      view =
-          viewManager.createView(
-              themedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
-      view.setId(reactTag);
-    }
-
-    ViewState viewState = new ViewState(reactTag, view, viewManager);
-    viewState.mCurrentProps = propsDiffMap;
-    viewState.mCurrentState = (stateWrapper != null ? stateWrapper.getState() : null);
-
-    mTagToViewState.put(reactTag, viewState);
-  }
-
-  @UiThread
-  public void updateProps(int reactTag, ReadableMap props) {
+  public void updateProps(int reactTag, @Nullable ReadableMap props) {
+    UiThreadUtil.assertOnUiThread();
     if (props == null) {
       return;
     }
-    UiThreadUtil.assertOnUiThread();
-    ViewState viewState = getViewState(reactTag);
-    viewState.mCurrentProps = new ReactStylesDiffMap(props);
-    View view = viewState.mView;
 
-    if (view == null) {
-      throw new IllegalStateException("Unable to find view for tag " + reactTag);
-    }
-
-    Assertions.assertNotNull(viewState.mViewManager)
-        .updateProperties(view, viewState.mCurrentProps);
-  }
-
-  @UiThread
-  public void updateLayout(int reactTag, int x, int y, int width, int height) {
-    UiThreadUtil.assertOnUiThread();
-
-    ViewState viewState = getViewState(reactTag);
-    // Do not layout Root Views
-    if (viewState.mIsRoot) {
-      return;
-    }
-
-    View viewToUpdate = viewState.mView;
-    if (viewToUpdate == null) {
-      throw new IllegalStateException("Unable to find View for tag: " + reactTag);
-    }
-
-    viewToUpdate.measure(
-        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
-
-    ViewParent parent = viewToUpdate.getParent();
-    if (parent instanceof RootView) {
-      parent.requestLayout();
-    }
-
-    // TODO: T31905686 Check if the parent of the view has to layout the view, or the child has
-    // to lay itself out. see NativeViewHierarchyManager.updateLayout
-    viewToUpdate.layout(x, y, x + width, y + height);
-  }
-
-  @UiThread
-  public void deleteView(int reactTag) {
-    UiThreadUtil.assertOnUiThread();
-    View view = getViewState(reactTag).mView;
-    if (view != null) {
-      dropView(view);
-    } else {
-      mTagToViewState.remove(reactTag);
-    }
-  }
-
-  @UiThread
-  public void updateLocalData(int reactTag, ReadableMap newLocalData) {
-    UiThreadUtil.assertOnUiThread();
-    ViewState viewState = getViewState(reactTag);
-    if (viewState.mCurrentProps == null) {
-      throw new IllegalStateException(
-          "Can not update local data to view without props: " + reactTag);
-    }
-    if (viewState.mCurrentLocalData != null
-        && newLocalData.hasKey("hash")
-        && viewState.mCurrentLocalData.getDouble("hash") == newLocalData.getDouble("hash")
-        && viewState.mCurrentLocalData.equals(newLocalData)) {
-      return;
-    }
-    viewState.mCurrentLocalData = newLocalData;
-
-    ViewManager viewManager = viewState.mViewManager;
-
-    if (viewManager == null) {
-      throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
-    }
-    Object extraData =
-        viewManager.updateLocalData(
-            viewState.mView,
-            viewState.mCurrentProps,
-            new ReactStylesDiffMap(viewState.mCurrentLocalData));
-    if (extraData != null) {
-      viewManager.updateExtraData(viewState.mView, extraData);
-    }
-  }
-
-  @UiThread
-  public void updateState(final int reactTag, StateWrapper stateWrapper) {
-    UiThreadUtil.assertOnUiThread();
-    ViewState viewState = getViewState(reactTag);
-    ReadableNativeMap newState = stateWrapper.getState();
-    if (viewState.mCurrentState != null && viewState.mCurrentState.equals(newState)) {
-      return;
-    }
-    viewState.mCurrentState = newState;
-
-    ViewManager viewManager = viewState.mViewManager;
-
-    if (viewManager == null) {
-      throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
-    }
-    Object extraData =
-        viewManager.updateState(viewState.mView, viewState.mCurrentProps, stateWrapper);
-    if (extraData != null) {
-      viewManager.updateExtraData(viewState.mView, extraData);
-    }
-  }
-
-  @UiThread
-  public void preallocateView(
-      ThemedReactContext reactContext,
-      String componentName,
-      int reactTag,
-      @Nullable ReadableMap props,
-      @Nullable StateWrapper stateWrapper,
-      boolean isLayoutable) {
-
-    if (mTagToViewState.get(reactTag) != null) {
-      throw new IllegalStateException(
-          "View for component " + componentName + " with tag " + reactTag + " already exists.");
-    }
-
-    createView(reactContext, componentName, reactTag, props, stateWrapper, isLayoutable);
-  }
-
-  @UiThread
-  public void updateEventEmitter(int reactTag, EventEmitterWrapper eventEmitter) {
-    UiThreadUtil.assertOnUiThread();
-    ViewState viewState = getViewState(reactTag);
-    viewState.mEventEmitter = eventEmitter;
+    getSurfaceManagerForViewEnforced(reactTag).updateProps(reactTag, props);
   }
 
   /**
-   * Set the JS responder for the view associated with the tags received as a parameter.
-   *
-   * <p>The JSResponder coordinates the return values of the onInterceptTouch method in Android
-   * Views. This allows JS to coordinate when a touch should be handled by JS or by the Android
-   * native views. See {@link JSResponderHandler} for more details.
-   *
-   * <p>This method is going to be executed on the UIThread as soon as it is delivered from JS to
-   * RN.
-   *
-   * <p>Currently, there is no warranty that the view associated with the react tag exists, because
-   * this method is not handled by the react commit process.
-   *
-   * @param reactTag React tag of the first parent of the view that is NOT virtual
-   * @param initialReactTag React tag of the JS view that initiated the touch operation
-   * @param blockNativeResponder If native responder should be blocked or not
-   */
-  @UiThread
-  public synchronized void setJSResponder(
-      int reactTag, int initialReactTag, boolean blockNativeResponder) {
-    if (!blockNativeResponder) {
-      mJSResponderHandler.setJSResponder(initialReactTag, null);
-      return;
-    }
-
-    ViewState viewState = getViewState(reactTag);
-    View view = viewState.mView;
-    if (initialReactTag != reactTag && view instanceof ViewParent) {
-      // In this case, initialReactTag corresponds to a virtual/layout-only View, and we already
-      // have a parent of that View in reactTag, so we can use it.
-      mJSResponderHandler.setJSResponder(initialReactTag, (ViewParent) view);
-      return;
-    } else if (view == null) {
-      SoftAssertions.assertUnreachable("Cannot find view for tag " + reactTag + ".");
-      return;
-    }
-
-    if (viewState.mIsRoot) {
-      SoftAssertions.assertUnreachable(
-          "Cannot block native responder on " + reactTag + " that is a root view");
-    }
-    mJSResponderHandler.setJSResponder(initialReactTag, view.getParent());
-  }
-
-  /**
-   * Clears the JS Responder specified by {@link #setJSResponder(int, int, boolean)}. After this
-   * method is called, all the touch events are going to be handled by JS.
+   * Clears the JS Responder specified by {@link #setJSResponder(int, int, int, boolean)}. After
+   * this method is called, all the touch events are going to be handled by JS.
    */
   @UiThread
   public void clearJSResponder() {
+    // MountingManager and SurfaceMountingManagers all share the same JSResponderHandler.
+    // Must be called on MountingManager instead of SurfaceMountingManager, because we don't
+    // know what surfaceId it's being called for.
     mJSResponderHandler.clearJSResponder();
   }
 
   @AnyThread
-  public long measure(
-      Context context,
-      String componentName,
-      ReadableMap localData,
-      ReadableMap props,
-      ReadableMap state,
-      float width,
-      YogaMeasureMode widthMode,
-      float height,
-      YogaMeasureMode heightMode) {
-
-    return mViewManagerRegistry
-        .get(componentName)
-        .measure(context, localData, props, state, width, widthMode, height, heightMode);
-  }
-
-  @AnyThread
-  public @Nullable EventEmitterWrapper getEventEmitter(int reactTag) {
-    ViewState viewState = mTagToViewState.get(reactTag);
-    return viewState == null ? null : viewState.mEventEmitter;
+  @ThreadConfined(ANY)
+  public @Nullable EventEmitterWrapper getEventEmitter(int surfaceId, int reactTag) {
+    SurfaceMountingManager surfaceMountingManager =
+        (surfaceId == -1 ? getSurfaceManagerForView(reactTag) : getSurfaceManager(surfaceId));
+    if (surfaceMountingManager == null) {
+      return null;
+    }
+    return surfaceMountingManager.getEventEmitter(reactTag);
   }
 
   /**
-   * This class holds view state for react tags. Objects of this class are stored into the {@link
-   * #mTagToViewState}, and they should be updated in the same thread.
+   * Measure a component, given localData, props, state, and measurement information. This needs to
+   * remain here for now - and not in SurfaceMountingManager - because sometimes measures are made
+   * outside of the context of a Surface; especially from C++ before StartSurface is called.
+   *
+   * @param context
+   * @param componentName
+   * @param localData
+   * @param props
+   * @param state
+   * @param width
+   * @param widthMode
+   * @param height
+   * @param heightMode
+   * @param attachmentsPositions
+   * @return
    */
-  private static class ViewState {
-    @Nullable final View mView;
-    final int mReactTag;
-    final boolean mIsRoot;
-    @Nullable final ViewManager mViewManager;
-    @Nullable public ReactStylesDiffMap mCurrentProps = null;
-    @Nullable public ReadableMap mCurrentLocalData = null;
-    @Nullable public ReadableMap mCurrentState = null;
-    @Nullable public EventEmitterWrapper mEventEmitter = null;
+  @AnyThread
+  public long measure(
+      @NonNull ReactContext context,
+      @NonNull String componentName,
+      @NonNull ReadableMap localData,
+      @NonNull ReadableMap props,
+      @NonNull ReadableMap state,
+      float width,
+      @NonNull YogaMeasureMode widthMode,
+      float height,
+      @NonNull YogaMeasureMode heightMode,
+      @Nullable float[] attachmentsPositions) {
 
-    private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {
-      this(reactTag, view, viewManager, false);
-    }
+    return mViewManagerRegistry
+        .get(componentName)
+        .measure(
+            context,
+            localData,
+            props,
+            state,
+            width,
+            widthMode,
+            height,
+            heightMode,
+            attachmentsPositions);
+  }
 
-    private ViewState(int reactTag, @Nullable View view, ViewManager viewManager, boolean isRoot) {
-      mReactTag = reactTag;
-      mView = view;
-      mIsRoot = isRoot;
-      mViewManager = viewManager;
-    }
+  /**
+   * Measure a component, given localData, props, state, and measurement information. This needs to
+   * remain here for now - and not in SurfaceMountingManager - because sometimes measures are made
+   * outside of the context of a Surface; especially from C++ before StartSurface is called.
+   *
+   * @param context
+   * @param componentName
+   * @param attributedString
+   * @param paragraphAttributes
+   * @param width
+   * @param widthMode
+   * @param height
+   * @param heightMode
+   * @param attachmentsPositions
+   * @return
+   */
+  @AnyThread
+  public long measureTextMapBuffer(
+      @NonNull ReactContext context,
+      @NonNull String componentName,
+      @NonNull ReadableMapBuffer attributedString,
+      @NonNull ReadableMapBuffer paragraphAttributes,
+      float width,
+      @NonNull YogaMeasureMode widthMode,
+      float height,
+      @NonNull YogaMeasureMode heightMode,
+      @Nullable float[] attachmentsPositions) {
 
-    @Override
-    public String toString() {
-      boolean isLayoutOnly = mViewManager == null;
-      return "ViewState ["
-          + mReactTag
-          + "] - isRoot: "
-          + mIsRoot
-          + " - props: "
-          + mCurrentProps
-          + " - localData: "
-          + mCurrentLocalData
-          + " - viewManager: "
-          + mViewManager
-          + " - isLayoutOnly: "
-          + isLayoutOnly;
-    }
+    return TextLayoutManagerMapBuffer.measureText(
+        context,
+        attributedString,
+        paragraphAttributes,
+        width,
+        widthMode,
+        height,
+        heightMode,
+        new ReactTextViewManagerCallback() {
+          @Override
+          public void onPostProcessSpannable(Spannable text) {}
+        },
+        attachmentsPositions);
+  }
+
+  public void initializeViewManager(String componentName) {
+    mViewManagerRegistry.get(componentName);
   }
 }

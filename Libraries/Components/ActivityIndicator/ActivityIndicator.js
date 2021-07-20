@@ -6,16 +6,15 @@
  *
  * @format
  * @flow
+ * @generate-docs
  */
 
 'use strict';
-
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
-
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import * as React from 'react';
+import Platform from '../../Utilities/Platform';
+import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 const PlatformActivityIndicator =
@@ -29,10 +28,10 @@ type IndicatorSize = number | 'small' | 'large';
 
 type IOSProps = $ReadOnly<{|
   /**
-   * Whether the indicator should hide when not animating (true by default).
-   *
-   * See http://facebook.github.io/react-native/docs/activityindicator.html#hideswhenstopped
-   */
+    Whether the indicator should hide when not animating.
+
+    @platform ios
+  */
   hidesWhenStopped?: ?boolean,
 |}>;
 type Props = $ReadOnly<{|
@@ -40,35 +39,39 @@ type Props = $ReadOnly<{|
   ...IOSProps,
 
   /**
-   * Whether to show the indicator (true, the default) or hide it (false).
-   *
-   * See http://facebook.github.io/react-native/docs/activityindicator.html#animating
+   	Whether to show the indicator (`true`) or hide it (`false`).
    */
   animating?: ?boolean,
 
   /**
-   * The foreground color of the spinner (default is gray).
-   *
-   * See http://facebook.github.io/react-native/docs/activityindicator.html#color
-   */
-  color?: ?string,
+    The foreground color of the spinner.
+
+    @default {@platform android} `null` (system accent default color)
+    @default {@platform ios} '#999999'
+  */
+  color?: ?ColorValue,
 
   /**
-   * Size of the indicator (default is 'small').
-   * Passing a number to the size prop is only supported on Android.
-   *
-   * See http://facebook.github.io/react-native/docs/activityindicator.html#size
-   */
+    Size of the indicator.
+
+    @type enum(`'small'`, `'large'`)
+    @type {@platform android} number
+  */
   size?: ?IndicatorSize,
 |}>;
 
-/**
- * Displays a circular loading indicator.
- *
- * See http://facebook.github.io/react-native/docs/activityindicator.html
- */
-const ActivityIndicator = (props: Props, forwardedRef?: any) => {
-  const {onLayout, style, size, ...restProps} = props;
+const ActivityIndicator = (
+  {
+    animating = true,
+    color = Platform.OS === 'ios' ? GRAY : null,
+    hidesWhenStopped = true,
+    onLayout,
+    size = 'small',
+    style,
+    ...restProps
+  }: Props,
+  forwardedRef?: any,
+) => {
   let sizeStyle;
   let sizeProp;
 
@@ -82,11 +85,14 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
       sizeProp = 'large';
       break;
     default:
-      sizeStyle = {height: props.size, width: props.size};
+      sizeStyle = {height: size, width: size};
       break;
   }
 
   const nativeProps = {
+    animating,
+    color,
+    hidesWhenStopped,
     ...restProps,
     ref: forwardedRef,
     style: sizeStyle,
@@ -101,32 +107,87 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
   return (
     <View
       onLayout={onLayout}
-      style={StyleSheet.compose(
-        styles.container,
-        style,
-      )}>
+      style={StyleSheet.compose(styles.container, style)}>
       {Platform.OS === 'android' ? (
-        // $FlowFixMe Flow doesn't know when this is the android component
+        // $FlowFixMe[prop-missing] Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
       ) : (
+        /* $FlowFixMe[prop-missing] (>=0.106.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.106 was deployed. To see the
+         * error, delete this comment and run Flow. */
         <PlatformActivityIndicator {...nativeProps} />
       )}
     </View>
   );
 };
 
-const ActivityIndicatorWithRef = React.forwardRef(ActivityIndicator);
-ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
+/**
+  Displays a circular loading indicator.
 
-/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.89 was deployed. To see the error, delete this comment
- * and run Flow. */
-ActivityIndicatorWithRef.defaultProps = {
-  animating: true,
-  color: Platform.OS === 'ios' ? GRAY : null,
-  hidesWhenStopped: true,
-  size: 'small',
-};
+  ```SnackPlayer name=ActivityIndicator%20Function%20Component%20Example
+  import React from "react";
+  import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+
+  const App = () => (
+    <View style={[styles.container, styles.horizontal]}>
+      <ActivityIndicator />
+      <ActivityIndicator size="large" />
+      <ActivityIndicator size="small" color="#0000ff" />
+      <ActivityIndicator size="large" color="#00ff00" />
+    </View>
+  );
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center"
+    },
+    horizontal: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      padding: 10
+    }
+  });
+  export default App;
+  ```
+
+  ```SnackPlayer name=ActivityIndicator%20Class%20Component%20Example
+  import React, { Component } from "react";
+  import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+
+  class App extends Component {
+    render() {
+      return (
+        <View style={[styles.container, styles.horizontal]}>
+          <ActivityIndicator />
+          <ActivityIndicator size="large" />
+          <ActivityIndicator size="small" color="#0000ff" />
+          <ActivityIndicator size="large" color="#00ff00" />
+        </View>
+      );
+    }
+  }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center"
+    },
+    horizontal: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      padding: 10
+    }
+  });
+  export default App;
+  ```
+*/
+
+const ActivityIndicatorWithRef: React.AbstractComponent<
+  Props,
+  HostComponent<mixed>,
+> = React.forwardRef(ActivityIndicator);
+ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 
 const styles = StyleSheet.create({
   container: {
@@ -143,7 +204,4 @@ const styles = StyleSheet.create({
   },
 });
 
-/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.89 was deployed. To see the error, delete this comment
- * and run Flow. */
-module.exports = (ActivityIndicatorWithRef: Class<NativeComponent<Props>>);
+module.exports = ActivityIndicatorWithRef;

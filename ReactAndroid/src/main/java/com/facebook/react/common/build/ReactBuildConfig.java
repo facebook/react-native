@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.common.build;
 
 import com.facebook.react.BuildConfig;
@@ -19,4 +20,5 @@ public class ReactBuildConfig {
   public static final boolean DEBUG = BuildConfig.DEBUG;
   public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
   public static final int EXOPACKAGE_FLAGS = BuildConfig.EXOPACKAGE_FLAGS;
+  public static final int HERMES_BYTECODE_VERSION = BuildConfig.HERMES_BYTECODE_VERSION;
 }

@@ -16,13 +16,38 @@
 #import <string>
 #import <unordered_map>
 
-static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
-  {"PlatformConstants", RCTPlatformCls},
-};
-
 Class RCTCoreModulesClassProvider(const char *name) {
-  auto p = sCoreModuleClassMap.find(name);
-  if (p != sCoreModuleClassMap.end()) {
+  // Intentionally leak to avoid crashing after static destructors are run.
+  static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
+    {"AccessibilityManager", RCTAccessibilityManagerCls},
+    {"Appearance", RCTAppearanceCls},
+    {"DeviceInfo", RCTDeviceInfoCls},
+    {"ExceptionsManager", RCTExceptionsManagerCls},
+    {"PlatformConstants", RCTPlatformCls},
+    {"Clipboard", RCTClipboardCls},
+    {"I18nManager", RCTI18nManagerCls},
+    {"SourceCode", RCTSourceCodeCls},
+    {"ActionSheetManager", RCTActionSheetManagerCls},
+    {"AlertManager", RCTAlertManagerCls},
+    {"AsyncLocalStorage", RCTAsyncLocalStorageCls},
+    {"Timing", RCTTimingCls},
+    {"StatusBarManager", RCTStatusBarManagerCls},
+    {"KeyboardObserver", RCTKeyboardObserverCls},
+    {"AppState", RCTAppStateCls},
+    {"PerfMonitor", RCTPerfMonitorCls},
+    {"DevMenu", RCTDevMenuCls},
+    {"DevSettings", RCTDevSettingsCls},
+    {"RedBox", RCTRedBoxCls},
+    {"LogBox", RCTLogBoxCls},
+    {"WebSocketExecutor", RCTWebSocketExecutorCls},
+    {"WebSocketModule", RCTWebSocketModuleCls},
+    {"DevLoadingView", RCTDevLoadingViewCls},
+    {"DevSplitBundleLoader", RCTDevSplitBundleLoaderCls},
+    {"EventDispatcher", RCTEventDispatcherCls},
+  };
+
+  auto p = sCoreModuleClassMap->find(name);
+  if (p != sCoreModuleClassMap->end()) {
     auto classFunc = p->second;
     return classFunc();
   }

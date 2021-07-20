@@ -1,7 +1,29 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "AutoAttachUtils.h"
 
+#ifdef _WINDOWS
+namespace facebook {
+namespace hermes {
+namespace inspector {
+namespace chrome {
+bool isNetworkInspected(
+    const std::string &,
+    const std::string &,
+    const std::string &) {
+  return false;
+}
+} // namespace chrome
+} // namespace inspector
+} // namespace hermes
+} // namespace facebook
+
+#else
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -125,3 +147,5 @@ bool isNetworkInspected(
 } // namespace inspector
 } // namespace hermes
 } // namespace facebook
+
+#endif

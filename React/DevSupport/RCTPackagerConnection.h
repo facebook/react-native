@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,7 +9,7 @@
 
 #import <React/RCTDefines.h>
 
-#if RCT_DEV && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -51,8 +51,7 @@ typedef void (^RCTConnectedHandler)(void);
  * packager has been established. The handler will be dispatched immediately
  * if the connection is already established.
  */
-- (RCTHandlerToken)addConnectedHandler:(RCTConnectedHandler)handler
-                                 queue:(dispatch_queue_t)queue;
+- (RCTHandlerToken)addConnectedHandler:(RCTConnectedHandler)handler queue:(dispatch_queue_t)queue;
 
 /** Removes a handler. Silently does nothing if the token is not valid. */
 - (void)removeHandler:(RCTHandlerToken)token;

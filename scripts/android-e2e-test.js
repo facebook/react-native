@@ -4,26 +4,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * Used in run-ci-e2e-test.js and executed in Circle CI.
- * E2e test that verifies that init app can be installed, compiled, started and Hot Module reloading and Chrome debugging work.
- * For other examples of appium refer to: https://github.com/appium/sample-code/tree/master/sample-code/examples/node and
- * https://www.npmjs.com/package/wd-android
- *
- *
- * To set up:
- * - npm install --save-dev appium@1.11.1 mocha@2.4.5 wd@1.11.1 colors@1.0.3 pretty-data2@0.40.1
- * - cp <this file> <to app installation path>
- * - keytool -genkey -v -keystore android/app/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
- *
- * To run this test:
- * - npm start
- * - node node_modules/.bin/appium
- * - (cd android && ./gradlew :app:copyDownloadableDepsToLibs)
- * - react-native run-android
- * - node ../node_modules/.bin/_mocha ../android-e2e-test.js
- *
  * @format
  */
+
+// Used in run-ci-e2e-test.js and executed in Circle CI.
+//
+// E2e test that verifies that init app can be installed, compiled, started and
+// Hot Module reloading and Chrome debugging work.
+//
+// For other examples of appium refer to:
+// https://github.com/appium/sample-code/tree/master/sample-code/examples/node and
+// https://www.npmjs.com/package/wd-android
+//
+// To set up:
+// - npm install --save-dev appium@1.11.1 mocha@2.4.5 wd@1.11.1 colors@1.0.3 pretty-data2@0.40.1
+// - cp <this file> <to app installation path>
+// - keytool -genkey -v -keystore android/app/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+//
+// To run this test:
+// - npm start
+// - node node_modules/.bin/appium
+// - (cd android && ./gradlew :app:copyDownloadableDepsToLibs)
+// - react-native run-android
+// - node ../node_modules/.bin/_mocha ../android-e2e-test.js
 
 /* eslint-env mocha */
 
@@ -33,7 +36,7 @@ const wd = require('wd');
 const path = require('path');
 const fs = require('fs');
 const pd = require('pretty-data2').pd;
-require('colors');
+
 // value in ms to print out screen contents, set this value in CI to debug if tests are failing
 const appiumDebugInterval = process.env.APPIUM_DEBUG_INTERVAL;
 
@@ -81,7 +84,7 @@ describe('Android Test App', function() {
     };
 
     // React Native in dev mode often starts with Red Box "Can't fibd variable __fbBatchedBridge..."
-    // This is fixed by clicking Reload JS which will trigger a request to packager server
+    // This is fixed by clicking Reload JS which will trigger a request to Metro
     return driver
       .init(desired)
       .setImplicitWaitTimeout(5000)

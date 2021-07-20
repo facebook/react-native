@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -87,6 +87,13 @@
     NSNumber *gifLoopCount = gifProperties[(__bridge NSString *)kCGImagePropertyGIFLoopCount];
     if (gifLoopCount != nil) {
       loopCount = gifLoopCount.unsignedIntegerValue;
+      if (@available(iOS 14, *)) {
+      } else {
+      // A loop count of 1 means it should animate twice, 2 means, thrice, etc.
+        if (loopCount != 0) {
+          loopCount++;
+        }
+      }
     }
   }
   return loopCount;
@@ -103,7 +110,7 @@
   NSDictionary *gifProperties = frameProperties[(NSString *)kCGImagePropertyGIFDictionary];
 
   NSNumber *delayTimeUnclampedProp = gifProperties[(NSString *)kCGImagePropertyGIFUnclampedDelayTime];
-  if (delayTimeUnclampedProp != nil) {
+  if (delayTimeUnclampedProp != nil && [delayTimeUnclampedProp floatValue] != 0.0f) {
     frameDuration = [delayTimeUnclampedProp floatValue];
   } else {
     NSNumber *delayTimeProp = gifProperties[(NSString *)kCGImagePropertyGIFDelayTime];
@@ -160,7 +167,6 @@
     CFRelease(_imageSource);
     _imageSource = NULL;
   }
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
 }
 
 @end

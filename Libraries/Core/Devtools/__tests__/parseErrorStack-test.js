@@ -18,7 +18,7 @@ function getFakeError() {
 
 describe('parseErrorStack', function() {
   it('parses error stack', function() {
-    const stack = parseErrorStack(getFakeError());
+    const stack = parseErrorStack(getFakeError().stack);
     expect(stack.length).toBeGreaterThan(0);
 
     const firstFrame = stack[0];
@@ -26,21 +26,19 @@ describe('parseErrorStack', function() {
     expect(firstFrame.file).toMatch(/parseErrorStack-test\.js$/);
   });
 
-  it('supports framesToPop', function() {
+  it('does not support framesToPop', function() {
     function getWrappedError() {
       const error = getFakeError();
       error.framesToPop = 1;
       return error;
     }
 
-    // Make sure framesToPop == 1 causes it to ignore getFakeError
-    // stack frame
-    const stack = parseErrorStack(getWrappedError());
-    expect(stack[0].methodName).toEqual('getWrappedError');
+    const stack = parseErrorStack(getWrappedError().stack);
+    expect(stack[0].methodName).toEqual('getFakeError');
   });
 
   it('ignores bad inputs', function() {
-    expect(parseErrorStack({})).toEqual([]);
+    expect(parseErrorStack(undefined)).toEqual([]);
     expect(parseErrorStack(null)).toEqual([]);
   });
 });

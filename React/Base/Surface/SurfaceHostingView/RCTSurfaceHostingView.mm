@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,6 +7,7 @@
 
 #import "RCTSurfaceHostingView.h"
 
+#import "RCTConstants.h"
 #import "RCTDefines.h"
 #import "RCTSurface.h"
 #import "RCTSurfaceDelegate.h"
@@ -26,28 +27,31 @@
   RCTSurfaceStage _stage;
 }
 
-+ (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
-                             moduleName:(NSString *)moduleName
-                      initialProperties:(NSDictionary *)initialProperties
++ (id<RCTSurfaceProtocol>)createSurfaceWithBridge:(RCTBridge *)bridge
+                                       moduleName:(NSString *)moduleName
+                                initialProperties:(NSDictionary *)initialProperties
 {
   return [[RCTSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
+RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
-  RCTSurface *surface = [[self class] createSurfaceWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  id<RCTSurfaceProtocol> surface = [[self class] createSurfaceWithBridge:bridge
+                                                              moduleName:moduleName
+                                                       initialProperties:initialProperties];
   [surface start];
   return [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode];
 }
 
-- (instancetype)initWithSurface:(RCTSurface *)surface sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
+                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _surface = surface;
@@ -56,6 +60,9 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     _surface.delegate = self;
     _stage = surface.stage;
     [self _updateViews];
+
+    // For backward compatibility with RCTRootView, set a color here instead of transparent (OS default).
+    self.backgroundColor = [UIColor whiteColor];
   }
 
   return self;
@@ -74,14 +81,10 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   CGSize maximumSize;
 
   RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
-    self.bounds.size,
-    _sizeMeasureMode,
-    &minimumSize,
-    &maximumSize
-  );
+      self.bounds.size, _sizeMeasureMode, &minimumSize, &maximumSize);
+  CGRect windowFrame = [self.window convertRect:self.frame fromView:self.superview];
 
-  [_surface setMinimumSize:minimumSize
-               maximumSize:maximumSize];
+  [_surface setMinimumSize:minimumSize maximumSize:maximumSize viewportOffset:windowFrame.origin];
 }
 
 - (CGSize)intrinsicContentSize
@@ -110,15 +113,9 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   CGSize minimumSize;
   CGSize maximumSize;
 
-  RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
-    size,
-    _sizeMeasureMode,
-    &minimumSize,
-    &maximumSize
-  );
+  RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(size, _sizeMeasureMode, &minimumSize, &maximumSize);
 
-  return [_surface sizeThatFitsMinimumSize:minimumSize
-                               maximumSize:maximumSize];
+  return [_surface sizeThatFitsMinimumSize:minimumSize maximumSize:maximumSize];
 }
 
 - (void)setStage:(RCTSurfaceStage)stage
@@ -127,9 +124,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     return;
   }
 
-  BOOL shouldInvalidateLayout =
-    RCTSurfaceStageIsRunning(stage) != RCTSurfaceStageIsRunning(_stage) ||
-    RCTSurfaceStageIsPreparing(stage) != RCTSurfaceStageIsPreparing(_stage);
+  BOOL shouldInvalidateLayout = RCTSurfaceStageIsRunning(stage) != RCTSurfaceStageIsRunning(_stage) ||
+      RCTSurfaceStageIsPreparing(stage) != RCTSurfaceStageIsPreparing(_stage);
 
   _stage = stage;
 
@@ -202,6 +198,19 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     self.isActivityIndicatorViewVisible = NO;
     self.isActivityIndicatorViewVisible = YES;
   }
+}
+
+#pragma mark - UITraitCollection updates
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                    object:self
+                  userInfo:@{
+                    RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : self.traitCollection,
+                  }];
 }
 
 #pragma mark - Private stuff

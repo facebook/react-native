@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -10,6 +12,8 @@
 #include <map>
 #include <vector>
 
+#include <ReactCommon/CallInvoker.h>
+#include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/JSExecutor.h>
 
 namespace folly {
@@ -29,18 +33,18 @@ class RAMBundleRegistry;
 // executors and their threads.  All functions here can be called from
 // any thread.
 //
-// Except for loadApplicationScriptSync(), all void methods will queue
+// Except for loadBundleSync(), all void methods will queue
 // work to run on the jsQueue passed to the ctor, and return
 // immediately.
 class NativeToJsBridge {
-public:
+ public:
   friend class JsToNativeBridge;
 
   /**
    * This must be called on the main JS thread.
    */
   NativeToJsBridge(
-      JSExecutorFactory* jsExecutorFactory,
+      JSExecutorFactory *jsExecutorFactory,
       std::shared_ptr<ModuleRegistry> registry,
       std::shared_ptr<MessageQueueThread> jsQueue,
       std::shared_ptr<InstanceCallback> callback);
@@ -50,30 +54,40 @@ public:
    * Executes a function with the module ID and method ID and any additional
    * arguments in JS.
    */
-  void callFunction(std::string&& module, std::string&& method, folly::dynamic&& args);
+  void callFunction(
+      std::string &&module,
+      std::string &&method,
+      folly::dynamic &&args);
 
   /**
    * Invokes a callback with the cbID, and optional additional arguments in JS.
    */
-  void invokeCallback(double callbackId, folly::dynamic&& args);
+  void invokeCallback(double callbackId, folly::dynamic &&args);
+
+  /**
+   * Sets global variables in the JS Context.
+   */
+  void initializeRuntime();
 
   /**
    * Starts the JS application.  If bundleRegistry is non-null, then it is
    * used to fetch JavaScript modules as individual scripts.
    * Otherwise, the script is assumed to include all the modules.
    */
-  void loadApplication(
-    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> startupCode,
-    std::string sourceURL);
-  void loadApplicationSync(
-    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> startupCode,
-    std::string sourceURL);
+  void loadBundle(
+      std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+      std::unique_ptr<const JSBigString> startupCode,
+      std::string sourceURL);
+  void loadBundleSync(
+      std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+      std::unique_ptr<const JSBigString> startupCode,
+      std::string sourceURL);
 
-  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
-  void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
-  void* getJavaScriptContext();
+  void registerBundle(uint32_t bundleId, const std::string &bundlePath);
+  void setGlobalVariable(
+      std::string propName,
+      std::unique_ptr<const JSBigString> jsonValue);
+  void *getJavaScriptContext();
   bool isInspectable();
   bool isBatchActive();
 
@@ -84,9 +98,16 @@ public:
    */
   void destroy();
 
-  void runOnExecutorQueue(std::function<void(JSExecutor*)> task);
+  void runOnExecutorQueue(std::function<void(JSExecutor *)> task);
 
-private:
+  /**
+   * Native CallInvoker is used by TurboModules to schedule work on the
+   * NativeModule thread(s).
+   */
+  std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
+      std::shared_ptr<CallInvoker> nativeInvoker);
+
+ private:
   // This is used to avoid a race condition where a proxyCallback gets queued
   // after ~NativeToJsBridge(), on the same thread. In that case, the callback
   // will try to run the task on m_callback which will have been destroyed
@@ -106,9 +127,10 @@ private:
   // likely fail as well, so this flag can help prevent them.
   bool m_applicationScriptHasFailure = false;
 
-  #ifdef WITH_FBSYSTRACE
-  std::atomic_uint_least32_t m_systraceCookie = ATOMIC_VAR_INIT();
-  #endif
+#ifdef WITH_FBSYSTRACE
+  std::atomic_uint_least32_t m_systraceCookie = ATOMIC_VAR_INIT(0);
+#endif
 };
 
-} }
+} // namespace react
+} // namespace facebook

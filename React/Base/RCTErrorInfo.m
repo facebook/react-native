@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -11,8 +11,8 @@
 
 @implementation RCTErrorInfo
 
-- (instancetype)initWithErrorMessage:(NSString *)errorMessage
-                               stack:(NSArray<RCTJSStackFrame *> *)stack {
+- (instancetype)initWithErrorMessage:(NSString *)errorMessage stack:(NSArray<RCTJSStackFrame *> *)stack
+{
   self = [super init];
   if (self) {
     _errorMessage = [errorMessage copy];

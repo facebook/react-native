@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -22,7 +22,7 @@ type LoaderId = string;
 type FrameId = string;
 type Timestamp = number;
 
-type Headers = Object;
+type Headers = {[string]: string};
 
 // We don't currently care about this
 type ResourceTiming = null;
@@ -64,6 +64,7 @@ type Initiator = {
   stackTrace?: StackTrace,
   url?: string,
   lineNumber?: number,
+  ...
 };
 
 type ResourcePriority = 'VeryLow' | 'Low' | 'Medium' | 'High' | 'VeryHigh';
@@ -75,6 +76,7 @@ type Request = {
   postData?: string,
   mixedContentType?: 'blockable' | 'optionally-blockable' | 'none',
   initialPriority: ResourcePriority,
+  ...
 };
 
 type Response = {
@@ -92,6 +94,7 @@ type Response = {
   encodedDataLength: number,
   timing?: ResourceTiming,
   securityState: SecurityState,
+  ...
 };
 
 type RequestWillBeSentEvent = {
@@ -106,6 +109,7 @@ type RequestWillBeSentEvent = {
   // This is supposed to be optional but the inspector crashes without it,
   // see https://bugs.chromium.org/p/chromium/issues/detail?id=653138
   type: ResourceType,
+  ...
 };
 
 type ResponseReceivedEvent = {
@@ -115,6 +119,7 @@ type ResponseReceivedEvent = {
   timestamp: Timestamp,
   type: ResourceType,
   response: Response,
+  ...
 };
 
 type DataReceived = {
@@ -122,12 +127,14 @@ type DataReceived = {
   timestamp: Timestamp,
   dataLength: number,
   encodedDataLength: number,
+  ...
 };
 
 type LoadingFinishedEvent = {
   requestId: RequestId,
   timestamp: Timestamp,
   encodedDataLength: number,
+  ...
 };
 
 type LoadingFailedEvent = {
@@ -137,6 +144,7 @@ type LoadingFailedEvent = {
   errorText: string,
   canceled?: boolean,
   blockedReason?: BlockedReason,
+  ...
 };
 
 class Interceptor {
@@ -152,7 +160,7 @@ class Interceptor {
     return this._requests.get(requestId);
   }
 
-  requestSent(id: number, url: string, method: string, headers: Object) {
+  requestSent(id: number, url: string, method: string, headers: Headers) {
     const requestId = String(id);
     this._requests.set(requestId, '');
 
@@ -180,7 +188,7 @@ class Interceptor {
     this._agent.sendEvent('requestWillBeSent', event);
   }
 
-  responseReceived(id: number, url: string, status: number, headers: Object) {
+  responseReceived(id: number, url: string, status: number, headers: Headers) {
     const requestId = String(id);
     const response: Response = {
       url,
@@ -239,7 +247,7 @@ class Interceptor {
     this._agent.sendEvent('loadingFailed', event);
   }
 
-  _getMimeType(headers: Object): string {
+  _getMimeType(headers: Headers): string {
     const contentType = headers['Content-Type'] || '';
     return contentType.split(';')[0];
   }
@@ -248,6 +256,7 @@ class Interceptor {
 type EnableArgs = {
   maxResourceBufferSize?: number,
   maxTotalBufferSize?: number,
+  ...
 };
 
 class NetworkAgent extends InspectorAgent {
@@ -270,7 +279,12 @@ class NetworkAgent extends InspectorAgent {
     requestId,
   }: {
     requestId: RequestId,
-  }): {body: ?string, base64Encoded: boolean} {
+    ...
+  }): {
+    body: ?string,
+    base64Encoded: boolean,
+    ...
+  } {
     return {body: this.interceptor().getData(requestId), base64Encoded: false};
   }
 

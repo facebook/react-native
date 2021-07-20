@@ -1,17 +1,21 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
+import android.os.Build;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
@@ -37,6 +41,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   private static final int[] SPACING_TYPES = {
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
+  private static final String TAG = "ReactTextAnchorViewManager";
 
   // maxLines can only be set in master view (block), doesn't really make sense to set in a span
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
@@ -57,6 +62,11 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid ellipsizeMode: " + ellipsizeMode);
     }
+  }
+
+  @ReactProp(name = ViewProps.ADJUSTS_FONT_SIZE_TO_FIT)
+  public void setAdjustFontSizeToFit(ReactTextView view, boolean adjustsFontSizeToFit) {
+    view.setAdjustFontSizeToFit(adjustsFontSizeToFit);
   }
 
   @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
@@ -87,6 +97,28 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
           DefaultStyleValuesUtil.getDefaultTextColorHighlight(view.getContext()));
     } else {
       view.setHighlightColor(color);
+    }
+  }
+
+  @ReactProp(name = "android_hyphenationFrequency")
+  public void setAndroidHyphenationFrequency(ReactTextView view, @Nullable String frequency) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      FLog.w(TAG, "android_hyphenationFrequency only available since android 23");
+      return;
+    }
+    if (frequency == null || frequency.equals("none")) {
+      view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
+    } else if (frequency.equals("full")) {
+      view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_FULL);
+    } else if (frequency.equals("balanced")) {
+      view.setHyphenationFrequency(Layout.BREAK_STRATEGY_BALANCED);
+    } else if (frequency.equals("high")) {
+      view.setHyphenationFrequency(Layout.BREAK_STRATEGY_HIGH_QUALITY);
+    } else if (frequency.equals("normal")) {
+      view.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException(
+          "Invalid android_hyphenationFrequency: " + frequency);
     }
   }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -38,7 +38,8 @@
       continue;
     }
     NSString *key = [line substringToIndex:location];
-    NSString *value = [[line substringFromIndex:location + 1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *value = [[line substringFromIndex:location + 1]
+        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     [headers setValue:value forKey:key];
   }
   return headers;
@@ -87,8 +88,10 @@
   NSInteger chunkStart = 0;
   NSInteger bytesSeen = 0;
 
-  NSData *delimiter = [[NSString stringWithFormat:@"%@--%@%@", CRLF, _boundary, CRLF] dataUsingEncoding:NSUTF8StringEncoding];
-  NSData *closeDelimiter = [[NSString stringWithFormat:@"%@--%@--%@", CRLF, _boundary, CRLF] dataUsingEncoding:NSUTF8StringEncoding];
+  NSData *delimiter =
+      [[NSString stringWithFormat:@"%@--%@%@", CRLF, _boundary, CRLF] dataUsingEncoding:NSUTF8StringEncoding];
+  NSData *closeDelimiter =
+      [[NSString stringWithFormat:@"%@--%@--%@", CRLF, _boundary, CRLF] dataUsingEncoding:NSUTF8StringEncoding];
   NSMutableData *content = [[NSMutableData alloc] initWithCapacity:1];
   NSDictionary *currentHeaders = nil;
   NSUInteger currentHeadersLength = 0;

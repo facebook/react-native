@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include <cstdio>
 #include <cstdlib>
@@ -33,7 +38,7 @@ debug server. For instance, running this:
 will run a WebSocket server on port 9999 that debugs script.js in Hermes. Chrome
 can connect to this debugging session using a URL like this:
 
-  chrome-devtools://devtools/bundled/inspector.html?experiments=false&v8only=true&ws=127.0.0.1:9999
+  devtools://devtools/bundled/inspector.html?experiments=false&v8only=true&ws=127.0.0.1:9999
 
 Options:
 
@@ -46,13 +51,82 @@ static void usage() {
   exit(1);
 }
 
+/// Truncate UTF8 string \p s to be at most \p len bytes long.  If a multi-byte
+/// sequence crosses the limit (len), it will be wholly omitted from the
+/// output.  If the output is truncated, it will be suffixed with "...".
+///
+/// \pre len must be strictly greater than the length of the truncation suffix
+///     (three characters), so there is something left after truncation.
+static void truncate(std::string &s, size_t len) {
+  static constexpr char suffix[] = "...";
+  static const size_t suflen = strlen(suffix);
+  assert(len > suflen);
+
+  if (s.size() <= len) {
+    return;
+  }
+
+  // Iterate back from the edge to pop off continuation bytes.
+  ssize_t last = len - suflen;
+  while (last > 0 && (s[last] & 0xC0) == 0x80)
+    --last;
+
+  // Copy in the suffix.
+  strncpy(&s[last], suffix, suflen);
+
+  // Trim the excess.
+  s.resize(last + suflen);
+}
+
+/// Traverse the structure of \p d, truncating all the strings found,
+/// (excluding object keys) to at most \p len bytes long using the definition
+/// of truncate above.
+static void truncateStringsIn(folly::dynamic &d, size_t len) {
+  switch (d.type()) {
+    case folly::dynamic::STRING:
+      truncate(d.getString(), len);
+      break;
+
+    case folly::dynamic::ARRAY:
+      for (auto &child : d) {
+        truncateStringsIn(child, len);
+      }
+      break;
+
+    case folly::dynamic::OBJECT:
+      for (auto &kvp : d.items()) {
+        truncateStringsIn(kvp.second, len);
+      }
+      break;
+
+    default:
+      /* nop */
+      break;
+  }
+}
+
+/// Pretty print the JSON blob contained within \p str, by introducing
+/// parsing it and pretty printing it.  Large string values (larger than 512
+/// characters) are truncated.
+///
+/// \pre str contains a valid JSON blob.
 static std::string prettify(const std::string &str) {
+  constexpr size_t MAX_LINE_LEN = 512;
+
   try {
     folly::dynamic obj = folly::parseJson(str);
+    truncateStringsIn(obj, MAX_LINE_LEN);
     return folly::toPrettyJson(obj);
   } catch (...) {
     // pass
   }
+
+  if (str.size() > MAX_LINE_LEN) {
+    std::string cpy = str;
+    truncate(cpy, MAX_LINE_LEN);
+    return cpy;
+  }
+
   return str;
 }
 
@@ -82,8 +156,8 @@ static void sendResponse(const std::string &str) {
 
 static std::string readScriptSource(const char *path) {
   std::ifstream stream(path);
-  return std::string{std::istreambuf_iterator<char>(stream),
-                     std::istreambuf_iterator<char>()};
+  return std::string{
+      std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
 }
 
 static std::string getUrl(const char *path) {
@@ -140,8 +214,8 @@ static void runDebuggerLoop(
 static void runScript(const std::string &scriptSource, const std::string &url) {
   std::shared_ptr<fbhermes::HermesRuntime> runtime(
       fbhermes::makeHermesRuntime());
-  auto adapter =
-      std::make_unique<fbhermes::inspector::SharedRuntimeAdapter>(runtime);
+  auto adapter = std::make_unique<fbhermes::inspector::SharedRuntimeAdapter>(
+      runtime, runtime->getDebugger());
   fbhermes::inspector::chrome::Connection conn(
       std::move(adapter), "hermes-chrome-debug-server");
   std::thread debuggerLoop(runDebuggerLoop, std::ref(conn), scriptSource);
@@ -154,9 +228,10 @@ static void runScript(const std::string &scriptSource, const std::string &url) {
 
 int main(int argc, char **argv) {
   const char *shortOpts = "l:h";
-  const option longOpts[] = {{"log", 1, nullptr, 'l'},
-                             {"help", 0, nullptr, 'h'},
-                             {nullptr, 0, nullptr, 0}};
+  const option longOpts[] = {
+      {"log", 1, nullptr, 'l'},
+      {"help", 0, nullptr, 'h'},
+      {nullptr, 0, nullptr, 0}};
 
   while (true) {
     int opt = getopt_long(argc, argv, shortOpts, longOpts, nullptr);

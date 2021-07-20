@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
@@ -29,6 +30,9 @@ import com.facebook.react.bridge.ReadableMap;
   }
 
   public double getValue() {
+    if (Double.isNaN(mOffset + mValue)) {
+      this.update();
+    }
     return mOffset + mValue;
   }
 
@@ -55,5 +59,9 @@ import com.facebook.react.bridge.ReadableMap;
 
   public void setValueListener(@Nullable AnimatedNodeValueListener listener) {
     mValueListener = listener;
+  }
+
+  public String prettyPrint() {
+    return "ValueAnimatedNode[" + mTag + "]: value: " + mValue + " offset: " + mOffset;
   }
 }

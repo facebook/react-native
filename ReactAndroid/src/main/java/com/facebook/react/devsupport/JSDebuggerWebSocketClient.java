@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.util.JsonReader;
@@ -80,7 +81,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
     }
   }
 
-  public void loadApplicationScript(
+  public void loadBundle(
       String sourceURL, HashMap<String, String> injectedObjects, JSDebuggerCallback callback) {
     int requestID = mRequestID.getAndIncrement();
     mCallbacks.put(requestID, callback);
@@ -118,7 +119,7 @@ public class JSDebuggerWebSocketClient extends WebSocketListener {
 
       js.beginObject().name("id").value(requestID).name("method").value(methodName);
       /* JsonWriter does not offer writing raw string (without quotes), that's why
-      here we directly write to output string using the the underlying StringWriter */
+      here we directly write to output string using the underlying StringWriter */
       sw.append(",\"arguments\":").append(jsonArgsArray);
       js.endObject().close();
       sendMessage(requestID, sw.toString());

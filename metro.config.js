@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const getPolyfills = require('./rn-get-polyfills');
@@ -16,8 +17,14 @@ const getPolyfills = require('./rn-get-polyfills');
  * integration tests during local development or on CI services.
  */
 module.exports = {
-  extraNodeModules: {
-    'react-native': __dirname,
+  resolver: {
+    // $FlowFixMe[signature-verification-failure] Can't infer RegExp type.
+    blacklistRE: /buck-out/,
+    extraNodeModules: {
+      'react-native': __dirname,
+    },
   },
-  getPolyfills,
+  serializer: {
+    getPolyfills,
+  },
 };

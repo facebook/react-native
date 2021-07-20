@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
@@ -56,4 +57,20 @@ import java.util.List;
    * it can be used to calculate node's value.
    */
   public void update() {}
+
+  /**
+   * Pretty-printer for the AnimatedNode. Only called in production pre-crash for debug diagnostics.
+   */
+  public abstract String prettyPrint();
+
+  public String prettyPrintWithChildren() {
+    String children = "";
+    if (mChildren != null && mChildren.size() > 0) {
+      for (AnimatedNode child : mChildren) {
+        children += " " + child.mTag;
+      }
+    }
+
+    return prettyPrint() + (children.length() > 0 ? " children: " + children : "");
+  }
 }

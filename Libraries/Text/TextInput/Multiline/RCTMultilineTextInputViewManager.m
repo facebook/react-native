@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,7 +6,6 @@
  */
 
 #import <React/RCTMultilineTextInputViewManager.h>
-
 #import <React/RCTMultilineTextInputView.h>
 
 @implementation RCTMultilineTextInputViewManager
@@ -20,8 +19,6 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Multiline <TextInput> (aka TextView) specific properties
 
-#if !TARGET_OS_TV
 RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, backedTextInputView.dataDetectorTypes, UIDataDetectorTypes)
-#endif
 
 @end

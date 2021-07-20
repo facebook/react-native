@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -32,6 +32,12 @@
 - (void)removeDelegate:(id)delegate
 {
   [_delegates removeObject:delegate];
+  [self _updateDelegate];
+}
+
+- (void)removeAllDelegates
+{
+  [_delegates removeAllObjects];
   [self _updateDelegate];
 }
 
@@ -72,10 +78,16 @@
 
 - (void)forwardInvocation:(NSInvocation *)invocation
 {
+  NSMutableArray *targets = [[NSMutableArray alloc] initWithCapacity:_delegates.count];
+
   for (id delegate in _delegates) {
     if ([delegate respondsToSelector:[invocation selector]]) {
-      [invocation invokeWithTarget:delegate];
+      [targets addObject:delegate];
     }
+  }
+
+  for (id target in targets) {
+    [invocation invokeWithTarget:target];
   }
 }
 

@@ -7,16 +7,15 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
-import type {
-  DangerouslyImpreciseStyle,
-  DangerouslyImpreciseStyleProp,
-} from './StyleSheet';
+import type {DangerouslyImpreciseStyleProp} from './StyleSheet';
+import type {____FlattenStyleProp_Internal} from './StyleSheetTypes';
 
-function flattenStyle(
-  style: ?DangerouslyImpreciseStyleProp,
-): ?DangerouslyImpreciseStyle {
+function flattenStyle<+TStyleProp: DangerouslyImpreciseStyleProp>(
+  style: ?TStyleProp,
+): ?____FlattenStyleProp_Internal<TStyleProp> {
   if (style === null || typeof style !== 'object') {
     return undefined;
   }

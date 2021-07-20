@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react;
 
 import android.view.KeyEvent;
@@ -28,6 +29,9 @@ public class ReactAndroidHWInputDeviceHelper {
           .put(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, "playPause")
           .put(KeyEvent.KEYCODE_MEDIA_REWIND, "rewind")
           .put(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, "fastForward")
+          .put(KeyEvent.KEYCODE_MEDIA_STOP, "stop")
+          .put(KeyEvent.KEYCODE_MEDIA_NEXT, "next")
+          .put(KeyEvent.KEYCODE_MEDIA_PREVIOUS, "previous")
           .put(KeyEvent.KEYCODE_DPAD_UP, "up")
           .put(KeyEvent.KEYCODE_DPAD_RIGHT, "right")
           .put(KeyEvent.KEYCODE_DPAD_DOWN, "down")

@@ -1,0 +1,23 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_target", "react_native_xplat_dep", "rn_xplat_cxx_library")
+
+rn_xplat_cxx_library(
+    name = "jni",
+    srcs = glob(["*.cpp"]),
+    headers = glob(["*.h"]),
+    header_namespace = "",
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+    ],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    platforms = ANDROID,
+    soname = "libreactnativeblob.$(ext)",
+    visibility = ["PUBLIC"],
+    deps = [
+        react_native_target("jni/react/jni:jni"),
+        FBJNI_TARGET,
+        react_native_xplat_dep("jsi:jsi"),
+    ],
+)

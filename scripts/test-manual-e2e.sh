@@ -40,7 +40,7 @@ rm -rf android
 
 success "Generated artifacts for Maven"
 
-npm install
+yarn
 
 success "Killing any running packagers"
 lsof -i :8081 | grep LISTEN
@@ -51,17 +51,22 @@ info "and then press any key."
 info ""
 read -n 1
 
-./gradlew :RNTester:android:app:installJscDebug || error "Couldn't build RNTester Android"
+./gradlew :packages:rn-tester:android:app:installJscDebug || error "Couldn't build RNTester Android"
 
 info "Press any key to run RNTester in an already running Android emulator/device"
 info ""
 read -n 1
 adb shell am start -n com.facebook.react.uiapp/.RNTesterActivity
 
+success "Installing CocoaPods dependencies"
+rm -rf packages/rn-tester/Pods
+(cd packages/rn-tester && pod install)
+
 info "Press any key to open the workspace in Xcode, then build and test manually."
 info ""
 read -n 1
-open "RNTester/RNTesterPods.xcworkspace"
+
+open "packages/rn-tester/RNTesterPods.xcworkspace"
 
 info "When done testing RNTester app on iOS and Android press any key to continue."
 info ""
@@ -98,7 +103,7 @@ info ""
 info "Press any key to run the sample in Android emulator/device"
 info ""
 read -n 1
-cd "/tmp/${project_name}" && react-native run-android
+cd "/tmp/${project_name}" && npx react-native run-android
 
 info "Test the following on iOS:"
 info "   - Disable Fast Refresh. It might be enabled from last time (the setting is stored on the device)"
@@ -111,9 +116,9 @@ info ""
 info "Press any key to open the project in Xcode"
 info ""
 read -n 1
-open "/tmp/${project_name}/ios/${project_name}.xcodeproj"
+open "/tmp/${project_name}/ios/${project_name}.xcworkspace"
 
 cd "$repo_root"
 
 info "Next steps:"
-info "   - https://github.com/facebook/react-native/blob/master/Releases.md"
+info "   - https://github.com/facebook/react-native/blob/HEAD/Releases.md"

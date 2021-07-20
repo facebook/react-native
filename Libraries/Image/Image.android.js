@@ -8,132 +8,39 @@
  * @format
  */
 
-'use strict';
+import DeprecatedImagePropType from '../DeprecatedPropTypes/DeprecatedImagePropType';
+import ImageViewNativeComponent from './ImageViewNativeComponent';
+import * as React from 'react';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import TextAncestor from '../Text/TextAncestor';
+import ImageInjection from './ImageInjection';
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import resolveAssetSource from './resolveAssetSource';
 
-const DeprecatedImageStylePropTypes = require('../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
-const DeprecatedStyleSheetPropType = require('../DeprecatedPropTypes/DeprecatedStyleSheetPropType');
-const DeprecatedViewPropTypes = require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
-const ImageViewNativeComponent = require('./ImageViewNativeComponent');
-const NativeModules = require('../BatchedBridge/NativeModules');
-const PropTypes = require('prop-types');
-const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const TextAncestor = require('../Text/TextAncestor');
+import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
 
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const merge = require('../vendor/core/merge');
-const resolveAssetSource = require('./resolveAssetSource');
-
-const {ImageLoader} = NativeModules;
-
-const TextInlineImageNativeComponent = require('./TextInlineImageNativeComponent');
+import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
+import type {RootTag} from '../Types/RootTagTypes';
 
 let _requestId = 1;
 function generateRequestId() {
   return _requestId++;
 }
 
-const ImageProps = {
-  ...DeprecatedViewPropTypes,
-  style: DeprecatedStyleSheetPropType(DeprecatedImageStylePropTypes),
-  /**
-   * See https://facebook.github.io/react-native/docs/image.html#source
-   */
-  source: PropTypes.oneOfType([
-    PropTypes.shape({
-      uri: PropTypes.string,
-      headers: PropTypes.objectOf(PropTypes.string),
-    }),
-    // Opaque type returned by require('./image.jpg')
-    PropTypes.number,
-    // Multiple sources
-    PropTypes.arrayOf(
-      PropTypes.shape({
-        uri: PropTypes.string,
-        width: PropTypes.number,
-        height: PropTypes.number,
-        headers: PropTypes.objectOf(PropTypes.string),
-      }),
-    ),
-  ]),
-  /**
-   * blurRadius: the blur radius of the blur filter added to the image
-   *
-   * See https://facebook.github.io/react-native/docs/image.html#blurradius
-   */
-  blurRadius: PropTypes.number,
-  /**
-   * See https://facebook.github.io/react-native/docs/image.html#defaultsource
-   */
-  defaultSource: PropTypes.number,
-  /**
-   * See https://facebook.github.io/react-native/docs/image.html#loadingindicatorsource
-   */
-  loadingIndicatorSource: PropTypes.oneOfType([
-    PropTypes.shape({
-      uri: PropTypes.string,
-    }),
-    // Opaque type returned by require('./image.jpg')
-    PropTypes.number,
-  ]),
-  progressiveRenderingEnabled: PropTypes.bool,
-  fadeDuration: PropTypes.number,
-  /**
-   * Invoked on load start
-   */
-  onLoadStart: PropTypes.func,
-  /**
-   * Invoked on load error
-   */
-  onError: PropTypes.func,
-  /**
-   * Invoked when load completes successfully
-   */
-  onLoad: PropTypes.func,
-  /**
-   * Invoked when load either succeeds or fails
-   */
-  onLoadEnd: PropTypes.func,
-  /**
-   * Used to locate this view in end-to-end tests.
-   */
-  testID: PropTypes.string,
-  /**
-   * The mechanism that should be used to resize the image when the image's dimensions
-   * differ from the image view's dimensions. Defaults to `auto`.
-   *
-   * See https://facebook.github.io/react-native/docs/image.html#resizemethod
-   */
-  resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
-  /**
-   * Determines how to resize the image when the frame doesn't match the raw
-   * image dimensions.
-   *
-   * See https://facebook.github.io/react-native/docs/image.html#resizemode
-   */
-  resizeMode: PropTypes.oneOf([
-    'cover',
-    'contain',
-    'stretch',
-    'repeat',
-    'center',
-  ]),
-};
-
 /**
  * Retrieve the width and height (in pixels) of an image prior to displaying it
  *
- * See https://facebook.github.io/react-native/docs/image.html#getsize
+ * See https://reactnative.dev/docs/image.html#getsize
  */
 function getSize(
   url: string,
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
-) {
-  return ImageLoader.getSize(url)
+): any {
+  return NativeImageLoaderAndroid.getSize(url)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -149,15 +56,15 @@ function getSize(
  * Retrieve the width and height (in pixels) of an image prior to displaying it
  * with the ability to provide the headers for the request
  *
- * See https://facebook.github.io/react-native/docs/image.html#getsizewithheaders
+ * See https://reactnative.dev/docs/image.html#getsizewithheaders
  */
 function getSizeWithHeaders(
   url: string,
-  headers: {[string]: string},
+  headers: {[string]: string, ...},
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
-) {
-  return ImageLoader.getSizeWithHeaders(url, headers)
+): any {
+  return NativeImageLoaderAndroid.getSizeWithHeaders(url, headers)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -169,56 +76,67 @@ function getSizeWithHeaders(
     );
 }
 
-function prefetch(url: string, callback: ?Function) {
+function prefetchWithMetadata(
+  url: string,
+  queryRootName: string,
+  rootTag?: ?RootTag,
+  callback: ?Function,
+): any {
+  // TODO: T79192300 Log queryRootName and rootTag
+  prefetch(url, callback);
+}
+
+function prefetch(url: string, callback: ?Function): any {
   const requestId = generateRequestId();
   callback && callback(requestId);
-  return ImageLoader.prefetchImage(url, requestId);
+  return NativeImageLoaderAndroid.prefetchImage(url, requestId);
 }
 
 function abortPrefetch(requestId: number) {
-  ImageLoader.abortRequest(requestId);
+  NativeImageLoaderAndroid.abortRequest(requestId);
 }
 
 /**
  * Perform cache interrogation.
  *
- * See https://facebook.github.io/react-native/docs/image.html#querycache
+ * See https://reactnative.dev/docs/image.html#querycache
  */
 async function queryCache(
   urls: Array<string>,
-): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
-  return await ImageLoader.queryCache(urls);
+): Promise<{[string]: 'memory' | 'disk' | 'disk/memory', ...}> {
+  return await NativeImageLoaderAndroid.queryCache(urls);
 }
 
-declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsType> {
-  static getSize: typeof getSize;
-  static getSizeWithHeaders: typeof getSizeWithHeaders;
-  static prefetch: typeof prefetch;
-  static abortPrefetch: typeof abortPrefetch;
-  static queryCache: typeof queryCache;
-  static resolveAssetSource: typeof resolveAssetSource;
-  static propTypes: typeof ImageProps;
-}
+type ImageComponentStatics = $ReadOnly<{|
+  getSize: typeof getSize,
+  getSizeWithHeaders: typeof getSizeWithHeaders,
+  prefetch: typeof prefetch,
+  prefetchWithMetadata: typeof prefetchWithMetadata,
+  abortPrefetch: typeof abortPrefetch,
+  queryCache: typeof queryCache,
+  resolveAssetSource: typeof resolveAssetSource,
+  propTypes: typeof DeprecatedImagePropType,
+|}>;
 
 /**
  * A React component for displaying different types of images,
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * See https://facebook.github.io/react-native/docs/image.html
+ * See https://reactnative.dev/docs/image.html
  */
-let Image = (
-  props: ImagePropsType,
-  forwardedRef: ?React.Ref<'RCTTextInlineImage' | 'ImageViewNativeComponent'>,
-) => {
+let Image = (props: ImagePropsType, forwardedRef) => {
   let source = resolveAssetSource(props.source);
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
   );
 
-  if (source && source.uri === '') {
-    console.warn('source.uri should not be an empty string');
+  if (source) {
+    const uri = source.uri;
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
+    }
   }
 
   if (props.src) {
@@ -246,12 +164,8 @@ let Image = (
   let style;
   let sources;
   if (source?.uri != null) {
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     const {width, height} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     sources = [{uri: source.uri}];
   } else {
     style = flattenStyle([styles.base, props.style]);
@@ -259,7 +173,8 @@ let Image = (
   }
 
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
-  const nativeProps = merge(props, {
+  const nativeProps = {
+    ...props,
     style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
     src: sources,
@@ -271,28 +186,50 @@ let Image = (
       ? loadingIndicatorSource.uri
       : null,
     ref: forwardedRef,
-  });
+  };
 
   return (
-    <TextAncestor.Consumer>
-      {hasTextAncestor =>
-        hasTextAncestor ? (
-          <TextInlineImageNativeComponent {...nativeProps} />
-        ) : (
-          <ImageViewNativeComponent {...nativeProps} />
-        )
-      }
-    </TextAncestor.Consumer>
+    <ImageAnalyticsTagContext.Consumer>
+      {analyticTag => {
+        const nativePropsWithAnalytics =
+          analyticTag !== null
+            ? {
+                ...nativeProps,
+                internal_analyticTag: analyticTag,
+              }
+            : nativeProps;
+        return (
+          <TextAncestor.Consumer>
+            {hasTextAncestor =>
+              hasTextAncestor ? (
+                <TextInlineImageNativeComponent {...nativePropsWithAnalytics} />
+              ) : (
+                <ImageViewNativeComponent {...nativePropsWithAnalytics} />
+              )
+            }
+          </TextAncestor.Consumer>
+        );
+      }}
+    </ImageAnalyticsTagContext.Consumer>
   );
 };
 
-Image = React.forwardRef(Image);
+Image = React.forwardRef<
+  ImagePropsType,
+  | React.ElementRef<typeof TextInlineImageNativeComponent>
+  | React.ElementRef<typeof ImageViewNativeComponent>,
+>(Image);
+
+if (ImageInjection.unstable_createImageComponent != null) {
+  Image = ImageInjection.unstable_createImageComponent(Image);
+}
+
 Image.displayName = 'Image';
 
 /**
  * Retrieve the width and height (in pixels) of an image prior to displaying it
  *
- * See https://facebook.github.io/react-native/docs/image.html#getsize
+ * See https://reactnative.dev/docs/image.html#getsize
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -303,7 +240,7 @@ Image.getSize = getSize;
  * Retrieve the width and height (in pixels) of an image prior to displaying it
  * with the ability to provide the headers for the request
  *
- * See https://facebook.github.io/react-native/docs/image.html#getsizewithheaders
+ * See https://reactnative.dev/docs/image.html#getsizewithheaders
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -314,7 +251,7 @@ Image.getSizeWithHeaders = getSizeWithHeaders;
  * Prefetches a remote image for later use by downloading it to the disk
  * cache
  *
- * See https://facebook.github.io/react-native/docs/image.html#prefetch
+ * See https://reactnative.dev/docs/image.html#prefetch
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -322,9 +259,20 @@ Image.getSizeWithHeaders = getSizeWithHeaders;
 Image.prefetch = prefetch;
 
 /**
+ * Prefetches a remote image for later use by downloading it to the disk
+ * cache, and adds metadata for queryRootName and rootTag.
+ *
+ * See https://reactnative.dev/docs/image.html#prefetch
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.prefetchWithMetadata = prefetchWithMetadata;
+
+/**
  * Abort prefetch request.
  *
- * See https://facebook.github.io/react-native/docs/image.html#abortprefetch
+ * See https://reactnative.dev/docs/image.html#abortprefetch
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -334,7 +282,7 @@ Image.abortPrefetch = abortPrefetch;
 /**
  * Perform cache interrogation.
  *
- * See https://facebook.github.io/react-native/docs/image.html#querycache
+ * See https://reactnative.dev/docs/image.html#querycache
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -344,7 +292,7 @@ Image.queryCache = queryCache;
 /**
  * Resolves an asset reference into an object.
  *
- * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
+ * See https://reactnative.dev/docs/image.html#resolveassetsource
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -354,7 +302,7 @@ Image.resolveAssetSource = resolveAssetSource;
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
-Image.propTypes = ImageProps;
+Image.propTypes = DeprecatedImagePropType;
 
 const styles = StyleSheet.create({
   base: {
@@ -362,7 +310,9 @@ const styles = StyleSheet.create({
   },
 });
 
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
-module.exports = (Image: Class<ImageComponentType>);
+module.exports = ((Image: any): React.AbstractComponent<
+  ImagePropsType,
+  | React.ElementRef<typeof TextInlineImageNativeComponent>
+  | React.ElementRef<typeof ImageViewNativeComponent>,
+> &
+  ImageComponentStatics);

@@ -1,11 +1,13 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #import <React/RCTInspectorPackagerConnection.h>
 
-#if RCT_DEV && !TARGET_OS_UIKITFORMAC
+#if RCT_DEV
 
 #import <React/RCTDefines.h>
 #import <React/RCTInspector.h>
@@ -43,12 +45,12 @@ const int RECONNECT_DELAY_MS = 2000;
 
 static NSDictionary<NSString *, id> *makePageIdPayload(NSString *pageId)
 {
-  return @{ @"pageId": pageId };
+  return @{@"pageId" : pageId};
 }
 
 @implementation RCTInspectorPackagerConnection
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (instancetype)initWithURL:(NSURL *)url
 {
@@ -91,7 +93,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)closeAllConnections
 {
-  for (NSString *pageId in _inspectorConnections){
+  for (NSString *pageId in _inspectorConnections) {
     [[_inspectorConnections objectForKey:pageId] disconnect];
   }
   [_inspectorConnections removeAllObjects];
@@ -109,8 +111,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   RCTInspectorRemoteConnection *remoteConnection =
-    [[RCTInspectorRemoteConnection alloc] initWithPackagerConnection:self
-                                                              pageId:pageId];
+      [[RCTInspectorRemoteConnection alloc] initWithPackagerConnection:self pageId:pageId];
 
   RCTInspectorLocalConnection *inspectorConnection = [RCTInspector connectPage:[pageId integerValue]
                                                            forRemoteConnection:remoteConnection];
@@ -138,10 +139,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSString *wrappedEvent = payload[@"wrappedEvent"];
   RCTInspectorLocalConnection *inspectorConnection = _inspectorConnections[pageId];
   if (!inspectorConnection) {
-    RCTLogWarn(
-      @"Not connected to page: %@ , failed trying to handle event: %@",
-      pageId,
-      wrappedEvent);
+    RCTLogWarn(@"Not connected to page: %@ , failed trying to handle event: %@", pageId, wrappedEvent);
     return;
   }
   [inspectorConnection sendMessage:wrappedEvent];
@@ -153,34 +151,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSMutableArray *array = [NSMutableArray arrayWithCapacity:pages.count];
 
   RCTBundleStatusProvider statusProvider = _bundleStatusProvider;
-  RCTBundleStatus *bundleStatus = statusProvider == nil
-    ? nil
-    : statusProvider();
+  RCTBundleStatus *bundleStatus = statusProvider == nil ? nil : statusProvider();
 
   for (RCTInspectorPage *page in pages) {
     NSDictionary *jsonPage = @{
-      @"id": [@(page.id) stringValue],
-      @"title": page.title,
-      @"app": [[NSBundle mainBundle] bundleIdentifier],
-      @"vm": page.vm,
-      @"isLastBundleDownloadSuccess": bundleStatus == nil
-        ? [NSNull null]
-        : @(bundleStatus.isLastBundleDownloadSuccess),
-      @"bundleUpdateTimestamp": bundleStatus == nil
-        ? [NSNull null]
-        : @((long)bundleStatus.bundleUpdateTimestamp * 1000),
+      @"id" : [@(page.id) stringValue],
+      @"title" : page.title,
+      @"app" : [[NSBundle mainBundle] bundleIdentifier],
+      @"vm" : page.vm,
+      @"isLastBundleDownloadSuccess" : bundleStatus == nil ? [NSNull null]
+                                                           : @(bundleStatus.isLastBundleDownloadSuccess),
+      @"bundleUpdateTimestamp" : bundleStatus == nil ? [NSNull null]
+                                                     : @((long)bundleStatus.bundleUpdateTimestamp * 1000),
     };
     [array addObject:jsonPage];
   }
   return array;
 }
 
-- (void)sendWrappedEvent:(NSString *)pageId
-                 message:(NSString *)message
+- (void)sendWrappedEvent:(NSString *)pageId message:(NSString *)message
 {
   NSDictionary *payload = @{
-    @"pageId": pageId,
-    @"wrappedEvent": message,
+    @"pageId" : pageId,
+    @"wrappedEvent" : message,
   };
   [self sendEvent:@"wrappedEvent" payload:payload];
 }
@@ -188,8 +181,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)sendEvent:(NSString *)name payload:(id)payload
 {
   NSDictionary *jsonMessage = @{
-    @"event": name,
-    @"payload": payload,
+    @"event" : name,
+    @"payload" : payload,
   };
   [self sendToPackager:jsonMessage];
 }
@@ -198,8 +191,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)webSocket:(__unused RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   if (_webSocket) {
-    [self abort:@"Websocket exception"
-      withCause:error];
+    [self abort:@"Websocket exception" withCause:error];
   }
   if (!_closed && [error code] != ECONNREFUSED) {
     [self reconnect];
@@ -219,8 +211,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSError *error = nil;
   id parsedJSON = RCTJSONParse(messageText, &error);
   if (error) {
-    RCTLogWarn(@"Unrecognized inspector message, string was not valid JSON: %@",
-      messageText);
+    RCTLogWarn(@"Unrecognized inspector message, string was not valid JSON: %@", messageText);
     return;
   }
 
@@ -228,15 +219,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 
 // analogous to InspectorPackagerConnection.Connection.onClosed(...)
-- (void)webSocket:(__unused RCTSRWebSocket *)webSocket didCloseWithCode:(__unused NSInteger)code
-                                                        reason:(__unused NSString *)reason
-                                                      wasClean:(__unused BOOL)wasClean
+- (void)webSocket:(__unused RCTSRWebSocket *)webSocket
+    didCloseWithCode:(__unused NSInteger)code
+              reason:(__unused NSString *)reason
+            wasClean:(__unused BOOL)wasClean
 {
   _webSocket = nil;
   [self closeAllConnections];
   if (!_closed) {
     [self reconnect];
   }
+}
+
+- (bool)isConnected
+{
+  return _webSocket != nil;
 }
 
 - (void)connect
@@ -268,13 +265,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   __weak RCTInspectorPackagerConnection *weakSelf = self;
-  dispatch_after(
-    dispatch_time(DISPATCH_TIME_NOW, RECONNECT_DELAY_MS *NSEC_PER_MSEC),
-    dispatch_get_main_queue(), ^{
-      RCTInspectorPackagerConnection *strongSelf = weakSelf;
-      if (strongSelf && !strongSelf->_closed) {
-        [strongSelf connect];
-      }
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, RECONNECT_DELAY_MS * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+    RCTInspectorPackagerConnection *strongSelf = weakSelf;
+    if (strongSelf && !strongSelf->_closed) {
+      [strongSelf connect];
+    }
   });
 }
 
@@ -287,7 +282,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)sendToPackager:(NSDictionary *)messageObject
 {
   __weak RCTInspectorPackagerConnection *weakSelf = self;
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+  dispatch_async(_jsQueue, ^{
     RCTInspectorPackagerConnection *strongSelf = weakSelf;
     if (strongSelf && !strongSelf->_closed) {
       NSError *error;
@@ -301,8 +296,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   });
 }
 
-- (void)abort:(NSString *)message
-    withCause:(NSError *)cause
+- (void)abort:(NSString *)message withCause:(NSError *)cause
 {
   // Don't log ECONNREFUSED at all; it's expected in cases where the server isn't listening.
   if (![cause.domain isEqual:NSPOSIXErrorDomain] || cause.code != ECONNREFUSED) {
@@ -316,8 +310,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)disposeWebSocket
 {
   if (_webSocket) {
-    [_webSocket closeWithCode:1000
-                       reason:@"End of session"];
+    [_webSocket closeWithCode:1000 reason:@"End of session"];
     _webSocket.delegate = nil;
     _webSocket = nil;
   }
@@ -327,7 +320,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @implementation RCTInspectorRemoteConnection
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (instancetype)initWithPackagerConnection:(RCTInspectorPackagerConnection *)owningPackagerConnection
                                     pageId:(NSString *)pageId
@@ -341,8 +334,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)onMessage:(NSString *)message
 {
-  [_owningPackagerConnection sendWrappedEvent:_pageId
-                                      message:message];
+  [_owningPackagerConnection sendWrappedEvent:_pageId message:message];
 }
 
 - (void)onDisconnect
@@ -350,8 +342,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   RCTInspectorPackagerConnection *owningPackagerConnectionStrong = _owningPackagerConnection;
   if (owningPackagerConnectionStrong) {
     [owningPackagerConnectionStrong removeConnectionForPage:_pageId];
-    [owningPackagerConnectionStrong sendEvent:@"disconnect"
-                                      payload:makePageIdPayload(_pageId)];
+    [owningPackagerConnectionStrong sendEvent:@"disconnect" payload:makePageIdPayload(_pageId)];
   }
 }
 

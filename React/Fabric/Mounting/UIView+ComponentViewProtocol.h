@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -27,9 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateEventEmitter:(facebook::react::EventEmitter::Shared const &)eventEmitter;
 
-- (void)updateLocalData:(facebook::react::SharedLocalData)localData
-           oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
-
 - (void)updateState:(facebook::react::State::Shared const &)state
            oldState:(facebook::react::State::Shared const &)oldState;
 
@@ -41,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prepareForRecycle;
 
 - (facebook::react::SharedProps)props;
+
+- (void)setIsJSResponder:(BOOL)isJSResponder;
+
+- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)props;
+- (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 
 @end
 

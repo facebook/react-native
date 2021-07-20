@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,18 +8,24 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTSurfacePresenterStub.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 @protocol RCTValueAnimatedNodeObserver;
 
 @interface RCTNativeAnimatedNodesManager : NSObject
 
-- (nonnull instancetype)initWithBridge:(nonnull RCTBridge *)bridge;
+- (nonnull instancetype)initWithBridge:(RCTBridge *)bridge
+                      surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 
 - (void)updateAnimations;
 
 - (void)stepAnimations:(nonnull CADisplayLink *)displaylink;
 
 - (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag;
+
+- (void)getValue:(nonnull NSNumber *)nodeTag
+        saveCallback:(nullable RCTResponseSenderBlock)saveCallback;
 
 // graph
 

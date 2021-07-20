@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_android_library")
 
 INTERFACES = [
     "Dynamic.java",
@@ -11,6 +11,7 @@ INTERFACES = [
     "ReadableArray.java",
     "ReadableType.java",
     "NativeArrayInterface.java",
+    "LifecycleEventListener.java",
 ]
 
 rn_android_library(
@@ -19,7 +20,9 @@ rn_android_library(
         ["**/*.java"],
         exclude = INTERFACES,
     ),
+    autoglob = False,
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     proguard_config = "reactnative.pro",
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
@@ -29,6 +32,9 @@ rn_android_library(
         react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
     ],
     required_for_source_only_abi = True,
+    tests = [
+        react_native_tests_target("java/com/facebook/react/bridge:bridge"),
+    ],
     visibility = [
         "PUBLIC",
     ],
@@ -47,10 +53,10 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager/common:common"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
-        react_native_target("java/com/facebook/react/turbomodule/core:jscallinvokerholder"),
+        react_native_target("java/com/facebook/react/turbomodule/core:callinvokerholder"),
     ] + ([react_native_target("jni/react/jni:jni")] if not IS_OSS_BUILD else []),
     exported_deps = [
-        react_native_dep("java/com/facebook/jni:jni"),
+        react_native_dep("libraries/fbjni:java"),
         react_native_dep("java/com/facebook/proguard/annotations:annotations"),
         react_native_dep("third-party/java/jsr-330:jsr-330"),
         react_native_target("java/com/facebook/react/bridge:interfaces"),
@@ -60,7 +66,9 @@ rn_android_library(
 rn_android_library(
     name = "interfaces",
     srcs = glob(INTERFACES),
+    autoglob = False,
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     proguard_config = "reactnative.pro",
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),

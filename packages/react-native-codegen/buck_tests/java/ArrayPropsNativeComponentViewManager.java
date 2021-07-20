@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
@@ -8,7 +15,7 @@ import com.facebook.react.viewmanagers.ArrayPropsNativeComponentViewManagerInter
 public class ArrayPropsNativeComponentViewManager extends SimpleViewManager<ViewGroup>
     implements ArrayPropsNativeComponentViewManagerInterface<ViewGroup> {
 
-  public static final String REACT_CLASS = "ArrayPropsNativeComponent";
+  public static final String REACT_CLASS = "ArrayPropsNativeComponentView";
 
   @Override
   public String getName() {
@@ -16,8 +23,8 @@ public class ArrayPropsNativeComponentViewManager extends SimpleViewManager<View
   }
 
   private void test() {
-    ArrayPropsNativeComponentViewManagerDelegate delegate =
-        new ArrayPropsNativeComponentViewManagerDelegate<ViewGroup>();
+    ArrayPropsNativeComponentViewManagerDelegate<ViewGroup, ArrayPropsNativeComponentViewManager>
+        delegate = new ArrayPropsNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override
@@ -47,5 +54,11 @@ public class ArrayPropsNativeComponentViewManager extends SimpleViewManager<View
   public void setPoints(ViewGroup view, ReadableArray value) {}
 
   @Override
+  public void setEdgeInsets(ViewGroup view, ReadableArray value) {}
+
+  @Override
   public void setSizes(ViewGroup view, ReadableArray value) {}
+
+  @Override
+  public void setObject(ViewGroup view, ReadableArray value) {}
 }

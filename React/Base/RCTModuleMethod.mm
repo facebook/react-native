@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -33,9 +33,7 @@ static SEL selectorForType(NSString *type)
 
 @implementation RCTMethodArgument
 
-- (instancetype)initWithType:(NSString *)type
-                 nullability:(RCTNullability)nullability
-                      unused:(BOOL)unused
+- (instancetype)initWithType:(NSString *)type nullability:(RCTNullability)nullability unused:(BOOL)unused
 {
   if (self = [super init]) {
     _type = [type copy];
@@ -47,8 +45,7 @@ static SEL selectorForType(NSString *type)
 
 @end
 
-@implementation RCTModuleMethod
-{
+@implementation RCTModuleMethod {
   Class _moduleClass;
   const RCTMethodInfo *_methodInfo;
   NSString *_JSMethodName;
@@ -59,15 +56,18 @@ static SEL selectorForType(NSString *type)
   NSMutableArray *_retainedObjects;
 }
 
-static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
-                                id valueOrType, const char *issue)
+static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index, id valueOrType, const char *issue)
 {
-  RCTLogError(@"Argument %tu (%@) of %@.%s %s", index, valueOrType,
-              RCTBridgeModuleNameForClass(method->_moduleClass),
-              method.JSMethodName, issue);
+  RCTLogError(
+      @"Argument %tu (%@) of %@.%s %s",
+      index,
+      valueOrType,
+      RCTBridgeModuleNameForClass(method->_moduleClass),
+      method.JSMethodName,
+      issue);
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 RCT_EXTERN_C_BEGIN
 
@@ -90,9 +90,8 @@ static BOOL RCTParseSelectorPart(const char **input, NSMutableString *selector)
 
 static BOOL RCTParseUnused(const char **input)
 {
-  return RCTReadString(input, "__attribute__((unused))") ||
-         RCTReadString(input, "__attribute__((__unused__))") ||
-         RCTReadString(input, "__unused");
+  return RCTReadString(input, "__attribute__((unused))") || RCTReadString(input, "__attribute__((__unused__))") ||
+      RCTReadString(input, "__unused");
 }
 
 static RCTNullability RCTParseNullability(const char **input)
@@ -107,11 +106,9 @@ static RCTNullability RCTParseNullability(const char **input)
 
 static RCTNullability RCTParseNullabilityPostfix(const char **input)
 {
-  if (RCTReadString(input, "_Nullable") ||
-      RCTReadString(input, "__nullable")) {
+  if (RCTReadString(input, "_Nullable") || RCTReadString(input, "__nullable")) {
     return RCTNullable;
-  } else if (RCTReadString(input, "_Nonnull") ||
-             RCTReadString(input, "__nonnull")) {
+  } else if (RCTReadString(input, "_Nonnull") || RCTReadString(input, "__nonnull")) {
     return RCTNonnullable;
   }
   return RCTNullabilityUnspecified;
@@ -119,13 +116,15 @@ static RCTNullability RCTParseNullabilityPostfix(const char **input)
 
 // returns YES if execution is safe to proceed (enqueue callback invocation), NO if callback has already been invoked
 #if RCT_DEBUG
-static BOOL checkCallbackMultipleInvocations(BOOL *didInvoke) {
+static BOOL checkCallbackMultipleInvocations(BOOL *didInvoke)
+{
   if (*didInvoke) {
-      RCTFatal(RCTErrorWithMessage(@"Illegal callback invocation from native module. This callback type only permits a single invocation from native code."));
-      return NO;
+    RCTFatal(RCTErrorWithMessage(
+        @"Illegal callback invocation from native module. This callback type only permits a single invocation from native code."));
+    return NO;
   } else {
-      *didInvoke = YES;
-      return YES;
+    *didInvoke = YES;
+    return YES;
   }
 }
 #endif
@@ -144,20 +143,20 @@ NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *
     // Parse type
     if (RCTReadChar(&input, '(')) {
       RCTSkipWhitespace(&input);
-      
+
       // 5 cases that both nullable and __unused exist
       // 1: foo:(nullable __unused id)foo 2: foo:(nullable id __unused)foo
       // 3: foo:(__unused id _Nullable)foo 4: foo:(id __unused _Nullable)foo
       // 5: foo:(id _Nullable __unused)foo
       RCTNullability nullability = RCTParseNullability(&input);
       RCTSkipWhitespace(&input);
-      
+
       BOOL unused = RCTParseUnused(&input);
       RCTSkipWhitespace(&input);
 
       NSString *type = RCTParseType(&input);
       RCTSkipWhitespace(&input);
-      
+
       if (nullability == RCTNullabilityUnspecified) {
         nullability = RCTParseNullabilityPostfix(&input);
         RCTSkipWhitespace(&input);
@@ -173,17 +172,13 @@ NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *
         unused = RCTParseUnused(&input);
         RCTSkipWhitespace(&input);
       }
-      [args addObject:[[RCTMethodArgument alloc] initWithType:type
-                                                  nullability:nullability
-                                                       unused:unused]];
+      [args addObject:[[RCTMethodArgument alloc] initWithType:type nullability:nullability unused:unused]];
       RCTSkipWhitespace(&input);
       RCTReadChar(&input, ')');
       RCTSkipWhitespace(&input);
     } else {
       // Type defaults to id if unspecified
-      [args addObject:[[RCTMethodArgument alloc] initWithType:@"id"
-                                                  nullability:RCTNullable
-                                                       unused:NO]];
+      [args addObject:[[RCTMethodArgument alloc] initWithType:@"id" nullability:RCTNullable unused:NO]];
     }
 
     // Argument name
@@ -197,8 +192,7 @@ NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *
 
 RCT_EXTERN_C_END
 
-- (instancetype)initWithExportedMethod:(const RCTMethodInfo *)exportedMethod
-                           moduleClass:(Class)moduleClass
+- (instancetype)initWithExportedMethod:(const RCTMethodInfo *)exportedMethod moduleClass:(Class)moduleClass
 {
   if (self = [super init]) {
     _moduleClass = moduleClass;
@@ -224,33 +218,32 @@ RCT_EXTERN_C_END
 
   // Process arguments
   NSUInteger numberOfArguments = methodSignature.numberOfArguments;
-  NSMutableArray<RCTArgumentBlock> *argumentBlocks =
-    [[NSMutableArray alloc] initWithCapacity:numberOfArguments - 2];
+  NSMutableArray<RCTArgumentBlock> *argumentBlocks = [[NSMutableArray alloc] initWithCapacity:numberOfArguments - 2];
 
 #if RCT_DEBUG
   __weak RCTModuleMethod *weakSelf = self;
 #endif
 
-#define RCT_RETAINED_ARG_BLOCK(_logic) \
-[argumentBlocks addObject:^(__unused __weak RCTBridge *bridge, NSUInteger index, id json) { \
-  _logic                                                                             \
-  [invocation setArgument:&value atIndex:(index) + 2];                               \
-  if (value) {                                                                       \
-    [retainedObjects addObject:value];                                               \
-  }                                                                                  \
-  return YES;                                                                        \
-}]
+#define RCT_RETAINED_ARG_BLOCK(_logic)                                                         \
+  [argumentBlocks addObject:^(__unused __weak RCTBridge * bridge, NSUInteger index, id json) { \
+    _logic [invocation setArgument:&value atIndex:(index) + 2];                                \
+    if (value) {                                                                               \
+      [retainedObjects addObject:value];                                                       \
+    }                                                                                          \
+    return YES;                                                                                \
+  }]
 
-#define __PRIMITIVE_CASE(_type, _nullable) {                                           \
-  isNullableType = _nullable;                                                          \
-  _type (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;                   \
-  [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
-    _type value = convert([RCTConvert class], selector, json);                         \
-    [invocation setArgument:&value atIndex:(index) + 2];                               \
-    return YES;                                                                        \
-  }];                                                                                  \
-  break;                                                                               \
-}
+#define __PRIMITIVE_CASE(_type, _nullable)                                                \
+  {                                                                                       \
+    isNullableType = _nullable;                                                           \
+    _type (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;                    \
+    [argumentBlocks addObject:^(__unused RCTBridge * bridge, NSUInteger index, id json) { \
+      _type value = convert([RCTConvert class], selector, json);                          \
+      [invocation setArgument:&value atIndex:(index) + 2];                                \
+      return YES;                                                                         \
+    }];                                                                                   \
+    break;                                                                                \
+  }
 
 #define PRIMITIVE_CASE(_type) __PRIMITIVE_CASE(_type, NO)
 #define NULLABLE_PRIMITIVE_CASE(_type) __PRIMITIVE_CASE(_type, YES)
@@ -260,22 +253,22 @@ RCT_EXTERN_C_END
   id value = [block copy];             \
   if (value) {                         \
     [retainedObjects addObject:value]; \
-  }                                    \
+  }
 
 #if RCT_DEBUG
-#define BLOCK_CASE(_block_args, _block) RCT_RETAINED_ARG_BLOCK(         \
-  if (json && ![json isKindOfClass:[NSNumber class]]) {                 \
-    RCTLogArgumentError(weakSelf, index, json, "should be a function"); \
-    return NO;                                                          \
-  }                                                                     \
-  __block BOOL didInvoke = NO;                                          \
-  __COPY_BLOCK(^_block_args {                                           \
-    if (checkCallbackMultipleInvocations(&didInvoke)) _block            \
-  });                                                                   \
-)
+#define BLOCK_CASE(_block_args, _block)                                        \
+  RCT_RETAINED_ARG_BLOCK(if (json && ![json isKindOfClass:[NSNumber class]]) { \
+    RCTLogArgumentError(weakSelf, index, json, "should be a function");        \
+    return NO;                                                                 \
+  } __block BOOL didInvoke = NO;                                               \
+                         __COPY_BLOCK(^_block_args {                           \
+                           if (checkCallbackMultipleInvocations(&didInvoke))   \
+                             _block                                            \
+                         });)
 #else
-#define BLOCK_CASE(_block_args, _block) \
-  RCT_RETAINED_ARG_BLOCK( __COPY_BLOCK(^_block_args { _block }); )
+#define BLOCK_CASE(_block_args, _block)             \
+  RCT_RETAINED_ARG_BLOCK(__COPY_BLOCK(^_block_args{ \
+      _block});)
 #endif
 
   for (NSUInteger i = 2; i < numberOfArguments; i++) {
@@ -287,29 +280,43 @@ RCT_EXTERN_C_END
     if ([RCTConvert respondsToSelector:selector]) {
       switch (objcType[0]) {
         // Primitives
-        case _C_CHR: PRIMITIVE_CASE(char)
-        case _C_UCHR: PRIMITIVE_CASE(unsigned char)
-        case _C_SHT: PRIMITIVE_CASE(short)
-        case _C_USHT: PRIMITIVE_CASE(unsigned short)
-        case _C_INT: PRIMITIVE_CASE(int)
-        case _C_UINT: PRIMITIVE_CASE(unsigned int)
-        case _C_LNG: PRIMITIVE_CASE(long)
-        case _C_ULNG: PRIMITIVE_CASE(unsigned long)
-        case _C_LNG_LNG: PRIMITIVE_CASE(long long)
-        case _C_ULNG_LNG: PRIMITIVE_CASE(unsigned long long)
-        case _C_FLT: PRIMITIVE_CASE(float)
-        case _C_DBL: PRIMITIVE_CASE(double)
-        case _C_BOOL: PRIMITIVE_CASE(BOOL)
-        case _C_SEL: NULLABLE_PRIMITIVE_CASE(SEL)
-        case _C_CHARPTR: NULLABLE_PRIMITIVE_CASE(const char *)
-        case _C_PTR: NULLABLE_PRIMITIVE_CASE(void *)
+        case _C_CHR:
+          PRIMITIVE_CASE(char)
+        case _C_UCHR:
+          PRIMITIVE_CASE(unsigned char)
+        case _C_SHT:
+          PRIMITIVE_CASE(short)
+        case _C_USHT:
+          PRIMITIVE_CASE(unsigned short)
+        case _C_INT:
+          PRIMITIVE_CASE(int)
+        case _C_UINT:
+          PRIMITIVE_CASE(unsigned int)
+        case _C_LNG:
+          PRIMITIVE_CASE(long)
+        case _C_ULNG:
+          PRIMITIVE_CASE(unsigned long)
+        case _C_LNG_LNG:
+          PRIMITIVE_CASE(long long)
+        case _C_ULNG_LNG:
+          PRIMITIVE_CASE(unsigned long long)
+        case _C_FLT:
+          PRIMITIVE_CASE(float)
+        case _C_DBL:
+          PRIMITIVE_CASE(double)
+        case _C_BOOL:
+          PRIMITIVE_CASE(BOOL)
+        case _C_SEL:
+          NULLABLE_PRIMITIVE_CASE(SEL)
+        case _C_CHARPTR:
+          NULLABLE_PRIMITIVE_CASE(const char *)
+        case _C_PTR:
+          NULLABLE_PRIMITIVE_CASE(void *)
 
         case _C_ID: {
           isNullableType = YES;
           id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
-          RCT_RETAINED_ARG_BLOCK(
-            id value = convert([RCTConvert class], selector, json);
-          );
+          RCT_RETAINED_ARG_BLOCK(id value = convert([RCTConvert class], selector, json););
           break;
         }
 
@@ -338,44 +345,35 @@ RCT_EXTERN_C_END
         }
 
         default: {
-          static const char *blockType = @encode(__typeof__(^{}));
+          static const char *blockType = @encode(__typeof__(^{
+          }));
           if (!strcmp(objcType, blockType)) {
-            BLOCK_CASE((NSArray *args), {
-              [bridge enqueueCallback:json args:args];
-            });
+            BLOCK_CASE((NSArray * args), { [bridge enqueueCallback:json args:args]; });
           } else {
-            RCTLogError(@"Unsupported argument type '%@' in method %@.",
-                        typeName, [self methodName]);
+            RCTLogError(@"Unsupported argument type '%@' in method %@.", typeName, [self methodName]);
           }
         }
       }
     } else if ([typeName isEqualToString:@"RCTResponseSenderBlock"]) {
-      BLOCK_CASE((NSArray *args), {
-        [bridge enqueueCallback:json args:args];
-      });
+      BLOCK_CASE((NSArray * args), { [bridge enqueueCallback:json args:args]; });
     } else if ([typeName isEqualToString:@"RCTResponseErrorBlock"]) {
-      BLOCK_CASE((NSError *error), {
-        [bridge enqueueCallback:json args:@[RCTJSErrorFromNSError(error)]];
-      });
+      BLOCK_CASE((NSError * error), { [bridge enqueueCallback:json args:@[ RCTJSErrorFromNSError(error) ]]; });
     } else if ([typeName isEqualToString:@"RCTPromiseResolveBlock"]) {
-      RCTAssert(i == numberOfArguments - 2,
-                @"The RCTPromiseResolveBlock must be the second to last parameter in %@",
-                [self methodName]);
-      BLOCK_CASE((id result), {
-        [bridge enqueueCallback:json args:result ? @[result] : @[]];
-      });
+      RCTAssert(
+          i == numberOfArguments - 2,
+          @"The RCTPromiseResolveBlock must be the second to last parameter in %@",
+          [self methodName]);
+      BLOCK_CASE((id result), { [bridge enqueueCallback:json args:result ? @[ result ] : @[]]; });
     } else if ([typeName isEqualToString:@"RCTPromiseRejectBlock"]) {
-      RCTAssert(i == numberOfArguments - 1,
-                @"The RCTPromiseRejectBlock must be the last parameter in %@",
-                [self methodName]);
-      BLOCK_CASE((NSString *code, NSString *message, NSError *error), {
+      RCTAssert(
+          i == numberOfArguments - 1, @"The RCTPromiseRejectBlock must be the last parameter in %@", [self methodName]);
+      BLOCK_CASE((NSString * code, NSString * message, NSError * error), {
         NSDictionary *errorJSON = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-        [bridge enqueueCallback:json args:@[errorJSON]];
+        [bridge enqueueCallback:json args:@[ errorJSON ]];
       });
     } else if ([typeName hasPrefix:@"JS::"]) {
       NSString *selectorNameForCxxType =
-      [[typeName stringByReplacingOccurrencesOfString:@"::" withString:@"_"]
-       stringByAppendingString:@":"];
+          [[typeName stringByReplacingOccurrencesOfString:@"::" withString:@"_"] stringByAppendingString:@":"];
       selector = NSSelectorFromString(selectorNameForCxxType);
 
       [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) {
@@ -390,16 +388,22 @@ RCT_EXTERN_C_END
       }];
     } else {
       // Unknown argument type
-      RCTLogError(@"Unknown argument type '%@' in method %@. Extend RCTConvert to support this type.",
-                  typeName, [self methodName]);
+      RCTLogError(
+          @"Unknown argument type '%@' in method %@. Extend RCTConvert to support this type.",
+          typeName,
+          [self methodName]);
     }
 
 #if RCT_DEBUG
     RCTNullability nullability = argument.nullability;
     if (!isNullableType) {
       if (nullability == RCTNullable) {
-        RCTLogArgumentError(weakSelf, i - 2, typeName, "is marked as "
-                            "nullable, but is not a nullable type.");
+        RCTLogArgumentError(
+            weakSelf,
+            i - 2,
+            typeName,
+            "is marked as "
+            "nullable, but is not a nullable type.");
       }
       nullability = RCTNonnullable;
     }
@@ -411,11 +415,15 @@ RCT_EXTERN_C_END
     if ([typeName isEqualToString:@"NSNumber"]) {
       BOOL unspecified = (nullability == RCTNullabilityUnspecified);
       if (!argument.unused && (nullability == RCTNullable || unspecified)) {
-        RCTLogArgumentError(weakSelf, i - 2, typeName,
-          [unspecified ? @"has unspecified nullability" : @"is marked as nullable"
-           stringByAppendingString: @" but React requires that all NSNumber "
-           "arguments are explicitly marked as `nonnull` to ensure "
-           "compatibility with Android."].UTF8String);
+        RCTLogArgumentError(
+            weakSelf,
+            i - 2,
+            typeName,
+            [unspecified ? @"has unspecified nullability" : @"is marked as nullable"
+                stringByAppendingString:@" but React requires that all NSNumber "
+                                         "arguments are explicitly marked as `nonnull` to ensure "
+                                         "compatibility with Android."]
+                .UTF8String);
       }
       nullability = RCTNonnullable;
     }
@@ -448,8 +456,10 @@ RCT_EXTERN_C_END
 #if RCT_DEBUG
   const char *objcType = _invocation.methodSignature.methodReturnType;
   if (_methodInfo->isSync && objcType[0] != _C_ID) {
-    RCTLogError(@"Return type of %@.%s should be (id) as the method is \"sync\"",
-                RCTBridgeModuleNameForClass(_moduleClass), self.JSMethodName);
+    RCTLogError(
+        @"Return type of %@.%s should be (id) as the method is \"sync\"",
+        RCTBridgeModuleNameForClass(_moduleClass),
+        self.JSMethodName);
   }
 #endif
 
@@ -459,8 +469,10 @@ RCT_EXTERN_C_END
 - (SEL)selector
 {
   if (_selector == NULL) {
-    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"", (@{ @"module": NSStringFromClass(_moduleClass),
-                                                          @"method": @(_methodInfo->objcName) }));
+    RCT_PROFILE_BEGIN_EVENT(
+        RCTProfileTagAlways,
+        @"",
+        (@{@"module" : NSStringFromClass(_moduleClass), @"method" : @(_methodInfo->objcName)}));
     [self processMethodSignature];
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
@@ -481,8 +493,11 @@ RCT_EXTERN_C_END
         methodName = [methodName substringToIndex:colonRange.location];
       }
       methodName = [methodName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-      RCTAssert(methodName.length, @"%s is not a valid JS function name, please"
-                " supply an alternative using RCT_REMAP_METHOD()", _methodInfo->objcName);
+      RCTAssert(
+          methodName.length,
+          @"%s is not a valid JS function name, please"
+           " supply an alternative using RCT_REMAP_METHOD()",
+          _methodInfo->objcName);
     }
     _JSMethodName = methodName;
   }
@@ -501,9 +516,7 @@ RCT_EXTERN_C_END
   }
 }
 
-- (id)invokeWithBridge:(RCTBridge *)bridge
-                module:(id)module
-             arguments:(NSArray *)arguments
+- (id)invokeWithBridge:(RCTBridge *)bridge module:(id)module arguments:(NSArray *)arguments
 {
   if (_argumentBlocks == nil) {
     [self processMethodSignature];
@@ -525,12 +538,15 @@ RCT_EXTERN_C_END
       expectedCount -= 2;
     }
 
-    RCTLogError(@"%@.%s was called with %lld arguments but expects %lld arguments. "
-                @"If you haven\'t changed this method yourself, this usually means that "
-                @"your versions of the native code and JavaScript code are out of sync. "
-                @"Updating both should make this error go away.",
-                RCTBridgeModuleNameForClass(_moduleClass), self.JSMethodName,
-                (long long)actualCount, (long long)expectedCount);
+    RCTLogError(
+        @"%@.%s was called with %lld arguments but expects %lld arguments. "
+        @"If you haven\'t changed this method yourself, this usually means that "
+        @"your versions of the native code and JavaScript code are out of sync. "
+        @"Updating both should make this error go away.",
+        RCTBridgeModuleNameForClass(_moduleClass),
+        self.JSMethodName,
+        (long long)actualCount,
+        (long long)expectedCount);
     return nil;
   }
 #endif
@@ -555,12 +571,11 @@ RCT_EXTERN_C_END
     CFTimeInterval duration = CACurrentMediaTime() - start;
     if (duration > RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD) {
       RCTLogWarn(
-                 @"Main Thread Watchdog: Invocation of %@ blocked the main thread for %dms. "
-                 "Consider using background-threaded modules and asynchronous calls "
-                 "to spend less time on the main thread and keep the app's UI responsive.",
-                 [self methodName],
-                 (int)(duration * 1000)
-                 );
+          @"Main Thread Watchdog: Invocation of %@ blocked the main thread for %dms. "
+           "Consider using background-threaded modules and asynchronous calls "
+           "to spend less time on the main thread and keep the app's UI responsive.",
+          [self methodName],
+          (int)(duration * 1000));
     }
   } else {
     [_invocation invokeWithTarget:module];
@@ -590,7 +605,11 @@ RCT_EXTERN_C_END
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<%@: %p; exports %@ as %s(); type: %s>",
-          [self class], self, [self methodName], self.JSMethodName, RCTFunctionDescriptorFromType(self.functionType)];
+                                    [self class],
+                                    self,
+                                    [self methodName],
+                                    self.JSMethodName,
+                                    RCTFunctionDescriptorFromType(self.functionType)];
 }
 
 @end

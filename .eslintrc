@@ -5,13 +5,28 @@
     "./packages/eslint-config-react-native-community/index.js"
   ],
 
+  "plugins": [
+    "@react-native/eslint-plugin-codegen"
+  ],
+
   "overrides": [
     {
       "files": [
         "Libraries/**/*.js",
       ],
-      rules: {
-        '@react-native-community/no-haste-imports': 2
+      "rules": {
+        "@react-native-community/no-haste-imports": 2,
+        "@react-native-community/error-subclass-name": 2,
+        "@react-native-community/platform-colors": 2,
+        "@react-native/codegen/react-native-modules": 2
+      }
+    },
+    {
+      "files": [
+        "flow-typed/**/*.js",
+      ],
+      "rules": {
+        quotes: 0
       }
     },
     {
@@ -20,7 +35,7 @@
         "**/__mocks__/**/*.js",
         "**/__tests__/**/*.js",
         "jest/**/*.js",
-        "RNTester/**/*.js",
+        "packages/rn-tester/**/*.js",
       ],
       "globals": {
         // Expose some Jest globals for test helpers
@@ -38,8 +53,8 @@
       ],
       "env": {
         "jasmine": true,
-        "jest": true,
-      },
-    },
-  ],
+        "jest": true
+      }
+    }
+  ]
 }

@@ -14,6 +14,7 @@ type truncateOptions = {
   breakOnWords: boolean,
   minDelta: number,
   elipsis: string,
+  ...
 };
 
 const defaultOptions = {

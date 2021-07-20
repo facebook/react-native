@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "MessageConverters.h"
 
@@ -30,6 +35,11 @@ m::OkResponse m::makeOkResponse(int id) {
   return resp;
 }
 
+std::string m::stripCachePrevention(const std::string &url) {
+  std::regex regex("&?cachePrevention=[0-9]*");
+  return std::regex_replace(url, regex, "");
+}
+
 /*
  * debugger message conversion helpers
  */
@@ -49,7 +59,7 @@ m::debugger::CallFrame m::debugger::makeCallFrame(
     const h::debugger::CallFrameInfo &callFrameInfo,
     const h::debugger::LexicalInfo &lexicalInfo,
     RemoteObjectsTable &objTable,
-    HermesRuntime &runtime,
+    jsi::Runtime &runtime,
     const facebook::hermes::debugger::ProgramState &state) {
   m::debugger::CallFrame result;
 
@@ -58,21 +68,38 @@ m::debugger::CallFrame m::debugger::makeCallFrame(
   result.location = makeLocation(callFrameInfo.location);
 
   uint32_t scopeCount = lexicalInfo.getScopesCount();
-  for (uint32_t scopeIndex = 0; scopeIndex < scopeCount; scopeIndex++) {
+
+  // First we have our local scope (unless we're in the global function)
+  if (scopeCount > 1) {
+    m::debugger::Scope scope;
+    scope.type = "local";
+    scope.object.objectId = objTable.addScope(
+        std::make_pair(callFrameIndex, 0), BacktraceObjectGroup);
+    scope.object.type = "object";
+    scope.object.className = "Object";
+    result.scopeChain.emplace_back(std::move(scope));
+  }
+
+  // Then we have zero or more parent closure scopes
+  for (uint32_t scopeIndex = 1; scopeIndex < scopeCount - 1; scopeIndex++) {
     m::debugger::Scope scope;
 
-    if (scopeIndex == scopeCount - 1) {
-      scope.type = "global";
-      scope.name = "Global Scope";
-      scope.object.objectId =
-          objTable.addValue(runtime.global(), BacktraceObjectGroup);
-    } else {
-      scope.type = "local";
-      scope.name = "Scope " + folly::to<std::string>(scopeIndex);
-      scope.object.objectId = objTable.addScope(
-          std::make_pair(callFrameIndex, scopeIndex), BacktraceObjectGroup);
-    }
+    scope.type = "closure";
+    // TODO: Get the parent closure's name
+    scope.name = folly::to<std::string>(scopeIndex);
+    scope.object.objectId = objTable.addScope(
+        std::make_pair(callFrameIndex, scopeIndex), BacktraceObjectGroup);
+    scope.object.type = "object";
+    scope.object.className = "Object";
+    result.scopeChain.emplace_back(std::move(scope));
+  }
 
+  // Finally, we always have the global scope
+  {
+    m::debugger::Scope scope;
+    scope.type = "global";
+    scope.object.objectId =
+        objTable.addValue(runtime.global(), BacktraceObjectGroup);
     scope.object.type = "object";
     scope.object.className = "Object";
     result.scopeChain.emplace_back(std::move(scope));
@@ -88,7 +115,7 @@ m::debugger::CallFrame m::debugger::makeCallFrame(
 std::vector<m::debugger::CallFrame> m::debugger::makeCallFrames(
     const h::debugger::ProgramState &state,
     RemoteObjectsTable &objTable,
-    HermesRuntime &runtime) {
+    jsi::Runtime &runtime) {
   const h::debugger::StackTrace &stackTrace = state.getStackTrace();
   uint32_t count = stackTrace.callFrameCount();
 
@@ -153,7 +180,8 @@ m::runtime::RemoteObject m::runtime::makeRemoteObject(
     facebook::jsi::Runtime &runtime,
     const facebook::jsi::Value &value,
     RemoteObjectsTable &objTable,
-    const std::string &objectGroup) {
+    const std::string &objectGroup,
+    bool byValue) {
   m::runtime::RemoteObject result;
 
   if (value.isUndefined()) {
@@ -202,8 +230,13 @@ m::runtime::RemoteObject m::runtime::makeRemoteObject(
       result.description = result.className = "Object";
     }
 
-    result.objectId =
-        objTable.addValue(jsi::Value(std::move(obj)), objectGroup);
+    if (byValue) {
+      // FIXME: JSI currently does not handle cycles and functions well here
+      result.value = jsi::dynamicFromValue(runtime, value);
+    } else {
+      result.objectId =
+          objTable.addValue(jsi::Value(std::move(obj)), objectGroup);
+    }
   }
 
   return result;

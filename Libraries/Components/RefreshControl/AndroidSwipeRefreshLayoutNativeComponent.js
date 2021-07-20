@@ -5,13 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-'use strict';
+import * as React from 'react';
 
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 import type {
   DirectEventHandler,
@@ -19,7 +20,7 @@ import type {
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 type NativeProps = $ReadOnly<{|
@@ -28,7 +29,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Whether the pull to refresh functionality is enabled.
    */
-  enabled?: WithDefault<boolean, false>,
+  enabled?: WithDefault<boolean, true>,
   /**
    * The colors (at least one) that will be used to draw the refresh indicator.
    */
@@ -38,17 +39,9 @@ type NativeProps = $ReadOnly<{|
    */
   progressBackgroundColor?: ?ColorValue,
   /**
-   * Size of the refresh indicator, see RefreshControl.SIZE.
-   *
-   * This type isn't currently accurate. It really is specific numbers
-   * hard coded in the Android platform.
-   *
-   * Also, 1 isn't actually a safe default. We are able to set this here
-   * because native code isn't currently consuming the generated artifact.
-   * This will end up being
-   * size?: WithDefault<'default' | 'large', 'default'>,
+   * Size of the refresh indicator.
    */
-  size?: WithDefault<Int32, 1>,
+  size?: WithDefault<'default' | 'large', 'default'>,
   /**
    * Progress view top offset
    */
@@ -65,6 +58,19 @@ type NativeProps = $ReadOnly<{|
   refreshing: boolean,
 |}>;
 
+type NativeType = HostComponent<NativeProps>;
+
+interface NativeCommands {
+  +setNativeRefreshing: (
+    viewRef: React.ElementRef<NativeType>,
+    value: boolean,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['setNativeRefreshing'],
+});
+
 export default (codegenNativeComponent<NativeProps>(
   'AndroidSwipeRefreshLayout',
-): NativeComponentType<NativeProps>);
+): NativeType);

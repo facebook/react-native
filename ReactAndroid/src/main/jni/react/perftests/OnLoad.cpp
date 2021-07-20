@@ -1,15 +1,17 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
-
-#include <fb/log.h>
-#include <fb/fbjni.h>
 #include <cxxreact/CxxModule.h>
 #include <cxxreact/JsArgumentHelpers.h>
+#include <fb/log.h>
+#include <fbjni/fbjni.h>
 
-#include <mutex>
 #include <condition_variable>
+#include <mutex>
 
 namespace facebook {
 namespace react {
@@ -25,9 +27,9 @@ namespace {
 // really desperate, you can fix this by using ToReflectedMethod on the
 // underlying jmethodid and invoking that.
 class JavaJSModule : public jni::JavaClass<JavaJSModule> {
-public:
+ public:
   static constexpr auto kJavaDescriptor =
-    "Lcom/facebook/react/CatalystBridgeBenchmarks$BridgeBenchmarkModule;";
+      "Lcom/facebook/react/CatalystBridgeBenchmarks$BridgeBenchmarkModule;";
 
   static void bounceCxx(alias_ref<javaobject> obj, int iters) {
     static auto method = javaClassLocal()->getMethod<void(jint)>("bounceCxx");
@@ -37,20 +39,35 @@ public:
   static void bounceArgsCxx(
       alias_ref<javaobject> obj,
       int iters,
-      int a, int b,
-      double x, double y,
-      const std::string& s, const std::string& t) {
+      int a,
+      int b,
+      double x,
+      double y,
+      const std::string &s,
+      const std::string &t) {
     static auto method =
-      javaClassLocal()->getMethod<void(jint, jint, jint, jdouble, jdouble, jstring, jstring)>("bounceArgsCxx");
-    method(obj, iters, a, b, x, y, jni::make_jstring(s).get(), jni::make_jstring(t).get());
+        javaClassLocal()
+            ->getMethod<void(
+                jint, jint, jint, jdouble, jdouble, jstring, jstring)>(
+                "bounceArgsCxx");
+    method(
+        obj,
+        iters,
+        a,
+        b,
+        x,
+        y,
+        jni::make_jstring(s).get(),
+        jni::make_jstring(t).get());
   }
 };
 
 // This is just the test instance itself. Used only to countdown the latch.
-class CatalystBridgeBenchmarks : public jni::JavaClass<CatalystBridgeBenchmarks> {
-public:
+class CatalystBridgeBenchmarks
+    : public jni::JavaClass<CatalystBridgeBenchmarks> {
+ public:
   static constexpr auto kJavaDescriptor =
-    "Lcom/facebook/react/CatalystBridgeBenchmarks;";
+      "Lcom/facebook/react/CatalystBridgeBenchmarks;";
 
   static void countDown(alias_ref<javaobject> obj) {
     static auto method = javaClassLocal()->getMethod<void()>("countDown");
@@ -70,7 +87,7 @@ Data data;
 void runBounce(jni::alias_ref<jclass>, bool isLeft, int iters) {
   for (int i = 0; i < iters; i++) {
     std::unique_lock<std::mutex> lk(data.m);
-    data.cv.wait(lk, [&]{ return data.leftActive == isLeft; });
+    data.cv.wait(lk, [&] { return data.leftActive == isLeft; });
     data.leftActive = !isLeft;
     data.cv.notify_one();
   }
@@ -80,30 +97,35 @@ static jni::global_ref<JavaJSModule::javaobject> jsModule;
 static jni::global_ref<CatalystBridgeBenchmarks::javaobject> javaTestInstance;
 
 class CxxBenchmarkModule : public xplat::module::CxxModule {
-public:
+ public:
   virtual std::string getName() override {
     return "CxxBenchmarkModule";
   }
 
-  virtual auto getConstants() -> std::map<std::string, folly::dynamic> override {
+  virtual auto getConstants()
+      -> std::map<std::string, folly::dynamic> override {
     return std::map<std::string, folly::dynamic>();
   }
 
   virtual auto getMethods() -> std::vector<Method> override {
     return std::vector<Method>{
-      Method("bounce", [this] (folly::dynamic args) {
-          this->bounce(xplat::jsArgAsInt(args, 0));
-      }),
-      Method("bounceArgs", [this] (folly::dynamic args) {
-          this->bounceArgs(
-            xplat::jsArgAsInt(args, 0),
-            xplat::jsArgAsInt(args, 1),
-            xplat::jsArgAsInt(args, 2),
-            xplat::jsArgAsDouble(args, 3),
-            xplat::jsArgAsDouble(args, 4),
-            xplat::jsArgAsString(args, 5),
-            xplat::jsArgAsString(args, 6));
-      }),
+        Method(
+            "bounce",
+            [this](folly::dynamic args) {
+              this->bounce(xplat::jsArgAsInt(args, 0));
+            }),
+        Method(
+            "bounceArgs",
+            [this](folly::dynamic args) {
+              this->bounceArgs(
+                  xplat::jsArgAsInt(args, 0),
+                  xplat::jsArgAsInt(args, 1),
+                  xplat::jsArgAsInt(args, 2),
+                  xplat::jsArgAsDouble(args, 3),
+                  xplat::jsArgAsDouble(args, 4),
+                  xplat::jsArgAsString(args, 5),
+                  xplat::jsArgAsString(args, 6));
+            }),
     };
   }
 
@@ -117,9 +139,12 @@ public:
 
   void bounceArgs(
       int iters,
-      int a, int b,
-      double x, double y,
-      const std::string& s, const std::string& t) {
+      int a,
+      int b,
+      double x,
+      double y,
+      const std::string &s,
+      const std::string &t) {
     if (iters == 0) {
       CatalystBridgeBenchmarks::countDown(javaTestInstance);
     } else {
@@ -128,7 +153,6 @@ public:
   }
 };
 
-
 void setUp(
     alias_ref<CatalystBridgeBenchmarks::javaobject> obj,
     alias_ref<JavaJSModule::javaobject> mod) {
@@ -136,8 +160,7 @@ void setUp(
   jsModule = jni::make_global(mod);
 }
 
-void tearDown(
-    alias_ref<CatalystBridgeBenchmarks::javaobject>) {
+void tearDown(alias_ref<CatalystBridgeBenchmarks::javaobject>) {
   javaTestInstance.reset();
   jsModule.reset();
 }
@@ -161,17 +184,21 @@ static void stubLogHandler(int pri, const char *tag, const char *msg) {
   gHasSeenMessage |= priorityMatches && substringFound;
 }
 
-static jboolean hasSeenExpectedLogMessage(JNIEnv*, jclass) {
+static jboolean hasSeenExpectedLogMessage(JNIEnv *, jclass) {
   return gHasSeenMessage ? JNI_TRUE : JNI_FALSE;
 }
 
-static void stopWatchingLogMessages(JNIEnv*, jclass) {
+static void stopWatchingLogMessages(JNIEnv *, jclass) {
   gMessageToLookFor = "";
   gHasSeenMessage = false;
   setLogHandler(NULL);
 }
 
-static void startWatchingForLogMessage(JNIEnv* env, jclass loggerClass, jstring jmsg, jint priority) {
+static void startWatchingForLogMessage(
+    JNIEnv *env,
+    jclass loggerClass,
+    jstring jmsg,
+    jint priority) {
   stopWatchingLogMessages(env, loggerClass);
   gMessageToLookFor = jni::wrap_alias(jmsg)->toStdString();
   gMessagePriorityToLookFor = priority;
@@ -185,24 +212,34 @@ static void startWatchingForLogMessage(JNIEnv* env, jclass loggerClass, jstring 
 
 using namespace facebook::react;
 
-extern "C" facebook::xplat::module::CxxModule* CxxBenchmarkModule() {
+extern "C" facebook::xplat::module::CxxModule *CxxBenchmarkModule() {
   return new facebook::react::CxxBenchmarkModule();
 }
 
-extern "C" jint JNI_OnLoad(JavaVM* vm, void*) {
+extern "C" jint JNI_OnLoad(JavaVM *vm, void *) {
   return facebook::jni::initialize(vm, [] {
-      facebook::jni::registerNatives(
-        "com/facebook/catalyst/testing/LogWatcher", {
-          makeNativeMethod("startWatchingForLogMessage", "(Ljava/lang/String;I)V", logwatcher::startWatchingForLogMessage),
-          makeNativeMethod("stopWatchingLogMessages", "()V", logwatcher::stopWatchingLogMessages),
-          makeNativeMethod("hasSeenExpectedLogMessage", "()Z", logwatcher::hasSeenExpectedLogMessage),
-      });
-      facebook::jni::registerNatives(
-        "com/facebook/react/CatalystBridgeBenchmarks", {
-          makeNativeMethod("runNativeBounce", runBounce),
-          makeNativeMethod("nativeSetUp", setUp),
-          makeNativeMethod("nativeTearDown", tearDown),
+    facebook::jni::registerNatives(
+        "com/facebook/catalyst/testing/LogWatcher",
+        {
+            makeNativeMethod(
+                "startWatchingForLogMessage",
+                "(Ljava/lang/String;I)V",
+                logwatcher::startWatchingForLogMessage),
+            makeNativeMethod(
+                "stopWatchingLogMessages",
+                "()V",
+                logwatcher::stopWatchingLogMessages),
+            makeNativeMethod(
+                "hasSeenExpectedLogMessage",
+                "()Z",
+                logwatcher::hasSeenExpectedLogMessage),
         });
-      });
+    facebook::jni::registerNatives(
+        "com/facebook/react/CatalystBridgeBenchmarks",
+        {
+            makeNativeMethod("runNativeBounce", runBounce),
+            makeNativeMethod("nativeSetUp", setUp),
+            makeNativeMethod("nativeTearDown", tearDown),
+        });
+  });
 }
-

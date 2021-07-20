@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 #include "SyncConnection.h"
 
 #include <functional>
@@ -45,10 +52,15 @@ class SyncConnection::RemoteConnnection : public IRemoteConnection {
   SyncConnection &conn_;
 };
 
-SyncConnection::SyncConnection(std::shared_ptr<HermesRuntime> runtime)
+SyncConnection::SyncConnection(
+    std::shared_ptr<HermesRuntime> runtime,
+    bool waitForDebugger)
     : connection_(
-          std::make_unique<SharedRuntimeAdapter>(std::move(runtime)),
-          "testConn") {
+          std::make_unique<SharedRuntimeAdapter>(
+              runtime,
+              runtime->getDebugger()),
+          "testConn",
+          waitForDebugger) {
   connection_.connect(std::make_unique<RemoteConnnection>(*this));
 }
 

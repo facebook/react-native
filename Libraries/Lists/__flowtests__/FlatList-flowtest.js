@@ -13,7 +13,11 @@
 const FlatList = require('../FlatList');
 const React = require('react');
 
-function renderMyListItem(info: {item: {title: string}, index: number}) {
+function renderMyListItem(info: {
+  item: {title: string, ...},
+  index: number,
+  ...
+}) {
   return <span />;
 }
 
@@ -31,11 +35,11 @@ module.exports = {
   testBadDataWithTypicalItem(): React.Node {
     const data = [
       {
-        // $FlowExpectedError - bad title type 6, should be string
         title: 6,
         key: 1,
       },
     ];
+    // $FlowExpectedError - bad title type 6, should be string
     return <FlatList renderItem={renderMyListItem} data={data} />;
   },
 
@@ -93,7 +97,8 @@ module.exports = {
       />,
       // EverythingIsFine
       <FlatList
-        renderItem={(info: {item: {title: string}}) => <span />}
+        // $FlowExpectedError - bad title type number, should be string
+        renderItem={(info: {item: {title: string, ...}, ...}) => <span />}
         data={data}
       />,
     ];

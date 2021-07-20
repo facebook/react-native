@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.image;
 
 import static org.junit.Assert.assertEquals;
@@ -117,6 +118,14 @@ public class ReactImagePropertyTest {
     viewManager.updateProperties(view, buildStyles("borderRadius", (double) 10));
     viewManager.updateProperties(view, buildStyles("borderRadius", (double) 0));
     viewManager.updateProperties(view, buildStyles("borderRadius", null));
+  }
+
+  @Test
+  public void testAccessibilityFocus() {
+    ReactImageManager viewManager = new ReactImageManager();
+    ReactImageView view = viewManager.createViewInstance(mThemeContext);
+    viewManager.setAccessible(view, true);
+    assertEquals(true, view.isFocusable());
   }
 
   @Test

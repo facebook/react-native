@@ -4,21 +4,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
+ * @generate-docs
  */
 
-'use strict';
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import useMergeRefs from '../../Utilities/useMergeRefs';
 
-const AndroidSwitchNativeComponent = require('./AndroidSwitchNativeComponent');
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
+import AndroidSwitchNativeComponent, {
+  Commands as AndroidSwitchCommands,
+} from './AndroidSwitchNativeComponent';
+import SwitchNativeComponent, {
+  Commands as SwitchCommands,
+} from './SwitchNativeComponent';
 
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import SwitchNativeComponent from './SwitchNativeComponent';
 
 type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -30,26 +35,30 @@ export type Props = $ReadOnly<{|
   ...ViewProps,
 
   /**
-   * Whether the switch is disabled. Defaults to false.
+    If true the user won't be able to toggle the switch.
+
+    @default false
    */
   disabled?: ?boolean,
 
   /**
-   * Boolean value of the switch. Defaults to false.
+    The value of the switch. If true the switch will be turned on.
+
+    @default false
    */
   value?: ?boolean,
 
   /**
-   * Custom color for the switch thumb.
+    Color of the foreground switch grip. If this is set on iOS, the switch grip will lose its drop shadow.
    */
   thumbColor?: ?ColorValue,
 
   /**
-   * Custom colors for the switch track.
-   *
-   * NOTE: On iOS when the switch value is false, the track shrinks into the
-   * border. If you want to change the color of the background exposed by the
-   * shrunken track, use `ios_backgroundColor`.
+    Custom colors for the switch track.
+
+    _iOS_: When the switch value is false, the track shrinks into the border. If you want to change the
+    color of the background exposed by the shrunken track, use
+     [`ios_backgroundColor`](https://reactnative.dev/docs/switch#ios_backgroundColor).
    */
   trackColor?: ?$ReadOnly<{|
     false?: ?ColorValue,
@@ -57,115 +66,149 @@ export type Props = $ReadOnly<{|
   |}>,
 
   /**
-   * On iOS, custom color for the background. This background color can be seen
-   * either when the switch value is false or when the switch is disabled (and
-   * the switch is translucent).
+    On iOS, custom color for the background. This background color can be
+    seen either when the switch value is false or when the switch is
+    disabled (and the switch is translucent).
    */
   ios_backgroundColor?: ?ColorValue,
 
   /**
-   * Called when the user tries to change the value of the switch.
-   *
-   * Receives the change event as an argument. If you want to only receive the
-   * new value, use `onValueChange` instead.
+    Invoked when the user tries to change the value of the switch. Receives
+    the change event as an argument. If you want to only receive the new
+    value, use `onValueChange` instead.
    */
   onChange?: ?(event: SwitchChangeEvent) => Promise<void> | void,
 
   /**
-   * Called when the user tries to change the value of the switch.
-   *
-   * Receives the new value as an argument. If you want to instead receive an
-   * event, use `onChange`.
+    Invoked when the user tries to change the value of the switch. Receives
+    the new value as an argument. If you want to instead receive an event,
+    use `onChange`.
    */
   onValueChange?: ?(value: boolean) => Promise<void> | void,
 |}>;
+const returnsFalse = () => false;
+const returnsTrue = () => true;
 
 /**
- * A visual toggle between two mutually exclusive states.
- *
- * This is a controlled component that requires an `onValueChange` callback that
- * updates the `value` prop in order for the component to reflect user actions.
- * If the `value` prop is not updated, the component will continue to render the
- * supplied `value` prop instead of the expected result of any user actions.
- */
-class Switch extends React.Component<Props> {
-  _nativeSwitchRef: ?React.ElementRef<
-    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-  >;
+  Renders a boolean input.
 
-  render(): React.Node {
-    const {
-      disabled,
-      ios_backgroundColor,
-      onChange,
-      onValueChange,
-      style,
-      thumbColor,
-      trackColor,
-      value,
-      ...props
-    } = this.props;
+  This is a controlled component that requires an `onValueChange`
+  callback that updates the `value` prop in order for the component to
+  reflect user actions. If the `value` prop is not updated, the
+  component will continue to render the supplied `value` prop instead of
+  the expected result of any user actions.
 
-    // Support deprecated color props.
-    let _thumbColor = thumbColor;
-    let _trackColorForFalse = trackColor?.false;
-    let _trackColorForTrue = trackColor?.true;
+  ```SnackPlayer name=Switch
+  import React, { useState } from "react";
+  import { View, Switch, StyleSheet } from "react-native";
 
-    // TODO: Remove support for these props after a couple releases.
-    const {thumbTintColor, tintColor, onTintColor} = (props: $FlowFixMe);
-    if (thumbTintColor != null) {
-      _thumbColor = thumbTintColor;
-      if (__DEV__) {
-        console.warn(
-          'Switch: `thumbTintColor` is deprecated, use `thumbColor` instead.',
-        );
-      }
-    }
-    if (tintColor != null) {
-      _trackColorForFalse = tintColor;
-      if (__DEV__) {
-        console.warn(
-          'Switch: `tintColor` is deprecated, use `trackColor` instead.',
-        );
-      }
-    }
-    if (onTintColor != null) {
-      _trackColorForTrue = onTintColor;
-      if (__DEV__) {
-        console.warn(
-          'Switch: `onTintColor` is deprecated, use `trackColor` instead.',
-        );
-      }
-    }
+  const App = () => {
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
-    if (Platform.OS === 'android') {
-      const platformProps = {
-        enabled: disabled !== true,
-        on: value === true,
-        style,
-        thumbTintColor: _thumbColor,
-        trackColorForFalse: _trackColorForFalse,
-        trackColorForTrue: _trackColorForTrue,
-        trackTintColor:
-          value === true ? _trackColorForTrue : _trackColorForFalse,
-      };
-
-      return (
-        <AndroidSwitchNativeComponent
-          {...props}
-          {...platformProps}
-          accessibilityRole={props.accessibilityRole ?? 'button'}
-          onChange={this._handleChange}
-          onResponderTerminationRequest={returnsFalse}
-          onStartShouldSetResponder={returnsTrue}
-          ref={this._handleSwitchNativeComponentRef}
+    return (
+      <View style={styles.container}>
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={isEnabled}
         />
-      );
-    }
+      </View>
+    );
+  }
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  });
+
+  export default App;
+  ```
+ */
+
+const SwitchWithForwardedRef: React.AbstractComponent<
+  Props,
+  React.ElementRef<
+    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
+  >,
+> = React.forwardRef(function Switch(props, forwardedRef): React.Node {
+  const {
+    disabled,
+    ios_backgroundColor,
+    onChange,
+    onValueChange,
+    style,
+    thumbColor,
+    trackColor,
+    value,
+    ...restProps
+  } = props;
+  const trackColorForFalse = trackColor?.false;
+  const trackColorForTrue = trackColor?.true;
+
+  const nativeSwitchRef = React.useRef<React.ElementRef<
+    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
+  > | null>(null);
+
+  const ref = useMergeRefs(nativeSwitchRef, forwardedRef);
+
+  const [native, setNative] = React.useState({value: null});
+
+  const handleChange = (event: SwitchChangeEvent) => {
+    onChange?.(event);
+    onValueChange?.(event.nativeEvent.value);
+    setNative({value: event.nativeEvent.value});
+  };
+
+  React.useLayoutEffect(() => {
+    // This is necessary in case native updates the switch and JS decides
+    // that the update should be ignored and we should stick with the value
+    // that we have in JS.
+    const jsValue = value === true;
+    const shouldUpdateNativeSwitch = native.value !== jsValue;
+    if (
+      shouldUpdateNativeSwitch &&
+      nativeSwitchRef.current?.setNativeProps != null
+    ) {
+      if (Platform.OS === 'android') {
+        AndroidSwitchCommands.setNativeValue(nativeSwitchRef.current, jsValue);
+      } else {
+        SwitchCommands.setValue(nativeSwitchRef.current, jsValue);
+      }
+    }
+  }, [value, native]);
+
+  if (Platform.OS === 'android') {
+    const platformProps = {
+      enabled: disabled !== true,
+      on: value === true,
+      style,
+      thumbTintColor: thumbColor,
+      trackColorForFalse: trackColorForFalse,
+      trackColorForTrue: trackColorForTrue,
+      trackTintColor: value === true ? trackColorForTrue : trackColorForFalse,
+    };
+
+    return (
+      <AndroidSwitchNativeComponent
+        {...restProps}
+        {...platformProps}
+        accessibilityRole={props.accessibilityRole ?? 'switch'}
+        onChange={handleChange}
+        onResponderTerminationRequest={returnsFalse}
+        onStartShouldSetResponder={returnsTrue}
+        ref={ref}
+      />
+    );
+  } else {
     const platformProps = {
       disabled,
-      onTintColor: _trackColorForTrue,
+      onTintColor: trackColorForTrue,
       style: StyleSheet.compose(
         {height: 31, width: 51},
         StyleSheet.compose(
@@ -178,56 +221,23 @@ class Switch extends React.Component<Props> {
               },
         ),
       ),
-      thumbTintColor: _thumbColor,
-      tintColor: _trackColorForFalse,
+      thumbTintColor: thumbColor,
+      tintColor: trackColorForFalse,
       value: value === true,
     };
 
     return (
       <SwitchNativeComponent
-        {...props}
+        {...restProps}
         {...platformProps}
-        accessibilityRole={props.accessibilityRole ?? 'button'}
-        onChange={this._handleChange}
+        accessibilityRole={props.accessibilityRole ?? 'switch'}
+        onChange={handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}
-        ref={this._handleSwitchNativeComponentRef}
+        ref={ref}
       />
     );
   }
+});
 
-  _handleChange = (event: SwitchChangeEvent) => {
-    if (this._nativeSwitchRef == null) {
-      return;
-    }
-
-    // Force value of native switch in order to control it.
-    const value = this.props.value === true;
-    if (Platform.OS === 'android') {
-      this._nativeSwitchRef.setNativeProps({on: value});
-    } else {
-      this._nativeSwitchRef.setNativeProps({value});
-    }
-
-    if (this.props.onChange != null) {
-      this.props.onChange(event);
-    }
-
-    if (this.props.onValueChange != null) {
-      this.props.onValueChange(event.nativeEvent.value);
-    }
-  };
-
-  _handleSwitchNativeComponentRef = (
-    ref: ?React.ElementRef<
-      typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-    >,
-  ) => {
-    this._nativeSwitchRef = ref;
-  };
-}
-
-const returnsFalse = () => false;
-const returnsTrue = () => true;
-
-module.exports = Switch;
+export default SwitchWithForwardedRef;

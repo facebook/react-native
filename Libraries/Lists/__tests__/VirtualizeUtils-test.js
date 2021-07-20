@@ -4,16 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
  * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
-const {
-  elementsThatOverlapOffsets,
-  newRangeCount,
-} = require('../VirtualizeUtils');
+import {elementsThatOverlapOffsets, newRangeCount} from '../VirtualizeUtils';
 
 describe('newRangeCount', function() {
   it('handles subset', function() {

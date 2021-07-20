@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -48,12 +48,12 @@
 - (BOOL)shouldBridgeUseCustomJSC:(RCTBridge *)bridge;
 
 /**
-* The bridge will call this method when a module been called from JS
-* cannot be found among registered modules.
-* It should return YES if the module with name 'moduleName' was registered
-* in the implementation, and the system must attempt to look for it again among registered.
-* If the module was not registered, return NO to prevent further searches.
-*/
+ * The bridge will call this method when a module been called from JS
+ * cannot be found among registered modules.
+ * It should return YES if the module with name 'moduleName' was registered
+ * in the implementation, and the system must attempt to look for it again among registered.
+ * If the module was not registered, return NO to prevent further searches.
+ */
 - (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName;
 
 /**
@@ -69,8 +69,7 @@
  * Similar to loadSourceForBridge:onProgress:onComplete: but without progress
  * reporting.
  */
-- (void)loadSourceForBridge:(RCTBridge *)bridge
-                  withBlock:(RCTSourceLoadBlock)loadCallback;
+- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback;
 
 /**
  * Retrieve the list of lazy-native-modules names for the given bridge.

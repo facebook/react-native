@@ -4,16 +4,22 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import Header from './components/Header';
-import LearnMoreLinks from './components/LearnMoreLinks';
 import Colors from './components/Colors';
+import Header from './components/Header';
+import HermesBadge from './components/HermesBadge';
+import LearnMoreLinks from './components/LearnMoreLinks';
 import DebugInstructions from './components/DebugInstructions';
 import ReloadInstructions from './components/ReloadInstructions';
 
-export {Header, LearnMoreLinks, Colors, DebugInstructions, ReloadInstructions};
+export {
+  Colors,
+  Header,
+  HermesBadge,
+  LearnMoreLinks,
+  DebugInstructions,
+  ReloadInstructions,
+};

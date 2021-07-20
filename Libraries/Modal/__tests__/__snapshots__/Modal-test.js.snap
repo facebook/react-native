@@ -14,6 +14,7 @@ exports[`<Modal /> should render as <RCTModalHostView> when not mocked 1`] = `
   animationType="none"
   hardwareAccelerated={false}
   identifier={1}
+  onDismiss={[Function]}
   onStartShouldSetResponder={[Function]}
   presentationStyle="fullScreen"
   style={
@@ -21,8 +22,10 @@ exports[`<Modal /> should render as <RCTModalHostView> when not mocked 1`] = `
       "position": "absolute",
     }
   }
+  visible={true}
 >
   <View
+    collapsable={false}
     style={
       Array [
         Object {
@@ -60,13 +63,13 @@ exports[`<Modal /> should render as <RCTModalHostView> when not mocked 1`] = `
 </RCTModalHostView>
 `;
 
-exports[`<Modal /> should shallow render as <Component> when mocked 1`] = `
-<Component
+exports[`<Modal /> should shallow render as <Modal> when mocked 1`] = `
+<Modal
   hardwareAccelerated={false}
   visible={true}
 >
   <View />
-</Component>
+</Modal>
 `;
 
 exports[`<Modal /> should shallow render as <Modal> when not mocked 1`] = `

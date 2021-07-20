@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,7 +9,7 @@
 
 #import <React/RCTConvert.h>
 
-typedef UIFont *(^RCTFontHandler)(CGFloat fontSize, NSString *fontWeightDescription);
+typedef UIFont * (^RCTFontHandler)(CGFloat fontSize, NSString *fontWeightDescription);
 
 /**
  * React Native will use the System font for rendering by default. If you want to

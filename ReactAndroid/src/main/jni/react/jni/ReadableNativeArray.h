@@ -1,7 +1,9 @@
-//  Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -14,21 +16,25 @@ namespace facebook {
 namespace react {
 
 struct ReadableArray : jni::JavaClass<ReadableArray> {
-  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableArray;";
+  static auto constexpr kJavaDescriptor =
+      "Lcom/facebook/react/bridge/ReadableArray;";
 };
 
-class ReadableNativeArray : public jni::HybridClass<ReadableNativeArray, NativeArray> {
+class ReadableNativeArray
+    : public jni::HybridClass<ReadableNativeArray, NativeArray> {
  protected:
   friend HybridBase;
   explicit ReadableNativeArray(folly::dynamic array);
 
  public:
-  static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableNativeArray;";
+  static constexpr const char *kJavaDescriptor =
+      "Lcom/facebook/react/bridge/ReadableNativeArray;";
 
-  static void mapException(const std::exception& ex);
+  static void mapException(const std::exception &ex);
   jni::local_ref<jni::JArrayClass<jobject>> importArray();
   jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
   static void registerNatives();
 };
 
-}}
+} // namespace react
+} // namespace facebook

@@ -8,12 +8,13 @@
  * @format
  */
 
-'use strict';
+import * as React from 'react';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
 export type SyntheticEvent<T> = $ReadOnly<{|
   bubbles: ?boolean,
   cancelable: ?boolean,
-  currentTarget: number,
+  currentTarget: number | React.ElementRef<HostComponent<mixed>>,
   defaultPrevented: ?boolean,
   dispatchConfig: $ReadOnly<{|
     registrationName: string,
@@ -26,7 +27,7 @@ export type SyntheticEvent<T> = $ReadOnly<{|
   isTrusted: ?boolean,
   nativeEvent: T,
   persist: () => void,
-  target: ?number,
+  target: ?number | React.ElementRef<HostComponent<mixed>>,
   timeStamp: number,
   type: ?string,
 |}>;
@@ -85,7 +86,7 @@ export type TextLayoutEvent = SyntheticEvent<
 export type PressEvent = ResponderSyntheticEvent<
   $ReadOnly<{|
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
-    force: number,
+    force?: number,
     identifier: number,
     locationX: number,
     locationY: number,
@@ -127,5 +128,27 @@ export type ScrollEvent = SyntheticEvent<
     |}>,
     zoomScale?: number,
     responderIgnoreScroll?: boolean,
+  |}>,
+>;
+
+export type BlurEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+export type FocusEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+export type MouseEvent = SyntheticEvent<
+  $ReadOnly<{|
+    clientX: number,
+    clientY: number,
+    pageX: number,
+    pageY: number,
+    timestamp: number,
   |}>,
 >;

@@ -7,15 +7,16 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const PixelRatio = require('../Utilities/PixelRatio');
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-const StyleSheetValidation = require('./StyleSheetValidation');
 
 const flatten = require('./flattenStyle');
 
 import type {
+  ____ColorValue_Internal,
   ____Styles_Internal,
   ____DangerouslyImpreciseStyle_Internal,
   ____DangerouslyImpreciseStyleProp_Internal,
@@ -26,6 +27,15 @@ import type {
   ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
 } from './StyleSheetTypes';
+
+/**
+ * This type should be used as the type for anything that is a color. It is
+ * most useful when using DynamicColorIOS which can be a string or a dynamic
+ * color object.
+ *
+ * type props = {backgroundColor: ColorValue};
+ */
+export type ColorValue = ____ColorValue_Internal;
 
 /**
  * This type should be used as the type for a prop that is passed through
@@ -328,9 +338,9 @@ module.exports = {
     let value;
 
     if (ReactNativeStyleAttributes[property] === true) {
-      value = {};
+      value = {process};
     } else if (typeof ReactNativeStyleAttributes[property] === 'object') {
-      value = ReactNativeStyleAttributes[property];
+      value = {...ReactNativeStyleAttributes[property], process};
     } else {
       console.error(`${property} is not a valid style attribute`);
       return;
@@ -340,19 +350,18 @@ module.exports = {
       console.warn(`Overwriting ${property} style attribute preprocessor`);
     }
 
-    ReactNativeStyleAttributes[property] = {...value, process};
+    ReactNativeStyleAttributes[property] = value;
   },
 
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<+S: ____Styles_Internal>(obj: S): $ObjMap<S, (Object) => any> {
+  create<+S: ____Styles_Internal>(obj: S): $ReadOnly<S> {
     // TODO: This should return S as the return type. But first,
     // we need to codemod all the callsites that are typing this
     // return value as a number (even though it was opaque).
     if (__DEV__) {
       for (const key in obj) {
-        StyleSheetValidation.validateStyle(key, obj);
         if (obj[key]) {
           Object.freeze(obj[key]);
         }

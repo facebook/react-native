@@ -16,17 +16,19 @@ module.exports = (moduleName, instanceMethods) => {
   const SuperClass =
     typeof RealComponent === 'function' ? RealComponent : React.Component;
 
+  const name =
+    RealComponent.displayName ||
+    RealComponent.name ||
+    (RealComponent.render // handle React.forwardRef
+      ? RealComponent.render.displayName || RealComponent.render.name
+      : 'Unknown');
+
+  const nameWithoutPrefix = name.replace(/^(RCT|RK)/, '');
+
   const Component = class extends SuperClass {
     static displayName = 'Component';
 
     render() {
-      const name =
-        RealComponent.displayName ||
-        RealComponent.name ||
-        (RealComponent.render // handle React.forwardRef
-          ? RealComponent.render.displayName || RealComponent.render.name
-          : 'Unknown');
-
       const props = Object.assign({}, RealComponent.defaultProps);
 
       if (this.props) {
@@ -42,13 +44,11 @@ module.exports = (moduleName, instanceMethods) => {
         });
       }
 
-      return React.createElement(
-        name.replace(/^(RCT|RK)/, ''),
-        props,
-        this.props.children,
-      );
+      return React.createElement(nameWithoutPrefix, props, this.props.children);
     }
   };
+
+  Component.displayName = nameWithoutPrefix;
 
   Object.keys(RealComponent).forEach(classStatic => {
     Component[classStatic] = RealComponent[classStatic];

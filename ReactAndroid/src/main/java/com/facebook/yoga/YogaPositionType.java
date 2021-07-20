@@ -1,17 +1,16 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
-
-@DoNotStrip
 public enum YogaPositionType {
-  RELATIVE(0),
-  ABSOLUTE(1);
+  STATIC(0),
+  RELATIVE(1),
+  ABSOLUTE(2);
 
   private final int mIntValue;
 
@@ -25,8 +24,9 @@ public enum YogaPositionType {
 
   public static YogaPositionType fromInt(int value) {
     switch (value) {
-      case 0: return RELATIVE;
-      case 1: return ABSOLUTE;
+      case 0: return STATIC;
+      case 1: return RELATIVE;
+      case 2: return ABSOLUTE;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }

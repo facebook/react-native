@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,36 +15,30 @@ RCTLayoutMetrics RCTLayoutMetricsFromYogaNode(YGNodeRef yogaNode)
   RCTLayoutMetrics layoutMetrics;
 
   CGRect frame = (CGRect){
-    (CGPoint){
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetLeft(yogaNode)),
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetTop(yogaNode))
-    },
-    (CGSize){
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetWidth(yogaNode)),
-      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(yogaNode))
-    }
-  };
+      (CGPoint){
+          RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetLeft(yogaNode)),
+          RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetTop(yogaNode))},
+      (CGSize){
+          RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetWidth(yogaNode)),
+          RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(yogaNode))}};
 
   UIEdgeInsets padding = (UIEdgeInsets){
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeTop)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeLeft)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeBottom)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeRight))
-  };
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeTop)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeLeft)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeBottom)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeRight))};
 
   UIEdgeInsets borderWidth = (UIEdgeInsets){
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeTop)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeLeft)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeBottom)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeRight))
-  };
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeTop)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeLeft)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeBottom)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeRight))};
 
   UIEdgeInsets compoundInsets = (UIEdgeInsets){
-    borderWidth.top + padding.top,
-    borderWidth.left + padding.left,
-    borderWidth.bottom + padding.bottom,
-    borderWidth.right + padding.right
-  };
+      borderWidth.top + padding.top,
+      borderWidth.left + padding.left,
+      borderWidth.bottom + padding.bottom,
+      borderWidth.right + padding.right};
 
   CGRect bounds = (CGRect){CGPointZero, frame.size};
   CGRect contentFrame = UIEdgeInsetsInsetRect(bounds, compoundInsets);
@@ -57,7 +51,6 @@ RCTLayoutMetrics RCTLayoutMetricsFromYogaNode(YGNodeRef yogaNode)
 
   return layoutMetrics;
 }
-
 
 /**
  * Yoga and CoreGraphics have different opinions about how "infinity" value

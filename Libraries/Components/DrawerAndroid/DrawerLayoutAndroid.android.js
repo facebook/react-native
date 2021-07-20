@@ -8,24 +8,22 @@
  * @format
  */
 
-'use strict';
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import StatusBar from '../StatusBar/StatusBar';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
 
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StatusBar = require('../StatusBar/StatusBar');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
-const nullthrows = require('nullthrows');
+import dismissKeyboard from '../../Utilities/dismissKeyboard';
+import nullthrows from 'nullthrows';
 
-const dismissKeyboard = require('../../Utilities/dismissKeyboard');
 import AndroidDrawerLayoutNativeComponent, {
   Commands,
 } from './AndroidDrawerLayoutNativeComponent';
 
 const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {DirectEventHandler} from '../../Types/CodegenTypes';
 import type {
   MeasureOnSuccessCallback,
@@ -163,15 +161,19 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
 
     return {Left: 'left', Right: 'right'};
   }
-  static defaultProps = {
+  static defaultProps: {|
+    drawerBackgroundColor: 'white',
+  |} = {
     drawerBackgroundColor: 'white',
   };
 
-  _nativeRef = React.createRef();
+  _nativeRef = React.createRef<
+    React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
+  >();
 
-  state = {statusBarBackgroundColor: null};
+  state: State = {statusBarBackgroundColor: null};
 
-  render() {
+  render(): React.Node {
     const {
       onDrawerStateChanged,
       renderNavigationView,
@@ -180,7 +182,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
       ...props
     } = this.props;
     const drawStatusBar =
-      Platform.Version >= 21 && this.props.statusBarBackgroundColor;
+      Platform.Version >= 21 && this.props.statusBarBackgroundColor != null;
     const drawerViewWrapper = (
       <View
         style={[
@@ -217,9 +219,6 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     return (
       <AndroidDrawerLayoutNativeComponent
         {...props}
-        /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
-         * suppresses an error found when Flow v0.87 was deployed. To see the
-         * error, delete this comment and run Flow. */
         ref={this._nativeRef}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
@@ -318,30 +317,18 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
    * Native methods
    */
   blur() {
-    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
-     * suppresses an error found when Flow v0.87 was deployed. To see the
-     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).blur();
   }
 
   focus() {
-    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
-     * suppresses an error found when Flow v0.87 was deployed. To see the
-     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).focus();
   }
 
   measure(callback: MeasureOnSuccessCallback) {
-    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
-     * suppresses an error found when Flow v0.87 was deployed. To see the
-     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).measure(callback);
   }
 
   measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
-    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
-     * suppresses an error found when Flow v0.87 was deployed. To see the
-     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).measureInWindow(callback);
   }
 
@@ -350,9 +337,6 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void,
   ) {
-    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
-     * suppresses an error found when Flow v0.87 was deployed. To see the
-     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).measureLayout(
       relativeToNativeNode,
       onSuccess,
@@ -361,9 +345,6 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
   }
 
   setNativeProps(nativeProps: Object) {
-    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
-     * suppresses an error found when Flow v0.87 was deployed. To see the
-     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).setNativeProps(nativeProps);
   }
 }

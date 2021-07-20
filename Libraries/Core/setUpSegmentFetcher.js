@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
 export type FetchSegmentFunction = typeof __fetchSegment;
@@ -19,10 +20,11 @@ export type GetSegmentFunction = typeof __getSegment;
 
 function __fetchSegment(
   segmentId: number,
-  options: {|
-    +otaBuildNumber: ?string,
-    +requestedModuleName?: ?string,
-  |},
+  options: $ReadOnly<{
+    otaBuildNumber: ?string,
+    requestedModuleName: string,
+    segmentHash: string,
+  }>,
   callback: (?Error) => void,
 ) {
   const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
@@ -30,7 +32,13 @@ function __fetchSegment(
   SegmentFetcher.fetchSegment(
     segmentId,
     options,
-    (errorObject: ?{message: string, code: string}) => {
+    (
+      errorObject: ?{
+        message: string,
+        code: string,
+        ...
+      },
+    ) => {
       if (errorObject) {
         const error = new Error(errorObject.message);
         (error: any).code = errorObject.code; // flowlint-line unclear-type: off
@@ -46,10 +54,11 @@ global.__fetchSegment = __fetchSegment;
 
 function __getSegment(
   segmentId: number,
-  options: {|
-    +otaBuildNumber: ?string,
-    +requestedModuleName?: ?string,
-  |},
+  options: $ReadOnly<{
+    otaBuildNumber: ?string,
+    requestedModuleName: string,
+    segmentHash: string,
+  }>,
   callback: (?Error, ?string) => void,
 ) {
   const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
@@ -62,7 +71,14 @@ function __getSegment(
   SegmentFetcher.getSegment(
     segmentId,
     options,
-    (errorObject: ?{message: string, code: string}, path: ?string) => {
+    (
+      errorObject: ?{
+        message: string,
+        code: string,
+        ...
+      },
+      path: ?string,
+    ) => {
       if (errorObject) {
         const error = new Error(errorObject.message);
         (error: any).code = errorObject.code; // flowlint-line unclear-type: off

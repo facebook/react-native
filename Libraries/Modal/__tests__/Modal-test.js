@@ -6,7 +6,7 @@
  *
  * @format
  * @emails oncall+react_native
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -27,7 +27,7 @@ describe('<Modal />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should shallow render as <Component> when mocked', () => {
+  it('should shallow render as <Modal> when mocked', () => {
     const output = render.shallow(
       <Modal>
         <View />

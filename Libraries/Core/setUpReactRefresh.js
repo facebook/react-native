@@ -7,13 +7,13 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 if (__DEV__) {
-  const NativeDevSettings = require('../NativeModules/specs/NativeDevSettings')
-    .default;
+  const DevSettings = require('../Utilities/DevSettings');
 
-  if (typeof NativeDevSettings.reload !== 'function') {
+  if (typeof DevSettings.reload !== 'function') {
     throw new Error('Could not find the reload() implementation.');
   }
 
@@ -22,8 +22,8 @@ if (__DEV__) {
   ReactRefreshRuntime.injectIntoGlobalHook(global);
 
   const Refresh = {
-    performFullRefresh() {
-      NativeDevSettings.reload();
+    performFullRefresh(reason: string) {
+      DevSettings.reload(reason);
     },
 
     createSignatureFunctionForTransform:
@@ -37,12 +37,15 @@ if (__DEV__) {
 
     performReactRefresh() {
       if (ReactRefreshRuntime.hasUnrecoverableErrors()) {
-        NativeDevSettings.reload();
+        DevSettings.reload('Fast Refresh - Unrecoverable');
         return;
       }
       ReactRefreshRuntime.performReactRefresh();
+      DevSettings.onFastRefresh();
     },
   };
 
-  (require: any).Refresh = Refresh;
+  // The metro require polyfill can not have dependencies (applies for all polyfills).
+  // Expose `Refresh` by assigning it to global to make it available in the polyfill.
+  global[(global.__METRO_GLOBAL_PREFIX__ || '') + '__ReactRefresh'] = Refresh;
 }

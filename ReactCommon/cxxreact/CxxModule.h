@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -19,7 +21,8 @@ namespace react {
 
 class Instance;
 
-}}
+}
+} // namespace facebook
 
 namespace facebook {
 namespace xplat {
@@ -55,7 +58,7 @@ class CxxModule {
   class AsyncTagType {};
   class SyncTagType {};
 
-public:
+ public:
   typedef std::function<std::unique_ptr<CxxModule>()> Provider;
 
   typedef std::function<void(std::vector<folly::dynamic>)> Callback;
@@ -79,81 +82,103 @@ public:
 
     // std::function/lambda ctors
 
-    Method(std::string aname,
-           std::function<void()>&& afunc)
-      : name(std::move(aname))
-      , callbacks(0)
-      , isPromise(false)
-      , func(std::bind(std::move(afunc))) {}
+    Method(std::string aname, std::function<void()> &&afunc)
+        : name(std::move(aname)),
+          callbacks(0),
+          isPromise(false),
+          func(std::bind(std::move(afunc))) {}
 
-    Method(std::string aname,
-           std::function<void(folly::dynamic)>&& afunc)
-      : name(std::move(aname))
-      , callbacks(0)
-      , isPromise(false)
-      , func(std::bind(std::move(afunc), std::placeholders::_1)) {}
+    Method(std::string aname, std::function<void(folly::dynamic)> &&afunc)
+        : name(std::move(aname)),
+          callbacks(0),
+          isPromise(false),
+          func(std::bind(std::move(afunc), std::placeholders::_1)) {}
 
-    Method(std::string aname,
-           std::function<void(folly::dynamic, Callback)>&& afunc)
-      : name(std::move(aname))
-      , callbacks(1)
-      , isPromise(false)
-      , func(std::bind(std::move(afunc), std::placeholders::_1, std::placeholders::_2)) {}
+    Method(
+        std::string aname,
+        std::function<void(folly::dynamic, Callback)> &&afunc)
+        : name(std::move(aname)),
+          callbacks(1),
+          isPromise(false),
+          func(std::bind(
+              std::move(afunc),
+              std::placeholders::_1,
+              std::placeholders::_2)) {}
 
-    Method(std::string aname,
-           std::function<void(folly::dynamic, Callback, Callback)>&& afunc)
-      : name(std::move(aname))
-      , callbacks(2)
-      , isPromise(true)
-      , func(std::move(afunc)) {}
+    Method(
+        std::string aname,
+        std::function<void(folly::dynamic, Callback, Callback)> &&afunc)
+        : name(std::move(aname)),
+          callbacks(2),
+          isPromise(true),
+          func(std::move(afunc)) {}
 
-    Method(std::string aname,
-           std::function<void(folly::dynamic, Callback, Callback)>&& afunc,
-           AsyncTagType)
-      : name(std::move(aname))
-      , callbacks(2)
-      , isPromise(false)
-      , func(std::move(afunc)) {}
+    Method(
+        std::string aname,
+        std::function<void(folly::dynamic, Callback, Callback)> &&afunc,
+        AsyncTagType)
+        : name(std::move(aname)),
+          callbacks(2),
+          isPromise(false),
+          func(std::move(afunc)) {}
 
     // method pointer ctors
 
     template <typename T>
-    Method(std::string aname, T* t, void (T::*method)())
-      : name(std::move(aname))
-      , callbacks(0)
-      , isPromise(false)
-      , func(std::bind(method, t)) {}
+    Method(std::string aname, T *t, void (T::*method)())
+        : name(std::move(aname)),
+          callbacks(0),
+          isPromise(false),
+          func(std::bind(method, t)) {}
 
     template <typename T>
-    Method(std::string aname, T* t, void (T::*method)(folly::dynamic))
-      : name(std::move(aname))
-      , callbacks(0)
-      , isPromise(false)
-      , func(std::bind(method, t, std::placeholders::_1)) {}
+    Method(std::string aname, T *t, void (T::*method)(folly::dynamic))
+        : name(std::move(aname)),
+          callbacks(0),
+          isPromise(false),
+          func(std::bind(method, t, std::placeholders::_1)) {}
 
     template <typename T>
-    Method(std::string aname, T* t, void (T::*method)(folly::dynamic, Callback))
-      : name(std::move(aname))
-      , callbacks(1)
-      , isPromise(false)
-      , func(std::bind(method, t, std::placeholders::_1, std::placeholders::_2)) {}
+    Method(std::string aname, T *t, void (T::*method)(folly::dynamic, Callback))
+        : name(std::move(aname)),
+          callbacks(1),
+          isPromise(false),
+          func(std::bind(
+              method,
+              t,
+              std::placeholders::_1,
+              std::placeholders::_2)) {}
 
     template <typename T>
-    Method(std::string aname, T* t, void (T::*method)(folly::dynamic, Callback, Callback))
-      : name(std::move(aname))
-      , callbacks(2)
-      , isPromise(true)
-      , func(std::bind(method, t, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)) {}
+    Method(
+        std::string aname,
+        T *t,
+        void (T::*method)(folly::dynamic, Callback, Callback))
+        : name(std::move(aname)),
+          callbacks(2),
+          isPromise(true),
+          func(std::bind(
+              method,
+              t,
+              std::placeholders::_1,
+              std::placeholders::_2,
+              std::placeholders::_3)) {}
 
     template <typename T>
-    Method(std::string aname,
-          T* t,
-          void (T::*method)(folly::dynamic, Callback, Callback),
-          AsyncTagType)
-      : name(std::move(aname))
-      , callbacks(2)
-      , isPromise(false)
-      , func(std::bind(method, t, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)) {}
+    Method(
+        std::string aname,
+        T *t,
+        void (T::*method)(folly::dynamic, Callback, Callback),
+        AsyncTagType)
+        : name(std::move(aname)),
+          callbacks(2),
+          isPromise(false),
+          func(std::bind(
+              method,
+              t,
+              std::placeholders::_1,
+              std::placeholders::_2,
+              std::placeholders::_3)) {}
 
     // sync std::function/lambda ctors
 
@@ -161,24 +186,25 @@ public:
     // I am not sure if this is a runtime/compiler bug, or a
     // limitation I do not understand.
 
-    Method(std::string aname,
-           std::function<folly::dynamic()>&& afunc,
-           SyncTagType)
-      : name(std::move(aname))
-      , callbacks(0)
-      , isPromise(false)
-      , syncFunc([afunc=std::move(afunc)] (const folly::dynamic&)
-                 { return afunc(); })
-    {}
+    Method(
+        std::string aname,
+        std::function<folly::dynamic()> &&afunc,
+        SyncTagType)
+        : name(std::move(aname)),
+          callbacks(0),
+          isPromise(false),
+          syncFunc([afunc = std::move(afunc)](const folly::dynamic &) {
+            return afunc();
+          }) {}
 
-    Method(std::string aname,
-           std::function<folly::dynamic(folly::dynamic)>&& afunc,
-           SyncTagType)
-      : name(std::move(aname))
-      , callbacks(0)
-      , isPromise(false)
-      , syncFunc(std::move(afunc))
-      {}
+    Method(
+        std::string aname,
+        std::function<folly::dynamic(folly::dynamic)> &&afunc,
+        SyncTagType)
+        : name(std::move(aname)),
+          callbacks(0),
+          isPromise(false),
+          syncFunc(std::move(afunc)) {}
   };
 
   /**
@@ -188,8 +214,8 @@ public:
   virtual ~CxxModule() {}
 
   /**
-   * @return the name of this module. This will be the name used to {@code require()} this module
-   * from javascript.
+   * @return the name of this module. This will be the name used to {@code
+   * require()} this module from javascript.
    */
   virtual std::string getName() = 0;
 
@@ -197,7 +223,9 @@ public:
    * Each entry in the map will be exported as a property to JS.  The
    * key is the property name, and the value can be anything.
    */
-  virtual auto getConstants() -> std::map<std::string, folly::dynamic> { return {}; };
+  virtual auto getConstants() -> std::map<std::string, folly::dynamic> {
+    return {};
+  };
 
   /**
    * @return a list of methods this module exports to JS.
@@ -221,8 +249,10 @@ public:
     return instance_;
   }
 
-private:
+ private:
   std::weak_ptr<react::Instance> instance_;
 };
 
-}}}
+} // namespace module
+} // namespace xplat
+} // namespace facebook

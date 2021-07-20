@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,11 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTComponentViewDescriptor.h>
 #import <React/RCTComponentViewProtocol.h>
-
-#import <react/uimanager/ComponentDescriptorRegistry.h>
+#import <jsi/jsi.h>
+#import <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+void RCTInstallNativeComponentRegistryBinding(facebook::jsi::Runtime &runtime);
 
 /**
  * Registry of supported component view classes that can instantiate
@@ -22,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Constructs and returns an instance of the class with a bunch of already registered standard components.
  */
-+ (RCTComponentViewFactory *)standardComponentViewFactory;
++ (RCTComponentViewFactory *)currentComponentViewFactory;
 
 /**
  * Registers a component view class in the factory.
@@ -30,15 +33,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass;
 
 /**
- * Unregisters a component view class in the factory.
+ * Registers component if there is a matching class. Returns true if it matching class is found or the component has
+ * already been registered, false otherwise.
  */
-- (void)unregisterComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass;
+- (BOOL)registerComponentIfPossible:(std::string const &)componentName;
 
 /**
  * Creates a component view with given component handle.
  */
-- (UIView<RCTComponentViewProtocol> *)createComponentViewWithComponentHandle:
-    (facebook::react::ComponentHandle)componentHandle;
+- (RCTComponentViewDescriptor)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 
 /**
  * Creates *managed* `ComponentDescriptorRegistry`. After creation, the object continues to store a weak pointer to the

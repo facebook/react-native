@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react;
 
 import android.app.Application;
@@ -71,7 +72,9 @@ public abstract class ReactNativeHost {
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
             .setUIImplementationProvider(getUIImplementationProvider())
             .setJSIModulesPackage(getJSIModulePackage())
-            .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
+            .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
+            .setReactPackageTurboModuleManagerDelegateBuilder(
+                getReactPackageTurboModuleManagerDelegateBuilder());
 
     for (ReactPackage reactPackage : getPackages()) {
       builder.addPackage(reactPackage);
@@ -98,6 +101,11 @@ public abstract class ReactNativeHost {
     return null;
   }
 
+  protected @Nullable ReactPackageTurboModuleManagerDelegate.Builder
+      getReactPackageTurboModuleManagerDelegateBuilder() {
+    return null;
+  }
+
   protected final Application getApplication() {
     return mApplication;
   }
@@ -117,9 +125,9 @@ public abstract class ReactNativeHost {
   }
 
   /**
-   * Returns the name of the main module. Determines the URL used to fetch the JS bundle from the
-   * packager server. It is only used when dev support is enabled. This is the first file to be
-   * executed once the {@link ReactInstanceManager} is created. e.g. "index.android"
+   * Returns the name of the main module. Determines the URL used to fetch the JS bundle from Metro.
+   * It is only used when dev support is enabled. This is the first file to be executed once the
+   * {@link ReactInstanceManager} is created. e.g. "index.android"
    */
   protected String getJSMainModuleName() {
     return "index.android";
@@ -137,7 +145,7 @@ public abstract class ReactNativeHost {
   /**
    * Returns the name of the bundle in assets. If this is null, and no file path is specified for
    * the bundle, the app will only work with {@code getUseDeveloperSupport} enabled and will always
-   * try to load the JS bundle from the packager server. e.g. "index.android.bundle"
+   * try to load the JS bundle from Metro. e.g. "index.android.bundle"
    */
   protected @Nullable String getBundleAssetName() {
     return "index.android.bundle";

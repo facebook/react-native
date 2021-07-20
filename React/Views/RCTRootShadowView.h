@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,6 +9,12 @@
 #import <yoga/YGEnums.h>
 
 @interface RCTRootShadowView : RCTShadowView
+
+/**
+ * Minimum size to layout all views.
+ * Defaults to CGSizeZero
+ */
+@property (nonatomic, assign) CGSize minimumSize;
 
 /**
  * Available size to layout all views.

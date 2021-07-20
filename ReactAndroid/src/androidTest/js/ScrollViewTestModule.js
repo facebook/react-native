@@ -30,7 +30,7 @@ import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 // Shared by integration tests for ScrollView and HorizontalScrollView
 
-let scrollViewApp;
+let scrollViewApp: ScrollViewTestApp | HorizontalScrollViewTestApp;
 
 type ItemProps = $ReadOnly<{|
   onPress: (event: PressEvent) => void,
@@ -92,9 +92,6 @@ type State = {|
 |};
 
 class ScrollViewTestApp extends React.Component<Props, State> {
-  /* $FlowFixMe(>=0.87.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.87 was deployed. To see the error, delete this comment
-   * and run Flow. */
   scrollView: {|current: any | null|} = React.createRef();
   state: State = getInitialState();
 
@@ -129,9 +126,6 @@ class ScrollViewTestApp extends React.Component<Props, State> {
 }
 
 class HorizontalScrollViewTestApp extends React.Component<Props, State> {
-  /* $FlowFixMe(>=0.87.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.87 was deployed. To see the error, delete this comment
-   * and run Flow. */
   scrollView: {|current: any | null|} = React.createRef();
   state: State = getInitialState();
 

@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.uimanager.layoutanimation;
 
@@ -86,6 +88,9 @@ public class LayoutAnimationController {
     // resume when view is re-attached to parent, which is the standard android animation behavior.
     // If there's a layout handling animation going on, it should be animated nonetheless since the
     // ongoing animation needs to be updated.
+    if (viewToAnimate == null) {
+      return false;
+    }
     return (mShouldAnimateLayout && viewToAnimate.getParent() != null)
         || mLayoutHandlers.get(viewToAnimate.getId()) != null;
   }

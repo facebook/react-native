@@ -6,6 +6,7 @@
  *
  * @format
  */
+
 'use strict';
 
 const ios = require('@react-native-community/cli-platform-ios');
@@ -31,10 +32,10 @@ module.exports = {
   reactNativePath: '.',
   project: {
     ios: {
-      project: './RNTester/RNTesterPods.xcworkspace',
+      project: './packages/rn-tester/RNTesterPods.xcworkspace',
     },
     android: {
-      sourceDir: './RNTester',
+      sourceDir: './packages/rn-tester',
     },
   },
 };

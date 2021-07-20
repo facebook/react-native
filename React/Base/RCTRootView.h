@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -19,9 +19,9 @@
  * rootViewDidChangeIntrinsicSize method of the RCTRootViewDelegate will be called.
  */
 typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
-  RCTRootViewSizeFlexibilityNone           = 0,
-  RCTRootViewSizeFlexibilityWidth          = 1 << 0,
-  RCTRootViewSizeFlexibilityHeight         = 1 << 1,
+  RCTRootViewSizeFlexibilityNone = 0,
+  RCTRootViewSizeFlexibilityWidth = 1 << 0,
+  RCTRootViewSizeFlexibilityHeight = 1 << 1,
   RCTRootViewSizeFlexibilityWidthAndHeight = RCTRootViewSizeFlexibilityWidth | RCTRootViewSizeFlexibilityHeight,
 };
 
@@ -36,9 +36,9 @@ extern "C"
 extern
 #endif
 
-NS_ASSUME_NONNULL_BEGIN
+    NS_ASSUME_NONNULL_BEGIN
 
-NSString *const RCTContentDidAppearNotification;
+        NSString *const RCTContentDidAppearNotification;
 
 /**
  * Native view used to host React-managed views within the app. Can be used just
@@ -50,9 +50,18 @@ NSString *const RCTContentDidAppearNotification;
 /**
  * - Designated initializer -
  */
+- (instancetype)initWithFrame:(CGRect)frame
+                       bridge:(RCTBridge *)bridge
+                   moduleName:(NSString *)moduleName
+            initialProperties:(nullable NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+
+/**
+ * - Convenience initializer -
+ * The frame will default to CGRectZero.
+ */
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(nullable NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+             initialProperties:(nullable NSDictionary *)initialProperties;
 
 /**
  * - Convenience initializer -
@@ -65,7 +74,6 @@ NSString *const RCTContentDidAppearNotification;
                        moduleName:(NSString *)moduleName
                 initialProperties:(nullable NSDictionary *)initialProperties
                     launchOptions:(nullable NSDictionary *)launchOptions;
-
 
 /**
  * The name of the JavaScript module to execute within the
@@ -94,6 +102,11 @@ NSString *const RCTContentDidAppearNotification;
  * The size flexibility mode of the root view.
  */
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
+
+/*
+ * The minimum size of the root view, defaults to CGSizeZero.
+ */
+@property (nonatomic, assign) CGSize minimumSize;
 
 /**
  * The delegate that handles intrinsic size updates.
@@ -146,8 +159,7 @@ NSString *const RCTContentDidAppearNotification;
  * This property is deprecated and will be removed in next releases.
  * Use UIKit `intrinsicContentSize` property instead.
  */
-@property (readonly, nonatomic, assign) CGSize intrinsicSize
-__deprecated_msg("Use `intrinsicContentSize` instead.");
+@property (readonly, nonatomic, assign) CGSize intrinsicSize __deprecated_msg("Use `intrinsicContentSize` instead.");
 
 /**
  * This methods is deprecated and will be removed soon.

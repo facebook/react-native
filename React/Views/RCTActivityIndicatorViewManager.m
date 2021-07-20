@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -15,10 +15,14 @@
 // NOTE: It's pointless to support UIActivityIndicatorViewStyleGray
 // as we can set the color to any arbitrary value that we want to
 
-RCT_ENUM_CONVERTER(UIActivityIndicatorViewStyle, (@{
-  @"large": @(UIActivityIndicatorViewStyleWhiteLarge),
-  @"small": @(UIActivityIndicatorViewStyleWhite),
-}), UIActivityIndicatorViewStyleWhiteLarge, integerValue)
+RCT_ENUM_CONVERTER(
+    UIActivityIndicatorViewStyle,
+    (@{
+      @"large" : @(UIActivityIndicatorViewStyleWhiteLarge),
+      @"small" : @(UIActivityIndicatorViewStyleWhite),
+    }),
+    UIActivityIndicatorViewStyleWhiteLarge,
+    integerValue)
 
 @end
 
@@ -40,7 +44,8 @@ RCT_CUSTOM_VIEW_PROPERTY(size, UIActivityIndicatorViewStyle, UIActivityIndicator
     after setting the indicator style.
   */
   UIColor *oldColor = view.color;
-  view.activityIndicatorViewStyle = json ? [RCTConvert UIActivityIndicatorViewStyle: json] : defaultView.activityIndicatorViewStyle;
+  view.activityIndicatorViewStyle =
+      json ? [RCTConvert UIActivityIndicatorViewStyle:json] : defaultView.activityIndicatorViewStyle;
   view.color = oldColor;
 }
 

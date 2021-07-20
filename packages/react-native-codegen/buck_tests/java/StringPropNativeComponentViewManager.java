@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
@@ -15,8 +22,8 @@ public class StringPropNativeComponentViewManager extends SimpleViewManager<View
   }
 
   private void test() {
-    StringPropNativeComponentViewManagerDelegate delegate =
-        new StringPropNativeComponentViewManagerDelegate<ViewGroup>();
+    StringPropNativeComponentViewManagerDelegate<ViewGroup, StringPropNativeComponentViewManager>
+        delegate = new StringPropNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override
@@ -25,8 +32,8 @@ public class StringPropNativeComponentViewManager extends SimpleViewManager<View
   }
 
   @Override
-  public void setAccessibilityHint(ViewGroup view, String value) {}
+  public void setPlaceholder(ViewGroup view, String value) {}
 
   @Override
-  public void setAccessibilityRole(ViewGroup view, String value) {}
+  public void setDefaultValue(ViewGroup view, String value) {}
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -96,6 +96,7 @@
 
 - (void)drawRect:(CGRect)rect
 {
+  [super drawRect:rect];
   if (!_textStorage) {
     return;
   }
@@ -104,6 +105,15 @@
   NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
+#if TARGET_OS_MACCATALYST
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSaveGState(context);
+  // NSLayoutManager tries to draw text with sub-pixel anti-aliasing by default on
+  // macOS, but rendering SPAA onto a transparent background produces poor results.
+  // CATextLayer disables font smoothing by default now on macOS; we follow suit.
+  CGContextSetShouldSmoothFonts(context, NO);
+#endif
+  
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
@@ -147,6 +157,10 @@
     [_highlightLayer removeFromSuperlayer];
     _highlightLayer = nil;
   }
+  
+#if TARGET_OS_MACCATALYST
+  CGContextRestoreGState(context);
+#endif
 }
 
 
@@ -213,7 +227,7 @@
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
   // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
-#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
+#if !TARGET_OS_UIKITFORMAC
   UIMenuController *menuController = [UIMenuController sharedMenuController];
 
   if (menuController.isMenuVisible) {
@@ -245,7 +259,6 @@
 
 - (void)copy:(id)sender
 {
-#if !TARGET_OS_TV
   NSAttributedString *attributedText = _textStorage;
 
   NSMutableDictionary *item = [NSMutableDictionary new];
@@ -262,7 +275,6 @@
 
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
   pasteboard.items = @[item];
-#endif
 }
 
 @end

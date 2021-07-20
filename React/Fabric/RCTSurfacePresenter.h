@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,69 +6,71 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <memory>
 
-#import <React/RCTBridge.h>
-#import <React/RCTComponentViewFactory.h>
 #import <React/RCTPrimitives.h>
 #import <React/RCTSurfacePresenterStub.h>
-#import <react/config/ReactNativeConfig.h>
+#import <React/RCTSurfaceStage.h>
+#import <ReactCommon/RuntimeExecutor.h>
+#import <react/renderer/scheduler/SurfaceHandler.h>
 #import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
+@class RCTImageLoader;
 @class RCTMountingManager;
 
 /**
  * Coordinates presenting of React Native Surfaces and represents application
  * facing interface of running React Native core.
- * SurfacePresenter incapsulates a bridge object inside and discourage direct
- * access to it.
  */
 @interface RCTSurfacePresenter : NSObject
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                        config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config;
+- (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
+                         runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
 
-@property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
-@property (nonatomic, readonly) facebook::react::ContextContainer::Shared contextContainer;
+@property (nonatomic) facebook::react::ContextContainer::Shared contextContainer;
+@property (nonatomic) facebook::react::RuntimeExecutor runtimeExecutor;
+
+/*
+ * Suspends/resumes all surfaces associated with the presenter.
+ * Suspending is a process or gracefull stopping all surfaces and destroying all underlying infrastructure
+ * with a future possibility of recreating the infrastructure and restarting the surfaces from scratch.
+ * Suspending is usually a part of a bundle reloading process.
+ * Can be called on any thread.
+ */
+- (BOOL)suspend;
+- (BOOL)resume;
 
 @end
 
 @interface RCTSurfacePresenter (Surface) <RCTSurfacePresenterStub>
 
-/**
+/*
  * Surface uses these methods to register itself in the Presenter.
  */
 - (void)registerSurface:(RCTFabricSurface *)surface;
-/**
- * Starting initiates running, rendering and mounting processes.
- * Should be called after registerSurface and any other surface-specific setup is done
- */
-- (void)startSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
-- (void)setProps:(NSDictionary *)props surface:(RCTFabricSurface *)surface;
+
+@property (readonly) RCTMountingManager *mountingManager;
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 
-/**
- * Measures the Surface with given constraints.
- */
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
-                      maximumSize:(CGSize)maximumSize
-                          surface:(RCTFabricSurface *)surface;
-
-/**
- * Sets `minimumSize` and `maximumSize` layout constraints for the Surface.
- */
-- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize surface:(RCTFabricSurface *)surface;
-
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
 
-- (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
+- (void)setupAnimationDriverWithSurfaceHandler:(facebook::react::SurfaceHandler const &)surfaceHandler;
 
+/*
+ * Deprecated.
+ * Use `RCTMountingTransactionObserverCoordinator` instead.
+ */
+- (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;
+
+/*
+ * Please do not use this, this will be deleted soon.
+ */
+- (nullable UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag;
 
 @end
 

@@ -7,24 +7,35 @@
  * @flow
  * @format
  */
+
 'use strict';
 
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
+
 module.exports = {
-  getViewManagerConfig: (viewManagerName: string): null => {
+  getViewManagerConfig: (viewManagerName: string): mixed => {
     console.warn(
       'Attempting to get config for view manager: ' + viewManagerName,
     );
+    if (viewManagerName === 'RCTVirtualText') {
+      return {};
+    }
     return null;
   },
-  getConstants: (): $TEMPORARY$object<{||}> => ({}),
+  hasViewManagerConfig: (viewManagerName: string): boolean => {
+    return (
+      viewManagerName === 'RCTVirtualText' ||
+      viewManagerName === 'RCTShimmeringView'
+    );
+  },
+  getConstants: (): {...} => ({}),
   getConstantsForViewManager: (viewManagerName: string) => {},
   getDefaultEventTypes: (): Array<$FlowFixMe> => [],
-  playTouchSound: () => {},
   lazilyLoadView: (name: string) => {},
   createView: (
     reactTag: ?number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: Object,
   ) => {},
   updateView: (reactTag: number, viewName: string, props: Object) => {},

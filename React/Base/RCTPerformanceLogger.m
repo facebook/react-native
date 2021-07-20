@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,13 +7,12 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "RCTPerformanceLogger.h"
-#import "RCTRootView.h"
 #import "RCTLog.h"
+#import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
+#import "RCTRootView.h"
 
-@interface RCTPerformanceLogger ()
-{
+@interface RCTPerformanceLogger () {
   int64_t _data[RCTPLSize][2];
   NSUInteger _cookies[RCTPLSize];
 }
@@ -47,6 +46,7 @@
       @"BridgeStartup",
       @"RootViewTTI",
       @"BundleSize",
+      @"ReactInstanceInit",
     ];
   }
   return self;
@@ -64,12 +64,11 @@
   _data[tag][1] = 0;
 }
 
-
 - (void)markStopForTag:(RCTPLTag)tag
 {
 #if RCT_PROFILE
   if (RCTProfileIsProfiling()) {
-    NSString *label =_labelsForTags[tag];
+    NSString *label = _labelsForTags[tag];
     RCTProfileEndAsyncEvent(RCTProfileTagAlways, @"native", _cookies[tag], label, @"RCTPerformanceLogger");
   }
 #endif

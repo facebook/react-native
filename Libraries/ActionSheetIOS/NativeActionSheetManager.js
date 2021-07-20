@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
@@ -20,11 +18,12 @@ export interface Spec extends TurboModule {
       +title?: ?string,
       +message?: ?string,
       +options: ?Array<string>,
-      // Supports Array<number> as well.
-      +destructiveButtonIndex?: ?number,
+      +destructiveButtonIndices?: ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: ?number,
+      +userInterfaceStyle?: ?string,
+      +disabledButtonIndices?: Array<number>,
     |},
     callback: (buttonIndex: number) => void,
   ) => void;
@@ -36,6 +35,7 @@ export interface Spec extends TurboModule {
       +anchor?: ?number,
       +tintColor?: ?number,
       +excludedActivityTypes?: ?Array<string>,
+      +userInterfaceStyle?: ?string,
     |},
     failureCallback: (error: {|
       +domain: string,

@@ -15,6 +15,7 @@ module.exports = {
   DeprecatedAccessibilityRoles: [
     'none',
     'button',
+    'togglebutton',
     'link',
     'search',
     'image',
@@ -39,17 +40,7 @@ module.exports = {
     'tab',
     'tablist',
     'timer',
+    'list',
     'toolbar',
-  ],
-  // This must be kept in sync with the AccessibilityStatesMask in RCTViewManager.m
-  DeprecatedAccessibilityStates: [
-    'selected',
-    'disabled',
-    'checked',
-    'unchecked',
-    'busy',
-    'expanded',
-    'collapsed',
-    'hasPopup',
   ],
 };

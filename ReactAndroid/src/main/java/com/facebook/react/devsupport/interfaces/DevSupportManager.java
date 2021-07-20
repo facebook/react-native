@@ -1,11 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport.interfaces;
 
+import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
@@ -15,7 +17,7 @@ import java.io.File;
 
 /**
  * Interface for accessing and interacting with development features. In dev mode, use the
- * implementation {@link DevSupportManagerImpl}. In production mode, use the dummy implementation
+ * implementation {@link BridgeDevSupportManager}. In production mode, use the dummy implementation
  * {@link DisabledDevSupportManager}.
  */
 public interface DevSupportManager extends NativeModuleCallExceptionHandler {
@@ -23,6 +25,11 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void showNewJavaError(String message, Throwable e);
 
   void addCustomDevOption(String optionName, DevOptionHandler optionHandler);
+
+  @Nullable
+  View createRootView(String appKey);
+
+  void destroyRootView(View rootView);
 
   void showNewJSError(String message, ReadableArray details, int errorCookie);
 
@@ -62,13 +69,15 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
 
   void reloadJSFromServer(final String bundleURL);
 
+  void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback);
+
+  void loadSplitBundleFromServer(String bundlePath, DevSplitBundleCallback callback);
+
   void isPackagerRunning(PackagerStatusCallback callback);
 
   void setHotModuleReplacementEnabled(final boolean isHotModuleReplacementEnabled);
 
   void setRemoteJSDebugEnabled(final boolean isRemoteJSDebugEnabled);
-
-  void setReloadOnJSChangeEnabled(final boolean isReloadOnJSChangeEnabled);
 
   void setFpsDebugEnabled(final boolean isFpsDebugEnabled);
 
@@ -83,5 +92,19 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   @Nullable
   StackFrame[] getLastErrorStack();
 
+  @Nullable
+  ErrorType getLastErrorType();
+
   void registerErrorCustomizer(ErrorCustomizer errorCustomizer);
+
+  /**
+   * The PackagerLocationCustomizer allows you to have a dynamic packager location that is
+   * determined right before loading the packager. Your customizer must call |callback|, as loading
+   * will be blocked waiting for it to resolve.
+   */
+  public interface PackagerLocationCustomizer {
+    void run(Runnable callback);
+  }
+
+  void setPackagerLocationCustomizer(PackagerLocationCustomizer packagerLocationCustomizer);
 }

@@ -65,9 +65,8 @@ const QuickPerformanceLogger = {
     markerId: number,
     instanceKey?: number = DUMMY_INSTANCE_KEY,
   ): void {
-    if (global.nativeQPLMarkerCancel) {
-      global.nativeQPLMarkerCancel(markerId, instanceKey);
-    }
+    // $FlowFixMe[object-this-reference]
+    this.markerDrop(markerId, instanceKey);
   },
 
   markerPoint(
@@ -78,6 +77,15 @@ const QuickPerformanceLogger = {
   ): void {
     if (global.nativeQPLMarkerPoint) {
       global.nativeQPLMarkerPoint(markerId, name, instanceKey, timestamp);
+    }
+  },
+
+  markerDrop(
+    markerId: number,
+    instanceKey?: number = DUMMY_INSTANCE_KEY,
+  ): void {
+    if (global.nativeQPLMarkerDrop) {
+      global.nativeQPLMarkerDrop(markerId, instanceKey);
     }
   },
 

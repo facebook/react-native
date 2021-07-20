@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.fresco;
 
 import android.content.Context;
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
+import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.listener.RequestListener;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -23,6 +25,7 @@ import com.facebook.react.modules.common.ModuleDataCleaner;
 import com.facebook.react.modules.network.CookieJarContainer;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.HashSet;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
@@ -34,11 +37,12 @@ import okhttp3.OkHttpClient;
  */
 @ReactModule(name = FrescoModule.NAME, needsEagerInit = true)
 public class FrescoModule extends ReactContextBaseJavaModule
-    implements ModuleDataCleaner.Cleanable, LifecycleEventListener {
+    implements ModuleDataCleaner.Cleanable, LifecycleEventListener, TurboModule {
 
   public static final String NAME = "FrescoModule";
   private final boolean mClearOnDestroy;
   private @Nullable ImagePipelineConfig mConfig;
+  private @Nullable ImagePipeline mImagePipeline;
 
   private static boolean sHasBeenInitialized = false;
 
@@ -62,6 +66,20 @@ public class FrescoModule extends ReactContextBaseJavaModule
    */
   public FrescoModule(ReactApplicationContext reactContext, boolean clearOnDestroy) {
     this(reactContext, clearOnDestroy, null);
+  }
+
+  /**
+   * Create a new Fresco module with a default configuration (or the previously given configuration
+   * via {@link #FrescoModule(ReactApplicationContext, boolean, ImagePipelineConfig)}.
+   *
+   * @param clearOnDestroy whether to clear the memory cache in onHostDestroy: this should be {@code
+   *     true} for pure RN apps and {@code false} for apps that use Fresco outside of RN as well
+   * @param reactContext the context to use
+   */
+  public FrescoModule(
+      ReactApplicationContext reactContext, ImagePipeline imagePipeline, boolean clearOnDestroy) {
+    this(reactContext, clearOnDestroy);
+    mImagePipeline = imagePipeline;
   }
 
   /**
@@ -112,7 +130,7 @@ public class FrescoModule extends ReactContextBaseJavaModule
   @Override
   public void clearSensitiveData() {
     // Clear image cache.
-    Fresco.getImagePipeline().clearCaches();
+    getImagePipeline().clearCaches();
   }
 
   /**
@@ -166,7 +184,24 @@ public class FrescoModule extends ReactContextBaseJavaModule
     // the 'last' ReactActivity is being destroyed, which effectively means the app is being
     // backgrounded.
     if (hasBeenInitialized() && mClearOnDestroy) {
-      Fresco.getImagePipeline().clearMemoryCaches();
+      getImagePipeline().clearMemoryCaches();
+    }
+  }
+
+  private ImagePipeline getImagePipeline() {
+    if (mImagePipeline == null) {
+      mImagePipeline = Fresco.getImagePipeline();
+    }
+    return mImagePipeline;
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
     }
   }
 }

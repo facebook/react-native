@@ -3,12 +3,9 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
  */
 
-'use strict';
-
-import { Graph } from '../src/Graph.js';
+import {Graph} from '../src/Graph.js';
 
 // graph looks like this before test: https://pxl.cl/9k8t
 let graph = null;

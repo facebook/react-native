@@ -5,18 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
-
-'use strict';
 
 import type {WithDefault} from '../../Types/CodegenTypes';
 
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -24,21 +22,21 @@ type NativeProps = $ReadOnly<{|
   /**
    * Whether the indicator should hide when not animating (true by default).
    *
-   * See http://facebook.github.io/react-native/docs/activityindicator.html#hideswhenstopped
+   * See https://reactnative.dev/docs/activityindicator.html#hideswhenstopped
    */
   hidesWhenStopped?: WithDefault<boolean, false>,
 
   /**
    * Whether to show the indicator (true, the default) or hide it (false).
    *
-   * See http://facebook.github.io/react-native/docs/activityindicator.html#animating
+   * See https://reactnative.dev/docs/activityindicator.html#animating
    */
   animating?: WithDefault<boolean, false>,
 
   /**
    * The foreground color of the spinner (default is gray).
    *
-   * See http://facebook.github.io/react-native/docs/activityindicator.html#color
+   * See https://reactnative.dev/docs/activityindicator.html#color
    */
   color?: ?ColorValue,
 
@@ -46,11 +44,11 @@ type NativeProps = $ReadOnly<{|
    * Size of the indicator (default is 'small').
    * Passing a number to the size prop is only supported on Android.
    *
-   * See http://facebook.github.io/react-native/docs/activityindicator.html#size
+   * See https://reactnative.dev/docs/activityindicator.html#size
    */
   size?: WithDefault<'small' | 'large', 'small'>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>('ActivityIndicatorView', {
   paperComponentName: 'RCTActivityIndicatorView',
-}): NativeComponentType<NativeProps>);
+}): HostComponent<NativeProps>);

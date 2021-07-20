@@ -6,14 +6,14 @@
  *
  * @format
  * @flow
+ * @generated SignedSource<<dd0939e57b6f6addeff0b75ba29fbb41>>
  */
 
 'use strict';
 
 import {BatchedBridge} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 
-// TODO @sema: Adjust types
-import type {ReactNativeType} from './ReactNativeTypes';
+import type {ReactFabricType} from './ReactNativeTypes';
 
 let ReactFabric;
 
@@ -23,6 +23,10 @@ if (__DEV__) {
   ReactFabric = require('../implementations/ReactFabric-prod');
 }
 
-BatchedBridge.registerCallableModule('ReactFabric', ReactFabric);
+if (global.RN$Bridgeless) {
+  global.RN$stopSurface = ReactFabric.stopSurface;
+} else {
+  BatchedBridge.registerCallableModule('ReactFabric', ReactFabric);
+}
 
-module.exports = (ReactFabric: ReactNativeType);
+module.exports = (ReactFabric: ReactFabricType);

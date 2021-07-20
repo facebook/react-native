@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
 
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -37,7 +38,7 @@ public interface JavaJSExecutor {
    * @param sourceURL url or file location from which script content was loaded
    */
   @DoNotStrip
-  void loadApplicationScript(String sourceURL) throws ProxyExecutorException;
+  void loadBundle(String sourceURL) throws ProxyExecutorException;
 
   /**
    * Execute javascript method within js context

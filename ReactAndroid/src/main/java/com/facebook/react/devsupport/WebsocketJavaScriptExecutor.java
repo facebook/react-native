@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.os.Handler;
@@ -152,10 +153,9 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
   }
 
   @Override
-  public void loadApplicationScript(String sourceURL) throws JavaJSExecutor.ProxyExecutorException {
+  public void loadBundle(String sourceURL) throws JavaJSExecutor.ProxyExecutorException {
     JSExecutorCallbackFuture callback = new JSExecutorCallbackFuture();
-    Assertions.assertNotNull(mWebSocketClient)
-        .loadApplicationScript(sourceURL, mInjectedObjects, callback);
+    Assertions.assertNotNull(mWebSocketClient).loadBundle(sourceURL, mInjectedObjects, callback);
     try {
       callback.get();
     } catch (Throwable cause) {
@@ -177,7 +177,7 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
 
   @Override
   public void setGlobalVariable(String propertyName, String jsonEncodedValue) {
-    // Store and use in the next loadApplicationScript() call.
+    // Store and use in the next loadBundle() call.
     mInjectedObjects.put(propertyName, jsonEncodedValue);
   }
 }

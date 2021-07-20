@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
-
-'use strict';
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
@@ -29,7 +27,9 @@ export type ExceptionData = {
   stack: Array<StackFrame>,
   id: number,
   isFatal: boolean,
-  extraData?: ?{},
+  // flowlint-next-line unclear-type:off
+  extraData?: Object,
+  ...
 };
 
 export interface Spec extends TurboModule {
@@ -51,9 +51,11 @@ export interface Spec extends TurboModule {
     stack: Array<StackFrame>,
     exceptionId: number,
   ) => void;
-  // Android only
+  // TODO(T53311281): This is a noop on iOS now. Implement it.
   +dismissRedbox?: () => void;
 }
+
+const Platform = require('../Utilities/Platform');
 
 const NativeModule = TurboModuleRegistry.getEnforcing<Spec>(
   'ExceptionsManager',
@@ -82,7 +84,8 @@ const ExceptionsManager = {
     NativeModule.updateExceptionMessage(message, stack, exceptionId);
   },
   dismissRedbox(): void {
-    if (NativeModule.dismissRedbox) {
+    if (Platform.OS !== 'ios' && NativeModule.dismissRedbox) {
+      // TODO(T53311281): This is a noop on iOS now. Implement it.
       NativeModule.dismissRedbox();
     }
   },

@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
 #include <tuple>
@@ -124,6 +125,9 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   Value evaluatePreparedJavaScript(
       const std::shared_ptr<const PreparedJavaScript>& js) override {
     return plain().evaluatePreparedJavaScript(js);
+  }
+  bool drainMicrotasks(int maxMicrotasksHint) override {
+    return plain().drainMicrotasks(maxMicrotasksHint);
   }
   Object global() override {
     return plain().global();
@@ -255,7 +259,7 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   WeakObject createWeakObject(const Object& o) override {
     return plain_.createWeakObject(o);
   };
-  Value lockWeakObject(const WeakObject& wo) override {
+  Value lockWeakObject(WeakObject& wo) override {
     return plain_.lockWeakObject(wo);
   };
 
@@ -325,26 +329,48 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain().instrumentation().getRecordedGCStats();
   }
 
-  Value getHeapInfo(bool includeExpensive) override {
+  std::unordered_map<std::string, int64_t> getHeapInfo(
+      bool includeExpensive) override {
     return plain().instrumentation().getHeapInfo(includeExpensive);
   }
 
-  void collectGarbage() override {
-    plain().instrumentation().collectGarbage();
+  void collectGarbage(std::string cause) override {
+    plain().instrumentation().collectGarbage(std::move(cause));
   }
 
-  bool createSnapshotToFile(const std::string& path, bool compact) override {
-    return plain().instrumentation().createSnapshotToFile(path, compact);
+  void startTrackingHeapObjectStackTraces(
+      std::function<void(
+          uint64_t,
+          std::chrono::microseconds,
+          std::vector<HeapStatsUpdate>)> callback) override {
+    plain().instrumentation().startTrackingHeapObjectStackTraces(
+        std::move(callback));
   }
 
-  bool createSnapshotToStream(std::ostream& os, bool compact) override {
-    return plain().instrumentation().createSnapshotToStream(os, compact);
+  void stopTrackingHeapObjectStackTraces() override {
+    plain().instrumentation().stopTrackingHeapObjectStackTraces();
   }
 
-  void writeBridgeTrafficTraceToFile(
-      const std::string& fileName) const override {
-    const_cast<Plain&>(plain()).instrumentation().writeBridgeTrafficTraceToFile(
-        fileName);
+  void startHeapSampling(size_t samplingInterval) override {
+    plain().instrumentation().startHeapSampling(samplingInterval);
+  }
+
+  void stopHeapSampling(std::ostream& os) override {
+    plain().instrumentation().stopHeapSampling(os);
+  }
+
+  void createSnapshotToFile(const std::string& path) override {
+    plain().instrumentation().createSnapshotToFile(path);
+  }
+
+  void createSnapshotToStream(std::ostream& os) override {
+    plain().instrumentation().createSnapshotToStream(os);
+  }
+
+  std::string flushAndDisableBridgeTrafficTrace() override {
+    return const_cast<Plain&>(plain())
+        .instrumentation()
+        .flushAndDisableBridgeTrafficTrace();
   }
 
   void writeBasicBlockProfileTraceToFile(
@@ -397,6 +423,44 @@ struct AfterCaller<T, decltype((void)&T::after)> {
   }
 };
 
+// It's possible to use multiple decorators by nesting
+// WithRuntimeDecorator<...>, but this specialization allows use of
+// std::tuple of decorator classes instead.  See testlib.cpp for an
+// example.
+template <typename... T>
+struct BeforeCaller<std::tuple<T...>> {
+  static void before(std::tuple<T...>& tuple) {
+    all_before<0, T...>(tuple);
+  }
+
+ private:
+  template <size_t N, typename U, typename... Rest>
+  static void all_before(std::tuple<T...>& tuple) {
+    detail::BeforeCaller<U>::before(std::get<N>(tuple));
+    all_before<N + 1, Rest...>(tuple);
+  }
+
+  template <size_t N>
+  static void all_before(std::tuple<T...>&) {}
+};
+
+template <typename... T>
+struct AfterCaller<std::tuple<T...>> {
+  static void after(std::tuple<T...>& tuple) {
+    all_after<0, T...>(tuple);
+  }
+
+ private:
+  template <size_t N, typename U, typename... Rest>
+  static void all_after(std::tuple<T...>& tuple) {
+    all_after<N + 1, Rest...>(tuple);
+    detail::AfterCaller<U>::after(std::get<N>(tuple));
+  }
+
+  template <size_t N>
+  static void all_after(std::tuple<T...>&) {}
+};
+
 } // namespace detail
 
 // A decorator which implements an around idiom.  A With instance is
@@ -429,6 +493,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       const std::shared_ptr<const PreparedJavaScript>& js) override {
     Around around{with_};
     return RD::evaluatePreparedJavaScript(js);
+  }
+  bool drainMicrotasks(int maxMicrotasksHint) override {
+    Around around{with_};
+    return RD::drainMicrotasks(maxMicrotasksHint);
   }
   Object global() override {
     Around around{with_};
@@ -585,7 +653,7 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::createWeakObject(o);
   };
-  Value lockWeakObject(const WeakObject& wo) override {
+  Value lockWeakObject(WeakObject& wo) override {
     Around around{with_};
     return RD::lockWeakObject(wo);
   };
@@ -679,41 +747,6 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
   };
 
   With& with_;
-};
-
-// Nesting WithRuntimeDecorator will work, but using this as the With
-// type will be easier to read, write, and understand.
-template <typename... T>
-class WithTuple : public std::tuple<T...> {
- public:
-  using std::tuple<T...>::tuple;
-
-  void before() {
-    all_before<0, T...>();
-  }
-
-  void after() {
-    all_after<0, T...>();
-  }
-
- private:
-  template <size_t N, typename U, typename... Rest>
-  void all_before() {
-    detail::BeforeCaller<U>::before(std::get<N>(*this));
-    all_before<N + 1, Rest...>();
-  }
-
-  template <size_t N>
-  void all_before() {}
-
-  template <size_t N, typename U, typename... Rest>
-  void all_after() {
-    all_after<N + 1, Rest...>();
-    detail::AfterCaller<U>::after(std::get<N>(*this));
-  }
-
-  template <size_t N>
-  void all_after() {}
 };
 
 } // namespace jsi

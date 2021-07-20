@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,9 +13,9 @@
 - (void)setHidden:(BOOL)hidden
 {
   if ([self hidesWhenStopped] && ![self isAnimating]) {
-    [super setHidden: YES];
+    [super setHidden:YES];
   } else {
-    [super setHidden: hidden];
+    [super setHidden:hidden];
   }
 }
 

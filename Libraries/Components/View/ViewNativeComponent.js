@@ -4,67 +4,42 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @flow
  */
 
-'use strict';
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
+import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import Platform from '../../Utilities/Platform';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
+import {type ViewProps as Props} from './ViewPropTypes';
+import * as React from 'react';
 
-const Platform = require('../../Utilities/Platform');
-const ReactNative = require('../../Renderer/shims/ReactNative');
-const ReactNativeViewViewConfigAndroid = require('./ReactNativeViewViewConfigAndroid');
+const ViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+  'RCTView',
+  () =>
+    Platform.OS === 'android'
+      ? ReactNativeViewViewConfigAndroid
+      : {uiViewClassName: 'RCTView'},
+);
 
-const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
-import type {ViewProps} from './ViewPropTypes';
-
-export type ViewNativeComponentType = Class<
-  ReactNative.NativeComponent<ViewProps>,
->;
-
-let NativeViewComponent;
-let viewConfig:
-  | $TEMPORARY$object<{||}>
-  | $TEMPORARY$object<{|
-      bubblingEventTypes?: $ReadOnly<{
-        [eventName: string]: $ReadOnly<{|
-          phasedRegistrationNames: $ReadOnly<{|
-            bubbled: string,
-            captured: string,
-          |}>,
-        |}>,
-      }>,
-      directEventTypes?: $ReadOnly<{
-        [eventName: string]: $ReadOnly<{|registrationName: string|}>,
-      }>,
-      uiViewClassName: string,
-      validAttributes?: {
-        [propName: string]:
-          | true
-          | $ReadOnly<{|
-              diff?: <T>(arg1: any, arg2: any) => boolean,
-              process?: (arg1: any) => any,
-            |}>,
-      },
-    |}>;
-
-// Only use the JS view config in DEV
-if (__DEV__) {
-  // On Android, View extends the base component with additional view-only props
-  // On iOS, the base component is View
-  if (Platform.OS === 'android') {
-    viewConfig = ReactNativeViewViewConfigAndroid;
-    registerGeneratedViewConfig('RCTView', ReactNativeViewViewConfigAndroid);
-  } else {
-    viewConfig = {};
-    registerGeneratedViewConfig('RCTView', {uiViewClassName: 'RCTView'});
-  }
-
-  NativeViewComponent = 'RCTView';
-} else {
-  NativeViewComponent = requireNativeComponent('RCTView');
+interface NativeCommands {
+  +hotspotUpdate: (
+    viewRef: React.ElementRef<HostComponent<mixed>>,
+    x: number,
+    y: number,
+  ) => void;
+  +setPressed: (
+    viewRef: React.ElementRef<HostComponent<mixed>>,
+    pressed: boolean,
+  ) => void;
 }
 
-export const __INTERNAL_VIEW_CONFIG = viewConfig;
-export default ((NativeViewComponent: any): ViewNativeComponentType);
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['hotspotUpdate', 'setPressed'],
+});
+
+export default ViewNativeComponent;
+
+export type ViewNativeComponentType = HostComponent<Props>;

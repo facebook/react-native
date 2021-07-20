@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
 
-const warning = require('fbjs/lib/warning');
-
-const warnedKeys: {[string]: boolean} = {};
+const warnedKeys: {[string]: boolean, ...} = {};
 
 /**
  * A simple function that prints a warning message once per session.
@@ -26,7 +24,7 @@ function warnOnce(key: string, message: string) {
     return;
   }
 
-  warning(false, message);
+  console.warn(message);
 
   warnedKeys[key] = true;
 }

@@ -10,16 +10,23 @@
 
 'use strict';
 
-const React = require('react');
-const SectionList = require('../SectionList');
+import * as React from 'react';
+import SectionList from '../SectionList';
 
-function renderMyListItem(info: {item: {title: string}, index: number}) {
+function renderMyListItem(info: {
+  item: {title: string, ...},
+  index: number,
+  ...
+}) {
   return <span />;
 }
 
-const renderMyHeader = ({section}: {section: {fooNumber: number} & Object}) => (
-  <span />
-);
+const renderMyHeader = ({
+  section,
+}: {
+  section: {fooNumber: number, ...} & Object,
+  ...
+}) => <span />;
 
 module.exports = {
   testGoodDataWithGoodItem(): React.Node {
@@ -50,9 +57,9 @@ module.exports = {
       },
     ];
     return [
-      // $FlowExpectedError - title should be inside `item`
       <SectionList
-        renderItem={(info: {title: string}) => <span />}
+        // $FlowExpectedError - title should be inside `item`
+        renderItem={(info: {title: string, ...}) => <span />}
         sections={sections}
       />,
       <SectionList
@@ -62,7 +69,7 @@ module.exports = {
       />,
       // EverythingIsFine
       <SectionList
-        renderItem={(info: {item: {title: string}}) => <span />}
+        renderItem={(info: {item: {title: string, ...}, ...}) => <span />}
         sections={sections}
       />,
     ];
@@ -87,9 +94,6 @@ module.exports = {
 
   testBadSectionsShape(): React.Element<*> {
     const sections = [
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
       {
         key: 'a',
         items: [
@@ -108,7 +112,6 @@ module.exports = {
     const sections = [
       {
         key: 'a',
-        // $FlowExpectedError - section has bad meta data `fooNumber` field of type string
         fooNumber: 'string',
         data: [
           {
@@ -122,6 +125,8 @@ module.exports = {
       <SectionList
         renderSectionHeader={renderMyHeader}
         renderItem={renderMyListItem}
+        /* $FlowExpectedError - section has bad meta data `fooNumber` field of
+         * type string */
         sections={sections}
       />
     );

@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.systrace;
 
-import android.os.Build;
 import android.os.Trace;
 
 /**
@@ -48,15 +48,11 @@ public class Systrace {
   public static void traceInstant(long tag, final String title, EventScope scope) {}
 
   public static void beginSection(long tag, final String sectionName) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      Trace.beginSection(sectionName);
-    }
+    Trace.beginSection(sectionName);
   }
 
   public static void endSection(long tag) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      Trace.endSection();
-    }
+    Trace.endSection();
   }
 
   public static void beginAsyncSection(long tag, final String sectionName, final int cookie) {}

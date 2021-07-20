@@ -13,54 +13,23 @@
 
 const React = require('react');
 const DatePickerIOS = require('../DatePickerIOS');
-const render = require('../../../../jest/renderer');
+
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 
 describe('DatePickerIOS', () => {
-  it('should render as <View> when mocked', () => {
-    const instance = render.create(
-      <DatePickerIOS
-        date={new Date(1555883690956)}
-        mode="date"
-        onDateChange={jest.fn()}
-      />,
+  it('should render as expected', () => {
+    ReactNativeTestTools.expectRendersMatchingSnapshot(
+      'DatePickerIOS',
+      () => (
+        <DatePickerIOS
+          date={new Date(1555883690956)}
+          mode="date"
+          onDateChange={jest.fn()}
+        />
+      ),
+      () => {
+        jest.dontMock('../DatePickerIOS');
+      },
     );
-    expect(instance).toMatchSnapshot();
-  });
-
-  it('should shallow render as <DatePickerIOS> when mocked', () => {
-    const output = render.shallow(
-      <DatePickerIOS
-        date={new Date(1555883690956)}
-        mode="date"
-        onDateChange={jest.fn()}
-      />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <DatePickerIOS> when not mocked', () => {
-    jest.dontMock('../DatePickerIOS');
-
-    const output = render.shallow(
-      <DatePickerIOS
-        date={new Date(1555883690956)}
-        mode="date"
-        onDateChange={jest.fn()}
-      />,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render as <View> when not mocked', () => {
-    jest.dontMock('../DatePickerIOS');
-
-    const instance = render.create(
-      <DatePickerIOS
-        date={new Date(1555883690956)}
-        mode="date"
-        onDateChange={jest.fn()}
-      />,
-    );
-    expect(instance).toMatchSnapshot();
   });
 });

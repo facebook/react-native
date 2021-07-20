@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -24,10 +24,9 @@
     return;
   }
 
-  RCTAssert([scrollView isKindOfClass:[RCTScrollView class]],
-            @"Unexpected view hierarchy of RCTScrollView component.");
+  RCTAssert([scrollView isKindOfClass:[RCTScrollView class]], @"Unexpected view hierarchy of RCTScrollView component.");
 
-  [scrollView updateContentOffsetIfNeeded];
+  [scrollView updateContentSizeIfNeeded];
 }
 
 @end

@@ -12,10 +12,15 @@
 
 import type {
   EventTypeShape,
-  ObjectPropertyType,
+  NamedShape,
+  EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 
-function getPropertyType(name, optional, typeAnnotation) {
+function getPropertyType(
+  name,
+  optional,
+  typeAnnotation,
+): NamedShape<EventTypeAnnotation> {
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
       ? typeAnnotation.id.name
@@ -24,45 +29,71 @@ function getPropertyType(name, optional, typeAnnotation) {
   switch (type) {
     case 'BooleanTypeAnnotation':
       return {
-        type: 'BooleanTypeAnnotation',
         name,
         optional,
+        typeAnnotation: {
+          type: 'BooleanTypeAnnotation',
+        },
       };
     case 'StringTypeAnnotation':
       return {
-        type: 'StringTypeAnnotation',
         name,
         optional,
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
       };
     case 'Int32':
       return {
-        type: 'Int32TypeAnnotation',
         name,
         optional,
+        typeAnnotation: {
+          type: 'Int32TypeAnnotation',
+        },
+      };
+    case 'Double':
+      return {
+        name,
+        optional,
+        typeAnnotation: {
+          type: 'DoubleTypeAnnotation',
+        },
       };
     case 'Float':
       return {
-        type: 'FloatTypeAnnotation',
         name,
         optional,
+        typeAnnotation: {
+          type: 'FloatTypeAnnotation',
+        },
       };
+    case '$ReadOnly':
+      return getPropertyType(
+        name,
+        optional,
+        typeAnnotation.typeParameters.params[0],
+      );
     case 'ObjectTypeAnnotation':
       return {
-        type: 'ObjectTypeAnnotation',
         name,
         optional,
-        properties: typeAnnotation.properties.map(buildPropertiesForEvent),
+        typeAnnotation: {
+          type: 'ObjectTypeAnnotation',
+          properties: typeAnnotation.properties.map(buildPropertiesForEvent),
+        },
       };
     case 'UnionTypeAnnotation':
       return {
-        type: 'StringEnumTypeAnnotation',
         name,
         optional,
-        options: typeAnnotation.types.map(option => ({name: option.value})),
+        typeAnnotation: {
+          type: 'StringEnumTypeAnnotation',
+          options: typeAnnotation.types.map(option => option.value),
+        },
       };
     default:
       (type: empty);
-      throw new Error(`Unable to determine event type for "${name}"`);
+      throw new Error(`Unable to determine event type for "${name}": ${type}`);
   }
 }
 
@@ -72,6 +103,9 @@ function findEventArgumentsAndType(
   bubblingType,
   paperName,
 ) {
+  if (!typeAnnotation.id) {
+    throw new Error("typeAnnotation of event doesn't have a name");
+  }
   const name = typeAnnotation.id.name;
   if (name === '$ReadOnly') {
     return {
@@ -117,7 +151,7 @@ function findEventArgumentsAndType(
   }
 }
 
-function buildPropertiesForEvent(property): ObjectPropertyType {
+function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   const name = property.key.name;
   const optional =
     property.value.type === 'NullableTypeAnnotation' || property.optional;
@@ -189,20 +223,21 @@ function buildEventSchema(
   }
 
   if (argumentProps === null) {
-    throw new Error(`Unabled to determine event arguments for "${name}"`);
+    throw new Error(`Unable to determine event arguments for "${name}"`);
   }
 
   if (bubblingType === null) {
-    throw new Error(`Unabled to determine event arguments for "${name}"`);
+    throw new Error(`Unable to determine event arguments for "${name}"`);
   }
 }
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type EventTypeAST = Object;
 
 type TypeMap = {
-  // $FlowFixMe there's no flowtype for ASTs
+  // $FlowFixMe[unclear-type] there's no flowtype for ASTs
   [string]: Object,
+  ...,
 };
 
 function getEvents(

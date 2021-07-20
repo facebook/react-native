@@ -14,7 +14,7 @@
  * Convert a react internal instance to a sanitized data object.
  *
  * This is shamelessly stolen from react-devtools:
- * https://github.com/facebook/react-devtools/blob/master/backend/getData.js
+ * https://github.com/facebook/react-devtools/blob/HEAD/backend/getData.js
  */
 function getData(element: Object): Object {
   let children = null;
@@ -142,14 +142,8 @@ function setInContext(inst, path: Array<string | number>, value: any) {
 
 function setIn(obj: Object, path: Array<string | number>, value: any) {
   const last = path.pop();
-  /* $FlowFixMe(>=0.88.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.88 was deployed. To see the error, delete this comment
-   * and run Flow. */
   const parent = path.reduce((obj_, attr) => (obj_ ? obj_[attr] : null), obj);
   if (parent) {
-    /* $FlowFixMe(>=0.88.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.88 was deployed. To see the error, delete this
-     * comment and run Flow. */
     parent[last] = value;
   }
 }
@@ -168,7 +162,7 @@ function copyWithSetImpl(obj, path, idx, value) {
   }
   const key = path[idx];
   const updated = Array.isArray(obj) ? obj.slice() : {...obj};
-  // $FlowFixMe number or string is fine here
+  // $FlowFixMe[incompatible-use] number or string is fine here
   updated[key] = copyWithSetImpl(obj[key], path, idx + 1, value);
   return updated;
 }

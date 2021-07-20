@@ -1,17 +1,17 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.appstate;
 
+import com.facebook.fbreact.specs.NativeAppStateSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WindowFocusChangeListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
@@ -19,10 +19,12 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 @ReactModule(name = AppStateModule.NAME)
-public class AppStateModule extends ReactContextBaseJavaModule
+public class AppStateModule extends NativeAppStateSpec
     implements LifecycleEventListener, WindowFocusChangeListener {
+  public static final String TAG = AppStateModule.class.getSimpleName();
 
   public static final String NAME = "AppState";
 
@@ -49,13 +51,13 @@ public class AppStateModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public Map<String, Object> getConstants() {
+  public Map<String, Object> getTypedExportedConstants() {
     HashMap<String, Object> constants = new HashMap<>();
     constants.put(INITIAL_STATE, mAppState);
     return constants;
   }
 
-  @ReactMethod
+  @Override
   public void getCurrentAppState(Callback success, Callback error) {
     success.invoke(createAppStateEventMap());
   }
@@ -80,9 +82,7 @@ public class AppStateModule extends ReactContextBaseJavaModule
 
   @Override
   public void onWindowFocusChange(boolean hasFocus) {
-    getReactApplicationContext()
-        .getJSModule(RCTDeviceEventEmitter.class)
-        .emit("appStateFocusChange", hasFocus);
+    sendEvent("appStateFocusChange", hasFocus);
   }
 
   private WritableMap createAppStateEventMap() {
@@ -91,9 +91,42 @@ public class AppStateModule extends ReactContextBaseJavaModule
     return appState;
   }
 
+  private void sendEvent(String eventName, @Nullable Object data) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+
+    if (reactApplicationContext == null) {
+      return;
+    }
+    // We don't gain anything interesting from logging here, and it's an extremely common
+    // race condition for an AppState event to be triggered as the Catalyst instance is being
+    // set up or torn down. So, just fail silently here.
+    if (!reactApplicationContext.hasActiveReactInstance()) {
+      return;
+    }
+    reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
+  }
+
   private void sendAppStateChangeEvent() {
-    getReactApplicationContext()
-        .getJSModule(RCTDeviceEventEmitter.class)
-        .emit("appStateDidChange", createAppStateEventMap());
+    sendEvent("appStateDidChange", createAppStateEventMap());
+  }
+
+  @Override
+  public void addListener(String eventName) {
+    // iOS only
+  }
+
+  @Override
+  public void removeListeners(double count) {
+    // iOS only
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
   }
 }

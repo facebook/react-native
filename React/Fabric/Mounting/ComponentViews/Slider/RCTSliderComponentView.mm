@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,33 +7,39 @@
 
 #import "RCTSliderComponentView.h"
 
+#import <React/RCTConversions.h>
+#import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
-#import <react/components/rncore/EventEmitters.h>
-#import <react/components/rncore/Props.h>
-#import <react/components/slider/SliderComponentDescriptor.h>
-#import <react/components/slider/SliderLocalData.h>
+
+#import <react/renderer/components/rncore/EventEmitters.h>
+#import <react/renderer/components/rncore/Props.h>
+#import <react/renderer/components/slider/SliderComponentDescriptor.h>
+
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
+
+@interface RCTSliderComponentView () <RCTImageResponseDelegate>
+@end
 
 @implementation RCTSliderComponentView {
   UISlider *_sliderView;
   float _previousValue;
-  SharedSliderLocalData _sliderLocalData;
 
   UIImage *_trackImage;
   UIImage *_minimumTrackImage;
   UIImage *_maximumTrackImage;
   UIImage *_thumbImage;
 
-  const ImageResponseObserverCoordinator *_trackImageCoordinator;
-  const ImageResponseObserverCoordinator *_minimumTrackImageCoordinator;
-  const ImageResponseObserverCoordinator *_maximumTrackImageCoordinator;
-  const ImageResponseObserverCoordinator *_thumbImageCoordinator;
+  ImageResponseObserverCoordinator const *_trackImageCoordinator;
+  ImageResponseObserverCoordinator const *_minimumTrackImageCoordinator;
+  ImageResponseObserverCoordinator const *_maximumTrackImageCoordinator;
+  ImageResponseObserverCoordinator const *_thumbImageCoordinator;
 
-  std::unique_ptr<RCTImageResponseObserverProxy> _trackImageResponseObserverProxy;
-  std::unique_ptr<RCTImageResponseObserverProxy> _minimumTrackImageResponseObserverProxy;
-  std::unique_ptr<RCTImageResponseObserverProxy> _maximumTrackImageResponseObserverProxy;
-  std::unique_ptr<RCTImageResponseObserverProxy> _thumbImageResponseObserverProxy;
+  RCTImageResponseObserverProxy _trackImageResponseObserverProxy;
+  RCTImageResponseObserverProxy _minimumTrackImageResponseObserverProxy;
+  RCTImageResponseObserverProxy _maximumTrackImageResponseObserverProxy;
+  RCTImageResponseObserverProxy _thumbImageResponseObserverProxy;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -51,10 +57,10 @@ using namespace facebook::react;
 
     _sliderView.value = defaultProps->value;
 
-    _trackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
-    _minimumTrackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
-    _maximumTrackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
-    _thumbImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
+    _trackImageResponseObserverProxy = RCTImageResponseObserverProxy(self);
+    _minimumTrackImageResponseObserverProxy = RCTImageResponseObserverProxy(self);
+    _maximumTrackImageResponseObserverProxy = RCTImageResponseObserverProxy(self);
+    _thumbImageResponseObserverProxy = RCTImageResponseObserverProxy(self);
 
     self.contentView = _sliderView;
   }
@@ -73,31 +79,23 @@ using namespace facebook::react;
   self.maximumTrackImageCoordinator = nullptr;
   self.thumbImageCoordinator = nullptr;
 
-  _sliderLocalData.reset();
-
   // Tint colors will be taken care of when props are set again - we just
   // need to make sure that image properties are reset here
   [_sliderView setMinimumTrackImage:nil forState:UIControlStateNormal];
   [_sliderView setMaximumTrackImage:nil forState:UIControlStateNormal];
-  [_sliderView setThumbImage:nil forState:UIControlStateNormal];
+
+  if (_thumbImage) {
+    [_sliderView setThumbImage:nil forState:UIControlStateNormal];
+  }
 
   _trackImage = nil;
   _minimumTrackImage = nil;
   _maximumTrackImage = nil;
   _thumbImage = nil;
-}
 
-- (void)dealloc
-{
-  self.trackImageCoordinator = nullptr;
-  self.minimumTrackImageCoordinator = nullptr;
-  self.maximumTrackImageCoordinator = nullptr;
-  self.thumbImageCoordinator = nullptr;
-
-  _trackImageResponseObserverProxy.reset();
-  _minimumTrackImageResponseObserverProxy.reset();
-  _maximumTrackImageResponseObserverProxy.reset();
-  _thumbImageResponseObserverProxy.reset();
+  const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
+  _sliderView.value = props.value;
+  _previousValue = props.value;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -112,12 +110,6 @@ using namespace facebook::react;
   const auto &oldSliderProps = *std::static_pointer_cast<const SliderProps>(_props);
   const auto &newSliderProps = *std::static_pointer_cast<const SliderProps>(props);
 
-  // `value`
-  if (oldSliderProps.value != newSliderProps.value) {
-    _sliderView.value = newSliderProps.value;
-    _previousValue = newSliderProps.value;
-  }
-
   // `minimumValue`
   if (oldSliderProps.minimumValue != newSliderProps.minimumValue) {
     _sliderView.minimumValue = newSliderProps.minimumValue;
@@ -128,6 +120,12 @@ using namespace facebook::react;
     _sliderView.maximumValue = newSliderProps.maximumValue;
   }
 
+  // `value`
+  if (oldSliderProps.value != newSliderProps.value) {
+    _sliderView.value = newSliderProps.value;
+    _previousValue = newSliderProps.value;
+  }
+
   // `disabled`
   if (oldSliderProps.disabled != newSliderProps.disabled) {
     _sliderView.enabled = !newSliderProps.disabled;
@@ -135,86 +133,98 @@ using namespace facebook::react;
 
   // `thumbTintColor`
   if (oldSliderProps.thumbTintColor != newSliderProps.thumbTintColor) {
-    _sliderView.thumbTintColor = [UIColor colorWithCGColor:newSliderProps.thumbTintColor.get()];
+    _sliderView.thumbTintColor = RCTUIColorFromSharedColor(newSliderProps.thumbTintColor);
   }
 
   // `minimumTrackTintColor`
   if (oldSliderProps.minimumTrackTintColor != newSliderProps.minimumTrackTintColor) {
-    _sliderView.minimumTrackTintColor = [UIColor colorWithCGColor:newSliderProps.minimumTrackTintColor.get()];
+    _sliderView.minimumTrackTintColor = RCTUIColorFromSharedColor(newSliderProps.minimumTrackTintColor);
   }
 
   // `maximumTrackTintColor`
   if (oldSliderProps.maximumTrackTintColor != newSliderProps.maximumTrackTintColor) {
-    _sliderView.maximumTrackTintColor = [UIColor colorWithCGColor:newSliderProps.maximumTrackTintColor.get()];
+    _sliderView.maximumTrackTintColor = RCTUIColorFromSharedColor(newSliderProps.maximumTrackTintColor);
   }
 
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
+- (void)updateState:(facebook::react::State::Shared const &)state
+           oldState:(facebook::react::State::Shared const &)oldState
 {
-  SharedSliderLocalData previousData = _sliderLocalData;
-  _sliderLocalData = std::static_pointer_cast<const SliderLocalData>(localData);
-  assert(_sliderLocalData);
-  bool havePreviousData = previousData != nullptr;
+  auto _state = std::static_pointer_cast<SliderShadowNode::ConcreteState const>(state);
+  auto _oldState = std::static_pointer_cast<SliderShadowNode::ConcreteState const>(oldState);
 
-  if (!havePreviousData || _sliderLocalData->getTrackImageSource() != previousData->getTrackImageSource()) {
-    self.trackImageCoordinator = &_sliderLocalData->getTrackImageRequest().getObserverCoordinator();
+  auto data = _state->getData();
+
+  bool havePreviousData = _oldState != nullptr;
+
+  auto getCoordinator = [](ImageRequest const *request) -> ImageResponseObserverCoordinator const * {
+    if (request) {
+      return &request->getObserverCoordinator();
+    } else {
+      return nullptr;
+    }
+  };
+
+  if (!havePreviousData || data.getTrackImageSource() != _oldState->getData().getTrackImageSource()) {
+    self.trackImageCoordinator = getCoordinator(&data.getTrackImageRequest());
   }
-  if (!havePreviousData ||
-      _sliderLocalData->getMinimumTrackImageSource() != previousData->getMinimumTrackImageSource()) {
-    self.minimumTrackImageCoordinator = &_sliderLocalData->getMinimumTrackImageRequest().getObserverCoordinator();
+
+  if (!havePreviousData || data.getMinimumTrackImageSource() != _oldState->getData().getMinimumTrackImageSource()) {
+    self.minimumTrackImageCoordinator = getCoordinator(&data.getMinimumTrackImageRequest());
   }
-  if (!havePreviousData ||
-      _sliderLocalData->getMaximumTrackImageSource() != previousData->getMaximumTrackImageSource()) {
-    self.maximumTrackImageCoordinator = &_sliderLocalData->getMaximumTrackImageRequest().getObserverCoordinator();
+
+  if (!havePreviousData || data.getMaximumTrackImageSource() != _oldState->getData().getMaximumTrackImageSource()) {
+    self.maximumTrackImageCoordinator = getCoordinator(&data.getMaximumTrackImageRequest());
   }
-  if (!havePreviousData || _sliderLocalData->getThumbImageSource() != previousData->getThumbImageSource()) {
-    self.thumbImageCoordinator = &_sliderLocalData->getThumbImageRequest().getObserverCoordinator();
+
+  if (!havePreviousData || data.getThumbImageSource() != _oldState->getData().getThumbImageSource()) {
+    self.thumbImageCoordinator = getCoordinator(&data.getThumbImageRequest());
   }
 }
 
 - (void)setTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
 {
   if (_trackImageCoordinator) {
-    _trackImageCoordinator->removeObserver(_trackImageResponseObserverProxy.get());
+    _trackImageCoordinator->removeObserver(_trackImageResponseObserverProxy);
   }
   _trackImageCoordinator = coordinator;
   if (_trackImageCoordinator) {
-    _trackImageCoordinator->addObserver(_trackImageResponseObserverProxy.get());
+    _trackImageCoordinator->addObserver(_trackImageResponseObserverProxy);
   }
 }
 
 - (void)setMinimumTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
 {
   if (_minimumTrackImageCoordinator) {
-    _minimumTrackImageCoordinator->removeObserver(_minimumTrackImageResponseObserverProxy.get());
+    _minimumTrackImageCoordinator->removeObserver(_minimumTrackImageResponseObserverProxy);
   }
   _minimumTrackImageCoordinator = coordinator;
   if (_minimumTrackImageCoordinator) {
-    _minimumTrackImageCoordinator->addObserver(_minimumTrackImageResponseObserverProxy.get());
+    _minimumTrackImageCoordinator->addObserver(_minimumTrackImageResponseObserverProxy);
   }
 }
 
 - (void)setMaximumTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
 {
   if (_maximumTrackImageCoordinator) {
-    _maximumTrackImageCoordinator->removeObserver(_maximumTrackImageResponseObserverProxy.get());
+    _maximumTrackImageCoordinator->removeObserver(_maximumTrackImageResponseObserverProxy);
   }
   _maximumTrackImageCoordinator = coordinator;
   if (_maximumTrackImageCoordinator) {
-    _maximumTrackImageCoordinator->addObserver(_maximumTrackImageResponseObserverProxy.get());
+    _maximumTrackImageCoordinator->addObserver(_maximumTrackImageResponseObserverProxy);
   }
 }
 
 - (void)setThumbImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
 {
   if (_thumbImageCoordinator) {
-    _thumbImageCoordinator->removeObserver(_thumbImageResponseObserverProxy.get());
+    _thumbImageCoordinator->removeObserver(_thumbImageResponseObserverProxy);
   }
   _thumbImageCoordinator = coordinator;
   if (_thumbImageCoordinator) {
-    _thumbImageCoordinator->addObserver(_thumbImageResponseObserverProxy.get());
+    _thumbImageCoordinator->addObserver(_thumbImageResponseObserverProxy);
   }
 }
 
@@ -290,7 +300,7 @@ using namespace facebook::react;
 
   const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
 
-  if (props.step > 0 && value <= (props.maximumValue - props.minimumValue)) {
+  if (props.step > 0 && props.step <= (props.maximumValue - props.minimumValue)) {
     value = MAX(
         props.minimumValue,
         MIN(props.maximumValue, props.minimumValue + round((value - props.minimumValue) / props.step) * props.step));
@@ -300,11 +310,11 @@ using namespace facebook::react;
 
   if (continuous && _previousValue != value) {
     std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)
-        ->onValueChange(SliderOnValueChangeStruct{.value = static_cast<Float>(value)});
+        ->onValueChange(SliderEventEmitter::OnValueChange{.value = static_cast<Float>(value)});
   }
   if (!continuous) {
     std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)
-        ->onSlidingComplete(SliderOnSlidingCompleteStruct{.value = static_cast<Float>(value)});
+        ->onSlidingComplete(SliderEventEmitter::OnSlidingComplete{.value = static_cast<Float>(value)});
   }
 
   _previousValue = value;
@@ -312,25 +322,30 @@ using namespace facebook::react;
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void *)observer
+- (void)didReceiveImage:(UIImage *)image metadata:(id)metadata fromObserver:(void const *)observer
 {
-  if (observer == _trackImageResponseObserverProxy.get()) {
+  if (observer == &_trackImageResponseObserverProxy) {
     self.trackImage = image;
-  } else if (observer == _minimumTrackImageResponseObserverProxy.get()) {
+  } else if (observer == &_minimumTrackImageResponseObserverProxy) {
     self.minimumTrackImage = image;
-  } else if (observer == _maximumTrackImageResponseObserverProxy.get()) {
+  } else if (observer == &_maximumTrackImageResponseObserverProxy) {
     self.maximumTrackImage = image;
-  } else if (observer == _thumbImageResponseObserverProxy.get()) {
+  } else if (observer == &_thumbImageResponseObserverProxy) {
     self.thumbImage = image;
   }
 }
 
-- (void)didReceiveProgress:(float)progress fromObserver:(void *)observer
+- (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer
 {
 }
 
-- (void)didReceiveFailureFromObserver:(void *)observer
+- (void)didReceiveFailureFromObserver:(void const *)observer
 {
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTSliderCls(void)
+{
+  return RCTSliderComponentView.class;
+}

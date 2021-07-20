@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -19,22 +19,20 @@
 {
   YGNodeRef yogaNode = self.yogaNode;
   return (UIEdgeInsets){
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeTop)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeLeft)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeBottom)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeRight))
-  };
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeTop)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeLeft)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeBottom)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetPadding(yogaNode, YGEdgeRight))};
 }
 
 - (UIEdgeInsets)borderAsInsets
 {
   YGNodeRef yogaNode = self.yogaNode;
   return (UIEdgeInsets){
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeTop)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeLeft)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeBottom)),
-    RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeRight))
-  };
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeTop)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeLeft)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeBottom)),
+      RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetBorder(yogaNode, YGEdgeRight))};
 }
 
 - (UIEdgeInsets)compoundInsets
@@ -43,11 +41,10 @@
   UIEdgeInsets paddingAsInsets = self.paddingAsInsets;
 
   return (UIEdgeInsets){
-    borderAsInsets.top + paddingAsInsets.top,
-    borderAsInsets.left + paddingAsInsets.left,
-    borderAsInsets.bottom + paddingAsInsets.bottom,
-    borderAsInsets.right + paddingAsInsets.right
-  };
+      borderAsInsets.top + paddingAsInsets.top,
+      borderAsInsets.left + paddingAsInsets.left,
+      borderAsInsets.bottom + paddingAsInsets.bottom,
+      borderAsInsets.right + paddingAsInsets.right};
 }
 
 - (CGSize)availableSize

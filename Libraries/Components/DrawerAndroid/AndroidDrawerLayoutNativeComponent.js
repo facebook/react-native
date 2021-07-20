@@ -5,13 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-'use strict';
-
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   WithDefault,
   DirectEventHandler,
@@ -20,6 +18,7 @@ import type {
 } from 'react-native/Libraries/Types/CodegenTypes';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import * as React from 'react';
 
 type DrawerStateEvent = $ReadOnly<{|
@@ -29,11 +28,6 @@ type DrawerStateEvent = $ReadOnly<{|
 type DrawerSlideEvent = $ReadOnly<{|
   offset: Float,
 |}>;
-
-interface NativeCommands {
-  +openDrawer: (viewRef: React.Ref<'AndroidDrawerLayout'>) => void;
-  +closeDrawer: (viewRef: React.Ref<'AndroidDrawerLayout'>) => void;
-}
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -67,7 +61,7 @@ type NativeProps = $ReadOnly<{|
    * from the edge of the window.
    */
 
-  drawerWidth?: ?Float,
+  drawerWidth?: WithDefault<Float, null>,
 
   /**
    * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
@@ -113,8 +107,17 @@ type NativeProps = $ReadOnly<{|
   statusBarBackgroundColor?: ?ColorValue,
 |}>;
 
+type NativeType = HostComponent<NativeProps>;
+
+interface NativeCommands {
+  +openDrawer: (viewRef: React.ElementRef<NativeType>) => void;
+  +closeDrawer: (viewRef: React.ElementRef<NativeType>) => void;
+}
+
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['openDrawer', 'closeDrawer'],
 });
 
-export default codegenNativeComponent<NativeProps>('AndroidDrawerLayout');
+export default (codegenNativeComponent<NativeProps>(
+  'AndroidDrawerLayout',
+): NativeType);

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,15 +9,13 @@
 
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
-
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTTextAttributes.h>
 
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
+  NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
 }
-
-@synthesize reactTextAttributes = _reactTextAttributes;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -28,14 +26,10 @@
                                                object:self];
 
     _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
+    _scrollEnabled = YES;
   }
 
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)_textDidChange
@@ -72,29 +66,26 @@
   [self _updatePlaceholder];
 }
 
-- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+- (void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
-  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+  if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
     return;
   }
-  self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
-  _reactTextAttributes = reactTextAttributes;
+
+  _defaultTextAttributes = defaultTextAttributes;
+  [super setDefaultTextAttributes:defaultTextAttributes];
   [self _updatePlaceholder];
 }
 
-- (RCTTextAttributes *)reactTextAttributes
+- (NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
-  return _reactTextAttributes;
+  return _defaultTextAttributes;
 }
 
 - (void)_updatePlaceholder
 {
-  if (self.placeholder == nil) {
-    return;
-  }
-
-  self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
-                                                               attributes:[self placeholderEffectiveTextAttributes]];
+  self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder ?: @""
+                                                               attributes:[self _placeholderTextAttributes]];
 }
 
 - (BOOL)isEditable
@@ -107,36 +98,35 @@
   self.enabled = editable;
 }
 
-- (void)setScrollEnabled:(BOOL)enabled
+- (void)setSecureTextEntry:(BOOL)secureTextEntry
 {
-  // Do noting, compatible with multiline textinput
-}
+  if (self.secureTextEntry == secureTextEntry) {
+    return;
+  }
 
-- (BOOL)scrollEnabled
-{
-  return NO;
+  [super setSecureTextEntry:secureTextEntry];
+
+  // Fix for trailing whitespate issue
+  // Read more:
+  // https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
+  NSAttributedString *originalText = [self.attributedText copy];
+  self.attributedText = [NSAttributedString new];
+  self.attributedText = originalText;
 }
 
 #pragma mark - Placeholder
 
-- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+- (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
 {
-  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionary];
-  
-  if (_placeholderColor) {
-    effectiveTextAttributes[NSForegroundColorAttributeName] = _placeholderColor;
+  NSMutableDictionary<NSAttributedStringKey, id> *textAttributes = [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
+
+  if (self.placeholderColor) {
+    [textAttributes setValue:self.placeholderColor forKey:NSForegroundColorAttributeName];
+  } else {
+    [textAttributes removeObjectForKey:NSForegroundColorAttributeName];
   }
-  // Kerning
-  if (!isnan(_reactTextAttributes.letterSpacing)) {
-    effectiveTextAttributes[NSKernAttributeName] = @(_reactTextAttributes.letterSpacing);
-  }
-  
-  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
-  if (paragraphStyle) {
-    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
-  }
-  
-  return [effectiveTextAttributes copy];
+
+  return textAttributes;
 }
 
 #pragma mark - Context Menu
@@ -160,7 +150,6 @@
 
   return [super caretRectForPosition:position];
 }
-
 
 #pragma mark - Positioning Overrides
 
@@ -215,7 +204,7 @@
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
   NSString *text = self.placeholder ?: @"";
-  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
+  CGSize size = [text sizeWithAttributes:[self _placeholderTextAttributes]];
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
   size.width += _textContainerInset.left + _textContainerInset.right;
   size.height += _textContainerInset.top + _textContainerInset.bottom;

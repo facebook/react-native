@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,8 +8,9 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTURLRequestHandler.h>
+#import <React/RCTInitializing.h>
 
-@interface RCTBlobManager : NSObject <RCTBridgeModule, RCTURLRequestHandler>
+@interface RCTBlobManager : NSObject <RCTBridgeModule, RCTURLRequestHandler, RCTInitializing>
 
 - (NSString *)store:(NSData *)data;
 

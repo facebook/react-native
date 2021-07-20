@@ -4,20 +4,19 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
-'use strict';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {
   BubblingEventHandler,
   WithDefault,
   Int32,
 } from '../../Types/CodegenTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 export type OnChangeEvent = $ReadOnly<{|
   value: Int32,
@@ -32,6 +31,8 @@ type NativeProps = $ReadOnly<{|
   selectedIndex?: WithDefault<Int32, 0>,
   enabled?: WithDefault<boolean, true>,
   tintColor?: ?ColorValue,
+  textColor?: ?ColorValue,
+  backgroundColor?: ?ColorValue,
   momentary?: WithDefault<boolean, false>,
 
   // Events
@@ -40,4 +41,4 @@ type NativeProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<NativeProps>(
   'RCTSegmentedControl',
-): NativeComponentType<NativeProps>);
+): HostComponent<NativeProps>);

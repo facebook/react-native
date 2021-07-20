@@ -10,15 +10,21 @@
 
 'use strict';
 
-import type {PressEvent, Layout, LayoutEvent} from '../../Types/CoreEventTypes';
+import type {
+  BlurEvent,
+  FocusEvent,
+  MouseEvent,
+  PressEvent,
+  Layout,
+  LayoutEvent,
+} from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {TVViewProps} from '../AppleTV/TVViewPropTypes';
 import type {
   AccessibilityRole,
-  AccessibilityStates,
   AccessibilityState,
+  AccessibilityValue,
   AccessibilityActionEvent,
   AccessibilityActionInfo,
 } from './ViewAccessibility';
@@ -26,21 +32,26 @@ import type {
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
+type BubblingEventProps = $ReadOnly<{|
+  onBlur?: ?(event: BlurEvent) => mixed,
+  onFocus?: ?(event: FocusEvent) => mixed,
+|}>;
+
 type DirectEventProps = $ReadOnly<{|
   /**
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs an accessibility custom action.
    *
    */
-  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => void,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility tap gesture.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
+   * See https://reactnative.dev/docs/view.html#onaccessibilitytap
    */
-  onAccessibilityTap?: ?() => void,
+  onAccessibilityTap?: ?() => mixed,
 
   /**
    * Invoked on mount and layout changes with:
@@ -51,7 +62,7 @@ type DirectEventProps = $ReadOnly<{|
    * the new layout may not yet be reflected on the screen at the time the
    * event is received, especially if a layout animation is in progress.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onlayout
+   * See https://reactnative.dev/docs/view.html#onlayout
    */
   onLayout?: ?(event: LayoutEvent) => mixed,
 
@@ -59,17 +70,22 @@ type DirectEventProps = $ReadOnly<{|
    * When `accessible` is `true`, the system will invoke this function when the
    * user performs the magic tap gesture.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onmagictap
+   * See https://reactnative.dev/docs/view.html#onmagictap
    */
-  onMagicTap?: ?() => void,
+  onMagicTap?: ?() => mixed,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the
    * user performs the escape gesture.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityescape
+   * See https://reactnative.dev/docs/view.html#onaccessibilityescape
    */
-  onAccessibilityEscape?: ?() => void,
+  onAccessibilityEscape?: ?() => mixed,
+|}>;
+
+type MouseEventProps = $ReadOnly<{|
+  onMouseEnter?: (event: MouseEvent) => void,
+  onMouseLeave?: (event: MouseEvent) => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -96,7 +112,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onMoveShouldSetResponder: (event) => [true | false]`, where
    * `event` is a synthetic touch event as described above.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onmoveshouldsetresponder
+   * See https://reactnative.dev/docs/view.html#onmoveshouldsetresponder
    */
   onMoveShouldSetResponder?: ?(e: PressEvent) => boolean,
 
@@ -107,7 +123,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onMoveShouldSetResponderCapture: (event) => [true | false]`,
    * where `event` is a synthetic touch event as described above.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onMoveShouldsetrespondercapture
+   * See https://reactnative.dev/docs/view.html#onMoveShouldsetrespondercapture
    */
   onMoveShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
 
@@ -121,7 +137,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    * PanResponder includes a note `// TODO: t7467124 investigate if this can be removed` that
    * should help fixing this return type.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onrespondergrant
+   * See https://reactnative.dev/docs/view.html#onrespondergrant
    */
   onResponderGrant?: ?(e: PressEvent) => void | boolean,
 
@@ -131,7 +147,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onResponderMove: (event) => {}`, where `event` is a synthetic
    * touch event as described above.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onrespondermove
+   * See https://reactnative.dev/docs/view.html#onrespondermove
    */
   onResponderMove?: ?(e: PressEvent) => void,
 
@@ -142,7 +158,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onResponderReject: (event) => {}`, where `event` is a
    * synthetic touch event as described above.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onresponderreject
+   * See https://reactnative.dev/docs/view.html#onresponderreject
    */
   onResponderReject?: ?(e: PressEvent) => void,
 
@@ -152,7 +168,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onResponderRelease: (event) => {}`, where `event` is a
    * synthetic touch event as described above.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onresponderrelease
+   * See https://reactnative.dev/docs/view.html#onresponderrelease
    */
   onResponderRelease?: ?(e: PressEvent) => void,
 
@@ -168,7 +184,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onResponderTerminate: (event) => {}`, where `event` is a
    * synthetic touch event as described above.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onresponderterminate
+   * See https://reactnative.dev/docs/view.html#onresponderterminate
    */
   onResponderTerminate?: ?(e: PressEvent) => void,
 
@@ -179,7 +195,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onResponderTerminationRequest: (event) => {}`, where `event`
    * is a synthetic touch event as described above.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onresponderterminationrequest
+   * See https://reactnative.dev/docs/view.html#onresponderterminationrequest
    */
   onResponderTerminationRequest?: ?(e: PressEvent) => boolean,
 
@@ -189,7 +205,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onStartShouldSetResponder: (event) => [true | false]`, where
    * `event` is a synthetic touch event as described above.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onstartshouldsetresponder
+   * See https://reactnative.dev/docs/view.html#onstartshouldsetresponder
    */
   onStartShouldSetResponder?: ?(e: PressEvent) => boolean,
 
@@ -200,7 +216,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onStartShouldSetResponderCapture: (event) => [true | false]`,
    * where `event` is a synthetic touch event as described above.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#onstartshouldsetrespondercapture
+   * See https://reactnative.dev/docs/view.html#onstartshouldsetrespondercapture
    */
   onStartShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
 |}>;
@@ -214,6 +230,7 @@ type AndroidDrawableRipple = $ReadOnly<{|
   type: 'RippleAndroid',
   color?: ?number,
   borderless?: ?boolean,
+  rippleRadius?: ?number,
 |}>;
 
 type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
@@ -228,21 +245,9 @@ type AndroidViewProps = $ReadOnly<{|
    *
    * @platform android
    *
-   * See http://facebook.github.io/react-native/docs/view.html#rendertohardwaretextureandroid
+   * See https://reactnative.dev/docs/view.html#rendertohardwaretextureandroid
    */
   renderToHardwareTextureAndroid?: ?boolean,
-
-  /**
-   * Views that are only used to layout their children or otherwise don't draw
-   * anything may be automatically removed from the native hierarchy as an
-   * optimization. Set this property to `false` to disable this optimization and
-   * ensure that this `View` exists in the native view hierarchy.
-   *
-   * @platform android
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#collapsable
-   */
-  collapsable?: ?boolean,
 
   /**
    * Whether this `View` needs to rendered offscreen and composited with an
@@ -250,7 +255,7 @@ type AndroidViewProps = $ReadOnly<{|
    *
    * @platform android
    *
-   * See http://facebook.github.io/react-native/docs/view.html#needsoffscreenalphacompositing
+   * See https://reactnative.dev/docs/view.html#needsoffscreenalphacompositing
    */
   needsOffscreenAlphaCompositing?: ?boolean,
 
@@ -260,7 +265,7 @@ type AndroidViewProps = $ReadOnly<{|
    *
    * @platform android
    *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilityliveregion
+   * See https://reactnative.dev/docs/view.html#accessibilityliveregion
    */
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
 
@@ -271,9 +276,16 @@ type AndroidViewProps = $ReadOnly<{|
    *
    * @platform android
    *
-   * See http://facebook.github.io/react-native/docs/view.html#importantforaccessibility
+   * See https://reactnative.dev/docs/view.html#importantforaccessibility
    */
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
+
+  /**
+   * Whether to force the Android TV focus engine to move focus to this view.
+   *
+   * @platform android
+   */
+  hasTVPreferredFocus?: ?boolean,
 
   /**
    * TV next focus down (see documentation for the View component).
@@ -322,7 +334,7 @@ type AndroidViewProps = $ReadOnly<{|
    *
    * @platform android
    */
-  onClick?: () => void,
+  onClick?: ?(event: PressEvent) => mixed,
 |}>;
 
 type IOSViewProps = $ReadOnly<{|
@@ -340,7 +352,7 @@ type IOSViewProps = $ReadOnly<{|
    *
    * @platform ios
    *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilityviewismodal
+   * See https://reactnative.dev/docs/view.html#accessibilityviewismodal
    */
   accessibilityViewIsModal?: ?boolean,
 
@@ -350,7 +362,7 @@ type IOSViewProps = $ReadOnly<{|
    *
    * @platform ios
    *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilityElementsHidden
+   * See https://reactnative.dev/docs/view.html#accessibilityElementsHidden
    */
   accessibilityElementsHidden?: ?boolean,
 
@@ -359,21 +371,19 @@ type IOSViewProps = $ReadOnly<{|
    *
    * @platform ios
    *
-   * See http://facebook.github.io/react-native/docs/view.html#shouldrasterizeios
+   * See https://reactnative.dev/docs/view.html#shouldrasterizeios
    */
   shouldRasterizeIOS?: ?boolean,
 |}>;
 
 export type ViewProps = $ReadOnly<{|
+  ...BubblingEventProps,
   ...DirectEventProps,
   ...GestureResponderEventProps,
+  ...MouseEventProps,
   ...TouchEventProps,
   ...AndroidViewProps,
   ...IOSViewProps,
-
-  // There's no easy way to create a different type if (Platform.isTV):
-  // so we must include TVViewProps
-  ...TVViewProps,
 
   children?: Node,
   style?: ?ViewStyleProp,
@@ -382,7 +392,7 @@ export type ViewProps = $ReadOnly<{|
    * When `true`, indicates that the view is an accessibility element.
    * By default, all the touchable elements are accessible.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#accessible
+   * See https://reactnative.dev/docs/view.html#accessible
    */
   accessible?: ?boolean,
 
@@ -391,7 +401,7 @@ export type ViewProps = $ReadOnly<{|
    * with the element. By default, the label is constructed by traversing all
    * the children and accumulating all the `Text` nodes separated by space.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitylabel
+   * See https://reactnative.dev/docs/view.html#accessibilitylabel
    */
   accessibilityLabel?: ?Stringish,
 
@@ -401,7 +411,7 @@ export type ViewProps = $ReadOnly<{|
    * accessibility label.
    *
    *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilityHint
+   * See https://reactnative.dev/docs/view.html#accessibilityHint
    */
   accessibilityHint?: ?Stringish,
 
@@ -413,8 +423,8 @@ export type ViewProps = $ReadOnly<{|
   /**
    * Indicates to accessibility services that UI Component is in a specific State.
    */
-  accessibilityStates?: ?AccessibilityStates,
   accessibilityState?: ?AccessibilityState,
+  accessibilityValue?: ?AccessibilityValue,
 
   /**
    * Provides an array of custom actions available for accessibility.
@@ -423,11 +433,24 @@ export type ViewProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
 
   /**
+   * Views that are only used to layout their children or otherwise don't draw
+   * anything may be automatically removed from the native hierarchy as an
+   * optimization. Set this property to `false` to disable this optimization and
+   * ensure that this `View` exists in the native view hierarchy.
+   *
+   * @platform android
+   * In Fabric, this prop is used in ios as well.
+   *
+   * See https://reactnative.dev/docs/view.html#collapsable
+   */
+  collapsable?: ?boolean,
+
+  /**
    * Used to locate this view in end-to-end tests.
    *
    * > This disables the 'layout-only view removal' optimization for this view!
    *
-   * See http://facebook.github.io/react-native/docs/view.html#testid
+   * See https://reactnative.dev/docs/view.html#testid
    */
   testID?: ?string,
 
@@ -436,7 +459,7 @@ export type ViewProps = $ReadOnly<{|
    *
    * > This disables the 'layout-only view removal' optimization for this view!
    *
-   * See http://facebook.github.io/react-native/docs/view.html#nativeid
+   * See https://reactnative.dev/docs/view.html#nativeid
    */
   nativeID?: ?string,
 
@@ -449,14 +472,14 @@ export type ViewProps = $ReadOnly<{|
    * > of sibling views always takes precedence if a touch hits two overlapping
    * > views.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#hitslop
+   * See https://reactnative.dev/docs/view.html#hitslop
    */
   hitSlop?: ?EdgeInsetsProp,
 
   /**
    * Controls whether the `View` can be the target of touch events.
    *
-   * See http://facebook.github.io/react-native/docs/view.html#pointerevents
+   * See https://reactnative.dev/docs/view.html#pointerevents
    */
   pointerEvents?: ?('auto' | 'box-none' | 'box-only' | 'none'),
 
@@ -468,7 +491,7 @@ export type ViewProps = $ReadOnly<{|
    * subviews must also have `overflow: hidden`, as should the containing view
    * (or one of its superviews).
    *
-   * See http://facebook.github.io/react-native/docs/view.html#removeclippedsubviews
+   * See https://reactnative.dev/docs/view.html#removeclippedsubviews
    */
   removeClippedSubviews?: ?boolean,
 |}>;

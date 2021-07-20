@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
  * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 const ViewabilityHelper = require('../ViewabilityHelper');
@@ -429,7 +429,10 @@ describe('onUpdate', function() {
 
     expect(onViewableItemsChanged.mock.calls.length).toBe(2);
     expect(onViewableItemsChanged.mock.calls[1][0]).toEqual({
-      changed: [{isViewable: true, key: 'c'}, {isViewable: false, key: 'a'}],
+      changed: [
+        {isViewable: true, key: 'c'},
+        {isViewable: false, key: 'a'},
+      ],
       viewabilityConfig: {viewAreaCoveragePercentThreshold: 0},
       viewableItems: [{isViewable: true, key: 'c'}],
     });

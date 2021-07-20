@@ -27,9 +27,9 @@ If you'd like to discuss topics related to the future of React Native, please ch
 
 If you want to participate in casual discussions about the use of React Native, consider participating in one of the following forums:
 
-- [Reactiflux Discord Server](https://www.reactiflux)
+- [Reactiflux Discord Server](https://www.reactiflux.com)
 - [Spectrum Chat](https://spectrum.chat/react-native)
 - [React Native Community Facebook Group](https://www.facebook.com/groups/react.native.community)
 
 
-> For a full list of community resources, check out [React Native's Community page](https://facebook.github.io/react-native/help).
+> For a full list of community resources, check out [React Native's Community page](https://reactnative.dev/help).

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.animated;
 
 import com.facebook.react.bridge.JavaOnlyArray;
@@ -80,5 +81,13 @@ import java.util.List;
     }
 
     propsMap.putArray("transform", JavaOnlyArray.from(transforms));
+  }
+
+  @Override
+  public String prettyPrint() {
+    return "TransformAnimatedNode["
+        + mTag
+        + "]: mTransformConfigs: "
+        + (mTransformConfigs != null ? mTransformConfigs.toString() : "null");
   }
 }

@@ -1,10 +1,13 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
+
+import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.text.Layout;
 import android.text.Spannable;
@@ -27,6 +30,8 @@ public class ReactTextUpdate {
   private final int mSelectionStart;
   private final int mSelectionEnd;
   private final int mJustificationMode;
+
+  public boolean mContainsMultipleFragments;
 
   /**
    * @deprecated Use a non-deprecated constructor for ReactTextUpdate instead. This one remains
@@ -87,6 +92,28 @@ public class ReactTextUpdate {
       Spannable text,
       int jsEventCounter,
       boolean containsImages,
+      int textAlign,
+      int textBreakStrategy,
+      int justificationMode) {
+    this(
+        text,
+        jsEventCounter,
+        containsImages,
+        UNSET,
+        UNSET,
+        UNSET,
+        UNSET,
+        textAlign,
+        textBreakStrategy,
+        justificationMode,
+        -1,
+        -1);
+  }
+
+  public ReactTextUpdate(
+      Spannable text,
+      int jsEventCounter,
+      boolean containsImages,
       float paddingStart,
       float paddingTop,
       float paddingEnd,
@@ -108,6 +135,21 @@ public class ReactTextUpdate {
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
     mJustificationMode = justificationMode;
+  }
+
+  public static ReactTextUpdate buildReactTextUpdateFromState(
+      Spannable text,
+      int jsEventCounter,
+      int textAlign,
+      int textBreakStrategy,
+      int justificationMode,
+      boolean containsMultipleFragments) {
+
+    ReactTextUpdate reactTextUpdate =
+        new ReactTextUpdate(
+            text, jsEventCounter, false, textAlign, textBreakStrategy, justificationMode);
+    reactTextUpdate.mContainsMultipleFragments = containsMultipleFragments;
+    return reactTextUpdate;
   }
 
   public Spannable getText() {

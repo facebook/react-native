@@ -1,22 +1,49 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
-def config = project.hasProperty("react") ? project.react : [];
+def config = project.hasProperty("react") ? project.react : [:];
 
-def cliPath = config.cliPath ?: "node_modules/react-native/cli.js"
+def detectEntryFile(config) {
+    if (System.getenv('ENTRY_FILE')) {
+        return System.getenv('ENTRY_FILE')
+    } else if (config.entryFile) {
+        return config.entryFile
+    } else if ((new File("${projectDir}/../../index.android.js")).exists()) {
+        return "index.android.js"
+    }
+
+    return "index.js";
+}
+
+/**
+ * Detects CLI location in a similar fashion to the React Native CLI
+ */
+def detectCliPath(config) {
+    if (config.cliPath) {
+        return config.cliPath
+    }
+    if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
+        return "${projectDir}/../../node_modules/react-native/cli.js"
+    }
+    throw new Exception("Couldn't determine CLI location. " +
+             "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
+}
+
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
-def entryFile = config.entryFile ?: "index.android.js"
+def entryFile = detectEntryFile(config)
 def bundleCommand = config.bundleCommand ?: "bundle"
 def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
-def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermes"
+def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermesc"
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
@@ -29,31 +56,31 @@ def reactNativeInspectorProxyPort() {
 }
 
 def getHermesOSBin() {
-  if (Os.isFamily(Os.FAMILY_WINDOWS)) return "win64-bin";
-  if (Os.isFamily(Os.FAMILY_MAC)) return "osx-bin";
-  if (Os.isOs(null, "linux", "amd64", null)) return "linux64-bin";
-  throw new Exception("OS not recognized. Please set project.ext.react.hermesCommand " +
-                      "to the path of a working Hermes compiler.");
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) return "win64-bin";
+    if (Os.isFamily(Os.FAMILY_MAC)) return "osx-bin";
+    if (Os.isOs(null, "linux", "amd64", null)) return "linux64-bin";
+    throw new Exception("OS not recognized. Please set project.ext.react.hermesCommand " +
+                        "to the path of a working Hermes compiler.");
 }
 
 // Make sure not to inspect the Hermes config unless we need it,
 // to avoid breaking any JSC-only setups.
 def getHermesCommand = {
-  // If the project specifies a Hermes command, don't second guess it.
-  if (!hermesCommand.contains("%OS-BIN%")) {
-    return hermesCommand
-  }
+    // If the project specifies a Hermes command, don't second guess it.
+    if (!hermesCommand.contains("%OS-BIN%")) {
+        return hermesCommand
+    }
 
-  // Execution on Windows fails with / as separator
-  return hermesCommand
-      .replaceAll("%OS-BIN%", getHermesOSBin())
-      .replace('/' as char, File.separatorChar);
+    // Execution on Windows fails with / as separator
+    return hermesCommand
+            .replaceAll("%OS-BIN%", getHermesOSBin())
+            .replace('/' as char, File.separatorChar);
 }
 
 // Set enableHermesForVariant to a function to configure per variant,
 // or set `enableHermes` to True/False to set all of them
 def enableHermesForVariant = config.enableHermesForVariant ?: {
-      def variant -> config.enableHermes ?: false
+    def variant -> config.enableHermes ?: false
 }
 
 android {
@@ -84,7 +111,15 @@ afterEvaluate {
 
         // Additional node and packager commandline arguments
         def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
-        def extraPackagerArgs = config.extraPackagerArgs ?: []
+        def cliPath = detectCliPath(config)
+
+        def execCommand = []
+
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, cliPath])
+        } else {
+            execCommand.addAll([*nodeExecutableAndArgs, cliPath])
+        }
 
         def enableHermes = enableHermesForVariant(variant)
 
@@ -118,23 +153,27 @@ afterEvaluate {
             def devEnabled = !(config."devDisabledIn${targetName}"
                 || targetName.toLowerCase().contains("release"))
 
-            def extraArgs = extraPackagerArgs;
+            def extraArgs = []
 
             if (bundleConfig) {
-                extraArgs = extraArgs.clone()
-                extraArgs.add("--config");
-                extraArgs.add(bundleConfig);
+                extraArgs.add("--config")
+                extraArgs.add(bundleConfig)
             }
 
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
-                    "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
-            } else {
-                commandLine(*nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
-                    "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
+            // Hermes doesn't require JS minification.
+            if (enableHermes && !devEnabled) {
+                extraArgs.add("--minify")
+                extraArgs.add("false")
             }
+
+            if (config.extraPackagerArgs) {
+                extraArgs.addAll(config.extraPackagerArgs)
+            }
+
+            commandLine(*execCommand, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
+                "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
+                "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
+
 
             if (enableHermes) {
                 doLast {
@@ -149,7 +188,12 @@ afterEvaluate {
                             hermesFlags = config.hermesFlagsDebug
                             if (hermesFlags == null) hermesFlags = []
                         }
-                        commandLine(getHermesCommand(), "-emit-binary", "-out", hbcTempFile, jsBundleFile, *hermesFlags)
+
+                        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                            commandLine("cmd", "/c", getHermesCommand(), "-emit-binary", "-out", hbcTempFile, jsBundleFile, *hermesFlags)
+                        } else {
+                            commandLine(getHermesCommand(), "-emit-binary", "-out", hbcTempFile, jsBundleFile, *hermesFlags)
+                        }
                     }
                     ant.move(
                         file: hbcTempFile,
@@ -177,10 +221,10 @@ afterEvaluate {
             }
 
             enabled config."bundleIn${targetName}" != null
-              ? config."bundleIn${targetName}"
-              : config."bundleIn${variant.buildType.name.capitalize()}" != null
-                ? config."bundleIn${variant.buildType.name.capitalize()}"
-                : targetName.toLowerCase().contains("release")
+                ? config."bundleIn${targetName}"
+                : config."bundleIn${variant.buildType.name.capitalize()}" != null
+                    ? config."bundleIn${variant.buildType.name.capitalize()}"
+                    : targetName.toLowerCase().contains("release")
         }
 
         // Expose a minimal interface on the application variant and the task itself:
@@ -261,6 +305,11 @@ afterEvaluate {
             enabled(currentBundleTask.enabled)
         }
 
+        // mergeResources task runs before the bundle file is copied to the intermediate asset directory from Android plugin 4.1+.
+        // This ensures to copy the bundle file before mergeResources task starts
+        def mergeResourcesTask = tasks.findByName("merge${targetName}Resources")
+        mergeResourcesTask.dependsOn(currentAssetsCopyTask)
+
         packageTask.dependsOn(currentAssetsCopyTask)
         if (buildPreBundleTask != null) {
             buildPreBundleTask.dependsOn(currentAssetsCopyTask)
@@ -269,7 +318,7 @@ afterEvaluate {
         // Delete the VM related libraries that this build doesn't need.
         // The application can manage this manually by setting 'enableVmCleanup: false'
         //
-        // This should really be done by packaging all Hermes releated libs into
+        // This should really be done by packaging all Hermes related libs into
         // two separate HermesDebug and HermesRelease AARs, but until then we'll
         // kludge it by deleting the .so files out of the /transforms/ directory.
         def isRelease = targetName.toLowerCase().contains("release")
@@ -297,7 +346,7 @@ afterEvaluate {
                 def targetVariant = ".*/transforms/[^/]*/${targetPath}/.*"
                 def path = details.file.getAbsolutePath().replace(File.separatorChar, '/' as char)
                 if (path.matches(targetVariant) && details.file.isFile()) {
-                  details.file.delete()
+                    details.file.delete()
                 }
             }
         }

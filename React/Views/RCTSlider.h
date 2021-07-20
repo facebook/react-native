@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -22,6 +22,5 @@
 @property (nonatomic, strong) UIImage *maximumTrackImage;
 
 @property (nonatomic, strong) UIImage *thumbImage;
-
 
 @end

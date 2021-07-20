@@ -1,15 +1,16 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.textinput;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /** Event emitted by EditText native view when content size changes. */
 public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
@@ -19,8 +20,14 @@ public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
   private float mContentWidth;
   private float mContentHeight;
 
+  @Deprecated
   public ReactContentSizeChangedEvent(int viewId, float contentSizeWidth, float contentSizeHeight) {
-    super(viewId);
+    this(-1, viewId, contentSizeWidth, contentSizeHeight);
+  }
+
+  public ReactContentSizeChangedEvent(
+      int surfaceId, int viewId, float contentSizeWidth, float contentSizeHeight) {
+    super(surfaceId, viewId);
     mContentWidth = contentSizeWidth;
     mContentHeight = contentSizeHeight;
   }
@@ -30,12 +37,9 @@ public class ReactContentSizeChangedEvent extends Event<ReactTextChangedEvent> {
     return EVENT_NAME;
   }
 
+  @Nullable
   @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
-  }
-
-  private WritableMap serializeEventData() {
+  protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
 
     WritableMap contentSize = Arguments.createMap();

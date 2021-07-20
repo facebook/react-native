@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import android.content.Context;
@@ -37,27 +38,42 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *
    * @param viewToUpdate
    * @param props
-   * @param stateWrapper
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
-    ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
+    final ViewManagerDelegate<T> delegate = getDelegate();
+    if (delegate != null) {
+      ViewManagerPropertyUpdater.updateProps(delegate, viewToUpdate, props);
+    } else {
+      ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
+    }
     onAfterUpdateTransaction(viewToUpdate);
   }
 
-  /** Creates a view and installs event emitters on it. */
-  private final @NonNull T createView(
-      @NonNull ThemedReactContext reactContext, JSResponderHandler jsResponderHandler) {
-    return createView(reactContext, null, null, jsResponderHandler);
+  /**
+   * Override this method and return an instance of {@link ViewManagerDelegate} if the props of the
+   * view managed by this view manager should be set via this delegate. The provided instance will
+   * then get calls to {@link ViewManagerDelegate#setProperty(View, String, Object)} for every prop
+   * that must be updated and it's the delegate's responsibility to apply these values to the view.
+   *
+   * <p>By default this method returns {@code null}, which means that the view manager doesn't have
+   * a delegate and the view props should be set internally by the view manager itself.
+   *
+   * @return an instance of {@link ViewManagerDelegate} if the props of the view managed by this
+   *     view manager should be set via this delegate
+   */
+  @Nullable
+  protected ViewManagerDelegate<T> getDelegate() {
+    return null;
   }
 
-  /** Creates a view with knowledge of props. */
+  /** Creates a view with knowledge of props and state. */
   public @NonNull T createView(
+      int reactTag,
       @NonNull ThemedReactContext reactContext,
       @Nullable ReactStylesDiffMap props,
       @Nullable StateWrapper stateWrapper,
       JSResponderHandler jsResponderHandler) {
-    T view = createViewInstance(reactContext, props, stateWrapper);
-    addEventEmitters(reactContext, view);
+    T view = createViewInstance(reactTag, reactContext, props, stateWrapper);
     if (view instanceof ReactInterceptingViewGroup) {
       ((ReactInterceptingViewGroup) view).setOnInterceptTouchEventListener(jsResponderHandler);
     }
@@ -105,18 +121,28 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   /**
    * Subclasses should return a new View instance of the proper type. This is an optional method
    * that will call createViewInstance for you. Override it if you need props upon creation of the
-   * view.
+   * view, or state.
    *
-   * @param reactContext
+   * <p>If you override this method, you *must* guarantee that you you're handling updateProperties,
+   * view.setId, addEventEmitters, and updateState/updateExtraData properly!
+   *
+   * @param reactTag reactTag that should be set as ID of the view instance
+   * @param reactContext ReactContext used to initialize view instance
+   * @param initialProps initial props for the view instance
+   * @param stateWrapper initial state for the view instance
    */
   protected @NonNull T createViewInstance(
+      int reactTag,
       @NonNull ThemedReactContext reactContext,
       @Nullable ReactStylesDiffMap initialProps,
       @Nullable StateWrapper stateWrapper) {
     T view = createViewInstance(reactContext);
+    view.setId(reactTag);
+    addEventEmitters(reactContext, view);
     if (initialProps != null) {
       updateProperties(view, initialProps);
     }
+    // Only present in Fabric; but always present in Fabric.
     if (stateWrapper != null) {
       Object extraData = updateState(view, initialProps, stateWrapper);
       if (extraData != null) {
@@ -245,13 +271,12 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return null;
   }
 
+  /**
+   * Returns a {@link Map<String, String>} representing the native props of the view manager. The
+   * Map contains the names (key) and types (value) of the ViewManager's props.
+   */
   public Map<String, String> getNativeProps() {
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
-  }
-
-  public @Nullable Object updateLocalData(
-      @NonNull T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
-    return null;
   }
 
   /**
@@ -259,10 +284,32 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * this component type.
    */
   public @Nullable Object updateState(
-      @NonNull T view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
+      @NonNull T view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
     return null;
   }
 
+  /**
+   * Subclasses can override this method to implement custom measure functions for the ViewManager
+   *
+   * @param context {@link com.facebook.react.bridge.ReactContext} used for the view.
+   * @param localData {@link ReadableMap} containing "local data" defined in C++
+   * @param props {@link ReadableMap} containing JS props
+   * @param state {@link ReadableMap} containing state defined in C++
+   * @param width width of the view (usually zero)
+   * @param widthMode widthMode used during calculation of layout
+   * @param height height of the view (usually zero)
+   * @param heightMode widthMode used during calculation of layout
+   * @param attachmentsPositions {@link int[]} array containing 2x times the amount of attachments
+   *     of the view. An attachment represents the position of an inline view that needs to be
+   *     rendered inside a component and it requires the content of the parent view in order to be
+   *     positioned. This array is meant to be used by the platform to RETURN the position of each
+   *     attachment, as a result of the calculation of layout. (e.g. this array is used to measure
+   *     inlineViews that are rendered inside Text components). On most of the components this array
+   *     will be contain a null value.
+   *     <p>Even values will represent the TOP of each attachment, Odd values represent the LEFT of
+   *     each attachment.
+   * @return result of calculation of layout for the arguments received as a parameter.
+   */
   public long measure(
       Context context,
       ReadableMap localData,
@@ -271,7 +318,14 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       float width,
       YogaMeasureMode widthMode,
       float height,
-      YogaMeasureMode heightMode) {
+      YogaMeasureMode heightMode,
+      @Nullable float[] attachmentsPositions) {
     return 0;
   }
+
+  /**
+   * Subclasses can override this method to set padding for the given View in Fabric. Since not all
+   * components support setting padding, the default implementation of this method does nothing.
+   */
+  public void setPadding(T view, int left, int top, int right, int bottom) {}
 }

@@ -121,7 +121,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  * ### Working Example
  *
  * To see it in action, try the
- * [PanResponder example in RNTester](https://github.com/facebook/react-native/blob/master/RNTester/js/PanResponderExample.js)
+ * [PanResponder example in RNTester](https://github.com/facebook/react-native/blob/HEAD/packages/rn-tester/js/examples/PanResponder/PanResponderExample.js)
  */
 
 export type GestureState = {|
@@ -559,7 +559,7 @@ const PanResponder = {
 };
 
 function clearInteractionHandle(
-  interactionState: {handle: ?number},
+  interactionState: {handle: ?number, ...},
   callback: ?(ActiveCallback | PassiveCallback),
   event: PressEvent,
   gestureState: GestureState,

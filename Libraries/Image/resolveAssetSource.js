@@ -4,17 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
- * Resolves an asset into a `source` for `Image`.
- *
  * @format
  * @flow
  */
 
+// Resolves an asset into a `source` for `Image`.
+
 'use strict';
 
-const AssetRegistry = require('./AssetRegistry');
+const AssetRegistry = require('@react-native/assets/registry');
 const AssetSourceResolver = require('./AssetSourceResolver');
+const {pickScale} = require('./AssetUtils');
 
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 
@@ -106,5 +106,5 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
 }
 
 module.exports = resolveAssetSource;
-module.exports.pickScale = AssetSourceResolver.pickScale;
+module.exports.pickScale = pickScale;
 module.exports.setCustomSourceTransformer = setCustomSourceTransformer;

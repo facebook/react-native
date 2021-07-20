@@ -1,18 +1,21 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import android.content.Context;
-import android.text.Layout;
 import android.text.Spannable;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -30,7 +33,15 @@ public class ReactTextViewManager
     extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode>
     implements IViewManagerWithChildren {
 
+  private static final short TX_STATE_KEY_ATTRIBUTED_STRING = 0;
+  private static final short TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
+  // used for text input
+  private static final short TX_STATE_KEY_HASH = 2;
+  private static final short TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
+
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
+
+  protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
 
   @Override
   public String getName() {
@@ -57,6 +68,11 @@ public class ReactTextViewManager
     return new ReactTextShadowNode();
   }
 
+  public ReactTextShadowNode createShadowNodeInstance(
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    return new ReactTextShadowNode(reactTextViewManagerCallback);
+  }
+
   @Override
   public Class<ReactTextShadowNode> getShadowNodeClass() {
     return ReactTextShadowNode.class;
@@ -74,32 +90,64 @@ public class ReactTextViewManager
 
   @Override
   public Object updateState(
-      ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
-    ReadableMap attributedString = stateWrapper.getState().getMap("attributedString");
+      ReactTextView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+    if (stateWrapper == null) {
+      return null;
+    }
 
+    if (ReactFeatureFlags.isMapBufferSerializationEnabled()) {
+      ReadableMapBuffer stateMapBuffer = stateWrapper.getStatDataMapBuffer();
+      if (stateMapBuffer != null) {
+        return getReactTextUpdate(view, props, stateMapBuffer);
+      }
+    }
+
+    ReadableNativeMap state = stateWrapper.getStateData();
+    if (state == null) {
+      return null;
+    }
+
+    ReadableMap attributedString = state.getMap("attributedString");
+    ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
     Spannable spanned =
-        TextLayoutManager.getOrCreateSpannableForText(view.getContext(), attributedString);
+        TextLayoutManager.getOrCreateSpannableForText(
+            view.getContext(), attributedString, mReactTextViewManagerCallback);
     view.setSpanned(spanned);
 
-    TextAttributeProps textViewProps = new TextAttributeProps(props);
-
-    // TODO add textBreakStrategy prop into local Data
-    int textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-
-    // TODO add justificationMode prop into local Data
-    int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
+    int textBreakStrategy =
+        TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
     return new ReactTextUpdate(
         spanned,
-        -1, // TODO add this into local Data?
+        state.hasKey("mostRecentEventCount") ? state.getInt("mostRecentEventCount") : -1,
         false, // TODO add this into local Data
-        textViewProps.getStartPadding(),
-        textViewProps.getTopPadding(),
-        textViewProps.getEndPadding(),
-        textViewProps.getBottomPadding(),
-        0,
+        TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
-        justificationMode);
+        TextAttributeProps.getJustificationMode(props));
+  }
+
+  private Object getReactTextUpdate(
+      ReactTextView view, ReactStylesDiffMap props, ReadableMapBuffer state) {
+
+    ReadableMapBuffer attributedString = state.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING);
+    ReadableMapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
+    Spannable spanned =
+        TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
+            view.getContext(), attributedString, mReactTextViewManagerCallback);
+    view.setSpanned(spanned);
+
+    int textBreakStrategy =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
+
+    return new ReactTextUpdate(
+        spanned,
+        -1, // UNUSED FOR TEXT
+        false, // TODO add this into local Data
+        TextAttributeProps.getTextAlignment(
+            props, TextLayoutManagerMapBuffer.isRTL(attributedString)),
+        textBreakStrategy,
+        TextAttributeProps.getJustificationMode(props));
   }
 
   @Override
@@ -118,9 +166,23 @@ public class ReactTextViewManager
       float width,
       YogaMeasureMode widthMode,
       float height,
-      YogaMeasureMode heightMode) {
+      YogaMeasureMode heightMode,
+      @Nullable float[] attachmentsPositions) {
 
     return TextLayoutManager.measureText(
-        context, localData, props, width, widthMode, height, heightMode);
+        context,
+        localData,
+        props,
+        width,
+        widthMode,
+        height,
+        heightMode,
+        mReactTextViewManagerCallback,
+        attachmentsPositions);
+  }
+
+  @Override
+  public void setPadding(ReactTextView view, int left, int top, int right, int bottom) {
+    view.setPadding(left, top, right, bottom);
   }
 }

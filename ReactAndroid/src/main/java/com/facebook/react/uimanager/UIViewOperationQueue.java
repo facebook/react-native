@@ -1,22 +1,27 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import android.os.SystemClock;
 import android.view.View;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
@@ -42,6 +47,7 @@ import java.util.Map;
 public class UIViewOperationQueue {
 
   public static final int DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS = 8;
+  private static final String TAG = UIViewOperationQueue.class.getSimpleName();
 
   private final int[] mMeasureBuffer = new int[4];
 
@@ -106,11 +112,20 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
-      mReactApplicationContext
-          .getNativeModule(UIManagerModule.class)
-          .getEventDispatcher()
-          .dispatchEvent(
-              OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
+      UIManagerModule uiManager = mReactApplicationContext.getNativeModule(UIManagerModule.class);
+
+      if (uiManager != null) {
+        uiManager
+            .getEventDispatcher()
+            .dispatchEvent(
+                OnLayoutEvent.obtain(
+                    -1 /* SurfaceId not used in classic renderer */,
+                    mTag,
+                    mScreenX,
+                    mScreenY,
+                    mScreenWidth,
+                    mScreenHeight));
+      }
     }
   }
 
@@ -185,25 +200,22 @@ public class UIViewOperationQueue {
     private final @Nullable int[] mIndicesToRemove;
     private final @Nullable ViewAtIndex[] mViewsToAdd;
     private final @Nullable int[] mTagsToDelete;
-    private final @Nullable int[] mIndicesToDelete;
 
     public ManageChildrenOperation(
         int tag,
         @Nullable int[] indicesToRemove,
         @Nullable ViewAtIndex[] viewsToAdd,
-        @Nullable int[] tagsToDelete,
-        @Nullable int[] indicesToDelete) {
+        @Nullable int[] tagsToDelete) {
       super(tag);
       mIndicesToRemove = indicesToRemove;
       mViewsToAdd = viewsToAdd;
       mTagsToDelete = tagsToDelete;
-      mIndicesToDelete = indicesToDelete;
     }
 
     @Override
     public void execute() {
       mNativeViewHierarchyManager.manageChildren(
-          mTag, mIndicesToRemove, mViewsToAdd, mTagsToDelete, mIndicesToDelete);
+          mTag, mIndicesToRemove, mViewsToAdd, mTagsToDelete);
     }
   }
 
@@ -261,11 +273,34 @@ public class UIViewOperationQueue {
     }
   }
 
+  /**
+   * This is a common interface for View Command operations. Once we delete the deprecated {@link
+   * DispatchCommandOperation}, we can delete this interface too. It provides a set of common
+   * operations to simplify generic operations on all types of ViewCommands.
+   */
+  private interface DispatchCommandViewOperation {
+
+    /**
+     * Like the execute function, but throws real exceptions instead of logging soft errors and
+     * returning silently.
+     */
+    void executeWithExceptions();
+
+    /** Increment retry counter. */
+    void incrementRetries();
+
+    /** Get retry counter. */
+    int getRetries();
+  }
+
   @Deprecated
-  private final class DispatchCommandOperation extends ViewOperation {
+  private final class DispatchCommandOperation extends ViewOperation
+      implements DispatchCommandViewOperation {
 
     private final int mCommand;
     private final @Nullable ReadableArray mArgs;
+
+    private int numRetries = 0;
 
     public DispatchCommandOperation(int tag, int command, @Nullable ReadableArray args) {
       super(tag);
@@ -275,14 +310,38 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
+      try {
+        mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
+      } catch (Throwable e) {
+        ReactSoftException.logSoftException(
+            TAG, new RuntimeException("Error dispatching View Command", e));
+      }
+    }
+
+    @Override
+    public void executeWithExceptions() {
       mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
+    }
+
+    @Override
+    @UiThread
+    public void incrementRetries() {
+      numRetries++;
+    }
+
+    @Override
+    @UiThread
+    public int getRetries() {
+      return numRetries;
     }
   }
 
-  private final class DispatchStringCommandOperation extends ViewOperation {
+  private final class DispatchStringCommandOperation extends ViewOperation
+      implements DispatchCommandViewOperation {
 
     private final String mCommand;
     private final @Nullable ReadableArray mArgs;
+    private int numRetries = 0;
 
     public DispatchStringCommandOperation(int tag, String command, @Nullable ReadableArray args) {
       super(tag);
@@ -292,7 +351,29 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
+      try {
+        mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
+      } catch (Throwable e) {
+        ReactSoftException.logSoftException(
+            TAG, new RuntimeException("Error dispatching View Command", e));
+      }
+    }
+
+    @Override
+    @UiThread
+    public void executeWithExceptions() {
       mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
+    }
+
+    @Override
+    @UiThread
+    public void incrementRetries() {
+      numRetries++;
+    }
+
+    @Override
+    public int getRetries() {
+      return numRetries;
     }
   }
 
@@ -520,6 +601,8 @@ public class UIViewOperationQueue {
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
   private final ReactApplicationContext mReactApplicationContext;
 
+  private ArrayList<DispatchCommandViewOperation> mViewCommandOperations = new ArrayList<>();
+
   // Only called from the UIManager queue?
   private ArrayList<UIOperation> mOperations = new ArrayList<>();
 
@@ -535,12 +618,16 @@ public class UIViewOperationQueue {
   private boolean mIsProfilingNextBatch = false;
   private long mNonBatchedExecutionTotalTime;
   private long mProfiledBatchCommitStartTime;
+  private long mProfiledBatchCommitEndTime;
   private long mProfiledBatchLayoutTime;
   private long mProfiledBatchDispatchViewUpdatesTime;
   private long mProfiledBatchRunStartTime;
+  private long mProfiledBatchRunEndTime;
   private long mProfiledBatchBatchedExecutionTime;
   private long mProfiledBatchNonBatchedExecutionTime;
   private long mThreadCpuTime;
+  private long mCreateViewCount;
+  private long mUpdatePropertiesOperationCount;
 
   public UIViewOperationQueue(
       ReactApplicationContext reactContext,
@@ -568,22 +655,28 @@ public class UIViewOperationQueue {
   public void profileNextBatch() {
     mIsProfilingNextBatch = true;
     mProfiledBatchCommitStartTime = 0;
+    mCreateViewCount = 0;
+    mUpdatePropertiesOperationCount = 0;
   }
 
   public Map<String, Long> getProfiledBatchPerfCounters() {
     Map<String, Long> perfMap = new HashMap<>();
     perfMap.put("CommitStartTime", mProfiledBatchCommitStartTime);
+    perfMap.put("CommitEndTime", mProfiledBatchCommitEndTime);
     perfMap.put("LayoutTime", mProfiledBatchLayoutTime);
     perfMap.put("DispatchViewUpdatesTime", mProfiledBatchDispatchViewUpdatesTime);
     perfMap.put("RunStartTime", mProfiledBatchRunStartTime);
+    perfMap.put("RunEndTime", mProfiledBatchRunEndTime);
     perfMap.put("BatchedExecutionTime", mProfiledBatchBatchedExecutionTime);
     perfMap.put("NonBatchedExecutionTime", mProfiledBatchNonBatchedExecutionTime);
     perfMap.put("NativeModulesThreadCpuTime", mThreadCpuTime);
+    perfMap.put("CreateViewCount", mCreateViewCount);
+    perfMap.put("UpdatePropsCount", mUpdatePropertiesOperationCount);
     return perfMap;
   }
 
   public boolean isEmpty() {
-    return mOperations.isEmpty();
+    return mOperations.isEmpty() && mViewCommandOperations.isEmpty();
   }
 
   public void addRootView(final int tag, final View rootView) {
@@ -617,12 +710,16 @@ public class UIViewOperationQueue {
   @Deprecated
   public void enqueueDispatchCommand(
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    mOperations.add(new DispatchCommandOperation(reactTag, commandId, commandArgs));
+    final DispatchCommandOperation command =
+        new DispatchCommandOperation(reactTag, commandId, commandArgs);
+    mViewCommandOperations.add(command);
   }
 
   public void enqueueDispatchCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
-    mOperations.add(new DispatchStringCommandOperation(reactTag, commandId, commandArgs));
+    final DispatchStringCommandOperation command =
+        new DispatchStringCommandOperation(reactTag, commandId, commandArgs);
+    mViewCommandOperations.add(command);
   }
 
   public void enqueueUpdateExtraData(int reactTag, Object extraData) {
@@ -644,6 +741,7 @@ public class UIViewOperationQueue {
       String viewClassName,
       @Nullable ReactStylesDiffMap initialProps) {
     synchronized (mNonBatchedOperationsLock) {
+      mCreateViewCount++;
       mNonBatchedOperations.addLast(
           new CreateViewOperation(themedContext, viewReactTag, viewClassName, initialProps));
     }
@@ -654,6 +752,7 @@ public class UIViewOperationQueue {
   }
 
   public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
+    mUpdatePropertiesOperationCount++;
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
   }
 
@@ -672,11 +771,9 @@ public class UIViewOperationQueue {
       int reactTag,
       @Nullable int[] indicesToRemove,
       @Nullable ViewAtIndex[] viewsToAdd,
-      @Nullable int[] tagsToDelete,
-      @Nullable int[] indicesToDelete) {
+      @Nullable int[] tagsToDelete) {
     mOperations.add(
-        new ManageChildrenOperation(
-            reactTag, indicesToRemove, viewsToAdd, tagsToDelete, indicesToDelete));
+        new ManageChildrenOperation(reactTag, indicesToRemove, viewsToAdd, tagsToDelete));
   }
 
   public void enqueueSetChildren(int reactTag, ReadableArray childrenTags) {
@@ -734,6 +831,14 @@ public class UIViewOperationQueue {
 
       // Store the current operation queues to dispatch and create new empty ones to continue
       // receiving new operations
+      final ArrayList<DispatchCommandViewOperation> viewCommandOperations;
+      if (!mViewCommandOperations.isEmpty()) {
+        viewCommandOperations = mViewCommandOperations;
+        mViewCommandOperations = new ArrayList<>();
+      } else {
+        viewCommandOperations = null;
+      }
+
       final ArrayList<UIOperation> batchedOperations;
       if (!mOperations.isEmpty()) {
         batchedOperations = mOperations;
@@ -766,6 +871,36 @@ public class UIViewOperationQueue {
               try {
                 long runStartTime = SystemClock.uptimeMillis();
 
+                // All ViewCommands should be executed first as a perf optimization.
+                // This entire block is only executed if there's at least one ViewCommand queued.
+                if (viewCommandOperations != null) {
+                  for (DispatchCommandViewOperation op : viewCommandOperations) {
+                    try {
+                      op.executeWithExceptions();
+                    } catch (RetryableMountingLayerException e) {
+                      // Catch errors in DispatchCommands. We allow all commands to be retried
+                      // exactly once, after the current batch of other mountitems. If the second
+                      // attempt fails, then  we log a soft error. This will still crash only in
+                      // debug. We do this because it is a ~relatively common pattern to dispatch a
+                      // command during render, for example, to scroll to the bottom of a ScrollView
+                      // in render. This dispatches the command before that View is even mounted. By
+                      // retrying once, we can still dispatch the vast majority of commands faster,
+                      // avoid errors, and still operate correctly for most commands even when
+                      // they're executed too soon.
+                      if (op.getRetries() == 0) {
+                        op.incrementRetries();
+                        mViewCommandOperations.add(op);
+                      } else {
+                        // Retryable exceptions should be logged, but never crash in debug.
+                        ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException(e));
+                      }
+                    } catch (Throwable e) {
+                      // Non-retryable exceptions should be logged in prod, and crash in Debug.
+                      ReactSoftException.logSoftException(TAG, e);
+                    }
+                  }
+                }
+
                 // All nonBatchedOperations should be executed before regular operations as
                 // regular operations may depend on them
                 if (nonBatchedOperations != null) {
@@ -782,9 +917,11 @@ public class UIViewOperationQueue {
 
                 if (mIsProfilingNextBatch && mProfiledBatchCommitStartTime == 0) {
                   mProfiledBatchCommitStartTime = commitStartTime;
+                  mProfiledBatchCommitEndTime = SystemClock.uptimeMillis();
                   mProfiledBatchLayoutTime = layoutTime;
                   mProfiledBatchDispatchViewUpdatesTime = dispatchViewUpdatesTime;
                   mProfiledBatchRunStartTime = runStartTime;
+                  mProfiledBatchRunEndTime = mProfiledBatchCommitEndTime;
                   mThreadCpuTime = nativeModulesThreadCpuTime;
 
                   Systrace.beginAsyncSection(

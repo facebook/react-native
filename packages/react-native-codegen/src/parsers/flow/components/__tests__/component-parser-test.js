@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @emails oncall+react_native
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -23,7 +23,12 @@ describe('RN Codegen Flow Parser', () => {
     .sort()
     .forEach(fixtureName => {
       it(`can generate fixture ${fixtureName}`, () => {
-        expect(FlowParser.parseFile(fixtureName)).toMatchSnapshot();
+        const schema = FlowParser.parseFile(fixtureName);
+        const serializedSchema = JSON.stringify(schema, null, 2).replace(
+          /"/g,
+          "'",
+        );
+        expect(serializedSchema).toMatchSnapshot();
       });
     });
 

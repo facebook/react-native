@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -13,8 +13,7 @@
 
 @implementation RCTScrollContentShadowView
 
-- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
-            layoutContext:(RCTLayoutContext)layoutContext
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics layoutContext:(RCTLayoutContext)layoutContext
 {
   if (layoutMetrics.layoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
     // Motivation:

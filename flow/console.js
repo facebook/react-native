@@ -12,7 +12,12 @@ declare module 'console' {
   declare function assert(value: any, ...message: any): void;
   declare function dir(
     obj: Object,
-    options: {showHidden: boolean, depth: number, colors: boolean},
+    options: {
+      showHidden: boolean,
+      depth: number,
+      colors: boolean,
+      ...
+    },
   ): void;
   declare function error(...data: any): void;
   declare function info(...data: any): void;
@@ -26,7 +31,12 @@ declare module 'console' {
     assert(value: any, ...message: any): void;
     dir(
       obj: Object,
-      options: {showHidden: boolean, depth: number, colors: boolean},
+      options: {
+        showHidden: boolean,
+        depth: number,
+        colors: boolean,
+        ...
+      },
     ): void;
     error(...data: any): void;
     info(...data: any): void;

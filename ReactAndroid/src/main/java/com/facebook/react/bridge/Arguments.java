@@ -1,19 +1,23 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@DoNotStrip
 public class Arguments {
   private static Object makeNativeObject(Object object) {
     if (object == null) {
@@ -120,6 +124,7 @@ public class Arguments {
    * The best way to think of this is a way to generate a Java representation of a json object, from
    * Java types which have a natural representation in json.
    */
+  @DoNotStrip
   public static WritableNativeMap makeNativeMap(Map<String, Object> objects) {
     WritableNativeMap nativeMap = new WritableNativeMap();
     if (objects == null) {
@@ -132,6 +137,7 @@ public class Arguments {
   }
 
   /** Like the above, but takes a Bundle instead of a Map. */
+  @DoNotStrip
   public static WritableNativeMap makeNativeMap(Bundle bundle) {
     WritableNativeMap nativeMap = new WritableNativeMap();
     if (bundle == null) {
@@ -217,6 +223,14 @@ public class Arguments {
     } else if (array instanceof boolean[]) {
       for (boolean v : (boolean[]) array) {
         catalystArray.pushBoolean(v);
+      }
+    } else if (array instanceof Parcelable[]) {
+      for (Parcelable v : (Parcelable[]) array) {
+        if (v instanceof Bundle) {
+          catalystArray.pushMap(fromBundle((Bundle) v));
+        } else {
+          throw new IllegalArgumentException("Unexpected array member type " + v.getClass());
+        }
       }
     } else {
       throw new IllegalArgumentException("Unknown array type " + array.getClass());

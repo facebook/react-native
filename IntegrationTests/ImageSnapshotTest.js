@@ -15,7 +15,7 @@ const ReactNative = require('react-native');
 const {Image} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
-class ImageSnapshotTest extends React.Component<{}> {
+class ImageSnapshotTest extends React.Component<{...}> {
   componentDidMount() {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');

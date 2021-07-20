@@ -1,15 +1,15 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.drawer.events;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
 
@@ -17,8 +17,13 @@ public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
 
   private final int mDrawerState;
 
+  @Deprecated
   public DrawerStateChangedEvent(int viewId, int drawerState) {
-    super(viewId);
+    this(-1, viewId, drawerState);
+  }
+
+  public DrawerStateChangedEvent(int surfaceId, int viewId, int drawerState) {
+    super(surfaceId, viewId);
     mDrawerState = drawerState;
   }
 
@@ -32,17 +37,7 @@ public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
   }
 
   @Override
-  public short getCoalescingKey() {
-    // All events for a given view can be coalesced.
-    return 0;
-  }
-
-  @Override
-  public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
-  }
-
-  private WritableMap serializeEventData() {
+  protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putDouble("drawerState", getDrawerState());
     return eventData;

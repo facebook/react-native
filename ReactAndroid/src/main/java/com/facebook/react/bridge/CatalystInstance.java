@@ -1,16 +1,17 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
 
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import java.util.Collection;
 import java.util.List;
 
@@ -61,8 +62,10 @@ public interface CatalystInstance
 
   <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
 
+  @Nullable
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
 
+  @Nullable
   NativeModule getNativeModule(String moduleName);
 
   JSIModule getJSIModule(JSIModuleType moduleType);
@@ -96,21 +99,31 @@ public interface CatalystInstance
   void setGlobalVariable(String propName, String jsonValue);
 
   /**
-   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   * Do not use this anymore. Use {@link #getRuntimeExecutor()} instead. Get the C pointer (as a
+   * long) to the JavaScriptCore context associated with this instance.
    *
    * <p>Use the following pattern to ensure that the JS context is not cleared while you are using
    * it: JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
+  @Deprecated
   JavaScriptContextHolder getJavaScriptContextHolder();
+
+  RuntimeExecutor getRuntimeExecutor();
 
   void addJSIModules(List<JSIModuleSpec> jsiModules);
 
   /**
-   * Returns a hybrid object that contains a pointer to JSCallInvoker. Required for
-   * TurboModuleManager initialization.
+   * Returns a hybrid object that contains a pointer to a JS CallInvoker, which is used to schedule
+   * work on the JS Thread. Required for TurboModuleManager initialization.
    */
-  JSCallInvokerHolder getJSCallInvokerHolder();
+  CallInvokerHolder getJSCallInvokerHolder();
+
+  /**
+   * Returns a hybrid object that contains a pointer to a Native CallInvoker, which is used to
+   * schedule work on the NativeModules thread. Required for TurboModuleManager initialization.
+   */
+  CallInvokerHolder getNativeCallInvokerHolder();
 
   /**
    * For the time being, we want code relying on the old infra to also work with TurboModules.

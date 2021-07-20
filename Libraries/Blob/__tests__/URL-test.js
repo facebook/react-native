@@ -7,6 +7,7 @@
  * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 const URL = require('../URL').URL;
@@ -31,5 +32,13 @@ describe('URL', function() {
     // expect(g.href).toBe('https://developer.mozilla.org/en-US/docs');
     const h = new URL('/en-US/docs', a);
     expect(h.href).toBe('https://developer.mozilla.org/en-US/docs');
+    const i = new URL('http://github.com', 'http://google.com');
+    expect(i.href).toBe('http://github.com/');
+    // Support Bare Hosts
+    const j = new URL('home', 'http://localhost');
+    expect(j.href).toBe('http://localhost/home');
+    // Insert / between Base and Path if missing
+    const k = new URL('en-US/docs', 'https://developer.mozilla.org');
+    expect(k.href).toBe('https://developer.mozilla.org/en-US/docs');
   });
 });

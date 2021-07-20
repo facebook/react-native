@@ -5,10 +5,6 @@
     translatable="false"
     >Link</string>
   <string
-    name="search_description"
-    translatable="false"
-    >Search Field</string>
-  <string
     name="image_description"
     translatable="false"
     >Image</string>
@@ -88,6 +84,10 @@
     name="state_collapsed_description"
     translatable="false"
     >collapsed</string>
+  <string
+    name="state_unselected_description"
+    translatable="false"
+    >unselected</string>
   <string
     name="state_on_description"
     translatable="false"

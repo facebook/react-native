@@ -1,20 +1,21 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.yoga;
 
 import javax.annotation.Nullable;
 
-public abstract class YogaNode {
-  public static YogaNode create() {
-    return new YogaNodeJNIFinalizer();
-  }
+public abstract class YogaNode implements YogaProps {
 
-  public static YogaNode create(YogaConfig config) {
-    return new YogaNodeJNIFinalizer(config);
+  /** The interface the {@link #getData()} object can optionally implement. */
+  public interface Inputs {
+
+    /** Requests the data object to disable mutations of its inputs. */
+    void freeze(final YogaNode node, final @Nullable YogaNode parent);
   }
 
   public abstract void reset();
@@ -32,12 +33,10 @@ public abstract class YogaNode {
   public abstract YogaNode removeChildAt(int i);
 
   /**
-   * @returns the {@link YogaNode} that owns this {@link YogaNode}.
-   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs
-   * to.
-   * This method will return the parent of the {@link YogaNode} when the
-   * {@link YogaNode} only belongs to one YogaTree or null when the
-   * {@link YogaNode} is shared between two or more YogaTrees.
+   * @returns the {@link YogaNode} that owns this {@link YogaNode}. The owner is used to identify
+   *     the YogaTree that a {@link YogaNode} belongs to. This method will return the parent of the
+   *     {@link YogaNode} when the {@link YogaNode} only belongs to one YogaTree or null when the
+   *     {@link YogaNode} is shared between two or more YogaTrees.
    */
   @Nullable
   public abstract YogaNode getOwner();
@@ -220,7 +219,7 @@ public abstract class YogaNode {
 
   public abstract void print();
 
-  public abstract void setStyleInputs(float[] styleInputs, int size);
-
   public abstract YogaNode cloneWithoutChildren();
+
+  public abstract YogaNode cloneWithChildren();
 }

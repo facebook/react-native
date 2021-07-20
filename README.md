@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://facebook.github.io/react-native/">
+  <a href="https://reactnative.dev/">
     React Native
   </a>
 </h1>
@@ -10,19 +10,16 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/facebook/react-native/blob/master/LICENSE">
+  <a href="https://github.com/facebook/react-native/blob/HEAD/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="React Native is released under the MIT license." />
   </a>
   <a href="https://circleci.com/gh/facebook/react-native">
     <img src="https://circleci.com/gh/facebook/react-native.svg?style=shield" alt="Current CircleCI build status." />
   </a>
-  <a href="https://ci.appveyor.com/project/facebook/react-native/branch/master">
-    <img src="https://ci.appveyor.com/api/projects/status/g8d58ipi3auqdtrk/branch/master?svg=true" alt="Current Appveyor build status." />
-  </a>
   <a href="https://www.npmjs.org/package/react-native">
-    <img src="https://badge.fury.io/js/react-native.svg" alt="Current npm package version." />
+    <img src="https://img.shields.io/npm/v/react-native?color=brightgreen&label=npm%20package" alt="Current npm package version." />
   </a>
-  <a href="https://facebook.github.io/react-native/docs/contributing">
+  <a href="https://reactnative.dev/docs/contributing">
     <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome!" />
   </a>
   <a href="https://twitter.com/intent/follow?screen_name=reactnative">
@@ -31,31 +28,31 @@
 </p>
 
 <h3 align="center">
-  <a href="https://facebook.github.io/react-native/docs/getting-started">Getting Started</a>
+  <a href="https://reactnative.dev/docs/getting-started">Getting Started</a>
   <span> · </span>
-  <a href="https://facebook.github.io/react-native/docs/tutorial">Learn the Basics</a>
+  <a href="https://reactnative.dev/docs/tutorial">Learn the Basics</a>
   <span> · </span>
-  <a href="https://facebook.github.io/react-native/showcase.html">Showcase</a>
+  <a href="https://reactnative.dev/showcase.html">Showcase</a>
   <span> · </span>
-  <a href="https://facebook.github.io/react-native/docs/contributing">Contribute</a>
+  <a href="https://reactnative.dev/docs/contributing">Contribute</a>
   <span> · </span>
-  <a href="https://facebook.github.io/react-native/en/help">Community</a>
+  <a href="https://reactnative.dev/help">Community</a>
   <span> · </span>
-  <a href="https://github.com/facebook/react-native/blob/master/.github/SUPPORT">Support</a>
+  <a href="https://github.com/facebook/react-native/blob/HEAD/.github/SUPPORT.md">Support</a>
 </h3>
 
 React Native brings [**React**'s][r] declarative UI framework to iOS and Android. With React Native, you use native UI controls and have full access to the native platform.
 
 - **Declarative.** React makes it painless to create interactive UIs. Declarative views make your code more predictable and easier to debug.
-- **Component-Based.** Build encapsulated components that manage their own state, then compose them to make complex UIs.
+- **Component-Based.** Build encapsulated components that manage their state, then compose them to make complex UIs.
 - **Developer Velocity.** See local changes in seconds. Changes to JavaScript code can be live reloaded without rebuilding the native app.
 - **Portability.** Reuse code across iOS, Android, and [other platforms][p].
 
 React Native is developed and supported by many companies and individual core contributors. Find out more in our [ecosystem overview][e].
 
 [r]: https://reactjs.org/
-[p]: https://facebook.github.io/react-native/docs/out-of-tree-platforms
-[e]: https://github.com/facebook/react-native/blob/master/ECOSYSTEM.md
+[p]: https://reactnative.dev/docs/out-of-tree-platforms
+[e]: https://github.com/facebook/react-native/blob/HEAD/ECOSYSTEM.md
 
 ## Contents
 
@@ -70,19 +67,19 @@ React Native is developed and supported by many companies and individual core co
 
 ## 📋 Requirements
 
-React Native apps may target iOS 9.0 and Android 4.1 (API 16) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.io) can be used to work around this.
+React Native apps may target iOS 11.0 and Android 5.0 (API 21) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.io) can be used to work around this.
 
 ## 🎉 Building your first React Native app
 
-Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/getting-started.html). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
+Follow the [Getting Started guide](https://reactnative.dev/docs/getting-started). The recommended way to install React Native depends on your project. Here you can find short guides for the most common scenarios:
 
 - [Trying out React Native][hello-world]
 - [Creating a New Application][new-app]
 - [Adding React Native to an Existing Application][existing]
 
 [hello-world]: https://snack.expo.io/@hramos/hello,-world!
-[new-app]: https://facebook.github.io/react-native/docs/getting-started.html
-[existing]: https://facebook.github.io/react-native/docs/integration-with-existing-apps.html
+[new-app]: https://reactnative.dev/docs/getting-started
+[existing]: https://reactnative.dev/docs/integration-with-existing-apps
 
 ## 📖 Documentation
 
@@ -92,22 +89,22 @@ The React Native documentation discusses components, APIs, and topics that are s
 
 The source for the React Native documentation and website is hosted on a separate repo, [**@facebook/react-native-website**][repo-website].
 
-[docs]: https://facebook.github.io/react-native/docs/getting-started.html
+[docs]: https://reactnative.dev/docs/getting-started
 [r-docs]: https://reactjs.org/docs/getting-started.html
 [repo-website]: https://github.com/facebook/react-native-website
 
 ## 🚀 Upgrading
 
-Upgrading to new versions of React Native may give you access to more APIs, views, developer tools and other goodies. See the [Upgrading Guide][u] for instructions.
+Upgrading to new versions of React Native may give you access to more APIs, views, developer tools, and other goodies. See the [Upgrading Guide][u] for instructions.
 
 React Native releases are discussed in the React Native Community, [**@react-native-community/react-native-releases**][repo-releases].
 
-[u]: https://facebook.github.io/react-native/docs/upgrading
+[u]: https://reactnative.dev/docs/upgrading
 [repo-releases]: https://github.com/react-native-community/react-native-releases
 
 ## 👏 How to Contribute
 
-The main purpose of this repository is to continue evolving React Native core. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving React Native.
+The main purpose of this repository is to continue evolving React Native core. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bug fixes and improvements. Read below to learn how you can take part in improving React Native.
 
 ### [Code of Conduct][code]
 
@@ -120,7 +117,7 @@ Please read the [full text][code] so that you can understand what actions will a
 
 Read our [**Contributing Guide**][contribute] to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to React Native.
 
-[contribute]: https://facebook.github.io/react-native/docs/contributing
+[contribute]: https://reactnative.dev/docs/contributing
 
 ### [Open Source Roadmap][roadmap]
 
@@ -146,5 +143,5 @@ React Native is MIT licensed, as found in the [LICENSE][l] file.
 
 React Native documentation is Creative Commons licensed, as found in the [LICENSE-docs][ld] file.
 
-[l]: https://github.com/facebook/react-native/blob/master/LICENSE
-[ld]: https://github.com/facebook/react-native/blob/master/LICENSE-docs
+[l]: https://github.com/facebook/react-native/blob/HEAD/LICENSE
+[ld]: https://github.com/facebook/react-native/blob/HEAD/LICENSE-docs

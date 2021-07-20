@@ -1,21 +1,25 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include <memory>
 
 #include <cxxreact/CxxModule.h>
 
-namespace facebook { namespace xplat { namespace module {
+namespace facebook {
+namespace xplat {
+namespace module {
 
 // Allows a Cxx-module to be shared or reused across multiple React instances
-// Caveat: the setInstance call is not forwarded, so usages of getInstance inside your
-// module (e.g. dispatching events) will always be nullptr.
+// Caveat: the setInstance call is not forwarded, so usages of getInstance
+// inside your module (e.g. dispatching events) will always be nullptr.
 class SharedProxyCxxModule : public CxxModule {
-public:
+ public:
   explicit SharedProxyCxxModule(std::shared_ptr<CxxModule> shared)
-    : shared_(shared) {}
+      : shared_(shared) {}
 
   std::string getName() override {
     return shared_->getName();
@@ -29,10 +33,10 @@ public:
     return shared_->getMethods();
   }
 
-private:
+ private:
   std::shared_ptr<CxxModule> shared_;
 };
 
-}
-}
-}
+} // namespace module
+} // namespace xplat
+} // namespace facebook

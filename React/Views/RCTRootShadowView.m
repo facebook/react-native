@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -16,6 +16,7 @@
 {
   if (self = [super init]) {
     _baseDirection = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
+    _minimumSize = CGSizeZero;
     _availableSize = CGSizeMake(INFINITY, INFINITY);
   }
 
@@ -31,7 +32,7 @@
   layoutContext.affectedShadowViews = affectedShadowViews;
   layoutContext.other = other;
 
-  [self layoutWithMinimumSize:CGSizeZero
+  [self layoutWithMinimumSize:_minimumSize
                   maximumSize:_availableSize
               layoutDirection:RCTUIKitLayoutDirectionFromYogaLayoutDirection(_baseDirection)
                 layoutContext:layoutContext];

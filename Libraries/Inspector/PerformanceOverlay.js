@@ -16,13 +16,13 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
 const View = require('../Components/View/View');
 
-class PerformanceOverlay extends React.Component<{}> {
+class PerformanceOverlay extends React.Component<{...}> {
   render(): React.Node {
     const perfLogs = PerformanceLogger.getTimespans();
     const items = [];
 
     for (const key in perfLogs) {
-      if (perfLogs[key].totalTime) {
+      if (perfLogs[key]?.totalTime) {
         const unit = key === 'BundleSize' ? 'b' : 'ms';
         items.push(
           <View style={styles.row} key={key}>

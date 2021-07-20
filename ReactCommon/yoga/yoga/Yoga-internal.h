@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 #include <algorithm>
 #include <array>
@@ -32,6 +33,10 @@ inline bool isUndefined(float value) {
   return std::isnan(value);
 }
 
+inline bool isUndefined(double value) {
+  return std::isnan(value);
+}
+
 } // namespace yoga
 } // namespace facebook
 
@@ -53,10 +58,10 @@ struct YGCachedMeasurement {
   float computedHeight;
 
   YGCachedMeasurement()
-      : availableWidth(0),
-        availableHeight(0),
-        widthMeasureMode((YGMeasureMode) -1),
-        heightMeasureMode((YGMeasureMode) -1),
+      : availableWidth(-1),
+        availableHeight(-1),
+        widthMeasureMode(YGMeasureModeUndefined),
+        heightMeasureMode(YGMeasureModeUndefined),
         computedWidth(-1),
         computedHeight(-1) {}
 
@@ -143,8 +148,3 @@ static const float kDefaultFlexShrink = 0.0f;
 static const float kWebDefaultFlexShrink = 1.0f;
 
 extern bool YGFloatsEqual(const float a, const float b);
-extern facebook::yoga::detail::CompactValue YGComputedEdgeValue(
-    const facebook::yoga::detail::Values<
-        facebook::yoga::enums::count<YGEdge>()>& edges,
-    YGEdge edge,
-    facebook::yoga::detail::CompactValue defaultValue);

@@ -7,21 +7,22 @@
  * @flow
  * @format
  */
-'use strict';
 
+import UIManagerInjection from './UIManagerInjection';
 import type {Spec} from './NativeUIManager';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 interface UIManagerJSInterface extends Spec {
   +getViewManagerConfig: (viewManagerName: string) => Object;
-  // The following are not marked read-only due to logic in UIManagerStatTracker.
-  createView: (
+  +hasViewManagerConfig: (viewManagerName: string) => boolean;
+  +createView: (
     reactTag: ?number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: Object,
   ) => void;
-  updateView: (reactTag: number, viewName: string, props: Object) => void;
-  manageChildren: (
+  +updateView: (reactTag: number, viewName: string, props: Object) => void;
+  +manageChildren: (
     containerTag: ?number,
     moveFromIndices: Array<number>,
     moveToIndices: Array<number>,
@@ -34,6 +35,8 @@ interface UIManagerJSInterface extends Spec {
 const UIManager: UIManagerJSInterface =
   global.RN$Bridgeless === true
     ? require('./DummyUIManager') // No UIManager in bridgeless mode
-    : require('./PaperUIManager');
+    : UIManagerInjection.unstable_UIManager == null
+    ? require('./PaperUIManager')
+    : UIManagerInjection.unstable_UIManager;
 
 module.exports = UIManager;

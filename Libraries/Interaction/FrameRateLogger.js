@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import NativeFrameRateLogger from './NativeFrameRateLogger';
 
 const invariant = require('invariant');
@@ -38,6 +36,7 @@ const FrameRateLogger = {
   setGlobalOptions: function(options: {
     debug?: boolean,
     reportStackTraces?: boolean,
+    ...
   }) {
     if (options.debug !== undefined) {
       invariant(

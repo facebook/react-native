@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.packagerconnection;
 
 import android.net.Uri;
@@ -17,8 +18,6 @@ import org.json.JSONObject;
 /** A client for packager that uses WebSocket connection. */
 public final class JSPackagerClient implements ReconnectingWebSocket.MessageCallback {
   private static final String TAG = JSPackagerClient.class.getSimpleName();
-  private static final String PACKAGER_CONNECTION_URL_FORMAT =
-      "ws://%s/message?device=%s&app=%s&context=%s";
   private static final int PROTOCOL_VERSION = 2;
 
   private class ResponderImpl implements Responder {

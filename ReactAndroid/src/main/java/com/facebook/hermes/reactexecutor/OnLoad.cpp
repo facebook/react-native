@@ -1,41 +1,39 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include <../instrumentation/HermesMemoryDumper.h>
 #include <HermesExecutorFactory.h>
-#include <fb/fbjni.h>
-#include <folly/Memory.h>
+#include <android/log.h>
+#include <fbjni/fbjni.h>
+#include <glog/logging.h>
 #include <hermes/Public/GCConfig.h>
 #include <hermes/Public/RuntimeConfig.h>
 #include <jni.h>
 #include <react/jni/JReactMarker.h>
 #include <react/jni/JSLogging.h>
 #include <react/jni/JavaScriptExecutorHolder.h>
+#include <react/jni/NativeTime.h>
+
+#include <memory>
 
 namespace facebook {
 namespace react {
 
-/// Converts a duration given as a long from Java, into a std::chrono duration.
-static constexpr std::chrono::hours msToHours(jlong ms) {
-  using namespace std::chrono;
-  return duration_cast<hours>(milliseconds(ms));
+static void hermesFatalHandler(const std::string &reason) {
+  LOG(ERROR) << "Hermes Fatal: " << reason << "\n";
+  __android_log_assert(nullptr, "Hermes", "%s", reason.c_str());
 }
 
-static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
-    jlong heapSizeMB,
-    bool es6Symbol,
-    jint bytecodeWarmupPercent,
-    bool tripWireEnabled,
-    jni::alias_ref<jsi::jni::HermesMemoryDumper> heapDumper,
-    jlong tripWireCooldownMS,
-    jlong tripWireLimitBytes) {
+static std::once_flag flag;
+
+static ::hermes::vm::RuntimeConfig makeRuntimeConfig(jlong heapSizeMB) {
   namespace vm = ::hermes::vm;
   auto gcConfigBuilder =
       vm::GCConfig::Builder()
-          .withMaxHeapSize(heapSizeMB << 20)
           .withName("RN")
           // For the next two arguments: avoid GC before TTI by initializing the
           // runtime to allocate directly in the old generation, but revert to
@@ -43,44 +41,12 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
           .withAllocInYoung(false)
           .withRevertToYGAtTTI(true);
 
-  if (tripWireEnabled) {
-    assert(
-        heapDumper &&
-        "Must provide a heap dumper instance if tripwire is enabled");
-
-    gcConfigBuilder.withTripwireConfig(
-        vm::GCTripwireConfig::Builder()
-            .withLimit(tripWireLimitBytes)
-            .withCooldown(msToHours(tripWireCooldownMS))
-            .withCallback([globalHeapDumper = jni::make_global(heapDumper)](
-                              vm::GCTripwireContext &ctx) mutable {
-              if (!globalHeapDumper->shouldSaveSnapshot()) {
-                return;
-              }
-
-              std::string crashId = globalHeapDumper->getId();
-              std::string path = globalHeapDumper->getInternalStorage();
-              path += "/dump_";
-              path += crashId;
-              path += ".hermes";
-
-              bool successful = ctx.createSnapshotToFile(path, true);
-              if (!successful) {
-                LOG(ERROR) << "Failed to write Hermes Memory Dump to " << path
-                           << "\n";
-                return;
-              }
-
-              LOG(INFO) << "Hermes Memory Dump saved on: " << path << "\n";
-              globalHeapDumper->setMetaData(crashId);
-            })
-            .build());
+  if (heapSizeMB > 0) {
+    gcConfigBuilder.withMaxHeapSize(heapSizeMB << 20);
   }
 
   return vm::RuntimeConfig::Builder()
       .withGCConfig(gcConfigBuilder.build())
-      .withES6Symbol(es6Symbol)
-      .withBytecodeWarmupPercent(bytecodeWarmupPercent)
       .build();
 }
 
@@ -89,6 +55,10 @@ static void installBindings(jsi::Runtime &runtime) {
       static_cast<void (*)(const std::string &, unsigned int)>(
           &reactAndroidLoggingHook);
   react::bindNativeLogger(runtime, androidLogger);
+
+  react::PerformanceNow androidNativePerformanceNow =
+      static_cast<double (*)()>(&reactAndroidNativePerformanceNowHook);
+  react::bindNativePerformanceNow(runtime, androidNativePerformanceNow);
 }
 
 class HermesExecutorHolder
@@ -101,29 +71,22 @@ class HermesExecutorHolder
       jni::alias_ref<jclass>) {
     JReactMarker::setLogPerfMarkerIfNeeded();
 
+    std::call_once(flag, []() {
+      facebook::hermes::HermesRuntime::setFatalHandler(hermesFatalHandler);
+    });
     return makeCxxInstance(
-        folly::make_unique<HermesExecutorFactory>(installBindings));
+        std::make_unique<HermesExecutorFactory>(installBindings));
   }
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass>,
-      jlong heapSizeMB,
-      bool es6Symbol,
-      jint bytecodeWarmupPercent,
-      bool tripWireEnabled,
-      jni::alias_ref<jsi::jni::HermesMemoryDumper> heapDumper,
-      jlong tripWireCooldownMS,
-      jlong tripWireLimitBytes) {
+      jlong heapSizeMB) {
     JReactMarker::setLogPerfMarkerIfNeeded();
-    auto runtimeConfig = makeRuntimeConfig(
-        heapSizeMB,
-        es6Symbol,
-        bytecodeWarmupPercent,
-        tripWireEnabled,
-        heapDumper,
-        tripWireCooldownMS,
-        tripWireLimitBytes);
-    return makeCxxInstance(folly::make_unique<HermesExecutorFactory>(
+    auto runtimeConfig = makeRuntimeConfig(heapSizeMB);
+    std::call_once(flag, []() {
+      facebook::hermes::HermesRuntime::setFatalHandler(hermesFatalHandler);
+    });
+    return makeCxxInstance(std::make_unique<HermesExecutorFactory>(
         installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
   }
 

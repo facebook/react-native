@@ -9,19 +9,22 @@
  */
 
 'use strict';
+import * as React from 'react';
 
-const React = require('react');
+import requireNativeComponent from '../../../ReactNative/requireNativeComponent';
 
-const requireNativeComponent = require('../../../ReactNative/requireNativeComponent');
+import type {HostComponent} from '../../../Renderer/shims/ReactNativeTypes';
 
-const RCTRefreshControl = requireNativeComponent('RCTRefreshControl');
+const RCTRefreshControl: HostComponent<mixed> = requireNativeComponent<mixed>(
+  'RCTRefreshControl',
+);
 
-class RefreshControlMock extends React.Component<{}> {
+class RefreshControlMock extends React.Component<{...}> {
   static latestRef: ?RefreshControlMock;
   componentDidMount() {
     RefreshControlMock.latestRef = this;
   }
-  render(): React.Element<string> {
+  render(): React.Element<typeof RCTRefreshControl> {
     return <RCTRefreshControl />;
   }
 }

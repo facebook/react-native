@@ -3,7 +3,7 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-#
+
 # This script validates that the Android SDK is installed correctly.
 # This means setting ANDROID_HOME and adding its subdirectories to PATH.
 # If the Android SDK is not installed correctly, this script exits
@@ -13,7 +13,7 @@ if [ -z "$ANDROID_HOME" ]; then
   echo "Error: \$ANDROID_HOME is not configured."
   echo "You must first install the Android SDK and then set \$ANDROID_HOME."
   echo "If you already installed the Android SDK, the problem is that you need to export ANDROID_HOME from your .bashrc or equivalent."
-  echo "See https://facebook.github.io/react-native/docs/getting-started.html for instructions."
+  echo "See https://reactnative.dev/docs/getting-started.html for instructions."
   exit 1
 fi
 
@@ -21,7 +21,7 @@ if [ ! -d "$ANDROID_HOME" ]; then
   echo "Error: \$ANDROID_HOME = $ANDROID_HOME but that directory does not exist."
   echo "It is possible that you installed then uninstalled the Android SDK."
   echo "In that case, you should reinstall it."
-  echo "See https://facebook.github.io/react-native/docs/getting-started.html for instructions."
+  echo "See https://reactnative.dev/docs/getting-started.html for instructions."
   exit 1
 fi
 
@@ -31,7 +31,7 @@ if [ ! -e "$ANDROID_HOME/tools/emulator" ]; then
   echo "This indicates something is borked with your Android SDK install."
   echo "One possibility is that you have \$ANDROID_HOME set to the wrong value."
   echo "If that seems correct, you might want to try reinstalling the Android SDK."
-  echo "See https://facebook.github.io/react-native/docs/getting-started.html for instructions."
+  echo "See https://reactnative.dev/docs/getting-started.html for instructions."
   exit 1
 fi
 
@@ -49,7 +49,6 @@ if [ -z `which adb` ]; then
   echo "This indicates something is borked with your Android SDK install."
   echo "The most likely problem is that you are not adding \$ANDROID_HOME/platform-tools to your \$PATH."
   echo "If all else fails, try reinstalling the Android SDK."
-  echo "See https://facebook.github.io/react-native/docs/getting-started.html for instructions."
+  echo "See https://reactnative.dev/docs/getting-started.html for instructions."
   exit 1
 fi
-

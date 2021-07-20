@@ -8,22 +8,40 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import processColor from '../StyleSheet/processColor';
 import NativeDevLoadingView from './NativeDevLoadingView';
+import Appearance from './Appearance';
 
 module.exports = {
   showMessage(message: string, type: 'load' | 'refresh') {
     if (NativeDevLoadingView) {
-      NativeDevLoadingView.showMessage(
-        message,
-        // Use same colors as iOS "Personal Hotspot" bar.
-        processColor('#ffffff'),
-        type && type === 'load'
-          ? processColor('#275714')
-          : processColor('#2584e8'),
-      );
+      if (type === 'refresh') {
+        const backgroundColor = processColor('#2584e8');
+        const textColor = processColor('#ffffff');
+
+        NativeDevLoadingView.showMessage(
+          message,
+          typeof textColor === 'number' ? textColor : null,
+          typeof backgroundColor === 'number' ? backgroundColor : null,
+        );
+      } else if (type === 'load') {
+        let backgroundColor;
+        let textColor;
+
+        if (Appearance.getColorScheme() === 'dark') {
+          backgroundColor = processColor('#fafafa');
+          textColor = processColor('#242526');
+        } else {
+          backgroundColor = processColor('#404040');
+          textColor = processColor('#ffffff');
+        }
+
+        NativeDevLoadingView.showMessage(
+          message,
+          typeof textColor === 'number' ? textColor : null,
+          typeof backgroundColor === 'number' ? backgroundColor : null,
+        );
+      }
     }
   },
   hide() {

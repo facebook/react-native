@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.tests;
 
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -106,6 +108,128 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     fireEditorActionAndCheckRecording(reactEditText, EditorInfo.IME_ACTION_NONE);
   }
 
+  public void testRequestFocusDoesNothing() throws Throwable {
+    String testId = "textInput1";
+
+    final ReactEditText reactEditText = getViewByTestId(testId);
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.clearFocus();
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertFalse(reactEditText.isFocused());
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.requestFocus();
+          }
+        });
+    waitForBridgeAndUIIdle();
+
+    // Calling requestFocus() directly should no-op
+    assertFalse(reactEditText.isFocused());
+  }
+
+  public void testRequestFocusFromJS() throws Throwable {
+    String testId = "textInput1";
+
+    final ReactEditText reactEditText = getViewByTestId(testId);
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.clearFocus();
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertFalse(reactEditText.isFocused());
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.requestFocusFromJS();
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertTrue(reactEditText.isFocused());
+  }
+
+  public void testAccessibilityFocus() throws Throwable {
+    String testId = "textInput1";
+
+    final ReactEditText reactEditText = getViewByTestId(testId);
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.clearFocus();
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertFalse(reactEditText.isFocused());
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.performAccessibilityAction(
+                AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+            reactEditText.performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK, null);
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertTrue(reactEditText.isFocused());
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.performAccessibilityAction(
+                AccessibilityNodeInfo.ACTION_CLEAR_FOCUS, null);
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertFalse(reactEditText.isFocused());
+  }
+
+  public void testAccessibilityFocus_notEmpty_selectionSetAtEnd() throws Throwable {
+    String testId = "textInput1";
+    String text = "Testing";
+
+    final ReactEditText reactEditText = getViewByTestId(testId);
+    reactEditText.setText(text);
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.clearFocus();
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertFalse(reactEditText.isFocused());
+    assertEquals(0, reactEditText.getSelectionStart());
+
+    runTestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            reactEditText.performAccessibilityAction(
+                AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+            reactEditText.performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK, null);
+          }
+        });
+    waitForBridgeAndUIIdle();
+    assertTrue(reactEditText.isFocused());
+    assertEquals(text.length(), reactEditText.getSelectionStart());
+  }
+
   private void fireEditorActionAndCheckRecording(
       final ReactEditText reactEditText, final int actionId) throws Throwable {
     fireEditorActionAndCheckRecording(reactEditText, actionId, true);
@@ -135,8 +259,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
   /**
    * Test that the mentions input has colors displayed correctly. Removed for being flaky in open
    * source, December 2016 public void testMetionsInputColors() throws Throwable { EventDispatcher
-   * eventDispatcher =
-   * getReactContext().getNativeModule(UIManagerModule.class).getEventDispatcher(); ReactEditText
+   * eventDispatcher = UIManagerHelper.getEventEmitterForReactTag(reactContext, tag); ReactEditText
    * reactEditText = getViewByTestId("tokenizedInput"); String newText = "#Things and more #things";
    * int contentWidth = reactEditText.getWidth(); int contentHeight = reactEditText.getHeight(); int
    * start = 0; int count = newText.length();

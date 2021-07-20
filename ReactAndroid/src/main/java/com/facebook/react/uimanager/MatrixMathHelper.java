@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import com.facebook.infer.annotation.Assertions;
@@ -163,10 +164,6 @@ public class MatrixMathHelper {
     // Compute X scale factor and normalize first row.
     scale[0] = v3Length(row[0]);
     row[0] = v3Normalize(row[0], scale[0]);
-
-    // Compute XY shear factor and make 2nd row orthogonal to 1st.
-    skew[0] = v3Dot(row[0], row[1]);
-    row[1] = v3Combine(row[1], row[0], 1.0, -skew[0]);
 
     // Compute XY shear factor and make 2nd row orthogonal to 1st.
     skew[0] = v3Dot(row[0], row[1]);

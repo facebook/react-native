@@ -13,9 +13,10 @@
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
-const {getProps} = require('./props');
+const {getProps, getPropProperties} = require('./props');
 const {getCommandOptions, getOptions} = require('./options');
-const {getExtendsProps} = require('./extends');
+const {getExtendsProps, removeKnownExtends} = require('./extends');
+const {getTypes} = require('../utils');
 
 function findComponentConfig(ast) {
   const foundConfigs = [];
@@ -118,17 +119,6 @@ function findComponentConfig(ast) {
   };
 }
 
-function getPropProperties(propsTypeName, types) {
-  const typeAlias = types[propsTypeName];
-  try {
-    return typeAlias.right.typeParameters.params[0].properties;
-  } catch (e) {
-    throw new Error(
-      `Failed to find type definition for "${propsTypeName}", please check that you have a valid codegen flow file`,
-    );
-  }
-}
-
 function getCommandProperties(commandTypeName, types, commandOptions) {
   if (commandTypeName == null) {
     return [];
@@ -138,9 +128,7 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
 
   if (typeAlias.type !== 'InterfaceDeclaration') {
     throw new Error(
-      `The type argument for codegenNativeCommands must be an interface, received ${
-        typeAlias.type
-      }`,
+      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
     );
   }
 
@@ -179,8 +167,8 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
   return properties;
 }
 
-// $FlowFixMe there's no flowtype for AST
-function processComponent(ast, types): ComponentSchemaBuilderConfig {
+// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const {
     componentName,
     propsTypeName,
@@ -188,6 +176,8 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
     commandOptionsExpression,
     optionsExpression,
   } = findComponentConfig(ast);
+
+  const types = getTypes(ast);
 
   const propProperties = getPropProperties(propsTypeName, types);
   const commandOptions = getCommandOptions(commandOptionsExpression);
@@ -198,10 +188,11 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
     commandOptions,
   );
 
-  const extendsProps = getExtendsProps(propProperties);
+  const extendsProps = getExtendsProps(propProperties, types);
   const options = getOptions(optionsExpression);
 
-  const props = getProps(propProperties, types);
+  const nonExtendsProps = removeKnownExtends(propProperties, types);
+  const props = getProps(nonExtendsProps, types);
   const events = getEvents(propProperties, types);
   const commands = getCommands(commandProperties, types);
 
@@ -217,5 +208,5 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
 }
 
 module.exports = {
-  processComponent,
+  buildComponentSchema,
 };

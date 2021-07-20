@@ -1,14 +1,18 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react;
 
+import static com.facebook.react.ReactInstanceManager.initializeSoLoaderIfNecessary;
 import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriendlyDeviceName;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
@@ -54,6 +58,7 @@ public class ReactInstanceManagerBuilder {
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
   private @Nullable JSIModulePackage mJSIModulesPackage;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
+  private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -114,9 +119,9 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
-   * Path to your app's main module on the packager server. This is used when reloading JS during
-   * development. All paths are relative to the root folder the packager is serving files from.
-   * Examples: {@code "index.android"} or {@code "subdirectory/index.android"}
+   * Path to your app's main module on Metro. This is used when reloading JS during development. All
+   * paths are relative to the root folder the packager is serving files from. Examples: {@code
+   * "index.android"} or {@code "subdirectory/index.android"}
    */
   public ReactInstanceManagerBuilder setJSMainModulePath(String jsMainModulePath) {
     mJSMainModulePath = jsMainModulePath;
@@ -220,6 +225,12 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setReactPackageTurboModuleManagerDelegateBuilder(
+      @Nullable ReactPackageTurboModuleManagerDelegate.Builder builder) {
+    mTMMDelegateBuilder = builder;
+    return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}. Before calling {@code build}, the following
    * must be called:
@@ -254,6 +265,7 @@ public class ReactInstanceManagerBuilder {
     }
 
     // We use the name of the device and the app for debugging & metrics
+    //noinspection ConstantConditions
     String appName = mApplication.getPackageName();
     String deviceName = getFriendlyDeviceName();
 
@@ -262,7 +274,7 @@ public class ReactInstanceManagerBuilder {
         mCurrentActivity,
         mDefaultHardwareBackBtnHandler,
         mJavaScriptExecutorFactory == null
-            ? getDefaultJSExecutorFactory(appName, deviceName)
+            ? getDefaultJSExecutorFactory(appName, deviceName, mApplication.getApplicationContext())
             : mJavaScriptExecutorFactory,
         (mJSBundleLoader == null && mJSBundleAssetUrl != null)
             ? JSBundleLoader.createAssetLoader(
@@ -281,17 +293,46 @@ public class ReactInstanceManagerBuilder {
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
         mJSIModulesPackage,
-        mCustomPackagerCommandHandlers);
+        mCustomPackagerCommandHandlers,
+        mTMMDelegateBuilder);
   }
 
-  private JavaScriptExecutorFactory getDefaultJSExecutorFactory(String appName, String deviceName) {
+  private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
+      String appName, String deviceName, Context applicationContext) {
     try {
       // If JSC is included, use it as normal
+      initializeSoLoaderIfNecessary(applicationContext);
       SoLoader.loadLibrary("jscexecutor");
       return new JSCExecutorFactory(appName, deviceName);
     } catch (UnsatisfiedLinkError jscE) {
+      // https://github.com/facebook/hermes/issues/78 shows that
+      // people who aren't trying to use Hermes are having issues.
+      // https://github.com/facebook/react-native/issues/25923#issuecomment-554295179
+      // includes the actual JSC error in at least one case.
+      //
+      // So, if "__cxa_bad_typeid" shows up in the jscE exception
+      // message, then we will assume that's the failure and just
+      // throw now.
+
+      if (jscE.getMessage().contains("__cxa_bad_typeid")) {
+        throw jscE;
+      }
+
       // Otherwise use Hermes
-      return new HermesExecutorFactory();
+      try {
+        return new HermesExecutorFactory();
+      } catch (UnsatisfiedLinkError hermesE) {
+        // If we get here, either this is a JSC build, and of course
+        // Hermes failed (since it's not in the APK), or it's a Hermes
+        // build, and Hermes had a problem.
+
+        // We suspect this is a JSC issue (it's the default), so we
+        // will throw that exception, but we will print hermesE first,
+        // since it could be a Hermes issue and we don't want to
+        // swallow that.
+        hermesE.printStackTrace();
+        throw jscE;
+      }
     }
   }
 }

@@ -9,8 +9,7 @@
  */
 
 'use strict';
-
-const ReactNativeStyleAttributes = require('./ReactNativeStyleAttributes');
+import ReactNativeStyleAttributes from './ReactNativeStyleAttributes';
 
 const UIView = {
   pointerEvents: true,
@@ -19,8 +18,8 @@ const UIView = {
   accessibilityLabel: true,
   accessibilityLiveRegion: true,
   accessibilityRole: true,
-  accessibilityStates: true,
   accessibilityState: true,
+  accessibilityValue: true,
   accessibilityHint: true,
   importantForAccessibility: true,
   nativeID: true,

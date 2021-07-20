@@ -8,9 +8,9 @@
  * @flow
  */
 
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
+import * as React from 'react';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
 
 import type {ViewProps} from '../View/ViewPropTypes';
 import RCTMaskedViewNativeComponent from './RCTMaskedViewNativeComponent';

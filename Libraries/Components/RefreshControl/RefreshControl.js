@@ -8,29 +8,17 @@
  * @flow
  */
 
-'use strict';
-
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
-const nullthrows = require('nullthrows');
-
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
-import AndroidSwipeRefreshLayoutNativeComponent from './AndroidSwipeRefreshLayoutNativeComponent';
-import PullToRefreshViewNativeComponent from './PullToRefreshViewNativeComponent';
-
-let RefreshLayoutConsts: any;
-if (Platform.OS === 'android') {
-  const AndroidSwipeRefreshLayout = require('../../ReactNative/UIManager').getViewManagerConfig(
-    'AndroidSwipeRefreshLayout',
-  );
-  RefreshLayoutConsts = AndroidSwipeRefreshLayout
-    ? AndroidSwipeRefreshLayout.Constants
-    : {SIZE: {}};
-} else {
-  RefreshLayoutConsts = {SIZE: {}};
-}
+import AndroidSwipeRefreshLayoutNativeComponent, {
+  Commands as AndroidSwipeRefreshLayoutCommands,
+} from './AndroidSwipeRefreshLayoutNativeComponent';
+import PullToRefreshViewNativeComponent, {
+  Commands as PullToRefreshCommands,
+} from './PullToRefreshViewNativeComponent';
 
 type IOSProps = $ReadOnly<{|
   /**
@@ -61,16 +49,9 @@ type AndroidProps = $ReadOnly<{|
    */
   progressBackgroundColor?: ?ColorValue,
   /**
-   * Size of the refresh indicator, see RefreshControl.SIZE.
+   * Size of the refresh indicator.
    */
-  size?: ?(
-    | typeof RefreshLayoutConsts.SIZE.DEFAULT
-    | typeof RefreshLayoutConsts.SIZE.LARGE
-  ),
-  /**
-   * Progress view top offset
-   */
-  progressViewOffset?: ?number,
+  size?: ?('default' | 'large'),
 |}>;
 
 export type RefreshControlProps = $ReadOnly<{|
@@ -81,12 +62,17 @@ export type RefreshControlProps = $ReadOnly<{|
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?() => void,
+  onRefresh?: ?() => void | Promise<void>,
 
   /**
    * Whether the view should be indicating an active refresh.
    */
   refreshing: boolean,
+
+  /**
+   * Progress view top offset
+   */
+  progressViewOffset?: ?number,
 |}>;
 
 /**
@@ -135,9 +121,10 @@ export type RefreshControlProps = $ReadOnly<{|
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
 class RefreshControl extends React.Component<RefreshControlProps> {
-  static SIZE: any = RefreshLayoutConsts.SIZE;
-
-  _setNativePropsOnRef: ?({refreshing: boolean}) => void;
+  _nativeRef: ?React.ElementRef<
+    | typeof PullToRefreshViewNativeComponent
+    | typeof AndroidSwipeRefreshLayoutNativeComponent,
+  >;
   _lastNativeRefreshing = false;
 
   componentDidMount() {
@@ -152,31 +139,36 @@ class RefreshControl extends React.Component<RefreshControlProps> {
       this._lastNativeRefreshing = this.props.refreshing;
     } else if (
       this.props.refreshing !== this._lastNativeRefreshing &&
-      this._setNativePropsOnRef
+      this._nativeRef
     ) {
-      this._setNativePropsOnRef({
-        refreshing: this.props.refreshing,
-      });
+      if (Platform.OS === 'android') {
+        AndroidSwipeRefreshLayoutCommands.setNativeRefreshing(
+          this._nativeRef,
+          this.props.refreshing,
+        );
+      } else {
+        PullToRefreshCommands.setNativeRefreshing(
+          this._nativeRef,
+          this.props.refreshing,
+        );
+      }
       this._lastNativeRefreshing = this.props.refreshing;
     }
   }
 
   render(): React.Node {
-    const setRef = ref =>
-      (this._setNativePropsOnRef = ref ? ref.setNativeProps.bind(ref) : null);
     if (Platform.OS === 'ios') {
       const {
         enabled,
         colors,
         progressBackgroundColor,
         size,
-        progressViewOffset,
         ...props
       } = this.props;
       return (
         <PullToRefreshViewNativeComponent
           {...props}
-          ref={setRef}
+          ref={this._setNativeRef}
           onRefresh={this._onRefresh}
         />
       );
@@ -185,7 +177,7 @@ class RefreshControl extends React.Component<RefreshControlProps> {
       return (
         <AndroidSwipeRefreshLayoutNativeComponent
           {...props}
-          ref={setRef}
+          ref={this._setNativeRef}
           onRefresh={this._onRefresh}
         />
       );
@@ -200,6 +192,15 @@ class RefreshControl extends React.Component<RefreshControlProps> {
     // The native component will start refreshing so force an update to
     // make sure it stays in sync with the js component.
     this.forceUpdate();
+  };
+
+  _setNativeRef = (
+    ref: ?React.ElementRef<
+      | typeof PullToRefreshViewNativeComponent
+      | typeof AndroidSwipeRefreshLayoutNativeComponent,
+    >,
+  ) => {
+    this._nativeRef = ref;
   };
 }
 

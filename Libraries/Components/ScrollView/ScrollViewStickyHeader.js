@@ -4,73 +4,168 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
-'use strict';
-
-const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
 
 import type {LayoutEvent} from '../../Types/CoreEventTypes';
+import setAndForwardRef from 'react-native/Libraries/Utilities/setAndForwardRef';
+import Platform from '../../Utilities/Platform';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Animated from '../../Animated/Animated';
+import * as React from 'react';
+import {useEffect, useMemo, useRef, useCallback} from 'react';
 
-const AnimatedView = AnimatedImplementation.createAnimatedComponent(View);
+const AnimatedView = Animated.View;
 
-export type Props = {
-  children?: React.Element<any>,
+export type Props = $ReadOnly<{
+  children?: React.Element<$FlowFixMe>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
-  scrollAnimatedValue: AnimatedImplementation.Value,
+  scrollAnimatedValue: Animated.Value,
   // Will cause sticky headers to stick at the bottom of the ScrollView instead
   // of the top.
   inverted: ?boolean,
   // The height of the parent ScrollView. Currently only set when inverted.
   scrollViewHeight: ?number,
-};
+  nativeID?: ?string,
+  hiddenOnScroll?: ?boolean,
+}>;
 
-type State = {
-  measured: boolean,
-  layoutY: number,
-  layoutHeight: number,
-  nextHeaderLayoutY: ?number,
-};
+const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
+  Props,
+  $ReadOnly<{
+    setNextHeaderY: number => void,
+    ...$Exact<React.ElementRef<typeof AnimatedView>>,
+  }>,
+> = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
+  const {
+    inverted,
+    scrollViewHeight,
+    hiddenOnScroll,
+    scrollAnimatedValue,
+    nextHeaderLayoutY: _nextHeaderLayoutY,
+  } = props;
 
-class ScrollViewStickyHeader extends React.Component<Props, State> {
-  state: State = {
-    measured: false,
-    layoutY: 0,
-    layoutHeight: 0,
-    nextHeaderLayoutY: this.props.nextHeaderLayoutY,
-  };
+  const [measured, setMeasured] = React.useState<boolean>(false);
+  const [layoutY, setLayoutY] = React.useState<number>(0);
+  const [layoutHeight, setLayoutHeight] = React.useState<number>(0);
+  const [translateY, setTranslateY] = React.useState<?number>(null);
+  const [nextHeaderLayoutY, setNextHeaderLayoutY] = React.useState<?number>(
+    _nextHeaderLayoutY,
+  );
+  const [isFabric, setIsFabric] = React.useState<boolean>(false);
 
-  setNextHeaderY(y: number) {
-    this.setState({nextHeaderLayoutY: y});
-  }
+  const componentRef = React.useRef<?React.ElementRef<typeof AnimatedView>>();
+  const _setNativeRef = setAndForwardRef({
+    getForwardedRef: () => forwardedRef,
+    setLocalRef: ref => {
+      componentRef.current = ref;
+      if (ref) {
+        ref.setNextHeaderY = value => {
+          setNextHeaderLayoutY(value);
+        };
+        setIsFabric(
+          !!(
+            // An internal transform mangles variables with leading "_" as private.
+            // eslint-disable-next-line dot-notation
+            ref['_internalInstanceHandle']?.stateNode?.canonical
+          ),
+        );
+      }
+    },
+  });
 
-  _onLayout = event => {
-    this.setState({
-      measured: true,
-      layoutY: event.nativeEvent.layout.y,
-      layoutHeight: event.nativeEvent.layout.height,
-    });
+  const offset = useMemo(
+    () =>
+      hiddenOnScroll === true
+        ? Animated.diffClamp(
+            scrollAnimatedValue
+              .interpolate({
+                extrapolateLeft: 'clamp',
+                inputRange: [layoutY, layoutY + 1],
+                outputRange: ([0, 1]: Array<number>),
+              })
+              .interpolate({
+                inputRange: [0, 1],
+                outputRange: ([0, -1]: Array<number>),
+              }),
+            -layoutHeight,
+            0,
+          )
+        : null,
+    [scrollAnimatedValue, layoutHeight, layoutY, hiddenOnScroll],
+  );
 
-    this.props.onLayout(event);
-    const child = React.Children.only(this.props.children);
-    if (child.props.onLayout) {
-      child.props.onLayout(event);
+  const [
+    animatedTranslateY,
+    setAnimatedTranslateY,
+  ] = React.useState<Animated.Node>(() => {
+    const inputRange: Array<number> = [-1, 0];
+    const outputRange: Array<number> = [0, 0];
+    const initialTranslateY: Animated.Interpolation = scrollAnimatedValue.interpolate(
+      {
+        inputRange,
+        outputRange,
+      },
+    );
+
+    if (offset != null) {
+      return Animated.add(initialTranslateY, offset);
     }
-  };
+    return initialTranslateY;
+  });
 
-  render(): React.Node {
-    const {inverted, scrollViewHeight} = this.props;
-    const {measured, layoutHeight, layoutY, nextHeaderLayoutY} = this.state;
+  const _haveReceivedInitialZeroTranslateY = useRef<boolean>(true);
+  const _timer = useRef<?TimeoutID>(null);
+
+  useEffect(() => {
+    if (translateY !== 0 && translateY != null) {
+      _haveReceivedInitialZeroTranslateY.current = false;
+    }
+  }, [translateY]);
+
+  // This is called whenever the (Interpolated) Animated Value
+  // updates, which is several times per frame during scrolling.
+  // To ensure that the Fabric ShadowTree has the most recent
+  // translate style of this node, we debounce the value and then
+  // pass it through to the underlying node during render.
+  // This is:
+  // 1. Only an issue in Fabric.
+  // 2. Worse in Android than iOS. In Android, but not iOS, you
+  //    can touch and move your finger slightly and still trigger
+  //    a "tap" event. In iOS, moving will cancel the tap in
+  //    both Fabric and non-Fabric. On Android when you move
+  //    your finger, the hit-detection moves from the Android
+  //    platform to JS, so we need the ShadowTree to have knowledge
+  //    of the current position.
+  const animatedValueListener = useCallback(
+    ({value}) => {
+      const _debounceTimeout: number = Platform.OS === 'android' ? 15 : 64;
+      // When the AnimatedInterpolation is recreated, it always initializes
+      // to a value of zero and emits a value change of 0 to its listeners.
+      if (value === 0 && !_haveReceivedInitialZeroTranslateY.current) {
+        _haveReceivedInitialZeroTranslateY.current = true;
+        return;
+      }
+      if (_timer.current != null) {
+        clearTimeout(_timer.current);
+      }
+      _timer.current = setTimeout(() => {
+        if (value !== translateY) {
+          setTranslateY(value);
+        }
+      }, _debounceTimeout);
+    },
+    [translateY],
+  );
+
+  useEffect(() => {
     const inputRange: Array<number> = [-1, 0];
     const outputRange: Array<number> = [0, 0];
 
     if (measured) {
-      if (inverted) {
+      if (inverted === true) {
         // The interpolation looks like:
         // - Negative scroll: no translation
         // - `stickStartPoint` is the point at which the header will start sticking.
@@ -131,33 +226,90 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
       }
     }
 
-    const translateY = this.props.scrollAnimatedValue.interpolate({
+    let newAnimatedTranslateY: Animated.Node = scrollAnimatedValue.interpolate({
       inputRange,
       outputRange,
     });
-    const child = React.Children.only(this.props.children);
 
-    return (
-      <AnimatedView
-        collapsable={false}
-        onLayout={this._onLayout}
-        style={[child.props.style, styles.header, {transform: [{translateY}]}]}>
-        {React.cloneElement(child, {
-          style: styles.fill, // We transfer the child style to the wrapper.
-          onLayout: undefined, // we call this manually through our this._onLayout
-        })}
-      </AnimatedView>
-    );
-  }
-}
+    if (offset != null) {
+      newAnimatedTranslateY = Animated.add(newAnimatedTranslateY, offset);
+    }
+
+    // add the event listener
+    let animatedListenerId;
+    if (isFabric) {
+      animatedListenerId = newAnimatedTranslateY.addListener(
+        animatedValueListener,
+      );
+    }
+
+    setAnimatedTranslateY(newAnimatedTranslateY);
+
+    // clean up the event listener and timer
+    return () => {
+      if (animatedListenerId) {
+        newAnimatedTranslateY.removeListener(animatedListenerId);
+      }
+      if (_timer.current != null) {
+        clearTimeout(_timer.current);
+      }
+    };
+  }, [nextHeaderLayoutY, measured, layoutHeight, layoutY, scrollViewHeight, scrollAnimatedValue, inverted, offset, animatedValueListener, isFabric]);
+
+  const _onLayout = (event: LayoutEvent) => {
+    setLayoutY(event.nativeEvent.layout.y);
+    setLayoutHeight(event.nativeEvent.layout.height);
+    setMeasured(true);
+
+    props.onLayout(event);
+    const child = React.Children.only(props.children);
+    if (child.props.onLayout) {
+      child.props.onLayout(event);
+    }
+  };
+
+  const child = React.Children.only(props.children);
+
+  // TODO T68319535: remove this if NativeAnimated is rewritten for Fabric
+  const passthroughAnimatedPropExplicitValues =
+    isFabric && translateY != null
+      ? {
+          style: {transform: [{translateY: translateY}]},
+        }
+      : null;
+
+  return (
+    /* $FlowFixMe[prop-missing] passthroughAnimatedPropExplicitValues isn't properly
+       included in the Animated.View flow type. */
+    <AnimatedView
+      collapsable={false}
+      nativeID={props.nativeID}
+      onLayout={_onLayout}
+      ref={_setNativeRef}
+      style={[
+        child.props.style,
+        styles.header,
+        {transform: [{translateY: animatedTranslateY}]},
+      ]}
+      passthroughAnimatedPropExplicitValues={
+        passthroughAnimatedPropExplicitValues
+      }>
+      {React.cloneElement(child, {
+        style: styles.fill, // We transfer the child style to the wrapper.
+        onLayout: undefined, // we call this manually through our this._onLayout
+      })}
+    </AnimatedView>
+  );
+});
 
 const styles = StyleSheet.create({
   header: {
     zIndex: 10,
+    position: 'relative',
   },
   fill: {
     flex: 1,
   },
 });
 
-module.exports = ScrollViewStickyHeader;
+export default ScrollViewStickyHeaderWithForwardedRef;

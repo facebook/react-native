@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
 const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
@@ -20,10 +21,10 @@ const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
 polyfillGlobal('XMLHttpRequest', () => require('../Network/XMLHttpRequest'));
 polyfillGlobal('FormData', () => require('../Network/FormData'));
 
-polyfillGlobal('fetch', () => require('../Network/fetch').fetch); // flowlint-line untyped-import:off
-polyfillGlobal('Headers', () => require('../Network/fetch').Headers); // flowlint-line untyped-import:off
-polyfillGlobal('Request', () => require('../Network/fetch').Request); // flowlint-line untyped-import:off
-polyfillGlobal('Response', () => require('../Network/fetch').Response); // flowlint-line untyped-import:off
+polyfillGlobal('fetch', () => require('../Network/fetch').fetch);
+polyfillGlobal('Headers', () => require('../Network/fetch').Headers);
+polyfillGlobal('Request', () => require('../Network/fetch').Request);
+polyfillGlobal('Response', () => require('../Network/fetch').Response);
 polyfillGlobal('WebSocket', () => require('../WebSocket/WebSocket'));
 polyfillGlobal('Blob', () => require('../Blob/Blob'));
 polyfillGlobal('File', () => require('../Blob/File'));

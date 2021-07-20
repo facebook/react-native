@@ -10,10 +10,24 @@
 
 'use strict';
 
-import type {PropTypeShape} from '../../../CodegenSchema.js';
-import type {TypeMap} from '../utils.js';
-
 const {getValueFromTypes} = require('../utils.js');
+
+import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
+import type {TypeDeclarationMap} from '../utils.js';
+
+function getPropProperties(
+  propsTypeName: string,
+  types: TypeDeclarationMap,
+): $FlowFixMe {
+  const typeAlias = types[propsTypeName];
+  try {
+    return typeAlias.right.typeParameters.params[0].properties;
+  } catch (e) {
+    throw new Error(
+      `Failed to find type definition for "${propsTypeName}", please check that you have a valid codegen flow file`,
+    );
+  }
+}
 
 function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
   const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
@@ -32,6 +46,45 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
     );
   }
 
+  if (extractedTypeAnnotation.type === 'GenericTypeAnnotation') {
+    // Resolve the type alias if it's not defined inline
+    const objectType = getValueFromTypes(extractedTypeAnnotation, types);
+
+    if (objectType.id.name === '$ReadOnly') {
+      return {
+        type: 'ObjectTypeAnnotation',
+        properties: flattenProperties(
+          objectType.typeParameters.params[0].properties,
+          types,
+        )
+          .map(prop => buildPropSchema(prop, types))
+          .filter(Boolean),
+      };
+    }
+
+    if (objectType.id.name === '$ReadOnlyArray') {
+      // We need to go yet another level deeper to resolve
+      // types that may be defined in a type alias
+      const nestedObjectType = getValueFromTypes(
+        objectType.typeParameters.params[0],
+        types,
+      );
+
+      return {
+        type: 'ArrayTypeAnnotation',
+        elementType: {
+          type: 'ObjectTypeAnnotation',
+          properties: flattenProperties(
+            nestedObjectType.typeParameters.params[0].properties,
+            types,
+          )
+            .map(prop => buildPropSchema(prop, types))
+            .filter(Boolean),
+        },
+      };
+    }
+  }
+
   const type =
     extractedTypeAnnotation.type === 'GenericTypeAnnotation'
       ? extractedTypeAnnotation.id.name
@@ -40,18 +93,24 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
   switch (type) {
     case 'ImageSource':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
+    case 'ProcessedColorValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ColorPrimitive',
       };
     case 'PointValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'PointPrimitive',
+      };
+    case 'EdgeInsetsValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'EdgeInsetsPrimitive',
       };
     case 'Stringish':
       return {
@@ -60,6 +119,10 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
     case 'Int32':
       return {
         type: 'Int32TypeAnnotation',
+      };
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
       };
     case 'Float':
       return {
@@ -74,23 +137,48 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         type: 'StringTypeAnnotation',
       };
     case 'UnionTypeAnnotation':
-      if (defaultValue == null) {
-        throw new Error(`A default array enum value is required for "${name}"`);
+      typeAnnotation.types.reduce((lastType, currType) => {
+        if (lastType && currType.type !== lastType.type) {
+          throw new Error(`Mixed types are not supported (see "${name}")`);
+        }
+        return currType;
+      });
+
+      if (defaultValue === null) {
+        throw new Error(`A default enum value is required for "${name}"`);
       }
-      return {
-        type: 'StringEnumTypeAnnotation',
-        default: defaultValue,
-        options: extractedTypeAnnotation.types.map(option => ({
-          name: option.value,
-        })),
-      };
+
+      const unionType = typeAnnotation.types[0].type;
+      if (unionType === 'StringLiteralTypeAnnotation') {
+        return {
+          type: 'StringEnumTypeAnnotation',
+          default: (defaultValue: string),
+          options: typeAnnotation.types.map(option => option.value),
+        };
+      } else if (unionType === 'NumberLiteralTypeAnnotation') {
+        throw new Error(
+          `Arrays of int enums are not supported (see: "${name}")`,
+        );
+      } else {
+        throw new Error(
+          `Unsupported union type for "${name}", recieved "${unionType}"`,
+        );
+      }
     default:
       (type: empty);
-      throw new Error(`Unknown prop type for "${name}"`);
+      throw new Error(`Unknown prop type for "${name}": ${type}`);
   }
 }
 
-function getTypeAnnotation(name, typeAnnotation, defaultValue, types) {
+function getTypeAnnotation(
+  name,
+  annotation,
+  defaultValue,
+  withNullDefault,
+  types,
+) {
+  const typeAnnotation = getValueFromTypes(annotation, types);
+
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
     typeAnnotation.id.name === '$ReadOnlyArray'
@@ -106,6 +194,21 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue, types) {
     };
   }
 
+  if (
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === '$ReadOnly'
+  ) {
+    return {
+      type: 'ObjectTypeAnnotation',
+      properties: flattenProperties(
+        typeAnnotation.typeParameters.params[0].properties,
+        types,
+      )
+        .map(prop => buildPropSchema(prop, types))
+        .filter(Boolean),
+    };
+  }
+
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
       ? typeAnnotation.id.name
@@ -114,41 +217,56 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue, types) {
   switch (type) {
     case 'ImageSource':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
+    case 'ProcessedColorValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ColorPrimitive',
       };
     case 'ColorArrayValue':
       return {
         type: 'ArrayTypeAnnotation',
         elementType: {
-          type: 'NativePrimitiveTypeAnnotation',
+          type: 'ReservedPropTypeAnnotation',
           name: 'ColorPrimitive',
         },
       };
     case 'PointValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'PointPrimitive',
+      };
+    case 'EdgeInsetsValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'EdgeInsetsPrimitive',
       };
     case 'Int32':
       return {
         type: 'Int32TypeAnnotation',
         default: ((defaultValue ? defaultValue : 0): number),
       };
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
+        default: ((defaultValue ? defaultValue : 0): number),
+      };
     case 'Float':
       return {
         type: 'FloatTypeAnnotation',
-        default: ((defaultValue ? defaultValue : 0): number),
+        default: withNullDefault
+          ? (defaultValue: number | null)
+          : ((defaultValue ? defaultValue : 0): number),
       };
     case 'BooleanTypeAnnotation':
       return {
         type: 'BooleanTypeAnnotation',
-        default: ((defaultValue == null ? false : defaultValue): boolean),
+        default: withNullDefault
+          ? (defaultValue: boolean | null)
+          : ((defaultValue == null ? false : defaultValue): boolean),
       };
     case 'StringTypeAnnotation':
       if (typeof defaultValue !== 'undefined') {
@@ -167,21 +285,49 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue, types) {
       }
       throw new Error(`A default string (or null) is required for "${name}"`);
     case 'UnionTypeAnnotation':
-      if (defaultValue !== null) {
+      typeAnnotation.types.reduce((lastType, currType) => {
+        if (lastType && currType.type !== lastType.type) {
+          throw new Error(`Mixed types are not supported (see "${name}")`);
+        }
+        return currType;
+      });
+
+      if (defaultValue === null) {
+        throw new Error(`A default enum value is required for "${name}"`);
+      }
+
+      const unionType = typeAnnotation.types[0].type;
+      if (unionType === 'StringLiteralTypeAnnotation') {
         return {
           type: 'StringEnumTypeAnnotation',
           default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => ({name: option.value})),
+          options: typeAnnotation.types.map(option => option.value),
         };
+      } else if (unionType === 'NumberLiteralTypeAnnotation') {
+        return {
+          type: 'Int32EnumTypeAnnotation',
+          default: (defaultValue: number),
+          options: typeAnnotation.types.map(option => option.value),
+        };
+      } else {
+        throw new Error(
+          `Unsupported union type for "${name}", received "${unionType}"`,
+        );
       }
-      throw new Error(`A default enum value is required for "${name}"`);
+    case 'NumberTypeAnnotation':
+      throw new Error(
+        `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
+      );
     default:
       (type: empty);
-      throw new Error(`Unknown prop type for "${name}"`);
+      throw new Error(`Unknown prop type for "${name}": "${type}"`);
   }
 }
 
-function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
+function buildPropSchema(
+  property,
+  types: TypeDeclarationMap,
+): ?NamedShape<PropTypeAnnotation> {
   const name = property.key.name;
 
   const value = getValueFromTypes(property.value, types);
@@ -205,8 +351,8 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   }
   if (
     value.type === 'NullableTypeAnnotation' &&
-    (typeAnnotation.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.id.name === 'WithDefault')
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'WithDefault'
   ) {
     throw new Error(
       'WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it.',
@@ -231,6 +377,7 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   }
 
   let defaultValue = null;
+  let withNullDefault = false;
   if (
     type === 'GenericTypeAnnotation' &&
     typeAnnotation.id.name === 'WithDefault'
@@ -251,13 +398,8 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
         : typeAnnotation.type;
 
     if (defaultValueType === 'NullLiteralTypeAnnotation') {
-      if (type !== 'StringTypeAnnotation' && type !== 'Stringish') {
-        throw new Error(
-          `WithDefault can only provide a 'null' default value for string types (see ${name})`,
-        );
-      }
-
       defaultValue = null;
+      withNullDefault = true;
     }
   }
 
@@ -268,24 +410,66 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
       name,
       typeAnnotation,
       defaultValue,
+      withNullDefault,
       types,
     ),
   };
 }
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type PropAST = Object;
+
+function verifyPropNotAlreadyDefined(
+  props: $ReadOnlyArray<PropAST>,
+  needleProp: PropAST,
+) {
+  const propName = needleProp.key.name;
+  const foundProp = props.some(prop => prop.key.name === propName);
+  if (foundProp) {
+    throw new Error(`A prop was already defined with the name ${propName}`);
+  }
+}
+
+function flattenProperties(
+  typeDefinition: $ReadOnlyArray<PropAST>,
+  types: TypeDeclarationMap,
+) {
+  return typeDefinition
+    .map(property => {
+      if (property.type === 'ObjectTypeProperty') {
+        return property;
+      } else if (property.type === 'ObjectTypeSpreadProperty') {
+        return flattenProperties(
+          getPropProperties(property.argument.id.name, types),
+          types,
+        );
+      }
+    })
+    .reduce((acc, item) => {
+      if (Array.isArray(item)) {
+        item.forEach(prop => {
+          verifyPropNotAlreadyDefined(acc, prop);
+        });
+        return acc.concat(item);
+      } else {
+        verifyPropNotAlreadyDefined(acc, item);
+        acc.push(item);
+        return acc;
+      }
+    }, [])
+    .filter(Boolean);
+}
 
 function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
-  types: TypeMap,
-): $ReadOnlyArray<PropTypeShape> {
-  return typeDefinition
-    .filter(property => property.type === 'ObjectTypeProperty')
+  types: TypeDeclarationMap,
+): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
+  return flattenProperties(typeDefinition, types)
     .map(property => buildPropSchema(property, types))
     .filter(Boolean);
 }
 
 module.exports = {
   getProps,
+  getPropProperties,
 };

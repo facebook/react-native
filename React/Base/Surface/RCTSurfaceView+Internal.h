@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTSurfaceView (Internal)
 
-@property (nonatomic, strong) RCTSurfaceRootView *rootView;
+@property (nonatomic, nullable, strong) RCTSurfaceRootView *rootView;
 @property (nonatomic, assign) RCTSurfaceStage stage;
 
 @end

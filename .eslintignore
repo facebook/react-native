@@ -1,11 +1,10 @@
-# node_modules ignored by default
-
-**/staticBundle.js
 **/main.js
-Libraries/vendor/**/*
-Libraries/Renderer/*
-packages/*/node_modules
-pr-inactivity-bookmarklet.js
-question-bookmarklet.js
-flow/
+**/staticBundle.js
 bots/node_modules
+docs/generatedComponentApiDocs.js
+flow/
+Libraries/Renderer/*
+Libraries/vendor/**/*
+node_modules/
+packages/*/node_modules
+packages/react-native-codegen/lib

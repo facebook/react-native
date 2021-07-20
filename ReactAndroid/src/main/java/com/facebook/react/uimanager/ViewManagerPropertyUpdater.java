@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react.uimanager;
 
@@ -34,6 +36,15 @@ public class ViewManagerPropertyUpdater {
     ViewManagersPropertyCache.clear();
     VIEW_MANAGER_SETTER_MAP.clear();
     SHADOW_NODE_SETTER_MAP.clear();
+  }
+
+  public static <T extends ViewManagerDelegate<V>, V extends View> void updateProps(
+      T delegate, V v, ReactStylesDiffMap props) {
+    Iterator<Map.Entry<String, Object>> iterator = props.mBackingMap.getEntryIterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, Object> entry = iterator.next();
+      delegate.setProperty(v, entry.getKey(), entry.getValue());
+    }
   }
 
   public static <T extends ViewManager, V extends View> void updateProps(

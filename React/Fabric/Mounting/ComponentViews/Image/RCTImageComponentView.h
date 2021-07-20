@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,14 +6,18 @@
  */
 
 #import <React/RCTImageResponseDelegate.h>
-#import "RCTViewComponentView.h"
+#import <React/RCTUIImageViewAnimated.h>
+#import <React/RCTViewComponentView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
  * UIView class for root <Image> component.
  */
-@interface RCTImageComponentView : RCTViewComponentView <RCTImageResponseDelegate>
+@interface RCTImageComponentView : RCTViewComponentView <RCTImageResponseDelegate> {
+ @protected
+  RCTUIImageViewAnimated *_imageView;
+}
 
 @end
 
