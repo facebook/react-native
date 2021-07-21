@@ -82,7 +82,7 @@ const AndroidTextInputViewConfig = {
     keyboardType: true,
     multiline: true,
     color: {process: require('../../StyleSheet/processColor')},
-    autoCompleteType: true,
+    autoComplete: true,
     numberOfLines: true,
     letterSpacing: true,
     returnKeyLabel: true,

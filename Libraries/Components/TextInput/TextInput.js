@@ -331,7 +331,7 @@ type AndroidProps = $ReadOnly<{|
    *
    * @platform android
    */
-  autoCompleteType?: ?(
+  autoComplete?: ?(
     | 'cc-csc'
     | 'cc-exp'
     | 'cc-exp-month'
