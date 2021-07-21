@@ -10,12 +10,12 @@
 
 'use strict';
 
-describe('Object (ES7)', () => {
+describe('Object (ES8)', () => {
   beforeEach(() => {
     delete Object.entries;
     delete Object.values;
     jest.resetModules();
-    require('../Object.es7');
+    require('../Object.es8');
   });
 
   describe('Object.entries', () => {
