@@ -1895,7 +1895,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
 type CellRendererProps = {
   CellRendererComponent?: ?React.ComponentType<any>,
-  ItemSeparatorComponent: ?React.ComponentType<*>,
+  ItemSeparatorComponent: ?React.ComponentType<
+    any | {highlighted: boolean, leadingItem: ?Item},
+  >,
   cellKey: string,
   fillRateHelper: FillRateHelper,
   horizontal: ?boolean,

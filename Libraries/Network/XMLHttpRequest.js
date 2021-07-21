@@ -10,6 +10,8 @@
 
 'use strict';
 
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 const BlobManager = require('../Blob/BlobManager');
@@ -125,7 +127,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
   _requestId: ?number;
-  _subscriptions: Array<*>;
+  _subscriptions: Array<EventSubscription>;
 
   _aborted: boolean = false;
   _cachedResponse: Response;

@@ -107,7 +107,7 @@ type ChangeSizeState = {|
   width: number,
 |};
 
-class ChangeImageSize extends React.Component<*, ChangeSizeState> {
+class ChangeImageSize extends React.Component<mixed, ChangeSizeState> {
   state: ChangeSizeState = {
     width: 50,
   };
@@ -143,7 +143,7 @@ class ChangeImageSize extends React.Component<*, ChangeSizeState> {
   }
 }
 
-class ChangeViewSize extends React.Component<*, ChangeSizeState> {
+class ChangeViewSize extends React.Component<mixed, ChangeSizeState> {
   state: ChangeSizeState = {
     width: 50,
   };
@@ -175,7 +175,7 @@ class ChangeViewSize extends React.Component<*, ChangeSizeState> {
   }
 }
 
-class ChangeInnerViewSize extends React.Component<*, ChangeSizeState> {
+class ChangeInnerViewSize extends React.Component<mixed, ChangeSizeState> {
   state: ChangeSizeState = {
     width: 50,
   };
