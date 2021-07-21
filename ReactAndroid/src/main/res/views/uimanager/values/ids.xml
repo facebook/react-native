@@ -27,4 +27,7 @@
   <!--tag is used to store accessibilityValue tag -->
   <item type="id" name="accessibility_value"/>
 
+  <!--tag is used to store accessibilityLinks tag -->
+  <item type="id" name="accessibility_links"/>
 </resources>
+

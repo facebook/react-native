@@ -14,11 +14,13 @@ import {type HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
 import {type ProcessedColorValue} from '../StyleSheet/processColor';
 import {type TextProps} from './TextProps';
+import {type PressEvent} from '../Types/CoreEventTypes';
 
 type NativeTextProps = $ReadOnly<{
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,
+  onClick?: ?(event: PressEvent) => void,
 }>;
 
 export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComponentClass(
