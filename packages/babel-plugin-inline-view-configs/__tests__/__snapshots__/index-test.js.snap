@@ -141,7 +141,7 @@ exports[`Babel plugin inline view configs fails on inline config for CommandsExp
   17 | }
   18 | 
 > 19 | export const Foo = codegenNativeCommands<NativeCommands>();
-     | ^
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   20 | 
   21 | export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
   22 | "
@@ -152,7 +152,7 @@ exports[`Babel plugin inline view configs fails on inline config for CommandsExp
   19 | const Commands = 4;
   20 | 
 > 21 | export {Commands};
-     | ^
+     | ^^^^^^^^^^^^^^^^^^
   22 | 
   23 | export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
   24 | "
@@ -163,7 +163,7 @@ exports[`Babel plugin inline view configs fails on inline config for OtherComman
   17 | }
   18 | 
 > 19 | export const Commands = 4;
-     | ^
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^
   20 | 
   21 | export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
   22 | "

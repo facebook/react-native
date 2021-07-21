@@ -605,13 +605,11 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
   return inv;
 }
 
-ObjCTurboModule::ObjCTurboModule(
-    const std::string &name,
-    id<RCTTurboModule> instance,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    std::shared_ptr<CallInvoker> nativeInvoker,
-    id<RCTTurboModulePerformanceLogger> perfLogger)
-    : TurboModule(name, jsInvoker), instance_(instance), nativeInvoker_(nativeInvoker), performanceLogger_(perfLogger)
+ObjCTurboModule::ObjCTurboModule(const InitParams &params)
+    : TurboModule(params.moduleName, params.jsInvoker),
+      instance_(params.instance),
+      nativeInvoker_(params.nativeInvoker),
+      performanceLogger_(params.perfLogger)
 {
 }
 

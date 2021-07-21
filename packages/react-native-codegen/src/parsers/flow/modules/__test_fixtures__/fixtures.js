@@ -132,7 +132,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
-const NATIVE_MODULE_WITH_WITH_ALIASES = `
+const NATIVE_MODULE_WITH_ALIASES = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -159,14 +159,14 @@ export interface Spec extends TurboModule {
   // Exported methods.
   +getNumber: Num2;
   +getVoid: () => Void;
-  +getArray: (a : Array<A>) => {| a: B |};
+  +getArray: (a: Array<A>) => {| a: B |};
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
-const NATIVE_MODULE_WITH_WITH_FLOAT_AND_INT32 = `
+const NATIVE_MODULE_WITH_FLOAT_AND_INT32 = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -208,7 +208,31 @@ import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getObject: (o : Object) => Object,
+  +getObject: (o: Object) => Object,
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_ROOT_TAG = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {RootTag, TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +getRootTag: (rootTag: RootTag) => RootTag,
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -265,7 +289,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
-const NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEIFNED_IN_FILE_AS_PROPERTY = `
+const NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -431,14 +455,15 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 `;
 
 module.exports = {
-  NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEIFNED_IN_FILE_AS_PROPERTY,
+  NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY,
   NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE,
-  NATIVE_MODULE_WITH_WITH_FLOAT_AND_INT32,
-  NATIVE_MODULE_WITH_WITH_ALIASES,
+  NATIVE_MODULE_WITH_FLOAT_AND_INT32,
+  NATIVE_MODULE_WITH_ALIASES,
   NATIVE_MODULE_WITH_PROMISE,
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS,
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY,
   NATIVE_MODULE_WITH_SIMPLE_OBJECT,
+  NATIVE_MODULE_WITH_ROOT_TAG,
   NATIVE_MODULE_WITH_NULLABLE_PARAM,
   NATIVE_MODULE_WITH_BASIC_ARRAY,
   NATIVE_MODULE_WITH_COMPLEX_ARRAY,

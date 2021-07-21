@@ -58,7 +58,6 @@ info ""
 read -n 1
 adb shell am start -n com.facebook.react.uiapp/.RNTesterActivity
 
-
 success "Installing CocoaPods dependencies"
 rm -rf RNTester/Pods
 (cd RNTester && pod install)

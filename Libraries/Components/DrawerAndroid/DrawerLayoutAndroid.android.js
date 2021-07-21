@@ -25,8 +25,7 @@ import AndroidDrawerLayoutNativeComponent, {
 
 const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {DirectEventHandler} from '../../Types/CodegenTypes';
 import type {
   MeasureOnSuccessCallback,

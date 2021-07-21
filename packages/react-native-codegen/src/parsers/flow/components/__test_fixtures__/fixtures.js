@@ -837,6 +837,7 @@ const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float} from 'CodegenTypes';
+import type {RootTag} from 'RCTExport';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
@@ -849,6 +850,7 @@ export type ModuleProps = $ReadOnly<{|
 type NativeType = HostComponent<ModuleProps>;
 
 interface NativeCommands {
+  +handleRootTag: (viewRef: React.ElementRef<NativeType>, rootTag: RootTag) => void;
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
   +scrollTo: (
     viewRef: React.ElementRef<NativeType>,
@@ -860,7 +862,7 @@ interface NativeCommands {
 }
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['hotspotUpdate', 'scrollTo'],
+  supportedCommands: ['handleRootTag', 'hotspotUpdate', 'scrollTo'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(

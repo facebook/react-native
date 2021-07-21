@@ -11,12 +11,12 @@
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 
+#include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/StateData.h>
 #include <react/mounting/ShadowTree.h>
 #include <react/mounting/ShadowTreeDelegate.h>
 #include <react/mounting/ShadowTreeRegistry.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/UIManagerDelegate.h>
 
 namespace facebook {

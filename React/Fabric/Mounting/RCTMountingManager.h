@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<RCTMountingManagerDelegate> delegate;
 @property (nonatomic, strong) RCTComponentViewRegistry *componentViewRegistry;
 
+@property (atomic, assign) BOOL useModernDifferentiatorMode;
+
 /**
  * Schedule a mounting transaction to be performed on the main thread.
  * Can be called from any thread.

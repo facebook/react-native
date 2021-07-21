@@ -40,7 +40,7 @@ class SliderShadowNode final : public ConcreteViewShadowNode<
 
   static SliderState initialStateData(
       ShadowNodeFragment const &fragment,
-      SurfaceId const surfaceId,
+      ShadowNodeFamilyFragment const &familyFragment,
       ComponentDescriptor const &componentDescriptor) {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};
     return {imageSource,

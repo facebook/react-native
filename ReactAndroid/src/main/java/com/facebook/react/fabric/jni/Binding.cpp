@@ -15,15 +15,15 @@
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/componentregistry/ComponentDescriptorFactory.h>
 #include <react/components/scrollview/ScrollViewProps.h>
 #include <react/core/EventBeat.h>
 #include <react/core/EventEmitter.h>
 #include <react/core/conversions.h>
 #include <react/debug/SystraceSection.h>
-#include <react/uimanager/ComponentDescriptorFactory.h>
-#include <react/uimanager/Scheduler.h>
-#include <react/uimanager/SchedulerDelegate.h>
-#include <react/uimanager/SchedulerToolbox.h>
+#include <react/scheduler/Scheduler.h>
+#include <react/scheduler/SchedulerDelegate.h>
+#include <react/scheduler/SchedulerToolbox.h>
 #include <react/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 

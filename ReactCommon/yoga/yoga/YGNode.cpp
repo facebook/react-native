@@ -29,7 +29,7 @@ YGNode::YGNode(YGNode&& node) {
   config_ = node.config_;
   resolvedDimensions_ = node.resolvedDimensions_;
   for (auto c : children_) {
-    c->setOwner(c);
+    c->setOwner(this);
   }
 }
 

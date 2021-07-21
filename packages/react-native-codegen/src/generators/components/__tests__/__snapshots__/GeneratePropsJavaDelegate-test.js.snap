@@ -266,6 +266,9 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
 
   public void receiveCommand(CommandNativeComponentManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
     switch (commandName) {
+      case \\"handleRootTag\\":
+        viewManager.handleRootTag(view, args.getDouble(0));
+        break;
       case \\"hotspotUpdate\\":
         viewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
         break;

@@ -12,10 +12,8 @@
 
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
-import type {
-  PointValue,
-  ColorValue,
-} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
+import type {PointValue} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../../../../Libraries/StyleSheet/StyleSheet';
 import type {
   Int32,
   Float,

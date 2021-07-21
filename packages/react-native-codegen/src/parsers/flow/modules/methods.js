@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  MethodTypeShape,
+  NativeModuleMethodTypeShape,
   FunctionTypeAnnotationParam,
   FunctionTypeAnnotationReturn,
   FunctionTypeAnnotationParamTypeAnnotation,
@@ -67,6 +67,11 @@ function getElementTypeForArrayOrObject(
       : typeAnnotation.type;
 
   switch (type) {
+    case 'RootTag':
+      return {
+        type: 'ReservedFunctionValueTypeAnnotation',
+        name: 'RootTag',
+      };
     case 'Array':
     case '$ReadOnlyArray':
       if (
@@ -168,6 +173,15 @@ function getTypeAnnotationForParam(
       : typeAnnotation.type;
 
   switch (type) {
+    case 'RootTag':
+      return {
+        name: paramName,
+        nullable,
+        typeAnnotation: {
+          type: 'ReservedFunctionValueTypeAnnotation',
+          name: 'RootTag',
+        },
+      };
     case 'Array':
     case '$ReadOnlyArray':
       if (
@@ -300,6 +314,12 @@ function getReturnTypeAnnotation(
       : typeAnnotation.type;
 
   switch (type) {
+    case 'RootTag':
+      return {
+        nullable,
+        type: 'ReservedFunctionValueTypeAnnotation',
+        name: 'RootTag',
+      };
     case 'Promise':
       if (
         typeAnnotation.typeParameters &&
@@ -401,7 +421,7 @@ function getReturnTypeAnnotation(
 function buildMethodSchema(
   property: MethodAST,
   types: TypeMap,
-): MethodTypeShape {
+): NativeModuleMethodTypeShape {
   const name: string = property.key.name;
   const value = getValueFromTypes(property.value, types);
   if (value.type !== 'FunctionTypeAnnotation') {
@@ -432,7 +452,7 @@ function buildMethodSchema(
 function getMethods(
   typeDefinition: $ReadOnlyArray<MethodAST>,
   types: TypeMap,
-): $ReadOnlyArray<MethodTypeShape> {
+): $ReadOnlyArray<NativeModuleMethodTypeShape> {
   return typeDefinition
     .filter(property => property.type === 'ObjectTypeProperty')
     .map(property => buildMethodSchema(property, types))

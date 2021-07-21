@@ -71,6 +71,9 @@ public abstract class DevSupportManagerBase
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
+  private static final String FLIPPER_DEBUGGER_URL =
+      "flipper://null/Hermesdebuggerrn?device=React%20Native";
+  private static final String FLIPPER_DEVTOOLS_URL = "flipper://null/React?device=React%20Native";
   private boolean mIsSamplingProfilerEnabled = false;
 
   private enum ErrorType {
@@ -432,17 +435,53 @@ public abstract class DevSupportManagerBase
             handleReloadJS();
           }
         });
-    options.put(
-        mDevSettings.isRemoteJSDebugEnabled()
-            ? mApplicationContext.getString(R.string.catalyst_debug_stop)
-            : mApplicationContext.getString(R.string.catalyst_debug),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            mDevSettings.setRemoteJSDebugEnabled(!mDevSettings.isRemoteJSDebugEnabled());
-            handleReloadJS();
-          }
-        });
+    if (mDevSettings.isDeviceDebugEnabled()) {
+      // For on-device debugging we link out to Flipper.
+      // Since we're assuming Flipper is available, also include the DevTools.
+
+      // Reset the old debugger setting so no one gets stuck.
+      // TODO: Remove in a few weeks.
+      if (mDevSettings.isRemoteJSDebugEnabled()) {
+        mDevSettings.setRemoteJSDebugEnabled(false);
+        handleReloadJS();
+      }
+      options.put(
+          mApplicationContext.getString(R.string.catalyst_debug_open),
+          new DevOptionHandler() {
+            @Override
+            public void onOptionSelected() {
+              mDevServerHelper.openUrl(
+                  mCurrentContext,
+                  FLIPPER_DEBUGGER_URL,
+                  mApplicationContext.getString(R.string.catalyst_open_flipper_error));
+            }
+          });
+      options.put(
+          mApplicationContext.getString(R.string.catalyst_devtools_open),
+          new DevOptionHandler() {
+            @Override
+            public void onOptionSelected() {
+              mDevServerHelper.openUrl(
+                  mCurrentContext,
+                  FLIPPER_DEVTOOLS_URL,
+                  mApplicationContext.getString(R.string.catalyst_open_flipper_error));
+            }
+          });
+    } else {
+      // For remote debugging, we open up Chrome running the app in a web worker.
+      // Note that this requires async communication, which will not work for Turbo Modules.
+      options.put(
+          mDevSettings.isRemoteJSDebugEnabled()
+              ? mApplicationContext.getString(R.string.catalyst_debug_stop)
+              : mApplicationContext.getString(R.string.catalyst_debug),
+          new DevOptionHandler() {
+            @Override
+            public void onOptionSelected() {
+              mDevSettings.setRemoteJSDebugEnabled(!mDevSettings.isRemoteJSDebugEnabled());
+              handleReloadJS();
+            }
+          });
+    }
     options.put(
         mApplicationContext.getString(R.string.catalyst_change_bundle_location),
         new DevOptionHandler() {

@@ -23,6 +23,7 @@ exports[`<Modal /> should render as <RCTModalHostView> when not mocked 1`] = `
   }
 >
   <View
+    collapsable={false}
     style={
       Array [
         Object {

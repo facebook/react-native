@@ -7,9 +7,8 @@
 
 #include "ComponentDescriptorRegistry.h"
 
+#include <react/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/core/ShadowNodeFragment.h>
-#include <react/uimanager/ComponentDescriptorProviderRegistry.h>
-#include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {

@@ -50,6 +50,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
   private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
 
+  private static final int UNSET_CONTENT_OFFSET = -1;
+
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
@@ -76,6 +78,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mSnapToEnd = true;
   private ReactViewBackgroundManager mReactBackgroundManager;
   private boolean mPagedArrowScrolling = false;
+  private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
+  private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private @Nullable StateWrapper mStateWrapper;
 
   private final Rect mTempRect = new Rect();
@@ -224,7 +228,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
     // Call with the present values in order to re-layout if necessary
-    reactScrollTo(getScrollX(), getScrollY());
+    // If a "pending" value has been set, we restore that value.
+    // That value gets cleared by reactScrollTo.
+    int scrollToX =
+        pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
+    int scrollToY =
+        pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
+    reactScrollTo(scrollToX, scrollToY);
   }
 
   /**
@@ -906,6 +916,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   public void reactSmoothScrollTo(int x, int y) {
     smoothScrollTo(x, y);
     updateStateOnScroll(x, y);
+    setPendingContentOffsets(x, y);
   }
 
   /**
@@ -917,6 +928,25 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   public void reactScrollTo(int x, int y) {
     scrollTo(x, y);
     updateStateOnScroll(x, y);
+    setPendingContentOffsets(x, y);
+  }
+
+  /**
+   * If contentOffset is set before the View has been laid out, store the values and set them when
+   * `onLayout` is called.
+   *
+   * @param x
+   * @param y
+   */
+  private void setPendingContentOffsets(int x, int y) {
+    View child = getChildAt(0);
+    if (child != null && child.getWidth() != 0 && child.getHeight() != 0) {
+      pendingContentOffsetX = UNSET_CONTENT_OFFSET;
+      pendingContentOffsetY = UNSET_CONTENT_OFFSET;
+    } else {
+      pendingContentOffsetX = x;
+      pendingContentOffsetY = y;
+    }
   }
 
   public void updateState(@Nullable StateWrapper stateWrapper) {

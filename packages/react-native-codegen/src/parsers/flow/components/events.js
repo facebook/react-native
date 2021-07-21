@@ -12,7 +12,7 @@
 
 import type {
   EventTypeShape,
-  ObjectPropertyType,
+  EventObjectPropertyType,
 } from '../../../CodegenSchema.js';
 
 function getPropertyType(name, optional, typeAnnotation) {
@@ -126,7 +126,7 @@ function findEventArgumentsAndType(
   }
 }
 
-function buildPropertiesForEvent(property): ObjectPropertyType {
+function buildPropertiesForEvent(property): EventObjectPropertyType {
   const name = property.key.name;
   const optional =
     property.value.type === 'NullableTypeAnnotation' || property.optional;

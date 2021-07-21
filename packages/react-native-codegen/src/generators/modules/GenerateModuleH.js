@@ -49,12 +49,20 @@ namespace react {
 `;
 
 function translatePrimitiveJSTypeToCpp(
-  type:
+  typeAnnotation:
     | FunctionTypeAnnotationParamTypeAnnotation
     | FunctionTypeAnnotationReturn,
-  error: string,
+  createErrorMessage: (typeName: string) => string,
 ) {
-  switch (type.type) {
+  switch (typeAnnotation.type) {
+    case 'ReservedFunctionValueTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'RootTag':
+          return 'double';
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(createErrorMessage(typeAnnotation.name));
+      }
     case 'VoidTypeAnnotation':
       return 'void';
     case 'StringTypeAnnotation':
@@ -75,11 +83,13 @@ function translatePrimitiveJSTypeToCpp(
       return 'jsi::Function';
     case 'GenericPromiseTypeAnnotation':
       return 'jsi::Value';
-
     default:
-      throw new Error(error);
+      // TODO (T65847278): Figure out why this does not work.
+      // (typeAnnotation.type: empty);
+      throw new Error(createErrorMessage(typeAnnotation.type));
   }
 }
+
 const propertyTemplate =
   'virtual ::_RETURN_VALUE_:: ::_PROPERTY_NAME_::(jsi::Runtime &rt::_ARGS_::) = 0;';
 
@@ -110,7 +120,8 @@ module.exports = {
               .map(param => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(
                   param.typeAnnotation,
-                  `Unspopported type for param "${param.name}" in ${prop.name}. Found: ${param.typeAnnotation.type}`,
+                  typeName =>
+                    `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
                 );
                 const isObject = translatedParam.startsWith('jsi::');
                 return (
@@ -126,7 +137,8 @@ module.exports = {
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToCpp(
                   prop.typeAnnotation.returnTypeAnnotation,
-                  `Unspopported return type for ${prop.name}. Found: ${prop.typeAnnotation.returnTypeAnnotation.type}`,
+                  typeName =>
+                    `Unsupported return type for ${prop.name}. Found: ${typeName}`,
                 ),
               )
               .replace(

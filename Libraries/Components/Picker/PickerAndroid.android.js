@@ -21,9 +21,8 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import invariant from 'invariant';
 import processColor from '../../StyleSheet/processColor';
 
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue, TextStyleProp} from '../../StyleSheet/StyleSheet';
 
 type PickerItemSelectSyntheticEvent = SyntheticEvent<
   $ReadOnly<{|

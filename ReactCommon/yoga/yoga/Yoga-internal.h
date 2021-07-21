@@ -54,10 +54,10 @@ struct YGCachedMeasurement {
   float computedHeight;
 
   YGCachedMeasurement()
-      : availableWidth(0),
-        availableHeight(0),
-        widthMeasureMode((YGMeasureMode) -1),
-        heightMeasureMode((YGMeasureMode) -1),
+      : availableWidth(-1),
+        availableHeight(-1),
+        widthMeasureMode(YGMeasureModeUndefined),
+        heightMeasureMode(YGMeasureModeUndefined),
         computedWidth(-1),
         computedHeight(-1) {}
 

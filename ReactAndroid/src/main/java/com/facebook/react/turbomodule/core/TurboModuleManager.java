@@ -10,6 +10,7 @@ package com.facebook.react.turbomodule.core;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -17,6 +18,7 @@ import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
@@ -30,7 +32,7 @@ import java.util.*;
  */
 public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private static volatile boolean sIsSoLibraryLoaded;
-  private final List<String> mEagerInitModuleNames;
+  private final List<String> mEagerInitModuleNames = new ArrayList<>();
   private final TurboModuleProvider mJavaModuleProvider;
   private final TurboModuleProvider mCxxModuleProvider;
 
@@ -62,8 +64,11 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             delegate);
     installJSIBindings();
 
-    mEagerInitModuleNames =
-        delegate == null ? new ArrayList<String>() : delegate.getEagerInitModuleNames();
+    if (delegate != null) {
+      synchronized (delegate) {
+        mEagerInitModuleNames.addAll(delegate.getEagerInitModuleNames());
+      }
+    }
 
     mJavaModuleProvider =
         new TurboModuleProvider() {
@@ -73,7 +78,10 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
               return null;
             }
 
-            return delegate.getModule(moduleName);
+            /** TODO(T65532092): Should TurboModuleManagerDelegate be thread-safe? */
+            synchronized (delegate) {
+              return delegate.getModule(moduleName);
+            }
           }
         };
 
@@ -85,7 +93,13 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
               return null;
             }
 
-            CxxModuleWrapper nativeModule = delegate.getLegacyCxxModule(moduleName);
+            CxxModuleWrapper nativeModule;
+
+            /** TODO(T65532092): Should TurboModuleManagerDelegate be thread-safe? */
+            synchronized (delegate) {
+              nativeModule = delegate.getLegacyCxxModule(moduleName);
+            }
+
             if (nativeModule != null) {
               // TurboModuleManagerDelegate must always return TurboModules
               Assertions.assertCondition(
@@ -114,6 +128,12 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         /*
          * Always return null after cleanup has started, so that getModule(moduleName) returns null.
          */
+
+        FLog.e(
+            ReactConstants.TAG,
+            "TurboModuleManager.getOrMaybeCreateTurboModuleHolder: Tried to require TurboModule "
+                + moduleName
+                + " after cleanup initiated");
         return null;
       }
 
@@ -174,6 +194,10 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
          * Therefore, we should initialize on the TurboModule now.
          */
         ((NativeModule) turboModule).initialize();
+      } else {
+        FLog.e(
+            ReactConstants.TAG,
+            "TurboModuleManager.getModule: TurboModule " + moduleName + " not found in delegate");
       }
 
       synchronized (moduleHolder) {

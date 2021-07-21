@@ -11,9 +11,9 @@
 
 #include <folly/dynamic.h>
 
+#include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ShadowNode.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/UIManagerDelegate.h>
 
 namespace facebook {

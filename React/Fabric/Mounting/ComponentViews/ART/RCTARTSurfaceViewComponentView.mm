@@ -6,7 +6,7 @@
  */
 
 #import "RCTARTSurfaceViewComponentView.h"
-#import <react/uimanager/ComponentDescriptorProvider.h>
+#import <react/componentregistry/ComponentDescriptorProvider.h>
 #import "RCTARTSurfaceViewComponentDescriptor.h"
 
 #import "FBRCTFabricComponentsPlugins.h"

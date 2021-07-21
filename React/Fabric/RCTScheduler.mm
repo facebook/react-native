@@ -7,10 +7,10 @@
 
 #import "RCTScheduler.h"
 
+#import <react/componentregistry/ComponentDescriptorFactory.h>
 #import <react/debug/SystraceSection.h>
-#import <react/uimanager/ComponentDescriptorFactory.h>
-#import <react/uimanager/Scheduler.h>
-#import <react/uimanager/SchedulerDelegate.h>
+#import <react/scheduler/Scheduler.h>
+#import <react/scheduler/SchedulerDelegate.h>
 
 #import <React/RCTFollyConvert.h>
 

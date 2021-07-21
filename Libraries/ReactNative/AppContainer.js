@@ -14,7 +14,7 @@ const EmitterSubscription = require('../vendor/emitter/EmitterSubscription');
 const PropTypes = require('prop-types');
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 const React = require('react');
-const RootTagContext = require('./RootTagContext');
+import {RootTagContext, createRootTag} from './RootTag';
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
@@ -128,7 +128,7 @@ class AppContainer extends React.Component<Props, State> {
       );
     }
     return (
-      <RootTagContext.Provider value={this.props.rootTag}>
+      <RootTagContext.Provider value={createRootTag(this.props.rootTag)}>
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
           {this.state.inspector}

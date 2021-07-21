@@ -112,8 +112,12 @@ void TurboModuleManager::installJSIBindings() {
     auto moduleInstance = getJavaModule(javaPart.get(), name);
 
     if (moduleInstance) {
-      auto turboModule = delegate->cthis()->getTurboModule(
-          name, moduleInstance, jsCallInvoker, nativeCallInvoker);
+      JavaTurboModule::InitParams params = {.moduleName = name,
+                                            .instance = moduleInstance,
+                                            .jsInvoker = jsCallInvoker,
+                                            .nativeInvoker = nativeCallInvoker};
+
+      auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
       return turboModule;
     }

@@ -140,7 +140,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   @Override
   public Object updateState(
       ReactModalHostView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    // TODO T55794595: Add support for updating state with null stateWrapper
     Point modalSize = ModalHostHelper.getModalHostSize(view.getContext());
     view.updateState(stateWrapper, modalSize.x, modalSize.y);
     return null;

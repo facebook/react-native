@@ -15,7 +15,7 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
 
 import RCTProgressViewNativeComponent from './RCTProgressViewNativeComponent';
 import type {ImageSource} from '../../Image/ImageSource';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 type Props = $ReadOnly<{|

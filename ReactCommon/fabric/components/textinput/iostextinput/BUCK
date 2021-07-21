@@ -68,6 +68,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("fabric/components/view:view"),
         react_native_xplat_target("fabric/components/image:image"),
         react_native_xplat_target("fabric/uimanager:uimanager"),
+        react_native_xplat_target("fabric/componentregistry:componentregistry"),
         react_native_xplat_target("fabric/imagemanager:imagemanager"),
     ],
 )

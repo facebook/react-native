@@ -98,6 +98,9 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArray(jsi:
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getObject(rt, args[0].getObject(rt));
 }
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getRootTag(rt, args[0].getNumber());
+}
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValue(rt, args[0].getNumber(), args[1].getString(rt), args[2].getObject(rt));
 }
@@ -119,6 +122,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
   methodMap_[\\"getString\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getString};
   methodMap_[\\"getArray\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArray};
   methodMap_[\\"getObject\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getObject};
+  methodMap_[\\"getRootTag\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getRootTag};
   methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue};
   methodMap_[\\"getValueWithCallback\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithCallback};
   methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithPromise};

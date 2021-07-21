@@ -11,7 +11,7 @@
 'use strict';
 
 import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ProcessedColorValue} from '../../StyleSheet/processColor'; // TODO(macOS GH#774)
 import type {ViewProps} from '../View/ViewPropTypes';
 import * as React from 'react';

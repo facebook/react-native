@@ -21,7 +21,7 @@ const {
 import type {
   ComponentShape,
   EventTypeShape,
-  ObjectPropertyType,
+  EventObjectPropertyType,
   SchemaType,
 } from '../../CodegenSchema';
 
@@ -97,7 +97,7 @@ function indent(nice: string, spaces: number) {
 
 function getNativeTypeFromAnnotation(
   componentName: string,
-  eventProperty: ObjectPropertyType,
+  eventProperty: EventObjectPropertyType,
   nameParts: $ReadOnlyArray<string>,
 ): string {
   const type = eventProperty.type;
@@ -146,7 +146,7 @@ function generateStruct(
   structs: StructsMap,
   componentName: string,
   nameParts: $ReadOnlyArray<string>,
-  properties: $ReadOnlyArray<ObjectPropertyType>,
+  properties: $ReadOnlyArray<EventObjectPropertyType>,
 ): void {
   const structNameParts = nameParts;
   const structName = generateEventStructName(structNameParts);
@@ -161,7 +161,7 @@ function generateStruct(
     })
     .join('\n' + '  ');
 
-  properties.forEach((property: ObjectPropertyType) => {
+  properties.forEach((property: EventObjectPropertyType) => {
     const name = property.name;
     switch (property.type) {
       case 'BooleanTypeAnnotation':

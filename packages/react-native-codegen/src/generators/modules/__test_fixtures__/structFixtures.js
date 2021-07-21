@@ -99,6 +99,14 @@ const SIMPLE_STRUCT: $ReadOnlyArray<
             ],
           },
         },
+        {
+          optional: false,
+          name: 'k',
+          typeAnnotation: {
+            type: 'ReservedFunctionValueTypeAnnotation',
+            name: 'RootTag',
+          },
+        },
       ],
     },
   },
@@ -190,6 +198,14 @@ const SIMPLE_CONSTANTS: $ReadOnlyArray<
                 },
               },
             ],
+          },
+        },
+        {
+          optional: false,
+          name: 'k',
+          typeAnnotation: {
+            type: 'ReservedFunctionValueTypeAnnotation',
+            name: 'RootTag',
           },
         },
       ],

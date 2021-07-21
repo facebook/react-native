@@ -240,10 +240,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   // Remove ANSI color codes from the message
   NSString *messageWithoutAnsi = [self stripAnsi:message];
 
+  BOOL isRootViewControllerPresented = self.rootViewController.presentingViewController != nil;
   // Show if this is a new message, or if we're updating the previous message
-  BOOL isNew = !self.rootViewController.isBeingPresented && !isUpdate;
+  BOOL isNew = !isRootViewControllerPresented && !isUpdate;
   BOOL isUpdateForSameMessage = !isNew &&
-      (self.rootViewController.isBeingPresented && isUpdate &&
+      (isRootViewControllerPresented && isUpdate &&
        ((errorCookie == -1 && [_lastErrorMessage isEqualToString:messageWithoutAnsi]) ||
         (errorCookie == _lastErrorCookie)));
   if (isNew || isUpdateForSameMessage) {
@@ -255,7 +256,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
     [_stackTraceTableView reloadData];
 
-    if (!self.rootViewController.isBeingPresented) {
+    if (!isRootViewControllerPresented) {
       [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                   atScrollPosition:UITableViewScrollPositionTop
                                           animated:NO];
@@ -1057,12 +1058,10 @@ RCT_EXPORT_METHOD(dismiss)
   [_customButtonHandlers addObject:handler];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
 }
 
 @end
@@ -1144,12 +1143,10 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)addCustomButton:(NSString *)title onPressHandler:(RCTRedBoxButtonPressHandler)handler
 {
 }
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(self, jsInvoker, nativeInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
 }
 
 @end

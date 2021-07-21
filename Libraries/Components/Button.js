@@ -22,7 +22,7 @@ const invariant = require('invariant');
 
 import type {PressEvent, KeyEvent} from '../Types/CoreEventTypes';
 import type {FocusEvent, BlurEvent} from './TextInput/TextInput'; // TODO(OSS Candidate ISS#2710739)
-import type {ColorValue} from '../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../StyleSheet/StyleSheet';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,

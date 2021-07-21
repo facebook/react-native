@@ -36,7 +36,7 @@ const wd = require('wd');
 const path = require('path');
 const fs = require('fs');
 const pd = require('pretty-data2').pd;
-require('colors');
+
 // value in ms to print out screen contents, set this value in CI to debug if tests are failing
 const appiumDebugInterval = process.env.APPIUM_DEBUG_INTERVAL;
 

@@ -76,8 +76,8 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
                         stringWithFormat:@"http://%@:%lu/", hostPort, (unsigned long)kRCTBundleURLProviderDefaultPort]];
 }
 
-#if RCT_DEV
-- (BOOL)isPackagerRunning:(NSString *)host
+#if RCT_DEV_MENU
++ (BOOL)isPackagerRunning:(NSString *)host
 {
   NSURL *url = [serverRootWithHostPort(host) URLByAppendingPathComponent:@"status"];
 
@@ -111,7 +111,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   });
 
   NSString *host = ipGuess ?: @"localhost";
-  if ([self isPackagerRunning:host]) {
+  if ([RCTBundleURLProvider isPackagerRunning:host]) {
     return host;
   }
   return nil;

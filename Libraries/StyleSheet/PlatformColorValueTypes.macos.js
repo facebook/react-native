@@ -10,7 +10,7 @@
 // [TODO(macOS GH#774)
 'use strict';
 
-import type {ColorValue} from './StyleSheetTypes';
+import type {ColorValue} from './StyleSheet';
 import type {ProcessedColorValue} from './processColor';
 
 export opaque type NativeColorValue = {

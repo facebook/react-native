@@ -227,6 +227,10 @@ export const __INTERNAL_VIEW_CONFIG = CommandNativeComponentViewConfig;
 export default nativeComponentName;
 
 export const Commands = {
+    handleRootTag(ref, rootTag) {
+        dispatchCommand(ref, \\"handleRootTag\\", [rootTag]);
+    },
+
     hotspotUpdate(ref, x, y) {
         dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
     }

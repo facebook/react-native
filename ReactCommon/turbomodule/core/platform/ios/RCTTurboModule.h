@@ -127,12 +127,16 @@ class Instance;
  */
 class JSI_EXPORT ObjCTurboModule : public TurboModule {
  public:
-  ObjCTurboModule(
-      const std::string &name,
-      id<RCTTurboModule> instance,
-      std::shared_ptr<CallInvoker> jsInvoker,
-      std::shared_ptr<CallInvoker> nativeInvoker,
-      id<RCTTurboModulePerformanceLogger> perfLogger);
+  // TODO(T65603471): Should we unify this with a Fabric abstraction?
+  struct InitParams {
+    std::string moduleName;
+    id<RCTTurboModule> instance;
+    std::shared_ptr<CallInvoker> jsInvoker;
+    std::shared_ptr<CallInvoker> nativeInvoker;
+    id<RCTTurboModulePerformanceLogger> perfLogger;
+  };
+
+  ObjCTurboModule(const InitParams &params);
 
   jsi::Value invokeObjCMethod(
       jsi::Runtime &runtime,
@@ -208,10 +212,8 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
 @optional
 // This should be required, after migration is done.
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger;
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params;
 
 @end
 

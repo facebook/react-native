@@ -22,7 +22,7 @@ import SwitchNativeComponent, {
   Commands as SwitchCommands,
 } from './SwitchNativeComponent';
 
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 

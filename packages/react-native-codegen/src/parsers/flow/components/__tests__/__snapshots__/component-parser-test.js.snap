@@ -361,7 +361,7 @@ Object {
               "optional": false,
               "typeAnnotation": Object {
                 "name": "ImageSourcePrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -369,7 +369,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "ImageSourcePrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -377,7 +377,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "ImageSourcePrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -385,7 +385,7 @@ Object {
               "optional": false,
               "typeAnnotation": Object {
                 "name": "ColorPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -393,7 +393,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "ColorPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -401,7 +401,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "ColorPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -409,7 +409,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "ColorPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -418,7 +418,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ColorPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -429,7 +429,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ColorPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -440,7 +440,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ColorPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -451,7 +451,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ColorPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -461,7 +461,7 @@ Object {
               "optional": false,
               "typeAnnotation": Object {
                 "name": "ColorPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -469,7 +469,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "ColorPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -477,7 +477,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "ColorPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -485,7 +485,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "ColorPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -493,7 +493,7 @@ Object {
               "optional": false,
               "typeAnnotation": Object {
                 "name": "PointPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -501,7 +501,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "PointPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -509,7 +509,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "PointPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -517,7 +517,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "PointPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -525,7 +525,7 @@ Object {
               "optional": false,
               "typeAnnotation": Object {
                 "name": "EdgeInsetsPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -533,7 +533,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "EdgeInsetsPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -541,7 +541,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "EdgeInsetsPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
             Object {
@@ -549,7 +549,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "EdgeInsetsPrimitive",
-                "type": "NativePrimitiveTypeAnnotation",
+                "type": "ReservedPropTypeAnnotation",
               },
             },
           ],
@@ -819,7 +819,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ImageSourcePrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -830,7 +830,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ImageSourcePrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -841,7 +841,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ImageSourcePrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -852,7 +852,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ImageSourcePrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -863,7 +863,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ColorPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -874,7 +874,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ColorPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -885,7 +885,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ColorPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -896,7 +896,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "ColorPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -907,7 +907,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "PointPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -918,7 +918,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "PointPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -929,7 +929,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "PointPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -940,7 +940,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "PointPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -951,7 +951,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "EdgeInsetsPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -962,7 +962,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "EdgeInsetsPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -973,7 +973,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "EdgeInsetsPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -984,7 +984,7 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "EdgeInsetsPrimitive",
-                  "type": "NativePrimitiveTypeAnnotation",
+                  "type": "ReservedPropTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -2336,6 +2336,22 @@ Object {
       "components": Object {
         "Module": Object {
           "commands": Array [
+            Object {
+              "name": "handleRootTag",
+              "optional": false,
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "rootTag",
+                    "typeAnnotation": Object {
+                      "name": "RootTag",
+                      "type": "ReservedFunctionValueTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "FunctionTypeAnnotation",
+              },
+            },
             Object {
               "name": "hotspotUpdate",
               "optional": false,
@@ -5386,7 +5402,7 @@ Object {
                     "optional": false,
                     "typeAnnotation": Object {
                       "name": "ImageSourcePrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5403,7 +5419,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "ImageSourcePrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5420,7 +5436,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "ImageSourcePrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5437,7 +5453,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "ImageSourcePrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5454,7 +5470,7 @@ Object {
                     "optional": false,
                     "typeAnnotation": Object {
                       "name": "ColorPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5471,7 +5487,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "ColorPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5488,7 +5504,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "ColorPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5505,7 +5521,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "ColorPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5522,7 +5538,7 @@ Object {
                     "optional": false,
                     "typeAnnotation": Object {
                       "name": "ColorPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5539,7 +5555,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "ColorPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5556,7 +5572,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "ColorPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5573,7 +5589,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "ColorPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5590,7 +5606,7 @@ Object {
                     "optional": false,
                     "typeAnnotation": Object {
                       "name": "PointPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5607,7 +5623,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "PointPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5624,7 +5640,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "PointPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5641,7 +5657,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "PointPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5658,7 +5674,7 @@ Object {
                     "optional": false,
                     "typeAnnotation": Object {
                       "name": "EdgeInsetsPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5675,7 +5691,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "EdgeInsetsPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5692,7 +5708,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "EdgeInsetsPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],
@@ -5709,7 +5725,7 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "EdgeInsetsPrimitive",
-                      "type": "NativePrimitiveTypeAnnotation",
+                      "type": "ReservedPropTypeAnnotation",
                     },
                   },
                 ],

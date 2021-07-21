@@ -10,8 +10,8 @@
 #include <fbjni/fbjni.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/uimanager/Scheduler.h>
-#include <react/uimanager/SchedulerDelegate.h>
+#include <react/scheduler/Scheduler.h>
+#include <react/scheduler/SchedulerDelegate.h>
 #include <memory>
 #include <mutex>
 #include "ComponentFactoryDelegate.h"

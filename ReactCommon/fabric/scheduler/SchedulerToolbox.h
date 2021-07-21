@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <react/componentregistry/ComponentDescriptorFactory.h>
 #include <react/core/EventBeat.h>
-#include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/RuntimeExecutor.h>
 
