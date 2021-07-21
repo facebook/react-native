@@ -260,7 +260,9 @@ void Binding::startSurface(
       animationDriver_);
 
   {
+    SystraceSection s2("FabricUIManagerBinding::startSurface::surfaceId::lock");
     std::unique_lock<better::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    SystraceSection s3("FabricUIManagerBinding::startSurface::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
@@ -319,7 +321,11 @@ void Binding::startSurfaceWithConstraints(
       animationDriver_);
 
   {
+    SystraceSection s2(
+        "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId::lock");
     std::unique_lock<better::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    SystraceSection s3(
+        "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
