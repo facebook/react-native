@@ -8,6 +8,7 @@
  * @format
  */
 
+import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 import Text from '../../Text/Text';
 
@@ -29,7 +30,7 @@ function LogBoxMessage(props: Props): React.Node {
   const {content, substitutions}: Message = props.message;
 
   if (props.plaintext === true) {
-    return <Text>{cleanContent(content)}</Text>;
+    return <Text style={{color: LogBoxStyle.getTextColor(1)}}>{cleanContent(content)}</Text>;
   }
 
   const maxLength = props.maxLength != null ? props.maxLength : Infinity;
