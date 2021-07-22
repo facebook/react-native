@@ -473,7 +473,7 @@ class StatusBar extends React.Component<Props> {
           );
           NativeStatusBarManagerAndroid.setColor(
             processedColor,
-            mergedProps.backgroundColor.animated,
+            mergedProps.backgroundColor.animated || false,
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
