@@ -53,7 +53,7 @@ class Share {
    *
    *  - `url` - an URL to share
    *
-   * At least one of URL and message is required.
+   * At least one of URL or message is required.
    *
    * #### Android
    *
@@ -82,7 +82,7 @@ class Share {
     );
     invariant(
       typeof content.url === 'string' || typeof content.message === 'string',
-      'At least one of URL and message is required',
+      'At least one of URL or message is required',
     );
     invariant(
       typeof options === 'object' && options !== null,
