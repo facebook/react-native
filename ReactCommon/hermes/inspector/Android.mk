@@ -12,6 +12,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := hermes-inspector
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/detail/*.cpp $(LOCAL_PATH)/chrome/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_C_ROOT := $(LOCAL_PATH)/../..
 
