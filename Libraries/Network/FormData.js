@@ -10,8 +10,12 @@
 
 'use strict';
 
-type FormDataValue = string | {name?: string, type?: string, uri: string};
-type FormDataNameValuePair = [string, FormDataValue];
+type FormDataValue =
+  | string
+  | {name?: string, type?: string, uri: string}
+  | File
+  | Blob;
+type FormDataInternalParts = [string, FormDataValue, ?string];
 
 type Headers = {[name: string]: string, ...};
 type FormDataPart =
@@ -49,25 +53,67 @@ type FormDataPart =
  *   xhr.send(body);
  */
 class FormData {
-  _parts: Array<FormDataNameValuePair>;
+  _parts: Array<FormDataInternalParts>;
 
   constructor() {
     this._parts = [];
   }
 
-  append(key: string, value: FormDataValue) {
+  append(key: string, value: FormDataValue, fileName?: string) {
     // The XMLHttpRequest spec doesn't specify if duplicate keys are allowed.
     // MDN says that any new values should be appended to existing values.
     // In any case, major browsers allow duplicate keys, so that's what we'll do
     // too. They'll simply get appended as additional form data parts in the
     // request body, leaving the server to deal with them.
-    this._parts.push([key, value]);
+    let finalFileName: ?string = fileName;
+
+    if (typeof fileName !== 'string') {
+      if (value && typeof value.name === 'string') {
+        finalFileName = value.name;
+      } else if (value instanceof Blob) {
+        finalFileName = 'blob';
+      } else {
+        finalFileName = null;
+      }
+    }
+
+    this._parts.push([key, value, finalFileName]);
+  }
+
+  set(key: string, value: FormDataValue, fileName?: string) {
+    const newParts: Array<FormDataInternalParts> = [];
+    let replaced: boolean = false;
+    let finalFileName: ?string = fileName;
+
+    if (typeof fileName !== 'string') {
+      if (value && typeof value.name === 'string') {
+        finalFileName = value.name;
+      } else if (value instanceof Blob) {
+        finalFileName = 'blob';
+      } else {
+        finalFileName = null;
+      }
+    }
+
+    this._parts.forEach(part => {
+      if (part[0] === key) {
+        newParts.push([key, value, finalFileName]);
+        replaced = true;
+      } else {
+        newParts.push(part);
+      }
+    });
+
+    if (!replaced) {
+      newParts.push([key, value, finalFileName]);
+    }
+
+    this._parts = newParts;
   }
 
   getParts(): Array<FormDataPart> {
-    return this._parts.map(([name, value]) => {
+    return this._parts.map(([name, value, fileName]) => {
       const contentDisposition = 'form-data; name="' + name + '"';
-
       const headers: Headers = {'content-disposition': contentDisposition};
 
       // The body part is a "blob", which in React Native just means
@@ -75,14 +121,22 @@ class FormData {
       // have a `name` and `type` attribute to specify filename and
       // content type (cf. web Blob interface.)
       if (typeof value === 'object' && value) {
-        if (typeof value.name === 'string') {
-          headers['content-disposition'] += '; filename="' + value.name + '"';
+        if (typeof fileName === 'string') {
+          headers['content-disposition'] += '; filename="' + fileName + '"';
         }
         if (typeof value.type === 'string') {
           headers['content-type'] = value.type;
         }
-        return {...value, headers, fieldName: name};
+
+        return {
+          name: typeof fileName === 'string' ? fileName : undefined,
+          type: value.type,
+          uri: value instanceof Blob ? URL.createObjectURL(value) : value.uri,
+          headers,
+          fieldName: name,
+        };
       }
+
       // Convert non-object values to strings as per FormData.append() spec
       return {string: String(value), headers, fieldName: name};
     });
