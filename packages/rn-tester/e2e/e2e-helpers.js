@@ -12,9 +12,9 @@
 
 // Will open a component example from the root list
 // by filtering by component and then tapping on the label
-exports.openComponentWithLabel = async (component, label) => {
+exports.openComponentWithId = async (component, id) => {
   await element(by.id('explorer_search')).replaceText(component);
-  await element(by.label(label)).tap();
+  await element(by.id(id)).tap();
 };
 
 // Will open an individual example for a component

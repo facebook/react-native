@@ -10,17 +10,14 @@
 
 /* global device, element, by, expect */
 const {
-  openComponentWithLabel,
+  openComponentWithId,
   openExampleWithTitle,
 } = require('../e2e-helpers');
 
 describe('Touchable', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
-    await openComponentWithLabel(
-      'Touchable*',
-      'Touchable* and onPress Touchable and onPress examples.',
-    );
+    await openComponentWithId('Touchable', 'Touchable* and onPress');
   });
 
   it('Touchable Highlight should be tappable', async () => {
