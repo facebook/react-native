@@ -411,7 +411,7 @@ export type ViewProps = $ReadOnly<{|
    * accessibility label.
    *
    *
-   * See https://reactnative.dev/docs/view.html#accessibilityHint
+   * See https://reactnative.dev/docs/view.html#accessibilityhint
    */
   accessibilityHint?: ?Stringish,
 
