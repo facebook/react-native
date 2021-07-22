@@ -351,7 +351,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     // shared under the hood.
     // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
     if (timeout != mClient.connectTimeoutMillis()) {
-      clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
+      clientBuilder.callTimeout(timeout, TimeUnit.MILLISECONDS);
     }
     OkHttpClient client = clientBuilder.build();
 
