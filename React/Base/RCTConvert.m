@@ -807,7 +807,7 @@ static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
   return color;
 }
 
-/** Returns an alphabetically sorted comma seperated list of the valid semantic color names
+/** Returns an alphabetically sorted comma separated list of the valid semantic color names
  */
 static NSString *RCTSemanticColorNames()
 {
