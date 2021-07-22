@@ -13,6 +13,8 @@ import Platform from '../../Utilities/Platform';
 import invariant from 'invariant';
 import processColor from '../../StyleSheet/processColor';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import AppState from '../../AppState/AppState.js';
+import Keyboard from '../Keyboard/Keyboard';
 
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
@@ -400,12 +402,35 @@ class StatusBar extends React.Component<Props> {
     // stack. This allows having multiple StatusBar components and the one that is
     // added last or is deeper in the view hierarchy will have priority.
     this._stackEntry = StatusBar.pushStackEntry(this.props);
+
+    // When the app is moved to the background the OS may adjust the status bar,
+    // if the app is not remounted when the app is opened again (unlikely if its
+    // opened quickly, the status bar will be out of sync.
+    this._appStateListener = AppState.addEventListener(
+      'change',
+      this._handleAppStateChange,
+    );
+
+    // Showing the keyboard can sometimes adjust the status bar settings so we
+    // reset the status bar when the keyboard hides.
+    this._keyboardHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this._handleKeyboardDidHide,
+    );
   }
 
   componentWillUnmount() {
     // When a StatusBar is unmounted, remove itself from the stack and update
     // the native bar with the next props.
     StatusBar.popStackEntry(this._stackEntry);
+
+    if (this._appStateListener) {
+      this._appStateListener.remove();
+    }
+
+    if (this._keyboardHideListener) {
+      this._keyboardHideListener.remove();
+    }
   }
 
   componentDidUpdate() {
@@ -418,11 +443,11 @@ class StatusBar extends React.Component<Props> {
   /**
    * Updates the native status bar with the props from the stack.
    */
-  static _updatePropsStack = () => {
+  static _updatePropsStack = (force?: boolean) => {
     // Send the update to the native module only once at the end of the frame.
     clearImmediate(StatusBar._updateImmediate);
     StatusBar._updateImmediate = setImmediate(() => {
-      const oldProps = StatusBar._currentValues;
+      const oldProps = force ? null : StatusBar._currentValues;
       const mergedProps = mergePropsStack(
         StatusBar._propsStack,
         StatusBar._defaultProps,
@@ -490,6 +515,16 @@ class StatusBar extends React.Component<Props> {
 
   render(): React.Node {
     return null;
+  }
+
+  _handleAppStateChange(appState) {
+    if (appState === 'active') {
+      StatusBar._updatePropsStack(true);
+    }
+  }
+
+  _handleKeyboardDidHide() {
+    StatusBar._updatePropsStack(true);
   }
 }
 
