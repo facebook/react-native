@@ -97,6 +97,7 @@ afterEvaluate {
         // Create variant and target names
         def targetName = variant.name.capitalize()
         def targetPath = variant.dirName
+        def isRelease = targetName.toLowerCase().contains("release") || config."useReleaseConfigIn${targetName}"
 
         // React js bundle directories
         def jsBundleDir = file("$buildDir/generated/assets/react/${targetPath}")
@@ -151,7 +152,7 @@ afterEvaluate {
 
             // Set up dev mode
             def devEnabled = !(config."devDisabledIn${targetName}"
-                || targetName.toLowerCase().contains("release"))
+                || isRelease)
 
             def extraArgs = []
 
@@ -180,7 +181,7 @@ afterEvaluate {
                     def hermesFlags;
                     def hbcTempFile = file("${jsBundleFile}.hbc")
                     exec {
-                        if (targetName.toLowerCase().contains("release")) {
+                        if (isRelease) {
                             // Can't use ?: since that will also substitute valid empty lists
                             hermesFlags = config.hermesFlagsRelease
                             if (hermesFlags == null) hermesFlags = ["-O", "-output-source-map"]
@@ -224,7 +225,7 @@ afterEvaluate {
                 ? config."bundleIn${targetName}"
                 : config."bundleIn${variant.buildType.name.capitalize()}" != null
                     ? config."bundleIn${variant.buildType.name.capitalize()}"
-                    : targetName.toLowerCase().contains("release")
+                    : isRelease
         }
 
         // Expose a minimal interface on the application variant and the task itself:
@@ -321,7 +322,6 @@ afterEvaluate {
         // This should really be done by packaging all Hermes related libs into
         // two separate HermesDebug and HermesRelease AARs, but until then we'll
         // kludge it by deleting the .so files out of the /transforms/ directory.
-        def isRelease = targetName.toLowerCase().contains("release")
         def libDir = "$buildDir/intermediates/transforms/"
         def vmSelectionAction = {
             fileTree(libDir).matching {
