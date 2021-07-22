@@ -150,7 +150,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setLoadingIndicatorSource(source);
   }
 
-  @ReactProp(name = "borderColor", customType = "Color")
+  @ReactProp(name = "borderColor", customType = "NullableColor")
   public void setBorderColor(ReactImageView view, @Nullable Integer borderColor) {
     if (borderColor == null) {
       view.setBorderColor(Color.TRANSPARENT);
@@ -159,7 +159,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     }
   }
 
-  @ReactProp(name = "overlayColor", customType = "Color")
+  @ReactProp(name = "overlayColor", customType = "NullableColor")
   public void setOverlayColor(ReactImageView view, @Nullable Integer overlayColor) {
     if (overlayColor == null) {
       view.setOverlayColor(Color.TRANSPARENT);
@@ -214,7 +214,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     }
   }
 
-  @ReactProp(name = "tintColor", customType = "Color")
+  @ReactProp(name = "tintColor", customType = "NullableColor")
   public void setTintColor(ReactImageView view, @Nullable Integer tintColor) {
     if (tintColor == null) {
       view.clearColorFilter();

@@ -214,6 +214,29 @@ import java.util.Map;
     }
   }
 
+  private static class NullableColorPropSetter extends PropSetter {
+
+    private final int mDefaultValue;
+
+    public NullableColorPropSetter(ReactProp prop, Method setter) {
+      this(prop, setter, 0);
+    }
+
+    public NullableColorPropSetter(ReactProp prop, Method setter, int defaultValue) {
+      super(prop, "mixed", setter);
+      mDefaultValue = defaultValue;
+    }
+
+    @Override
+    protected Object getValueOrDefault(Object value, Context context) {
+      if (value == null) {
+        return null;
+      }
+
+      return ColorPropConverter.getColor(value, context);
+    }
+  }
+
   private static class BooleanPropSetter extends PropSetter {
 
     private final boolean mDefaultValue;
@@ -407,6 +430,9 @@ import java.util.Map;
       if ("Color".equals(annotation.customType())) {
         return new ColorPropSetter(annotation, method, annotation.defaultInt());
       }
+      if ("NullableColor".equals(annotation.customType())) {
+        return new NullableColorPropSetter(annotation, method, annotation.defaultInt());
+      }
       return new IntPropSetter(annotation, method, annotation.defaultInt());
     } else if (propTypeClass == float.class) {
       return new FloatPropSetter(annotation, method, annotation.defaultFloat());
@@ -419,6 +445,9 @@ import java.util.Map;
     } else if (propTypeClass == Integer.class) {
       if ("Color".equals(annotation.customType())) {
         return new ColorPropSetter(annotation, method);
+      }
+      if ("NullableColor".equals(annotation.customType())) {
+        return new NullableColorPropSetter(annotation, method, annotation.defaultInt());
       }
       return new BoxedIntPropSetter(annotation, method);
     } else if (propTypeClass == ReadableArray.class) {
