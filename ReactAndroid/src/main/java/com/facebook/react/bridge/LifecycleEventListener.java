@@ -34,17 +34,17 @@ public interface LifecycleEventListener {
    * if the native module that implements this is initialized while the host activity is already
    * resumed. Always called for the most current activity.
    */
-  void onHostResume();
+  default void onHostResume() {};
 
   /**
    * Called when host activity receives pause event (e.g. {@link Activity#onPause}. Always called
    * for the most current activity.
    */
-  void onHostPause();
+  default void onHostPause() {};
 
   /**
    * Called when host activity receives destroy event (e.g. {@link Activity#onDestroy}. Only called
    * for the last React activity to be destroyed.
    */
-  void onHostDestroy();
+  default void onHostDestroy() {};
 }
