@@ -7,7 +7,7 @@
 
 #include "AutoAttachUtils.h"
 
-#ifdef _WINDOWS
+#ifdef _MSC_VER
 namespace facebook {
 namespace hermes {
 namespace inspector {

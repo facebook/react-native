@@ -120,7 +120,11 @@ struct ReentrancyCheck {
       // programmer error, where VM methods were called on two
       // different threads unsafely.  Fail fast (and hard) so the
       // crash can be analyzed.
+#ifdef _MSC_VER
+      __debugbreak();
+#else
       __builtin_trap();
+#endif
     }
   }
 
