@@ -446,7 +446,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactProp(name = "placeholder")
-  public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
+  public void setPlaceholder(ReactEditText view, String placeholder) {
     view.setHint(placeholder);
   }
 
