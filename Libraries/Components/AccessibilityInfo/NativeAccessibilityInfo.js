@@ -10,6 +10,7 @@
 
 import type {TurboModule} from '../../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
+import type {AccessibilityServiceInfo} from './AccessibilityInfoTypes';
 
 export interface Spec extends TurboModule {
   +isReduceMotionEnabled: (
@@ -23,6 +24,12 @@ export interface Spec extends TurboModule {
   +getRecommendedTimeoutMillis?: (
     mSec: number,
     onSuccess: (recommendedTimeoutMillis: number) => void,
+  ) => void;
+  +getEnabledAccessibilityServiceList?: (
+    feedbackTypeFlags: number,
+    onSuccess: (
+      enabledAccessibilityServiceList: Array<AccessibilityServiceInfo>,
+    ) => void,
   ) => void;
 }
 
