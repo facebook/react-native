@@ -9,7 +9,7 @@
  */
 
 import * as React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {Dimensions, View, StyleSheet} from 'react-native';
 import * as LogBoxData from './Data/LogBoxData';
 import LogBoxInspector from './UI/LogBoxInspector';
 import type LogBoxLog from './Data/LogBoxLog';
@@ -22,8 +22,9 @@ type Props = $ReadOnly<{|
 
 export class _LogBoxInspectorContainer extends React.Component<Props> {
   render(): React.Node {
+    const {width, height} = Dimensions.get('window');
     return (
-      <View style={StyleSheet.absoluteFill}>
+      <View style={[StyleSheet.absoluteFill, {width, height}]}>
         <LogBoxInspector
           onDismiss={this._handleDismiss}
           onMinimize={this._handleMinimize}
