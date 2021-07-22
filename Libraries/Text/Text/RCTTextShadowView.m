@@ -83,6 +83,11 @@
   CGRect contentFrame = self.contentFrame;
   NSTextStorage *textStorage = [self textStorageAndLayoutManagerThatFitsSize:self.contentFrame.size
                                                           exclusiveOwnership:YES];
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+  CGSize containerSize = textContainer.size;
+  // `[NSLayoutManager usedRectForTextContainer]` not calculated correctly in some cases(For example, https://github.com/facebook/react-native/issues/24970 ), so here we add one point to the height of text conatiner.
+  textContainer.size = CGSizeMake(containerSize.width, containerSize.height + 1.0);
 
   NSNumber *tag = self.reactTag;
   NSMutableArray<NSNumber *> *descendantViewTags = [NSMutableArray new];
