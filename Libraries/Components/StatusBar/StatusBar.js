@@ -132,14 +132,14 @@ function createStackEntry(props: any): any {
       props.backgroundColor != null
         ? {
             value: props.backgroundColor,
-            animated: props.animated,
+            animated: props.animated || false,
           }
         : null,
     barStyle:
       props.barStyle != null
         ? {
             value: props.barStyle,
-            animated: props.animated,
+            animated: props.animated || false,
           }
         : null,
     translucent: props.translucent,
@@ -147,8 +147,8 @@ function createStackEntry(props: any): any {
       props.hidden != null
         ? {
             value: props.hidden,
-            animated: props.animated,
-            transition: props.showHideTransition,
+            animated: props.animated || false,
+            transition: props.showHideTransition || 'fade',
           }
         : null,
     networkActivityIndicatorVisible: props.networkActivityIndicatorVisible,
@@ -383,14 +383,6 @@ class StatusBar extends React.Component<Props> {
     StatusBar._updatePropsStack();
     return newEntry;
   }
-
-  static defaultProps: {|
-    animated: boolean,
-    showHideTransition: $TEMPORARY$string<'fade'>,
-  |} = {
-    animated: false,
-    showHideTransition: 'fade',
-  };
 
   _stackEntry = null;
 
