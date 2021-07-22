@@ -80,24 +80,6 @@ UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
 
 @end
 
-static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
-{
-  NSMutableString *str = [NSMutableString stringWithString:@""];
-  for (UIView *subview in view.subviews) {
-    NSString *label = subview.accessibilityLabel;
-    if (!label) {
-      label = RCTRecursiveAccessibilityLabel(subview);
-    }
-    if (label && label.length > 0) {
-      if (str.length > 0) {
-        [str appendString:@" "];
-      }
-      [str appendString:label];
-    }
-  }
-  return str.length == 0 ? nil : str;
-}
-
 @implementation RCTView {
   UIColor *_backgroundColor;
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
@@ -216,15 +198,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 }
 
 #pragma mark - Accessibility
-
-- (NSString *)accessibilityLabel
-{
-  NSString *label = super.accessibilityLabel;
-  if (label) {
-    return label;
-  }
-  return RCTRecursiveAccessibilityLabel(self);
-}
 
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
