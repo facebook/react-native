@@ -883,6 +883,7 @@ function InternalTextInput(props: Props): React.Node {
 
   const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);
 
+  const [lastMultiline, setLastMultiline] = useState<?boolean>(props.multiline);
   const [lastNativeText, setLastNativeText] = useState<?Stringish>(props.value);
   const [lastNativeSelectionState, setLastNativeSelection] = useState<{|
     selection: ?Selection,
@@ -919,6 +920,17 @@ function InternalTextInput(props: Props): React.Node {
   // that we have in JS.
   useLayoutEffect(() => {
     const nativeUpdate = {};
+    let eventTag = mostRecentEventCount;
+    // In iOS, if multiline prop has changed, uiManager will create a new nativeTag(RCTMultilineTextInputView or RCTSinglelineTextInputView)
+    // With a new nativeTag, we need to set mostRecentEventCount to 0.
+    if (Platform.OS === 'ios') {
+      if (props.multiline !== lastMultiline) {
+        setLastMultiline(props.multiline);
+        setMostRecentEventCount(0);
+        nativeUpdate.multiline = true;
+        eventTag = 0;
+      }
+    }
 
     if (lastNativeText !== props.value && typeof props.value === 'string') {
       nativeUpdate.text = props.value;
@@ -932,7 +944,7 @@ function InternalTextInput(props: Props): React.Node {
         lastNativeSelection.end !== selection.end)
     ) {
       nativeUpdate.selection = selection;
-      setLastNativeSelection({selection, mostRecentEventCount});
+      setLastNativeSelection({selection, mostRecentEventCount: eventTag});
     }
 
     if (Object.keys(nativeUpdate).length === 0) {
@@ -942,7 +954,7 @@ function InternalTextInput(props: Props): React.Node {
     if (inputRef.current != null) {
       viewCommands.setTextAndSelection(
         inputRef.current,
-        mostRecentEventCount,
+        eventTag,
         text,
         selection?.start ?? -1,
         selection?.end ?? -1,
@@ -952,9 +964,11 @@ function InternalTextInput(props: Props): React.Node {
     mostRecentEventCount,
     inputRef,
     props.value,
+    props.multiline,
     props.defaultValue,
     lastNativeText,
     selection,
+    lastMultiline,
     lastNativeSelection,
     text,
     viewCommands,
