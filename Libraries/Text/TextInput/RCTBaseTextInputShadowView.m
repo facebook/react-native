@@ -92,8 +92,10 @@
 
   if (_maximumNumberOfLines == 1) {
     maximumSize.width = CGFLOAT_MAX;
+    maximumSize.height -= self.paddingTop.value + self.paddingBottom.value + self.borderWidth;
   } else {
     maximumSize.height = CGFLOAT_MAX;
+    maximumSize.width -= self.paddingLeft.value + self.paddingRight.value + self.borderWidth;
   }
 
   CGSize contentSize = [self sizeThatFitsMinimumSize:(CGSize)CGSizeZero maximumSize:maximumSize];
