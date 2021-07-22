@@ -401,9 +401,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
       nodeInfo.setRoleDescription(context.getString(R.string.summary_description));
     } else if (role.equals(AccessibilityRole.HEADER)) {
-      final AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
-          AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(0, 1, 0, 1, true);
-      nodeInfo.setCollectionItemInfo(itemInfo);
+      nodeInfo.setRoleDescription(context.getString(R.string.header_description));
     } else if (role.equals(AccessibilityRole.ALERT)) {
       nodeInfo.setRoleDescription(context.getString(R.string.alert_description));
     } else if (role.equals(AccessibilityRole.COMBOBOX)) {
@@ -426,6 +424,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       nodeInfo.setRoleDescription(context.getString(R.string.rn_tab_description));
     } else if (role.equals(AccessibilityRole.TABLIST)) {
       nodeInfo.setRoleDescription(context.getString(R.string.tablist_description));
+    } else if (role.equals(AccessibilityRole.TEXT)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.text_description));
     } else if (role.equals(AccessibilityRole.TIMER)) {
       nodeInfo.setRoleDescription(context.getString(R.string.timer_description));
     } else if (role.equals(AccessibilityRole.TOOLBAR)) {
