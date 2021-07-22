@@ -177,6 +177,7 @@ public class ReactInstanceManager {
   // Identifies whether the instance manager destroy function is in process,
   // while true any spawned create thread should wait for proper clean up before initializing
   private volatile Boolean mHasStartedDestroying = false;
+  private final Object mHasStartedDestroyingLock = new Object();
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final @Nullable JSIModulePackage mJSIModulePackage;
@@ -713,8 +714,8 @@ public class ReactInstanceManager {
 
     ResourceDrawableIdHelper.getInstance().clear();
     mHasStartedDestroying = false;
-    synchronized (mHasStartedDestroying) {
-      mHasStartedDestroying.notifyAll();
+    synchronized (mHasStartedDestroyingLock) {
+      mHasStartedDestroyingLock.notifyAll();
     }
     synchronized (mPackages) {
       mViewManagerNames = null;
@@ -1038,10 +1039,10 @@ public class ReactInstanceManager {
               @Override
               public void run() {
                 ReactMarker.logMarker(REACT_CONTEXT_THREAD_END);
-                synchronized (ReactInstanceManager.this.mHasStartedDestroying) {
+                synchronized (ReactInstanceManager.this.mHasStartedDestroyingLock) {
                   while (ReactInstanceManager.this.mHasStartedDestroying) {
                     try {
-                      ReactInstanceManager.this.mHasStartedDestroying.wait();
+                      ReactInstanceManager.this.mHasStartedDestroyingLock.wait();
                     } catch (InterruptedException e) {
                       continue;
                     }
