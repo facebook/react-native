@@ -13,6 +13,7 @@
 import type {StackFrame} from '../NativeExceptionsManager';
 import type {HermesParsedStack} from './parseHermesStack';
 
+const stacktraceParser = require('stacktrace-parser');
 const parseHermesStack = require('./parseHermesStack');
 
 function convertHermesStack(stack: HermesParsedStack): Array<StackFrame> {
@@ -43,7 +44,6 @@ function parseErrorStack(errorStack?: string): Array<StackFrame> {
     return [];
   }
 
-  const stacktraceParser = require('stacktrace-parser');
   const parsedStack = Array.isArray(errorStack)
     ? errorStack
     : global.HermesInternal
