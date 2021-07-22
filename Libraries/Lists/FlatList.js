@@ -178,7 +178,6 @@ export type Props<ItemT> = {
     },
   >,
   ...FlatListProps<ItemT>,
-  ...
 };
 
 /**
@@ -418,10 +417,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       );
     } else if (this.props.onViewableItemsChanged) {
       this._virtualizedListPairs.push({
-        /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
-         * comment suppresses an error found when Flow v0.63 was deployed. To
-         * see the error delete this comment and run Flow. */
-        viewabilityConfig: this.props.viewabilityConfig,
+        viewabilityConfig: this.props.viewabilityConfig || {},
         onViewableItemsChanged: this._createOnViewableItemsChanged(
           this.props.onViewableItemsChanged,
         ),
@@ -579,13 +575,16 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   }
 
+  _getListRenderKey = (hasItemComponent?: boolean): string =>
+    hasItemComponent ? 'ListItemComponent' : 'renderItem';
+
   _renderer = () => {
     const {ListItemComponent, renderItem, columnWrapperStyle} = this.props;
     const numColumns = numColumnsOrDefault(this.props.numColumns);
 
-    let virtualizedListRenderKey = ListItemComponent
-      ? 'ListItemComponent'
-      : 'renderItem';
+    const virtualizedListRenderKey = this._getListRenderKey(
+      !!ListItemComponent,
+    );
 
     const renderer = (props): React.Node => {
       if (ListItemComponent) {
@@ -602,9 +601,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
 
     return {
-      /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
-       * This comment suppresses an error found when Flow v0.111 was deployed.
-       * To see the error, delete this comment and run Flow. */
       [virtualizedListRenderKey]: (info: RenderItemProps<ItemT>) => {
         if (numColumns > 1) {
           const {item, index} = info;
