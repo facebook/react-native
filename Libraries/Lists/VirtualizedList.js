@@ -313,6 +313,12 @@ type State = {
   last: number,
 };
 
+type CachedCell = {
+  component: any,
+  deps: Array<any>,
+  used?: boolean,
+};
+
 /**
  * Default Props Helper Functions
  * Use the following helper functions for default values
@@ -783,8 +789,51 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     };
   }
 
+  _cachedCells: Map<string, CachedCell> = new Map<string, CachedCell>();
+  _cells = [];
+
+  _markCellsAsUnused() {
+    this._cachedCells.forEach(cell => {
+      cell.used = false;
+    });
+  }
+
+  _deleteUnusedCells() {
+    this._cachedCells.forEach((cell, key) => {
+      if (!cell.used) {
+        this._cachedCells.delete(key);
+      }
+    });
+  }
+
+  _pushCell(key, deps, creator) {
+    //$FlowFixMe[incompatible-type]
+    let cell: CachedCell = this._cachedCells.get(key);
+    let depsChanged = false;
+    if (!cell || cell.deps.length !== deps.length) {
+      depsChanged = true;
+    } else {
+      for (let i = 0; i < deps.length; i++) {
+        if (cell.deps[i] !== deps[i]) {
+          depsChanged = true;
+          break;
+        }
+      }
+    }
+    if (depsChanged) {
+      this._cachedCells.set(
+        key,
+        (cell = {
+          component: creator(),
+          deps,
+        }),
+      );
+    }
+    cell.used = true;
+    this._cells.push(cell.component);
+  }
+
   _pushCells(
-    cells: Array<Object>,
     stickyHeaderIndices: Array<number>,
     stickyIndicesFromProps: Set<number>,
     first: number,
@@ -808,9 +857,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const key = this._keyExtractor(item, ii);
       this._indicesToKeys.set(ii, key);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
-        stickyHeaderIndices.push(cells.length);
+        stickyHeaderIndices.push(this._cells.length);
       }
-      cells.push(
+      const deps = [
+        CellRendererComponent,
+        ItemSeparatorComponent,
+        horizontal,
+        ii,
+        inversionStyle,
+        item,
+        prevCellKey,
+        this.props,
+      ];
+      this._pushCell(key, deps, () => (
         <CellRenderer
           CellRendererComponent={CellRendererComponent}
           ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
@@ -829,8 +888,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ref={ref => {
             this._cellRefs[key] = ref;
           }}
-        />,
-      );
+        />
+      ));
       prevCellKey = key;
     }
   }
@@ -894,37 +953,46 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         ? styles.horizontallyInverted
         : styles.verticallyInverted
       : null;
-    const cells = [];
+    this._cells = [];
+    this._markCellsAsUnused();
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
     if (ListHeaderComponent) {
       if (stickyIndicesFromProps.has(0)) {
         stickyHeaderIndices.push(0);
       }
-      const element = React.isValidElement(ListHeaderComponent) ? (
-        ListHeaderComponent
-      ) : (
-        // $FlowFixMe[not-a-component]
-        // $FlowFixMe[incompatible-type-arg]
-        <ListHeaderComponent />
-      );
-      cells.push(
-        <VirtualizedListCellContextProvider
-          cellKey={this._getCellKey() + '-header'}
-          key="$header">
-          <View
-            onLayout={this._onLayoutHeader}
-            style={StyleSheet.compose(
-              inversionStyle,
-              this.props.ListHeaderComponentStyle,
-            )}>
-            {
-              // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
-              element
-            }
-          </View>
-        </VirtualizedListCellContextProvider>,
-      );
+      const deps = [
+        inversionStyle,
+        ListHeaderComponent,
+        this.props.extraData,
+        this.props.ListHeaderComponentStyle,
+      ];
+      this._pushCell('$header', deps, () => {
+        const element = React.isValidElement(ListHeaderComponent) ? (
+          ListHeaderComponent
+        ) : (
+          // $FlowFixMe[not-a-component]
+          // $FlowFixMe[incompatible-type-arg]
+          <ListHeaderComponent />
+        );
+        return (
+          <VirtualizedListCellContextProvider
+            cellKey={this._getCellKey() + '-header'}
+            key="$header">
+            <View
+              onLayout={this._onLayoutHeader}
+              style={StyleSheet.compose(
+                inversionStyle,
+                this.props.ListHeaderComponentStyle,
+              )}>
+              {
+                // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
+                element
+              }
+            </View>
+          </VirtualizedListCellContextProvider>
+        );
+      });
     }
     const itemCount = this.props.getItemCount(data);
     if (itemCount > 0) {
@@ -936,7 +1004,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         : initialNumToRenderOrDefault(this.props.initialNumToRender) - 1;
       const {first, last} = this.state;
       this._pushCells(
-        cells,
         stickyHeaderIndices,
         stickyIndicesFromProps,
         0,
@@ -957,11 +1024,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 stickyBlock.offset -
                 initBlock.offset -
                 (this.props.initialScrollIndex ? 0 : initBlock.length);
-              cells.push(
+              this._cells.push(
                 <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />,
               );
               this._pushCells(
-                cells,
                 stickyHeaderIndices,
                 stickyIndicesFromProps,
                 ii,
@@ -971,7 +1037,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               const trailSpace =
                 this._getFrameMetricsApprox(first).offset -
                 (stickyBlock.offset + stickyBlock.length);
-              cells.push(
+              this._cells.push(
                 <View key="$sticky_trail" style={{[spacerKey]: trailSpace}} />,
               );
               insertedStickySpacer = true;
@@ -984,13 +1050,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           const firstSpace =
             this._getFrameMetricsApprox(first).offset -
             (initBlock.offset + initBlock.length);
-          cells.push(
+          this._cells.push(
             <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />,
           );
         }
       }
       this._pushCells(
-        cells,
         stickyHeaderIndices,
         stickyIndicesFromProps,
         firstAfterInitial,
@@ -1018,7 +1083,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           endFrame.offset +
           endFrame.length -
           (lastFrame.offset + lastFrame.length);
-        cells.push(
+        this._cells.push(
           <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />,
         );
       }
@@ -1032,7 +1097,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // $FlowFixMe[incompatible-type-arg]
         <ListEmptyComponent />
       )): any);
-      cells.push(
+
+      this._cells.push(
         React.cloneElement(element, {
           key: '$empty',
           onLayout: event => {
@@ -1046,30 +1112,38 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
     }
     if (ListFooterComponent) {
-      const element = React.isValidElement(ListFooterComponent) ? (
-        ListFooterComponent
-      ) : (
-        // $FlowFixMe[not-a-component]
-        // $FlowFixMe[incompatible-type-arg]
-        <ListFooterComponent />
-      );
-      cells.push(
-        <VirtualizedListCellContextProvider
-          cellKey={this._getFooterCellKey()}
-          key="$footer">
-          <View
-            onLayout={this._onLayoutFooter}
-            style={StyleSheet.compose(
-              inversionStyle,
-              this.props.ListFooterComponentStyle,
-            )}>
-            {
-              // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
-              element
-            }
-          </View>
-        </VirtualizedListCellContextProvider>,
-      );
+      const deps = [
+        inversionStyle,
+        ListFooterComponent,
+        this.props.extraData,
+        this.props.ListFooterComponentStyle,
+      ];
+      this._pushCell('$footer', deps, () => {
+        const element = React.isValidElement(ListFooterComponent) ? (
+          ListFooterComponent
+        ) : (
+          // $FlowFixMe[not-a-component]
+          // $FlowFixMe[incompatible-type-arg]
+          <ListFooterComponent />
+        );
+        return (
+          <VirtualizedListCellContextProvider
+            cellKey={this._getFooterCellKey()}
+            key="$footer">
+            <View
+              onLayout={this._onLayoutFooter}
+              style={StyleSheet.compose(
+                inversionStyle,
+                this.props.ListFooterComponentStyle,
+              )}>
+              {
+                // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
+                element
+              }
+            </View>
+          </VirtualizedListCellContextProvider>
+        );
+      });
     }
     const scrollProps = {
       ...this.props,
@@ -1116,11 +1190,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           {
             ref: this._captureScrollRef,
           },
-          cells,
+          this._cells,
         )}
       </VirtualizedListContextProvider>
     );
     let ret = innerRet;
+    this._deleteUnusedCells();
     if (__DEV__) {
       ret = (
         <ScrollView.Context.Consumer>
@@ -1928,22 +2003,18 @@ type CellRendererProps = {
 };
 
 type CellRendererState = {
-  separatorProps: $ReadOnly<{|
-    highlighted: boolean,
-    leadingItem: ?Item,
-  |}>,
+  highlighted: boolean,
+  leadingItem: ?Item,
   ...
 };
 
-class CellRenderer extends React.Component<
+class CellRenderer extends React.PureComponent<
   CellRendererProps,
   CellRendererState,
 > {
   state = {
-    separatorProps: {
-      highlighted: false,
-      leadingItem: this.props.item,
-    },
+    highlighted: false,
+    leadingItem: this.props.item,
   };
 
   static getDerivedStateFromProps(
@@ -1951,10 +2022,8 @@ class CellRenderer extends React.Component<
     prevState: CellRendererState,
   ): ?CellRendererState {
     return {
-      separatorProps: {
-        ...prevState.separatorProps,
-        leadingItem: props.item,
-      },
+      ...prevState,
+      leadingItem: props.item,
     };
   }
 
@@ -1984,7 +2053,8 @@ class CellRenderer extends React.Component<
 
   updateSeparatorProps(newProps: Object) {
     this.setState(state => ({
-      separatorProps: {...state.separatorProps, ...newProps},
+      ...state,
+      ...newProps,
     }));
   }
 
@@ -2057,7 +2127,7 @@ class CellRenderer extends React.Component<
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
     const itemSeparator = ItemSeparatorComponent && (
-      <ItemSeparatorComponent {...this.state.separatorProps} />
+      <ItemSeparatorComponent {...this.state} />
     );
     const cellStyle = inversionStyle
       ? horizontal
