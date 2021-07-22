@@ -20,7 +20,18 @@
 - (UIWindow *)alertWindow
 {
   if (_alertWindow == nil) {
-    _alertWindow = [[UIWindow alloc] initWithFrame:RCTSharedApplication().keyWindow.bounds];
+    if (@available(iOS 13.0, *)) {
+        for (UIWindowScene *scene in RCTSharedApplication().connectedScenes) {
+          if(scene.activationState == UISceneActivationStateForegroundActive && scene.class == UIWindowScene.class) {
+            _alertWindow = [[UIWindow alloc] initWithWindowScene:scene];
+            break;
+          }
+        }
+      }
+      if (_alertWindow == nil) {
+        _alertWindow = [[UIWindow alloc] initWithFrame:RCTSharedApplication().keyWindow.bounds];
+      }
+
     _alertWindow.rootViewController = [UIViewController new];
     _alertWindow.windowLevel = UIWindowLevelAlert + 1;
   }
