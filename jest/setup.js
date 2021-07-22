@@ -45,6 +45,13 @@ jest
       reportException: jest.fn(),
     },
   }))
+  .mock('../Libraries/Core/ExceptionsManager', () => {
+    return {
+      handleException: (...args) => {
+        return;
+      },
+    };
+  })
   .mock('../Libraries/ReactNative/UIManager', () => ({
     AndroidViewPager: {
       Commands: {
