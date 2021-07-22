@@ -338,11 +338,12 @@ public class NativeViewHierarchyOptimizer {
 
     ReactShadowNode parent = node.getParent();
 
-    // We use screenX/screenY (which round to integer pixels) at each node in the hierarchy to
-    // emulate what the layout would look like if it were actually built with native views which
-    // have to have integral top/left/bottom/right values
-    int x = node.getScreenX();
-    int y = node.getScreenY();
+    // We use getlayoutX/getlayoutY to get the exact position (maybe decimal) in the recursive 
+    // calculation of view position to obtain the child view exact position. Finally, it is 
+    // converted to the integral top / left / bottom / right values required in the Android layout
+    // process to ensure that the original continuous view is still continuous.
+    float x = node.getLayoutX();
+    float y = node.getLayoutY();
 
     while (parent != null && parent.getNativeKind() != NativeKind.PARENT) {
       if (!parent.isVirtual()) {
@@ -351,8 +352,8 @@ public class NativeViewHierarchyOptimizer {
         // them.
 
         // TODO(7854667): handle and test proper clipping
-        x += Math.round(parent.getLayoutX());
-        y += Math.round(parent.getLayoutY());
+        x += parent.getLayoutX();
+        y += parent.getLayoutY();
       }
 
       parent = parent.getParent();
@@ -361,14 +362,14 @@ public class NativeViewHierarchyOptimizer {
     applyLayoutRecursive(node, x, y);
   }
 
-  private void applyLayoutRecursive(ReactShadowNode toUpdate, int x, int y) {
+  private void applyLayoutRecursive(ReactShadowNode toUpdate, float x, float y) {
     if (toUpdate.getNativeKind() != NativeKind.NONE && toUpdate.getNativeParent() != null) {
       int tag = toUpdate.getReactTag();
       mUIViewOperationQueue.enqueueUpdateLayout(
           toUpdate.getLayoutParent().getReactTag(),
           tag,
-          x,
-          y,
+          Math.round(x),
+          Math.round(y),
           toUpdate.getScreenWidth(),
           toUpdate.getScreenHeight());
       return;
@@ -382,8 +383,8 @@ public class NativeViewHierarchyOptimizer {
       }
       mTagsWithLayoutVisited.put(childTag, true);
 
-      int childX = child.getScreenX();
-      int childY = child.getScreenY();
+      float childX = child.getLayoutX();
+      float childY = child.getLayoutY();
 
       childX += x;
       childY += y;
