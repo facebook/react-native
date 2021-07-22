@@ -76,7 +76,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     id token = [_handler sendRequest:_request withDelegate:self];
     if ([self validateRequestToken:token]) {
       _selfReference = self;
-      _status = RCTNetworkTaskInProgress;
+
+      // It's possible that, between the start of this function and now that:
+      // 1. This thread has yielded
+      // 2. Another thread had already processed sendRequest:_request, and 
+      //    set status to RCTNetworkTaskFinished by calling didCompleteWithError
+      // 3. This thread continues executing
+      //
+      // As a result, we first check to make sure this network request hadn't
+      // already finished before setting the status to "In progress"
+      if (_status == RCTNetworkTaskPending) {
+        _status = RCTNetworkTaskInProgress;
+      }
     }
   }
 }
