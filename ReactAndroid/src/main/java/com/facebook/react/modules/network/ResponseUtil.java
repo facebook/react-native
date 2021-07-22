@@ -12,7 +12,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-import java.net.SocketTimeoutException;
+import java.io.InterruptedIOException;
 
 /** Util methods to send network responses to JS. */
 public class ResponseUtil {
@@ -84,7 +84,7 @@ public class ResponseUtil {
     args.pushInt(requestId);
     args.pushString(error);
 
-    if ((e != null) && (e.getClass() == SocketTimeoutException.class)) {
+    if ((e != null) && (e.getClass() == InterruptedIOException.class)) {
       args.pushBoolean(true); // last argument is a time out boolean
     }
 
