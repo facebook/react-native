@@ -37,7 +37,7 @@ public abstract class ReactAppInstrumentationTestCase
     final ReactAppTestActivity activity = getActivity();
     activity.loadApp(
         getReactApplicationKeyUnderTest(), createReactInstanceSpecForTest(), getEnableDevSupport());
-    waitForBridgeAndUIIdle();
+    waitForBridgeAndUIIdle(5000);
   }
 
   @Override
