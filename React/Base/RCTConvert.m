@@ -473,6 +473,20 @@ RCT_ENUM_CONVERTER(
     UIReturnKeyDefault,
     integerValue)
 
+API_AVAILABLE_BEGIN(ios(11.0))
+
+RCT_ENUM_CONVERTER(
+    UITextSmartDashesType,
+    (@{
+       @"default" : @(UITextSmartDashesTypeDefault),
+       @"no" : @(UITextSmartDashesTypeNo),
+       @"yes" : @(UITextSmartDashesTypeYes),
+    }),
+    UITextSmartDashesTypeDefault,
+    integerValue)
+
+API_AVAILABLE_END
+
 RCT_ENUM_CONVERTER(
     UIViewContentMode,
     (@{
