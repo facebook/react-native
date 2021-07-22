@@ -7,28 +7,29 @@
  * @flow strict
  * @format
  */
+import type {BlobCollector} from './BlobTypes';
 
-const registry: {[key: string]: number, ...} = {};
+const registry: WeakMap<BlobCollector, number> = new WeakMap();
 
-const register = (id: string) => {
-  if (registry[id]) {
-    registry[id]++;
-  } else {
-    registry[id] = 1;
-  }
+const register = (collector: BlobCollector) => {
+  const currentCount = registry.get(collector) || 0;
+  registry.set(collector, currentCount + 1);
 };
 
-const unregister = (id: string) => {
-  if (registry[id]) {
-    registry[id]--;
-    if (registry[id] <= 0) {
-      delete registry[id];
-    }
+const unregister = (collector: BlobCollector) => {
+  const currentCount = registry.get(collector) || 0;
+
+  if (currentCount <= 1) {
+    registry.delete(collector);
+    return;
   }
+
+  registry.set(collector, currentCount - 1);
 };
 
-const has = (id: string): number | boolean => {
-  return registry[id] && registry[id] > 0;
+const has = (collector: BlobCollector): boolean => {
+  const currentCount = registry.get(collector) || 0;
+  return currentCount > 0;
 };
 
 module.exports = {

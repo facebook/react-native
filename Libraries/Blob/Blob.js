@@ -122,7 +122,7 @@ class Blob {
    */
   close() {
     const BlobManager = require('./BlobManager');
-    BlobManager.release(this.data.blobId);
+    BlobManager.release(this);
     this.data = null;
   }
 

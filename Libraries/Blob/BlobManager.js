@@ -11,7 +11,8 @@
 const Blob = require('./Blob');
 const BlobRegistry = require('./BlobRegistry');
 
-import type {BlobData, BlobOptions, BlobCollector} from './BlobTypes';
+import type {BlobData, BlobOptions} from './BlobTypes';
+import {createBlobCollector} from './BlobTypes';
 import NativeBlobModule from './NativeBlobModule';
 import invariant from 'invariant';
 
@@ -28,21 +29,6 @@ function uuidv4(): string {
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
-}
-
-// **Temporary workaround**
-// TODO(#24654): Use turbomodules for the Blob module.
-// Blob collector is a jsi::HostObject that is used by native to know
-// when the a Blob instance is deallocated. This allows to free the
-// underlying native resources. This is a hack to workaround the fact
-// that the current bridge infra doesn't allow to track js objects
-// deallocation. Ideally the whole Blob object should be a jsi::HostObject.
-function createBlobCollector(blobId: string): BlobCollector | null {
-  if (global.__blobCollectorProvider == null) {
-    return null;
-  } else {
-    return global.__blobCollectorProvider(blobId);
-  }
 }
 
 /**
@@ -109,7 +95,9 @@ class BlobManager {
    * Used internally by modules like XHR, WebSocket, etc.
    */
   static createFromOptions(options: BlobData): Blob {
-    BlobRegistry.register(options.blobId);
+    const collector =
+      options.__collector || createBlobCollector(options.blobId);
+    BlobRegistry.register(collector);
     return Object.assign(Object.create(Blob.prototype), {
       data:
         // Reuse the collector instance when creating from an existing blob.
@@ -118,7 +106,7 @@ class BlobManager {
         options.__collector == null
           ? {
               ...options,
-              __collector: createBlobCollector(options.blobId),
+              __collector: collector,
             }
           : options,
     });
@@ -127,13 +115,17 @@ class BlobManager {
   /**
    * Deallocate resources for a blob.
    */
-  static release(blobId: string): void {
+  static release(blob: Blob): void {
     invariant(NativeBlobModule, 'NativeBlobModule is available.');
 
-    BlobRegistry.unregister(blobId);
-    if (BlobRegistry.has(blobId)) {
+    const collector = blob.data.__collector;
+    collector && BlobRegistry.unregister(collector);
+
+    if (collector && BlobRegistry.has(collector)) {
       return;
     }
+
+    const blobId = blob.data.blobId;
     NativeBlobModule.release(blobId);
   }
 
