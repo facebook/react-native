@@ -110,7 +110,7 @@ function blurTextInput(textField: ?ComponentRef) {
   if (typeof textField === 'number') {
     if (__DEV__) {
       console.error(
-        'focusTextInput must be called with a host component. Passing a react tag is deprecated.',
+        'blurTextInput must be called with a host component. Passing a react tag is deprecated.',
       );
     }
 
