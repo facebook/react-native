@@ -901,6 +901,10 @@ public class ReactEditText extends AppCompatEditText
     mReactBackgroundManager.setBorderColor(position, color, alpha);
   }
 
+  public int getBorderColor(int position) {
+    return mReactBackgroundManager.getBorderColor(position);
+  }
+
   public void setBorderRadius(float borderRadius) {
     mReactBackgroundManager.setBorderRadius(borderRadius);
   }
