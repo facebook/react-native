@@ -200,12 +200,12 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
 
 #pragma mark - RCTURLRequestHandler methods
 
-- (BOOL)canHandleRequest:(NSURLRequest *)request
+- (BOOL)canHandleRequest:(nonnull NSURLRequest *)request
 {
   return [request.URL.scheme caseInsensitiveCompare:kBlobURIScheme] == NSOrderedSame;
 }
 
-- (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (nonnull NSOperation)sendRequest:(nonnull NSURLRequest *)request withDelegate:(nonnull id<RCTURLRequestDelegate>)delegate
 {
   // Lazy setup
   if (!_queue) {
@@ -242,7 +242,7 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
   return op;
 }
 
-- (void)cancelRequest:(NSOperation *)op
+- (void)cancelRequest:(nonnull NSOperation *)op
 {
   [op cancel];
 }

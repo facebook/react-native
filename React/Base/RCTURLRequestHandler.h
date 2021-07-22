@@ -19,7 +19,7 @@
  * request. Typically the handler would examine the scheme/protocol of the
  * request URL (and possibly the HTTP method and/or headers) to determine this.
  */
-- (BOOL)canHandleRequest:(NSURLRequest *)request;
+- (BOOL)canHandleRequest:(nonnull NSURLRequest *)request;
 
 /**
  * Send a network request and call the delegate with the response data. The
@@ -29,7 +29,7 @@
  * delegate methods, or the delegate won't recognize the token.
  * Following common Objective-C pattern, `delegate` will not be retained.
  */
-- (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate;
+- (nonnull id)sendRequest:(nonnull NSURLRequest *)request withDelegate:(nonnull id<RCTURLRequestDelegate>)delegate;
 
 @optional
 
@@ -38,7 +38,7 @@
  * for ones that can. It should be used to free up any resources on ongoing
  * processes associated with the request.
  */
-- (void)cancelRequest:(id)requestToken;
+- (void)cancelRequest:(nonnull id)requestToken;
 
 /**
  * If more than one RCTURLRequestHandler responds YES to `canHandleRequest:`

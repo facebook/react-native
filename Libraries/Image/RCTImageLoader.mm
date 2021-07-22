@@ -1051,7 +1051,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
 #pragma mark - RCTURLRequestHandler
 
-- (BOOL)canHandleRequest:(NSURLRequest *)request
+- (BOOL)canHandleRequest:(nonnull NSURLRequest *)request
 {
   NSURL *requestURL = request.URL;
 
@@ -1095,7 +1095,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   return NO;
 }
 
-- (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (id)sendRequest:(nonnull NSURLRequest *)request withDelegate:(nonnull id<RCTURLRequestDelegate>)delegate
 {
   __block RCTImageLoaderCancellationBlock requestToken;
   requestToken = [self loadImageWithURLRequest:request callback:^(NSError *error, UIImage *image) {
