@@ -163,6 +163,7 @@ const messageStyles = StyleSheet.create({
   },
   substitutionText: {
     color: LogBoxStyle.getTextColor(0.6),
+    fontSize: 14,
   },
 });
 
