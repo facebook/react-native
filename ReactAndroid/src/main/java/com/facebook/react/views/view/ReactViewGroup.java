@@ -265,6 +265,12 @@ public class ReactViewGroup extends ViewGroup
   public void setBorderRadius(float borderRadius) {
     ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setRadius(borderRadius);
+    // for sdk 24-28 fix issue with clipPath and LAYER_TYPE_NONE
+    // https://github.com/facebook/react-native/issues/18266
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+        && Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+      setLayerType(View.LAYER_TYPE_HARDWARE, null);
+    }
   }
 
   public void setBorderRadius(float borderRadius, int position) {
