@@ -185,6 +185,35 @@ class JSI_EXPORT Runtime {
   virtual Value evaluatePreparedJavaScript(
       const std::shared_ptr<const PreparedJavaScript>& js) = 0;
 
+  /// Drain the JavaScript VM internal Microtask (a.k.a. Job in ECMA262) queue.
+  ///
+  /// \param maxMicrotasksHint a hint to tell an implementation that it should
+  /// make a best effort not execute more than the given number. It's default
+  /// to -1 for infinity (unbounded execution).
+  /// \return true if the queue is drained or false if there is more work to do.
+  ///
+  /// When there were exceptions thrown from the execution of microtasks,
+  /// implementations shall discard the exceptional jobs. An implementation may
+  /// \throw a \c JSError object to signal the hosts to handle. In that case, an
+  /// implementation may or may not suspend the draining.
+  ///
+  /// Hosts may call this function again to resume the draining if it was
+  /// suspended due to either exceptions or the \p maxMicrotasksHint bound.
+  /// E.g. a host may repetitively invoke this function until the queue is
+  /// drained to implement the "microtask checkpint" defined in WHATWG HTML
+  /// event loop: https://html.spec.whatwg.org/C#perform-a-microtask-checkpoint.
+  ///
+  /// Note that error propagation is only a concern if a host needs to implement
+  /// `queueMicrotask`, a recent API that allows enqueueing aribitary functions
+  /// (hence may throw) as microtasks. Exceptions from ECMA-262 Promise Jobs are
+  /// handled internally to VMs and are never propagrated to hosts.
+  ///
+  /// This API offers some queue management to hosts at its best effort due to
+  /// different behaviors and limitations imposed by different VMs and APIs. By
+  /// the time this is written, An implementation may swallow exceptions (JSC),
+  /// may not pause (V8), and may not support bounded executions.
+  virtual bool drainMicrotasks(int maxMicrotasksHint = -1) = 0;
+
   /// \return the global object
   virtual Object global() = 0;
 

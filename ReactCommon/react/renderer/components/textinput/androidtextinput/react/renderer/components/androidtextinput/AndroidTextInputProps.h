@@ -141,7 +141,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   const AndroidTextInputTextShadowOffsetStruct textShadowOffset{};
   const Float lineHeight{0.0};
   const std::string textTransform{};
-  const int color{0};
+  const SharedColor color{0};
   const Float letterSpacing{0.0};
   const Float fontSize{0.0};
   const std::string textAlign{};

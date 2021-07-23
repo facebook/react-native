@@ -36,6 +36,8 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
@@ -58,6 +60,7 @@ public class ReactScrollView extends ScrollView
   private static boolean sTriedToGetScrollerField = false;
   private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
   private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
+  private static final String SCROLL_AWAY_PADDING_TOP = "scrollAwayPaddingTop";
 
   private static final int UNSET_CONTENT_OFFSET = -1;
 
@@ -94,6 +97,8 @@ public class ReactScrollView extends ScrollView
   private @Nullable ValueAnimator mScrollAnimator;
   private int mFinalAnimatedPositionScrollX;
   private int mFinalAnimatedPositionScrollY;
+
+  private int mScrollAwayPaddingTop = 0;
 
   private int mLastStateUpdateScrollX = -1;
   private int mLastStateUpdateScrollY = -1;
@@ -280,6 +285,12 @@ public class ReactScrollView extends ScrollView
       if (mRemoveClippedSubviews) {
         updateClippingRect();
       }
+
+      // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
+      // when JS processes the scroll event, the C++ ShadowNode representation will have a
+      // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
+      // the error as much as possible.
+      updateStateOnScroll();
 
       ReactScrollViewHelper.emitScrollEvent(
           this,
@@ -960,32 +971,91 @@ public class ReactScrollView extends ScrollView
   }
 
   /**
+   * ScrollAway: This enables a natively-controlled navbar that optionally obscures the top content
+   * of the ScrollView. Whether or not the navbar is obscuring the React Native surface is
+   * determined outside of React Native.
+   *
+   * <p>Note: all ScrollViews and HorizontalScrollViews in React have exactly one child: the
+   * "content" View (see ScrollView.js). That View is non-collapsable so it will never be
+   * View-flattened away. However, it is possible to pass custom styles into that View.
+   *
+   * <p>If you are using this feature it is assumed that you have full control over this ScrollView
+   * and that you are **not** overriding the ScrollView content view to pass in a `translateY`
+   * style. `translateY` must never be set from ReactJS while using this feature!
+   */
+  public void setScrollAwayTopPaddingEnabledUnstable(int topPadding) {
+    int count = getChildCount();
+
+    Assertions.assertCondition(
+        count == 1, "React Native ScrollView always has exactly 1 child; a content View");
+
+    if (count > 0) {
+      for (int i = 0; i < count; i++) {
+        View childView = getChildAt(i);
+        childView.setTranslationY(topPadding);
+      }
+
+      // Add the topPadding value as the bottom padding for the ScrollView.
+      // Otherwise, we'll push down the contents of the scroll view down too
+      // far off screen.
+      setPadding(0, 0, 0, topPadding);
+    }
+
+    updateScrollAwayState(topPadding);
+    setRemoveClippedSubviews(mRemoveClippedSubviews);
+  }
+
+  /**
    * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
    */
-  private void updateStateOnScroll(final int scrollX, final int scrollY) {
+  private boolean updateStateOnScroll(final int scrollX, final int scrollY) {
+    if (ViewUtil.getUIManagerType(getId()) == UIManagerType.DEFAULT) {
+      return false;
+    }
+
     // Dedupe events to reduce JNI traffic
     if (scrollX == mLastStateUpdateScrollX && scrollY == mLastStateUpdateScrollY) {
-      return;
+      return false;
     }
 
     mLastStateUpdateScrollX = scrollX;
     mLastStateUpdateScrollY = scrollY;
 
+    forceUpdateState();
+
+    return true;
+  }
+
+  private boolean updateStateOnScroll() {
+    return updateStateOnScroll(getScrollX(), getScrollY());
+  }
+
+  private void updateScrollAwayState(int scrollAwayPaddingTop) {
+    if (mScrollAwayPaddingTop == scrollAwayPaddingTop) {
+      return;
+    }
+
+    mScrollAwayPaddingTop = scrollAwayPaddingTop;
+
+    forceUpdateState();
+  }
+
+  private void forceUpdateState() {
+    final int scrollX = mLastStateUpdateScrollX;
+    final int scrollY = mLastStateUpdateScrollY;
+    final int scrollAwayPaddingTop = mScrollAwayPaddingTop;
+
     mFabricViewStateManager.setState(
         new FabricViewStateManager.StateUpdateCallback() {
           @Override
           public WritableMap getStateUpdate() {
-
             WritableMap map = new WritableNativeMap();
             map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(scrollX));
             map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(scrollY));
+            map.putDouble(SCROLL_AWAY_PADDING_TOP, PixelUtil.toDIPFromPixel(scrollAwayPaddingTop));
             return map;
           }
         });
-  }
-
-  private void updateStateOnScroll() {
-    updateStateOnScroll(getScrollX(), getScrollY());
   }
 
   @Override

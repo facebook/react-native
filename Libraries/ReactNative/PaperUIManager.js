@@ -15,6 +15,7 @@ const UIManagerProperties = require('./UIManagerProperties');
 const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
 
 import NativeUIManager from './NativeUIManager';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 const viewManagerConfigs = {};
 
@@ -84,7 +85,7 @@ const UIManagerJS = {
   createView(
     reactTag: ?number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: Object,
   ): void {
     if (Platform.OS === 'ios' && viewManagerConfigs[viewName] === undefined) {

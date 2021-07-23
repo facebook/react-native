@@ -38,12 +38,6 @@ public class DrawerSlideEvent extends Event<DrawerSlideEvent> {
   }
 
   @Override
-  public short getCoalescingKey() {
-    // All slide events for a given view can be coalesced.
-    return 0;
-  }
-
-  @Override
   protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putDouble("offset", getOffset());

@@ -124,6 +124,17 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
+    if (layout == null) {
+      // Text layout is calculated during pre-draw phase, so in some cases it can be empty during
+      // layout phase, which usually happens before drawing.
+      // The text layout is created by private {@link assumeLayout} method, which we can try to
+      // invoke directly through reflection or indirectly through some methods that compute it
+      // (e.g. {@link getExtendedPaddingTop}).
+      // It is safer, however, to just early return here, as next measure/layout passes are way more
+      // likely to have the text layout computed.
+      return;
+    }
+
     TextInlineViewPlaceholderSpan[] placeholders =
         text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
     ArrayList inlineViewInfoArray =

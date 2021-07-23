@@ -19,7 +19,7 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation 'com.android.tools.build:gradle:4.1.0'
+    implementation 'com.android.tools.build:gradle:4.2.1'
     // Use the same Gson version that `com.android.tools.build:gradle` depends on.
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.google.guava:guava:29.0-jre'

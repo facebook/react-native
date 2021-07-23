@@ -8,6 +8,7 @@
 #include "SurfaceHandler.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/uimanager/UIManager.h>
 
@@ -15,7 +16,6 @@ namespace facebook {
 namespace react {
 
 using Status = SurfaceHandler::Status;
-using DisplayMode = SurfaceHandler::DisplayMode;
 
 SurfaceHandler::SurfaceHandler(
     std::string const &moduleName,
@@ -54,35 +54,38 @@ Status SurfaceHandler::getStatus() const noexcept {
 }
 
 void SurfaceHandler::start() const noexcept {
+  SystraceSection s("SurfaceHandler::start");
+  std::unique_lock<better::shared_mutex> lock(linkMutex_);
+  react_native_assert(
+      link_.status == Status::Registered && "Surface must be registered.");
+  react_native_assert(
+      getLayoutConstraints().layoutDirection != LayoutDirection::Undefined &&
+      "layoutDirection must be set.");
+
+  auto parameters = Parameters{};
   {
-    std::unique_lock<better::shared_mutex> lock(linkMutex_);
-    react_native_assert(
-        link_.status == Status::Registered && "Surface must be registered.");
-    react_native_assert(
-        getLayoutConstraints().layoutDirection != LayoutDirection::Undefined &&
-        "layoutDirection must be set.");
-
-    auto parameters = Parameters{};
-    {
-      std::shared_lock<better::shared_mutex> parametersLock(parametersMutex_);
-      parameters = parameters_;
-    }
-
-    auto shadowTree = std::make_unique<ShadowTree>(
-        parameters.surfaceId,
-        parameters.layoutConstraints,
-        parameters.layoutContext,
-        *link_.uiManager);
-
-    link_.shadowTree = shadowTree.get();
-
-    link_.uiManager->startSurface(
-        std::move(shadowTree), parameters.moduleName, parameters.props);
-
-    link_.status = Status::Running;
-
-    applyDisplayMode(parameters.displayMode);
+    SystraceSection s2("SurfaceHandler::start::paramsLock");
+    std::shared_lock<better::shared_mutex> parametersLock(parametersMutex_);
+    parameters = parameters_;
   }
+
+  auto shadowTree = std::make_unique<ShadowTree>(
+      parameters.surfaceId,
+      parameters.layoutConstraints,
+      parameters.layoutContext,
+      *link_.uiManager);
+
+  link_.shadowTree = shadowTree.get();
+
+  link_.uiManager->startSurface(
+      std::move(shadowTree),
+      parameters.moduleName,
+      parameters.props,
+      parameters_.displayMode);
+
+  link_.status = Status::Running;
+
+  applyDisplayMode(parameters.displayMode);
 }
 
 void SurfaceHandler::stop() const noexcept {
@@ -121,6 +124,12 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
       return;
     }
 
+    link_.uiManager->setSurfaceProps(
+        parameters_.surfaceId,
+        parameters_.moduleName,
+        parameters_.props,
+        parameters_.displayMode);
+
     applyDisplayMode(displayMode);
   }
 }
@@ -148,6 +157,7 @@ std::string SurfaceHandler::getModuleName() const noexcept {
 }
 
 void SurfaceHandler::setProps(folly::dynamic const &props) const noexcept {
+  SystraceSection s("SurfaceHandler::setProps");
   std::unique_lock<better::shared_mutex> lock(parametersMutex_);
   parameters_.props = props;
 }
@@ -193,6 +203,7 @@ Size SurfaceHandler::measure(
 void SurfaceHandler::constraintLayout(
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext) const noexcept {
+  SystraceSection s("SurfaceHandler::constraintLayout");
   {
     std::unique_lock<better::shared_mutex> lock(parametersMutex_);
 
@@ -233,6 +244,7 @@ LayoutContext SurfaceHandler::getLayoutContext() const noexcept {
 #pragma mark - Private
 
 void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
+  SystraceSection s("SurfaceHandler::applyDisplayMode");
   react_native_assert(
       link_.status == Status::Running && "Surface must be running.");
   react_native_assert(
@@ -278,9 +290,11 @@ void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
 }
 
 SurfaceHandler::~SurfaceHandler() noexcept {
-  react_native_assert(
-      link_.status == Status::Unregistered &&
-      "`SurfaceHandler` must be unregistered (or moved-from) before deallocation.");
+  // TODO(T88046056): Fix Android memory leak before uncommenting changes
+  //  react_native_assert(
+  //      link_.status == Status::Unregistered &&
+  //      "`SurfaceHandler` must be unregistered (or moved-from) before
+  //      deallocation.");
 }
 
 } // namespace react

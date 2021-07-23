@@ -12,7 +12,7 @@
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs.h>
 
-#include "shadowTreeGeneration.h"
+#include <react/test_utils/shadowTreeGeneration.h>
 
 #include <glog/logging.h>
 #include <gtest/gtest.h>

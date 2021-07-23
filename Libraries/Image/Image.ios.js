@@ -8,14 +8,13 @@
  * @format
  */
 
-const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');
-const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('../StyleSheet/StyleSheet');
+import DeprecatedImagePropType from '../DeprecatedPropTypes/DeprecatedImagePropType';
+import * as React from 'react';
+import StyleSheet from '../StyleSheet/StyleSheet';
 
-const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const resolveAssetSource = require('./resolveAssetSource');
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import resolveAssetSource from './resolveAssetSource';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
@@ -23,6 +22,7 @@ import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
 import ImageViewNativeComponent from './ImageViewNativeComponent';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 function getSize(
   uri: string,
@@ -60,13 +60,15 @@ function getSizeWithHeaders(
 function prefetchWithMetadata(
   url: string,
   queryRootName: string,
-  rootTag?: ?number,
+  rootTag?: ?RootTag,
 ): any {
   if (NativeImageLoaderIOS.prefetchImageWithMetadata) {
     // number params like rootTag cannot be nullable before TurboModules is available
     return NativeImageLoaderIOS.prefetchImageWithMetadata(
       url,
       queryRootName,
+      // NOTE: RootTag type
+      // $FlowFixMe[incompatible-call] RootTag: number is incompatible with RootTag
       rootTag ? rootTag : 0,
     );
   } else {

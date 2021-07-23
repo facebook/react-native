@@ -8,21 +8,39 @@
  * @flow
  */
 
-'use strict';
-import {SectionList_onEndReached} from './SectionListExamples';
-const React = require('react');
+import SectionListBaseExample from './SectionListBaseExample';
+import * as React from 'react';
 
-exports.title = 'SectionList onEndReached';
-exports.testTitle = 'Test onEndReached callback';
-exports.category = 'ListView';
-exports.documentationURL = 'https://reactnative.dev/docs/sectionlist';
-exports.description =
-  'Scroll to end of list or tap Test button to see `onEndReached` triggered.';
-exports.examples = [
-  {
-    title: 'SectionList onEndReached',
-    render: function(): React.Element<typeof SectionList_onEndReached> {
-      return <SectionList_onEndReached />;
-    },
+export function SectionList_onEndReached(): React.Node {
+  const [output, setOutput] = React.useState('');
+  const exampleProps = {
+    onEndReached: info => setOutput('onEndReached'),
+    onEndReachedThreshold: 0,
+  };
+  const ref = React.useRef(null);
+
+  const onTest = () => {
+    const scrollResponder = ref?.current?.getScrollResponder();
+    if (scrollResponder != null) {
+      scrollResponder.scrollToEnd();
+    }
+  };
+
+  return (
+    <SectionListBaseExample
+      ref={ref}
+      exampleProps={exampleProps}
+      testOutput={output}
+      onTest={onTest}
+    />
+  );
+}
+
+export default {
+  title: 'SectionList onEndReached',
+  name: 'SectionList-onEndReached',
+  description: 'Test onEndReached behavior',
+  render: function(): React.Element<typeof SectionList_onEndReached> {
+    return <SectionList_onEndReached />;
   },
-];
+};

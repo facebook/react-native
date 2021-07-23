@@ -12,9 +12,10 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
   /**
@@ -40,7 +41,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       int fontWeight,
       @Nullable String fontFeatureSettings,
       @Nullable String fontFamily,
-      @NonNull AssetManager assetManager) {
+      AssetManager assetManager) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFeatureSettings = fontFeatureSettings;
@@ -54,21 +55,18 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   @Override
-  public void updateMeasureState(@NonNull TextPaint paint) {
+  public void updateMeasureState(TextPaint paint) {
     apply(paint, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
   }
 
-  /** Returns {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. */
   public int getStyle() {
-    return (mStyle == ReactTextShadowNode.UNSET ? 0 : mStyle);
+    return mStyle == ReactBaseTextShadowNode.UNSET ? Typeface.NORMAL : mStyle;
   }
 
-  /** Returns {@link Typeface#NORMAL} or {@link Typeface#BOLD}. */
   public int getWeight() {
-    return (mWeight == ReactTextShadowNode.UNSET ? 0 : mWeight);
+    return mWeight == ReactBaseTextShadowNode.UNSET ? TypefaceStyle.NORMAL : mWeight;
   }
 
-  /** Returns the font family set for this StyleSpan. */
   public @Nullable String getFontFamily() {
     return mFontFamily;
   }

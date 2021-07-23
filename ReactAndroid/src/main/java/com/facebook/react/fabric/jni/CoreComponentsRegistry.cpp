@@ -12,8 +12,6 @@
 #include <fbjni/fbjni.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
-#include <react/renderer/components/androidpicker/AndroidDialogPickerComponentDescriptor.h>
-#include <react/renderer/components/androidpicker/AndroidDropdownPickerComponentDescriptor.h>
 #include <react/renderer/components/androidswitch/AndroidSwitchComponentDescriptor.h>
 #include <react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h>
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
@@ -71,10 +69,6 @@ CoreComponentsRegistry::sharedProviderRegistry() {
         concreteComponentDescriptorProvider<ParagraphComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
                           AndroidDrawerLayoutComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          AndroidDialogPickerComponentDescriptor>());
-    providerRegistry->add(concreteComponentDescriptorProvider<
-                          AndroidDropdownPickerComponentDescriptor>());
 
     return providerRegistry;
   }();

@@ -117,6 +117,14 @@ enum class AccessibilityRole {
   Toolbar,
 };
 
+enum class TextTransform {
+  None,
+  Uppercase,
+  Lowercase,
+  Capitalize,
+  Unset,
+};
+
 } // namespace react
 } // namespace facebook
 
@@ -194,6 +202,13 @@ struct hash<facebook::react::TextBreakStrategy> {
 template <>
 struct hash<facebook::react::AccessibilityRole> {
   size_t operator()(const facebook::react::AccessibilityRole &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::TextTransform> {
+  size_t operator()(const facebook::react::TextTransform &v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

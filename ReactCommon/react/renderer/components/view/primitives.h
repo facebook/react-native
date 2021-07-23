@@ -38,18 +38,19 @@ struct CascadedRectangleEdges {
   OptionalT all{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
-    const auto leading = isRTL ? end : start;
-    const auto trailing = isRTL ? start : end;
+    const auto leadingEdge = isRTL ? end : start;
+    const auto trailingEdge = isRTL ? start : end;
     const auto horizontalOrAllOrDefault =
         horizontal.value_or(all.value_or(defaults));
     const auto verticalOrAllOrDefault =
         vertical.value_or(all.value_or(defaults));
 
     return {
-        /* .left = */ left.value_or(leading.value_or(horizontalOrAllOrDefault)),
+        /* .left = */
+        left.value_or(leadingEdge.value_or(horizontalOrAllOrDefault)),
         /* .top = */ top.value_or(verticalOrAllOrDefault),
         /* .right = */
-        right.value_or(trailing.value_or(horizontalOrAllOrDefault)),
+        right.value_or(trailingEdge.value_or(horizontalOrAllOrDefault)),
         /* .bottom = */ bottom.value_or(verticalOrAllOrDefault),
     };
   }

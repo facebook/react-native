@@ -29,6 +29,8 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -38,6 +40,7 @@ import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
@@ -549,7 +552,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   /*package*/ void addViewWithSubviewClippingEnabled(
-      View child, int index, ViewGroup.LayoutParams params) {
+      final View child, int index, ViewGroup.LayoutParams params) {
     Assertions.assertCondition(mRemoveClippedSubviews);
     Assertions.assertNotNull(mClippingRect);
     Assertions.assertNotNull(mAllChildren);
@@ -564,6 +567,29 @@ public class ReactViewGroup extends ViewGroup
     }
     updateSubviewClipStatus(mClippingRect, index, clippedSoFar);
     child.addOnLayoutChangeListener(mChildrenLayoutChangeListener);
+
+    if (child instanceof ReactClippingProhibitedView) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              if (!child.isShown()) {
+                ReactSoftException.logSoftException(
+                    TAG,
+                    new ReactNoCrashSoftException(
+                        "Child view has been added to Parent view in which it is clipped and not visible."
+                            + " This is not legal for this particular child view. Child: ["
+                            + child.getId()
+                            + "] "
+                            + child.toString()
+                            + " Parent: ["
+                            + getId()
+                            + "] "
+                            + toString()));
+              }
+            }
+          });
+    }
   }
 
   /*package*/ void removeViewWithSubviewClippingEnabled(View view) {

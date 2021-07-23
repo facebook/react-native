@@ -9,19 +9,36 @@
  */
 
 'use strict';
-import {SectionList_inverted} from './SectionListExamples';
-const React = require('react');
+import SectionListBaseExample from './SectionListBaseExample';
+import * as React from 'react';
 
-exports.title = 'SectionList inverted';
-exports.testTitle = 'Test inverted prop';
-exports.category = 'ListView';
-exports.documentationURL = 'https://reactnative.dev/docs/sectionlist';
-exports.description = 'Toggle inverted to see list inverted.';
-exports.examples = [
-  {
-    title: 'SectionList inverted',
-    render: function(): React.Element<typeof SectionList_inverted> {
-      return <SectionList_inverted />;
-    },
+export function SectionList_inverted(): React.Node {
+  const [output, setOutput] = React.useState('inverted false');
+  const [exampleProps, setExampleProps] = React.useState({
+    inverted: false,
+  });
+
+  const onTest = () => {
+    setExampleProps({
+      inverted: !exampleProps.inverted,
+    });
+    setOutput(`Is inverted: ${(!exampleProps.inverted).toString()}`);
+  };
+
+  return (
+    <SectionListBaseExample
+      exampleProps={exampleProps}
+      testOutput={output}
+      onTest={onTest}
+      testLabel={exampleProps.inverted ? 'Toggle false' : 'Toggle true'}
+    />
+  );
+}
+
+export default {
+  title: 'SectionList Inverted',
+  name: 'SectionList-inverted',
+  render: function(): React.Element<typeof SectionList_inverted> {
+    return <SectionList_inverted />;
   },
-];
+};
