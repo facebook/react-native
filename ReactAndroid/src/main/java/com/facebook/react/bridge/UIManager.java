@@ -18,9 +18,10 @@ import java.util.List;
 
 public interface UIManager extends JSIModule, PerformanceCounter {
 
-  /** Registers a new root view. */
+  /** Registers a new root view. @Deprecated call startSurface instead */
   @UiThread
   @ThreadConfined(UI)
+  @Deprecated
   <T extends View> int addRootView(
       final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
 
@@ -124,7 +125,19 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param eventName name of the event
    * @param event parameters
    */
+  @Deprecated
   void receiveEvent(int reactTag, String eventName, @Nullable WritableMap event);
+
+  /**
+   * This method dispatches events from RN Android code to JS. The delivery of this event will not
+   * be queued in EventDispatcher class.
+   *
+   * @param surfaceId
+   * @param reactTag tag
+   * @param eventName name of the event
+   * @param event parameters
+   */
+  void receiveEvent(int surfaceId, int reactTag, String eventName, @Nullable WritableMap event);
 
   /** Resolves Direct Event name exposed to JS from the one known to the Native side. */
   @Deprecated

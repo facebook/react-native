@@ -332,7 +332,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["textShadowOffset"] = toDynamic(textShadowOffset);
   props["lineHeight"] = lineHeight;
   props["textTransform"] = textTransform;
-  props["color"] = color;
+  props["color"] = toDynamic(color);
   props["letterSpacing"] = letterSpacing;
   props["fontSize"] = fontSize;
   props["textAlign"] = textAlign;

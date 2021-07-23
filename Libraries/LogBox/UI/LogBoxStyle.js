@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 export function getBackgroundColor(opacity?: number): string {
   return `rgba(51, 51, 51, ${opacity == null ? 1 : opacity})`;
 }

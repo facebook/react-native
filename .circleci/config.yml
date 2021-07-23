@@ -27,6 +27,7 @@ executors:
   nodelts:
     <<: *defaults
     docker:
+      # Note: Version set separately for Windows builds, see below.
       - image: circleci/node:14
   nodeprevlts:
     <<: *defaults
@@ -35,7 +36,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:2.1
+      - image: reactnativecommunity/react-native-android:4.0
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -51,7 +52,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: &_XCODE_VERSION "12.1.0"
+      xcode: &_XCODE_VERSION "12.5.0"
 
 # -------------------------
 #        COMMANDS
@@ -244,9 +245,12 @@ jobs:
 
       - install_github_bot_deps
 
+      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
           name: Install additional GitHub bot dependencies
-          command: apt update && apt install -y shellcheck jq
+          command: |
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            apt update && apt install -y shellcheck jq
 
       - run:
           name: Run linters against modified files (analysis-bot)
@@ -500,12 +504,6 @@ jobs:
           command: source scripts/android-setup.sh && launchAVD
           background: true
 
-      # Keep configuring Android dependencies while AVD boots up
-
-      - run:
-          name: Install rsync, zip
-          command: apt-get update -y && apt-get install rsync zip -y
-
       # Install Buck
       - install_buck_tooling
 
@@ -612,12 +610,19 @@ jobs:
     environment:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
       - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
-      - ANDROID_BUILD_VERSION: 28
-      - ANDROID_TOOLS_VERSION: 29.0.3
+      - ANDROID_BUILD_VERSION: 30
+      - ANDROID_TOOLS_VERSION: 30.0.2
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
-      - NDK_VERSION: 20.1.5948944
+      - NDK_VERSION: 21.4.7075529
     steps:
       - checkout
+
+      - run:
+          name: Install Node
+          # Note: Version set separately for non-Windows builds, see above.
+          command: |
+            nvm install 14.17.0
+            nvm use 14.17.0
 
       # Setup Dependencies
       - run:
@@ -639,9 +644,11 @@ jobs:
           paths:
             - C:\Users\circleci\AppData\Local\Yarn
 
+      # Try to install the SDK up to 3 times, since network flakiness can cause install failures
+      # Using a timeout of 9 mins, as circle ci will timeout if there is no output for 10 mins
       - run:
           name: Install Android SDK Tools
-          command: choco install android-sdk
+          command: choco install android-sdk --timeout 540; if (!$?) { choco install android-sdk --timeout 540 --force --forcedependencies}; if (!$?) { choco install android-sdk  --force --forcedependencies}
 
       - run:
           name: Setup Android SDKs
@@ -893,7 +900,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
     jobs:
       - nightly_job
 

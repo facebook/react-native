@@ -4,7 +4,7 @@ This document serves as guide for release coordinators. You can find a list of r
 
 ## Release schedule
 
-React Native follows a monthly release train. Every month, a new branch created off master enters the Release Candidate phase, and the previous Release Candidate branch is released and considered stable.
+React Native follows a monthly release train. Every month, a new branch created off `main` enters the Release Candidate phase, and the previous Release Candidate branch is released and considered stable.
 
 
 | Version | RC release          | Stable release   |
@@ -28,7 +28,7 @@ React Native follows a monthly release train. Every month, a new branch created 
 
 The following are required for the local test suite to run:
 
-- macOS with [Android dev environment set up](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md)
+- macOS with [Android dev environment set up](https://github.com/facebook/react-native/blob/HEAD/ReactAndroid/README.md)
 - [react-native-cli](https://www.npmjs.com/package/react-native-cli) installed globally (v0.2.0 or newer)
 
 ### Step 1: Check everything works
@@ -90,13 +90,13 @@ Once everything is ready, create a new release at https://github.com/facebook/re
 
 ### Step 4: Update `Breaking Changes` document
 
-Once the release is cut, go to the [page](https://github.com/facebook/react-native/wiki/Breaking-Changes) where all breaking changes are listed and create section for the release. Don't forget to move all breaking changes from `master` that are now part of the release.
+Once the release is cut, go to the [page](https://github.com/facebook/react-native/wiki/Breaking-Changes) where all breaking changes are listed and create section for the release. Don't forget to move all breaking changes from `main` that are now part of the release.
 
 When finished and there are breaking changes, include them in the release notes you just created.
 
 ### Step 5: Tweet about the RC release
 
-Tweet about it! Link to release notes and say "please report issues" and link to the master issue to track bugs you created.
+Tweet about it! Link to release notes and say "please report issues" and link to the main issue to track bugs you created.
 
 ### Step 6: IMPORTANT: Track bug reports from the community during the following month, ping owners to get them fixed
 
@@ -106,7 +106,7 @@ Now that the release is out in the open, go ahead and create a GitHub issue titl
 
 ## How to release an RC update (e.g. 0.57.0-rc.1, 0.57.0-rc.2)
 
-The release is now in the open, people are finding bugs, and fixes have landed in master. People have been nominating fixes in the issue you created above. Use your best judgment to decide which commits merit an RC update. It's a good idea to do a new RC release when several small and non-risky bugs have been fixed. Having a few RC releases can also help people bisect in case we cherry-pick a bad commit by mistake.
+The release is now in the open, people are finding bugs, and fixes have landed in `main`. People have been nominating fixes in the issue you created above. Use your best judgment to decide which commits merit an RC update. It's a good idea to do a new RC release when several small and non-risky bugs have been fixed. Having a few RC releases can also help people bisect in case we cherry-pick a bad commit by mistake.
 
 **Only cherry-pick small and non-risky bug fixes**. **Don't pick new features into the release** as this greatly increases the risk of something breaking. The main point of the RC is to let people to use it for a month and fix the most serious bugs.
 

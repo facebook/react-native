@@ -8,19 +8,16 @@
  * @format
  */
 
-'use strict';
+import * as React from 'react';
+import BoundingDimensions from './BoundingDimensions';
+import Platform from '../../Utilities/Platform';
+import Position from './Position';
+import UIManager from '../../ReactNative/UIManager';
+import SoundManager from '../Sound/SoundManager';
 
-const BoundingDimensions = require('./BoundingDimensions');
-const Platform = require('../../Utilities/Platform');
-const Position = require('./Position');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const UIManager = require('../../ReactNative/UIManager');
-const View = require('../View/View');
-const SoundManager = require('../Sound/SoundManager');
+import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 
-const normalizeColor = require('../../StyleSheet/normalizeColor');
-
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 
@@ -421,6 +418,7 @@ const TouchableMixin = {
    * @param {SyntheticEvent} e Synthetic event from event system.
    *
    */
+  // $FlowFixMe[signature-verification-failure]
   touchableHandleResponderGrant: function(e: PressEvent) {
     const dispatchID = e.currentTarget;
     // Since e is used in a callback invoked on another event loop
@@ -462,6 +460,7 @@ const TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderRelease` event.
    */
+  // $FlowFixMe[signature-verification-failure]
   touchableHandleResponderRelease: function(e: PressEvent) {
     this.pressInLocation = null;
     this._receiveSignal(Signals.RESPONDER_RELEASE, e);
@@ -470,6 +469,7 @@ const TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderTerminate` event.
    */
+  // $FlowFixMe[signature-verification-failure]
   touchableHandleResponderTerminate: function(e: PressEvent) {
     this.pressInLocation = null;
     this._receiveSignal(Signals.RESPONDER_TERMINATED, e);
@@ -478,6 +478,7 @@ const TouchableMixin = {
   /**
    * Place as callback for a DOM element's `onResponderMove` event.
    */
+  // $FlowFixMe[signature-verification-failure]
   touchableHandleResponderMove: function(e: PressEvent) {
     // Measurement may not have returned yet.
     if (!this.state.touchable.positionOnActivate) {
@@ -563,6 +564,7 @@ const TouchableMixin = {
    * element that was blurred just prior to this. This can be overridden when
    * using `Touchable.Mixin.withoutDefaultFocusAndBlur`.
    */
+  // $FlowFixMe[signature-verification-failure]
   touchableHandleFocus: function(e: Event) {
     this.props.onFocus && this.props.onFocus(e);
   },
@@ -575,6 +577,7 @@ const TouchableMixin = {
    * This can be overridden when using
    * `Touchable.Mixin.withoutDefaultFocusAndBlur`.
    */
+  // $FlowFixMe[signature-verification-failure]
   touchableHandleBlur: function(e: Event) {
     this.props.onBlur && this.props.onBlur(e);
   },
@@ -668,6 +671,7 @@ const TouchableMixin = {
     }
   },
 
+  // $FlowFixMe[signature-verification-failure]
   _handleQueryLayout: function(
     l: number,
     t: number,
@@ -694,11 +698,13 @@ const TouchableMixin = {
     );
   },
 
+  // $FlowFixMe[signature-verification-failure]
   _handleDelay: function(e: PressEvent) {
     this.touchableDelayTimeout = null;
     this._receiveSignal(Signals.DELAY, e);
   },
 
+  // $FlowFixMe[signature-verification-failure]
   _handleLongDelay: function(e: PressEvent) {
     this.longPressDelayTimeout = null;
     const curState = this.state.touchable.touchState;
@@ -718,6 +724,7 @@ const TouchableMixin = {
    * @throws Error if invalid state transition or unrecognized signal.
    * @sideeffects
    */
+  // $FlowFixMe[signature-verification-failure]
   _receiveSignal: function(signal: Signal, e: PressEvent) {
     const responderID = this.state.touchable.responderID;
     const curState = this.state.touchable.touchState;
@@ -769,6 +776,7 @@ const TouchableMixin = {
     );
   },
 
+  // $FlowFixMe[signature-verification-failure]
   _savePressInLocation: function(e: PressEvent) {
     const touch = extractSingleTouch(e.nativeEvent);
     const pageX = touch && touch.pageX;
@@ -800,6 +808,7 @@ const TouchableMixin = {
    * @param {Event} e Native event.
    * @sideeffects
    */
+  // $FlowFixMe[signature-verification-failure]
   _performSideEffectsForTransition: function(
     curState: State,
     nextState: State,
@@ -861,11 +870,13 @@ const TouchableMixin = {
     this.touchableDelayTimeout = null;
   },
 
+  // $FlowFixMe[signature-verification-failure]
   _startHighlight: function(e: PressEvent) {
     this._savePressInLocation(e);
     this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
   },
 
+  // $FlowFixMe[signature-verification-failure]
   _endHighlight: function(e: PressEvent) {
     if (this.touchableHandleActivePressOut) {
       if (
@@ -899,7 +910,6 @@ TouchableMixin.withoutDefaultFocusAndBlur = TouchableMixinWithoutDefaultFocusAnd
 
 const Touchable = {
   Mixin: TouchableMixin,
-  TOUCH_TARGET_DEBUG: false, // Highlights all touchable targets. Toggle with Inspector.
   /**
    * Renders a debugging overlay to visualize touch target with hitSlop (might not work on Android).
    */
@@ -907,54 +917,15 @@ const Touchable = {
     color,
     hitSlop,
   }: {
-    color: string | number,
+    color: ColorValue,
     hitSlop: EdgeInsetsProp,
     ...
   }): null | React.Node => {
-    if (!Touchable.TOUCH_TARGET_DEBUG) {
-      return null;
+    if (__DEV__) {
+      return <PressabilityDebugView color={color} hitSlop={hitSlop} />;
     }
-    if (!__DEV__) {
-      throw Error(
-        'Touchable.TOUCH_TARGET_DEBUG should not be enabled in prod!',
-      );
-    }
-    const debugHitSlopStyle = {};
-    hitSlop = hitSlop || {top: 0, bottom: 0, left: 0, right: 0};
-    for (const key in hitSlop) {
-      debugHitSlopStyle[key] = -hitSlop[key];
-    }
-    const normalizedColor = normalizeColor(color);
-    if (typeof normalizedColor !== 'number') {
-      return null;
-    }
-    const hexColor =
-      '#' + ('00000000' + normalizedColor.toString(16)).substr(-8);
-    return (
-      <View
-        pointerEvents="none"
-        style={[
-          styles.debug,
-          /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.111 was deployed. To see the error,
-           * delete this comment and run Flow. */
-          {
-            borderColor: hexColor.slice(0, -2) + '55', // More opaque
-            backgroundColor: hexColor.slice(0, -2) + '0F', // Less opaque
-            ...debugHitSlopStyle,
-          },
-        ]}
-      />
-    );
+    return null;
   },
 };
-
-const styles = StyleSheet.create({
-  debug: {
-    position: 'absolute',
-    borderWidth: 1,
-    borderStyle: 'dashed',
-  },
-});
 
 module.exports = Touchable;

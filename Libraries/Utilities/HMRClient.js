@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const DevSettings = require('./DevSettings');
 const invariant = require('invariant');
 const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
@@ -18,8 +16,8 @@ const prettyFormat = require('pretty-format');
 
 import getDevServer from '../Core/Devtools/getDevServer';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
-import * as LogBoxData from '../LogBox/Data/LogBoxData';
-import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
+import LogBox from '../LogBox/LogBox';
+import type {ExtendedError} from '../Core/ExtendedError';
 
 const pendingEntryPoints = [];
 let hmrClient = null;
@@ -120,6 +118,7 @@ const HMRClient: HMRClientNativeInterface = {
         JSON.stringify({
           type: 'log',
           level,
+          mode: global.RN$Bridgeless ? 'NOBRIDGE' : 'BRIDGE',
           data: data.map(item =>
             typeof item === 'string'
               ? item
@@ -208,7 +207,7 @@ Error: ${e.message}`;
     client.on('update', ({isInitialUpdate}) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
-        LogBoxData.clear();
+        LogBox.clearAllLogs();
       }
     });
 
@@ -325,6 +324,8 @@ function showCompileError() {
   const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;
 
+  /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+   * parameters */
   const error: ExtendedError = new Error(message);
   // Symbolicating compile errors is wasted effort
   // because the stack trace is meaningless:

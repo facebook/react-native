@@ -62,6 +62,10 @@ class YogaDirtyFlagTest : public ::testing::Test {
                 Element<ScrollViewShadowNode>()
                   .reference(scrollViewShadowNode_)
                   .tag(7)
+                  .children({
+                    Element<ViewShadowNode>()
+                      .tag(8)
+                  })
               })
           });
     // clang-format on

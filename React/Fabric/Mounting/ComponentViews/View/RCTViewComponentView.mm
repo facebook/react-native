@@ -23,6 +23,7 @@ using namespace facebook::react;
   UIColor *_backgroundColor;
   CALayer *_borderLayer;
   BOOL _needsInvalidateLayer;
+  BOOL _isJSResponder;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
@@ -284,6 +285,16 @@ using namespace facebook::react;
   }
 }
 
+- (BOOL)isJSResponder
+{
+  return _isJSResponder;
+}
+
+- (void)setIsJSResponder:(BOOL)isJSResponder
+{
+  _isJSResponder = isJSResponder;
+}
+
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
   [super finalizeUpdates:updateMask];
@@ -310,6 +321,7 @@ using namespace facebook::react;
 
   _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   _eventEmitter.reset();
+  _isJSResponder = NO;
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
@@ -338,9 +350,7 @@ using namespace facebook::react;
 
   BOOL clipsToBounds = self.clipsToBounds;
 
-  if (RCTExperimentGetOptimizedHitTesting()) {
-    clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
-  }
+  clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
 
   if (clipsToBounds && !isPointInside) {
     return nil;
@@ -620,7 +630,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
   for (auto const &accessibilityAction : accessibilityActions) {
     [customActions
-        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
+        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction.name)
                                                              target:self
                                                            selector:@selector(didActivateAccessibilityCustomAction:)]];
   }

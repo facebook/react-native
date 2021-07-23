@@ -135,6 +135,7 @@ include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
 # Note: Update this only when ready to minimize breaking changes.
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 include $(REACT_SRC_DIR)/fabric/jni/Android.mk
+include $(REACT_SRC_DIR)/common/mapbuffer/jni/Android.mk
 
 # TODO(ramanpreet):
 #   Why doesn't this import-module call generate a jscexecutor.so file?

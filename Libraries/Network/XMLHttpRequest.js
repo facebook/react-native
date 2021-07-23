@@ -10,6 +10,8 @@
 
 'use strict';
 
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 const BlobManager = require('../Blob/BlobManager');
@@ -32,7 +34,7 @@ export type ResponseType =
   | 'text';
 export type Response = ?Object | string;
 
-type XHRInterceptor = {
+type XHRInterceptor = interface {
   requestSent(id: number, url: string, method: string, headers: Object): void,
   responseReceived(
     id: number,
@@ -43,7 +45,6 @@ type XHRInterceptor = {
   dataReceived(id: number, data: string): void,
   loadingFinished(id: number, encodedDataLength: number): void,
   loadingFailed(id: number, error: string): void,
-  ...
 };
 
 // The native blob module is optional so inject it here if available.
@@ -126,7 +127,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
   _requestId: ?number;
-  _subscriptions: Array<*>;
+  _subscriptions: Array<EventSubscription>;
 
   _aborted: boolean = false;
   _cachedResponse: Response;
@@ -552,6 +553,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
         nativeResponseType,
         incrementalEvents,
         this.timeout,
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this.__didCreateRequest.bind(this),
         this.withCredentials,
       );

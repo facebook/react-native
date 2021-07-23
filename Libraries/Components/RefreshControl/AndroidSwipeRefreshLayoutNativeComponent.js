@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import * as React from 'react';
 
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
@@ -41,7 +39,7 @@ type NativeProps = $ReadOnly<{|
    */
   progressBackgroundColor?: ?ColorValue,
   /**
-   * Size of the refresh indicator, see RefreshControl.SIZE.
+   * Size of the refresh indicator.
    */
   size?: WithDefault<'default' | 'large', 'default'>,
   /**

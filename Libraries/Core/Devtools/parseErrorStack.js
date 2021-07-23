@@ -15,15 +15,6 @@ import type {HermesParsedStack} from './parseHermesStack';
 
 const parseHermesStack = require('./parseHermesStack');
 
-export type ExtendedError = Error & {
-  jsEngine?: string,
-  preventSymbolication?: boolean,
-  componentStack?: string,
-  forceRedbox?: boolean,
-  isComponentError?: boolean,
-  ...
-};
-
 function convertHermesStack(stack: HermesParsedStack): Array<StackFrame> {
   const frames = [];
   for (const entry of stack.entries) {

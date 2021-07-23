@@ -8,13 +8,12 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
+import Platform from '../../Utilities/Platform';
 import NativeKeyboardObserver from './NativeKeyboardObserver';
-import type EmitterSubscription from '../../vendor/emitter/_EmitterSubscription';
+import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 
 export type KeyboardEventName = $Keys<KeyboardEventDefinitions>;
 
@@ -103,10 +102,12 @@ type KeyboardEventDefinitions = {
  *```
  */
 
-class Keyboard extends NativeEventEmitter<KeyboardEventDefinitions> {
-  constructor() {
-    super(NativeKeyboardObserver);
-  }
+class Keyboard {
+  _emitter: NativeEventEmitter<KeyboardEventDefinitions> = new NativeEventEmitter(
+    // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+    // If you want to use the native module on other platforms, please remove this condition and test its behavior
+    Platform.OS !== 'ios' ? null : NativeKeyboardObserver,
+  );
 
   /**
    * The `addListener` function connects a JavaScript function to an identified native
@@ -134,22 +135,20 @@ class Keyboard extends NativeEventEmitter<KeyboardEventDefinitions> {
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
     listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
-    context: $FlowFixMe,
-  ): EmitterSubscription<KeyboardEventDefinitions, K> {
-    return super.addListener(eventType, listener);
+    context?: mixed,
+  ): EventSubscription {
+    return this._emitter.addListener(eventType, listener);
   }
 
   /**
-   * Removes a specific listener.
-   *
-   * @param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for.
-   * @param {function} callback function to be called when the event fires.
+   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
    */
-  removeListener<K: $Keys<KeyboardEventDefinitions>>(
+  removeEventListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
     listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
   ): void {
-    super.removeListener(eventType, listener);
+    // NOTE: This will report a deprecation notice via `console.error`.
+    this._emitter.removeListener(eventType, listener);
   }
 
   /**
@@ -158,7 +157,7 @@ class Keyboard extends NativeEventEmitter<KeyboardEventDefinitions> {
    * @param {string} eventType The native event string listeners are watching which will be removed.
    */
   removeAllListeners<K: $Keys<KeyboardEventDefinitions>>(eventType: ?K): void {
-    super.removeAllListeners(eventType);
+    this._emitter.removeAllListeners(eventType);
   }
 
   /**

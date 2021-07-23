@@ -28,7 +28,7 @@ import type {
 
 import type {AliasResolver} from '../Utils';
 
-const {capitalize} = require('./Utils');
+const {capitalize} = require('../../Utils');
 const {
   unwrapNullable,
   wrapNullable,
@@ -144,6 +144,7 @@ class StructCollector {
     resolveAlias: AliasResolver,
     objectTypeAnnotation: NativeModuleObjectTypeAnnotation,
   ): void {
+    // $FlowFixMe[missing-type-arg]
     const properties = objectTypeAnnotation.properties.map<
       $ReadOnly<{
         name: string,

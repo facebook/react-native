@@ -31,6 +31,8 @@ using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
  */
 class ShadowTree final {
  public:
+  using Unique = std::unique_ptr<ShadowTree>;
+
   /*
    * Represents a result of a `commit` operation.
    */
@@ -55,9 +57,10 @@ class ShadowTree final {
 
   struct CommitOptions {
     bool enableStateReconciliation{false};
-    // Lambda called inside `tryCommit`. If false is returned, commit is
-    // cancelled.
-    std::function<bool()> shouldCancel;
+
+    // Called during `tryCommit` phase. Returning true indicates current commit
+    // should yield to the next commit.
+    std::function<bool()> shouldYield;
   };
 
   /*
@@ -67,9 +70,7 @@ class ShadowTree final {
       SurfaceId surfaceId,
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
-      RootComponentDescriptor const &rootComponentDescriptor,
-      ShadowTreeDelegate const &delegate,
-      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate);
+      ShadowTreeDelegate const &delegate);
 
   ~ShadowTree();
 
@@ -123,6 +124,8 @@ class ShadowTree final {
   MountingCoordinator::Shared getMountingCoordinator() const;
 
  private:
+  constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
+
   void mount(ShadowTreeRevision const &revision) const;
 
   void emitLayoutEvents(

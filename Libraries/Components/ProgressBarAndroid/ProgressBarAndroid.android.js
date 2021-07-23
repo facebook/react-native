@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 const React = require('react');
 
 import ProgressBarAndroidNativeComponent from './ProgressBarAndroidNativeComponent';

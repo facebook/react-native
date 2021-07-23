@@ -33,7 +33,6 @@ class ShadowNode;
 // Deprecated: Use ShadowNode::Shared instead
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using WeakShadowNode = std::weak_ptr<const ShadowNode>;
-using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
 using SharedShadowNodeList =
     better::small_vector<SharedShadowNode, kShadowNodeChildrenSmallVectorSize>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
@@ -46,8 +45,11 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
   using Unshared = std::shared_ptr<ShadowNode>;
   using ListOfShared =
       better::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
+  using ListOfWeak =
+      better::small_vector<Weak, kShadowNodeChildrenSmallVectorSize>;
   using SharedListOfShared = std::shared_ptr<ListOfShared const>;
   using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
+  using UnsharedListOfWeak = std::shared_ptr<ListOfWeak>;
 
   using AncestorList = better::small_vector<
       std::pair<
@@ -101,7 +103,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
-  UnsharedShadowNode clone(const ShadowNodeFragment &fragment) const;
+  ShadowNode::Unshared clone(const ShadowNodeFragment &fragment) const;
 
   /*
    * Clones the node (and partially the tree starting from the node) by
@@ -176,8 +178,6 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   void setMounted(bool mounted) const;
 
-  int getStateRevision() const;
-
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -213,6 +213,12 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    * Pointer to a family object that this shadow node belongs to.
    */
   ShadowNodeFamily::Shared family_;
+
+  mutable std::atomic<bool> hasBeenMounted_{false};
+
+  static SharedProps propsForClonedShadowNode(
+      ShadowNode const &sourceShadowNode,
+      Props::Shared const &props);
 
  protected:
   /*

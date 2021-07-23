@@ -10,11 +10,8 @@
 
 'use strict';
 
-const {
-  capitalize,
-  getSafePropertyName,
-  getNamespacedStructName,
-} = require('../Utils');
+const {getSafePropertyName, getNamespacedStructName} = require('../Utils');
+const {capitalize} = require('../../../Utils');
 
 import type {Nullable} from '../../../../CodegenSchema';
 import type {StructTypeAnnotation, RegularStruct} from '../StructCollector';
@@ -226,6 +223,7 @@ function serializeRegularStruct(
       .join('\n      '),
   });
 
+  // $FlowFixMe[missing-type-arg]
   const methods = struct.properties
     .map<string>(property => {
       const {typeAnnotation, optional, name: propName} = property;

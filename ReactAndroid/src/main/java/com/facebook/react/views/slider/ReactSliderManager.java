@@ -118,6 +118,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
           if (eventDispatcher != null) {
             eventDispatcher.dispatchEvent(
                 new ReactSlidingCompleteEvent(
+                    UIManagerHelper.getSurfaceId(seekbar),
                     seekbar.getId(),
                     ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
           }

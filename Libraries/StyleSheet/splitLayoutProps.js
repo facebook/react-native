@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {____ViewStyle_Internal} from './StyleSheetTypes';
 
 export default function splitLayoutProps(
@@ -23,10 +21,8 @@ export default function splitLayoutProps(
 
   if (props != null) {
     // $FlowIgnore[incompatible-exact] Will contain a subset of keys from `props`.
-    // $FlowIgnore[incompatible-type] Values are preserved within a key.
     outer = {};
     // $FlowIgnore[incompatible-exact] Will contain a subset of keys from `props`.
-    // $FlowIgnore[incompatible-type] Values are preserved within a key.
     inner = {};
 
     for (const prop of Object.keys(props)) {

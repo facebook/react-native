@@ -9,8 +9,6 @@
  * @jsdoc
  */
 
-'use strict';
-
 import NativeAsyncLocalStorage from './NativeAsyncLocalStorage';
 import NativeAsyncSQLiteDBStorage from './NativeAsyncSQLiteDBStorage';
 import invariant from 'invariant';
@@ -239,6 +237,7 @@ const AsyncStorage = {
    *
    * See https://reactnative.dev/docs/asyncstorage.html#multiget
    */
+  // $FlowFixMe[signature-verification-failure]
   multiGet: function(
     keys: Array<string>,
     callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void,

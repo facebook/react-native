@@ -209,7 +209,7 @@ function translateParamTypeToJniType(
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
-      return !isRequired ? 'Ljava/lang/Boolean' : 'Z';
+      return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
     case 'NumberTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
@@ -261,7 +261,7 @@ function translateReturnTypeToJniType(
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
-      return nullable ? 'Ljava/lang/Boolean' : 'Z';
+      return nullable ? 'Ljava/lang/Boolean;' : 'Z';
     case 'NumberTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
@@ -358,6 +358,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
@@ -420,6 +421,7 @@ module.exports = {
       })
       .join('\n');
 
+    // $FlowFixMe[missing-type-arg]
     const moduleLookups = Object.keys(nativeModules)
       .filter(hasteModuleName => {
         const module = nativeModules[hasteModuleName];

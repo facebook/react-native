@@ -1,4 +1,5 @@
 load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
+load("@fbsource//tools/build_defs:platform_defs.bzl", "ANDROID", "APPLE", "CXX", "FBCODE", "WINDOWS")
 load("//tools/build_defs/oss:rn_defs.bzl", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
@@ -32,6 +33,7 @@ rn_xplat_cxx_library(
     ],
     fbandroid_preferred_linkage = "shared",
     labels = ["supermodule:xplat/default/public.react_native.infra"],
+    platforms = (ANDROID, APPLE, CXX, FBCODE, WINDOWS),
     visibility = [
         "PUBLIC",
     ],

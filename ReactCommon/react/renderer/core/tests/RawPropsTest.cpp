@@ -8,6 +8,7 @@
 #include <memory>
 
 #include <gtest/gtest.h>
+#include <react/debug/flags.h>
 #include <react/renderer/core/ConcreteShadowNode.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/propsConversions.h>
@@ -190,9 +191,10 @@ TEST(RawPropsTest, handleRawPropsSingleIntGetManyTimes) {
 }
 
 TEST(RawPropsTest, handleRawPropsPrimitiveTypes) {
-  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  const auto &raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue",
+          (float)66.67)("stringValue", "helloworld")("boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -208,9 +210,10 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypes) {
 }
 
 TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetTwice) {
-  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  const auto &raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue",
+          (float)66.67)("stringValue", "helloworld")("boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -234,9 +237,10 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetTwice) {
 }
 
 TEST(RawPropsTest, handleRawPropsPrimitiveTypesGetOutOfOrder) {
-  const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42)(
-      "doubleValue", (double)17.42)("floatValue", (float)66.67)(
-      "stringValue", "helloworld")("boolValue", true));
+  const auto &raw = RawProps(
+      folly::dynamic::object("intValue", (int)42)("doubleValue", (double)17.42)(
+          "floatValue",
+          (float)66.67)("stringValue", "helloworld")("boolValue", true));
 
   auto parser = RawPropsParser();
   parser.prepare<PropsPrimitiveTypes>();
@@ -275,7 +279,7 @@ TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncomplete) {
   EXPECT_EQ((int)*raw.at("intValue", nullptr, nullptr), 42);
 }
 
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
 TEST(RawPropsTest, handleRawPropsPrimitiveTypesIncorrectLookup) {
   const auto &raw = RawProps(folly::dynamic::object("intValue", (int)42));
 

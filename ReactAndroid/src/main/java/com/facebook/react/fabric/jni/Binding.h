@@ -20,6 +20,7 @@
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
 #include "JBackgroundExecutor.h"
+#include "SurfaceHandlerBinding.h"
 
 namespace facebook {
 namespace react {
@@ -75,6 +76,9 @@ class Binding : public jni::HybridClass<Binding>,
   constexpr static auto UIManagerJavaDescriptor =
       "com/facebook/react/fabric/FabricUIManager";
 
+  constexpr static auto ReactFeatureFlagsJavaDescriptor =
+      "com/facebook/react/config/ReactFeatureFlags";
+
   static void registerNatives();
 
  private:
@@ -124,12 +128,25 @@ class Binding : public jni::HybridClass<Binding>,
 
   void stopSurface(jint surfaceId);
 
+  void registerSurface(SurfaceHandlerBinding *surfaceHandler);
+
+  void unregisterSurface(SurfaceHandlerBinding *surfaceHandler);
+
   void schedulerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
 
+  void preallocateShadowView(
+      const SurfaceId surfaceId,
+      const ShadowView &shadowView);
+
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ShadowView &shadowView) override;
+      const ShadowNode &shadowNode) override;
+
+  void schedulerDidCloneShadowNode(
+      SurfaceId surfaceId,
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) override;
 
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
@@ -140,13 +157,10 @@ class Binding : public jni::HybridClass<Binding>,
       const ShadowView &shadowView,
       std::string const &eventType) override;
 
-  void schedulerDidSetJSResponder(
-      SurfaceId surfaceId,
-      const ShadowView &shadowView,
-      const ShadowView &initialShadowView,
+  void schedulerDidSetIsJSResponder(
+      ShadowView const &shadowView,
+      bool isJSResponder,
       bool blockNativeResponder) override;
-
-  void schedulerDidClearJSResponder() override;
 
   void setPixelDensity(float pointScaleFactor);
 
@@ -168,6 +182,10 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;
 
+  better::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
+  better::shared_mutex
+      surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
+
   std::recursive_mutex commitMutex_;
 
   float pointScaleFactor_ = 1;
@@ -176,6 +194,7 @@ class Binding : public jni::HybridClass<Binding>,
   bool disablePreallocateViews_{false};
   bool disableVirtualNodePreallocation_{false};
   bool enableFabricLogs_{false};
+  bool enableEarlyEventEmitterUpdate_{false};
 };
 
 } // namespace react

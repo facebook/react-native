@@ -79,6 +79,11 @@ static TextAttributes convertRawProp(
       "letterSpacing",
       sourceTextAttributes.letterSpacing,
       defaultTextAttributes.letterSpacing);
+  textAttributes.textTransform = convertRawProp(
+      rawProps,
+      "textTransform",
+      sourceTextAttributes.textTransform,
+      defaultTextAttributes.textTransform);
 
   // Paragraph
   textAttributes.lineHeight = convertRawProp(

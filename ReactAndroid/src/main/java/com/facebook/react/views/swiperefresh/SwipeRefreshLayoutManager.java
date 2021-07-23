@@ -146,7 +146,8 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
             EventDispatcher eventDispatcher =
                 UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.getId());
             if (eventDispatcher != null) {
-              eventDispatcher.dispatchEvent(new RefreshEvent(view.getId()));
+              eventDispatcher.dispatchEvent(
+                  new RefreshEvent(UIManagerHelper.getSurfaceId(view), view.getId()));
             }
           }
         });

@@ -21,7 +21,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -67,7 +66,7 @@ public class UIImplementation {
 
   public UIImplementation(
       ReactApplicationContext reactContext,
-      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      ViewManagerResolver viewManagerResolver,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     this(
@@ -787,9 +786,7 @@ public class UIImplementation {
   public void onHostDestroy() {}
 
   public void onCatalystInstanceDestroyed() {
-    if (ReactFeatureFlags.disableNonFabricViewOperationsOnCatalystDestroy) {
-      mViewOperationsEnabled = false;
-    }
+    mViewOperationsEnabled = false;
   }
 
   public void setViewHierarchyUpdateDebugListener(
@@ -958,6 +955,7 @@ public class UIImplementation {
       if (frameDidChange && cssNode.shouldNotifyOnLayout()) {
         mEventDispatcher.dispatchEvent(
             OnLayoutEvent.obtain(
+                -1, /* surfaceId not used in classic renderer */
                 tag,
                 cssNode.getScreenX(),
                 cssNode.getScreenY(),
@@ -966,9 +964,7 @@ public class UIImplementation {
       }
     }
     cssNode.markUpdateSeen();
-    if (ReactFeatureFlags.enableTransitionLayoutOnlyViewCleanup) {
-      mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
-    }
+    mNativeViewHierarchyOptimizer.onViewUpdatesCompleted(cssNode);
   }
 
   public void addUIBlock(UIBlock block) {
