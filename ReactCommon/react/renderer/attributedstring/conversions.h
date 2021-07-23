@@ -260,6 +260,55 @@ inline std::string toString(const FontVariant &fontVariant) {
   return result;
 }
 
+inline void fromRawValue(const RawValue &value, TextTransform &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = TextTransform::None;
+    } else if (string == "uppercase") {
+      result = TextTransform::Uppercase;
+    } else if (string == "lowercase") {
+      result = TextTransform::Lowercase;
+    } else if (string == "capitalize") {
+      result = TextTransform::Capitalize;
+    } else if (string == "unset") {
+      result = TextTransform::Unset;
+    } else {
+      LOG(ERROR) << "Unsupported TextTransform value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = TextTransform::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported TextTransform type";
+  react_native_assert(false);
+  // sane default for prod
+  result = TextTransform::None;
+}
+
+inline std::string toString(const TextTransform &textTransform) {
+  switch (textTransform) {
+    case TextTransform::None:
+      return "none";
+    case TextTransform::Uppercase:
+      return "uppercase";
+    case TextTransform::Lowercase:
+      return "lowercase";
+    case TextTransform::Capitalize:
+      return "capitalize";
+    case TextTransform::Unset:
+      return "unset";
+  }
+
+  LOG(ERROR) << "Unsupported TextTransform value";
+  react_native_assert(false);
+  // sane default for prod
+  return "none";
+}
+
 inline void fromRawValue(const RawValue &value, TextAlignment &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
@@ -764,6 +813,9 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   }
   if (!std::isnan(textAttributes.letterSpacing)) {
     _textAttributes("letterSpacing", textAttributes.letterSpacing);
+  }
+  if (textAttributes.textTransform.hasValue()) {
+    _textAttributes("textTransform", toString(*textAttributes.textTransform));
   }
   if (!std::isnan(textAttributes.lineHeight)) {
     _textAttributes("lineHeight", textAttributes.lineHeight);

@@ -163,6 +163,10 @@ inline void fromRawValue(const RawValue &value, KeyboardType &result) {
     result = KeyboardType::NumberPad;
     return;
   }
+  if (string == "url") {
+    result = KeyboardType::URL;
+    return;
+  }
   if (string == "decimal-pad") {
     result = KeyboardType::DecimalPad;
     return;
@@ -175,10 +179,6 @@ inline void fromRawValue(const RawValue &value, KeyboardType &result) {
   }
   if (string == "numbers-and-punctuation") {
     result = KeyboardType::NumbersAndPunctuation;
-    return;
-  }
-  if (string == "url") {
-    result = KeyboardType::URL;
     return;
   }
   if (string == "name-phone-pad") {

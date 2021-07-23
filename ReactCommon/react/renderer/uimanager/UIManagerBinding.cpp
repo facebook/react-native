@@ -139,6 +139,7 @@ void UIManagerBinding::startSurface(
     std::string const &moduleName,
     folly::dynamic const &initalProps,
     DisplayMode displayMode) const {
+  SystraceSection s("UIManagerBinding::startSurface");
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
@@ -172,6 +173,7 @@ void UIManagerBinding::setSurfaceProps(
     std::string const &moduleName,
     folly::dynamic const &initalProps,
     DisplayMode displayMode) const {
+  SystraceSection s("UIManagerBinding::setSurfaceProps");
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
@@ -271,6 +273,7 @@ jsi::Value UIManagerBinding::get(
     jsi::Runtime &runtime,
     jsi::PropNameID const &name) {
   auto methodName = name.utf8(runtime);
+  SystraceSection s("UIManagerBinding::get", "name", methodName);
 
   // Convert shared_ptr<UIManager> to a raw ptr
   // Why? Because:
@@ -836,6 +839,7 @@ jsi::Value UIManagerBinding::get(
 void UIManagerBinding::executeMeasure(
     jsi::Runtime &runtime,
     std::function<void(jsi::Runtime &)> &&callback) const noexcept {
+  SystraceSection s("UIManagerBinding::executeMeasure");
   if (enableAsyncMeasure_) {
     runtimeExecutor_(std::move(callback));
   } else {

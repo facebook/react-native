@@ -75,7 +75,7 @@ module.exports = {
     ];
   },
 
-  testBadInheritedDefaultProp(): React.Element<*> {
+  testBadInheritedDefaultProp(): React.MixedElement {
     const sections = [];
     return (
       <SectionList
@@ -87,12 +87,12 @@ module.exports = {
     );
   },
 
-  testMissingData(): React.Element<*> {
+  testMissingData(): React.MixedElement {
     // $FlowExpectedError - missing `sections` prop
     return <SectionList renderItem={renderMyListItem} />;
   },
 
-  testBadSectionsShape(): React.Element<*> {
+  testBadSectionsShape(): React.MixedElement {
     const sections = [
       {
         key: 'a',
@@ -108,7 +108,7 @@ module.exports = {
     return <SectionList renderItem={renderMyListItem} sections={sections} />;
   },
 
-  testBadSectionsMetadata(): React.Element<*> {
+  testBadSectionsMetadata(): React.MixedElement {
     const sections = [
       {
         key: 'a',

@@ -39,8 +39,11 @@ type TextAlignExampleRTLState = {|
   isRTL: boolean,
 |};
 
-class TextAlignRTLExample extends React.Component<*, TextAlignExampleRTLState> {
-  constructor(...args: Array<*>) {
+class TextAlignRTLExample extends React.Component<
+  {},
+  TextAlignExampleRTLState,
+> {
+  constructor(...args: Array<any>) {
     super(...args);
 
     this.state = {
@@ -264,7 +267,7 @@ class AdjustingFontSize extends React.Component<
   }
 }
 
-class TextBaseLineLayoutExample extends React.Component<*, *> {
+class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
   render() {
     const texts = [];
     for (let i = 9; i >= 0; i--) {
@@ -355,7 +358,24 @@ class TextBaseLineLayoutExample extends React.Component<*, *> {
   }
 }
 
-class TextRenderInfoExample extends React.Component<*, *> {
+class TextRenderInfoExample extends React.Component<
+  {},
+  {
+    fontSize: number,
+    numberOfTextBlocks: number,
+    textMetrics: $ReadOnly<{
+      ascender: number,
+      capHeight: number,
+      descender: number,
+      height: number,
+      text?: string,
+      width: number,
+      x: number,
+      xHeight: number,
+      y: number,
+    }>,
+  },
+> {
   state = {
     textMetrics: {
       x: 0,
@@ -439,7 +459,22 @@ class TextRenderInfoExample extends React.Component<*, *> {
   }
 }
 
-class TextWithCapBaseBox extends React.Component<*, *> {
+class TextWithCapBaseBox extends React.Component<
+  {children: string, style?: any},
+  {
+    textMetrics: $ReadOnly<{
+      ascender: number,
+      capHeight: number,
+      descender: number,
+      height: number,
+      text?: string,
+      width: number,
+      x: number,
+      xHeight: number,
+      y: number,
+    }>,
+  },
+> {
   state = {
     textMetrics: {
       x: 0,

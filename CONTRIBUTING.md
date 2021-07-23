@@ -8,9 +8,9 @@ The [Open Source Guides](https://opensource.guide/) website has a collection of 
 * [Building Welcoming Communities](https://opensource.guide/building-community/)
 
 
-### [Code of Conduct](https://github.com/facebook/react/blob/master/CODE_OF_CONDUCT.md)
+### [Code of Conduct](https://github.com/facebook/react-native/blob/HEAD/CODE_OF_CONDUCT.md)
 
-As a reminder, all contributors are expected to adhere to the [Code of Conduct](https://github.com/facebook/react/blob/master/CODE_OF_CONDUCT.md).
+As a reminder, all contributors are expected to adhere to the [Code of Conduct](https://github.com/facebook/react-native/blob/HEAD/CODE_OF_CONDUCT.md).
 
 ## Ways to Contribute
 
@@ -64,11 +64,11 @@ If you are adding new functionality or introducing a change in behavior, we will
 
 ### Contributing to the Blog
 
-The React Native blog is generated [from the Markdown sources for the blog](https://github.com/facebook/react-native-website/tree/master/website/blog).
+The React Native blog is generated [from the Markdown sources for the blog](https://github.com/facebook/react-native-website/tree/HEAD/website/blog).
 
 Please open an issue in the https://github.com/facebook/react-native-website repository or tag us on [@ReactNative on Twitter](http://twitter.com/reactnative) and get the go-ahead from a maintainer before writing an article intended for the React Native blog. In most cases, you might want to share your article on your own blog or writing medium instead. It's worth asking, though, in case we find your article is a good fit for the blog.
 
-We recommend referring to the [CONTRIBUTING](https://github.com/facebook/react-native-website/blob/master/CONTRIBUTING.md) document for the `react-native-website` repository to learn more about contributing to the website in general.
+We recommend referring to the [CONTRIBUTING](https://github.com/facebook/react-native-website/blob/HEAD/CONTRIBUTING.md) document for the `react-native-website` repository to learn more about contributing to the website in general.
 
 ## Contributing Code
 
@@ -76,7 +76,7 @@ Code-level contributions to React Native generally come in the form of [pull req
 
 The process of proposing a change to React Native can be summarized as follows:
 
-1. Fork the React Native repository and create your branch from `master`.
+1. Fork the React Native repository and create your branch from `main`.
 2. Make the desired changes to React Native sources. Use the `packages/rn-tester` app to test them out.
 3. If you've added code that should be tested, add tests.
 4. If you've changed APIs, update the documentation, which lives in [another repo](https://github.com/facebook/react-native-website/).
@@ -97,7 +97,7 @@ Whenever you are ready to contribute code, check out our [step-by-step guide to 
 
 ### Tests
 
-Tests help us prevent regressions from being introduced to the codebase. The GitHub repository is continuously tested using Circle and Appveyor, the results of which are available through the Checks functionality on [commits](https://github.com/facebook/react-native/commits/master) and pull requests. You can learn more about running and writing tests in the [Tests wiki](http://github.com/facebook/react-native/wiki/Tests).
+Tests help us prevent regressions from being introduced to the codebase. The GitHub repository is continuously tested using Circle and Appveyor, the results of which are available through the Checks functionality on [commits](https://github.com/facebook/react-native/commits/HEAD) and pull requests. You can learn more about running and writing tests in the [Tests wiki](http://github.com/facebook/react-native/wiki/Tests).
 
 ## Community Contributions
 

@@ -16,6 +16,7 @@ import MovingBoxExample from './MovingBoxExample';
 import FadeInViewExample from './FadeInViewExample';
 import ComposeAnimationsWithEasingExample from './ComposeAnimationsWithEasingExample';
 import TransformBounceExample from './TransformBounceExample';
+import ComposingExample from './ComposingExample';
 
 export default ({
   framework: 'React',
@@ -25,8 +26,10 @@ export default ({
   description:
     'Library designed to make animations fluid, powerful, and painless to ' +
     'build and maintain.',
+  showIndividualExamples: true,
   examples: [
     FadeInViewExample,
+    ComposingExample,
     ComposeAnimationsWithEasingExample,
     RotatingImagesExample,
     MovingBoxExample,

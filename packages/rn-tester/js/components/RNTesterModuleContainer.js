@@ -4,18 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-const React = require('react');
+import * as React from 'react';
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 import RNTPressableRow from './RNTPressableRow';
-import {RNTesterThemeContext} from './RNTesterTheme';
-import {StyleSheet, Platform} from 'react-native';
+import {RNTesterThemeContext, type RNTesterTheme} from './RNTesterTheme';
+import {View, Text, StyleSheet, Platform} from 'react-native';
+import RNTTestDetails from './RNTTestDetails';
 
-const invariant = require('invariant');
-import ExamplePage from './ExamplePage';
 import type {
   RNTesterModule,
   RNTesterModuleExample,
@@ -24,7 +24,7 @@ import type {
 type Props = {
   module: RNTesterModule,
   example?: ?RNTesterModuleExample,
-  onExampleCardPress: (exampleName: string) => mixed,
+  onExampleCardPress?: ?(exampleName: string) => mixed,
 };
 
 function getExampleTitle(title, platform) {
@@ -36,16 +36,15 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
   const theme = React.useContext(RNTesterThemeContext);
   const renderExample = (e, i) => {
     // Filter platform-specific es
-    const {description, platform} = e;
-    let {title} = e;
+    const {title, description, platform, render: ExampleComponent} = e;
     if (platform != null && Platform.OS !== platform) {
       return null;
     }
     return module.showIndividualExamples === true ? (
       <RNTPressableRow
         key={e.name}
-        onPress={() => onExampleCardPress(e.name)}
-        title={e.title}
+        onPress={() => onExampleCardPress?.(e.name)}
+        title={title}
         description={description}
         accessibilityLabel={e.name + ' ' + description}
         style={StyleSheet.compose(styles.separator, {
@@ -57,40 +56,20 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
         key={i}
         title={getExampleTitle(title, platform)}
         description={description}>
-        {e.render()}
+        <ExampleComponent />
       </RNTesterBlock>
     );
   };
 
-  if (module.simpleExampleContainer) {
-    invariant(
-      module.examples.length === 1,
-      'If noExampleContainer is specified, only one example is allowed',
-    );
-    return (
-      <ExamplePage
-        title={module.title}
-        description={module.description}
-        android={!module.platform || module.platform === 'android'}
-        ios={!module.platform || module.platform === 'ios'}
-        documentationURL={module.documentationURL}
-        category={module.category}>
-        {module.examples[0].render()}
-      </ExamplePage>
-    );
-  }
-
+  // TODO remove this case
   if (module.examples.length === 1) {
+    const description = module.examples[0].description ?? module.description;
+    const ModuleSingleExample = module.examples[0].render;
     return (
-      <ExamplePage
-        title={module.testTitle || module.title}
-        description={module.description}
-        android={!module.platform || module.platform === 'android'}
-        ios={!module.platform || module.platform === 'ios'}
-        documentationURL={module.documentationURL}
-        category={module.category}>
-        {module.examples[0].render()}
-      </ExamplePage>
+      <>
+        <Header description={description} theme={theme} />
+        <ModuleSingleExample />
+      </>
     );
   }
 
@@ -104,17 +83,22 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
     },
   ];
 
-  return (
-    <ExamplePage
-      title={module.title}
-      description={module.description}
-      android={!module.platform || module.platform === 'android'}
-      ios={!module.platform || module.platform === 'ios'}
-      documentationURL={module.documentationURL}
-      category={module.category}>
-      {module.showIndividualExamples === true && example != null ? (
-        example.render()
-      ) : (
+  return module.showIndividualExamples === true && example != null ? (
+    <>
+      <RNTTestDetails
+        title={example.title}
+        description={example.description}
+        expect={example.expect}
+        theme={theme}
+      />
+      <View style={styles.examplesContainer}>
+        <example.render />
+      </View>
+    </>
+  ) : (
+    <>
+      <Header description={module.description} noBottomPadding theme={theme} />
+      <View style={styles.examplesContainer}>
         <RNTesterExampleFilter
           testID="example_search"
           page="examples_page"
@@ -125,12 +109,44 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
             filteredSections[0].data.map(renderExample)
           }
         />
-      )}
-    </ExamplePage>
+      </View>
+    </>
+  );
+}
+
+function Header(props: {
+  description: string,
+  theme: RNTesterTheme,
+  noBottomPadding?: ?boolean,
+}) {
+  return (
+    <View
+      style={[
+        styles.headerContainer,
+        props.noBottomPadding === true ? styles.headerNoBottomPadding : null,
+        {backgroundColor: props.theme.BackgroundColor},
+      ]}>
+      <Text style={styles.headerDescription}>{props.description}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    paddingHorizontal: Platform.OS === 'android' ? 15 : 6,
+    paddingVertical: 6,
+    alignItems: 'center',
+  },
+  headerDescription: {
+    fontSize: 14,
+  },
+  headerNoBottomPadding: {
+    paddingBottom: 0,
+  },
+  examplesContainer: {
+    flexGrow: 1,
+    flex: 1,
+  },
   separator: {
     borderBottomWidth: Platform.select({
       ios: StyleSheet.hairlineWidth,

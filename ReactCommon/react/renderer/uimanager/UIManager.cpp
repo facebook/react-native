@@ -160,6 +160,7 @@ void UIManager::startSurface(
   shadowTreeRegistry_.add(std::move(shadowTree));
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
+    SystraceSection s("UIManager::startSurface::onRuntime");
     auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
     if (!uiManagerBinding) {
       return;

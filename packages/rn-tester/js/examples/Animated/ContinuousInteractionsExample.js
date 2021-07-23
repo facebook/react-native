@@ -14,6 +14,7 @@ import {Text} from 'react-native';
 
 export default ({
   title: 'Continuous Interactions',
+  name: 'continuousInteractions',
   description: ('Gesture events, chaining, 2D ' +
     'values, interrupting and transitioning ' +
     'animations, etc.': string),

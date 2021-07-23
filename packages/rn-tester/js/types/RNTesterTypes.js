@@ -15,6 +15,7 @@ export type RNTesterModuleExample = $ReadOnly<{|
   title: string,
   platform?: 'ios' | 'android',
   description?: string,
+  expect?: string,
   render: () => React.Node,
 |}>;
 
@@ -27,7 +28,6 @@ export type RNTesterModule = $ReadOnly<{|
   category?: ?string,
   framework?: string,
   examples: Array<RNTesterModuleExample>,
-  simpleExampleContainer?: ?boolean,
   category?: string,
   documentationURL?: string,
   showIndividualExamples?: boolean,
@@ -43,16 +43,16 @@ export type RNTesterModuleInfo = $ReadOnly<{|
   exampleType?: 'components' | 'apis',
 |}>;
 
-export type SectionData = {
+export type SectionData<T> = {
   key: string,
   title: string,
-  data: Array<RNTesterModuleInfo>,
+  data: Array<T>,
 };
 
 export type ExamplesList = $ReadOnly<{|
-  components: SectionData[],
-  apis: SectionData[],
-  bookmarks: SectionData[],
+  components: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
+  apis: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
+  bookmarks: $ReadOnlyArray<SectionData<RNTesterModuleInfo>>,
 |}>;
 
 export type ScreenTypes = 'components' | 'apis' | 'bookmarks' | null;
