@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RCTWeakProxy : NSObject
+@interface RCTWeakProxy : NSProxy
 
 @property (nonatomic, weak, readonly) id target;
 

@@ -11,9 +11,7 @@
 
 - (instancetype)initWithTarget:(id)target
 {
-  if (self = [super init]) {
-    _target = target;
-  }
+  _target = target;
   return self;
 }
 
