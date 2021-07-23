@@ -305,7 +305,7 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
 const styles = StyleSheet.create({
   header: {
     zIndex: 10,
-    position: 'relative',
+    elevation: 10,
   },
   fill: {
     flex: 1,
