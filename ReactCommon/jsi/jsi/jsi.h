@@ -357,7 +357,7 @@ class JSI_EXPORT Runtime {
 // Base class for pointer-storing types.
 class JSI_EXPORT Pointer {
  protected:
-  explicit Pointer(Pointer&& other) : ptr_(other.ptr_) {
+  explicit Pointer(Pointer&& other) noexcept : ptr_(other.ptr_) {
     other.ptr_ = nullptr;
   }
 
@@ -367,7 +367,7 @@ class JSI_EXPORT Pointer {
     }
   }
 
-  Pointer& operator=(Pointer&& other);
+  Pointer& operator=(Pointer&& other) noexcept;
 
   friend class Runtime;
   friend class Value;
@@ -456,7 +456,7 @@ class JSI_EXPORT Symbol : public Pointer {
  public:
   using Pointer::Pointer;
 
-  Symbol(Symbol&& other) = default;
+  Symbol(Symbol&& other) noexcept = default;
   Symbol& operator=(Symbol&& other) = default;
 
   /// \return whether a and b refer to the same symbol.
@@ -479,7 +479,7 @@ class JSI_EXPORT String : public Pointer {
  public:
   using Pointer::Pointer;
 
-  String(String&& other) = default;
+  String(String&& other) noexcept = default;
   String& operator=(String&& other) = default;
 
   /// Create a JS string from ascii values.  The string data is
@@ -537,7 +537,7 @@ class JSI_EXPORT Object : public Pointer {
  public:
   using Pointer::Pointer;
 
-  Object(Object&& other) = default;
+  Object(Object&& other) noexcept = default;
   Object& operator=(Object&& other) = default;
 
   /// Creates a new Object instance, like '{}' in JS.
@@ -745,7 +745,7 @@ class JSI_EXPORT WeakObject : public Pointer {
 /// with integral indices.
 class JSI_EXPORT Array : public Object {
  public:
-  Array(Array&&) = default;
+  Array(Array&&) noexcept = default;
   /// Creates a new Array instance, with \c length undefined elements.
   Array(Runtime& runtime, size_t length) : Array(runtime.createArray(length)) {}
 
@@ -827,7 +827,7 @@ class JSI_EXPORT ArrayBuffer : public Object {
 /// Represents a JS Object which is guaranteed to be Callable.
 class JSI_EXPORT Function : public Object {
  public:
-  Function(Function&&) = default;
+  Function(Function&&) noexcept = default;
   Function& operator=(Function&&) = default;
 
   /// Create a function which, when invoked, calls C++ code. If the
@@ -978,7 +978,7 @@ class JSI_EXPORT Value {
         "Value cannot be constructed directly from const char*");
   }
 
-  Value(Value&& value);
+  Value(Value&& value) noexcept;
 
   /// Copies a Symbol lvalue into a new JS value.
   Value(Runtime& runtime, const Symbol& sym) : Value(SymbolKind) {
@@ -1028,7 +1028,7 @@ class JSI_EXPORT Value {
   /// https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
   static bool strictEquals(Runtime& runtime, const Value& a, const Value& b);
 
-  Value& operator=(Value&& other) {
+  Value& operator=(Value&& other) noexcept {
     this->~Value();
     new (this) Value(std::move(other));
     return *this;
