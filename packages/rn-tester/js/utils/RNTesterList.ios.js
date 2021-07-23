@@ -119,6 +119,10 @@ const Components: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
   {
+    key: 'ScrollViewExpandingExample',
+    module: require('../examples/ScrollView/ScrollViewExpandingExample'),
+  },
+  {
     key: 'ScrollViewIndicatorInsetsExample',
     module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
   },

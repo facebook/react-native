@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,6 +41,8 @@ import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
+import com.facebook.react.views.view.ReactViewGroup;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -93,6 +96,19 @@ public class ReactScrollView extends ScrollView
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
+  private @Nullable ReactScrollViewMaintainVisibleContentPositionData
+      mMaintainVisibleContentPositionData;
+  private @Nullable WeakReference<View> firstVisibleViewForMaintainVisibleContentPosition = null;
+  private @Nullable Rect prevFirstVisibleFrameForMaintainVisibleContentPosition = null;
+
+  private final Handler mHandler = new Handler();
+  private final Runnable mComputeFirstVisibleViewRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          computeFirstVisibleItemForMaintainVisibleContentPosition();
+        }
+      };
 
   private @Nullable ValueAnimator mScrollAnimator;
   private int mFinalAnimatedPositionScrollX;
@@ -209,6 +225,14 @@ public class ReactScrollView extends ScrollView
     invalidate();
   }
 
+  public void setMaintainVisibleContentPosition(
+      ReactScrollViewMaintainVisibleContentPositionData maintainVisibleContentPositionData) {
+    mMaintainVisibleContentPositionData = maintainVisibleContentPositionData;
+    if (maintainVisibleContentPositionData != null) {
+      computeFirstVisibleItemForMaintainVisibleContentPosition();
+    }
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     MeasureSpecAssertions.assertExplicitMeasureSpec(widthMeasureSpec, heightMeasureSpec);
@@ -296,6 +320,14 @@ public class ReactScrollView extends ScrollView
           this,
           mOnScrollDispatchHelper.getXFlingVelocity(),
           mOnScrollDispatchHelper.getYFlingVelocity());
+    }
+
+    if (mMaintainVisibleContentPositionData != null) {
+      // We don't want to compute the first visible view everytime onScrollChanged gets called (can
+      // be multiple times per second).
+      // The following logic debounces the computation by 100ms (arbitrary value).
+      mHandler.removeCallbacks(mComputeFirstVisibleViewRunnable);
+      mHandler.postDelayed(mComputeFirstVisibleViewRunnable, 100);
     }
   }
 
@@ -938,10 +970,81 @@ public class ReactScrollView extends ScrollView
       return;
     }
 
+    if (this.mMaintainVisibleContentPositionData != null) {
+      scrollMaintainVisibleContentPosition();
+    }
+
     int currentScrollY = getScrollY();
     int maxScrollY = getMaxScrollY();
     if (currentScrollY > maxScrollY) {
       scrollTo(getScrollX(), maxScrollY);
+    }
+  }
+
+  /**
+   * Called when maintainVisibleContentPosition is used and after a scroll. Finds the first
+   * completely visible view in the ScrollView and stores it for later use.
+   */
+  private void computeFirstVisibleItemForMaintainVisibleContentPosition() {
+    ReactScrollViewMaintainVisibleContentPositionData maintainVisibleContentPositionData =
+        mMaintainVisibleContentPositionData;
+    if (maintainVisibleContentPositionData == null) return;
+
+    int currentScrollY = getScrollY();
+    int minIdx = maintainVisibleContentPositionData.minIndexForVisible;
+
+    ReactViewGroup contentView = (ReactViewGroup) mContentView;
+    if (contentView == null) return;
+
+    for (int i = minIdx; i < contentView.getChildCount(); i++) {
+      // Find the first entirely visible view. This must be done after we update the content offset
+      // or it will tend to grab rows that were made visible by the shift in position
+      View child = contentView.getChildAt(i);
+      if (child.getY() >= currentScrollY || i == contentView.getChildCount() - 1) {
+        firstVisibleViewForMaintainVisibleContentPosition = new WeakReference<>(child);
+        Rect frame = new Rect();
+        child.getHitRect(frame);
+        prevFirstVisibleFrameForMaintainVisibleContentPosition = frame;
+        break;
+      }
+    }
+  }
+
+  /**
+   * Called when maintainVisibleContentPosition is used and after a layout change. Detects if the
+   * layout change impacts the scroll position and corrects it if needed.
+   */
+  private void scrollMaintainVisibleContentPosition() {
+    ReactScrollViewMaintainVisibleContentPositionData maintainVisibleContentPositionData =
+        this.mMaintainVisibleContentPositionData;
+    if (maintainVisibleContentPositionData == null) return;
+
+    int currentScrollY = getScrollY();
+
+    View firstVisibleView =
+        firstVisibleViewForMaintainVisibleContentPosition != null
+            ? firstVisibleViewForMaintainVisibleContentPosition.get()
+            : null;
+    if (firstVisibleView == null) return;
+    Rect prevFirstVisibleFrame = this.prevFirstVisibleFrameForMaintainVisibleContentPosition;
+    if (prevFirstVisibleFrame == null) return;
+
+    Rect newFrame = new Rect();
+    firstVisibleView.getHitRect(newFrame);
+    int deltaY = newFrame.top - prevFirstVisibleFrame.top;
+
+    if (Math.abs(deltaY) > 1) {
+      int scrollYTo = getScrollY() + deltaY;
+
+      scrollTo(getScrollX(), scrollYTo);
+
+      Integer autoScrollThreshold = maintainVisibleContentPositionData.autoScrollToTopThreshold;
+      if (autoScrollThreshold != null) {
+        // If the offset WAS within the threshold of the start, animate to the start.
+        if (currentScrollY - deltaY <= autoScrollThreshold) {
+          reactSmoothScrollTo(getScrollX(), 0);
+        }
+      }
     }
   }
 
