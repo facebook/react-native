@@ -26,13 +26,13 @@ RCT_EXPORT_MODULE()
   _queue = nil;
 }
 
-- (BOOL)canHandleRequest:(NSURLRequest *)request
+- (BOOL)canHandleRequest:(nonnull NSURLRequest *)request
 {
   return [request.URL.scheme caseInsensitiveCompare:@"data"] == NSOrderedSame;
 }
 
-- (NSOperation *)sendRequest:(NSURLRequest *)request
-                withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (nonnull NSOperation *)sendRequest:(nonnull NSURLRequest *)request
+                withDelegate:(nonnull id<RCTURLRequestDelegate>)delegate
 {
   // Lazy setup
   if (!_queue) {
@@ -71,7 +71,7 @@ RCT_EXPORT_MODULE()
   return op;
 }
 
-- (void)cancelRequest:(NSOperation *)op
+- (void)cancelRequest:(nonnull NSOperation *)op
 {
   [op cancel];
 }

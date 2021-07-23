@@ -340,7 +340,7 @@ RCT_EXPORT_MODULE()
   }];
 }
 
-- (BOOL)canHandleRequest:(NSURLRequest *)request
+- (BOOL)canHandleRequest:(nonnull NSURLRequest *)request
 {
   return [self handlerForRequest:request] != nil;
 }

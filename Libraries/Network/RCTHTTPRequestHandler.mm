@@ -52,7 +52,7 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - NSURLRequestHandler
 
-- (BOOL)canHandleRequest:(NSURLRequest *)request
+- (BOOL)canHandleRequest:(nonnull NSURLRequest *)request
 {
   static NSSet<NSString *> *schemes = nil;
   static dispatch_once_t onceToken;
@@ -64,8 +64,8 @@ RCT_EXPORT_MODULE()
   return [schemes containsObject:request.URL.scheme.lowercaseString];
 }
 
-- (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request
-                         withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (nonnull NSURLSessionDataTask *)sendRequest:(nonnull NSURLRequest *)request
+                         withDelegate:(nonnull id<RCTURLRequestDelegate>)delegate
 {
   std::lock_guard<std::mutex> lock(_mutex);
   // Lazy setup
@@ -109,7 +109,7 @@ RCT_EXPORT_MODULE()
   return task;
 }
 
-- (void)cancelRequest:(NSURLSessionDataTask *)task
+- (void)cancelRequest:(nonnull NSURLSessionDataTask *)task
 {
   {
     std::lock_guard<std::mutex> lock(_mutex);

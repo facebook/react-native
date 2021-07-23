@@ -138,12 +138,12 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 #pragma mark - RCTURLRequestHandler
 
-- (BOOL)canHandleRequest:(NSURLRequest *)request
+- (BOOL)canHandleRequest:(nonnull NSURLRequest *)request
 {
   return [request.URL.scheme caseInsensitiveCompare:RCTImageStoreURLScheme] == NSOrderedSame;
 }
 
-- (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (id)sendRequest:(nonnull NSURLRequest *)request withDelegate:(nonnull id<RCTURLRequestDelegate>)delegate
 {
   __block auto cancelled = std::make_shared<std::atomic<bool>>(false);
   void (^cancellationBlock)(void) = ^{

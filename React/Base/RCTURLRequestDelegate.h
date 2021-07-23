@@ -17,24 +17,24 @@
  * Call this when you send request data to the server. This is used to track
  * upload progress, so should be called multiple times for large request bodies.
  */
-- (void)URLRequest:(id)requestToken didSendDataWithProgress:(int64_t)bytesSent;
+- (void)URLRequest:(nonnull id)requestToken didSendDataWithProgress:(int64_t)bytesSent;
 
 /**
  * Call this when you first receives a response from the server. This should
  * include response headers, etc.
  */
-- (void)URLRequest:(id)requestToken didReceiveResponse:(NSURLResponse *)response;
+- (void)URLRequest:(nonnull id)requestToken didReceiveResponse:(nonnull NSURLResponse *)response;
 
 /**
  * Call this when you receive data from the server. This can be called multiple
  * times with partial data chunks, or just once with the full data packet.
  */
-- (void)URLRequest:(id)requestToken didReceiveData:(NSData *)data;
+- (void)URLRequest:(nonnull id)requestToken didReceiveData:(nonnull NSData *)data;
 
 /**
  * Call this when the request is complete and/or if an error is encountered.
  * For a successful request, the error parameter should be nil.
  */
-- (void)URLRequest:(id)requestToken didCompleteWithError:(NSError *)error;
+- (void)URLRequest:(nonnull id)requestToken didCompleteWithError:(nullable NSError *)error;
 
 @end
