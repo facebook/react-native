@@ -27,6 +27,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _maxFontSizeMultiplier = NAN;
     _alignment = NSTextAlignmentNatural;
     _baseWritingDirection = NSWritingDirectionNatural;
+    _lineBreakStrategy = NSLineBreakStrategyNone;
     _textShadowRadius = NAN;
     _opacity = NAN;
     _textTransform = RCTTextTransformUndefined;
@@ -61,6 +62,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _lineHeight = !isnan(textAttributes->_lineHeight) ? textAttributes->_lineHeight : _lineHeight;
   _alignment = textAttributes->_alignment != NSTextAlignmentNatural ? textAttributes->_alignment : _alignment; // *
   _baseWritingDirection = textAttributes->_baseWritingDirection != NSWritingDirectionNatural ? textAttributes->_baseWritingDirection : _baseWritingDirection; // *
+  _lineBreakStrategy = textAttributes->_lineBreakStrategy != NSLineBreakStrategyNone ? textAttributes->_lineBreakStrategy : _lineBreakStrategy;
 
   // Decoration
   _textDecorationColor = textAttributes->_textDecorationColor ?: _textDecorationColor;
@@ -93,27 +95,34 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
         alignment = NSTextAlignmentRight;
       }
     }
-    
+
     paragraphStyle.alignment = alignment;
     isParagraphStyleUsed = YES;
   }
-  
+
   if (_baseWritingDirection != NSWritingDirectionNatural) {
     paragraphStyle.baseWritingDirection = _baseWritingDirection;
     isParagraphStyleUsed = YES;
   }
-  
+
+  if (_lineBreakStrategy != NSLineBreakStrategyNone) {
+    if (@available(iOS 14.0, *)) {
+      paragraphStyle.lineBreakStrategy = _lineBreakStrategy;
+      isParagraphStyleUsed = YES;
+    }
+  }
+
   if (!isnan(_lineHeight)) {
     CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
     paragraphStyle.minimumLineHeight = lineHeight;
     paragraphStyle.maximumLineHeight = lineHeight;
     isParagraphStyleUsed = YES;
   }
-  
+
   if (isParagraphStyleUsed) {
     return [paragraphStyle copy];
   }
-  
+
   return nil;
 }
 
@@ -294,6 +303,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     RCTTextAttributesCompareFloats(_lineHeight) &&
     RCTTextAttributesCompareFloats(_alignment) &&
     RCTTextAttributesCompareOthers(_baseWritingDirection) &&
+    RCTTextAttributesCompareOthers(_lineBreakStrategy) &&
     // Decoration
     RCTTextAttributesCompareObjects(_textDecorationColor) &&
     RCTTextAttributesCompareOthers(_textDecorationStyle) &&

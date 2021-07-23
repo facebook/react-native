@@ -126,6 +126,7 @@ const RCTTextInputViewConfig = {
     selectTextOnFocus: true,
     text: true,
     clearTextOnFocus: true,
+    ios_lineBreakStrategy: true,
   },
 };
 

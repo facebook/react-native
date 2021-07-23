@@ -205,4 +205,11 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text.html#supperhighlighting
    */
   suppressHighlighting?: ?boolean,
+
+  /**
+   * Set line break strategy on iOS.
+   *
+   * See https://reactnative.dev/docs/text.html#ios_linebreakstrategy
+   */
+  ios_lineBreakStrategy?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
 |}>;
