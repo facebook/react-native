@@ -10,6 +10,7 @@ package com.facebook.react.views.text;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
@@ -56,6 +57,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mAdjustsFontSizeToFit = false;
   private int mLinkifyMaskType = 0;
   private boolean mNotifyOnInlineViewLayout;
+  private boolean mSelectableText = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -433,6 +435,11 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
   }
 
+  public void setSelectableText(boolean value) {
+    mSelectableText = value;
+    invalidate();
+  }
+
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
@@ -455,6 +462,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         span.onFinishTemporaryDetach();
       }
     }
+  }
+
+  @Override
+  public void onDraw(Canvas canvas) {
+    super.onDraw(canvas);
+    setTextIsSelectable(mSelectableText);
   }
 
   @Override
