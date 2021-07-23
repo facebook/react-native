@@ -30,6 +30,10 @@ RN_DIR=$(cd "$THIS_DIR/.." && pwd)
 NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
 USE_FABRIC="${USE_FABRIC:-0}"
 
+# remove global prefix if it's already set
+# we want to use local or nvm anyway
+unset PREFIX
+
 # Find path to Node
 # shellcheck source=/dev/null
 source "$RN_DIR/scripts/find-node.sh"
