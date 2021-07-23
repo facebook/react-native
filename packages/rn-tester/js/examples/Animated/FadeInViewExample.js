@@ -78,7 +78,6 @@ export default ({
   description: ('Uses a simple timing animation to ' +
     'bring opacity from 0 to 1 when the component ' +
     'mounts.': string),
-  test: 'Toggle `Press to Hide/Show` button, with nativeDriver on/off',
   expect:
     'FadeInView box should animate from opacity 0 to 1. \nExpect no animation when hiding.\nHiding the view mid-animation should not affect next animation.',
   render: (): React.Node => <FadeInExample />,

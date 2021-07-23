@@ -31,26 +31,21 @@ export default ({
   description: ('Sequence, parallel, delay, and ' +
     'stagger with different easing functions.': string),
   render: function(): React.Node {
-    // $FlowFixMe[incompatible-use]
-    // $FlowFixMe[incompatible-type]
-    this.anims = this.anims || [1, 2, 3].map(() => new Animated.Value(0));
+    const anims = [1, 2, 3].map(() => new Animated.Value(0));
     return (
       <View>
         <RNTesterButton
           onPress={() => {
-            const timing = Animated.timing;
             Animated.sequence([
               // One after the other
-              // $FlowFixMe[incompatible-use]
-              timing(this.anims[0], {
+              Animated.timing(anims[0], {
                 toValue: 200,
                 // $FlowFixMe[method-unbinding]
                 easing: Easing.linear,
                 useNativeDriver: false,
               }),
               Animated.delay(400), // Use with sequence
-              // $FlowFixMe[incompatible-use]
-              timing(this.anims[0], {
+              Animated.timing(anims[0], {
                 toValue: 0,
 
                 // Springy
@@ -61,18 +56,16 @@ export default ({
               Animated.delay(400),
               Animated.stagger(
                 200,
-                // $FlowFixMe[incompatible-use]
-                this.anims
+                anims
                   .map(anim =>
-                    timing(anim, {
+                    Animated.timing(anim, {
                       toValue: 200,
                       useNativeDriver: false,
                     }),
                   )
                   .concat(
-                    // $FlowFixMe[incompatible-use]
-                    this.anims.map(anim =>
-                      timing(anim, {
+                    anims.map(anim =>
+                      Animated.timing(anim, {
                         toValue: 0,
                         useNativeDriver: false,
                       }),
@@ -87,8 +80,7 @@ export default ({
                   Easing.back(1.5), // Goes backwards first
                   Easing.ease, // Default bezier
                 ].map((easing, ii) =>
-                  // $FlowFixMe[incompatible-use]
-                  timing(this.anims[ii], {
+                  Animated.timing(anims[ii], {
                     toValue: 320,
                     // $FlowFixMe[method-unbinding]
                     easing,
@@ -100,9 +92,8 @@ export default ({
               Animated.delay(400),
               Animated.stagger(
                 200,
-                // $FlowFixMe[incompatible-use]
-                this.anims.map(anim =>
-                  timing(anim, {
+                anims.map(anim =>
+                  Animated.timing(anim, {
                     toValue: 0,
 
                     // Like a ball
@@ -124,8 +115,7 @@ export default ({
             style={[
               styles.content,
               {
-                // $FlowFixMe[incompatible-use]
-                left: this.anims[ii],
+                left: anims[ii],
               },
             ]}>
             <Text>{text}</Text>

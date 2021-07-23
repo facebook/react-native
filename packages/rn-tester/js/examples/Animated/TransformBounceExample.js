@@ -34,15 +34,12 @@ export default ({
     'an interpolation to convert the value into the ' +
     'right range and units.': string),
   render: function(): React.Node {
-    // $FlowFixMe[incompatible-use]
-    // $FlowFixMe[incompatible-type]
-    this.anim = this.anim || new Animated.Value(0);
+    const anim = new Animated.Value(0);
     return (
       <View>
         <RNTesterButton
           onPress={() => {
-            // $FlowFixMe[incompatible-use]
-            Animated.spring(this.anim, {
+            Animated.spring(anim, {
               // Returns to the start
               toValue: 0,
 
@@ -67,26 +64,24 @@ export default ({
               transform: [
                 // Array order matters
                 {
-                  scale: this.anim.interpolate({
+                  scale: anim.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [1, 4],
+                    outputRange: ([1, 4]: $ReadOnlyArray<number>),
                   }),
                 },
                 {
-                  // $FlowFixMe[incompatible-use]
-                  translateX: this.anim.interpolate({
+                  translateX: anim.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [0, 500],
+                    outputRange: ([0, 500]: $ReadOnlyArray<number>),
                   }),
                 },
                 {
-                  // $FlowFixMe[incompatible-use]
-                  rotate: this.anim.interpolate({
+                  rotate: anim.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [
+                    outputRange: ([
                       '0deg',
                       '360deg', // 'deg' or 'rad'
-                    ],
+                    ]: $ReadOnlyArray<string>),
                   }),
                 },
               ],

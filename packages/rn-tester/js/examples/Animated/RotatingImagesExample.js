@@ -21,15 +21,12 @@ const styles = StyleSheet.create({
 });
 
 function RotatingImagesExample(): React.Node {
-  // $FlowFixMe[incompatible-use]
-  // $FlowFixMe[incompatible-type]
-  this.anim = this.anim || new Animated.Value(0);
+  const anim = React.useRef(new Animated.Value(0));
   return (
     <View>
       <RNTesterButton
         onPress={() => {
-          // $FlowFixMe[incompatible-use]
-          Animated.spring(this.anim, {
+          Animated.spring(anim.current, {
             // Returns to the start
             toValue: 0,
 
@@ -54,26 +51,24 @@ function RotatingImagesExample(): React.Node {
           {
             transform: [
               {
-                scale: this.anim.interpolate({
+                scale: anim.current.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [1, 10],
+                  outputRange: ([1, 10]: $ReadOnlyArray<number>),
                 }),
               },
               {
-                // $FlowFixMe[incompatible-use]
-                translateX: this.anim.interpolate({
+                translateX: anim.current.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, 100],
+                  outputRange: ([0, 100]: $ReadOnlyArray<number>),
                 }),
               },
               {
-                // $FlowFixMe[incompatible-use]
-                rotate: this.anim.interpolate({
+                rotate: anim.current.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [
+                  outputRange: ([
                     '0deg',
                     '360deg', // 'deg' or 'rad'
-                  ],
+                  ]: $ReadOnlyArray<string>),
                 }),
               },
             ],
