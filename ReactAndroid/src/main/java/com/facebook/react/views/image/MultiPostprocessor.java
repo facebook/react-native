@@ -8,6 +8,7 @@
 package com.facebook.react.views.image;
 
 import android.graphics.Bitmap;
+import androidx.annotation.Nullable;
 import com.facebook.cache.common.CacheKey;
 import com.facebook.cache.common.MultiCacheKey;
 import com.facebook.common.references.CloseableReference;
@@ -49,12 +50,24 @@ public class MultiPostprocessor implements Postprocessor {
   }
 
   @Override
+  @Nullable
   public CacheKey getPostprocessorCacheKey() {
     LinkedList<CacheKey> keys = new LinkedList<>();
     for (Postprocessor p : mPostprocessors) {
-      keys.push(p.getPostprocessorCacheKey());
+      CacheKey cacheKey = p.getPostprocessorCacheKey();
+      if (cacheKey != null) {
+        keys.push(cacheKey);
+      }
     }
-    return new MultiCacheKey(keys);
+
+    switch (keys.size()) {
+      case 0:
+        return null;
+      case 1:
+        return keys.get(0);
+      default:
+        return new MultiCacheKey(keys);
+    }
   }
 
   @Override
