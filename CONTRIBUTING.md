@@ -88,9 +88,19 @@ git push
 ### Building the Repository
 This repo uses `yarn` to manage its dependencies so to pull in all the dependencies we need, you must run `yarn` from root (note this maps to `yarn install`).
  
+`pod install` generates an `xcworkspace` from the existing `xcodeproj` and newly installed depedencies. Use the machine specific steps below to install your pods. Then to begin your work, launch the `RNTester.xcworkspace` project, choose your target of macOS or iOS and hit `Run`.
+
+#### x86_64
 After doing so, you now have all the repo-level dependencies, but you still need to pull in the specific macOS/iOS xcode project dependencies. We use Cocoapods for this and to install them you must cd into the directory (e.g. `cd RNTester`)and run `pod install`.
  
-`pod install` generates an `xcworkspace` from the existing `xcodeproj` and newly installed depedencies. To begin your work, launch the `RNTester.xcworkspace` project, choose your target of macOS or iOS and hit `Run`.
+#### arm64
+To install cocoapods on an `M1` machine, `pod install` won't work as of writing this (July 23, 2021). Run the commands below to set up your pods xcworkspace.
+```
+cd RNTester
+sudo arch -x86_64 gem install ffi
+sudo xcode-select -s /Applications/Xcode.app
+arch -x86_64 pod install
+```
 
 ### Make the fix
 Now that your branch is set up and ready for commits, go ahead and fix the bug you are working on or make some small change that you want to check in. 
