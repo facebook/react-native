@@ -55,6 +55,10 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    mReactDelegate = createReactDelegate();
+  }
+
+  protected ReactDelegate createReactDelegate() {
     String mainComponentName = null;
     Bundle launchOptions = null;
     if (getArguments() != null) {
@@ -64,8 +68,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
     if (mainComponentName == null) {
       throw new IllegalStateException("Cannot loadApp if component name is null");
     }
-    mReactDelegate =
-        new ReactDelegate(getActivity(), getReactNativeHost(), mainComponentName, launchOptions);
+    return new ReactDelegate(getActivity(), getReactNativeHost(), mainComponentName, launchOptions);
   }
 
   /**
