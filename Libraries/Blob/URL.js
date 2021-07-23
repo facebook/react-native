@@ -128,9 +128,6 @@ export class URL {
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {
       this._url = url;
-      if (!this._url.endsWith('/')) {
-        this._url += '/';
-      }
     } else {
       if (typeof base === 'string') {
         baseUrl = base;
