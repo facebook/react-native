@@ -328,9 +328,22 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         Spannable spannable = update.getText();
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
+
+      // Ensure that selection is handled correctly on text update
+      boolean isCurrentSelectionEmpty = view.getSelectionStart() == view.getSelectionEnd();
+      int selectionStart = update.getSelectionStart();
+      int selectionEnd = update.getSelectionEnd();
+      if ((selectionStart == UNSET || selectionEnd == UNSET) && isCurrentSelectionEmpty) {
+        // if selection is not set by state, shift current selection to ensure constant gap to
+        // text end
+        int textLength = view.getText() == null ? 0 : view.getText().length();
+        int selectionOffset = textLength - view.getSelectionStart();
+        selectionStart = update.getText().length() - selectionOffset;
+        selectionEnd = selectionStart;
+      }
+
       view.maybeSetTextFromState(update);
-      view.maybeSetSelection(
-          update.getJsEventCounter(), update.getSelectionStart(), update.getSelectionEnd());
+      view.maybeSetSelection(update.getJsEventCounter(), selectionStart, selectionEnd);
     }
   }
 
