@@ -321,7 +321,7 @@ const getBackgroundProp =
     ? (background, useForeground) =>
         useForeground && TouchableNativeFeedback.canUseNativeForeground()
           ? {nativeForegroundAndroid: background}
-          : {nativeBackgroundAndroid: background}
+          : null
     : (background, useForeground) => null;
 
 TouchableNativeFeedback.displayName = 'TouchableNativeFeedback';
