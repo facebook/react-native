@@ -20,12 +20,14 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -115,6 +117,20 @@ public class ReactScrollView extends ScrollView
     mScroller = getOverScrollerFromParent();
     setOnHierarchyChangeListener(this);
     setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
+  }
+
+  @Override
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+    super.onInitializeAccessibilityNodeInfo(info);
+
+    // Expose the testID prop as the resource-id name of the view. Black-box E2E/UI testing
+    // frameworks, which interact with the UI through the accessibility framework, do not have
+    // access to view tags. This allows developers/testers to avoid polluting the
+    // content-description with test identifiers.
+    final String testId = (String) this.getTag(R.id.react_test_id);
+    if (testId != null) {
+      info.setViewIdResourceName(testId);
+    }
   }
 
   @Nullable

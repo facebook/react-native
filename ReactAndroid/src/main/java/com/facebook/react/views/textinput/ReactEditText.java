@@ -36,7 +36,6 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -44,6 +43,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.FabricViewStateManager;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.CustomLetterSpacingSpan;
@@ -155,7 +155,7 @@ public class ReactEditText extends AppCompatEditText
 
     ViewCompat.setAccessibilityDelegate(
         this,
-        new AccessibilityDelegateCompat() {
+        new ReactAccessibilityDelegate() {
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
