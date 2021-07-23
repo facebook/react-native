@@ -12,6 +12,8 @@ import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import {Animated, View, StyleSheet} from 'react-native';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
+import ToggleNativeDriver from './utils/ToggleNativeDriver';
 
 const styles = StyleSheet.create({
   rotatingImage: {
@@ -20,27 +22,28 @@ const styles = StyleSheet.create({
   },
 });
 
-function RotatingImagesExample(): React.Node {
-  const anim = React.useRef(new Animated.Value(0));
+function RotatingImagesView({useNativeDriver}: {useNativeDriver: boolean}) {
+  const anim = new Animated.Value(0);
+  const rotatingAnimation = Animated.spring(anim, {
+    // Returns to the start
+    toValue: 0,
+
+    // Velocity makes it move
+    velocity: 3,
+
+    // Slow
+    tension: -10,
+
+    // Oscillate a lot
+    friction: 1,
+    useNativeDriver,
+  });
+
   return (
-    <View>
+    <>
       <RNTesterButton
         onPress={() => {
-          Animated.spring(anim.current, {
-            // Returns to the start
-            toValue: 0,
-
-            // Velocity makes it move
-            velocity: 3,
-
-            // Slow
-            tension: -10,
-
-            // Oscillate a lot
-            friction: 1,
-
-            useNativeDriver: false,
-          }).start();
+          rotatingAnimation.start();
         }}>
         Press to Spin it!
       </RNTesterButton>
@@ -51,19 +54,19 @@ function RotatingImagesExample(): React.Node {
           {
             transform: [
               {
-                scale: anim.current.interpolate({
+                scale: anim.interpolate({
                   inputRange: [0, 1],
                   outputRange: ([1, 10]: $ReadOnlyArray<number>),
                 }),
               },
               {
-                translateX: anim.current.interpolate({
+                translateX: anim.interpolate({
                   inputRange: [0, 1],
                   outputRange: ([0, 100]: $ReadOnlyArray<number>),
                 }),
               },
               {
-                rotate: anim.current.interpolate({
+                rotate: anim.interpolate({
                   inputRange: [0, 1],
                   outputRange: ([
                     '0deg',
@@ -75,6 +78,25 @@ function RotatingImagesExample(): React.Node {
           },
         ]}
       />
+    </>
+  );
+}
+
+function RotatingImagesExample(): React.Node {
+  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+
+  return (
+    <View>
+      <RNTConfigurationBlock>
+        <ToggleNativeDriver
+          value={useNativeDriver}
+          onValueChange={setUseNativeDriver}
+        />
+      </RNTConfigurationBlock>
+      <RotatingImagesView
+        key={`rotating-images-view-${useNativeDriver ? 'native' : 'js'}-driver`}
+        useNativeDriver={useNativeDriver}
+      />
     </View>
   );
 }
@@ -83,5 +105,7 @@ export default ({
   title: 'Rotating Images',
   name: 'rotatingImages',
   description: 'Simple Animated.Image rotation.',
+  expect:
+    'Transform animation on image in scale, rotation, and translation. JS driver will ignore any calls to `start` on running animation. Native driver will re-start the animation.',
   render: RotatingImagesExample,
 }: RNTesterModuleExample);

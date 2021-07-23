@@ -11,7 +11,9 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
+import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import {Text, StyleSheet, View, Animated} from 'react-native';
+import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 
 const styles = StyleSheet.create({
   content: {
@@ -25,7 +27,13 @@ const styles = StyleSheet.create({
   },
 });
 
-function FadeInView({children}: {children: React.Node}) {
+function FadeInView({
+  useNativeDriver,
+  children,
+}: {
+  useNativeDriver: boolean,
+  children: React.Node,
+}) {
   //opacity 0
   const [fadeAnim, setFadeAnim] = React.useState(() => new Animated.Value(0));
   React.useEffect(() => {
@@ -39,10 +47,10 @@ function FadeInView({children}: {children: React.Node}) {
         // Configuration
         duration: 2000,
 
-        useNativeDriver: false,
+        useNativeDriver,
       },
     ).start(); // Don't forget start!
-  }, [fadeAnim]);
+  }, [fadeAnim, useNativeDriver]);
 
   return (
     <Animated.View // Special animatable View
@@ -56,13 +64,20 @@ function FadeInView({children}: {children: React.Node}) {
 
 function FadeInExample(): React.Node {
   const [show, setShow] = React.useState(true);
+  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
   return (
     <View>
+      <RNTConfigurationBlock>
+        <ToggleNativeDriver
+          value={useNativeDriver}
+          onValueChange={setUseNativeDriver}
+        />
+      </RNTConfigurationBlock>
       <RNTesterButton testID="toggle-button" onPress={() => setShow(!show)}>
         Press to {show ? 'Hide' : 'Show'}
       </RNTesterButton>
       {show && (
-        <FadeInView>
+        <FadeInView useNativeDriver={useNativeDriver}>
           <View testID="fade-in-view" style={styles.content}>
             <Text>FadeInView</Text>
           </View>

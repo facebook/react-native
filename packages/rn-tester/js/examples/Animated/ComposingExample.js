@@ -12,68 +12,86 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {CompositeAnimation} from 'react-native/Libraries/Animated/AnimatedMock';
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
+import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
+import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import {Text, StyleSheet, View, Animated, FlatList} from 'react-native';
 
 type Props = $ReadOnly<{||}>;
 
-const leftToRightTimingConfig = {
+const leftToRightTimingConfig = useNativeDriver => ({
   toValue: 200,
-  useNativeDriver: true,
-};
-const rightToLeftTimingConfig = {
+  useNativeDriver,
+});
+const rightToLeftTimingConfig = useNativeDriver => ({
   toValue: 0,
-  useNativeDriver: true,
-};
+  useNativeDriver,
+});
 const items = [
   {
     title: 'Parallel',
-    compositeAnimation: values =>
+    compositeAnimation: (values, useNativeDriver) =>
       Animated.sequence([
         Animated.parallel(
-          values.map(value => Animated.timing(value, leftToRightTimingConfig)),
+          values.map(value =>
+            Animated.timing(value, leftToRightTimingConfig(useNativeDriver)),
+          ),
         ),
         Animated.parallel(
-          values.map(value => Animated.timing(value, rightToLeftTimingConfig)),
+          values.map(value =>
+            Animated.timing(value, rightToLeftTimingConfig(useNativeDriver)),
+          ),
         ),
       ]),
   },
   {
     title: 'Sequence',
-    compositeAnimation: values =>
+    compositeAnimation: (values, useNativeDriver) =>
       Animated.sequence([
         Animated.sequence(
-          values.map(value => Animated.timing(value, leftToRightTimingConfig)),
+          values.map(value =>
+            Animated.timing(value, leftToRightTimingConfig(useNativeDriver)),
+          ),
         ),
         Animated.sequence(
-          values.map(value => Animated.timing(value, rightToLeftTimingConfig)),
+          values.map(value =>
+            Animated.timing(value, rightToLeftTimingConfig(useNativeDriver)),
+          ),
         ),
       ]),
   },
   {
     title: 'Stagger',
-    compositeAnimation: values =>
+    compositeAnimation: (values, useNativeDriver) =>
       Animated.sequence([
         Animated.stagger(
           150,
-          values.map(value => Animated.timing(value, leftToRightTimingConfig)),
+          values.map(value =>
+            Animated.timing(value, leftToRightTimingConfig(useNativeDriver)),
+          ),
         ),
         Animated.stagger(
           150,
-          values.map(value => Animated.timing(value, rightToLeftTimingConfig)),
+          values.map(value =>
+            Animated.timing(value, rightToLeftTimingConfig(useNativeDriver)),
+          ),
         ),
       ]),
   },
   {
     title: 'Delay',
-    compositeAnimation: values =>
+    compositeAnimation: (values, useNativeDriver) =>
       Animated.sequence([
         Animated.delay(2000),
         Animated.parallel(
-          values.map(value => Animated.timing(value, leftToRightTimingConfig)),
+          values.map(value =>
+            Animated.timing(value, leftToRightTimingConfig(useNativeDriver)),
+          ),
         ),
         Animated.delay(2000),
         Animated.parallel(
-          values.map(value => Animated.timing(value, rightToLeftTimingConfig)),
+          values.map(value =>
+            Animated.timing(value, rightToLeftTimingConfig(useNativeDriver)),
+          ),
         ),
       ]),
   },
@@ -82,9 +100,14 @@ const items = [
 function ComposingExampleItem({
   title,
   compositeAnimation,
+  useNativeDriver,
 }: {
   title: string,
-  compositeAnimation: (values: Animated.Value[]) => CompositeAnimation,
+  compositeAnimation: (
+    values: Animated.Value[],
+    useNativeDriver: boolean,
+  ) => CompositeAnimation,
+  useNativeDriver: boolean,
 }): React.Node {
   const boxes = [0, 1, 2, 3, 4];
   const xTranslations = React.useRef(boxes.map(() => new Animated.Value(0)))
@@ -96,7 +119,7 @@ function ComposingExampleItem({
         <Text style={styles.itemTitle}>{title}</Text>
         <RNTesterButton
           onPress={() => {
-            compositeAnimation(xTranslations).start();
+            compositeAnimation(xTranslations, useNativeDriver).start();
           }}>
           Animate
         </RNTesterButton>
@@ -119,17 +142,27 @@ function ComposingExampleItem({
 }
 
 function ComposingExample(props: Props): React.Node {
+  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
   return (
-    <FlatList
-      data={items}
-      renderItem={({item}) => (
-        <ComposingExampleItem
-          key={item.title}
-          title={item.title}
-          compositeAnimation={item.compositeAnimation}
+    <>
+      <RNTConfigurationBlock>
+        <ToggleNativeDriver
+          value={useNativeDriver}
+          onValueChange={setUseNativeDriver}
         />
-      )}
-    />
+      </RNTConfigurationBlock>
+      <FlatList
+        data={items}
+        renderItem={({item}) => (
+          <ComposingExampleItem
+            key={item.title}
+            title={item.title}
+            compositeAnimation={item.compositeAnimation}
+            useNativeDriver={useNativeDriver}
+          />
+        )}
+      />
+    </>
   );
 }
 

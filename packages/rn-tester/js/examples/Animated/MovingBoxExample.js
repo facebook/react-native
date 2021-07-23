@@ -12,6 +12,8 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
 import {Text, StyleSheet, View, Animated} from 'react-native';
+import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
+import ToggleNativeDriver from './utils/ToggleNativeDriver';
 const containerWidth = 200;
 const boxSize = 50;
 
@@ -53,15 +55,16 @@ const styles = StyleSheet.create({
 
 type Props = $ReadOnly<{||}>;
 
-function MovingBoxExample(props: Props): React.Node {
+function MovingBoxView({useNativeDriver}: {useNativeDriver: boolean}) {
   const x = React.useRef(new Animated.Value(0));
+  const [update, setUpdate] = React.useState(0);
   const [boxVisible, setBoxVisible] = React.useState(true);
 
   const moveTo = (pos: number) => {
     Animated.timing(x.current, {
       toValue: pos,
       duration: 1000,
-      useNativeDriver: true,
+      useNativeDriver,
     }).start();
   };
 
@@ -71,12 +74,12 @@ function MovingBoxExample(props: Props): React.Node {
   const toggleText = boxVisible ? 'Hide' : 'Show';
   const onReset = () => {
     x.current.resetAnimation();
+    setUpdate(update + 1);
   };
-
   return (
     <View style={styles.container}>
-      {boxVisible ? (
-        <View style={styles.boxContainer}>
+      <View style={styles.boxContainer}>
+        {boxVisible ? (
           <Animated.View
             testID="moving-view"
             style={[
@@ -85,12 +88,10 @@ function MovingBoxExample(props: Props): React.Node {
               {transform: [{translateX: x.current}]},
             ]}
           />
-        </View>
-      ) : (
-        <View style={styles.boxContainer}>
+        ) : (
           <Text>The box view is not being rendered</Text>
-        </View>
-      )}
+        )}
+      </View>
       <View style={styles.buttonsContainer}>
         <RNTesterButton testID="move-left-button" onPress={() => moveTo(0)}>
           {'<-'}
@@ -107,10 +108,31 @@ function MovingBoxExample(props: Props): React.Node {
   );
 }
 
+function MovingBoxExample(props: Props): React.Node {
+  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+
+  return (
+    <>
+      <RNTConfigurationBlock>
+        <ToggleNativeDriver
+          value={useNativeDriver}
+          onValueChange={setUseNativeDriver}
+        />
+      </RNTConfigurationBlock>
+      <MovingBoxView
+        key={`moving-box-view-${useNativeDriver ? 'native' : 'js'}-driver`}
+        useNativeDriver={useNativeDriver}
+      />
+    </>
+  );
+}
+
 export default ({
   title: 'Moving box example',
   name: 'movingView',
   description:
-    'Click arrow buttons to move the box. Then hide the box and reveal it again. The box will stay its last position. Reset will reset the animation to its starting position',
+    'Click arrow buttons to move the box. Hide will remove the box from layout.',
+  expect:
+    'During animation, removing box from layout will stop the animation and box will stay in its current position.\nStarting animation when box is not rendered and rendering mid-way does not affect animation.\nReset will reset the animation to its starting position.',
   render: (): React.Node => <MovingBoxExample />,
 }: RNTesterModuleExample);
