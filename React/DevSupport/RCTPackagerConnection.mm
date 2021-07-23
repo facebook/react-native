@@ -120,24 +120,28 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHostPor
   _requestRegistrations.clear();
 }
 
-- (void)bundleURLSettingsChanged
+- (void)reconnect:(NSString *)packagerServerHostPort
 {
   std::lock_guard<std::mutex> l(_mutex);
   if (_socket == nil) {
     return; // already stopped
   }
 
-  NSString *const serverHostPort = [[RCTBundleURLProvider sharedSettings] packagerServerHostPort];
-  if ([serverHostPort isEqual:_serverHostPortForSocket]) {
+  if ([packagerServerHostPort isEqual:_serverHostPortForSocket]) {
     return; // unchanged
   }
 
   _socket.delegate = nil;
   [_socket stop];
-  _serverHostPortForSocket = serverHostPort;
-  _socket = socketForLocation(serverHostPort);
+  _serverHostPortForSocket = packagerServerHostPort;
+  _socket = socketForLocation(packagerServerHostPort);
   _socket.delegate = self;
   [_socket start];
+}
+
+- (void)bundleURLSettingsChanged
+{
+  [self reconnect:[[RCTBundleURLProvider sharedSettings] packagerServerHostPort]];
 }
 
 - (RCTHandlerToken)addNotificationHandler:(RCTNotificationHandler)handler
