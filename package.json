@@ -120,6 +120,9 @@
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4"
   },
+  "resolutions": {
+    "lodash": "^4.17.12"
+  },
   "devDependencies": {
     "flow-bin": "^0.156.0",
     "react": "17.0.2"
