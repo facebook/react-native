@@ -80,7 +80,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     boolean supports(String responseType);
 
     /** Returns the JS body payload for the {@link ResponseBody}. */
-    WritableMap toResponseData(ResponseBody body) throws IOException;
+    WritableMap toResponseData(Response response) throws IOException;
   }
 
   public static final String NAME = "Networking";
@@ -509,7 +509,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
                   // Check if a handler is registered
                   for (ResponseHandler handler : mResponseHandlers) {
                     if (handler.supports(responseType)) {
-                      WritableMap res = handler.toResponseData(responseBody);
+                      WritableMap res = handler.toResponseData(response);
                       ResponseUtil.onDataReceived(eventEmitter, requestId, res);
                       ResponseUtil.onRequestSuccess(eventEmitter, requestId);
                       return;
