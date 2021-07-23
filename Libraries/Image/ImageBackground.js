@@ -55,15 +55,24 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
   };
 
   render(): React.Node {
-    const {children, style, imageStyle, imageRef, ...props} = this.props;
+    const {
+      children,
+      style,
+      imageStyle,
+      imageRef,
+      importantForAccessibility,
+      ...props
+    } = this.props;
 
     return (
       <View
         accessibilityIgnoresInvertColors={true}
+        importantForAccessibility={importantForAccessibility}
         style={style}
         ref={this._captureRef}>
         <Image
           {...props}
+          importantForAccessibility={importantForAccessibility}
           style={[
             StyleSheet.absoluteFill,
             {

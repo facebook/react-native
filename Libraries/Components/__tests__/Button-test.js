@@ -46,4 +46,14 @@ describe('<Button />', () => {
     expect(ReactTestRenderer.create( <Button title="Test Button" disabled={false} accessibilityState={{disabled: false}} />)
     ).toMatchSnapshot();
   });
+
+  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}', () => {
+    expect(ReactTestRenderer.create( <Button title="Test Button" importantForAccessibility={'no-hide-descendants'} />)
+    ).toMatchSnapshot();
+  });
+
+  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}', () => {
+    expect(ReactTestRenderer.create( <Button title="Test Button" importantForAccessibility={'no'} />)
+    ).toMatchSnapshot();
+  });
 });
