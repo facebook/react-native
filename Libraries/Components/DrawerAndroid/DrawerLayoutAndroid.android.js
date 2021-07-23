@@ -3,7 +3,7 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
+ * 
  * @flow
  * @format
  */
@@ -161,11 +161,6 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
 
     return {Left: 'left', Right: 'right'};
   }
-  static defaultProps: {|
-    drawerBackgroundColor: 'white',
-  |} = {
-    drawerBackgroundColor: 'white',
-  };
 
   _nativeRef = React.createRef<
     React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
@@ -176,6 +171,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
   render(): React.Node {
     const {
       onDrawerStateChanged,
+      drawerBackgroundColor="white",
       renderNavigationView,
       onDrawerOpen,
       onDrawerClose,
