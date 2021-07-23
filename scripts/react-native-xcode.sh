@@ -83,6 +83,13 @@ fi
 # shellcheck source=/dev/null
 source "$RN_DIR/scripts/find-node.sh"
 
+# Set up asdf-vm if present
+if [[ -f "$HOME/.asdf/asdf.sh" ]]; then
+  . "$HOME/.asdf/asdf.sh"
+elif [[ -x "$(command -v brew)" && -f "$(brew --prefix asdf)/asdf.sh" ]]; then
+  . "$(brew --prefix asdf)/asdf.sh"
+fi
+
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
