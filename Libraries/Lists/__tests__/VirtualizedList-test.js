@@ -71,7 +71,7 @@ describe('VirtualizedList', () => {
     // Silence the React error boundary warning; we expect an uncaught error.
     const consoleError = console.error;
     jest.spyOn(console, 'error').mockImplementation(message => {
-      if (message.startsWith('The above error occured in the ')) {
+      if (message.startsWith('The above error occurred in the ')) {
         return;
       }
       consoleError(message);
@@ -415,7 +415,7 @@ describe('VirtualizedList', () => {
     const errors = [];
     jest.spyOn(console, 'error').mockImplementation((...args) => {
       // Silence the DEV-only React error boundary warning.
-      if ((args[0] || '').startsWith('The above error occured in the ')) {
+      if ((args[0] || '').startsWith('The above error occurred in the ')) {
         return;
       }
       errors.push(args);
