@@ -187,7 +187,7 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
   }
 
   public int getTotalTimeMS() {
-    return (int) ((double) mLastFrameTime - mFirstFrameTime) / 1000000;
+    return (int) (((double) mLastFrameTime - mFirstFrameTime) / 1000000);
   }
 
   /**
