@@ -206,6 +206,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode,
+      @Nullable float[] extras,
       @Nullable float[] attachmentsPositions) {
     ReactSwitch view = new ReactSwitch(context);
     view.setShowText(false);

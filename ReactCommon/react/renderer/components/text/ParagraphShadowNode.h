@@ -65,7 +65,10 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   Size measureContent(
       LayoutContext const &layoutContext,
       LayoutConstraints const &layoutConstraints) const override;
-
+  Float measureBaseline(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const override;
+  
   /*
    * Internal representation of the nested content of the node in a format
    * suitable for future processing.
@@ -87,6 +90,13 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    * Builds and returns a `Content` object with given `layoutConstraints`.
    */
   Content getContentWithMeasuredAttachments(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const;
+
+  /*
+   * Used in `measureContent` and `measureBaseline`.
+   */
+  TextMeasurement measureText(
       LayoutContext const &layoutContext,
       LayoutConstraints const &layoutConstraints) const;
 

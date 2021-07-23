@@ -115,6 +115,17 @@ Size TextInputShadowNode::measureContent(
       .size;
 }
 
+Float TextInputShadowNode::measureBaseline(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
+  return textLayoutManager_
+      ->measure(
+          attributedStringBoxToMeasure(layoutContext),
+          getConcreteProps().getEffectiveParagraphAttributes(),
+          layoutConstraints)
+      .baseline;
+}
+
 void TextInputShadowNode::layout(LayoutContext layoutContext) {
   updateStateIfNeeded(layoutContext);
   ConcreteViewShadowNode::layout(layoutContext);
