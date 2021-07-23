@@ -9,6 +9,7 @@ package com.facebook.react.modules.network;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
@@ -82,7 +83,12 @@ import okio.Source;
       try {
         final FileOutputStream stream = new FileOutputStream(file);
         try {
-          stream.getChannel().transferFrom(channel, 0, Long.MAX_VALUE);
+          long maxBytes = Long.MAX_VALUE;
+          if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            // Old version of Android internally cast value to integer
+            maxBytes = (long) Integer.MAX_VALUE;
+          }
+          stream.getChannel().transferFrom(channel, 0, maxBytes);
           return new FileInputStream(file);
         } finally {
           stream.close();
