@@ -12,6 +12,7 @@
 
 @implementation RCTEventEmitter {
   NSInteger _listenerCount;
+  NSString *_eventName;
   BOOL _observationDisabled;
 }
 
@@ -112,6 +113,7 @@ RCT_EXPORT_METHOD(addListener : (NSString *)eventName)
   }
   _listenerCount++;
   if (_listenerCount == 1) {
+    _eventName = eventName;
     [self startObserving];
   }
 }
@@ -128,6 +130,7 @@ RCT_EXPORT_METHOD(removeListeners : (double)count)
   }
   _listenerCount = MAX(_listenerCount - currentCount, 0);
   if (_listenerCount == 0) {
+    _eventName = nil;
     [self stopObserving];
   }
 }
