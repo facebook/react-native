@@ -48,7 +48,7 @@ export type ViewabilityConfig = {|
   viewAreaCoveragePercentThreshold?: number,
 
   /**
-   * Similar to `viewAreaPercentThreshold`, but considers the percent of the item that is visible,
+   * Similar to `viewAreaCoveragePercentThreshold`, but considers the percent of the item that is visible,
    * rather than the fraction of the viewable area it covers.
    */
   itemVisiblePercentThreshold?: number,
