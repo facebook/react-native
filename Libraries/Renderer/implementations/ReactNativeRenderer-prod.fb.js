@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<1ea517705a715682abeb1aa7d378ce03>>
+ * @generated SignedSource<<bea4ed702f3d50248708067249bc66f2>>
  */
 
 "use strict";
@@ -4084,19 +4084,21 @@ function createClassErrorUpdate(fiber, errorInfo, lane) {
   if ("function" === typeof getDerivedStateFromError) {
     var error = errorInfo.value;
     lane.payload = function() {
-      logCapturedError(fiber, errorInfo);
       return getDerivedStateFromError(error);
+    };
+    lane.callback = function() {
+      logCapturedError(fiber, errorInfo);
     };
   }
   var inst = fiber.stateNode;
   null !== inst &&
     "function" === typeof inst.componentDidCatch &&
     (lane.callback = function() {
+      logCapturedError(fiber, errorInfo);
       "function" !== typeof getDerivedStateFromError &&
         (null === legacyErrorBoundariesThatAlreadyFailed
           ? (legacyErrorBoundariesThatAlreadyFailed = new Set([this]))
-          : legacyErrorBoundariesThatAlreadyFailed.add(this),
-        logCapturedError(fiber, errorInfo));
+          : legacyErrorBoundariesThatAlreadyFailed.add(this));
       var stack = errorInfo.stack;
       this.componentDidCatch(errorInfo.value, {
         componentStack: null !== stack ? stack : ""
@@ -5574,11 +5576,11 @@ function commitUnmount(finishedRoot, current, nearestMountedAncestor$jscomp$0) {
           (finishedRoot.props = current.memoizedProps),
             (finishedRoot.state = current.memoizedState),
             finishedRoot.componentWillUnmount();
-        } catch (unmountError) {
+        } catch (error) {
           captureCommitPhaseError(
             current,
             nearestMountedAncestor$jscomp$0,
-            unmountError
+            error
           );
         }
       break;
@@ -6288,7 +6290,7 @@ function ensureRootIsScheduled(root, currentTime) {
         default:
           existingCallbackNode = NormalPriority;
       }
-      existingCallbackNode = scheduleCallback(
+      existingCallbackNode = scheduleCallback$1(
         existingCallbackNode,
         performConcurrentWorkOnRoot.bind(null, root)
       );
@@ -6850,7 +6852,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     0 === (finishedWork.flags & 1040)) ||
     rootDoesHavePassiveEffects ||
     ((rootDoesHavePassiveEffects = !0),
-    scheduleCallback(NormalPriority, function() {
+    scheduleCallback$1(NormalPriority, function() {
       flushPassiveEffects();
       return null;
     }));
@@ -7636,6 +7638,9 @@ beginWork$1 = function(current, workInProgress, renderLanes) {
       "). This error is likely caused by a bug in React. Please file an issue."
   );
 };
+function scheduleCallback$1(priorityLevel, callback) {
+  return scheduleCallback(priorityLevel, callback);
+}
 function FiberNode(tag, pendingProps, key, mode) {
   this.tag = tag;
   this.key = key;
@@ -7957,7 +7962,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_983 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "18.0.0-568dc3532",
+    version: "18.0.0-cae635054-20210626",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -7999,7 +8004,7 @@ var internals$jscomp$inline_1237 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-568dc3532"
+  reconcilerVersion: "18.0.0-cae635054-20210626"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1238 = __REACT_DEVTOOLS_GLOBAL_HOOK__;

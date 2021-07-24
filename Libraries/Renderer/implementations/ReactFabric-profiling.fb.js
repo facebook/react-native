@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<0c18c82e93c04be7b78b4f8ff591f1b3>>
+ * @generated SignedSource<<6166092fac6dde5ba6dc59392f7ac520>>
  */
 
 "use strict";
@@ -4176,19 +4176,21 @@ function createClassErrorUpdate(fiber, errorInfo, lane) {
   if ("function" === typeof getDerivedStateFromError) {
     var error = errorInfo.value;
     lane.payload = function() {
-      logCapturedError(fiber, errorInfo);
       return getDerivedStateFromError(error);
+    };
+    lane.callback = function() {
+      logCapturedError(fiber, errorInfo);
     };
   }
   var inst = fiber.stateNode;
   null !== inst &&
     "function" === typeof inst.componentDidCatch &&
     (lane.callback = function() {
+      logCapturedError(fiber, errorInfo);
       "function" !== typeof getDerivedStateFromError &&
         (null === legacyErrorBoundariesThatAlreadyFailed
           ? (legacyErrorBoundariesThatAlreadyFailed = new Set([this]))
-          : legacyErrorBoundariesThatAlreadyFailed.add(this),
-        logCapturedError(fiber, errorInfo));
+          : legacyErrorBoundariesThatAlreadyFailed.add(this));
       var stack = errorInfo.stack;
       this.componentDidCatch(errorInfo.value, {
         componentStack: null !== stack ? stack : ""
@@ -5946,8 +5948,8 @@ function commitMutationEffects(root, firstChild, committedLanes) {
                         recordLayoutEffectDuration(effect);
                       }
                     else _effect.componentWillUnmount();
-                  } catch (unmountError) {
-                    captureCommitPhaseError(current, root, unmountError);
+                  } catch (error) {
+                    captureCommitPhaseError(current, root, error);
                   }
                 break;
               case 5:
@@ -6395,7 +6397,7 @@ function ensureRootIsScheduled(root, currentTime) {
         default:
           existingCallbackNode = NormalPriority;
       }
-      existingCallbackNode = scheduleCallback(
+      existingCallbackNode = scheduleCallback$1(
         existingCallbackNode,
         performConcurrentWorkOnRoot.bind(null, root)
       );
@@ -7000,7 +7002,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     0 === (finishedWork.flags & 1040)) ||
     rootDoesHavePassiveEffects ||
     ((rootDoesHavePassiveEffects = !0),
-    scheduleCallback(NormalPriority, function() {
+    scheduleCallback$1(NormalPriority, function() {
       flushPassiveEffects();
       return null;
     }));
@@ -7255,7 +7257,7 @@ function enqueuePendingPassiveProfilerEffect(fiber) {
   pendingPassiveProfilerEffects.push(fiber);
   rootDoesHavePassiveEffects ||
     ((rootDoesHavePassiveEffects = !0),
-    scheduleCallback(NormalPriority, function() {
+    scheduleCallback$1(NormalPriority, function() {
       flushPassiveEffects();
       return null;
     }));
@@ -7871,6 +7873,9 @@ function restorePendingUpdaters(root, lanes) {
       addFiberToLanesMap(root, schedulingFiber, lanes);
     });
 }
+function scheduleCallback$1(priorityLevel, callback) {
+  return scheduleCallback(priorityLevel, callback);
+}
 function FiberNode(tag, pendingProps, key, mode) {
   this.tag = tag;
   this.key = key;
@@ -8197,7 +8202,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_969 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "18.0.0-568dc3532",
+    version: "18.0.0-cae635054-20210626",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8239,7 +8244,7 @@ var internals$jscomp$inline_1227 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-568dc3532"
+  reconcilerVersion: "18.0.0-cae635054-20210626"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1228 = __REACT_DEVTOOLS_GLOBAL_HOOK__;

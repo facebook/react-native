@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<5e044cc6ca6afb37524e2b0f1b24bab5>>
+ * @generated SignedSource<<45ddf77f62454702039adab715d6bb58>>
  */
 
 'use strict';
@@ -5859,7 +5859,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "18.0.0-568dc3532";
+var ReactVersion = "18.0.0-cae635054-20210626";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -7323,6 +7323,7 @@ function applyDerivedStateFromProps(
   nextProps
 ) {
   var prevState = workInProgress.memoizedState;
+  var partialState = getDerivedStateFromProps(nextProps, prevState);
 
   {
     if (workInProgress.mode & StrictLegacyMode) {
@@ -7330,16 +7331,12 @@ function applyDerivedStateFromProps(
 
       try {
         // Invoke the function an extra time to help detect side-effects.
-        getDerivedStateFromProps(nextProps, prevState);
+        partialState = getDerivedStateFromProps(nextProps, prevState);
       } finally {
         reenableLogs();
       }
     }
-  }
 
-  var partialState = getDerivedStateFromProps(nextProps, prevState);
-
-  {
     warnOnUndefinedDerivedState(ctor, partialState);
   } // Merge the partial state and the previous state.
 
@@ -7440,19 +7437,6 @@ function checkShouldComponentUpdate(
   var instance = workInProgress.stateNode;
 
   if (typeof instance.shouldComponentUpdate === "function") {
-    {
-      if (workInProgress.mode & StrictLegacyMode) {
-        disableLogs();
-
-        try {
-          // Invoke the function an extra time to help detect side-effects.
-          instance.shouldComponentUpdate(newProps, newState, nextContext);
-        } finally {
-          reenableLogs();
-        }
-      }
-    }
-
     var shouldUpdate = instance.shouldComponentUpdate(
       newProps,
       newState,
@@ -7460,6 +7444,21 @@ function checkShouldComponentUpdate(
     );
 
     {
+      if (workInProgress.mode & StrictLegacyMode) {
+        disableLogs();
+
+        try {
+          // Invoke the function an extra time to help detect side-effects.
+          shouldUpdate = instance.shouldComponentUpdate(
+            newProps,
+            newState,
+            nextContext
+          );
+        } finally {
+          reenableLogs();
+        }
+      }
+
       if (shouldUpdate === undefined) {
         error(
           "%s.shouldComponentUpdate(): Returned undefined instead of a " +
@@ -7774,21 +7773,22 @@ function constructClassInstance(workInProgress, ctor, props) {
     context = isLegacyContextConsumer
       ? getMaskedContext(workInProgress, unmaskedContext)
       : emptyContextObject;
-  } // Instantiate twice to help detect side-effects.
+  }
+
+  var instance = new ctor(props, context); // Instantiate twice to help detect side-effects.
 
   {
     if (workInProgress.mode & StrictLegacyMode) {
       disableLogs();
 
       try {
-        new ctor(props, context); // eslint-disable-line no-new
+        instance = new ctor(props, context); // eslint-disable-line no-new
       } finally {
         reenableLogs();
       }
     }
   }
 
-  var instance = new ctor(props, context);
   var state = (workInProgress.memoizedState =
     instance.state !== null && instance.state !== undefined
       ? instance.state
@@ -12617,8 +12617,15 @@ function createClassErrorUpdate(fiber, errorInfo, lane) {
     var error$1 = errorInfo.value;
 
     update.payload = function() {
-      logCapturedError(fiber, errorInfo);
       return getDerivedStateFromError(error$1);
+    };
+
+    update.callback = function() {
+      {
+        markFailedErrorBoundaryForHotReloading(fiber);
+      }
+
+      logCapturedError(fiber, errorInfo);
     };
   }
 
@@ -12630,15 +12637,15 @@ function createClassErrorUpdate(fiber, errorInfo, lane) {
         markFailedErrorBoundaryForHotReloading(fiber);
       }
 
+      logCapturedError(fiber, errorInfo);
+
       if (typeof getDerivedStateFromError !== "function") {
         // To preserve the preexisting retry behavior of error boundaries,
         // we keep track of which ones already failed during this batch.
         // This gets reset before we yield back to the browser.
         // TODO: Warn in strict mode if getDerivedStateFromError is
         // not defined.
-        markLegacyErrorBoundaryAsFailed(this); // Only log here if componentDidCatch is the only error boundary method defined
-
-        logCapturedError(fiber, errorInfo);
+        markLegacyErrorBoundaryAsFailed(this);
       }
 
       var error$1 = errorInfo.value;
@@ -12661,10 +12668,6 @@ function createClassErrorUpdate(fiber, errorInfo, lane) {
           }
         }
       }
-    };
-  } else {
-    update.callback = function() {
-      markFailedErrorBoundaryForHotReloading(fiber);
     };
   }
 
@@ -16987,6 +16990,20 @@ var nextEffect = null; // Used for Profiling builds to track updaters.
 var inProgressLanes = null;
 var inProgressRoot = null;
 
+function reportUncaughtErrorInDEV(error) {
+  // Wrapping each small part of the commit phase into a guarded
+  // callback is a bit too slow (https://github.com/facebook/react/pull/21666).
+  // But we rely on it to surface errors to DEV tools like overlays
+  // (https://github.com/facebook/react/issues/21712).
+  // As a compromise, rethrow only caught errors in a guard.
+  {
+    invokeGuardedCallback(null, function() {
+      throw error;
+    });
+    clearCaughtError();
+  }
+}
+
 var callComponentWillUnmountWithTimer = function(current, instance) {
   instance.props = current.memoizedProps;
   instance.state = current.memoizedState;
@@ -17010,8 +17027,9 @@ function safelyCallComponentWillUnmount(
 ) {
   try {
     callComponentWillUnmountWithTimer(current, instance);
-  } catch (unmountError) {
-    captureCommitPhaseError(current, nearestMountedAncestor, unmountError);
+  } catch (error) {
+    reportUncaughtErrorInDEV(error);
+    captureCommitPhaseError(current, nearestMountedAncestor, error);
   }
 } // Capture errors so they don't interrupt mounting.
 
@@ -17036,6 +17054,7 @@ function safelyDetachRef(current, nearestMountedAncestor) {
           ref(null);
         }
       } catch (error) {
+        reportUncaughtErrorInDEV(error);
         captureCommitPhaseError(current, nearestMountedAncestor, error);
       }
     } else {
@@ -17048,6 +17067,7 @@ function safelyCallDestroy(current, nearestMountedAncestor, destroy) {
   try {
     destroy();
   } catch (error) {
+    reportUncaughtErrorInDEV(error);
     captureCommitPhaseError(current, nearestMountedAncestor, error);
   }
 }
@@ -17091,6 +17111,7 @@ function commitBeforeMutationEffects_complete() {
     try {
       commitBeforeMutationEffectsOnFiber(fiber);
     } catch (error) {
+      reportUncaughtErrorInDEV(error);
       captureCommitPhaseError(fiber, fiber.return, error);
     }
 
@@ -18106,6 +18127,7 @@ function commitMutationEffects_begin(root) {
         try {
           commitDeletion(root, childToDelete, fiber);
         } catch (error) {
+          reportUncaughtErrorInDEV(error);
           captureCommitPhaseError(childToDelete, fiber, error);
         }
       }
@@ -18130,6 +18152,7 @@ function commitMutationEffects_complete(root) {
     try {
       commitMutationEffectsOnFiber(fiber, root);
     } catch (error) {
+      reportUncaughtErrorInDEV(error);
       captureCommitPhaseError(fiber, fiber.return, error);
     }
 
@@ -18243,6 +18266,7 @@ function commitLayoutMountEffects_complete(subtreeRoot, root, committedLanes) {
       try {
         commitLayoutEffectOnFiber(root, current, fiber, committedLanes);
       } catch (error) {
+        reportUncaughtErrorInDEV(error);
         captureCommitPhaseError(fiber, fiber.return, error);
       }
 
@@ -18295,6 +18319,7 @@ function commitPassiveMountEffects_complete(subtreeRoot, root) {
       try {
         commitPassiveMountOnFiber(root, fiber);
       } catch (error) {
+        reportUncaughtErrorInDEV(error);
         captureCommitPhaseError(fiber, fiber.return, error);
       }
 
@@ -18557,6 +18582,7 @@ function invokeLayoutEffectMountInDEV(fiber) {
         try {
           commitHookEffectListMount(Layout | HasEffect, fiber);
         } catch (error) {
+          reportUncaughtErrorInDEV(error);
           captureCommitPhaseError(fiber, fiber.return, error);
         }
 
@@ -18569,6 +18595,7 @@ function invokeLayoutEffectMountInDEV(fiber) {
         try {
           instance.componentDidMount();
         } catch (error) {
+          reportUncaughtErrorInDEV(error);
           captureCommitPhaseError(fiber, fiber.return, error);
         }
 
@@ -18589,6 +18616,7 @@ function invokePassiveEffectMountInDEV(fiber) {
         try {
           commitHookEffectListMount(Passive$1 | HasEffect, fiber);
         } catch (error) {
+          reportUncaughtErrorInDEV(error);
           captureCommitPhaseError(fiber, fiber.return, error);
         }
 
@@ -18609,6 +18637,7 @@ function invokeLayoutEffectUnmountInDEV(fiber) {
         try {
           commitHookEffectListUnmount(Layout | HasEffect, fiber, fiber.return);
         } catch (error) {
+          reportUncaughtErrorInDEV(error);
           captureCommitPhaseError(fiber, fiber.return, error);
         }
 
@@ -18643,6 +18672,7 @@ function invokePassiveEffectUnmountInDEV(fiber) {
             fiber.return
           );
         } catch (error) {
+          reportUncaughtErrorInDEV(error);
           captureCommitPhaseError(fiber, fiber.return, error);
         }
       }
@@ -18669,7 +18699,7 @@ var ceil = Math.ceil;
 var ReactCurrentDispatcher$2 = ReactSharedInternals.ReactCurrentDispatcher,
   ReactCurrentOwner$2 = ReactSharedInternals.ReactCurrentOwner,
   ReactCurrentBatchConfig$2 = ReactSharedInternals.ReactCurrentBatchConfig,
-  IsSomeRendererActing = ReactSharedInternals.IsSomeRendererActing;
+  ReactCurrentActQueue = ReactSharedInternals.ReactCurrentActQueue;
 var NoContext =
   /*             */
   0;
@@ -19016,7 +19046,7 @@ function ensureRootIsScheduled(root, currentTime) {
   if (nextLanes === NoLanes) {
     // Special case: There's nothing to work on.
     if (existingCallbackNode !== null) {
-      cancelCallback(existingCallbackNode);
+      cancelCallback$1(existingCallbackNode);
     }
 
     root.callbackNode = null;
@@ -19028,7 +19058,15 @@ function ensureRootIsScheduled(root, currentTime) {
 
   var existingCallbackPriority = root.callbackPriority;
 
-  if (existingCallbackPriority === newCallbackPriority) {
+  if (
+    existingCallbackPriority === newCallbackPriority && // Special case related to `act`. If the currently scheduled task is a
+    // Scheduler task, rather than an `act` task, cancel it and re-scheduled
+    // on the `act` queue.
+    !(
+      ReactCurrentActQueue.current !== null &&
+      existingCallbackNode !== fakeActCallbackNode
+    )
+  ) {
     {
       // If we're going to re-use an existing task, it needs to exist.
       // Assume that discrete update microtasks are non-cancellable and null.
@@ -19048,7 +19086,7 @@ function ensureRootIsScheduled(root, currentTime) {
 
   if (existingCallbackNode != null) {
     // Cancel the existing callback. We'll schedule a new one below.
-    cancelCallback(existingCallbackNode);
+    cancelCallback$1(existingCallbackNode);
   } // Schedule a new callback.
 
   var newCallbackNode;
@@ -19064,7 +19102,7 @@ function ensureRootIsScheduled(root, currentTime) {
 
     {
       // Flush the queue in an Immediate task.
-      scheduleCallback(ImmediatePriority, flushSyncCallbacks);
+      scheduleCallback$1(ImmediatePriority, flushSyncCallbacks);
     }
 
     newCallbackNode = null;
@@ -19093,7 +19131,7 @@ function ensureRootIsScheduled(root, currentTime) {
         break;
     }
 
-    newCallbackNode = scheduleCallback(
+    newCallbackNode = scheduleCallback$1(
       schedulerPriorityLevel,
       performConcurrentWorkOnRoot.bind(null, root)
     );
@@ -19955,7 +19993,7 @@ function commitRootImpl(root, renderPriorityLevel) {
   ) {
     if (!rootDoesHavePassiveEffects) {
       rootDoesHavePassiveEffects = true;
-      scheduleCallback(NormalPriority, function() {
+      scheduleCallback$1(NormalPriority, function() {
         flushPassiveEffects();
         return null;
       });
@@ -20145,7 +20183,7 @@ function enqueuePendingPassiveProfilerEffect(fiber) {
 
     if (!rootDoesHavePassiveEffects) {
       rootDoesHavePassiveEffects = true;
-      scheduleCallback(NormalPriority, function() {
+      scheduleCallback$1(NormalPriority, function() {
         flushPassiveEffects();
         return null;
       });
@@ -20776,7 +20814,8 @@ function warnAboutRenderPhaseUpdatesInDEV(fiber) {
       }
     }
   }
-} // a 'shared' variable that changes when act() opens/closes in tests.
+}
+
 function restorePendingUpdaters(root, lanes) {
   {
     if (isDevToolsPresent) {
@@ -20789,52 +20828,35 @@ function restorePendingUpdaters(root, lanes) {
     }
   }
 }
+var fakeActCallbackNode = {};
 
-var didWarnAboutUnmockedScheduler = false; // TODO Before we release concurrent mode, revisit this and decide whether a mocked
-// scheduler is the actual recommendation. The alternative could be a testing build,
-// a new lib, or whatever; we dunno just yet. This message is for early adopters
-// to get their tests right.
-
-function warnIfUnmockedScheduler(fiber) {
+function scheduleCallback$1(priorityLevel, callback) {
   {
-    if (
-      didWarnAboutUnmockedScheduler === false &&
-      Scheduler.unstable_flushAllWithoutAsserting === undefined
-    ) {
-      if (fiber.mode & ConcurrentMode) {
-        didWarnAboutUnmockedScheduler = true;
+    // If we're currently inside an `act` scope, bypass Scheduler and push to
+    // the `act` queue instead.
+    var actQueue = ReactCurrentActQueue.current;
 
-        error(
-          'In Concurrent or Sync modes, the "scheduler" module needs to be mocked ' +
-          "to guarantee consistent behaviour across tests and browsers. " +
-          "For example, with jest: \n" + // Break up requires to avoid accidentally parsing them as dependencies.
-            "jest.mock('scheduler', () => require" +
-            "('scheduler/unstable_mock'));\n\n" +
-            "For more info, visit https://reactjs.org/link/mock-scheduler"
-        );
-      } else {
-        didWarnAboutUnmockedScheduler = true;
-
-        error(
-          'Starting from React v18, the "scheduler" module will need to be mocked ' +
-          "to guarantee consistent behaviour across tests and browsers. " +
-          "For example, with jest: \n" + // Break up requires to avoid accidentally parsing them as dependencies.
-            "jest.mock('scheduler', () => require" +
-            "('scheduler/unstable_mock'));\n\n" +
-            "For more info, visit https://reactjs.org/link/mock-scheduler"
-        );
-      }
+    if (actQueue !== null) {
+      actQueue.push(callback);
+      return fakeActCallbackNode;
+    } else {
+      return scheduleCallback(priorityLevel, callback);
     }
   }
-} // `act` testing API
+}
+
+function cancelCallback$1(callbackNode) {
+  if (callbackNode === fakeActCallbackNode) {
+    return;
+  } // In production, always call Scheduler. This function will be stripped out.
+
+  return cancelCallback(callbackNode);
+}
 
 function shouldForceFlushFallbacksInDEV() {
   // Never force flush in production. This function should get stripped out.
-  return actingUpdatesScopeDepth > 0;
+  return ReactCurrentActQueue.current !== null;
 }
-// so we can tell if any async act() calls try to run in parallel.
-
-var actingUpdatesScopeDepth = 0;
 
 var resolveFamily = null; // $FlowFixMe Flow gets confused by a WeakSet feature check below.
 
@@ -22121,14 +22143,6 @@ function updateContainer(element, container, parentComponent, callback) {
 
   var current$1 = container.current;
   var eventTime = requestEventTime();
-
-  {
-    // $FlowExpectedError - jest isn't a global, and isn't recognized outside of tests
-    if ("undefined" !== typeof jest) {
-      warnIfUnmockedScheduler(current$1);
-    }
-  }
-
   var lane = requestUpdateLane(current$1);
 
   var context = getContextForSubtree(parentComponent);
