@@ -57,7 +57,7 @@ class Dimensions {
    * This should only be called from native code by sending the
    * didUpdateDimensions event.
    *
-   * @param {object} dims Simple string-keyed object of dimensions to set
+   * @param {DimensionsPayload} dims Simple string-keyed object of dimensions to set
    */
   static set(dims: $ReadOnly<DimensionsPayload>): void {
     // We calculate the window dimensions in JS so that we don't encounter loss of
