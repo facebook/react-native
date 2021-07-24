@@ -11,7 +11,11 @@
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
-type DisplayMetricsAndroid = DisplayMetrics & {|
+type DisplayMetricsAndroid = {|
+  width: number,
+  height: number,
+  scale: number,
+  fontScale: number,
   densityDpi: number,
 |};
 
