@@ -11,8 +11,7 @@
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
-type DisplayMetricsAndroid = {|
-  ...DisplayMetrics,
+type DisplayMetricsAndroid = DisplayMetrics & {|
   densityDpi: number,
 |};
 
