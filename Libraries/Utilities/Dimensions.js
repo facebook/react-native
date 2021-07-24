@@ -46,9 +46,9 @@ class Dimensions {
    * Example: `const {height, width} = Dimensions.get('window');`
    *
    * @param {string} dim Name of dimension as defined when calling `set`.
-   * @returns {Object?} Value for the dimension.
+   * @returns {DisplayMetrics?} Value for the dimension.
    */
-  static get(dim: string): Object {
+  static get(dim: string): DisplayMetrics {
     invariant(dimensions[dim], 'No dimension set for key ' + dim);
     return dimensions[dim];
   }
@@ -59,7 +59,7 @@ class Dimensions {
    *
    * @param {object} dims Simple string-keyed object of dimensions to set
    */
-  static set(dims: $ReadOnly<{[key: string]: any, ...}>): void {
+  static set(dims: $ReadOnly<DimensionsPayload>): void {
     // We calculate the window dimensions in JS so that we don't encounter loss of
     // precision in transferring the dimensions (which could be non-integers) over
     // the bridge.
@@ -128,7 +128,7 @@ class Dimensions {
   }
 }
 
-let initialDims: ?$ReadOnly<{[key: string]: any, ...}> =
+let initialDims: ?$ReadOnly<DimensionsPayload> =
   global.nativeExtensions &&
   global.nativeExtensions.DeviceInfo &&
   global.nativeExtensions.DeviceInfo.Dimensions;
