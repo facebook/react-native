@@ -15,8 +15,10 @@
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
+#include <react/renderer/scheduler/InspectorData.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
@@ -48,6 +50,9 @@ class Scheduler final : public UIManagerDelegate {
    */
   void registerSurface(SurfaceHandler const &surfaceHandler) const noexcept;
   void unregisterSurface(SurfaceHandler const &surfaceHandler) const noexcept;
+
+  InspectorData getInspectorDataForInstance(
+      SharedEventEmitter eventEmitter) const noexcept;
 
   void renderTemplateToSurface(
       SurfaceId surfaceId,

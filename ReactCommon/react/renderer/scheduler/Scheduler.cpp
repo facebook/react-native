@@ -206,6 +206,31 @@ void Scheduler::registerSurface(
   surfaceHandler.setUIManager(uiManager_.get());
 }
 
+InspectorData Scheduler::getInspectorDataForInstance(
+    SharedEventEmitter eventEmitter) const noexcept {
+  return executeSynchronouslyOnSameThread_CAN_DEADLOCK<InspectorData>(
+      runtimeExecutor_, [=](jsi::Runtime &runtime) -> InspectorData {
+        auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+        auto value = uiManagerBinding->getInspectorDataForInstance(
+            runtime, eventEmitter);
+
+        // TODO: avoid transforming jsi
+        auto dynamic = jsi::dynamicFromValue(runtime, value);
+        auto source = dynamic["source"];
+
+        InspectorData result = {};
+        result.fileName = source["fileName"].c_str();
+        result.lineNumber = (int)source["lineNumber"].getDouble();
+        result.columnNumber = (int)source["columnNumber"].getDouble();
+        result.selectedIndex = (int)dynamic["selectedIndex"].getDouble();
+        auto hierarchy = dynamic["hierarchy"];
+        for (size_t i = 0; i < hierarchy.size(); i++) {
+          result.hierarchy.push_back(hierarchy[i]["name"].c_str());
+        }
+        return result;
+      });
+}
+
 void Scheduler::unregisterSurface(
     SurfaceHandler const &surfaceHandler) const noexcept {
   surfaceHandler.setUIManager(nullptr);

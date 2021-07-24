@@ -74,6 +74,10 @@ class UIManagerBinding : public jsi::HostObject {
       folly::dynamic const &props,
       DisplayMode displayMode) const;
 
+  jsi::Value getInspectorDataForInstance(
+      jsi::Runtime &runtime,
+      SharedEventEmitter eventEmitter) const;
+
   /*
    * Stops React Native Surface with given id.
    * Thread synchronization must be enforced externally.

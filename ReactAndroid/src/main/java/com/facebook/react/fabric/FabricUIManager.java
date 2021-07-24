@@ -223,6 +223,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
+  @UiThread
+  @ThreadConfined(UI)
+  public ReadableMap getInspectorDataForInstance(final int surfaceId, final View view) {
+    UiThreadUtil.assertOnUiThread();
+    int reactTag = view.getId();
+
+    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
+    return mBinding.getInspectorDataForInstance(eventEmitter);
+  }
+
   @Override
   public void preInitializeViewManagers(List<String> viewManagerNames) {
     for (String viewManagerName : viewManagerNames) {

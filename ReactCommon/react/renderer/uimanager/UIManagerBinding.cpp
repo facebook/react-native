@@ -133,6 +133,33 @@ static jsi::Value callMethodOfModule(
   return jsi::Value::undefined();
 }
 
+jsi::Value UIManagerBinding::getInspectorDataForInstance(
+    jsi::Runtime &runtime,
+    SharedEventEmitter eventEmitter) const {
+  auto eventTarget = eventEmitter->eventTarget_;
+  EventEmitter::DispatchMutex().lock();
+
+  if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge") ||
+      !eventTarget) {
+    return jsi::Value::undefined();
+  }
+
+  eventTarget->retain(runtime);
+  auto instanceHandle = eventTarget->getInstanceHandle(runtime);
+  eventTarget->release(runtime);
+  EventEmitter::DispatchMutex().unlock();
+
+  if (instanceHandle.isUndefined()) {
+    return jsi::Value::undefined();
+  }
+
+  return callMethodOfModule(
+      runtime,
+      "ReactFabric",
+      "getInspectorDataForInstance",
+      {std::move(instanceHandle)});
+}
+
 void UIManagerBinding::startSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
