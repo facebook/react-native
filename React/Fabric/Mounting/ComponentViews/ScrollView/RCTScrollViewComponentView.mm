@@ -86,8 +86,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   // some other part of the system scrolls scroll view.
   BOOL _isUserTriggeredScrolling;
 
-  BOOL _isOnDemandViewMountingEnabled;
-
   CGPoint _contentOffsetWhenClipped;
   NSMutableArray<UIView<RCTComponentViewProtocol> *> *_childComponentViews;
 }
@@ -106,7 +104,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     static const auto defaultProps = std::make_shared<const ScrollViewProps>();
     _props = defaultProps;
 
-    _isOnDemandViewMountingEnabled = RCTExperimentGetOnDemandViewMounting();
     _childComponentViews = [[NSMutableArray alloc] init];
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
@@ -327,27 +324,18 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (_isOnDemandViewMountingEnabled) {
-    [_childComponentViews insertObject:childComponentView atIndex:index];
-  } else {
-    [_containerView insertSubview:childComponentView atIndex:index];
-  }
+  [_childComponentViews insertObject:childComponentView atIndex:index];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (_isOnDemandViewMountingEnabled) {
-    RCTAssert(
-        [_childComponentViews objectAtIndex:index] == childComponentView,
-        @"Attempt to unmount improperly mounted component view.");
-    [_childComponentViews removeObjectAtIndex:index];
-    // In addition to removing a view from `_childComponentViews`,
-    // we have to unmount views immediately to not mess with recycling.
-    [childComponentView removeFromSuperview];
-  } else {
-    RCTAssert(childComponentView.superview == _containerView, @"Attempt to unmount improperly mounted component view.");
-    [childComponentView removeFromSuperview];
-  }
+  RCTAssert(
+      [_childComponentViews objectAtIndex:index] == childComponentView,
+      @"Attempt to unmount improperly mounted component view.");
+  [_childComponentViews removeObjectAtIndex:index];
+  // In addition to removing a view from `_childComponentViews`,
+  // we have to unmount views immediately to not mess with recycling.
+  [childComponentView removeFromSuperview];
 }
 
 /*
@@ -607,10 +595,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)_remountChildrenIfNeeded
 {
-  if (!_isOnDemandViewMountingEnabled) {
-    return;
-  }
-
   CGPoint contentOffset = _scrollView.contentOffset;
 
   if (std::abs(_contentOffsetWhenClipped.x - contentOffset.x) < kClippingLeeway &&
@@ -625,10 +609,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)_remountChildren
 {
-  if (!_isOnDemandViewMountingEnabled) {
-    return;
-  }
-
   CGRect visibleFrame = [_scrollView convertRect:_scrollView.bounds toView:_containerView];
   visibleFrame = CGRectInset(visibleFrame, -kClippingLeeway, -kClippingLeeway);
 

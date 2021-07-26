@@ -11,21 +11,6 @@ NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceS
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
 /*
- * On-demand view mounting
- */
-static BOOL RCTExperimentOnDemandViewMounting = NO;
-
-BOOL RCTExperimentGetOnDemandViewMounting()
-{
-  return RCTExperimentOnDemandViewMounting;
-}
-
-void RCTExperimentSetOnDemandViewMounting(BOOL value)
-{
-  RCTExperimentOnDemandViewMounting = value;
-}
-
-/*
  * Preemptive View Allocation
  */
 static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
