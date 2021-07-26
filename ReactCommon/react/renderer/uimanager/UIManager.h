@@ -184,7 +184,7 @@ class UIManager final : public ShadowTreeDelegate {
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  std::atomic<UIManagerDelegate *> delegate_;
+  UIManagerDelegate *delegate_;
   std::atomic<UIManagerAnimationDelegate *> animationDelegate_{nullptr};
   RuntimeExecutor const runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};

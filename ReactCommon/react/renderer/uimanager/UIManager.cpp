@@ -72,9 +72,8 @@ SharedShadowNode UIManager::createNode(
       },
       family);
 
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidCreateShadowNode(*shadowNode.get());
+  if (delegate_) {
+    delegate_->uiManagerDidCreateShadowNode(*shadowNode.get());
   }
   if (leakChecker_) {
     leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
@@ -100,9 +99,8 @@ SharedShadowNode UIManager::cloneNode(
           /* .children = */ children,
       });
 
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidCloneShadowNode(
+  if (delegate_) {
+    delegate_->uiManagerDidCloneShadowNode(
         *shadowNode.get(), *clonedShadowNode.get());
   }
 
@@ -142,9 +140,8 @@ void UIManager::setIsJSResponder(
     ShadowNode::Shared const &shadowNode,
     bool isJSResponder,
     bool blockNativeResponder) const {
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidSetIsJSResponder(
+  if (delegate_) {
+    delegate_->uiManagerDidSetIsJSResponder(
         shadowNode, isJSResponder, blockNativeResponder);
   }
 }
@@ -326,18 +323,16 @@ void UIManager::dispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
     folly::dynamic const args) const {
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidDispatchCommand(shadowNode, commandName, args);
+  if (delegate_) {
+    delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
   }
 }
 
 void UIManager::sendAccessibilityEvent(
     const ShadowNode::Shared &shadowNode,
     std::string const &eventType) {
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidSendAccessibilityEvent(shadowNode, eventType);
+  if (delegate_) {
+    delegate_->uiManagerDidSendAccessibilityEvent(shadowNode, eventType);
   }
 }
 
@@ -424,9 +419,8 @@ void UIManager::shadowTreeDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) const {
   SystraceSection s("UIManager::shadowTreeDidFinishTransaction");
 
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidFinishTransaction(mountingCoordinator);
+  if (delegate_) {
+    delegate_->uiManagerDidFinishTransaction(mountingCoordinator);
   }
 }
 
