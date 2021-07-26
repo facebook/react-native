@@ -49,7 +49,7 @@ if (
  * ```
  */
 
-// Small subset from whatwg-url: https://github.com/jsdom/whatwg-url/tree/master/lib
+// Small subset from whatwg-url: https://github.com/jsdom/whatwg-url/tree/master/src
 // The reference code bloat comes from Unicode issues with URLs, so those won't work here.
 export class URLSearchParams {
   _searchParams = [];
