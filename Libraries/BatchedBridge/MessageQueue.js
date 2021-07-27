@@ -47,7 +47,7 @@ class MessageQueue {
   _callID: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
-  _immediatesCallback: ?() => void;
+  _reactNativeMicrotasksCallback: ?() => void;
 
   _debugInfo: {[number]: [number, number], ...};
   _remoteModuleTable: {[number]: string, ...};
@@ -63,7 +63,7 @@ class MessageQueue {
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = Date.now();
-    this._immediatesCallback = null;
+    this._reactNativeMicrotasksCallback = null;
 
     if (__DEV__) {
       this._debugInfo = {};
@@ -132,7 +132,7 @@ class MessageQueue {
 
   flushedQueue(): null | [Array<number>, Array<number>, Array<mixed>, number] {
     this.__guard(() => {
-      this.__callImmediates();
+      this.__callReactNativeMicrotasks();
     });
 
     const queue = this._queue;
@@ -354,8 +354,8 @@ class MessageQueue {
   // For JSTimers to register its callback. Otherwise a circular dependency
   // between modules is introduced. Note that only one callback may be
   // registered at a time.
-  setImmediatesCallback(fn: () => void) {
-    this._immediatesCallback = fn;
+  setReactNativeMicrotasksCallback(fn: () => void) {
+    this._reactNativeMicrotasksCallback = fn;
   }
 
   /**
@@ -387,10 +387,10 @@ class MessageQueue {
     );
   }
 
-  __callImmediates() {
-    Systrace.beginEvent('JSTimers.callImmediates()');
-    if (this._immediatesCallback != null) {
-      this._immediatesCallback();
+  __callReactNativeMicrotasks() {
+    Systrace.beginEvent('JSTimers.callReactNativeMicrotasks()');
+    if (this._reactNativeMicrotasksCallback != null) {
+      this._reactNativeMicrotasksCallback();
     }
     Systrace.endEvent();
   }
@@ -409,7 +409,7 @@ class MessageQueue {
     const moduleMethods = this.getCallableModule(module);
     invariant(
       !!moduleMethods,
-      `Module ${module} is not a registered callable module (calling ${method}). A frequent cause of the error is that the application entry file path is incorrect. 
+      `Module ${module} is not a registered callable module (calling ${method}). A frequent cause of the error is that the application entry file path is incorrect.
       This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
     );
     invariant(

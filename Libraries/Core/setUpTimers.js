@@ -22,13 +22,23 @@ if (!global.RN$Bridgeless) {
     polyfillGlobal(name, () => require('./Timers/JSTimers')[name]);
   };
   defineLazyTimer('setTimeout');
-  defineLazyTimer('setInterval');
-  defineLazyTimer('setImmediate');
   defineLazyTimer('clearTimeout');
+  defineLazyTimer('setInterval');
   defineLazyTimer('clearInterval');
-  defineLazyTimer('clearImmediate');
   defineLazyTimer('requestAnimationFrame');
   defineLazyTimer('cancelAnimationFrame');
   defineLazyTimer('requestIdleCallback');
   defineLazyTimer('cancelIdleCallback');
+
+  /**
+   * Set up immediate APIs as aliases to the ReactNativeMicrotask APIs.
+   */
+  polyfillGlobal(
+    'setImmediate',
+    () => require('./Timers/JSTimers').queueReactNativeMicrotask,
+  );
+  polyfillGlobal(
+    'clearImmediate',
+    () => require('./Timers/JSTimers').clearReactNativeMicrotask,
+  );
 }
