@@ -11,11 +11,13 @@
 import Dimensions from './Dimensions';
 import {
   type DisplayMetrics,
-  type DisplayMetricsAndroid
+  type DisplayMetricsAndroid,
 } from './NativeDeviceInfo';
 import {useEffect, useState} from 'react';
 
-export default function useWindowDimensions(): DisplayMetrics | DisplayMetricsAndroid {
+export default function useWindowDimensions():
+  | DisplayMetrics
+  | DisplayMetricsAndroid {
   const [dimensions, setDimensions] = useState(() => Dimensions.get('window'));
   useEffect(() => {
     function handleChange({window}) {

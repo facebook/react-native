@@ -41,7 +41,7 @@ class Dimensions {
    * Example: `const {height, width} = Dimensions.get('window');`
    *
    * @param {string} dim Name of dimension as defined when calling `set`.
-   * @returns {DisplayMetrics?} Value for the dimension.
+   * @returns {DisplayMetrics? | DisplayMetricsAndroid?} Value for the dimension.
    */
   static get(dim: string): DisplayMetrics | DisplayMetricsAndroid {
     invariant(dimensions[dim], 'No dimension set for key ' + dim);
