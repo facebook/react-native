@@ -12,23 +12,33 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {CompositeAnimation} from 'react-native/Libraries/Animated/AnimatedMock';
 import * as React from 'react';
 import RNTesterButton from '../../components/RNTesterButton';
-import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
-import {Text, StyleSheet, View, Animated, FlatList} from 'react-native';
+import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
+import {
+  Text,
+  StyleSheet,
+  View,
+  Animated,
+  FlatList,
+  useWindowDimensions,
+} from 'react-native';
 
 type Props = $ReadOnly<{||}>;
-
-const leftToRightTimingConfig = useNativeDriver => ({
-  toValue: 200,
+const boxSize = 12;
+const padding = 8;
+const leftToRightTimingConfig = (useNativeDriver: boolean) => ({
+  toValue: 1,
   useNativeDriver,
 });
-const rightToLeftTimingConfig = useNativeDriver => ({
+const rightToLeftTimingConfig = (useNativeDriver: boolean) => ({
   toValue: 0,
   useNativeDriver,
 });
+
 const items = [
   {
     title: 'Parallel',
+    description: 'Starts a number of animations at the same time',
     compositeAnimation: (values, useNativeDriver) =>
       Animated.sequence([
         Animated.parallel(
@@ -45,6 +55,8 @@ const items = [
   },
   {
     title: 'Sequence',
+    description:
+      'Starts the animations in order, waiting for each to complete before starting the next',
     compositeAnimation: (values, useNativeDriver) =>
       Animated.sequence([
         Animated.sequence(
@@ -61,6 +73,8 @@ const items = [
   },
   {
     title: 'Stagger',
+    description:
+      'Starts animations in order and in parallel, but with successive delays',
     compositeAnimation: (values, useNativeDriver) =>
       Animated.sequence([
         Animated.stagger(
@@ -79,6 +93,7 @@ const items = [
   },
   {
     title: 'Delay',
+    description: 'Starts an animation after a given delay',
     compositeAnimation: (values, useNativeDriver) =>
       Animated.sequence([
         Animated.delay(2000),
@@ -99,43 +114,76 @@ const items = [
 
 function ComposingExampleItem({
   title,
+  description,
   compositeAnimation,
   useNativeDriver,
 }: {
   title: string,
+  description: string,
   compositeAnimation: (
     values: Animated.Value[],
     useNativeDriver: boolean,
   ) => CompositeAnimation,
   useNativeDriver: boolean,
 }): React.Node {
-  const boxes = [0, 1, 2, 3, 4];
-  const xTranslations = React.useRef(boxes.map(() => new Animated.Value(0)))
-    .current;
+  const {width: windowWidth} = useWindowDimensions();
+
+  // Figure out how far along the x axis we should translate the box by taking into
+  // account the window width, box size, and padding
+  const maxXTranslation = windowWidth - boxSize - 4 * padding;
+  const boxIndexes = React.useMemo(() => [0, 1, 2, 3, 4], []);
+  const xTranslations = React.useRef(
+    boxIndexes.map(() => new Animated.Value(0)),
+  );
+  const animation = React.useRef(
+    compositeAnimation(xTranslations.current, useNativeDriver),
+  );
 
   return (
     <View style={styles.itemContainer}>
-      <View style={styles.itemMeta}>
-        <Text style={styles.itemTitle}>{title}</Text>
+      <Text style={styles.itemTitle}>{title}</Text>
+      <Text>{description}</Text>
+      <View style={styles.boxesContainer}>
+        {boxIndexes.map(boxIndex => {
+          const translateX = xTranslations.current[boxIndex].interpolate({
+            inputRange: [0, 1],
+            outputRange: ([0, maxXTranslation]: [number, number]),
+          });
+
+          return (
+            <Animated.View
+              key={boxIndex}
+              style={[
+                styles.box,
+                {
+                  transform: [{translateX}],
+                },
+              ]}
+            />
+          );
+        })}
+      </View>
+      <View style={styles.buttonsContainer}>
         <RNTesterButton
           onPress={() => {
-            compositeAnimation(xTranslations, useNativeDriver).start();
+            animation.current.reset();
+            animation.current.start();
           }}>
-          Animate
+          Start
         </RNTesterButton>
-      </View>
-      <View>
-        {boxes.map(box => (
-          <Animated.View
-            key={box}
-            style={[
-              styles.box,
-              {
-                transform: [{translateX: xTranslations[box]}],
-              },
-            ]}
-          />
-        ))}
+        <RNTesterButton
+          onPress={() => {
+            animation.current.stop();
+          }}>
+          Stop
+        </RNTesterButton>
+        <RNTesterButton
+          onPress={() => {
+            // TODO (T96213225): Animated.reset() doesn't work without using native driver
+            animation.current.reset();
+          }}>
+          Reset
+        </RNTesterButton>
       </View>
     </View>
   );
@@ -143,6 +191,7 @@ function ComposingExampleItem({
 
 function ComposingExample(props: Props): React.Node {
   const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+
   return (
     <>
       <RNTConfigurationBlock>
@@ -155,8 +204,9 @@ function ComposingExample(props: Props): React.Node {
         data={items}
         renderItem={({item}) => (
           <ComposingExampleItem
-            key={item.title}
+            key={`${item.title}${useNativeDriver ? 'native' : 'non-native'}`}
             title={item.title}
+            description={item.description}
             compositeAnimation={item.compositeAnimation}
             useNativeDriver={useNativeDriver}
           />
@@ -166,20 +216,20 @@ function ComposingExample(props: Props): React.Node {
   );
 }
 
-const boxSize = 12;
 const styles = StyleSheet.create({
   itemContainer: {
-    padding: 8,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  itemMeta: {
-    alignItems: 'flex-start',
-    paddingRight: 16,
+    padding,
+    alignItems: 'stretch',
   },
   itemTitle: {
     fontSize: 18,
     fontWeight: '300',
+  },
+  boxesContainer: {
+    marginVertical: padding,
+    padding,
+    backgroundColor: '#eeeeee',
+    borderRadius: 4,
   },
   box: {
     borderRadius: 1,
@@ -187,6 +237,9 @@ const styles = StyleSheet.create({
     width: boxSize,
     height: boxSize,
     marginBottom: 2,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
   },
 });
 

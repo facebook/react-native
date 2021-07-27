@@ -135,7 +135,7 @@ function EasingExample(props: Props): React.Node {
   const [useNativeDriver, setUseNativeDriver] = React.useState(false);
 
   return (
-    <View>
+    <>
       <RNTConfigurationBlock>
         <ToggleNativeDriver
           value={useNativeDriver}
@@ -159,7 +159,7 @@ function EasingExample(props: Props): React.Node {
           <Text style={styles.sectionHeader}>{title}</Text>
         )}
       />
-    </View>
+    </>
   );
 }
 
