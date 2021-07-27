@@ -14,6 +14,7 @@ import EventEmitter, {
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeDeviceInfo, {
   type DisplayMetrics,
+  type DisplayMetricsAndroid,
   type DimensionsPayload,
 } from './NativeDeviceInfo';
 import invariant from 'invariant';
@@ -48,7 +49,7 @@ class Dimensions {
    * @param {string} dim Name of dimension as defined when calling `set`.
    * @returns {DisplayMetrics?} Value for the dimension.
    */
-  static get(dim: string): DisplayMetrics {
+  static get(dim: string): DisplayMetrics | DisplayMetricsAndroid {
     invariant(dimensions[dim], 'No dimension set for key ' + dim);
     return dimensions[dim];
   }
