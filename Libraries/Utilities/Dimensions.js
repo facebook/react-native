@@ -19,17 +19,11 @@ import NativeDeviceInfo, {
 } from './NativeDeviceInfo';
 import invariant from 'invariant';
 
-type DimensionsValue = {
-  window?: DisplayMetrics,
-  screen?: DisplayMetrics,
-  ...
-};
-
 const eventEmitter = new EventEmitter<{
-  change: [DimensionsValue],
+  change: [DimensionsPayload],
 }>();
 let dimensionsInitialized = false;
-let dimensions: DimensionsValue;
+let dimensions: DimensionsPayload;
 
 class Dimensions {
   /**
