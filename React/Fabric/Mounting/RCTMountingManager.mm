@@ -290,11 +290,9 @@ static void RCTPerformMountInstructions(
   if (props[@"transform"] &&
       !CATransform3DEqualToTransform(
           RCTCATransform3DFromTransformMatrix(newViewProps.transform), componentView.layer.transform)) {
-    RCTLogWarn(@"transform was not applied during [RCTViewComponentView updateProps:oldProps:]");
     componentView.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
   }
   if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
-    RCTLogWarn(@"opacity was not applied during [RCTViewComponentView updateProps:oldProps:]");
     componentView.layer.opacity = newViewProps.opacity;
   }
 }
