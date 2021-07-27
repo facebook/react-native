@@ -1,6 +1,6 @@
 # Building React Native for Android
 
-See the [docs on the website](https://reactnative.dev/docs/building-from-source.html#android).
+See the [docs on the wiki](https://github.com/facebook/react-native/wiki/Building-from-source#prerequisites).
 
 # Running tests
 
