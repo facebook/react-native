@@ -37,7 +37,8 @@ export default function RNTConfigurationBlock(props: Props): React.Node {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
     borderBottomWidth: 1,
   },
 });

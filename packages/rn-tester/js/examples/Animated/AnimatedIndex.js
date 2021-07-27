@@ -18,6 +18,7 @@ import FadeInViewExample from './FadeInViewExample';
 import ComposeAnimationsWithEasingExample from './ComposeAnimationsWithEasingExample';
 import TransformBounceExample from './TransformBounceExample';
 import ComposingExample from './ComposingExample';
+import TransformStylesExample from './TransformStylesExample';
 
 export default ({
   framework: 'React',
@@ -29,6 +30,7 @@ export default ({
     'build and maintain.',
   showIndividualExamples: true,
   examples: [
+    TransformStylesExample,
     FadeInViewExample,
     ComposingExample,
     EasingExample,

@@ -11,20 +11,24 @@
 import {View, Text, StyleSheet, Switch} from 'react-native';
 import * as React from 'react';
 
+type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
+
 type Props = {
   value: boolean,
   onValueChange: $ElementType<
     React.ElementConfig<typeof Switch>,
     'onValueChange',
   >,
+  style?: ?ViewStyleProp,
 };
 
 export default function ToggleNativeDriver({
   value,
   onValueChange,
+  style,
 }: Props): React.Node {
   return (
-    <View style={styles.row}>
+    <View style={StyleSheet.compose(styles.row, style)}>
       <Text>Use Native Driver</Text>
       <Switch
         testID="toggle-use-native-driver"
