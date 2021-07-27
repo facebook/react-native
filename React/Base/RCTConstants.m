@@ -24,3 +24,18 @@ void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
   RCTExperimentPreemptiveViewAllocationDisabled = value;
 }
+
+/*
+ * Remove clipped subviews
+ */
+static BOOL RCTRemoveClippedSubviewsEnabled = NO;
+
+BOOL RCTGetRemoveClippedSubviewsEnabled(void)
+{
+  return RCTRemoveClippedSubviewsEnabled;
+}
+
+void RCTSetRemoveClippedSubviewsEnabled(BOOL value)
+{
+  RCTRemoveClippedSubviewsEnabled = value;
+}

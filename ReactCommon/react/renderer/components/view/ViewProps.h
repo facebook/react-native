@@ -59,6 +59,8 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 
   bool collapsable{true};
 
+  bool removeClippedSubviews{false};
+
   Float elevation{}; /* Android-only */
 
 #pragma mark - Convenience Methods

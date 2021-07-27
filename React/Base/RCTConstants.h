@@ -15,3 +15,9 @@ RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollec
  */
 RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);
 RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);
+
+/*
+ * Remove clipped subviews
+ */
+RCT_EXTERN BOOL RCTGetRemoveClippedSubviewsEnabled(void);
+RCT_EXTERN void RCTSetRemoveClippedSubviewsEnabled(BOOL value);

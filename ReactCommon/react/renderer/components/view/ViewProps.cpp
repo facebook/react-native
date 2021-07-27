@@ -93,6 +93,11 @@ ViewProps::ViewProps(ViewProps const &sourceProps, RawProps const &rawProps)
           "collapsable",
           sourceProps.collapsable,
           true)),
+      removeClippedSubviews(convertRawProp(
+          rawProps,
+          "removeClippedSubviews",
+          sourceProps.removeClippedSubviews,
+          false)),
       elevation(
           convertRawProp(rawProps, "elevation", sourceProps.elevation, {})){};
 
