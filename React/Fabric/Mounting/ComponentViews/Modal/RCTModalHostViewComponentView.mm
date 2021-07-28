@@ -171,12 +171,11 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     UIView *snapshot = _modalContentsSnapshot;
     [self.viewController.view addSubview:snapshot];
 
-    auto eventEmitter = [self modalEventEmitter];
     [self dismissViewController:self.viewController
                        animated:_shouldAnimatePresentation
                      completion:^{
                        [snapshot removeFromSuperview];
-
+                       auto eventEmitter = [self modalEventEmitter];
                        if (eventEmitter) {
                          eventEmitter->onDismiss(ModalHostViewEventEmitter::OnDismiss{});
                        }
