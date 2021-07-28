@@ -1462,6 +1462,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
   dispatch_async(_workQueue, ^{
     self->_selfRetain = nil;
   });
+  _cleanupScheduled = NO;
 }
 
 @end
