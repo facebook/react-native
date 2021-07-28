@@ -258,6 +258,18 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     saveCallback(@[@(valueNode.value)]);
 }
 
+- (void)getState:(NSNumber *)nodeTag callback:(RCTResponseSenderBlock)callback
+{
+     RCTAnimatedNode *node = _animationNodes[nodeTag];
+     if (![node isKindOfClass:[RCTValueAnimatedNode class]]) {
+       RCTLogError(@"Not a value node.");
+       return;
+     }
+    RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)node;
+    State state = [valueNode getState];
+    callback(@[@{@"offset": @(state.offset), @"value": @(state.value)}]);
+}
+
 #pragma mark -- Drivers
 
 - (void)startAnimatingNode:(nonnull NSNumber *)animationId

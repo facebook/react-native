@@ -98,7 +98,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   __detach() {
     if (this.__isNative) {
-      NativeAnimatedAPI.getValue(this.__getNativeTag(), value => {
+      NativeAnimatedAPI.getState(this.__getNativeTag(), ({ value }) => {
         this._value = value;
       });
     }

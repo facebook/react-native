@@ -53,4 +53,9 @@
   }
 }
 
+- (State)getState
+{
+  return (State){.offset = _offset, .value = _value};
+}
+
 @end

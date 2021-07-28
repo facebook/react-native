@@ -13,6 +13,7 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 type EndResult = {finished: boolean, ...};
 type EndCallback = (result: EndResult) => void;
+type GetStateCallback = (state: { offset: number, value: number }) => void;
 type SaveValueCallback = (value: number) => void;
 
 export type EventMapping = {|
@@ -30,6 +31,7 @@ export interface Spec extends TurboModule {
   +finishOperationBatch: () => void;
   +createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void;
   +getValue: (tag: number, saveValueCallback: SaveValueCallback) => void;
+  +getState: (tag: number, callback: GetStateCallback) => void;
   +startListeningToAnimatedNodeValue: (tag: number) => void;
   +stopListeningToAnimatedNodeValue: (tag: number) => void;
   +connectAnimatedNodes: (parentTag: number, childTag: number) => void;

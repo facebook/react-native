@@ -23,6 +23,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.Event;
@@ -432,6 +433,20 @@ import java.util.Queue;
           "getValue: Animated node with tag [" + tag + "] does not exist or is not a 'value' node");
     }
     callback.invoke(((ValueAnimatedNode) node).getValue());
+  }
+
+  @UiThread
+  public void getState(int tag, Callback callback) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+    }
+    State state = ((ValueAnimatedNode) node).getState();
+    WritableNativeMap map = new WritableNativeMap();
+    map.putDouble("offset", state.offset);
+    map.putDouble("value", state.value);
+    callback.invoke(map);
   }
 
   @UiThread

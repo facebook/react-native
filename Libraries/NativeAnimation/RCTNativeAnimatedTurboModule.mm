@@ -260,6 +260,12 @@ RCT_EXPORT_METHOD(getValue:(double)nodeTag saveValueCallback:(RCTResponseSenderB
   }];
 }
 
+RCT_EXPORT_METHOD(getState:(double)nodeTag callback:(RCTResponseSenderBlock)callback) {
+  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager getState:[NSNumber numberWithDouble:nodeTag] callback:callback];
+  }];
+}
+
 #pragma mark -- Batch handling
 
 - (void)addOperationBlock:(AnimatedOperation)operation

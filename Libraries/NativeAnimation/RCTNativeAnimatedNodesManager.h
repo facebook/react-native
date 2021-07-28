@@ -27,6 +27,9 @@
 - (void)getValue:(nonnull NSNumber *)nodeTag
         saveCallback:(nullable RCTResponseSenderBlock)saveCallback;
 
+- (void)getState:(nonnull NSNumber *)nodeTag
+        callback:(nullable RCTResponseSenderBlock)callback;
+
 // graph
 
 - (void)createAnimatedNode:(nonnull NSNumber *)tag

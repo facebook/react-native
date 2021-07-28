@@ -10,6 +10,16 @@ package com.facebook.react.animated;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 
+class State {
+  public final double offset;
+  public final double value;
+
+  State(double value, double offset) {
+    this.offset = offset;
+    this.value = value;
+  }
+}
+
 /**
  * Basic type of animated node that maps directly from {@code Animated.Value(x)} of Animated.js
  * library.
@@ -34,6 +44,14 @@ import com.facebook.react.bridge.ReadableMap;
       this.update();
     }
     return mOffset + mValue;
+  }
+
+  public State getState() {
+    if (Double.isNaN(mOffset + mValue)) {
+      this.update();
+    }
+
+    return new State(mValue, mOffset);
   }
 
   public Object getAnimatedObject() {

@@ -9,6 +9,11 @@
 
 #import "RCTAnimatedNode.h"
 
+typedef struct {
+  CGFloat offset;
+  CGFloat value;
+} State;
+
 @class RCTValueAnimatedNode;
 
 @protocol RCTValueAnimatedNodeObserver <NSObject>
@@ -22,6 +27,7 @@
 - (void)setOffset:(CGFloat)offset;
 - (void)flattenOffset;
 - (void)extractOffset;
+- (State)getState;
 
 @property (nonatomic, assign) CGFloat value;
 @property (nonatomic, strong) id animatedObject;
