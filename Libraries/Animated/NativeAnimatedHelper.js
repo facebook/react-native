@@ -53,7 +53,7 @@ const API = {
   },
   getState: function(
     tag: number,
-    callback: (state: { offset: number, value: number }) => void,
+    callback: (state: {offset: number, value: number}) => void,
   ): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     if (NativeAnimatedModule.getState) {
