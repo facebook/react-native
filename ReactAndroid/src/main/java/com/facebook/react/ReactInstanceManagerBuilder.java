@@ -58,6 +58,7 @@ public class ReactInstanceManagerBuilder {
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
   private @Nullable JSIModulePackage mJSIModulesPackage;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
+  private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -224,6 +225,12 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setReactPackageTurboModuleManagerDelegateBuilder(
+      @Nullable ReactPackageTurboModuleManagerDelegate.Builder builder) {
+    mTMMDelegateBuilder = builder;
+    return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}. Before calling {@code build}, the following
    * must be called:
@@ -286,7 +293,8 @@ public class ReactInstanceManagerBuilder {
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
         mJSIModulesPackage,
-        mCustomPackagerCommandHandlers);
+        mCustomPackagerCommandHandlers,
+        mTMMDelegateBuilder);
   }
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(

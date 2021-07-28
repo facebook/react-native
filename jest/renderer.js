@@ -9,8 +9,6 @@
  * @flow
  */
 
-'use strict';
-
 const React = require('react');
 
 const ShallowRenderer = require('react-shallow-renderer');

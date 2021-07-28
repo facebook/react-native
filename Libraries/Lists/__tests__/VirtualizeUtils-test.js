@@ -10,10 +10,7 @@
 
 'use strict';
 
-const {
-  elementsThatOverlapOffsets,
-  newRangeCount,
-} = require('../VirtualizeUtils');
+import {elementsThatOverlapOffsets, newRangeCount} from '../VirtualizeUtils';
 
 describe('newRangeCount', function() {
   it('handles subset', function() {

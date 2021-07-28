@@ -36,7 +36,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   public static final String NAME = "AccessibilityInfo";
 
-  @TargetApi(Build.VERSION_CODES.KITKAT)
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private class ReactTouchExplorationStateChangeListener
       implements AccessibilityManager.TouchExplorationStateChangeListener {
 
@@ -56,7 +56,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
-          if (getReactApplicationContext().hasActiveCatalystInstance()) {
+          if (getReactApplicationContext().hasActiveReactInstance()) {
             AccessibilityInfoModule.this.updateAndSendReduceMotionChangeEvent();
           }
         }
@@ -67,6 +67,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   private final ContentResolver mContentResolver;
   private boolean mReduceMotionEnabled = false;
   private boolean mTouchExplorationEnabled = false;
+  private int mRecommendedTimeout;
 
   private static final String REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange";
   private static final String TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange";
@@ -79,10 +80,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     mContentResolver = getReactApplicationContext().getContentResolver();
     mTouchExplorationEnabled = mAccessibilityManager.isTouchExplorationEnabled();
     mReduceMotionEnabled = this.getIsReduceMotionEnabledValue();
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
-    }
+    mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
   }
 
   @Override
@@ -90,12 +88,10 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     return "AccessibilityInfo";
   }
 
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private boolean getIsReduceMotionEnabledValue() {
     String value =
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1
-            ? null
-            : Settings.Global.getString(
-                mContentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE);
+        Settings.Global.getString(mContentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE);
 
     return value != null && value.equals("0.0");
   }
@@ -139,31 +135,25 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   }
 
   @Override
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void onHostResume() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mAccessibilityManager.addTouchExplorationStateChangeListener(
-          mTouchExplorationStateChangeListener);
-    }
+    mAccessibilityManager.addTouchExplorationStateChangeListener(
+        mTouchExplorationStateChangeListener);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      Uri transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE);
-      mContentResolver.registerContentObserver(transitionUri, false, animationScaleObserver);
-    }
+    Uri transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE);
+    mContentResolver.registerContentObserver(transitionUri, false, animationScaleObserver);
 
     updateAndSendTouchExplorationChangeEvent(mAccessibilityManager.isTouchExplorationEnabled());
     updateAndSendReduceMotionChangeEvent();
   }
 
   @Override
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void onHostPause() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mAccessibilityManager.removeTouchExplorationStateChangeListener(
-          mTouchExplorationStateChangeListener);
-    }
+    mAccessibilityManager.removeTouchExplorationStateChangeListener(
+        mTouchExplorationStateChangeListener);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      mContentResolver.unregisterContentObserver(animationScaleObserver);
-    }
+    mContentResolver.unregisterContentObserver(animationScaleObserver);
   }
 
   @Override
@@ -174,9 +164,13 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
-    getReactApplicationContext().removeLifecycleEventListener(this);
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
   }
 
   @Override
@@ -199,5 +193,17 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   @Override
   public void setAccessibilityFocus(double reactTag) {
     // iOS only
+  }
+
+  @Override
+  public void getRecommendedTimeoutMillis(double originalTimeout, Callback successCallback) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      successCallback.invoke((int) originalTimeout);
+      return;
+    }
+    mRecommendedTimeout =
+        mAccessibilityManager.getRecommendedTimeoutMillis(
+            (int) originalTimeout, AccessibilityManager.FLAG_CONTENT_CONTROLS);
+    successCallback.invoke(mRecommendedTimeout);
   }
 }

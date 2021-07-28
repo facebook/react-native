@@ -8,15 +8,13 @@
  * @format
  */
 
-'use strict';
-
 const NativeModules = require('../BatchedBridge/NativeModules');
 import type {TurboModule} from './RCTExport';
 import invariant from 'invariant';
 
 const turboModuleProxy = global.__turboModuleProxy;
 
-export function get<T: TurboModule>(name: string): ?T {
+function requireModule<T: TurboModule>(name: string): ?T {
   // Bridgeless mode requires TurboModules
   if (!global.RN$Bridgeless) {
     // Backward compatibility layer during migration.
@@ -34,8 +32,12 @@ export function get<T: TurboModule>(name: string): ?T {
   return null;
 }
 
+export function get<T: TurboModule>(name: string): ?T {
+  return requireModule<T>(name);
+}
+
 export function getEnforcing<T: TurboModule>(name: string): T {
-  const module = get(name);
+  const module = requireModule<T>(name);
   invariant(
     module != null,
     `TurboModuleRegistry.getEnforcing(...): '${name}' could not be found. ` +

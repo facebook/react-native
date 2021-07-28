@@ -13,6 +13,7 @@ rn_android_library(
             "DisplayMetricsHolder.java",
         ],
     ),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
@@ -31,11 +32,14 @@ rn_android_library(
         ":DisplayMetrics",
         react_native_dep("java/com/facebook/systrace:systrace"),
         react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
+        react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_target("java/com/facebook/debug/tags:tags"),
         react_native_target("java/com/facebook/debug/holder:holder"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/uimanager/jni:jni"),
         react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/common/mapbuffer:mapbuffer"),
         react_native_target("java/com/facebook/react/config:config"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/modules/core:core"),
@@ -43,7 +47,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/touch:touch"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/uimanager/util:util"),
-        react_native_target("java/com/facebook/react/uimanager/common:common"),
         react_native_target("res:uimanager"),
     ],
     exported_deps = [
@@ -51,6 +54,7 @@ rn_android_library(
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/uimanager/common:common"),
+        react_native_target("java/com/facebook/react/uimanager/interfaces:interfaces"),
     ],
 )
 
@@ -59,6 +63,7 @@ rn_android_library(
     srcs = [
         "DisplayMetricsHolder.java",
     ],
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [

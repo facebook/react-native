@@ -4,22 +4,72 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
 
-import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeNetworkingIOS from './NativeNetworkingIOS';
-import type {NativeResponseType} from './XMLHttpRequest';
-import convertRequestBody from './convertRequestBody';
-import type {RequestBody} from './convertRequestBody';
+import {type NativeResponseType} from './XMLHttpRequest';
+import convertRequestBody, {type RequestBody} from './convertRequestBody';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 
-class RCTNetworking extends NativeEventEmitter {
-  constructor() {
-    super(NativeNetworkingIOS);
-  }
+type RCTNetworkingEventDefinitions = $ReadOnly<{
+  didSendNetworkData: [
+    [
+      number, // requestId
+      number, // progress
+      number, // total
+    ],
+  ],
+  didReceiveNetworkResponse: [
+    [
+      number, // requestId
+      number, // status
+      ?{[string]: string}, // responseHeaders
+      ?string, // responseURL
+    ],
+  ],
+  didReceiveNetworkData: [
+    [
+      number, // requestId
+      string, // response
+    ],
+  ],
+  didReceiveNetworkIncrementalData: [
+    [
+      number, // requestId
+      string, // responseText
+      number, // progress
+      number, // total
+    ],
+  ],
+  didReceiveNetworkDataProgress: [
+    [
+      number, // requestId
+      number, // loaded
+      number, // total
+    ],
+  ],
+  didCompleteNetworkResponse: [
+    [
+      number, // requestId
+      string, // error
+      boolean, // timeOutError
+    ],
+  ],
+}>;
+
+const RCTNetworking = {
+  addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
+    eventType: K,
+    listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
+    context?: mixed,
+  ): EventSubscription {
+    return RCTDeviceEventEmitter.addListener(eventType, listener, context);
+  },
 
   sendRequest(
     method: string,
@@ -47,15 +97,15 @@ class RCTNetworking extends NativeEventEmitter {
       },
       callback,
     );
-  }
+  },
 
   abortRequest(requestId: number) {
     NativeNetworkingIOS.abortRequest(requestId);
-  }
+  },
 
   clearCookies(callback: (result: boolean) => void) {
     NativeNetworkingIOS.clearCookies(callback);
-  }
-}
+  },
+};
 
-module.exports = (new RCTNetworking(): RCTNetworking);
+module.exports = RCTNetworking;

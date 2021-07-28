@@ -61,6 +61,7 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTSurfaceHostingProxyRootView init]", nil);
 
   _bridge = bridge;
+  _minimumSize = CGSizeZero;
 
   if (!bridge.isLoading) {
     [bridge.performanceLogger markStartForTag:RCTPLTTI];
@@ -69,12 +70,12 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   // `RCTRootViewSizeFlexibilityNone` is the RCTRootView's default.
   RCTSurfaceSizeMeasureMode sizeMeasureMode = convertToSurfaceSizeMeasureMode(RCTRootViewSizeFlexibilityNone);
 
-  RCTSurface *surface = [[self class] createSurfaceWithBridge:bridge
-                                                   moduleName:moduleName
-                                            initialProperties:initialProperties];
+  id<RCTSurfaceProtocol> surface = [[self class] createSurfaceWithBridge:bridge
+                                                              moduleName:moduleName
+                                                       initialProperties:initialProperties];
   [surface start];
   if (self = [super initWithSurface:surface sizeMeasureMode:sizeMeasureMode]) {
-    self.backgroundColor = [UIColor whiteColor];
+    // Nothing specific to do.
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -170,6 +171,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 - (UIViewController *)reactViewController
 {
   return _reactViewController ?: [super reactViewController];
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize
+{
+  if (!CGSizeEqualToSize(minimumSize, CGSizeZero)) {
+    // TODO (T93859532): Investigate implementation for this.
+    RCTLogError(@"RCTSurfaceHostingProxyRootView does not support changing the deprecated minimumSize");
+  }
+  _minimumSize = CGSizeZero;
 }
 
 #pragma mark unsupported

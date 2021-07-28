@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_prebuilt_ja
 
 rn_android_library(
     name = "mockito2",
+    autoglob = False,
     visibility = ["PUBLIC"],
     exported_deps = [
         ":byte-buddy",
@@ -25,8 +26,15 @@ fb_native.remote_file(
 
 rn_prebuilt_jar(
     name = "byte-buddy",
-    binary_jar = ":byte-buddy-binary.jar",
+    binary_jar = ":byte-buddy-binary-with-module-info-stripped",
     visibility = ["//ReactAndroid/..."],
+)
+
+# Strip module-info.class because some Android tooling cannot parse the file. Matches configuration in fbandroid.
+fb_native.genrule(
+    name = "byte-buddy-binary-with-module-info-stripped",
+    out = "byte-buddy-binary-with-module-info-stripped.jar",
+    cmd = "cp $(location :byte-buddy-binary.jar) \"$OUT\" && zip -d \"$OUT\" META-INF/versions/9/module-info.class",
 )
 
 fb_native.remote_file(
@@ -37,8 +45,15 @@ fb_native.remote_file(
 
 rn_prebuilt_jar(
     name = "byte-buddy-agent",
-    binary_jar = ":byte-buddy-agent-binary.jar",
+    binary_jar = ":byte-buddy-agent-with-module-info-stripped",
     visibility = ["//ReactAndroid/..."],
+)
+
+# Strip module-info.class because some Android tooling cannot parse the file. Matches configuration in fbandroid.
+fb_native.genrule(
+    name = "byte-buddy-agent-with-module-info-stripped",
+    out = "byte-buddy-agent-with-module-info-stripped.jar",
+    cmd = "cp $(location :byte-buddy-agent-binary.jar) \"$OUT\" && zip -d \"$OUT\" META-INF/versions/9/module-info.class",
 )
 
 fb_native.remote_file(

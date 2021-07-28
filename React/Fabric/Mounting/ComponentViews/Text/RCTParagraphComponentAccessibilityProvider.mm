@@ -8,13 +8,15 @@
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
 #import <Foundation/Foundation.h>
-#import <react/components/text/ParagraphProps.h>
-#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
-#import <react/textlayoutmanager/RCTTextLayoutManager.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/renderer/components/text/ParagraphProps.h>
+#import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
+#import <react/renderer/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
+#import "RCTAccessibilityElement.h"
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
+#import "RCTLocalizationProvider.h"
 
 using namespace facebook::react;
 
@@ -55,16 +57,17 @@ using namespace facebook::react;
   // build an array of the accessibleElements
   NSMutableArray<UIAccessibilityElement *> *elements = [NSMutableArray new];
 
-  NSString *accessibilityLabel = [_view valueForKey:@"accessibilityLabel"];
-  if (!accessibilityLabel.length) {
+  NSString *accessibilityLabel = _view.accessibilityLabel;
+  if (accessibilityLabel.length == 0) {
     accessibilityLabel = RCTNSStringFromString(_attributedString.getString());
   }
   // add first element has the text for the whole textview in order to read out the whole text
-  UIAccessibilityElement *firstElement = [[UIAccessibilityElement alloc] initWithAccessibilityContainer:_view];
+  RCTAccessibilityElement *firstElement =
+      [[RCTAccessibilityElement alloc] initWithAccessibilityContainer:_view.superview];
   firstElement.isAccessibilityElement = YES;
-  firstElement.accessibilityTraits = UIAccessibilityTraitStaticText;
+  firstElement.accessibilityTraits = _view.accessibilityTraits;
   firstElement.accessibilityLabel = accessibilityLabel;
-  firstElement.accessibilityFrameInContainerSpace = _view.bounds;
+  firstElement.accessibilityFrame = UIAccessibilityConvertFrameToScreenCoordinates(_view.bounds, _view);
   [firstElement setAccessibilityActivationPoint:CGPointMake(
                                                     firstElement.accessibilityFrame.origin.x + 1.0,
                                                     firstElement.accessibilityFrame.origin.y + 1.0)];
@@ -77,7 +80,11 @@ using namespace facebook::react;
                            enumerateAttribute:RCTTextAttributesAccessibilityRoleAttributeName
                                         frame:_frame
                                    usingBlock:^(CGRect fragmentRect, NSString *_Nonnull fragmentText, NSString *value) {
-                                     if (![value isEqualToString:@"button"] && ![value isEqualToString:@"link"]) {
+                                     if ([fragmentText isEqualToString:firstElement.accessibilityLabel]) {
+                                       // The fragment is the entire paragraph. This is handled as `firstElement`.
+                                       return;
+                                     }
+                                     if ((![value isEqualToString:@"button"] && ![value isEqualToString:@"link"])) {
                                        return;
                                      }
                                      if ([value isEqualToString:@"button"] &&
@@ -86,8 +93,8 @@ using namespace facebook::react;
                                        truncatedText = fragmentText;
                                        return;
                                      }
-                                     UIAccessibilityElement *element =
-                                         [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self->_view];
+                                     RCTAccessibilityElement *element =
+                                         [[RCTAccessibilityElement alloc] initWithAccessibilityContainer:self->_view];
                                      element.isAccessibilityElement = YES;
                                      if ([value isEqualToString:@"link"]) {
                                        element.accessibilityTraits = UIAccessibilityTraitLink;
@@ -97,7 +104,7 @@ using namespace facebook::react;
                                        numberOfButtons++;
                                      }
                                      element.accessibilityLabel = fragmentText;
-                                     element.accessibilityFrameInContainerSpace = fragmentRect;
+                                     element.frame = fragmentRect;
                                      [elements addObject:element];
                                    }];
 
@@ -109,35 +116,55 @@ using namespace facebook::react;
         return;
       }
       if (element.accessibilityTraits & UIAccessibilityTraitLink) {
-        element.accessibilityHint =
-            [NSString stringWithFormat:@"Link %ld of %ld.", (long)indexOfLink++, (long)numberOfLinks];
+        NSString *test = [RCTLocalizationProvider RCTLocalizedString:@"Link %ld of %ld."
+                                                     withDescription:@"index of the link"];
+        element.accessibilityHint = [NSString stringWithFormat:test, (long)indexOfLink++, (long)numberOfLinks];
       } else {
         element.accessibilityHint =
-            [NSString stringWithFormat:@"Button %ld of %ld.", (long)indexOfButton++, (long)numberOfButtons];
+            [NSString stringWithFormat:[RCTLocalizationProvider RCTLocalizedString:@"Button %ld of %ld."
+                                                                   withDescription:@"index of the button"],
+                                       (long)indexOfButton++,
+                                       (long)numberOfButtons];
       }
     }];
   }
 
   if (numberOfLinks > 0 && numberOfButtons > 0) {
-    firstElement.accessibilityHint = @"Links and buttons are found, swipe to move to them.";
+    firstElement.accessibilityHint =
+        [RCTLocalizationProvider RCTLocalizedString:@"Links and buttons are found, swipe to move to them."
+                                    withDescription:@"accessibility hint for links and buttons inside text"];
 
   } else if (numberOfLinks > 0) {
     NSString *firstElementHint = (numberOfLinks == 1)
-        ? @"One link found, swipe to move to the link."
-        : [NSString stringWithFormat:@"%ld links found, swipe to move to the first link.", (long)numberOfLinks];
+        ? [RCTLocalizationProvider RCTLocalizedString:@"One link found, swipe to move to the link."
+                                      withDescription:@"accessibility hint for one link inside text"]
+        : [NSString stringWithFormat:[RCTLocalizationProvider
+                                         RCTLocalizedString:@"%ld links found, swipe to move to the first link."
+                                            withDescription:@"accessibility hint for multiple links inside text"],
+                                     (long)numberOfLinks];
     firstElement.accessibilityHint = firstElementHint;
 
   } else if (numberOfButtons > 0) {
     NSString *firstElementHint = (numberOfButtons == 1)
-        ? @"One button found, swipe to move to the button."
-        : [NSString stringWithFormat:@"%ld buttons found, swipe to move to the first button.", (long)numberOfButtons];
+        ? [RCTLocalizationProvider RCTLocalizedString:@"One button found, swipe to move to the button."
+                                      withDescription:@"accessibility hint for one button inside text"]
+        : [NSString stringWithFormat:[RCTLocalizationProvider
+                                         RCTLocalizedString:@"%ld buttons found, swipe to move to the first button."
+                                            withDescription:@"accessibility hint for multiple buttons inside text"],
+                                     (long)numberOfButtons];
     firstElement.accessibilityHint = firstElementHint;
   }
 
   if (truncatedText && truncatedText.length > 0) {
     firstElement.accessibilityHint = (numberOfLinks > 0 || numberOfButtons > 0)
-        ? [NSString stringWithFormat:@"%@ Double tap to %@.", firstElement.accessibilityHint, truncatedText]
-        : firstElement.accessibilityHint = [NSString stringWithFormat:@"Double tap to %@.", truncatedText];
+        ? [NSString
+              stringWithFormat:@"%@ %@",
+                               firstElement.accessibilityHint,
+                               [RCTLocalizationProvider
+                                   RCTLocalizedString:[NSString stringWithFormat:@"Double tap to %@.", truncatedText]
+                                      withDescription:@"accessibility hint for truncated text with links or buttons"]]
+        : [RCTLocalizationProvider RCTLocalizedString:[NSString stringWithFormat:@"Double tap to %@.", truncatedText]
+                                      withDescription:@"accessibility hint for truncated text"];
   }
 
   // add accessible element for truncation attributed string for automation purposes only

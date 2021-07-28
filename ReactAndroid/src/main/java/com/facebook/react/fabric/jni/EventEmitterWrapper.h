@@ -8,8 +8,8 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/core/EventEmitter.h>
 #include <react/jni/ReadableNativeMap.h>
+#include <react/renderer/core/EventEmitter.h>
 
 namespace facebook {
 namespace react {
@@ -26,6 +26,10 @@ class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
   SharedEventEmitter eventEmitter;
 
   void invokeEvent(std::string eventName, NativeMap *params);
+  void invokeUniqueEvent(
+      std::string eventName,
+      NativeMap *params,
+      int customCoalesceKey);
 
  private:
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);

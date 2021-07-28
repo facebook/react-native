@@ -1,0 +1,66 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+buildscript {
+    repositories {
+        mavenLocal()
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:4.2.1")
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        google()
+        mavenCentral()
+    }
+}
+
+// This task is required when using react-native-codegen from source, instead of npm.
+task('buildCodegenCLI', type: Exec) {
+    def codegenRoot = "$projectDir/.."
+
+    inputs.files(
+        file("$codegenRoot/scripts"),
+        file("$codegenRoot/src"),
+        file("$codegenRoot/package.json"),
+        file("$codegenRoot/.babelrc"),
+        file("$codegenRoot/.prettierrc"),
+    )
+
+    def libDir = file("$codegenRoot/lib")
+    libDir.mkdirs()
+    def nodeModulesDir = file("$codegenRoot/node_modules")
+    nodeModulesDir.mkdirs();
+    outputs.dirs(libDir, nodeModulesDir)
+
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+      // Convert path to Linux format: use canonical path to strip it off relative elements in the middle of the string.
+      // Then replace baskslashes with slashes, remove leading colon, add leading slash.
+      // Eg. D:\path1\sub2/.. -> /D/path1/path2
+      String canonicalPath = new File(codegenRoot).getCanonicalPath()
+      String linuxPath = canonicalPath.replace('\\', '/');
+      linuxPath = linuxPath.replace(':', '')
+      linuxPath = '/' + linuxPath
+
+      // Get the location of bash in the system; assume environment variable created to store it.
+      String bashHome = "$System.env.REACT_WINDOWS_BASH"
+      if (bashHome == null) {
+        throw new GradleException("REACT_WINDOWS_BASH is not defined.")
+      }
+      commandLine(bashHome, "-c", "$linuxPath/scripts/oss/build.sh")
+    }
+    else {
+        commandLine("$codegenRoot/scripts/oss/build.sh")
+    }
+}
