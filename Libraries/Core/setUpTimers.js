@@ -10,10 +10,21 @@
 
 'use strict';
 
+const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
+
+if (__DEV__) {
+  if (typeof global.Promise !== 'function') {
+    console.error('Promise should exist before setting up timers.');
+  }
+}
+
+// Currently, Hermes `Promise` is implemented via Internal Bytecode.
+const hasHermesPromiseQueuedToJSVM =
+  global?.HermesInternal?.hasPromise?.() &&
+  global?.HermesInternal?.useEngineQueue?.();
+
 // In bridgeless mode, timers are host functions installed from cpp.
 if (!global.RN$Bridgeless) {
-  const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
-
   /**
    * Set up timers.
    * You can use this module directly, or just require InitializeCore.
@@ -40,5 +51,20 @@ if (!global.RN$Bridgeless) {
   polyfillGlobal(
     'clearImmediate',
     () => require('./Timers/JSTimers').clearReactNativeMicrotask,
+  );
+}
+
+/**
+ * Set up the microtask queueing API, which is required to use the same
+ * microtask queue as the Promise.
+ */
+if (hasHermesPromiseQueuedToJSVM) {
+  // Fast path for Hermes.
+  polyfillGlobal('queueMicrotask', () => global.HermesInternal.enqueueJob);
+} else {
+  // Polyfill it with promise (regardless it's polyfiled or native) otherwise.
+  polyfillGlobal(
+    'queueMicrotask',
+    () => require('./Timers/queueMicrotask.js').default,
   );
 }
