@@ -30,7 +30,7 @@ using namespace facebook::react;
     static auto const defaultProps = std::make_shared<ImageProps const>();
     _props = defaultProps;
 
-    _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
+    _imageView = [RCTUIImageViewAnimated new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = RCTContentModeFromImageResizeMode(defaultProps->resizeMode);
     _imageView.layer.minificationFilter = kCAFilterTrilinear;
@@ -83,7 +83,8 @@ using namespace facebook::react;
 
   bool havePreviousData = oldImageState && oldImageState->getData().getImageSource() != ImageSource{};
 
-  if (!havePreviousData || newImageState->getData().getImageSource() != oldImageState->getData().getImageSource()) {
+  if (!havePreviousData ||
+      (newImageState && newImageState->getData().getImageSource() != oldImageState->getData().getImageSource())) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();

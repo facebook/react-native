@@ -10,6 +10,7 @@
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 
@@ -19,7 +20,10 @@ namespace react {
 class TextProps : public Props, public BaseTextProps {
  public:
   TextProps() = default;
-  TextProps(const TextProps &sourceProps, const RawProps &rawProps);
+  TextProps(
+      const PropsParserContext &context,
+      const TextProps &sourceProps,
+      const RawProps &rawProps);
 
 #pragma mark - DebugStringConvertible
 

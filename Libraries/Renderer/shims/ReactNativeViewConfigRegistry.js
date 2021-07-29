@@ -6,7 +6,12 @@
  *
  * @format
  * @flow strict-local
+ * @generated SignedSource<<3276da8ef0bf14ad0623df6e1f704d72>>
  */
+
+/* eslint-disable react-internal/invariant-args */
+
+'use strict';
 
 import {type ViewConfig} from './ReactNativeTypes';
 import invariant from 'invariant';

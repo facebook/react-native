@@ -14,6 +14,7 @@
 
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -37,7 +38,8 @@ class ComponentDescriptorRegistry {
    */
   ComponentDescriptorRegistry(
       ComponentDescriptorParameters const &parameters,
-      ComponentDescriptorProviderRegistry const &providerRegistry);
+      ComponentDescriptorProviderRegistry const &providerRegistry,
+      ContextContainer::Shared contextContainer);
 
   /*
    * This is broken. Please do not use.
@@ -85,6 +87,7 @@ class ComponentDescriptorRegistry {
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
   ComponentDescriptorProviderRegistry const &providerRegistry_;
+  ContextContainer::Shared contextContainer_;
 };
 
 } // namespace react

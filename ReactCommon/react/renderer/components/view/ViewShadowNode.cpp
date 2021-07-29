@@ -28,14 +28,6 @@ ViewShadowNode::ViewShadowNode(
   initialize();
 }
 
-static bool isColorMeaningful(SharedColor const &color) noexcept {
-  if (!color) {
-    return false;
-  }
-
-  return colorComponentsFromColor(color).alpha > 0;
-}
-
 void ViewShadowNode::initialize() noexcept {
   auto &viewProps = static_cast<ViewProps const &>(*props_);
 
@@ -50,7 +42,8 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.getClipsContentToBounds() ||
       isColorMeaningful(viewProps.shadowColor) ||
       viewProps.accessibilityElementsHidden ||
-      viewProps.importantForAccessibility != ImportantForAccessibility::Auto;
+      viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
+      viewProps.removeClippedSubviews;
 
   bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||

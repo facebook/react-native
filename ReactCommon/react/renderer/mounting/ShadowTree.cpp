@@ -7,6 +7,7 @@
 
 #include "ShadowTree.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -14,7 +15,7 @@
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 
 #include "ShadowTreeDelegate.h"
 
@@ -177,7 +178,7 @@ static void updateMountedFlag(
     return;
   }
 
-  int index;
+  size_t index;
 
   // Stage 1: Mount and unmount "updated" children.
   for (index = 0; index < oldChildren.size() && index < newChildren.size();
@@ -201,7 +202,7 @@ static void updateMountedFlag(
     updateMountedFlag(oldChild->getChildren(), newChild->getChildren());
   }
 
-  int lastIndexAfterFirstStage = index;
+  size_t lastIndexAfterFirstStage = index;
 
   // State 2: Mount new children.
   for (index = lastIndexAfterFirstStage; index < newChildren.size(); index++) {
@@ -222,7 +223,8 @@ ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext,
-    ShadowTreeDelegate const &delegate)
+    ShadowTreeDelegate const &delegate,
+    ContextContainer const &contextContainer)
     : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
@@ -233,7 +235,10 @@ ShadowTree::ShadowTree(
               EventDispatcher::Shared{}, nullptr, nullptr});
 
   const auto props = std::make_shared<const RootProps>(
-      *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
+      PropsParserContext{surfaceId, contextContainer},
+      *RootShadowNode::defaultSharedProps(),
+      layoutConstraints,
+      layoutContext);
 
   auto const fragment =
       ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter};
@@ -247,7 +252,7 @@ ShadowTree::ShadowTree(
           family));
 
   currentRevision_ = ShadowTreeRevision{
-      rootShadowNode, ShadowTreeRevision::Number{0}, TransactionTelemetry{}};
+      rootShadowNode, INITIAL_REVISION, TransactionTelemetry{}};
 
   mountingCoordinator_ =
       std::make_shared<MountingCoordinator const>(currentRevision_);
@@ -274,7 +279,9 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
     revision = currentRevision_;
   }
 
-  if (commitMode == CommitMode::Normal) {
+  // initial revision never contains any commits so mounting it here is
+  // incorrect
+  if (commitMode == CommitMode::Normal && revision.number != INITIAL_REVISION) {
     mount(revision);
   }
 }
@@ -305,7 +312,7 @@ CommitStatus ShadowTree::commit(
 
     // After multiple attempts, we failed to commit the transaction.
     // Something internally went terribly wrong.
-    assert(attempts < 1024);
+    react_native_assert(attempts < 1024);
   }
 }
 
@@ -385,7 +392,7 @@ CommitStatus ShadowTree::tryCommit(
     }
 
     telemetry.didCommit();
-    telemetry.setRevisionNumber(newRevisionNumber);
+    telemetry.setRevisionNumber(static_cast<int>(newRevisionNumber));
 
     newRevision =
         ShadowTreeRevision{newRootShadowNode, newRevisionNumber, telemetry};

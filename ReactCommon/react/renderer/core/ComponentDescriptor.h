@@ -9,6 +9,7 @@
 
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawPropsParser.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/State.h>
@@ -82,7 +83,7 @@ class ComponentDescriptor {
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
    */
-  virtual UnsharedShadowNode cloneShadowNode(
+  virtual ShadowNode::Unshared cloneShadowNode(
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment) const = 0;
 
@@ -101,6 +102,7 @@ class ComponentDescriptor {
    * Must return an object which is NOT pointer equal to `props`.
    */
   virtual SharedProps cloneProps(
+      const PropsParserContext &context,
       const SharedProps &props,
       const RawProps &rawProps) const = 0;
 
@@ -109,6 +111,7 @@ class ComponentDescriptor {
    * between `props` and `newProps`.
    */
   virtual SharedProps interpolateProps(
+      const PropsParserContext &context,
       float animationProgress,
       const SharedProps &props,
       const SharedProps &newProps) const = 0;

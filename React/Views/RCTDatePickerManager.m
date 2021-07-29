@@ -25,6 +25,21 @@ RCT_ENUM_CONVERTER(
     UIDatePickerModeTime,
     integerValue)
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+
+RCT_ENUM_CONVERTER(
+    UIDatePickerStyle,
+    (@{
+      @"compact" : @(UIDatePickerStyleCompact),
+      @"spinner" : @(UIDatePickerStyleWheels),
+      @"inline" : @(UIDatePickerStyleInline),
+    }),
+    UIDatePickerStyleAutomatic,
+    integerValue)
+#endif
+#pragma clang diagnostic pop
 @end
 
 @implementation RCTDatePickerManager
@@ -66,4 +81,22 @@ RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *
   }];
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+RCT_CUSTOM_VIEW_PROPERTY(pickerStyle, UIDatePickerStyle, RCTDatePicker)
+{
+  if (@available(iOS 14, *)) {
+    // If the style changed, then the date picker may need to be resized and will generate a layout pass to display
+    // correctly. We need to prevent that to get consistent layout. That's why we memorise the old frame and set it
+    // after style is changed.
+    CGRect oldFrame = view.frame;
+    if (json) {
+      UIDatePickerStyle style = [RCTConvert UIDatePickerStyle:json];
+      view.preferredDatePickerStyle = style;
+    } else {
+      view.preferredDatePickerStyle = UIDatePickerStyleWheels;
+    }
+    view.frame = oldFrame;
+  }
+}
+#endif
 @end

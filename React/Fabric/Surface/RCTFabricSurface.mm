@@ -34,6 +34,12 @@ using namespace facebook::react;
   // hence we wrap a value into `optional` to workaround it.
   better::optional<SurfaceHandler> _surfaceHandler;
 
+  // Protects Surface's start and stop processes.
+  // Even though SurfaceHandler is tread-safe, it will crash if we try to stop a surface that is not running.
+  // To make the API easy to use, we check the status of the surface before calling `start` or `stop`,
+  // and we need this mutex to prevent races.
+  std::mutex _surfaceMutex;
+
   // Can be accessed from the main thread only.
   RCTSurfaceView *_Nullable _view;
   RCTSurfaceTouchHandler *_Nullable _touchHandler;
@@ -81,13 +87,21 @@ using namespace facebook::react;
 
 - (BOOL)start
 {
-  _surfaceHandler->start();
-  [self _propagateStageChange];
+  std::lock_guard<std::mutex> lock(_surfaceMutex);
 
-  RCTExecuteOnMainQueue(^{
+  if (_surfaceHandler->getStatus() != SurfaceHandler::Status::Registered) {
+    return NO;
+  }
+
+  // We need to register a root view component here synchronously because right after
+  // we start a surface, it can initiate an update that can query the root component.
+  RCTUnsafeExecuteOnMainQueueSync(^{
     [self->_surfacePresenter.mountingManager attachSurfaceToView:self.view
                                                        surfaceId:self->_surfaceHandler->getSurfaceId()];
   });
+
+  _surfaceHandler->start();
+  [self _propagateStageChange];
 
   [_surfacePresenter setupAnimationDriverWithSurfaceHandler:*_surfaceHandler];
   return YES;
@@ -95,6 +109,12 @@ using namespace facebook::react;
 
 - (BOOL)stop
 {
+  std::lock_guard<std::mutex> lock(_surfaceMutex);
+
+  if (_surfaceHandler->getStatus() != SurfaceHandler::Status::Running) {
+    return NO;
+  }
+
   _surfaceHandler->stop();
   [self _propagateStageChange];
 
@@ -150,6 +170,8 @@ using namespace facebook::react;
 - (void)_updateLayoutContext
 {
   auto layoutConstraints = _surfaceHandler->getLayoutConstraints();
+  layoutConstraints.layoutDirection = RCTLayoutDirection([[RCTI18nUtil sharedInstance] isRTL]);
+
   auto layoutContext = _surfaceHandler->getLayoutContext();
 
   layoutContext.pointScaleFactor = RCTScreenScale();

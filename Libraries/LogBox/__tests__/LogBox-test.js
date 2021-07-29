@@ -31,11 +31,13 @@ function mockFilterResult(returnValues) {
 
 describe('LogBox', () => {
   const {error, warn} = console;
+  let consoleError;
+  let consoleWarn;
 
   beforeEach(() => {
     jest.resetModules();
-    console.error = jest.fn();
-    console.warn = jest.fn();
+    console.error = consoleError = jest.fn();
+    console.warn = consoleWarn = jest.fn();
     console.disableYellowBox = false;
   });
 
@@ -275,5 +277,108 @@ describe('LogBox', () => {
         substitutions: [{length: 8, offset: 0}],
       },
     });
+  });
+
+  it('ignores console methods after uninstalling', () => {
+    jest.mock('../Data/LogBoxData');
+
+    LogBox.install();
+    LogBox.uninstall();
+
+    console.log('Test');
+    console.warn('Test');
+    console.error('Test');
+
+    expect(LogBoxData.addLog).not.toHaveBeenCalled();
+  });
+
+  it('does not add logs after uninstalling', () => {
+    jest.mock('../Data/LogBoxData');
+
+    LogBox.install();
+    LogBox.uninstall();
+
+    LogBox.addLog({
+      level: 'warn',
+      category: 'test',
+      message: {content: 'Some warning', substitutions: []},
+      componentStack: [],
+    });
+
+    expect(LogBoxData.addLog).not.toHaveBeenCalled();
+  });
+
+  it('does not add exceptions after uninstalling', () => {
+    jest.mock('../Data/LogBoxData');
+
+    LogBox.install();
+    LogBox.uninstall();
+
+    LogBox.addException({
+      message: 'Some error',
+      originalMessage: null,
+      name: 'Error',
+      componentStack: null,
+      stack: [],
+      id: 12,
+      isFatal: true,
+      isComponentError: false,
+    });
+
+    expect(LogBoxData.addException).not.toHaveBeenCalled();
+  });
+
+  it('preserves decorations of console.error after installing/uninstalling', () => {
+    LogBox.install();
+
+    const originalConsoleError = console.error;
+    console.error = message => {
+      originalConsoleError('Custom: ' + message);
+    };
+
+    console.error('before uninstalling');
+
+    expect(consoleError).toHaveBeenCalledWith('Custom: before uninstalling');
+
+    LogBox.uninstall();
+
+    console.error('after uninstalling');
+
+    expect(consoleError).toHaveBeenCalledWith('Custom: after uninstalling');
+
+    LogBox.install();
+
+    console.error('after installing for the second time');
+
+    expect(consoleError).toHaveBeenCalledWith(
+      'Custom: after installing for the second time',
+    );
+  });
+
+  it('preserves decorations of console.warn after installing/uninstalling', () => {
+    LogBox.install();
+
+    const originalConsoleWarn = console.warn;
+    console.warn = message => {
+      originalConsoleWarn('Custom: ' + message);
+    };
+
+    console.warn('before uninstalling');
+
+    expect(consoleWarn).toHaveBeenCalledWith('Custom: before uninstalling');
+
+    LogBox.uninstall();
+
+    console.warn('after uninstalling');
+
+    expect(consoleWarn).toHaveBeenCalledWith('Custom: after uninstalling');
+
+    LogBox.install();
+
+    console.warn('after installing for the second time');
+
+    expect(consoleWarn).toHaveBeenCalledWith(
+      'Custom: after installing for the second time',
+    );
   });
 });

@@ -16,6 +16,7 @@
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
 #include <react/renderer/core/RawValue.h>
@@ -74,7 +75,8 @@ class RawProps final {
   RawProps(RawProps const &other) noexcept = delete;
   RawProps &operator=(RawProps const &other) noexcept = delete;
 
-  void parse(RawPropsParser const &parser) const noexcept;
+  void parse(RawPropsParser const &parser, const PropsParserContext &)
+      const noexcept;
 
   /*
    * Deprecated. Do not use.

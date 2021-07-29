@@ -58,4 +58,4 @@ if (Platform.OS === 'android') {
   );
 }
 
-module.exports = exported;
+export default exported;

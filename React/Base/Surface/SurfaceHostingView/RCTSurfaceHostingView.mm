@@ -60,6 +60,9 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
     _surface.delegate = self;
     _stage = surface.stage;
     [self _updateViews];
+
+    // For backward compatibility with RCTRootView, set a color here instead of transparent (OS default).
+    self.backgroundColor = [UIColor whiteColor];
   }
 
   return self;

@@ -33,6 +33,7 @@ const InteractionMixin = {
     return handle;
   },
 
+  // $FlowFixMe[signature-verification-failure]
   clearInteractionHandle: function(clearHandle: number): void {
     InteractionManager.clearInteractionHandle(clearHandle);
     this._interactionMixinHandles = this._interactionMixinHandles.filter(
