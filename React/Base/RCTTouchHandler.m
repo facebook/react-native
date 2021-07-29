@@ -174,8 +174,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   // have a value of `1.0 / nativeTouch.maximumPossibleForce`)?
   if (RCTForceTouchAvailable()) {
     reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
-  }
-  else if (nativeTouch.type == UITouchTypePencil) {
+  } else if (nativeTouch.type == UITouchTypePencil) {
     reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
     reactTouch[@"altitudeAngle"] = @(RCTZeroIfNaN(nativeTouch.altitudeAngle));
   }
