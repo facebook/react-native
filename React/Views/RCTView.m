@@ -82,8 +82,14 @@ UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
 
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
-  NSMutableString *str = [NSMutableString stringWithString:@""];
+  NSMutableString *str = [NSMutableString string];
   for (UIView *subview in view.subviews) {
+    // Ignore non-text subviews that are accessible themselves because we don't want
+    // to create ambiguity with multiple views having the same label.
+    // (e.g. <View> that contains a <TouchableHighlight>)
+    if (subview.isAccessibilityElement && [subview isKindOfClass:[RCTView class]]) {
+      continue;
+    }
     NSString *label = subview.accessibilityLabel;
     if (!label) {
       label = RCTRecursiveAccessibilityLabel(subview);

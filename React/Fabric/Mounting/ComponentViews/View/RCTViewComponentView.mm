@@ -641,8 +641,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
-  NSMutableString *result = [NSMutableString stringWithString:@""];
+  NSMutableString *result = [NSMutableString string];
   for (UIView *subview in view.subviews) {
+    // Ignore non-text subviews that are accessible themselves because we don't want
+    // to create ambiguity with multiple views having the same label.
+    // (e.g. <View> that contains a <TouchableHighlight>)
+    if (subview.isAccessibilityElement && [subview isKindOfClass:[RCTViewComponentView class]]) {
+      continue;
+    }
     NSString *label = subview.accessibilityLabel;
     if (!label) {
       label = RCTRecursiveAccessibilityLabel(subview);
