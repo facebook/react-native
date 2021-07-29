@@ -43,10 +43,16 @@ SurfaceHandler &SurfaceHandler::operator=(SurfaceHandler &&other) noexcept {
 
   other.link_ = Link{};
   other.parameters_ = Parameters{};
+  other.parameters_.contextContainer = parameters_.contextContainer;
   return *this;
 }
 
 #pragma mark - Surface Life-Cycle Management
+
+void SurfaceHandler::setContextContainer(
+    ContextContainer::Shared contextContainer) const noexcept {
+  parameters_.contextContainer = contextContainer;
+}
 
 Status SurfaceHandler::getStatus() const noexcept {
   std::shared_lock<better::shared_mutex> lock(linkMutex_);
@@ -61,6 +67,8 @@ void SurfaceHandler::start() const noexcept {
   react_native_assert(
       getLayoutConstraints().layoutDirection != LayoutDirection::Undefined &&
       "layoutDirection must be set.");
+  react_native_assert(
+      parameters_.contextContainer && "ContextContainer must be set.");
 
   auto parameters = Parameters{};
   {
@@ -73,7 +81,8 @@ void SurfaceHandler::start() const noexcept {
       parameters.surfaceId,
       parameters.layoutConstraints,
       parameters.layoutContext,
-      *link_.uiManager);
+      *link_.uiManager,
+      *parameters.contextContainer);
 
   link_.shadowTree = shadowTree.get();
 
@@ -194,8 +203,11 @@ Size SurfaceHandler::measure(
   auto currentRootShadowNode =
       link_.shadowTree->getCurrentRevision().rootShadowNode;
 
-  auto rootShadowNode =
-      currentRootShadowNode->clone(layoutConstraints, layoutContext);
+  PropsParserContext propsParserContext{
+      parameters_.surfaceId, *parameters_.contextContainer.get()};
+
+  auto rootShadowNode = currentRootShadowNode->clone(
+      propsParserContext, layoutConstraints, layoutContext);
   rootShadowNode->layoutIfNeeded();
   return rootShadowNode->getLayoutMetrics().frame.size;
 }
@@ -223,10 +235,14 @@ void SurfaceHandler::constraintLayout(
       return;
     }
 
+    PropsParserContext propsParserContext{
+        parameters_.surfaceId, *parameters_.contextContainer.get()};
+
     react_native_assert(
         link_.shadowTree && "`link_.shadowTree` must not be null.");
     link_.shadowTree->commit([&](RootShadowNode const &oldRootShadowNode) {
-      return oldRootShadowNode.clone(layoutConstraints, layoutContext);
+      return oldRootShadowNode.clone(
+          propsParserContext, layoutConstraints, layoutContext);
     });
   }
 }

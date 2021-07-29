@@ -104,6 +104,9 @@ class Scheduler final : public UIManagerDelegate {
       bool isJSResponder,
       bool blockNativeResponder) override;
 
+#pragma mark - ContextContainer
+  ContextContainer::Shared getContextContainer() const;
+
  private:
   friend class SurfaceHandler;
 
@@ -123,6 +126,12 @@ class Scheduler final : public UIManagerDelegate {
    * fill the optional.
    */
   std::shared_ptr<better::optional<EventDispatcher const>> eventDispatcher_;
+
+  /**
+   * Hold onto ContextContainer. See SchedulerToolbox.
+   * Must not be nullptr.
+   */
+  ContextContainer::Shared contextContainer_;
 
   /*
    * Temporary flags.

@@ -87,9 +87,10 @@ CoreComponentsRegistry::initHybrid(
       [](EventDispatcher::Weak const &eventDispatcher,
          ContextContainer::Shared const &contextContainer)
       -> ComponentDescriptorRegistry::Shared {
-    auto registry = CoreComponentsRegistry::sharedProviderRegistry()
-                        ->createComponentDescriptorRegistry(
-                            {eventDispatcher, contextContainer});
+    auto registry =
+        CoreComponentsRegistry::sharedProviderRegistry()
+            ->createComponentDescriptorRegistry(
+                {eventDispatcher, contextContainer}, contextContainer);
     auto mutableRegistry =
         std::const_pointer_cast<ComponentDescriptorRegistry>(registry);
     mutableRegistry->setFallbackComponentDescriptor(

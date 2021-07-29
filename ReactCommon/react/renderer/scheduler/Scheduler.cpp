@@ -36,17 +36,18 @@ Scheduler::Scheduler(
     UIManagerAnimationDelegate *animationDelegate,
     SchedulerDelegate *delegate) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
+  contextContainer_ = schedulerToolbox.contextContainer;
 
   reactNativeConfig_ =
-      schedulerToolbox.contextContainer
-          ->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
+      contextContainer_->at<std::shared_ptr<const ReactNativeConfig>>(
+          "ReactNativeConfig");
 
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ =
       std::make_shared<better::optional<EventDispatcher const>>();
 
   auto uiManager = std::make_shared<UIManager>(
-      runtimeExecutor_, schedulerToolbox.backgroundExecutor);
+      runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
@@ -90,7 +91,7 @@ Scheduler::Scheduler(
       EventDispatcher::Shared{eventDispatcher_, &eventDispatcher_->value()};
 
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
-      eventDispatcher, schedulerToolbox.contextContainer);
+      eventDispatcher, contextContainer_);
 
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
@@ -104,8 +105,8 @@ Scheduler::Scheduler(
 
   auto componentDescriptorRegistryKey =
       "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE";
-  schedulerToolbox.contextContainer->erase(componentDescriptorRegistryKey);
-  schedulerToolbox.contextContainer->insert(
+  contextContainer_->erase(componentDescriptorRegistryKey);
+  contextContainer_->insert(
       componentDescriptorRegistryKey,
       std::weak_ptr<ComponentDescriptorRegistry const>(
           componentDescriptorRegistry_));
@@ -193,6 +194,7 @@ Scheduler::~Scheduler() {
 
 void Scheduler::registerSurface(
     SurfaceHandler const &surfaceHandler) const noexcept {
+  surfaceHandler.setContextContainer(getContextContainer());
   surfaceHandler.setUIManager(uiManager_.get());
 }
 
@@ -350,6 +352,10 @@ void Scheduler::uiManagerDidSetIsJSResponder(
     delegate_->schedulerDidSetIsJSResponder(
         ShadowView(*shadowNode), isJSResponder, blockNativeResponder);
   }
+}
+
+ContextContainer::Shared Scheduler::getContextContainer() const {
+  return contextContainer_;
 }
 
 } // namespace react

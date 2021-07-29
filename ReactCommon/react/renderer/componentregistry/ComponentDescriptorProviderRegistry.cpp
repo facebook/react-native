@@ -65,11 +65,12 @@ void ComponentDescriptorProviderRegistry::request(
 
 ComponentDescriptorRegistry::Shared
 ComponentDescriptorProviderRegistry::createComponentDescriptorRegistry(
-    ComponentDescriptorParameters const &parameters) const {
+    ComponentDescriptorParameters const &parameters,
+    ContextContainer::Shared contextContainer) const {
   std::shared_lock<better::shared_mutex> lock(mutex_);
 
-  auto registry =
-      std::make_shared<ComponentDescriptorRegistry const>(parameters, *this);
+  auto registry = std::make_shared<ComponentDescriptorRegistry const>(
+      parameters, *this, contextContainer);
 
   for (auto const &pair : componentDescriptorProviders_) {
     registry->add(pair.second);

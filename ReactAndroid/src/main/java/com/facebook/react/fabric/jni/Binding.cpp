@@ -275,6 +275,7 @@ void Binding::startSurface(
   layoutContext.pointScaleFactor = pointScaleFactor_;
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
+  surfaceHandler.setContextContainer(scheduler->getContextContainer());
   surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout({}, layoutContext);
 
@@ -336,6 +337,7 @@ void Binding::startSurfaceWithConstraints(
       isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
+  surfaceHandler.setContextContainer(scheduler_->getContextContainer());
   surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout(constraints, context);
 
