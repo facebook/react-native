@@ -11,6 +11,7 @@
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/AccessibilityPrimitives.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
 namespace facebook {
@@ -96,7 +97,10 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
   result = AccessibilityTraits::None;
 }
 
-inline void fromRawValue(const RawValue &value, AccessibilityTraits &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    AccessibilityTraits &result) {
   if (value.hasType<std::string>()) {
     fromString((std::string)value, result);
     return;
@@ -117,15 +121,18 @@ inline void fromRawValue(const RawValue &value, AccessibilityTraits &result) {
   }
 }
 
-inline void fromRawValue(const RawValue &value, AccessibilityState &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    AccessibilityState &result) {
   auto map = (better::map<std::string, RawValue>)value;
   auto selected = map.find("selected");
   if (selected != map.end()) {
-    fromRawValue(selected->second, result.selected);
+    fromRawValue(context, selected->second, result.selected);
   }
   auto disabled = map.find("disabled");
   if (disabled != map.end()) {
-    fromRawValue(disabled->second, result.disabled);
+    fromRawValue(context, disabled->second, result.disabled);
   }
   auto checked = map.find("checked");
   if (checked != map.end()) {
@@ -147,11 +154,11 @@ inline void fromRawValue(const RawValue &value, AccessibilityState &result) {
   }
   auto busy = map.find("busy");
   if (busy != map.end()) {
-    fromRawValue(busy->second, result.busy);
+    fromRawValue(context, busy->second, result.busy);
   }
   auto expanded = map.find("expanded");
   if (expanded != map.end()) {
-    fromRawValue(expanded->second, result.expanded);
+    fromRawValue(context, expanded->second, result.expanded);
   }
 }
 
@@ -170,6 +177,7 @@ inline std::string toString(
 }
 
 inline void fromRawValue(
+    const PropsParserContext &context,
     const RawValue &value,
     ImportantForAccessibility &result) {
   react_native_assert(value.hasType<std::string>());
@@ -192,13 +200,16 @@ inline void fromRawValue(
   }
 }
 
-inline void fromRawValue(const RawValue &value, AccessibilityAction &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    AccessibilityAction &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
   auto name = map.find("name");
   react_native_assert(name != map.end() && name->second.hasType<std::string>());
   if (name != map.end()) {
-    fromRawValue(name->second, result.name);
+    fromRawValue(context, name->second, result.name);
   }
 
   auto label = map.find("label");

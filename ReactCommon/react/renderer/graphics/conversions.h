@@ -11,6 +11,7 @@
 #include <folly/dynamic.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
@@ -20,7 +21,10 @@ namespace react {
 
 #pragma mark - Color
 
-inline void fromRawValue(const RawValue &value, SharedColor &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    SharedColor &result) {
   float red = 0;
   float green = 0;
   float blue = 0;
@@ -81,7 +85,10 @@ inline std::string toString(const SharedColor &value) {
 
 #pragma mark - Geometry
 
-inline void fromRawValue(const RawValue &value, Point &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    Point &result) {
   if (value.hasType<better::map<std::string, Float>>()) {
     auto map = (better::map<std::string, Float>)value;
     for (const auto &pair : map) {
@@ -109,7 +116,10 @@ inline void fromRawValue(const RawValue &value, Point &result) {
   }
 }
 
-inline void fromRawValue(const RawValue &value, Size &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    Size &result) {
   if (value.hasType<better::map<std::string, Float>>()) {
     auto map = (better::map<std::string, Float>)value;
     for (const auto &pair : map) {
@@ -140,7 +150,10 @@ inline void fromRawValue(const RawValue &value, Size &result) {
   }
 }
 
-inline void fromRawValue(const RawValue &value, EdgeInsets &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    EdgeInsets &result) {
   if (value.hasType<Float>()) {
     auto number = (Float)value;
     result = {number, number, number, number};
@@ -180,7 +193,10 @@ inline void fromRawValue(const RawValue &value, EdgeInsets &result) {
   }
 }
 
-inline void fromRawValue(const RawValue &value, CornerInsets &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    CornerInsets &result) {
   if (value.hasType<Float>()) {
     auto number = (Float)value;
     result = {number, number, number, number};

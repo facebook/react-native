@@ -10,6 +10,7 @@
 #include <yoga/YGStyle.h>
 
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook {
@@ -19,6 +20,7 @@ class YogaStylableProps : public Props {
  public:
   YogaStylableProps() = default;
   YogaStylableProps(
+      const PropsParserContext &context,
       YogaStylableProps const &sourceProps,
       RawProps const &rawProps);
 
