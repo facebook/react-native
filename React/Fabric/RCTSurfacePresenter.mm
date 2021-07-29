@@ -96,6 +96,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
     _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
     _mountingManager = [[RCTMountingManager alloc] init];
+    _mountingManager.contextContainer = contextContainer;
     _mountingManager.delegate = self;
 
     _observers = [NSMutableArray array];
@@ -127,6 +128,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
   _contextContainer = contextContainer;
+  _mountingManager.contextContainer = contextContainer;
 }
 
 - (RuntimeExecutor)runtimeExecutor

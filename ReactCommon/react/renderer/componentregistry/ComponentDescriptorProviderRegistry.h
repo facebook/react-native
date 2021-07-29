@@ -52,8 +52,7 @@ class ComponentDescriptorProviderRegistry final {
    * The methods can be called on any thread.
    */
   ComponentDescriptorRegistry::Shared createComponentDescriptorRegistry(
-      ComponentDescriptorParameters const &parameters,
-      ContextContainer::Shared contextContainer) const;
+      ComponentDescriptorParameters const &parameters) const;
 
  private:
   friend class ComponentDescriptorRegistry;

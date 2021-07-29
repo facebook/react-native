@@ -9,6 +9,7 @@
 
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs.h>
 
@@ -31,8 +32,12 @@ static SharedViewProps nonFlattenedDefaultProps(
   dynamic["nativeId"] = "NativeId";
   dynamic["accessible"] = true;
 
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   return std::static_pointer_cast<ViewProps const>(
-      componentDescriptor.cloneProps(nullptr, RawProps{dynamic}));
+      componentDescriptor.cloneProps(
+          parserContext, nullptr, RawProps{dynamic}));
 }
 
 static ShadowNode::Shared makeNode(
@@ -78,8 +83,11 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
               ShadowNodeFragment{RootShadowNode::defaultSharedProps()},
               rootFamily)));
 
+  PropsParserContext parserContext{-1, *contextContainer};
+
   // Applying size constraints.
   emptyRootNode = emptyRootNode->clone(
+      parserContext,
       LayoutConstraints{
           Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
       LayoutContext{});
@@ -383,8 +391,11 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
               ShadowNodeFragment{RootShadowNode::defaultSharedProps()},
               rootFamily)));
 
+  PropsParserContext parserContext{-1, *contextContainer};
+
   // Applying size constraints.
   emptyRootNode = emptyRootNode->clone(
+      parserContext,
       LayoutConstraints{
           Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
       LayoutContext{});

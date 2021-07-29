@@ -6,15 +6,19 @@
  */
 
 #include <react/renderer/components/root/RootComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/element/ComponentBuilder.h>
-#include <react/renderer/element/Element.h>
-#include <react/renderer/element/testUtils.h>
 
 #include <gtest/gtest.h>
+#include <react/renderer/element/Element.h>
+#include <react/renderer/element/testUtils.h>
 
 namespace facebook::react {
 
 TEST(RootShadowNodeTest, cloneWithLayoutConstraints) {
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   auto builder = simpleComponentBuilder();
   std::shared_ptr<RootShadowNode> rootShadowNode;
   LayoutConstraints defaultLayoutConstraints = {};
@@ -32,8 +36,8 @@ TEST(RootShadowNodeTest, cloneWithLayoutConstraints) {
   EXPECT_TRUE(rootShadowNode->layoutIfNeeded());
   EXPECT_TRUE(rootShadowNode->getIsLayoutClean());
 
-  auto clonedWithDiffentLayoutConstraints =
-      rootShadowNode->clone(LayoutConstraints{{0, 0}, {10, 10}}, {});
+  auto clonedWithDiffentLayoutConstraints = rootShadowNode->clone(
+      parserContext, LayoutConstraints{{0, 0}, {10, 10}}, {});
 
   EXPECT_FALSE(clonedWithDiffentLayoutConstraints->getIsLayoutClean());
   EXPECT_TRUE(clonedWithDiffentLayoutConstraints->layoutIfNeeded());
