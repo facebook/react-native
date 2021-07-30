@@ -715,18 +715,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setFilters(newFilters);
   }
 
-  @ReactProp(name = "autoCompleteType")
-  public void setTextContentType(ReactEditText view, @Nullable String autoCompleteType) {
-    if (autoCompleteType == null) {
+  @ReactProp(name = "autoComplete")
+  public void setTextContentType(ReactEditText view, @Nullable String autoComplete) {
+    if (autoComplete == null) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
-    } else if ("off".equals(autoCompleteType)) {
+    } else if ("off".equals(autoComplete)) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
-    } else if (REACT_PROPS_AUTOFILL_HINTS_MAP.containsKey(autoCompleteType)) {
-      setAutofillHints(view, REACT_PROPS_AUTOFILL_HINTS_MAP.get(autoCompleteType));
+    } else if (REACT_PROPS_AUTOFILL_HINTS_MAP.containsKey(autoComplete)) {
+      setAutofillHints(view, REACT_PROPS_AUTOFILL_HINTS_MAP.get(autoComplete));
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid autoCompleteType: " + autoCompleteType);
+      throw new JSApplicationIllegalArgumentException("Invalid autoComplete: " + autoComplete);
     }
+  }
+
+  // TODO: T96744578 - Delete autoCompleteType prop
+  @ReactProp(name = "autoCompleteType")
+  public void setTextContentTypeDeprecated(ReactEditText view, @Nullable String autoCompleteType) {
+    setTextContentType(view, autoCompleteType);
   }
 
   @ReactProp(name = "autoCorrect")

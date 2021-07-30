@@ -107,6 +107,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
 
 #pragma mark - Props
 
+  const std::string autoComplete{};
   const std::string autoCompleteType{};
   const std::string returnKeyLabel{};
   const int numberOfLines{0};

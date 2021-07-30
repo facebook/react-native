@@ -42,6 +42,12 @@ AndroidTextInputProps::AndroidTextInputProps(
     const RawProps &rawProps)
     : ViewProps(context, sourceProps, rawProps),
       BaseTextProps(context, sourceProps, rawProps),
+      autoComplete(convertRawProp(
+          context,
+          rawProps,
+          "autoComplete",
+          sourceProps.autoComplete,
+          {})),
       autoCompleteType(convertRawProp(
           context,
           rawProps,
@@ -262,6 +268,7 @@ AndroidTextInputProps::AndroidTextInputProps(
 folly::dynamic AndroidTextInputProps::getDynamic() const {
   folly::dynamic props = folly::dynamic::object();
   props["autoCompleteType"] = autoCompleteType;
+  props["autoComplete"] = autoComplete;
   props["returnKeyLabel"] = returnKeyLabel;
   props["numberOfLines"] = numberOfLines;
   props["disableFullscreenUI"] = disableFullscreenUI;
