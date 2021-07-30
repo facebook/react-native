@@ -12,8 +12,8 @@
 
 using namespace facebook::react;
 
-inline static NSTextAlignment RCTNSTextAlignmentFromTextAlignment(TextAlignment textAlignment)
-{
+inline static NSTextAlignment RCTNSTextAlignmentFromTextAlignment(
+    TextAlignment textAlignment) {
   switch (textAlignment) {
     case TextAlignment::Natural:
       return NSTextAlignmentNatural;
@@ -28,8 +28,8 @@ inline static NSTextAlignment RCTNSTextAlignmentFromTextAlignment(TextAlignment 
   }
 }
 
-inline static NSWritingDirection RCTNSWritingDirectionFromWritingDirection(WritingDirection writingDirection)
-{
+inline static NSWritingDirection RCTNSWritingDirectionFromWritingDirection(
+    WritingDirection writingDirection) {
   switch (writingDirection) {
     case WritingDirection::Natural:
       return NSWritingDirectionNatural;
@@ -40,8 +40,7 @@ inline static NSWritingDirection RCTNSWritingDirectionFromWritingDirection(Writi
   }
 }
 
-inline static RCTFontStyle RCTFontStyleFromFontStyle(FontStyle fontStyle)
-{
+inline static RCTFontStyle RCTFontStyleFromFontStyle(FontStyle fontStyle) {
   switch (fontStyle) {
     case FontStyle::Normal:
       return RCTFontStyleNormal;
@@ -52,15 +51,14 @@ inline static RCTFontStyle RCTFontStyleFromFontStyle(FontStyle fontStyle)
   }
 }
 
-inline static RCTFontVariant RCTFontVariantFromFontVariant(FontVariant fontVariant)
-{
+inline static RCTFontVariant RCTFontVariantFromFontVariant(
+    FontVariant fontVariant) {
   return (RCTFontVariant)fontVariant;
 }
 
 inline static NSUnderlineStyle RCTNSUnderlineStyleFromStyleAndPattern(
     TextDecorationLineStyle textDecorationLineStyle,
-    TextDecorationLinePattern textDecorationLinePattern)
-{
+    TextDecorationLinePattern textDecorationLinePattern) {
   NSUnderlineStyle style = NSUnderlineStyleNone;
 
   switch (textDecorationLineStyle) {
@@ -94,26 +92,4 @@ inline static NSUnderlineStyle RCTNSUnderlineStyleFromStyleAndPattern(
   }
 
   return style;
-}
-
-inline static UIColor *RCTUIColorFromSharedColor(const SharedColor &sharedColor)
-{
-  if (!sharedColor) {
-    return nil;
-  }
-
-  if (*facebook::react::clearColor() == *sharedColor) {
-    return [UIColor clearColor];
-  }
-
-  if (*facebook::react::blackColor() == *sharedColor) {
-    return [UIColor blackColor];
-  }
-
-  if (*facebook::react::whiteColor() == *sharedColor) {
-    return [UIColor whiteColor];
-  }
-
-  auto components = facebook::react::colorComponentsFromColor(sharedColor);
-  return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
 }

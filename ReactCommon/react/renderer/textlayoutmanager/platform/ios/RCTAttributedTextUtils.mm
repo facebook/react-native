@@ -7,6 +7,8 @@
 
 #import "RCTAttributedTextUtils.h"
 
+#import <React/RCTConversions.h>
+
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/textlayoutmanager/RCTFontProperties.h>
 #include <react/renderer/textlayoutmanager/RCTFontUtils.h>
