@@ -35,6 +35,7 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
+import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -456,6 +457,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         minHeight,
         maxHeight,
         null);
+  }
+
+  @SuppressWarnings("unused")
+  public int getColor(int surfaceId, ReadableMap platformColor) {
+    ThemedReactContext context =
+        mMountingManager.getSurfaceManagerEnforced(surfaceId, "getColor").getContext();
+    Integer color = ColorPropConverter.getColor(platformColor, context);
+    return color != null ? color : 0;
   }
 
   @SuppressWarnings("unused")

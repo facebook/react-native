@@ -457,10 +457,11 @@ def rn_codegen_components(
         # Tests
         fb_xplat_cxx_test(
             name = "generated_tests-{}".format(name),
-            srcs = [
+            srcs = [] if ANDROID else [
                 ":{}".format(generate_tests_cpp_name),
             ],
             apple_sdks = (IOS, MACOSX),
+            fbandroid_use_instrumentation_test = True,
             compiler_flags = [
                 "-fexceptions",
                 "-frtti",
@@ -471,6 +472,8 @@ def rn_codegen_components(
             labels = library_labels + ["codegen_rule"],
             platforms = (ANDROID, APPLE, CXX),
             deps = [
+                YOGA_CXX_TARGET,
+                react_native_xplat_target("react/renderer/core:core"),
                 "//xplat/third-party/gmock:gtest",
                 ":generated_components-{}".format(name),
             ],
