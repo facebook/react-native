@@ -43,9 +43,9 @@ rn_library(
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/js:node_modules__nullthrows",
-        "//xplat/js:react-native",
         "//xplat/js/RKJSModules/Libraries/Core:Core",
         "//xplat/js/RKJSModules/vendor/react:react",
+        "//xplat/js/react-native-github:react-native",
         "//xplat/js/react-native-github/packages/assets:assets",
     ],
 )
