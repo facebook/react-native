@@ -52,11 +52,6 @@ JavaTurboModule::~JavaTurboModule() {
   });
 }
 
-bool JavaTurboModule::useTurboModulesRAIICallbackManager_ = false;
-void JavaTurboModule::enableUseTurboModulesRAIICallbackManager(bool enable) {
-  JavaTurboModule::useTurboModulesRAIICallbackManager_ = enable;
-}
-
 namespace {
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
@@ -72,9 +67,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
   // 3. It cannot be a value, because that would be deleted as soon as this
   // function returns.
   auto callbackWrapperOwner =
-      (JavaTurboModule::useTurboModulesRAIICallbackManager_
-           ? std::make_shared<RAIICallbackWrapperDestroyer>(weakWrapper)
-           : nullptr);
+      std::make_shared<RAIICallbackWrapperDestroyer>(weakWrapper);
 
   std::function<void(folly::dynamic)> fn =
       [weakWrapper, callbackWrapperOwner, wrapperWasCalled = false](
@@ -114,11 +107,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
                   (const jsi::Value *)result.data(),
                   result.size());
 
-              if (JavaTurboModule::useTurboModulesRAIICallbackManager_) {
-                callbackWrapperOwner.reset();
-              } else {
-                strongWrapper2->destroy();
-              }
+              callbackWrapperOwner.reset();
             });
 
         wrapperWasCalled = true;

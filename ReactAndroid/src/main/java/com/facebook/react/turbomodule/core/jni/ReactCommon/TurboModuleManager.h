@@ -32,8 +32,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
       jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
       jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
-      jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-      bool useTurboModulesRAIICallbackManager);
+      jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
   static void registerNatives();
 
  private:
