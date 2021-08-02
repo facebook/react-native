@@ -21,9 +21,19 @@ namespace react {
 /**
  * Public API to install the TurboModule system.
  */
+
 TurboModuleBinding::TurboModuleBinding(
     const TurboModuleProviderFunctionType &&moduleProvider)
-    : moduleProvider_(std::move(moduleProvider)) {}
+    : moduleProvider_(std::move(moduleProvider)),
+      longLivedObjectCollection_(nullptr),
+      disableGlobalLongLivedObjectCollection_(false) {}
+
+TurboModuleBinding::TurboModuleBinding(
+    const TurboModuleProviderFunctionType &&moduleProvider,
+    std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection)
+    : moduleProvider_(std::move(moduleProvider)),
+      longLivedObjectCollection_(longLivedObjectCollection),
+      disableGlobalLongLivedObjectCollection_(true) {}
 
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
@@ -35,6 +45,9 @@ void TurboModuleBinding::install(
           runtime,
           jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
           1,
+
+          // Create a TurboModuleBinding that uses the global
+          // LongLivedObjectCollection
           [binding =
                std::make_shared<TurboModuleBinding>(std::move(moduleProvider))](
               jsi::Runtime &rt,
@@ -45,7 +58,39 @@ void TurboModuleBinding::install(
           }));
 }
 
+void TurboModuleBinding::install(
+    jsi::Runtime &runtime,
+    const TurboModuleProviderFunctionType &&moduleProvider,
+    std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
+  runtime.global().setProperty(
+      runtime,
+      "__turboModuleProxy",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
+          1,
+          // Create a TurboModuleBinding that doesn't use the global
+          // LongLivedObjectCollection
+          [binding = std::make_shared<TurboModuleBinding>(
+               std::move(moduleProvider), longLivedObjectCollection)](
+              jsi::Runtime &rt,
+              const jsi::Value &thisVal,
+              const jsi::Value *args,
+              size_t count) {
+            return binding->jsProxy(rt, thisVal, args, count);
+          }));
+}
+
 TurboModuleBinding::~TurboModuleBinding() {
+  if (longLivedObjectCollection_ != nullptr) {
+    longLivedObjectCollection_->clear();
+    return;
+  }
+
+  if (disableGlobalLongLivedObjectCollection_) {
+    return;
+  }
+
   LongLivedObjectCollection::get().clear();
 }
 
