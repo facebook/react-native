@@ -28,6 +28,26 @@ public class ReactFeatureFlags {
   /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
   public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
 
+  /**
+   * Experiment:
+   *
+   * <p>Bridge and Bridgeless mode can run concurrently. This means that there can be two
+   * TurboModule systems alive at the same time.
+   *
+   * <p>The TurboModule system stores all JS callbacks in a global LongLivedObjectCollection. This
+   * collection is cleared when the JS VM is torn down. Implication: Tearing down the bridge JSVM
+   * invalidates the bridgeless JSVM's callbacks, and vice versa.
+   *
+   * <p>useGlobalCallbackCleanupScopeUsingRetainJSCallback => Use a retainJSCallbacks lambda to
+   * store jsi::Functions into the global LongLivedObjectCollection
+   *
+   * <p>useTurboModuleManagerCallbackCleanupScope => Use a retainJSCallbacks labmda to store
+   * jsi::Functions into a LongLivedObjectCollection owned by the TurboModuleManager
+   */
+  public static boolean useGlobalCallbackCleanupScopeUsingRetainJSCallback = false;
+
+  public static boolean useTurboModuleManagerCallbackCleanupScope = false;
+
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 

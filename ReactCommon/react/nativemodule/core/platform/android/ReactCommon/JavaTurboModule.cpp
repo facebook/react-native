@@ -30,7 +30,8 @@ namespace react {
 JavaTurboModule::JavaTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(jni::make_global(params.instance)),
-      nativeInvoker_(params.nativeInvoker) {}
+      nativeInvoker_(params.nativeInvoker),
+      retainJSCallback_(params.retainJSCallback) {}
 
 JavaTurboModule::~JavaTurboModule() {
   /**
@@ -54,11 +55,13 @@ JavaTurboModule::~JavaTurboModule() {
 
 namespace {
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
+    JSCallbackRetainer retainJSCallback,
     jsi::Function &&function,
     jsi::Runtime &rt,
     std::shared_ptr<CallInvoker> jsInvoker) {
-  auto weakWrapper =
-      react::CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
+  auto weakWrapper = retainJSCallback != nullptr
+      ? retainJSCallback(std::move(function), rt, jsInvoker)
+      : react::CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
 
   // This needs to be a shared_ptr because:
   // 1. It cannot be unique_ptr. std::function is copyable but unique_ptr is
@@ -251,7 +254,8 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
     const jsi::Value *args,
     size_t count,
     std::shared_ptr<CallInvoker> jsInvoker,
-    TurboModuleMethodValueKind valueKind) {
+    TurboModuleMethodValueKind valueKind,
+    JSCallbackRetainer retainJSCallback) {
   unsigned int expectedArgumentCount = valueKind == PromiseKind
       ? methodArgTypes.size() - 1
       : methodArgTypes.size();
@@ -386,7 +390,8 @@ JNIArgs JavaTurboModule::convertJSIArgsToJNIArgs(
 
       jsi::Function fn = arg->getObject(rt).getFunction(rt);
       jarg->l = makeGlobalIfNecessary(
-          createJavaCallbackFromJSIFunction(std::move(fn), rt, jsInvoker)
+          createJavaCallbackFromJSIFunction(
+              retainJSCallback, std::move(fn), rt, jsInvoker)
               .release());
       continue;
     }
@@ -533,7 +538,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       args,
       argCount,
       jsInvoker_,
-      valueKind);
+      valueKind,
+      retainJSCallback_);
 
   if (isMethodSync && valueKind != PromiseKind) {
     TMPL::syncMethodCallArgConversionEnd(moduleName, methodName);
@@ -744,7 +750,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            methodID,
            moduleNameStr = name_,
            methodNameStr,
-           env](
+           env,
+           retainJSCallback = retainJSCallback_](
               jsi::Runtime &runtime,
               const jsi::Value &thisVal,
               const jsi::Value *promiseConstructorArgs,
@@ -761,10 +768,16 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                     runtime);
 
             auto resolve = createJavaCallbackFromJSIFunction(
-                               std::move(resolveJSIFn), runtime, jsInvoker_)
+                               retainJSCallback,
+                               std::move(resolveJSIFn),
+                               runtime,
+                               jsInvoker_)
                                .release();
             auto reject = createJavaCallbackFromJSIFunction(
-                              std::move(rejectJSIFn), runtime, jsInvoker_)
+                              retainJSCallback,
+                              std::move(rejectJSIFn),
+                              runtime,
+                              jsInvoker_)
                               .release();
 
             jclass jPromiseImpl =
