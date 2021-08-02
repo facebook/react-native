@@ -13,8 +13,6 @@
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/ColorComponents.h>
 
-using namespace facebook::jni;
-
 namespace facebook {
 namespace react {
 
@@ -42,10 +40,10 @@ inline ColorComponents parsePlatformColor(
             "com/facebook/react/fabric/FabricUIManager")
             ->getMethod<jint(jint, ReadableMap::javaobject)>("getColor");
 
-    local_ref<ReadableNativeMap::javaobject> dynamicPlatformColorRNM =
+    jni::local_ref<ReadableNativeMap::javaobject> dynamicPlatformColorRNM =
         ReadableNativeMap::newObjectCxxArgs(dynamicPlatformColor);
-    local_ref<ReadableMap::javaobject> dynamicPlatformColorRM =
-        make_local(reinterpret_cast<ReadableMap::javaobject>(
+    jni::local_ref<ReadableMap::javaobject> dynamicPlatformColorRM =
+        jni::make_local(reinterpret_cast<ReadableMap::javaobject>(
             dynamicPlatformColorRNM.get()));
 
     auto color = getColorFromJava(
