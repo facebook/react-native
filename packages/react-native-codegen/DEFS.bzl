@@ -457,6 +457,7 @@ def rn_codegen_components(
         # Tests
         fb_xplat_cxx_test(
             name = "generated_tests-{}".format(name),
+            # TODO T96844980: Fix and enable generated_tests-codegen_testsAndroid
             srcs = [] if ANDROID else [
                 ":{}".format(generate_tests_cpp_name),
             ],
