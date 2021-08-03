@@ -29,6 +29,12 @@ steps:
     displayName: npm install
     inputs:
       script: npm install
+
+  - task: CmdLine@2
+    displayName: Bump canary package version
+    inputs:
+      script: node scripts/bump-oss-version.js --nightly
+    condition: eq(variables['Build.SourceBranchName'], 'master')
   
   - task: CmdLine@2
     displayName: nuget restore
