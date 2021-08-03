@@ -805,6 +805,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @Override
+  public View resolveView(int reactTag) {
+    UiThreadUtil.assertOnUiThread();
+
+    SurfaceMountingManager surfaceManager = mMountingManager.getSurfaceManagerForView(reactTag);
+    return surfaceManager == null ? null : surfaceManager.getView(reactTag);
+  }
+
+  @Override
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
     receiveEvent(View.NO_ID, reactTag, eventName, params);
   }
