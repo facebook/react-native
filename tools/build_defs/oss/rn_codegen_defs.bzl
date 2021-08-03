@@ -27,7 +27,8 @@ def rn_codegen(
         android_package_name = None,
         codegen_components = False,
         codegen_modules = False,
-        library_labels = []):
+        library_labels = [],
+        src_prefix = ""):
     if (codegen_modules):
         error_header = "rn_codegen(name=\"{}\")".format(name)
         if not native_module_spec_name:
@@ -38,7 +39,7 @@ def rn_codegen(
 
         spec_srcs = native.glob(
             [
-                "**/Native*.js",
+                src_prefix + "**/Native*.js",
             ],
             exclude = [
                 "**/__*__/**",
@@ -68,7 +69,7 @@ def rn_codegen(
             name = "codegen_rn_components_schema_{}".format(name),
             srcs = native.glob(
                 [
-                    "**/*NativeComponent.js",
+                    src_prefix + "**/*NativeComponent.js",
                 ],
                 exclude = [
                     "**/__*__/**",

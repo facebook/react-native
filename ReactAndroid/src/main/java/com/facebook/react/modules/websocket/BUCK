@@ -23,6 +23,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/network:network"),
     ],
     exported_deps = [
-        react_native_root_target("Libraries:FBReactNativeSpec"),
+        react_native_root_target(":FBReactNativeSpec"),
     ],
 )
