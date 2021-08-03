@@ -11,6 +11,7 @@
 'use strict';
 
 const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
+const {isNativeFunction} = require('../Utilities/FeatureDetection');
 
 if (__DEV__) {
   if (typeof global.Promise !== 'function') {
@@ -23,14 +24,7 @@ const hasHermesPromiseQueuedToJSVM =
   global?.HermesInternal?.hasPromise?.() &&
   global?.HermesInternal?.useEngineQueue?.();
 
-// An util function to tell whether a function is provided natively by calling
-// the `toString` and check if the result includes `[native code]` in it.
-// N.B. a polyfill can fake this behavior but they usually won't. Hence this
-// is usually good enough for our purpose.
-const isNativeFunction = f =>
-  typeof f === 'function' && f.toString().indexOf('[native code]') > -1;
 const hasNativePromise = isNativeFunction(Promise);
-
 const hasPromiseQueuedToJSVM = hasNativePromise || hasHermesPromiseQueuedToJSVM;
 
 // In bridgeless mode, timers are host functions installed from cpp.
