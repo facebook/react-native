@@ -1,3 +1,4 @@
+load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//tools/build_defs/oss:metro_defs.bzl", "rn_library")
 load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 
@@ -48,4 +49,14 @@ rn_library(
         "//xplat/js/react-native-github:react-native",
         "//xplat/js/react-native-github/packages/assets:assets",
     ],
+)
+
+fb_native.filegroup(
+    name = "nativecomponent-srcs",
+    srcs = glob(
+        [
+            "**/*NativeComponent.js",
+        ],
+    ),
+    visibility = ["PUBLIC"],
 )
