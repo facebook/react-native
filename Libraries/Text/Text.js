@@ -18,6 +18,7 @@ import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import {type TextProps} from './TextProps';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
+import invariant from 'invariant';
 
 /**
  * Text is the fundamental component for displaying text.
@@ -146,6 +147,15 @@ const Text: React.AbstractComponent<
         color: 'magenta',
       });
     }
+  }
+
+  const numberOfLines = restProps.numberOfLines;
+  if (numberOfLines != null) {
+    invariant(
+      numberOfLines >= 0,
+      'Number of lines in <Text/> component can not be negative, passed value: %s.',
+      [numberOfLines],
+    );
   }
 
   const hasTextAncestor = useContext(TextAncestor);
