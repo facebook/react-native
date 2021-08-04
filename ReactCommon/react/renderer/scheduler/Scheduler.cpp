@@ -211,13 +211,17 @@ InspectorData Scheduler::getInspectorDataForInstance(
         auto source = dynamic["source"];
 
         InspectorData result = {};
-        result.fileName = source["fileName"].c_str();
+        result.fileName =
+            source["fileName"].isNull() ? "" : source["fileName"].c_str();
         result.lineNumber = (int)source["lineNumber"].getDouble();
         result.columnNumber = (int)source["columnNumber"].getDouble();
         result.selectedIndex = (int)dynamic["selectedIndex"].getDouble();
         auto hierarchy = dynamic["hierarchy"];
         for (size_t i = 0; i < hierarchy.size(); i++) {
-          result.hierarchy.push_back(hierarchy[i]["name"].c_str());
+          auto viewHierarchyValue = hierarchy[i]["name"];
+          if (!viewHierarchyValue.isNull()) {
+            result.hierarchy.push_back(viewHierarchyValue.c_str());
+          }
         }
         return result;
       });
