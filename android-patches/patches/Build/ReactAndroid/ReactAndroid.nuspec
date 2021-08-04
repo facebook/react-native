@@ -1,6 +1,6 @@
 --- "E:\\github\\rnm-63-fresh\\ReactAndroid\\ReactAndroid.nuspec"	1969-12-31 16:00:00.000000000 -0800
 +++ "E:\\github\\rnm-63\\ReactAndroid\\ReactAndroid.nuspec"	2020-10-27 20:20:54.071789900 -0700
-@@ -0,0 +1,135 @@
+@@ -0,0 +1,130 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 +  <metadata>
@@ -110,11 +110,6 @@
 +    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libv8executor.so" target="lib\droidarm\unstripped"/>
 +    <file src="build\tmp\buildReactNdkLib\local\x86\libv8executor.so" target="lib\droidx86\unstripped"/>
 +    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libv8executor.so" target="lib\droidarm64\unstripped"/>
-+
-+    <file src="build\tmp\buildReactNdkLib\local\x86_64\libyoga.so" target="lib\droidx64\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libyoga.so" target="lib\droidarm\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\x86\libyoga.so" target="lib\droidx86\unstripped"/>
-+    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libyoga.so" target="lib\droidarm64\unstripped"/>
 +
 +    <file src="build\tmp\buildReactNdkLib\local\x86_64\libyoga.so" target="lib\droidx64\unstripped"/>
 +    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libyoga.so" target="lib\droidarm\unstripped"/>
