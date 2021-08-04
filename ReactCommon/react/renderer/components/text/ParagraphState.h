@@ -7,12 +7,14 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
 #endif
 
 namespace facebook {
@@ -39,14 +41,16 @@ class ParagraphState final {
    * `TextLayoutManager` provides a connection to platform-specific
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
+   * This is not on every platform. This is not used on Android, but is
+   * used on the iOS mounting layer.
    */
-  SharedTextLayoutManager layoutManager;
+  std::weak_ptr<TextLayoutManager const> layoutManager;
 
 #ifdef ANDROID
   ParagraphState(
       AttributedString const &attributedString,
       ParagraphAttributes const &paragraphAttributes,
-      SharedTextLayoutManager const &layoutManager)
+      std::weak_ptr<const TextLayoutManager> const &layoutManager)
       : attributedString(attributedString),
         paragraphAttributes(paragraphAttributes),
         layoutManager(layoutManager) {}
@@ -54,9 +58,10 @@ class ParagraphState final {
   ParagraphState(
       ParagraphState const &previousState,
       folly::dynamic const &data) {
-    assert(false && "Not supported");
+    react_native_assert(false && "Not supported");
   };
   folly::dynamic getDynamic() const;
+  MapBuffer getMapBuffer() const;
 #endif
 };
 

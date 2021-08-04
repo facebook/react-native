@@ -7,9 +7,10 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ConcreteState.h>
-#include <react/renderer/core/ConcreteStateTeller.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
 
@@ -49,7 +50,6 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   using SharedConcreteEventEmitter = std::shared_ptr<EventEmitterT const>;
   using SharedConcreteShadowNode = std::shared_ptr<ConcreteShadowNode const>;
   using ConcreteState = ConcreteState<StateDataT>;
-  using ConcreteStateTeller = ConcreteStateTeller<ConcreteState>;
   using ConcreteStateData = StateDataT;
 
   static ComponentName Name() {
@@ -69,9 +69,11 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   }
 
   static SharedConcreteProps Props(
+      const PropsParserContext &context,
       RawProps const &rawProps,
       SharedProps const &baseProps = nullptr) {
     return std::make_shared<PropsT const>(
+        context,
         baseProps ? static_cast<PropsT const &>(*baseProps) : PropsT(),
         rawProps);
   }
@@ -94,8 +96,9 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Thread-safe after the node is sealed.
    */
   ConcreteProps const &getConcreteProps() const {
-    assert(BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
-    assert(
+    react_native_assert(
+        BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
+    react_native_assert(
         std::dynamic_pointer_cast<ConcreteProps const>(props_) &&
         "Props must be an instance of ConcreteProps class.");
     return static_cast<ConcreteProps const &>(*props_);
@@ -106,7 +109,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Thread-safe after the node is sealed.
    */
   ConcreteEventEmitter const &getConcreteEventEmitter() const {
-    assert(
+    react_native_assert(
         std::dynamic_pointer_cast<ConcreteEventEmitter const>(
             BaseShadowNodeT::getEventEmitter()) &&
         "EventEmitter must be an instance of ConcreteEventEmitter class.");
@@ -119,8 +122,8 @@ class ConcreteShadowNode : public BaseShadowNodeT {
    * Thread-safe after the node is sealed.
    */
   ConcreteStateData const &getStateData() const {
-    assert(state_ && "State must not be `nullptr`.");
-    assert(
+    react_native_assert(state_ && "State must not be `nullptr`.");
+    react_native_assert(
         std::dynamic_pointer_cast<ConcreteState const>(state_) &&
         "State must be an instance of ConcreteState class.");
     return static_cast<ConcreteState const *>(state_.get())->getData();

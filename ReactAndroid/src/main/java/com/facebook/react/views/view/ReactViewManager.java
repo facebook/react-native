@@ -239,7 +239,9 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
               if (mEventDispatcher == null) {
                 return;
               }
-              mEventDispatcher.dispatchEvent(new ViewGroupClickEvent(view.getId()));
+              mEventDispatcher.dispatchEvent(
+                  new ViewGroupClickEvent(
+                      UIManagerHelper.getSurfaceId(view.getContext()), view.getId()));
             }
           });
 
@@ -335,10 +337,9 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
       throw new JSApplicationIllegalArgumentException(
           "Illegal number of arguments for 'updateHotspot' command");
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
-      float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
-      root.drawableHotspotChanged(x, y);
-    }
+
+    float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
+    float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
+    root.drawableHotspotChanged(x, y);
   }
 }

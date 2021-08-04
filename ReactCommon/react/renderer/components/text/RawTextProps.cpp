@@ -14,10 +14,11 @@ namespace facebook {
 namespace react {
 
 RawTextProps::RawTextProps(
+    const PropsParserContext &context,
     const RawTextProps &sourceProps,
     const RawProps &rawProps)
-    : Props(sourceProps, rawProps),
-      text(convertRawProp(rawProps, "text", sourceProps.text, {})){};
+    : Props(context, sourceProps, rawProps),
+      text(convertRawProp(context, rawProps, "text", sourceProps.text, {})){};
 
 #pragma mark - DebugStringConvertible
 

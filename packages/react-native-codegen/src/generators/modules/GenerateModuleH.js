@@ -11,29 +11,39 @@
 'use strict';
 
 import type {
+  Nullable,
   SchemaType,
-  FunctionTypeAnnotationParamTypeAnnotation,
-  FunctionTypeAnnotationReturn,
-  TypeAliasTypeAnnotation,
-  ObjectTypeAliasTypeShape,
+  NativeModuleTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
 } from '../../CodegenSchema';
 
-const {getTypeAliasTypeAnnotation} = require('./Utils');
+import type {AliasResolver} from './Utils';
+const {createAliasResolver, getModules} = require('./Utils');
+const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
-const moduleTemplate = `
-class JSI_EXPORT Native::_MODULE_NAME_::CxxSpecJSI : public TurboModule {
+const ModuleClassDeclarationTemplate = ({
+  hasteModuleName,
+  moduleProperties,
+}: $ReadOnly<{hasteModuleName: string, moduleProperties: string}>) => {
+  return `class JSI_EXPORT ${hasteModuleName}CxxSpecJSI : public TurboModule {
 protected:
-  Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
+  ${hasteModuleName}CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-::_MODULE_PROPERTIES_::
+${moduleProperties}
 
 };`;
+};
 
-const template = `/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+const FileTemplate = ({
+  modules,
+}: $ReadOnly<{
+  modules: string,
+}>) => {
+  return `/**
+ * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,26 +57,28 @@ const template = `/**
 
 namespace facebook {
 namespace react {
-::_MODULES_::
+${modules}
 
 } // namespace react
 } // namespace facebook
 `;
+};
 
 function translatePrimitiveJSTypeToCpp(
-  typeAnnotation:
-    | FunctionTypeAnnotationParamTypeAnnotation
-    | FunctionTypeAnnotationReturn
-    | TypeAliasTypeAnnotation,
+  nullableTypeAnnotation: Nullable<NativeModuleTypeAnnotation>,
   createErrorMessage: (typeName: string) => string,
-  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
+  resolveAlias: AliasResolver,
 ) {
-  const realTypeAnnotation =
-    typeAnnotation.type === 'TypeAliasTypeAnnotation'
-      ? getTypeAliasTypeAnnotation(typeAnnotation.name, aliases)
-      : typeAnnotation;
+  const [typeAnnotation] = unwrapNullable<NativeModuleTypeAnnotation>(
+    nullableTypeAnnotation,
+  );
+  let realTypeAnnotation = typeAnnotation;
+  if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
+  }
+
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'double';
@@ -79,6 +91,9 @@ function translatePrimitiveJSTypeToCpp(
     case 'StringTypeAnnotation':
       return 'jsi::String';
     case 'NumberTypeAnnotation':
+      return 'double';
+    case 'DoubleTypeAnnotation':
+      return 'double';
     case 'FloatTypeAnnotation':
       return 'double';
     case 'Int32TypeAnnotation':
@@ -86,17 +101,17 @@ function translatePrimitiveJSTypeToCpp(
     case 'BooleanTypeAnnotation':
       return 'bool';
     case 'GenericObjectTypeAnnotation':
+      return 'jsi::Object';
     case 'ObjectTypeAnnotation':
       return 'jsi::Object';
     case 'ArrayTypeAnnotation':
       return 'jsi::Array';
     case 'FunctionTypeAnnotation':
       return 'jsi::Function';
-    case 'GenericPromiseTypeAnnotation':
+    case 'PromiseTypeAnnotation':
       return 'jsi::Value';
     default:
-      // TODO (T65847278): Figure out why this does not work.
-      // (type: empty);
+      (realTypeAnnotation.type: empty);
       throw new Error(createErrorMessage(realTypeAnnotation.type));
   }
 }
@@ -108,32 +123,33 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
+    packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
-    const nativeModules = Object.keys(schema.modules)
-      .map(moduleName => {
-        const modules = schema.modules[moduleName].nativeModules;
-        if (modules == null) {
-          return null;
-        }
-
-        return modules;
-      })
-      .filter(Boolean)
-      .reduce((acc, components) => Object.assign(acc, components), {});
+    const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
-      .map(name => {
-        const {aliases, properties} = nativeModules[name];
+      .map(hasteModuleName => {
+        const {
+          aliases,
+          spec: {properties},
+        } = nativeModules[hasteModuleName];
+        const resolveAlias = createAliasResolver(aliases);
+
         const traversedProperties = properties
           .map(prop => {
-            const traversedArgs = prop.typeAnnotation.params
+            const [
+              propTypeAnnotation,
+            ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+              prop.typeAnnotation,
+            );
+            const traversedArgs = propTypeAnnotation.params
               .map(param => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(
                   param.typeAnnotation,
                   typeName =>
                     `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
-                  aliases,
+                  resolveAlias,
                 );
                 const isObject = translatedParam.startsWith('jsi::');
                 return (
@@ -148,10 +164,10 @@ module.exports = {
               .replace(
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToCpp(
-                  prop.typeAnnotation.returnTypeAnnotation,
+                  propTypeAnnotation.returnTypeAnnotation,
                   typeName =>
                     `Unsupported return type for ${prop.name}. Found: ${typeName}`,
-                  aliases,
+                  resolveAlias,
                 ),
               )
               .replace(
@@ -160,15 +176,16 @@ module.exports = {
               );
           })
           .join('\n');
-        return moduleTemplate
-          .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)
-          .replace(/::_MODULE_NAME_::/g, name)
-          .replace('::_PROPERTIES_MAP_::', '');
+
+        return ModuleClassDeclarationTemplate({
+          hasteModuleName,
+          moduleProperties: traversedProperties,
+        });
       })
       .join('\n');
 
     const fileName = 'NativeModules.h';
-    const replacedTemplate = template.replace(/::_MODULES_::/g, modules);
+    const replacedTemplate = FileTemplate({modules});
 
     return new Map([[fileName, replacedTemplate]]);
   },

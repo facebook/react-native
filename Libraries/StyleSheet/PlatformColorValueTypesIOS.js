@@ -8,13 +8,13 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {ColorValue} from './StyleSheet';
 
 export type DynamicColorIOSTuple = {
   light: ColorValue,
   dark: ColorValue,
+  highContrastLight?: ColorValue,
+  highContrastDark?: ColorValue,
 };
 
 export const DynamicColorIOS = (tuple: DynamicColorIOSTuple): ColorValue => {

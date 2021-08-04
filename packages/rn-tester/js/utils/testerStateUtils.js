@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import {AsyncStorage} from 'react-native';
 
 import RNTesterList from './RNTesterList';
@@ -27,7 +25,9 @@ export const Screens = {
 };
 
 export const initialState: RNTesterState = {
-  openExample: null,
+  activeModuleKey: null,
+  activeModuleTitle: null,
+  activeModuleExampleKey: null,
   screen: null,
   bookmarks: null,
   recentlyUsed: null,
@@ -58,29 +58,33 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
     return null;
   }
 
-  const components = RNTesterList.ComponentExamples.map(c => ({
-    ...c,
-    isBookmarked: bookmarks.components.includes(c.key),
+  const components = RNTesterList.Components.map(componentExample => ({
+    ...componentExample,
+    isBookmarked: bookmarks.components.includes(componentExample.key),
     exampleType: Screens.COMPONENTS,
   }));
 
   const recentlyUsedComponents = recentlyUsed.components
-    .map(k => components.find(c => c.key === k))
+    .map(recentComponentKey =>
+      components.find(component => component.key === recentComponentKey),
+    )
     .filter(Boolean);
 
-  const bookmarkedComponents = components.filter(c => c.isBookmarked);
+  const bookmarkedComponents = components.filter(
+    component => component.isBookmarked,
+  );
 
-  const apis = RNTesterList.APIExamples.map(c => ({
-    ...c,
-    isBookmarked: bookmarks.apis.includes(c.key),
+  const apis = RNTesterList.APIs.map(apiExample => ({
+    ...apiExample,
+    isBookmarked: bookmarks.apis.includes(apiExample.key),
     exampleType: Screens.APIS,
   }));
 
   const recentlyUsedAPIs = recentlyUsed.apis
-    .map(k => apis.find(c => c.key === k))
+    .map(recentAPIKey => apis.find(apiEample => apiEample.key === recentAPIKey))
     .filter(Boolean);
 
-  const bookmarkedAPIs = apis.filter(c => c.isBookmarked);
+  const bookmarkedAPIs = apis.filter(apiEample => apiEample.isBookmarked);
 
   const examplesList: ExamplesList = {
     [Screens.COMPONENTS]: [
@@ -131,7 +135,9 @@ export const getInitialStateFromAsyncStorage = async (
 
   if (!initialStateString) {
     return {
-      openExample: null,
+      activeModuleKey: null,
+      activeModuleTitle: null,
+      activeModuleExampleKey: null,
       screen: Screens.COMPONENTS,
       bookmarks: {components: [], apis: []},
       recentlyUsed: {components: [], apis: []},

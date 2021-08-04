@@ -28,12 +28,12 @@ extern char const ParagraphComponentName[];
  * containing and displaying text. Text content is represented as nested <Text>
  * and <RawText> components.
  */
-class ParagraphShadowNode : public ConcreteViewShadowNode<
-                                ParagraphComponentName,
-                                ParagraphProps,
-                                ParagraphEventEmitter,
-                                ParagraphState>,
-                            public BaseTextShadowNode {
+class ParagraphShadowNode final : public ConcreteViewShadowNode<
+                                      ParagraphComponentName,
+                                      ParagraphProps,
+                                      ParagraphEventEmitter,
+                                      ParagraphState>,
+                                  public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
@@ -41,6 +41,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
     traits.set(ShadowNodeTraits::Trait::TextKind);
+    traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
 
 #ifdef ANDROID
     // Unsetting `FormsStackingContext` trait is essential on Android where we

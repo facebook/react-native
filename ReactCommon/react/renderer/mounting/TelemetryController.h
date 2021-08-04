@@ -12,7 +12,7 @@
 
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/MountingTransactionMetadata.h>
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 
 namespace facebook {
 namespace react {
@@ -45,8 +45,7 @@ class TelemetryController final {
   bool pullTransaction(
       std::function<void(MountingTransactionMetadata metadata)> willMount,
       std::function<void(ShadowViewMutationList const &mutations)> doMount,
-      std::function<void(MountingTransactionMetadata metadata)> didMount) const
-      noexcept;
+      std::function<void(MountingTransactionMetadata metadata)> didMount) const;
 
  private:
   MountingCoordinator const &mountingCoordinator_;

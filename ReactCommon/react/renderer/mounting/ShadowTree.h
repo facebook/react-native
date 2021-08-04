@@ -18,19 +18,52 @@
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/ShadowTreeDelegate.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
+#include <react/utils/ContextContainer.h>
 #include "MountingOverrideDelegate.h"
 
 namespace facebook {
 namespace react {
 
 using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
-    RootShadowNode::Shared const &oldRootShadowNode)>;
+    RootShadowNode const &oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.
  */
 class ShadowTree final {
  public:
+  using Unique = std::unique_ptr<ShadowTree>;
+
+  /*
+   * Represents a result of a `commit` operation.
+   */
+  enum class CommitStatus {
+    Succeeded,
+    Failed,
+    Cancelled,
+  };
+
+  /*
+   * Represents commits' side-effects propagation mode.
+   */
+  enum class CommitMode {
+    // Commits' side-effects are observable via `MountingCoordinator`.
+    // The rendering pipeline fully works end-to-end.
+    Normal,
+
+    // Commits' side-effects are *not* observable via `MountingCoordinator`.
+    // The mounting phase is skipped in the rendering pipeline.
+    Suspended,
+  };
+
+  struct CommitOptions {
+    bool enableStateReconciliation{false};
+
+    // Called during `tryCommit` phase. Returning true indicates current commit
+    // should yield to the next commit.
+    std::function<bool()> shouldYield;
+  };
+
   /*
    * Creates a new shadow tree instance.
    */
@@ -38,10 +71,8 @@ class ShadowTree final {
       SurfaceId surfaceId,
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
-      RootComponentDescriptor const &rootComponentDescriptor,
       ShadowTreeDelegate const &delegate,
-      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate,
-      bool enableReparentingDetection = false);
+      ContextContainer const &contextContainer);
 
   ~ShadowTree();
 
@@ -51,21 +82,34 @@ class ShadowTree final {
   SurfaceId getSurfaceId() const;
 
   /*
+   * Sets and gets the commit mode.
+   * Changing commit mode from `Suspended` to `Normal` will flush all suspended
+   * changes to `MountingCoordinator`.
+   */
+  void setCommitMode(CommitMode commitMode) const;
+  CommitMode getCommitMode() const;
+
+  /*
    * Performs commit calling `transaction` function with a `oldRootShadowNode`
    * and expecting a `newRootShadowNode` as a return value.
-   * The `transaction` function can abort commit returning `nullptr`.
-   * Returns `true` if the operation finished successfully.
+   * The `transaction` function can cancel commit returning `nullptr`.
    */
-  bool tryCommit(
+  CommitStatus tryCommit(
       ShadowTreeCommitTransaction transaction,
-      bool enableStateReconciliation = false) const;
+      CommitOptions commitOptions = {false}) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
-  void commit(
+  CommitStatus commit(
       ShadowTreeCommitTransaction transaction,
-      bool enableStateReconciliation = false) const;
+      CommitOptions commitOptions = {false}) const;
+
+  /*
+   * Returns a `ShadowTreeRevision` representing the momentary state of
+   * the `ShadowTree`.
+   */
+  ShadowTreeRevision getCurrentRevision() const;
 
   /*
    * Commit an empty tree (a new `RootShadowNode` with no children).
@@ -81,22 +125,10 @@ class ShadowTree final {
 
   MountingCoordinator::Shared getMountingCoordinator() const;
 
-  /*
-   * Temporary.
-   * Do not use.
-   */
-  void setEnableNewStateReconciliation(bool value) {
-    enableNewStateReconciliation_ = value;
-  }
-  void setEnableReparentingDetection(bool value) {
-    enableReparentingDetection_ = value;
-  }
-
  private:
-  RootShadowNode::Unshared cloneRootShadowNode(
-      RootShadowNode::Shared const &oldRootShadowNode,
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext) const;
+  constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
+
+  void mount(ShadowTreeRevision const &revision) const;
 
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
@@ -104,13 +136,10 @@ class ShadowTree final {
   SurfaceId const surfaceId_;
   ShadowTreeDelegate const &delegate_;
   mutable better::shared_mutex commitMutex_;
-  mutable RootShadowNode::Shared
-      rootShadowNode_; // Protected by `commitMutex_`.
-  mutable ShadowTreeRevision::Number revisionNumber_{
-      0}; // Protected by `commitMutex_`.
+  mutable CommitMode commitMode_{
+      CommitMode::Normal}; // Protected by `commitMutex_`.
+  mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
-  bool enableNewStateReconciliation_{false};
-  bool enableReparentingDetection_{false};
 };
 
 } // namespace react

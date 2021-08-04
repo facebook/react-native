@@ -40,10 +40,11 @@ public class FabricComponents {
     sComponentNames.put("Map", "RCTMap");
     sComponentNames.put("WebView", "RCTWebView");
     sComponentNames.put("Keyframes", "RCTKeyframes");
+    sComponentNames.put("ImpressionTrackingView", "RCTImpressionTrackingView");
   }
 
   /** @return the name of component in the Fabric environment */
-  static String getFabricComponentName(String componentName) {
+  public static String getFabricComponentName(String componentName) {
     String component = sComponentNames.get(componentName);
     return component != null ? component : componentName;
   }

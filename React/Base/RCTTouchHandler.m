@@ -8,10 +8,11 @@
 #import "RCTTouchHandler.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
+#import <UIKit/UIKit.h>
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
+#import "RCTEventDispatcherProtocol.h"
 #import "RCTLog.h"
 #import "RCTSurfaceView.h"
 #import "RCTTouchEvent.h"
@@ -25,7 +26,7 @@
 // TODO: this class behaves a lot like a module, and could be implemented as a
 // module if we were to assume that modules and RootViews had a 1:1 relationship
 @implementation RCTTouchHandler {
-  __weak RCTEventDispatcher *_eventDispatcher;
+  __weak id<RCTEventDispatcherProtocol> _eventDispatcher;
 
   /**
    * Arrays managed in parallel tracking native touch object along with the
@@ -39,6 +40,10 @@
 
   __weak UIView *_cachedRootView;
 
+  // See Touch.h and usage. This gives us a time-basis for a monotonic
+  // clock that acts like a timestamp of milliseconds elapsed since UNIX epoch.
+  NSTimeInterval _unixEpochBasisTime;
+
   uint16_t _coalescingKey;
 }
 
@@ -47,11 +52,14 @@
   RCTAssertParam(bridge);
 
   if ((self = [super initWithTarget:nil action:NULL])) {
-    _eventDispatcher = [bridge moduleForClass:[RCTEventDispatcher class]];
+    _eventDispatcher = bridge.eventDispatcher;
 
     _nativeTouches = [NSMutableOrderedSet new];
     _reactTouches = [NSMutableArray new];
     _touchViews = [NSMutableArray new];
+
+    // Get a UNIX epoch basis time:
+    _unixEpochBasisTime = [[NSDate date] timeIntervalSince1970] - [NSProcessInfo processInfo].systemUptime;
 
     // `cancelsTouchesInView` and `delaysTouches*` are needed in order to be used as a top level
     // event delegated recognizer. Otherwise, lower-level components not built
@@ -159,13 +167,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   reactTouch[@"pageY"] = @(RCTSanitizeNaNValue(rootViewLocation.y, @"touchEvent.pageY"));
   reactTouch[@"locationX"] = @(RCTSanitizeNaNValue(touchViewLocation.x, @"touchEvent.locationX"));
   reactTouch[@"locationY"] = @(RCTSanitizeNaNValue(touchViewLocation.y, @"touchEvent.locationY"));
-  reactTouch[@"timestamp"] = @(nativeTouch.timestamp * 1000); // in ms, for JS
+  reactTouch[@"timestamp"] = @((_unixEpochBasisTime + nativeTouch.timestamp) * 1000); // in ms, for JS
 
   // TODO: force for a 'normal' touch is usually 1.0;
   // should we expose a `normalTouchForce` constant somewhere (which would
   // have a value of `1.0 / nativeTouch.maximumPossibleForce`)?
   if (RCTForceTouchAvailable()) {
     reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
+  } else if (nativeTouch.type == UITouchTypePencil) {
+    reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
+    reactTouch[@"altitudeAngle"] = @(RCTZeroIfNaN(nativeTouch.altitudeAngle));
   }
 }
 

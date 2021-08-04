@@ -9,20 +9,21 @@
 
 #import "RCTConvert.h"
 #import "RCTDefines.h"
-
-#if __has_include("hermes.h") || __has_include(<hermes/hermes.h>)
-#import <hermes/hermes.h>
-#define HAS_BYTECODE_VERSION
-#endif
+#import "RCTLog.h"
 
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
 
+#if RCT_DEV_MENU
+static BOOL kRCTAllowPackagerAccess = YES;
+void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed)
+{
+  kRCTAllowPackagerAccess = allowed;
+}
+#endif
+
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
-// This option is no longer exposed in the dev menu UI.
-// It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
-static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload_LEGACY";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 
@@ -40,7 +41,6 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
 - (NSDictionary *)defaults
 {
   return @{
-    kRCTEnableLiveReloadKey : @NO,
     kRCTEnableDevKey : @YES,
     kRCTEnableMinificationKey : @NO,
   };
@@ -136,6 +136,12 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 
 - (NSString *)packagerServerHostPort
 {
+#if RCT_DEV_MENU
+  if (!kRCTAllowPackagerAccess) {
+    RCTLogInfo(@"Packager server access is disabled in this environment");
+    return nil;
+  }
+#endif
   NSString *location = [self jsLocation];
 #if RCT_DEV_MENU
   if ([location length] && ![RCTBundleURLProvider isPackagerRunning:location]) {
@@ -236,9 +242,8 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
                           runModule:(BOOL)runModule
 {
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
-#ifdef HAS_BYTECODE_VERSION
-  NSString *runtimeBytecodeVersion =
-      [NSString stringWithFormat:@"&runtimeBytecodeVersion=%u", facebook::hermes::HermesRuntime::getBytecodeVersion()];
+#ifdef HERMES_BYTECODE_VERSION
+  NSString *runtimeBytecodeVersion = [NSString stringWithFormat:@"&runtimeBytecodeVersion=%u", HERMES_BYTECODE_VERSION];
 #else
   NSString *runtimeBytecodeVersion = @"";
 #endif
@@ -281,11 +286,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableDevKey];
 }
 
-- (BOOL)enableLiveReload
-{
-  return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableLiveReloadKey];
-}
-
 - (BOOL)enableMinification
 {
   return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableMinificationKey];
@@ -299,11 +299,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 - (void)setEnableDev:(BOOL)enableDev
 {
   [self updateValue:@(enableDev) forKey:kRCTEnableDevKey];
-}
-
-- (void)setEnableLiveReload:(BOOL)enableLiveReload
-{
-  [self updateValue:@(enableLiveReload) forKey:kRCTEnableLiveReloadKey];
 }
 
 - (void)setJsLocation:(NSString *)jsLocation

@@ -22,10 +22,19 @@ class ViewComponentDescriptor
       : ConcreteComponentDescriptor<ViewShadowNode>(parameters) {}
 
   virtual SharedProps interpolateProps(
+      const PropsParserContext &context,
       float animationProgress,
       const SharedProps &props,
       const SharedProps &newProps) const override {
-    SharedProps interpolatedPropsShared = cloneProps(newProps, {});
+#ifdef ANDROID
+    // On Android only, the merged props should have the same RawProps as the
+    // final props struct
+    SharedProps interpolatedPropsShared =
+        (newProps != nullptr ? cloneProps(context, newProps, newProps->rawProps)
+                             : cloneProps(context, newProps, {}));
+#else
+    SharedProps interpolatedPropsShared = cloneProps(context, newProps, {});
+#endif
 
     interpolateViewProps(
         animationProgress, props, newProps, interpolatedPropsShared);

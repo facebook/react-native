@@ -74,8 +74,7 @@ NSError *tryAndReturnError(const std::function<void()> &func)
       func();
       return nil;
     } @catch (NSException *exception) {
-      NSString *message = [NSString stringWithFormat:@"Exception '%@' was thrown from JS thread", exception];
-      return RCTErrorWithMessage(message);
+      return RCTErrorWithNSException(exception);
     } @catch (id exception) {
       // This will catch any other ObjC exception, but no C++ exceptions
       return RCTErrorWithMessage(@"non-std ObjC Exception");

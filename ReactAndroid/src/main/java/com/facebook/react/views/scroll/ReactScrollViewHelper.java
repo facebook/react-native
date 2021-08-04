@@ -14,6 +14,9 @@ import android.widget.OverScroller;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /** Helper class that deals with emitting Scroll Events. */
 public class ReactScrollViewHelper {
@@ -22,6 +25,17 @@ public class ReactScrollViewHelper {
   public static final String OVER_SCROLL_ALWAYS = "always";
   public static final String AUTO = "auto";
   public static final String OVER_SCROLL_NEVER = "never";
+
+  public interface ScrollListener {
+    void onScroll(
+        ViewGroup scrollView, ScrollEventType scrollEventType, float xVelocity, float yVelocity);
+
+    void onLayout(ViewGroup scrollView);
+  }
+
+  // Support global native listeners for scroll events
+  private static Set<ScrollListener> sScrollListeners =
+      Collections.newSetFromMap(new WeakHashMap<ScrollListener, Boolean>());
 
   // If all else fails, this is the hardcoded value in OverScroller.java, in AOSP.
   // The default is defined here (as of this diff):
@@ -64,10 +78,16 @@ public class ReactScrollViewHelper {
       return;
     }
 
+    for (ScrollListener scrollListener : sScrollListeners) {
+      scrollListener.onScroll(scrollView, scrollEventType, xVelocity, yVelocity);
+    }
+
     ReactContext reactContext = (ReactContext) scrollView.getContext();
+    int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
     UIManagerHelper.getEventDispatcherForReactTag(reactContext, scrollView.getId())
         .dispatchEvent(
             ScrollEvent.obtain(
+                surfaceId,
                 scrollView.getId(),
                 scrollEventType,
                 scrollView.getScrollX(),
@@ -78,6 +98,13 @@ public class ReactScrollViewHelper {
                 contentView.getHeight(),
                 scrollView.getWidth(),
                 scrollView.getHeight()));
+  }
+
+  /** This is only for Java listeners. onLayout events emitted to JS are handled elsewhere. */
+  public static void emitLayoutEvent(ViewGroup scrollView) {
+    for (ScrollListener scrollListener : sScrollListeners) {
+      scrollListener.onLayout(scrollView);
+    }
   }
 
   public static int parseOverScrollMode(String jsOverScrollMode) {
@@ -129,5 +156,26 @@ public class ReactScrollViewHelper {
     public void startScroll(int startX, int startY, int dx, int dy, int duration) {
       mScrollAnimationDuration = duration;
     }
+  }
+
+  /**
+   * Adds a scroll listener.
+   *
+   * <p>Note that you must keep a reference to this scroll listener because this class only keeps a
+   * weak reference to it (to prevent memory leaks). This means that code like <code>
+   * addScrollListener(new ScrollListener() {...})</code> won't work, you need to do this instead:
+   * <code>
+   *   mScrollListener = new ScrollListener() {...};
+   *   ReactScrollViewHelper.addScrollListener(mScrollListener);
+   * </code> instead.
+   *
+   * @param listener
+   */
+  public static void addScrollListener(ScrollListener listener) {
+    sScrollListeners.add(listener);
+  }
+
+  public static void removeScrollListener(ScrollListener listener) {
+    sScrollListeners.remove(listener);
   }
 }

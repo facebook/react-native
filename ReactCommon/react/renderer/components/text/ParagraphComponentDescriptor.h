@@ -10,6 +10,7 @@
 #include "ParagraphShadowNode.h"
 
 #include <react/config/ReactNativeConfig.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
@@ -32,10 +33,11 @@ class ParagraphComponentDescriptor final
   }
 
   virtual SharedProps interpolateProps(
+      const PropsParserContext &context,
       float animationProgress,
       const SharedProps &props,
       const SharedProps &newProps) const override {
-    SharedProps interpolatedPropsShared = cloneProps(newProps, {});
+    SharedProps interpolatedPropsShared = cloneProps(context, newProps, {});
 
     interpolateViewProps(
         animationProgress, props, newProps, interpolatedPropsShared);
@@ -44,22 +46,17 @@ class ParagraphComponentDescriptor final
   };
 
  protected:
-  void adopt(UnsharedShadowNode shadowNode) const override {
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    assert(std::dynamic_pointer_cast<ParagraphShadowNode>(shadowNode));
+    react_native_assert(
+        std::dynamic_pointer_cast<ParagraphShadowNode>(shadowNode));
     auto paragraphShadowNode =
         std::static_pointer_cast<ParagraphShadowNode>(shadowNode);
 
     // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.
     paragraphShadowNode->setTextLayoutManager(textLayoutManager_);
-
-    paragraphShadowNode->dirtyLayout();
-
-    // All `ParagraphShadowNode`s must have leaf Yoga nodes with properly
-    // setup measure function.
-    paragraphShadowNode->enableMeasurement();
   }
 
  private:

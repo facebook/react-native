@@ -8,12 +8,10 @@
  * @format
  */
 
-'use strict';
-
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
-type DisplayMetricsAndroid = {|
+export type DisplayMetricsAndroid = {|
   width: number,
   height: number,
   scale: number,

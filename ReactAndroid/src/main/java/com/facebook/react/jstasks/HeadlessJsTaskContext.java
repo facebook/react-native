@@ -107,7 +107,7 @@ public class HeadlessJsTaskContext {
     }
     mActiveTasks.add(taskId);
     mActiveTaskConfigs.put(taskId, new HeadlessJsTaskConfig(taskConfig));
-    if (reactContext.hasActiveCatalystInstance()) {
+    if (reactContext.hasActiveReactInstance()) {
       reactContext
           .getJSModule(AppRegistry.class)
           .startHeadlessTask(taskId, taskConfig.getTaskKey(), taskConfig.getData());

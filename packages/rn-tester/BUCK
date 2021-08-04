@@ -1,4 +1,6 @@
-load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:metro_defs.bzl", "rn_library")
+load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 
 yarn_workspace(
     name = "yarn-workspace",
@@ -17,6 +19,43 @@ yarn_workspace(
             "**/.*/.*",
             "**/*.xcodeproj/**",
             "**/*.xcworkspace/**",
+        ],
+    ),
+    visibility = ["PUBLIC"],
+)
+
+rn_library(
+    name = "rn-tester",
+    srcs = glob(
+        [
+            "js/**/*",
+            "NativeModuleExample/**/*",
+            "RCTTest/**/*",
+        ],
+        exclude = [
+            "**/__*__/**",
+            "**/*.md",
+            "js/examples/WebSocket/http_test_server.js",
+            "js/examples/WebSocket/websocket_test_server.js",
+        ],
+    ),
+    labels = ["supermodule:xplat/default/public.react_native.playground"],
+    skip_processors = True,
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js:node_modules__nullthrows",
+        "//xplat/js/RKJSModules/Libraries/Core:Core",
+        "//xplat/js/RKJSModules/vendor/react:react",
+        "//xplat/js/react-native-github:react-native",
+        "//xplat/js/react-native-github/packages/assets:assets",
+    ],
+)
+
+fb_native.filegroup(
+    name = "nativecomponent-srcs",
+    srcs = glob(
+        [
+            "**/*NativeComponent.js",
         ],
     ),
     visibility = ["PUBLIC"],
