@@ -166,6 +166,16 @@ class FlatListExample extends React.PureComponent<Props, State> {
                 this._setBooleanValue('debug'),
               )}
               {renderSmallSwitchOption(
+                'onPress Disabled',
+                this.state.onPressDisabled,
+                this._setBooleanValue('onPressDisabled'),
+              )}
+              {renderSmallSwitchOption(
+                'Text Selectable',
+                this.state.textSelectable,
+                this._setBooleanValue('textSelectable'),
+              )}
+              {renderSmallSwitchOption(
                 'Use FlatListItemComponent',
                 this.state.useFlatListItemComponent,
                 this._setBooleanValue('useFlatListItemComponent'),
