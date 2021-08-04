@@ -153,7 +153,9 @@ export class URL {
     }
 
     let queryStringStart = this._url.indexOf('?');
-    if (queryStringStart < 0) { return; }
+    if (queryStringStart < 0) {
+      return;
+    }
     let queryString = this._url.substring(queryStringStart + 1);
 
     this._url = this._url.substr(0, queryStringStart);
