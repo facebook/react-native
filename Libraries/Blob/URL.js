@@ -128,7 +128,7 @@ export class URL {
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {
       this._url = url;
-      if (!this._url.endsWith('/')) {
+      if (!this._url.endsWith('/') && url.indexOf('?') < 0) {
         this._url += '/';
       }
     } else {
@@ -151,6 +151,19 @@ export class URL {
       }
       this._url = `${baseUrl}${url}`;
     }
+
+    let queryStringStart = this._url.indexOf('?');
+    if (queryStringStart < 0) { return; }
+    let queryString = this._url.substring(queryStringStart + 1);
+
+    this._url = this._url.substr(0, queryStringStart);
+    let searchParams = queryString.split('&').reduce((agg, pair) => {
+      let [key, value] = pair.split('=');
+      agg[key] = value;
+      return agg;
+    }, {});
+
+    this._searchParamsInstance = new URLSearchParams(searchParams);
   }
 
   get hash() {
