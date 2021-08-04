@@ -17,7 +17,6 @@ load(
     "RCT_IMAGE_DATA_DECODER_SOCKET",
     "RCT_IMAGE_URL_LOADER_SOCKET",
     "RCT_URL_REQUEST_HANDLER_SOCKET",
-    "YOGA_APPLE_TARGET",
     "YOGA_CXX_TARGET",
     "react_fabric_component_plugin_provider",
     "react_module_plugin_providers",
@@ -1384,43 +1383,5 @@ rn_xplat_cxx_library2(
     visibility = [
         "//fbobjc/Libraries/FBReactKit:RCTMapView",
         "//fbobjc/VendorLib/react-native-maps:react-native-maps",
-    ],
-)
-
-rn_apple_library(
-    name = "RCTTestApple",
-    srcs = glob([
-        "packages/rn-tester/RCTTest/**/*.m",
-        "packages/rn-tester/RCTTest/**/*.mm",
-    ]),
-    headers = glob([
-        "packages/rn-tester/RCTTest/**/*.h",
-    ]),
-    exported_headers = {
-        "RCTTest/RCTTestRunner.h": "packages/rn-tester/RCTTest/RCTTestRunner.h",
-    },
-    autoglob = False,
-    frameworks = [
-        "XCTest",
-    ],
-    header_path_prefix = "React",
-    labels = [
-        "disable_plugins_only_validation",
-    ],
-    plugins = react_module_plugin_providers(
-        name = "TestModule",
-        native_class_func = "RCTTestModuleCls",
-    ),
-    plugins_header = "FBRCTTestPlugins.h",
-    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
-        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
-    ],
-    visibility = ["PUBLIC"],
-    deps = [
-        "//xplat/js/react-native-github:RCTLinkingApple",
-        "//xplat/js/react-native-github:RCTPushNotificationApple",
-        "//xplat/js/react-native-github:ReactInternalApple",
-        "//xplat/js/react-native-github/React/CoreModules:CoreModulesApple",
-        YOGA_APPLE_TARGET,
     ],
 )

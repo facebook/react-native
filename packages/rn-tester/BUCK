@@ -7,7 +7,16 @@ load("//tools/build_defs/apple:fb_apple_test.bzl", "fb_apple_test")
 load("//tools/build_defs/apple:fb_js_dep.bzl", "rn_js_bundle_dep")
 load("//tools/build_defs/apple:flag_defs.bzl", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode")
 load("//tools/build_defs/oss:metro_defs.bzl", "rn_library")
-load("//tools/build_defs/oss:rn_defs.bzl", "APPLE", "make_resource_glob", "rn_xplat_cxx_library2")
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "APPLE",
+    "YOGA_APPLE_TARGET",
+    "make_resource_glob",
+    "react_module_plugin_providers",
+    "rn_apple_library",
+    "rn_extra_build_flags",
+    "rn_xplat_cxx_library2",
+)
 load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 
 yarn_workspace(
@@ -116,7 +125,7 @@ fb_apple_test(
     ],
     deps = REACT_CORE_OSS_DEPS + [
         "//xplat/js/react-native-github:RCTCxxBridgeApple",
-        "//xplat/js/react-native-github:RCTTestApple",
+        ":RCTTestApple",
         ":RNTesterUnitTestsResourcesApple",
         "//fbobjc/VendorLib/OCMock:OCMock",
     ],
@@ -149,7 +158,7 @@ fb_apple_test(
         "//fbobjc/Libraries/FBReactKit:workspace",
     ],
     deps = REACT_CORE_OSS_DEPS + [
-        "//xplat/js/react-native-github:RCTTestApple",
+        ":RCTTestApple",
         ":RNTesterIntegrationTestsResourcesApple",
         ":RNTesterResourcesApple",
         "//xplat/js/react-native-github:RCTCxxBridgeApple",
@@ -220,5 +229,43 @@ fb_xplat_resource(
     platforms = APPLE,
     visibility = [
         "//fbobjc/Libraries/FBReactKit:",
+    ],
+)
+
+rn_apple_library(
+    name = "RCTTestApple",
+    srcs = glob([
+        "RCTTest/**/*.m",
+        "RCTTest/**/*.mm",
+    ]),
+    headers = glob([
+        "RCTTest/**/*.h",
+    ]),
+    exported_headers = {
+        "RCTTest/RCTTestRunner.h": "RCTTest/RCTTestRunner.h",
+    },
+    autoglob = False,
+    frameworks = [
+        "XCTest",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "disable_plugins_only_validation",
+    ],
+    plugins = react_module_plugin_providers(
+        name = "TestModule",
+        native_class_func = "RCTTestModuleCls",
+    ),
+    plugins_header = "FBRCTTestPlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+        "//xplat/js/react-native-github/React/CoreModules:CoreModulesApple",
+        YOGA_APPLE_TARGET,
     ],
 )
