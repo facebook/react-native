@@ -7,6 +7,7 @@
 
 #include <folly/dynamic.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <unordered_map>
 
 namespace facebook {
@@ -16,6 +17,7 @@ class LegacyViewManagerInteropViewProps final : public ViewProps {
  public:
   LegacyViewManagerInteropViewProps() = default;
   LegacyViewManagerInteropViewProps(
+      const PropsParserContext &context,
       const LegacyViewManagerInteropViewProps &sourceProps,
       const RawProps &rawProps);
 

@@ -24,6 +24,7 @@ void SurfaceManager::startSurface(
   {
     std::unique_lock<better::shared_mutex> lock(mutex_);
     auto surfaceHandler = SurfaceHandler{moduleName, surfaceId};
+    surfaceHandler.setContextContainer(scheduler_.getContextContainer());
     registry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 

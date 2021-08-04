@@ -15,6 +15,12 @@ class StubQueue {
     callbackQueue_.push(func);
   }
 
+  void flush() {
+    while (!callbackQueue_.empty()) {
+      tick();
+    }
+  }
+
   void tick() {
     if (!callbackQueue_.empty()) {
       auto callback = callbackQueue_.front();

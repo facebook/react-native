@@ -82,7 +82,7 @@ RCT_EXPORT_MODULE()
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(voiceVoiceOverStatusDidChange:)
-                                                 name:UIAccessibilityVoiceOverStatusChanged
+                                                 name:UIAccessibilityVoiceOverStatusDidChangeNotification
                                                object:nil];
 
     self.contentSizeCategory = RCTSharedApplication().preferredContentSizeCategory;

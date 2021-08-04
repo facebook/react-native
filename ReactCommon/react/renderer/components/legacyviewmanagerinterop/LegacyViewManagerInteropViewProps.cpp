@@ -12,9 +12,10 @@ namespace facebook {
 namespace react {
 
 LegacyViewManagerInteropViewProps::LegacyViewManagerInteropViewProps(
+    const PropsParserContext &context,
     const LegacyViewManagerInteropViewProps &sourceProps,
     const RawProps &rawProps)
-    : ViewProps(sourceProps, rawProps),
+    : ViewProps(context, sourceProps, rawProps),
       otherProps(
           mergeDynamicProps(sourceProps.otherProps, (folly::dynamic)rawProps)) {
 }

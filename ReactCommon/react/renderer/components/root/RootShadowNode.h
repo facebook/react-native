@@ -12,6 +12,7 @@
 #include <react/renderer/components/root/RootProps.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
+#include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
@@ -51,6 +52,7 @@ class RootShadowNode final
    * Clones the node with given `layoutConstraints` and `layoutContext`.
    */
   RootShadowNode::Unshared clone(
+      PropsParserContext const &propsParserContext,
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext) const;
 

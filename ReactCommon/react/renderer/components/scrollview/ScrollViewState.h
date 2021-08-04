@@ -25,6 +25,7 @@ class ScrollViewState final {
  public:
   Point contentOffset;
   Rect contentBoundingRect;
+  int scrollAwayPaddingTop;
 
   /*
    * Returns size of scrollable area.
@@ -37,11 +38,13 @@ class ScrollViewState final {
       : contentOffset(
             {(Float)data["contentOffsetLeft"].getDouble(),
              (Float)data["contentOffsetTop"].getDouble()}),
-        contentBoundingRect({}){};
+        contentBoundingRect({}),
+        scrollAwayPaddingTop((Float)data["scrollAwayPaddingTop"].getDouble()){};
 
   folly::dynamic getDynamic() const {
     return folly::dynamic::object("contentOffsetLeft", contentOffset.x)(
-        "contentOffsetTop", contentOffset.y);
+        "contentOffsetTop", contentOffset.y)(
+        "scrollAwayPaddingTop", scrollAwayPaddingTop);
   };
   MapBuffer getMapBuffer() const {
     return MapBufferBuilder::EMPTY();

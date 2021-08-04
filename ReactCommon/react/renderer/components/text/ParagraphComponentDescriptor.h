@@ -33,10 +33,11 @@ class ParagraphComponentDescriptor final
   }
 
   virtual SharedProps interpolateProps(
+      const PropsParserContext &context,
       float animationProgress,
       const SharedProps &props,
       const SharedProps &newProps) const override {
-    SharedProps interpolatedPropsShared = cloneProps(newProps, {});
+    SharedProps interpolatedPropsShared = cloneProps(context, newProps, {});
 
     interpolateViewProps(
         animationProgress, props, newProps, interpolatedPropsShared);

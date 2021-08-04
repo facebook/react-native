@@ -40,7 +40,7 @@
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #ifndef RCT_USE_HERMES
-#if __has_include(<hermes/hermes.h>)
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #define RCT_USE_HERMES 1
 #else
 #define RCT_USE_HERMES 0
@@ -48,7 +48,7 @@
 #endif
 
 #if RCT_USE_HERMES
-#import <reacthermes/HermesExecutorFactory.h">
+#import <reacthermes/HermesExecutorFactory.h>
 #else
 #import "JSCExecutorFactory.h"
 #endif
@@ -194,7 +194,6 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge;
 - (void)partialBatchDidFlush;
 - (void)batchDidComplete;
-- (void)forceGarbageCollection;
 
 @end
 
@@ -236,6 +235,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   RCTModuleRegistry *_objCModuleRegistry;
   RCTViewRegistry *_viewRegistry_DEPRECATED;
+  RCTBundleManager *_bundleManager;
+  RCTCallableJSModules *_callableJSModules;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
@@ -256,11 +257,34 @@ struct RCTInstanceCallback : public InstanceCallback {
    * Attach the RCTViewRegistry to this TurboModule, which allows this TurboModule
    * To query a React component's UIView, given its reactTag.
    *
-   * Usage: In the NativeModule @implementation, include:
+   * Usage: In the TurboModule @implementation, include:
    *   `@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED`
    */
   if ([bridgeModule respondsToSelector:@selector(setViewRegistry_DEPRECATED:)]) {
     bridgeModule.viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+  }
+
+  /**
+   * Attach the RCTBundleManager to this TurboModule, which allows this TurboModule to
+   * read from/write to the app's bundle URL.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize bundleManager = _bundleManager`
+   */
+  if ([bridgeModule respondsToSelector:@selector(setBundleManager:)]) {
+    bridgeModule.bundleManager = _bundleManager;
+  }
+
+  /**
+   * Attach the RCTCallableJSModules to this TurboModule, which allows this TurboModule
+   * to call JS Module methods.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize callableJSModules = _callableJSModules`
+   */
+
+  if ([bridgeModule respondsToSelector:@selector(setCallableJSModules:)]) {
+    bridgeModule.callableJSModules = _callableJSModules;
   }
 }
 
@@ -300,8 +324,12 @@ struct RCTInstanceCallback : public InstanceCallback {
     _moduleDataByID = [NSMutableArray new];
     _objCModuleRegistry = [RCTModuleRegistry new];
     [_objCModuleRegistry setBridge:self];
+    _bundleManager = [RCTBundleManager new];
+    [_bundleManager setBridge:self];
     _viewRegistry_DEPRECATED = [RCTViewRegistry new];
     [_viewRegistry_DEPRECATED setBridge:self];
+    _callableJSModules = [RCTCallableJSModules new];
+    [_callableJSModules setBridge:self];
 
     [RCTBridge setCurrentBridge:self];
 
@@ -352,11 +380,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 }
 
 - (void)handleMemoryWarning
-{
-  [self forceGarbageCollection];
-}
-
-- (void)forceGarbageCollection
 {
   // We only want to run garbage collector when the loading is finished
   // and the instance is valid.
@@ -481,6 +504,14 @@ struct RCTInstanceCallback : public InstanceCallback {
   // Load the source asynchronously, then store it for later execution.
   dispatch_group_enter(prepareBridge);
   __block NSData *sourceCode;
+
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+  {
+    id<RCTDevLoadingViewProtocol> loadingView = [self moduleForName:@"DevLoadingView" lazilyLoadIfNecessary:YES];
+    [loadingView showWithURL:self.bundleURL];
+  }
+#endif
+
   [self
       loadSource:^(NSError *error, RCTSource *source) {
         if (error) {
@@ -778,7 +809,9 @@ struct RCTInstanceCallback : public InstanceCallback {
     moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
                                                      bridge:self
                                              moduleRegistry:_objCModuleRegistry
-                                    viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
+                                    viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
+                                              bundleManager:_bundleManager
+                                          callableJSModules:_callableJSModules];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -853,7 +886,9 @@ struct RCTInstanceCallback : public InstanceCallback {
     RCTModuleData *moduleData = [[RCTModuleData alloc] initWithModuleInstance:module
                                                                        bridge:self
                                                                moduleRegistry:_objCModuleRegistry
-                                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
+                                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
+                                                                bundleManager:_bundleManager
+                                                            callableJSModules:_callableJSModules];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -907,7 +942,9 @@ struct RCTInstanceCallback : public InstanceCallback {
       moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
                                                        bridge:self
                                                moduleRegistry:_objCModuleRegistry
-                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
+                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
+                                                bundleManager:_bundleManager
+                                            callableJSModules:_callableJSModules];
       BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
       _moduleDataByName[moduleName] = moduleData;

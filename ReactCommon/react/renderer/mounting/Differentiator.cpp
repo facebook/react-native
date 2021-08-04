@@ -6,7 +6,6 @@
  */
 
 #include "Differentiator.h"
-#include "DifferentiatorFlatteningClassic.h"
 
 #include <better/map.h>
 #include <better/small_vector.h>
@@ -170,8 +169,8 @@ class TinyMap final {
   }
 
   better::small_vector<Pair, DefaultSize> vector_;
-  int numErased_{0};
-  int erasedAtFront_{0};
+  size_t numErased_{0};
+  size_t erasedAtFront_{0};
 };
 
 /*
@@ -1658,13 +1657,7 @@ ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
 
 ShadowViewMutation::List calculateShadowViewMutations(
     ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode,
-    bool useNewDiffer) {
-  if (!useNewDiffer) {
-    return DifferOld::calculateShadowViewMutations(
-        oldRootShadowNode, newRootShadowNode);
-  }
-
+    ShadowNode const &newRootShadowNode) {
   SystraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.

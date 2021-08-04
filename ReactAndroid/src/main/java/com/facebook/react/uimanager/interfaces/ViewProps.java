@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import android.graphics.Color;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -258,10 +259,14 @@ public class ViewProps {
         // Ignore if explicitly set to default opacity.
         return map.isNull(OPACITY) || map.getDouble(OPACITY) == 1d;
       case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
-        if (map.hasKey(BACKGROUND_COLOR)
-            && !map.isNull(BACKGROUND_COLOR)
-            && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
-          return false;
+        if (map.hasKey(BACKGROUND_COLOR)) {
+          ReadableType valueType = map.getType(BACKGROUND_COLOR);
+          if (valueType == ReadableType.Number
+              && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
+            return false;
+          } else if (valueType != ReadableType.Null) {
+            return false;
+          }
         }
         if (map.hasKey(BORDER_WIDTH)
             && !map.isNull(BORDER_WIDTH)

@@ -11,13 +11,14 @@
 
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/element/ComponentBuilder.h>
 #include <react/renderer/element/Element.h>
-#include <react/renderer/element/testUtils.h>
-
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/mounting/ShadowTreeDelegate.h>
+
+#include <react/renderer/element/testUtils.h>
 
 using namespace facebook::react;
 
@@ -89,6 +90,8 @@ TEST(StateReconciliationTest, testStateReconciliation) {
         });
   // clang-format on
 
+  ContextContainer contextContainer{};
+
   auto shadowNode = builder.build(element);
 
   auto rootShadowNodeState1 = shadowNode->ShadowNode::clone({});
@@ -102,7 +105,7 @@ TEST(StateReconciliationTest, testStateReconciliation) {
       LayoutConstraints{},
       LayoutContext{},
       shadowTreeDelegate,
-      true};
+      contextContainer};
 
   shadowTree.commit(
       [&](RootShadowNode const &oldRootShadowNode) {

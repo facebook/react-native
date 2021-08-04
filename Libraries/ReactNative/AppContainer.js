@@ -19,6 +19,7 @@ import * as React from 'react';
 type Props = $ReadOnly<{|
   children?: React.Node,
   fabric?: boolean,
+  useConcurrentRoot?: boolean,
   rootTag: number | RootTag,
   initialProps?: {...},
   showArchitectureIndicator?: boolean,
@@ -130,12 +131,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-if (__DEV__) {
-  if (!global.__RCTProfileIsProfiling) {
-    const LogBox = require('../LogBox/LogBox');
-    LogBox.install();
-  }
-}
 
 module.exports = AppContainer;

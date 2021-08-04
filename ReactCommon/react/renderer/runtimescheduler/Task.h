@@ -31,7 +31,7 @@ struct Task final {
   better::optional<jsi::Function> callback;
   RuntimeSchedulerClock::time_point expirationTime;
 
-  jsi::Value execute(jsi::Runtime &runtime) const;
+  jsi::Value execute(jsi::Runtime &runtime);
 };
 
 class TaskPriorityComparer {

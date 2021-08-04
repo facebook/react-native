@@ -17,6 +17,7 @@
 #import <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #import <react/renderer/componentregistry/componentNameByReactViewName.h>
 #import <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
+#import <react/renderer/core/PropsParserContext.h>
 #import <react/renderer/core/ReactPrimitives.h>
 
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER

@@ -8,42 +8,45 @@
 #pragma once
 
 #include <better/map.h>
-#include <folly/dynamic.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/graphics/PlatformColorParser.h>
 
 namespace facebook {
 namespace react {
 
 #pragma mark - Color
 
-inline void fromRawValue(const RawValue &value, SharedColor &result) {
-  float red = 0;
-  float green = 0;
-  float blue = 0;
-  float alpha = 0;
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    SharedColor &result) {
+  ColorComponents colorComponents = {0, 0, 0, 0};
 
   if (value.hasType<int>()) {
     auto argb = (int64_t)value;
     auto ratio = 255.f;
-    alpha = ((argb >> 24) & 0xFF) / ratio;
-    red = ((argb >> 16) & 0xFF) / ratio;
-    green = ((argb >> 8) & 0xFF) / ratio;
-    blue = (argb & 0xFF) / ratio;
+    colorComponents.alpha = ((argb >> 24) & 0xFF) / ratio;
+    colorComponents.red = ((argb >> 16) & 0xFF) / ratio;
+    colorComponents.green = ((argb >> 8) & 0xFF) / ratio;
+    colorComponents.blue = (argb & 0xFF) / ratio;
   } else if (value.hasType<std::vector<float>>()) {
     auto items = (std::vector<float>)value;
     auto length = items.size();
     react_native_assert(length == 3 || length == 4);
-    red = items.at(0);
-    green = items.at(1);
-    blue = items.at(2);
-    alpha = length == 4 ? items.at(3) : 1.0f;
+    colorComponents.red = items.at(0);
+    colorComponents.green = items.at(1);
+    colorComponents.blue = items.at(2);
+    colorComponents.alpha = length == 4 ? items.at(3) : 1.0f;
+  } else {
+    colorComponents = parsePlatformColor(context, value);
   }
 
-  result = colorFromComponents({red, green, blue, alpha});
+  result = colorFromComponents(colorComponents);
 }
 
 #ifdef ANDROID
@@ -81,7 +84,10 @@ inline std::string toString(const SharedColor &value) {
 
 #pragma mark - Geometry
 
-inline void fromRawValue(const RawValue &value, Point &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    Point &result) {
   if (value.hasType<better::map<std::string, Float>>()) {
     auto map = (better::map<std::string, Float>)value;
     for (const auto &pair : map) {
@@ -109,7 +115,10 @@ inline void fromRawValue(const RawValue &value, Point &result) {
   }
 }
 
-inline void fromRawValue(const RawValue &value, Size &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    Size &result) {
   if (value.hasType<better::map<std::string, Float>>()) {
     auto map = (better::map<std::string, Float>)value;
     for (const auto &pair : map) {
@@ -140,7 +149,10 @@ inline void fromRawValue(const RawValue &value, Size &result) {
   }
 }
 
-inline void fromRawValue(const RawValue &value, EdgeInsets &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    EdgeInsets &result) {
   if (value.hasType<Float>()) {
     auto number = (Float)value;
     result = {number, number, number, number};
@@ -180,7 +192,10 @@ inline void fromRawValue(const RawValue &value, EdgeInsets &result) {
   }
 }
 
-inline void fromRawValue(const RawValue &value, CornerInsets &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    CornerInsets &result) {
   if (value.hasType<Float>()) {
     auto number = (Float)value;
     result = {number, number, number, number};

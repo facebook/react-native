@@ -178,7 +178,7 @@ static void updateMountedFlag(
     return;
   }
 
-  int index;
+  size_t index;
 
   // Stage 1: Mount and unmount "updated" children.
   for (index = 0; index < oldChildren.size() && index < newChildren.size();
@@ -202,7 +202,7 @@ static void updateMountedFlag(
     updateMountedFlag(oldChild->getChildren(), newChild->getChildren());
   }
 
-  int lastIndexAfterFirstStage = index;
+  size_t lastIndexAfterFirstStage = index;
 
   // State 2: Mount new children.
   for (index = lastIndexAfterFirstStage; index < newChildren.size(); index++) {
@@ -224,7 +224,7 @@ ShadowTree::ShadowTree(
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext,
     ShadowTreeDelegate const &delegate,
-    bool enableNewDiffer)
+    ContextContainer const &contextContainer)
     : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
@@ -235,7 +235,10 @@ ShadowTree::ShadowTree(
               EventDispatcher::Shared{}, nullptr, nullptr});
 
   const auto props = std::make_shared<const RootProps>(
-      *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
+      PropsParserContext{surfaceId, contextContainer},
+      *RootShadowNode::defaultSharedProps(),
+      layoutConstraints,
+      layoutContext);
 
   auto const fragment =
       ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter};
@@ -253,7 +256,6 @@ ShadowTree::ShadowTree(
 
   mountingCoordinator_ =
       std::make_shared<MountingCoordinator const>(currentRevision_);
-  mountingCoordinator_->setEnableNewDiffer(enableNewDiffer);
 }
 
 ShadowTree::~ShadowTree() {

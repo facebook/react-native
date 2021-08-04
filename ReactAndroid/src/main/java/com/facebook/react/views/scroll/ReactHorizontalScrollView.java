@@ -60,6 +60,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private static boolean sTriedToGetScrollerField = false;
   private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
   private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
+  private static final String SCROLL_AWAY_PADDING_TOP = "scrollAwayPaddingTop";
   private int mLayoutDirection;
 
   private int mScrollXAfterMeasure = NO_SCROLL_POSITION;
@@ -415,6 +416,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       if (mRemoveClippedSubviews) {
         updateClippingRect();
       }
+
+      // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
+      // when JS processes the scroll event, the C++ ShadowNode representation will have a
+      // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
+      // the error as much as possible.
+      updateStateOnScroll();
 
       ReactScrollViewHelper.emitScrollEvent(
           this,
@@ -1214,6 +1221,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
             WritableMap map = new WritableNativeMap();
             map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(fabricScrollX));
             map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(scrollY));
+            map.putDouble(SCROLL_AWAY_PADDING_TOP, 0);
             return map;
           }
         });

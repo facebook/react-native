@@ -549,12 +549,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mJavaScriptContextHolder;
   }
 
-  @Override
-  public RuntimeExecutor getRuntimeExecutor() {
-    return getRuntimeExecutor(ReactFeatureFlags.enableRuntimeExecutorFlushing());
-  }
-
-  public native RuntimeExecutor getRuntimeExecutor(boolean shouldFlush);
+  public native RuntimeExecutor getRuntimeExecutor();
 
   @Override
   public void addJSIModules(List<JSIModuleSpec> jsiModules) {

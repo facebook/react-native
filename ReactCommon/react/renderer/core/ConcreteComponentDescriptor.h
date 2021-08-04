@@ -14,6 +14,7 @@
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/core/State.h>
@@ -103,6 +104,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   virtual SharedProps cloneProps(
+      const PropsParserContext &context,
       const SharedProps &props,
       const RawProps &rawProps) const override {
     react_native_assert(
@@ -119,12 +121,13 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       return ShadowNodeT::defaultSharedProps();
     }
 
-    rawProps.parse(rawPropsParser_);
+    rawProps.parse(rawPropsParser_, context);
 
-    return ShadowNodeT::Props(rawProps, props);
+    return ShadowNodeT::Props(context, rawProps, props);
   };
 
   virtual SharedProps interpolateProps(
+      const PropsParserContext &context,
       float animationProgress,
       const SharedProps &props,
       const SharedProps &newProps) const override {
@@ -133,11 +136,11 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     // On Android only, the merged props should have the same RawProps as the
     // final props struct
     if (newProps != nullptr) {
-      return cloneProps(newProps, newProps->rawProps);
+      return cloneProps(context, newProps, newProps->rawProps);
     }
 #endif
 
-    return cloneProps(newProps, {});
+    return cloneProps(context, newProps, {});
   };
 
   virtual State::Shared createInitialState(

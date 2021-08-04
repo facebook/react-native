@@ -14,8 +14,9 @@ import android.widget.OverScroller;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /** Helper class that deals with emitting Scroll Events. */
 public class ReactScrollViewHelper {
@@ -33,7 +34,8 @@ public class ReactScrollViewHelper {
   }
 
   // Support global native listeners for scroll events
-  private static List<ScrollListener> sScrollListeners = new ArrayList<>();
+  private static Set<ScrollListener> sScrollListeners =
+      Collections.newSetFromMap(new WeakHashMap<ScrollListener, Boolean>());
 
   // If all else fails, this is the hardcoded value in OverScroller.java, in AOSP.
   // The default is defined here (as of this diff):
@@ -156,6 +158,19 @@ public class ReactScrollViewHelper {
     }
   }
 
+  /**
+   * Adds a scroll listener.
+   *
+   * <p>Note that you must keep a reference to this scroll listener because this class only keeps a
+   * weak reference to it (to prevent memory leaks). This means that code like <code>
+   * addScrollListener(new ScrollListener() {...})</code> won't work, you need to do this instead:
+   * <code>
+   *   mScrollListener = new ScrollListener() {...};
+   *   ReactScrollViewHelper.addScrollListener(mScrollListener);
+   * </code> instead.
+   *
+   * @param listener
+   */
   public static void addScrollListener(ScrollListener listener) {
     sScrollListeners.add(listener);
   }

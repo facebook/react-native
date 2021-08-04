@@ -13,10 +13,12 @@ namespace react {
 RawEvent::RawEvent(
     std::string type,
     ValueFactory payloadFactory,
-    SharedEventTarget eventTarget)
+    SharedEventTarget eventTarget,
+    Category category)
     : type(std::move(type)),
       payloadFactory(std::move(payloadFactory)),
-      eventTarget(std::move(eventTarget)) {}
+      eventTarget(std::move(eventTarget)),
+      category(category) {}
 
 } // namespace react
 } // namespace facebook

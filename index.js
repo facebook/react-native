@@ -23,8 +23,6 @@ import typeof InputAccessoryView from './Libraries/Components/TextInput/InputAcc
 import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/KeyboardAvoidingView';
 import typeof MaskedViewIOS from './Libraries/Components/MaskedView/MaskedViewIOS';
 import typeof Modal from './Libraries/Modal/Modal';
-import typeof Picker from './Libraries/Components/Picker/Picker';
-import typeof PickerIOS from './Libraries/Components/Picker/PickerIOS';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof ProgressViewIOS from './Libraries/Components/ProgressViewIOS/ProgressViewIOS';
@@ -152,7 +150,8 @@ module.exports = {
     return require('./Libraries/Components/TextInput/InputAccessoryView');
   },
   get KeyboardAvoidingView(): KeyboardAvoidingView {
-    return require('./Libraries/Components/Keyboard/KeyboardAvoidingView');
+    return require('./Libraries/Components/Keyboard/KeyboardAvoidingView')
+      .default;
   },
   get MaskedViewIOS(): MaskedViewIOS {
     warnOnce(
@@ -165,25 +164,6 @@ module.exports = {
   },
   get Modal(): Modal {
     return require('./Libraries/Modal/Modal');
-  },
-  get Picker(): Picker {
-    warnOnce(
-      'picker-moved',
-      'Picker has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
-        'See https://github.com/react-native-picker/picker',
-    );
-    return require('./Libraries/Components/Picker/Picker');
-  },
-  // $FlowFixMe[value-as-type]
-  get PickerIOS(): PickerIOS {
-    warnOnce(
-      'pickerios-moved',
-      'PickerIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
-        'See https://github.com/react-native-picker/picker',
-    );
-    return require('./Libraries/Components/Picker/PickerIOS');
   },
   get Pressable(): Pressable {
     return require('./Libraries/Components/Pressable/Pressable').default;
@@ -243,7 +223,7 @@ module.exports = {
     return require('./Libraries/Components/StatusBar/StatusBar');
   },
   get Switch(): Switch {
-    return require('./Libraries/Components/Switch/Switch');
+    return require('./Libraries/Components/Switch/Switch').default;
   },
   get Text(): Text {
     return require('./Libraries/Text/Text');
@@ -689,7 +669,7 @@ if (__DEV__) {
       );
     },
   });
-
+  
   /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
    * attempting to access StatusBarIOS. */
   /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
@@ -702,6 +682,22 @@ if (__DEV__) {
         'StatusBarIOS has been removed from React Native. ' +
           'Has been merged with StatusBar. ' +
           'See https://reactnative.dev/docs/statusbar',
+      );
+    },
+  });
+
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access PickerIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access PickerIOS. */
+  Object.defineProperty(module.exports, 'PickerIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'PickerIOS has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
+          'See https://github.com/react-native-picker/picker',
       );
     },
   });

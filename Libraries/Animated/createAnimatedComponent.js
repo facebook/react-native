@@ -10,6 +10,8 @@
 
 'use strict';
 
+import * as createAnimatedComponentInjection from './createAnimatedComponentInjection';
+
 const View = require('../Components/View/View');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
@@ -174,14 +176,11 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _attachProps(nextProps) {
       const oldPropsAnimated = this._propsAnimated;
 
-      if (nextProps === oldPropsAnimated) {
-        return;
-      }
-
       this._propsAnimated = new AnimatedProps(
         nextProps,
         this._animatedPropsCallback,
       );
+      this._propsAnimated.__attach();
 
       // When you call detach, it removes the element from the parent list
       // of children. If it goes to 0, then the parent also detaches itself
@@ -301,4 +300,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   });
 }
 
-module.exports = createAnimatedComponent;
+// $FlowIgnore[incompatible-cast] - Will be compatible after refactors.
+module.exports = (createAnimatedComponentInjection.recordAndRetrieve() ??
+  createAnimatedComponent: typeof createAnimatedComponent);

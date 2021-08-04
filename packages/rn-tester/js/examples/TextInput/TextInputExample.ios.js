@@ -27,7 +27,7 @@ import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/Tex
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
@@ -44,7 +44,7 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
 
 class TextInputAccessoryViewChangeTextExample extends React.Component<
   {...},
-  *,
+  {text: string},
 > {
   constructor(props) {
     super(props);
@@ -77,7 +77,7 @@ class TextInputAccessoryViewChangeTextExample extends React.Component<
 
 class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
   {...},
-  *,
+  {keyboardType: string, text: string},
 > {
   constructor(props) {
     super(props);
@@ -101,6 +101,7 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
           inputAccessoryViewID={inputAccessoryViewID}
           onChangeText={text => this.setState({text})}
           value={this.state.text}
+          // $FlowFixMe[incompatible-type]
           keyboardType={this.state.keyboardType}
           returnKeyType="done"
         />
@@ -118,7 +119,7 @@ class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
   $ReadOnly<{|
     keyboardType: KeyboardType,
   |}>,
-  *,
+  {text: string},
 > {
   constructor(props) {
     super(props);
@@ -816,4 +817,4 @@ exports.examples = ([
       );
     },
   },
-]: Array<RNTesterExampleModuleItem>);
+]: Array<RNTesterModuleExample>);

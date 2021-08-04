@@ -60,7 +60,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
             delegate,
-            ReactFeatureFlags.useTurboModulesRAIICallbackManager);
+            ReactFeatureFlags.useGlobalCallbackCleanupScopeUsingRetainJSCallback,
+            ReactFeatureFlags.useTurboModuleManagerCallbackCleanupScope);
     installJSIBindings();
 
     mEagerInitModuleNames =
@@ -293,7 +294,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       CallInvokerHolderImpl jsCallInvokerHolder,
       CallInvokerHolderImpl nativeCallInvokerHolder,
       TurboModuleManagerDelegate tmmDelegate,
-      boolean useTurboModulesRAIICallbackManager);
+      boolean useGlobalCallbackCleanupScopeUsingRetainJSCallback,
+      boolean useTurboModuleManagerCallbackCleanupScope);
 
   private native void installJSIBindings();
 

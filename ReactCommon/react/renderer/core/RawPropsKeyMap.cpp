@@ -63,7 +63,7 @@ void RawPropsKeyMap::reindex() noexcept {
   buckets_.resize(kPropNameLengthHardCap);
 
   auto length = RawPropsPropNameLength{0};
-  for (auto i = 0; i < items_.size(); i++) {
+  for (size_t i = 0; i < items_.size(); i++) {
     auto &item = items_[i];
     if (item.length != length) {
       for (auto j = length; j < item.length; j++) {

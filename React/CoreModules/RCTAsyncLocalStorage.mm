@@ -306,7 +306,11 @@ RCT_EXPORT_MODULE()
   if (errorOut) {
     return errorOut;
   }
+  if (![entry[1] isKindOfClass:[NSString class]]) {
+    return RCTMakeAndLogError(@"Invalid value for entry - must be a string. Got entry: ", entry, nil);
+  }
   NSString *value = entry[1];
+
   NSString *filePath = [self _filePathForKey:key];
   NSError *error;
   if (value.length <= RCTInlineValueThreshold) {
