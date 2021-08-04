@@ -1,6 +1,6 @@
-load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("@fbsource//tools/build_defs/oss:metro_defs.bzl", "rn_library")
-load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:metro_defs.bzl", "rn_library")
+load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 
 yarn_workspace(
     name = "yarn-workspace",

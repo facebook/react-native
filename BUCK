@@ -1,23 +1,29 @@
-load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
-load("@fbsource//tools/build_defs:platform_defs.bzl", "APPLETVOS", "IOS")
-load("@fbsource//tools/build_defs/apple:config_utils_defs.bzl", "STATIC_LIBRARY_APPLETVOS_CONFIG", "fbobjc_configs")
-load("@fbsource//tools/build_defs/apple:fb_apple_test.bzl", "fb_apple_test")
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_base_appletvos_flags", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
-load("@fbsource//tools/build_defs/oss:metro_defs.bzl", "rn_library")
-load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "YOGA_CXX_TARGET", "react_native_xplat_dep", "react_native_xplat_target", "rn_apple_library")
-load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
-load(
-    "@fbsource//xplat/configurations/buck/apple/plugins/sad_xplat_hosted_configurations:react_components_registration.bzl",
-    "react_fabric_component_plugin_provider",
-)
-load("@fbsource//xplat/hermes/defs:hermes.bzl", "HERMES_BYTECODE_VERSION")
-load("@fbsource//xplat/js:rn_xplat_defs.bzl", "rn_extra_build_flags", "rn_xplat_cxx_library")
-load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen_components")
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/apple:config_utils_defs.bzl", "STATIC_LIBRARY_APPLETVOS_CONFIG", "fbobjc_configs")
+load("//tools/build_defs/apple:fb_apple_test.bzl", "fb_apple_test")
+load("//tools/build_defs/apple:flag_defs.bzl", "get_base_appletvos_flags", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
+load("//tools/build_defs/oss:metro_defs.bzl", "rn_library")
 load(
     "//tools/build_defs/oss:rn_codegen_defs.bzl",
     "rn_codegen",
+    "rn_codegen_components",
 )
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "APPLETVOS",
+    "HERMES_BYTECODE_VERSION",
+    "IOS",
+    "YOGA_CXX_TARGET",
+    "react_fabric_component_plugin_provider",
+    "react_native_root_target",
+    "react_native_xplat_dep",
+    "react_native_xplat_target",
+    "rn_apple_library",
+    "rn_extra_build_flags",
+    "rn_xplat_cxx_library2",
+    "subdir_glob",
+)
+load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 
 RCTCXXBRIDGE_PUBLIC_HEADERS = {
     "React/" + x: "React/CxxBridge/" + x
@@ -33,7 +39,9 @@ fb_native.genrule(
     name = "codegen_rn_components_schema_rncore",
     srcs = glob(
         [
-            "**/*NativeComponent.js",
+            "Libraries/**/*NativeComponent.js",
+            "jest/**/*NativeComponent.js",
+            "packages/**/*NativeComponent.js",
         ],
         exclude = [
             "**/__*__/**",
@@ -42,9 +50,9 @@ fb_native.genrule(
             "packages/rn-tester/**",
         ],
     ) + [
-        "//xplat/js/react-native-github/packages/rn-tester:nativecomponent-srcs",
+        react_native_root_target("packages/rn-tester:nativecomponent-srcs"),
     ],
-    cmd = "$(exe //xplat/js/react-native-github/packages/react-native-codegen:write_to_json) $OUT $SRCS",
+    cmd = "$(exe {}) $OUT $SRCS".format(react_native_root_target("packages/react-native-codegen:write_to_json")),
     out = "schema-rncore.json",
 )
 
@@ -53,7 +61,7 @@ rn_codegen_components(
     schema_target = ":codegen_rn_components_schema_rncore",
 )
 
-rn_xplat_cxx_library(
+rn_xplat_cxx_library2(
     name = "RCTCxxBridge",
     srcs = glob([
         "React/CxxBridge/*.mm",
@@ -96,7 +104,7 @@ rn_xplat_cxx_library(
         ":ReactInternal",
         "//fbobjc/Libraries/FBReactKit:RCTFBSystrace",
         "//xplat/folly:molly",
-        "//xplat/js/react-native-github/React/CoreModules:CoreModules",
+        react_native_root_target("React/CoreModules:CoreModules"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
         react_native_xplat_target("jsi:JSCRuntime"),
@@ -114,7 +122,7 @@ RCTCXXMODULE_PUBLIC_HEADERS = {
     ]
 }
 
-rn_xplat_cxx_library(
+rn_xplat_cxx_library2(
     name = "RCTCxxModule",
     srcs = glob([
         "React/CxxModule/*.mm",
@@ -154,7 +162,7 @@ rn_xplat_cxx_library(
     ],
 )
 
-rn_xplat_cxx_library(
+rn_xplat_cxx_library2(
     name = "RCTCxxUtils",
     srcs = glob([
         "React/CxxUtils/*.mm",
@@ -310,7 +318,7 @@ REACT_COMPONENTVIEWS_BASE_FILES = [
     "React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.mm",
 ]
 
-rn_xplat_cxx_library(
+rn_xplat_cxx_library2(
     name = "ReactInternal",
     srcs = glob(
         [
@@ -406,7 +414,7 @@ rn_xplat_cxx_library(
     ],
 )
 
-rn_xplat_cxx_library(
+rn_xplat_cxx_library2(
     name = "RCTFabric",
     srcs = glob(
         [
@@ -628,7 +636,7 @@ rn_apple_library(
 # Ideally, each component view gets its own target, and each target uses react_fabric_component_plugin_provider.
 # For each component, an app can import the base component view, or an app-specific subclass.
 # i.e. Apps depend on "ImageView" target for RCTImageComponentView.h, and "FBReactImageView" target for FBReactImageComponentView.h
-rn_xplat_cxx_library(
+rn_xplat_cxx_library2(
     name = "RCTFabricComponentViewsBase",
     srcs = glob(REACT_COMPONENTVIEWS_BASE_FILES),
     header_namespace = "",
