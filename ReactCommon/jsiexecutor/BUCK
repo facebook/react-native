@@ -16,10 +16,11 @@ cxx_library(
         "-frtti",
     ],
     fbandroid_deps = [
+        "//third-party/glog:glog",
         "//xplat/folly:molly",
-        "//xplat/third-party/glog:glog",
         "//xplat/third-party/linker_lib:atomic",
     ],
+    fbandroid_labels = ["supermodule:android/default/public.react_native.infra"],
     fbobjc_force_static = True,
     fbobjc_header_path_prefix = "",
     fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],

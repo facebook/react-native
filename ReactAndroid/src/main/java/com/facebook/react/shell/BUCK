@@ -4,6 +4,7 @@ rn_android_library(
     name = "shell",
     srcs = glob(["**/*.java"]),
     is_androidx = True,
+    labels = ["supermodule:android/default/public.react_native.infra"],
     provided_deps = [
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),
@@ -51,7 +52,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/websocket:websocket"),
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
-        react_native_target("java/com/facebook/react/views/art:art"),
         react_native_target("java/com/facebook/react/views/drawer:drawer"),
         react_native_target("java/com/facebook/react/views/image:image"),
         react_native_target("java/com/facebook/react/views/modal:modal"),

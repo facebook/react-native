@@ -962,19 +962,22 @@ public abstract class DevSupportManagerBase
       return;
     }
     JSCHeapCapture heapCapture = mCurrentContext.getNativeModule(JSCHeapCapture.class);
-    heapCapture.captureHeap(
-        mApplicationContext.getCacheDir().getPath(),
-        new JSCHeapCapture.CaptureCallback() {
-          @Override
-          public void onSuccess(File capture) {
-            responder.respond(capture.toString());
-          }
 
-          @Override
-          public void onFailure(JSCHeapCapture.CaptureException error) {
-            responder.error(error.toString());
-          }
-        });
+    if (heapCapture != null) {
+      heapCapture.captureHeap(
+          mApplicationContext.getCacheDir().getPath(),
+          new JSCHeapCapture.CaptureCallback() {
+            @Override
+            public void onSuccess(File capture) {
+              responder.respond(capture.toString());
+            }
+
+            @Override
+            public void onFailure(JSCHeapCapture.CaptureException error) {
+              responder.error(error.toString());
+            }
+          });
+    }
   }
 
   private void updateLastErrorInfo(

@@ -1524,7 +1524,28 @@ const EXCLUDE_ANDROID: SchemaType = {
     ExcludedAndroid: {
       components: {
         ExcludedAndroidComponent: {
-          excludedPlatform: 'android',
+          excludedPlatforms: ['android'],
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const EXCLUDE_ANDROID_IOS: SchemaType = {
+  modules: {
+    ExcludedAndroidIos: {
+      components: {
+        ExcludedAndroidIosComponent: {
+          excludedPlatforms: ['android', 'iOS'],
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -1566,4 +1587,5 @@ module.exports = {
   COMMANDS,
   COMMANDS_AND_PROPS,
   EXCLUDE_ANDROID,
+  EXCLUDE_ANDROID_IOS,
 };

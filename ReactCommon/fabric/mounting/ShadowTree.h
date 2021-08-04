@@ -71,6 +71,14 @@ class ShadowTree final {
 
   MountingCoordinator::Shared getMountingCoordinator() const;
 
+  /*
+   * Temporary.
+   * Do not use.
+   */
+  void setEnableNewStateReconciliation(bool value) {
+    enableNewStateReconciliation_ = value;
+  }
+
  private:
   RootShadowNode::Unshared cloneRootShadowNode(
       RootShadowNode::Shared const &oldRootShadowNode,
@@ -88,6 +96,7 @@ class ShadowTree final {
   mutable ShadowTreeRevision::Number revisionNumber_{
       0}; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
+  bool enableNewStateReconciliation_{false};
 };
 
 } // namespace react

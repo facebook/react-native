@@ -196,7 +196,7 @@ class NotificationPermissionExample extends React.Component<
         );
         this._checkPermissions();
       },
-      (onReject?) => {
+      () => {
         this._showAlert('Error requesting permissions');
         this._checkPermissions();
       },

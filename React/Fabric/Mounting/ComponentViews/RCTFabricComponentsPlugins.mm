@@ -26,7 +26,6 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     {"Switch", RCTSwitchCls},
     {"UnimplementedNativeView", RCTUnimplementedNativeViewCls},
     {"ModalHostView", RCTModalHostViewCls},
-    {"ARTSurfaceView", RCTARTSurfaceViewCls},
     {"Image", RCTImageCls},
   };
 

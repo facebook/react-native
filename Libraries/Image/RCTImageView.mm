@@ -114,6 +114,9 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // Weak reference back to the bridge, for image loading
   __weak RCTBridge *_bridge;
 
+  // Weak reference back to the active image loader.
+  __weak id<RCTImageLoaderWithAttributionProtocol> _imageLoader;
+
   // The image source that's currently displayed
   RCTImageSource *_imageSource;
 
@@ -122,9 +125,6 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
   // Size of the image loaded / being loaded, so we can determine when to issue a reload to accommodate a changing size.
   CGSize _targetSize;
-
-  // A block that can be invoked to cancel the most recent call to -reloadImage, if any
-  RCTImageLoaderCancellationBlock _reloadImageCancellationBlock;
 
   // Whether the latest change of props requires the image to be reloaded
   BOOL _needsReload;
@@ -135,6 +135,8 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // Whether observing changes to the window's backing scale
   BOOL _subscribedToWindowBackingNotifications;
 #endif // [TODO(macOS GH#774)
+  
+  RCTImageURLLoaderRequest *_loaderRequest;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -317,12 +319,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)cancelImageLoad
 {
-  RCTImageLoaderCancellationBlock previousCancellationBlock = _reloadImageCancellationBlock;
-  if (previousCancellationBlock) {
-    previousCancellationBlock();
-    _reloadImageCancellationBlock = nil;
+  if (_loaderRequest.cancellationBlock) {
+    _loaderRequest.cancellationBlock();
   }
 
+  _loaderRequest = nil;
   _pendingImageSource = nil;
 }
 
@@ -440,11 +441,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       [weakSelf imageLoaderLoadedImage:loadedImage error:error forImageSource:source partial:NO];
     };
 
-    id<RCTImageLoaderWithAttributionProtocol> imageLoader = [_bridge moduleForName:@"ImageLoader"
-                                                             lazilyLoadIfNecessary:YES];
-    RCTImageURLLoaderRequest *loaderRequest = [imageLoader loadImageWithURLRequest:source.request
-                                                                              size:imageSize
-                                                                             scale:imageScale
+    if (!_imageLoader) {
+      _imageLoader = [_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES];
+    }
+
+    RCTImageURLLoaderRequest *loaderRequest = [_imageLoader loadImageWithURLRequest:source.request
+                                                                               size:imageSize
+                                                                              scale:imageScale
                                                                            clipped:NO
                                                                         resizeMode:_resizeMode
                                                                           priority:RCTImageLoaderPriorityImmediate
@@ -455,7 +458,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                                                      progressBlock:progressHandler
                                                                   partialLoadBlock:partialLoadHandler
                                                                    completionBlock:completionHandler];
-    _reloadImageCancellationBlock = loaderRequest.cancellationBlock;
+    _loaderRequest = loaderRequest;
   } else {
     [self clearImage];
   }
@@ -653,4 +656,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 #endif // ]TODO(macOS GH#774)
+
+- (void)dealloc {
+  [_imageLoader trackURLImageDidDestroy:_loaderRequest];
+}
+
 @end

@@ -42,6 +42,16 @@ using namespace facebook::react;
    * textInputDidChange]` call.
    */
   BOOL _ignoreNextTextInputCall;
+
+  /*
+   * A flag that when set to true, `_mostRecentEventCount` won't be incremented when `[self _updateState]`
+   * and delegate methods `textInputDidChange` and `textInputDidChangeSelection` will exit early.
+   *
+   * Setting `_backedTextInputView.attributedText` triggers delegate methods `textInputDidChange` and
+   * `textInputDidChangeSelection` for multiline text input only.
+   * In multiline text input this is undesirable as we don't want to be sending events for changes that JS triggered.
+   */
+  BOOL _comingFromJS;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -55,6 +65,7 @@ using namespace facebook::react;
     _backedTextInputView.frame = self.bounds;
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
+    _comingFromJS = NO;
     [self addSubview:_backedTextInputView];
   }
 
@@ -185,7 +196,9 @@ using namespace facebook::react;
 
   if (_mostRecentEventCount == _state->getData().mostRecentEventCount) {
     auto data = _state->getData();
+    _comingFromJS = YES;
     [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
+    _comingFromJS = NO;
   }
 }
 
@@ -204,11 +217,6 @@ using namespace facebook::react;
 {
   UITextRange *selectedRange = [_backedTextInputView selectedTextRange];
   _backedTextInputView.attributedText = attributedString;
-  // Calling `[_backedTextInputView setAttributedText]` results
-  // in `textInputDidChangeSelection` being called but not `textInputDidChange`.
-  // For `_ignoreNextTextInputCall` to have correct value, these calls
-  // need to be balanced, that's why we manually set the flag here.
-  _ignoreNextTextInputCall = NO;
   if (_lastStringStateWasUpdatedWith.length == attributedString.length) {
     // Calling `[_backedTextInputView setAttributedText]` moves caret
     // to the end of text input field. This cancels any selection as well
@@ -225,6 +233,7 @@ using namespace facebook::react;
   _backedTextInputView.attributedText = [[NSAttributedString alloc] init];
   _mostRecentEventCount = 0;
   _state.reset();
+  _comingFromJS = NO;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
 }
@@ -334,10 +343,15 @@ using namespace facebook::react;
 
 - (void)textInputDidChange
 {
+  if (_comingFromJS) {
+    return;
+  }
+
   if (_ignoreNextTextInputCall) {
     _ignoreNextTextInputCall = NO;
     return;
   }
+
   [self _updateState];
 
   if (_eventEmitter) {
@@ -347,6 +361,9 @@ using namespace facebook::react;
 
 - (void)textInputDidChangeSelection
 {
+  if (_comingFromJS) {
+    return;
+  }
   auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
   if (props.traits.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     [self textInputDidChange];
@@ -379,7 +396,7 @@ using namespace facebook::react;
   auto data = _state->getData();
   _lastStringStateWasUpdatedWith = attributedString;
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
-  _mostRecentEventCount += 1;
+  _mostRecentEventCount += _comingFromJS ? 0 : 1;
   data.mostRecentEventCount = _mostRecentEventCount;
   _state->updateState(std::move(data));
 }
@@ -419,8 +436,8 @@ using namespace facebook::react;
   if (_mostRecentEventCount != eventCount) {
     return;
   }
-
-  if (value) {
+  _comingFromJS = YES;
+  if (![value isEqualToString:_backedTextInputView.attributedText.string]) {
     NSMutableAttributedString *mutableString =
         [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
     [mutableString replaceCharactersInRange:NSMakeRange(0, _backedTextInputView.attributedText.length)
@@ -438,6 +455,7 @@ using namespace facebook::react;
     UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
     [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
   }
+  _comingFromJS = NO;
 }
 
 @end

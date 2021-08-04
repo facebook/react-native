@@ -17,6 +17,7 @@ import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYog
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.SystemClock;
 import android.view.View;
 import androidx.annotation.AnyThread;
@@ -195,6 +196,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
+  @Override
   @AnyThread
   @ThreadConfined(ANY)
   public <T extends View> int startSurface(
@@ -204,8 +206,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int widthMeasureSpec,
       int heightMeasureSpec) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    Context context = rootView.getContext();
     ThemedReactContext reactContext =
-        new ThemedReactContext(mReactApplicationContext, rootView.getContext(), moduleName);
+        new ThemedReactContext(mReactApplicationContext, context, moduleName);
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
@@ -219,8 +222,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         getMaxSize(widthMeasureSpec),
         getMinSize(heightMeasureSpec),
         getMaxSize(heightMeasureSpec),
-        I18nUtil.getInstance().isRTL(rootView.getContext()),
-        I18nUtil.getInstance().doLeftAndRightSwapInRTL(rootView.getContext()));
+        I18nUtil.getInstance().isRTL(context),
+        I18nUtil.getInstance().doLeftAndRightSwapInRTL(context));
     return rootTag;
   }
 
@@ -522,7 +525,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       long layoutEndTime,
       long finishTransactionStartTime,
       long finishTransactionEndTime) {
-    // TODO T31905686: support multithreading
     // When Binding.cpp calls scheduleMountItems during a commit phase, it always calls with
     // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
     // calls scheduleMountItems with a BatchMountItem.
@@ -842,12 +844,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (reactContext != null) {
       isRTL = I18nUtil.getInstance().isRTL(reactContext);
       doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(reactContext);
-    } else {
-      // TODO T65116569: analyze why this happens
-      ReactSoftException.logSoftException(
-          TAG,
-          new IllegalStateException(
-              "updateRootLayoutSpecs called before ReactContext set for tag: " + rootTag));
     }
 
     mBinding.setConstraints(

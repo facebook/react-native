@@ -36,8 +36,16 @@ using namespace facebook::react;
 
 + (NSMutableSet<NSString *> *)supportedViewManagers
 {
-  static NSMutableSet<NSString *> *supported =
-      [NSMutableSet setWithObjects:@"Picker", @"DatePicker", @"ProgressView", @"SegmentedControl", @"MaskedView", nil];
+  static NSMutableSet<NSString *> *supported = [NSMutableSet setWithObjects:@"Picker",
+                                                                            @"DatePicker",
+                                                                            @"ProgressView",
+                                                                            @"SegmentedControl",
+                                                                            @"MaskedView",
+                                                                            @"ARTSurfaceView",
+                                                                            @"ARTText",
+                                                                            @"ARTShape",
+                                                                            @"ARTGroup",
+                                                                            nil];
   return supported;
 }
 

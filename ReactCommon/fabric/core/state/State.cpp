@@ -32,6 +32,15 @@ State::Shared State::getMostRecentState() const {
   return family->getMostRecentState();
 }
 
+State::Shared State::getMostRecentStateIfObsolete() const {
+  auto family = family_.lock();
+  if (!family) {
+    return {};
+  }
+
+  return family->getMostRecentStateIfObsolete(*this);
+}
+
 size_t State::getRevision() const {
   return revision_;
 }

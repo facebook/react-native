@@ -258,9 +258,23 @@ struct RCTInstanceCallback : public InstanceCallback {
     _moduleDataByID = [NSMutableArray new];
 
     [RCTBridge setCurrentBridge:self];
+
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleMemoryWarning)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
+#endif // TODO(macOS GH#774)
   }
   return self;
 }
+
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+#endif // TODO(macOS GH#774)
 
 + (void)runRunLoop
 {
@@ -292,6 +306,13 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSError *error = tryAndReturnError(block);
   if (error) {
     [self handleError:error];
+  }
+}
+
+- (void)handleMemoryWarning
+{
+  if (_reactInstance) {
+    _reactInstance->handleMemoryPressure(15 /* TRIM_MEMORY_RUNNING_CRITICAL */);
   }
 }
 
@@ -514,6 +535,11 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 
   // Module may not be loaded yet, so attempt to force load it here.
+  // Do this only if the bridge is still valid.
+  if (_didInvalidate) {
+    return nil;
+  }
+
   const BOOL result = [self.delegate respondsToSelector:@selector(bridge:didNotFindModule:)] &&
       [self.delegate bridge:self didNotFindModule:moduleName];
   if (result) {

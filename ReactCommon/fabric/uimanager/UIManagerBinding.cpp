@@ -535,10 +535,15 @@ jsi::Value UIManagerBinding::get(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,
               {/* .includeTransform = */ true});
-          auto frame = layoutMetrics.frame;
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
 
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            onSuccessFunction.call(runtime, {0, 0, 0, 0, 0, 0});
+            return jsi::Value::undefined();
+          }
+
+          auto frame = layoutMetrics.frame;
           onSuccessFunction.call(
               runtime,
               {0,
@@ -568,8 +573,13 @@ jsi::Value UIManagerBinding::get(
 
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
-          auto frame = layoutMetrics.frame;
 
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            onSuccessFunction.call(runtime, {0, 0, 0, 0});
+            return jsi::Value::undefined();
+          }
+
+          auto frame = layoutMetrics.frame;
           onSuccessFunction.call(
               runtime,
               {jsi::Value{runtime, (double)frame.origin.x},
@@ -598,6 +608,27 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "configureNextLayoutAnimation") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        3,
+        [uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          uiManager->configureNextLayoutAnimation(
+              commandArgsFromValue(
+                  runtime,
+                  arguments[0]), // TODO T66507273: do a better job of parsing
+                                 // these arguments into a real struct / use a
+                                 // C++ typed object instead of folly::dynamic
+              eventTargetFromValue(runtime, arguments[1], -1),
+              eventTargetFromValue(runtime, arguments[2], -1));
+          return jsi::Value::undefined();
+        });
+  }
   return jsi::Value::undefined();
 }
 

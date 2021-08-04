@@ -19,9 +19,21 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_difficult(jsi
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->difficult(rt, args[0].getObject(rt));
 }
 
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionals(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->optionals(rt, args[0].getObject(rt));
+  return jsi::Value::undefined();
+}
+
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionalMethod(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->optionalMethod(rt, args[0].getObject(rt), std::move(args[1].getObject(rt).getFunction(rt)), args[2].getObject(rt).getArray(rt));
+  return jsi::Value::undefined();
+}
+
 NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
   methodMap_[\\"difficult\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_difficult};
+  methodMap_[\\"optionals\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionals};
+  methodMap_[\\"optionalMethod\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionalMethod};
 }
 
 

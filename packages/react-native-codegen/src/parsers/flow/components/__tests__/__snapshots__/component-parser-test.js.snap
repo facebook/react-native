@@ -5935,6 +5935,9 @@ Object {
               },
             },
           ],
+          "excludedPlatforms": Array [
+            "android",
+          ],
           "extendsProps": Array [
             Object {
               "knownTypeName": "ReactNativeCoreViewProps",

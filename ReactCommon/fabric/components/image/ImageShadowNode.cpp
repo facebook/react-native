@@ -27,13 +27,18 @@ void ImageShadowNode::updateStateIfNeeded() {
 
   auto const &imageSource = getImageSource();
   auto const &currentState = getStateData();
+  bool hasSameRadius =
+      getConcreteProps().blurRadius == currentState.getBlurRadius();
+  bool hasSameImageSource = currentState.getImageSource() == imageSource;
 
-  if (currentState.getImageSource() == imageSource) {
+  if (hasSameImageSource && hasSameRadius) {
     return;
   }
 
-  auto state = ImageState{
-      imageSource, imageManager_->requestImage(imageSource, getSurfaceId())};
+  auto state =
+      ImageState{imageSource,
+                 imageManager_->requestImage(imageSource, getSurfaceId()),
+                 getConcreteProps().blurRadius};
   setStateData(std::move(state));
 }
 

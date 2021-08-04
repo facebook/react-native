@@ -4,6 +4,7 @@ rn_android_library(
     name = "sound",
     srcs = glob(["**/*.java"]),
     is_androidx = True,
+    labels = ["supermodule:android/default/public.react_native.infra"],
     provided_deps = [
     ],
     visibility = [

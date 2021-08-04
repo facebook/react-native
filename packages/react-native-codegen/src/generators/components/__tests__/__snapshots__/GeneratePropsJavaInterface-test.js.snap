@@ -247,6 +247,8 @@ public interface InterfaceOnlyComponentManagerInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture EXCLUDE_ANDROID 1`] = `Map {}`;
 
+exports[`GeneratePropsJavaInterface can generate fixture EXCLUDE_ANDROID_IOS 1`] = `Map {}`;
+
 exports[`GeneratePropsJavaInterface can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "FloatPropNativeComponentManagerInterface.java" => "/**

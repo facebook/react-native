@@ -384,7 +384,8 @@ folly::Future<folly::Unit> Inspector::setPauseOnExceptions(
 
 folly::Future<folly::Unit> Inspector::setPauseOnLoads(
     const PauseOnLoadMode mode) {
-  std::unique_lock<std::mutex> lock(mutex_);
+  // This flag does not touch the runtime, so it doesn't need the executor.
+  // Return a future anyways for consistency.
   auto promise = std::make_shared<folly::Promise<Unit>>();
   pauseOnLoadMode_ = mode;
   promise->setValue();

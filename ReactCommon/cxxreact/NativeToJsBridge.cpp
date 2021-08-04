@@ -331,5 +331,22 @@ std::shared_ptr<CallInvoker> NativeToJsBridge::getDecoratedNativeCallInvoker(
   return std::make_shared<NativeCallInvoker>(m_delegate, nativeInvoker);
 }
 
+RuntimeExecutor NativeToJsBridge::getRuntimeExecutor() {
+  auto runtimeExecutor =
+      [this, isDestroyed = m_destroyed](
+          std::function<void(jsi::Runtime & runtime)> &&callback) {
+        if (*isDestroyed) {
+          return;
+        }
+        runOnExecutorQueue(
+            [callback = std::move(callback)](JSExecutor *executor) {
+              jsi::Runtime *runtime =
+                  (jsi::Runtime *)executor->getJavaScriptContext();
+              callback(*runtime);
+            });
+      };
+  return runtimeExecutor;
+}
+
 } // namespace react
 } // namespace facebook

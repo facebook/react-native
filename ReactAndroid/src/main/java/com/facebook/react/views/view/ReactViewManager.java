@@ -233,10 +233,14 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
           new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              final EventDispatcher mEventDispatcher =
-                  ((ReactContext) view.getContext())
-                      .getNativeModule(UIManagerModule.class)
-                      .getEventDispatcher();
+              UIManagerModule uiManager =
+                  ((ReactContext) view.getContext()).getNativeModule(UIManagerModule.class);
+
+              if (uiManager == null) {
+                return;
+              }
+
+              final EventDispatcher mEventDispatcher = uiManager.getEventDispatcher();
               mEventDispatcher.dispatchEvent(new ViewGroupClickEvent(view.getId()));
             }
           });

@@ -105,8 +105,12 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
 
   @Override
   protected void addEventEmitters(ThemedReactContext reactContext, final ReactModalHostView view) {
-    final EventDispatcher dispatcher =
-        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    if (uiManager == null) {
+      return;
+    }
+
+    final EventDispatcher dispatcher = uiManager.getEventDispatcher();
     view.setOnRequestCloseListener(
         new ReactModalHostView.OnRequestCloseListener() {
           @Override

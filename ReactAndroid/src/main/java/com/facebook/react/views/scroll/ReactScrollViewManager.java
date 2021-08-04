@@ -308,8 +308,8 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @ReactProp(name = "contentOffset")
   public void setContentOffset(ReactScrollView view, ReadableMap value) {
     if (value != null) {
-      double x = value.getDouble("x");
-      double y = value.getDouble("y");
+      double x = value.hasKey("x") ? value.getDouble("x") : 0;
+      double y = value.hasKey("y") ? value.getDouble("y") : 0;
       view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
     }
   }

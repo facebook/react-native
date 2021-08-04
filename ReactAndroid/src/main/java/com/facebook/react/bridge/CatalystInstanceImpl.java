@@ -562,6 +562,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
+  @Nullable
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     return (T) getNativeModule(getNameFromAnnotation(nativeModuleInterface));
   }
@@ -577,23 +578,28 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
+  @Nullable
   public NativeModule getNativeModule(String moduleName) {
     if (getTurboModuleRegistry() != null) {
       TurboModule turboModule = getTurboModuleRegistry().getModule(moduleName);
 
-      // TODO(T46487253): Remove after task is closed
-      FLog.e(
-          ReactConstants.TAG,
-          "CatalystInstanceImpl.getNativeModule: TurboModule "
-              + moduleName
-              + (turboModule == null ? " not" : "")
-              + " found");
+      if (ReactFeatureFlags.enableTurboModuleDebugLogs) {
+        // TODO(T46487253): Remove after task is closed
+        FLog.e(
+            ReactConstants.TAG,
+            "CatalystInstanceImpl.getNativeModule: TurboModule "
+                + moduleName
+                + (turboModule == null ? " not" : "")
+                + " found");
+      }
       if (turboModule != null) {
         return (NativeModule) turboModule;
       }
     }
 
-    return mNativeModuleRegistry.getModule(moduleName);
+    return mNativeModuleRegistry.hasModule(moduleName)
+        ? mNativeModuleRegistry.getModule(moduleName)
+        : null;
   }
 
   private <T extends NativeModule> String getNameFromAnnotation(Class<T> nativeModuleInterface) {
@@ -657,6 +663,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
   public JavaScriptContextHolder getJavaScriptContextHolder() {
     return mJavaScriptContextHolder;
   }
+
+  @Override
+  public native RuntimeExecutor getRuntimeExecutor();
 
   @Override
   public void addJSIModules(List<JSIModuleSpec> jsiModules) {

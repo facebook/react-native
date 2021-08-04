@@ -635,7 +635,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       }
     }
   });
-
+  
   return [[RCTImageURLLoaderRequest alloc] initWithRequestId:requestId imageURL:request.URL cancellationBlock:^{
     BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1);
     if (alreadyCancelled) {
@@ -856,6 +856,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     return;
   }
 
+  // This delegate method is Fabric-only
   id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:loaderRequest.imageURL];
   if ([loadHandler respondsToSelector:@selector(trackURLImageContentDidSetForRequest:)]) {
     [(id<RCTImageURLLoaderWithAttribution>)loadHandler trackURLImageContentDidSetForRequest:loaderRequest];
@@ -879,6 +880,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   if (!loaderRequest) {
     return;
   }
+  
   id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:loaderRequest.imageURL];
   if ([loadHandler respondsToSelector:@selector(trackURLImageDidDestroy:)]) {
     [(id<RCTImageURLLoaderWithAttribution>)loadHandler trackURLImageDidDestroy:loaderRequest];

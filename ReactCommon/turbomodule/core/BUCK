@@ -28,6 +28,7 @@ rn_xplat_cxx_library(
         ],
         prefix = "ReactCommon",
     ),
+    fbandroid_labels = ["supermodule:android/default/public.react_native.infra"],
     fbandroid_srcs = glob(
         [
             "platform/android/**/*.cpp",
@@ -70,12 +71,12 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",
         "//xplat/folly:molly",
         "//xplat/jsi:JSIDynamic",
-        "//xplat/third-party/glog:glog",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
         react_native_xplat_target("callinvoker:callinvoker"),

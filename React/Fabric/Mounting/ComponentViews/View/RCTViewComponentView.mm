@@ -48,6 +48,7 @@ using namespace facebook::react;
 
   if (_contentView) {
     [self addSubview:_contentView];
+    _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
 }
 

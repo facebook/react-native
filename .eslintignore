@@ -14,3 +14,4 @@ pr-inactivity-bookmarklet.js
 question-bookmarklet.js
 bots/node_modules
 android-patches/
+packages/react-native-codegen/lib

@@ -229,6 +229,10 @@ std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
   return std::static_pointer_cast<CallInvoker>(jsCallInvoker_);
 }
 
+RuntimeExecutor Instance::getRuntimeExecutor() {
+  return nativeToJsBridge_->getRuntimeExecutor();
+}
+
 std::shared_ptr<CallInvoker> Instance::getDecoratedNativeCallInvoker(
     std::shared_ptr<CallInvoker> nativeInvoker) {
   return nativeToJsBridge_->getDecoratedNativeCallInvoker(nativeInvoker);

@@ -12,10 +12,6 @@ steps:
       slice_name: ${{ parameters.slice_name }}
       xcode_version: ${{ parameters.xcode_version }}
 
-  - template: apple-droid-node-patching.yml
-    parameters:
-      apply_office_patches: $(apply_office_patches)
-
   - script: 'yarn install'
     displayName: 'yarn install'
 

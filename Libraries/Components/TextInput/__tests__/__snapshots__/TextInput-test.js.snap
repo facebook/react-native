@@ -5,6 +5,7 @@ exports[`TextInput tests should render as expected: should deep render when mock
   acceptsFirstMouse={true}
   accessible={true}
   allowFontScaling={true}
+  blurOnSubmit={true}
   enableFocusRing={true}
   focusable={true}
   forwardedRef={null}
@@ -36,6 +37,7 @@ exports[`TextInput tests should render as expected: should deep render when not 
   acceptsFirstMouse={true}
   accessible={true}
   allowFontScaling={true}
+  blurOnSubmit={true}
   enableFocusRing={true}
   focusable={true}
   forwardedRef={null}

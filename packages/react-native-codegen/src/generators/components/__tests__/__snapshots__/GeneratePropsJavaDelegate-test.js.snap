@@ -442,6 +442,8 @@ public class InterfaceOnlyComponentManagerDelegate<T extends View, U extends Bas
 
 exports[`GeneratePropsJavaDelegate can generate fixture EXCLUDE_ANDROID 1`] = `Map {}`;
 
+exports[`GeneratePropsJavaDelegate can generate fixture EXCLUDE_ANDROID_IOS 1`] = `Map {}`;
+
 exports[`GeneratePropsJavaDelegate can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "FloatPropNativeComponentManagerDelegate.java" => "/**

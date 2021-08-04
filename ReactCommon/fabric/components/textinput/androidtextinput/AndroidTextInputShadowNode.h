@@ -30,6 +30,13 @@ class AndroidTextInputShadowNode : public ConcreteViewShadowNode<
                                        AndroidTextInputEventEmitter,
                                        AndroidTextInputState> {
  public:
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::TextKind);
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    return traits;
+  }
+
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   void setContextContainer(ContextContainer *contextContainer);

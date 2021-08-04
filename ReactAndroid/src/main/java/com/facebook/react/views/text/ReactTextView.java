@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TintContextWrapper;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
@@ -118,7 +119,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     ReactContext reactContext = getReactContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    UIManagerModule uiManager =
+        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();

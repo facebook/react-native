@@ -5,16 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
-
-#include <react/core/ConcreteComponentDescriptor.h>
-#include "RCTARTSurfaceShadowNode.h"
+#include "JRuntimeExecutor.h"
 
 namespace facebook {
 namespace react {
 
-using RCTARTSurfaceComponentDescriptor =
-    ConcreteComponentDescriptor<RCTARTSurfaceShadowNode>;
+JRuntimeExecutor::JRuntimeExecutor(RuntimeExecutor runtimeExecutor)
+    : runtimeExecutor_(runtimeExecutor) {}
+
+RuntimeExecutor JRuntimeExecutor::get() {
+  return runtimeExecutor_;
+}
 
 } // namespace react
 } // namespace facebook

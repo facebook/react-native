@@ -321,12 +321,22 @@ static Class getFallbackClassFromName(const char *name)
  */
 - (id<RCTTurboModule>)provideRCTTurboModule:(const char *)moduleName
 {
-  TurboModuleHolder *moduleHolder = [self _getOrCreateTurboModuleHolder:moduleName];
+  TurboModuleHolder *moduleHolder;
 
-  if (!moduleHolder) {
-    return nil;
+  {
+    std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
+    if (_invalidating) {
+      return nil;
+    }
+
+    moduleHolder = &_turboModuleHolders[moduleName];
   }
 
+  return [self _provideRCTTurboModule:moduleName moduleHolder:moduleHolder];
+}
+
+- (id<RCTTurboModule>)_provideRCTTurboModule:(const char *)moduleName moduleHolder:(TurboModuleHolder *)moduleHolder
+{
   bool shouldCreateModule = false;
 
   {
@@ -566,20 +576,6 @@ static Class getFallbackClassFromName(const char *name)
 }
 
 /**
- * Return a pointer to this TurboModule's TurboModuleHolder entry, creating one if it doesn't exist.
- * Return nullptr if we've started teardown of TurboModuleManager.
- */
-- (TurboModuleHolder *)_getOrCreateTurboModuleHolder:(const char *)moduleName
-{
-  std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
-  if (_invalidating) {
-    return nullptr;
-  }
-
-  return &_turboModuleHolders[moduleName];
-}
-
-/**
  * Should this TurboModule be created and initialized on the main queue?
  *
  * For TurboModule ObjC classes that implement requiresMainQueueInit, return the result of this method.
@@ -732,15 +728,16 @@ static Class getFallbackClassFromName(const char *name)
   // Backward-compatibility: RCTInvalidating handling.
   dispatch_group_t moduleInvalidationGroup = dispatch_group_create();
 
-  for (const auto &pair : _turboModuleHolders) {
+  for (auto &pair : _turboModuleHolders) {
     std::string moduleName = pair.first;
+    TurboModuleHolder *moduleHolder = &pair.second;
 
     /**
      * We could start tearing down ReactNative before a TurboModule is fully initialized. In this case, we should wait
-     * for init to finish before we call invalidate on the module. Therefore, we call provideRCTTurboModule (because
-     * it's guaranteed to return a fully initialized NativeModule).
+     * for TurboModule init to finish before calling invalidate on it. So, we call _provideRCTTurboModule:moduleHolder,
+     * because it's guaranteed to return a fully initialized NativeModule.
      */
-    id<RCTTurboModule> module = [self provideRCTTurboModule:moduleName.c_str()];
+    id<RCTTurboModule> module = [self _provideRCTTurboModule:moduleName.c_str() moduleHolder:moduleHolder];
 
     if ([module respondsToSelector:@selector(invalidate)]) {
       if ([module respondsToSelector:@selector(methodQueue)]) {

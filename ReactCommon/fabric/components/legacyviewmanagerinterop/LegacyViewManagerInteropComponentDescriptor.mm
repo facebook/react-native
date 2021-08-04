@@ -29,6 +29,12 @@ static std::string moduleNameFromComponentName(const std::string &componentName)
     // If `moduleName` has "FB" prefix.
     return componentName + "Manager";
   }
+
+  std::string artPrefix("ART");
+  if (std::mismatch(artPrefix.begin(), artPrefix.end(), componentName.begin()).first == artPrefix.end()) {
+    return componentName + "Manager";
+  }
+
   return "RCT" + componentName + "Manager";
 }
 

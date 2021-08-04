@@ -10,6 +10,8 @@
 
 'use strict';
 
+export type PlatformType = 'iOS' | 'android';
+
 export type CommandsFunctionTypeAnnotation = $ReadOnly<{|
   type: 'FunctionTypeAnnotation',
   params: $ReadOnlyArray<CommandsFunctionTypeParamAnnotation>,
@@ -309,8 +311,8 @@ export type OptionsShape = $ReadOnly<{|
   // Does not check for new name
   paperComponentName?: string,
 
-  // Use for components that are not used on one or the other platform.
-  excludedPlatform?: 'iOS' | 'android',
+  // Use for components that are not used on other platforms.
+  excludedPlatforms?: $ReadOnlyArray<PlatformType>,
 
   // Use for components currently being renamed in paper
   // Will use new name if it is available and fallback to this name

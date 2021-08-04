@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include <react/componentregistry/ComponentDescriptorFactory.h>
 #include <react/core/EventBeat.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/RuntimeExecutor.h>
 
 namespace facebook {
 namespace react {

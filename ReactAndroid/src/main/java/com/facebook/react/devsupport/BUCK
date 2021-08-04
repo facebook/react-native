@@ -4,6 +4,7 @@ rn_android_library(
     name = "devsupport",
     srcs = glob(["*.java"]),
     is_androidx = True,
+    labels = ["supermodule:android/default/public.react_native.infra"],
     manifest = "AndroidManifest.xml",
     provided_deps = [
         react_native_dep("third-party/android/androidx:core"),
@@ -46,6 +47,7 @@ rn_android_library(
     name = "interfaces",
     srcs = glob(["interfaces/*.java"]),
     is_androidx = True,
+    labels = ["supermodule:android/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -154,7 +155,9 @@ public class ReactViewPager extends ViewPager {
 
   public ReactViewPager(ReactContext reactContext) {
     super(reactContext);
-    mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    mEventDispatcher =
+        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class))
+            .getEventDispatcher();
     mIsCurrentItemFromJs = false;
     setOnPageChangeListener(new PageChangeListener());
     setAdapter(new Adapter());

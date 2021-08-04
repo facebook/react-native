@@ -41,4 +41,5 @@ Pod::Spec.new do |s|
   s.dependency "glog"
   s.dependency "React-jsinspector", version
   s.dependency "React-callinvoker", version
+  s.dependency "React-runtimeexecutor", version
 end

@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<0d7691362d081e7bc44d2b7a0ed24371>>
+// @generated SignedSource<<575de63c36edd2a9a0f191501fd4f662>>
 
 #include "MessageTypes.h"
 
@@ -35,6 +35,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.setBreakpoint", makeUnique<debugger::SetBreakpointRequest>},
       {"Debugger.setBreakpointByUrl",
        makeUnique<debugger::SetBreakpointByUrlRequest>},
+      {"Debugger.setInstrumentationBreakpoint",
+       makeUnique<debugger::SetInstrumentationBreakpointRequest>},
       {"Debugger.setPauseOnExceptions",
        makeUnique<debugger::SetPauseOnExceptionsRequest>},
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
@@ -46,7 +48,6 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
        makeUnique<heapProfiler::StopTrackingHeapObjectsRequest>},
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
-      {"Hermes.setPauseOnLoad", makeUnique<hermes::SetPauseOnLoadRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
   };
@@ -506,6 +507,36 @@ void debugger::SetBreakpointByUrlRequest::accept(
   handler.handle(*this);
 }
 
+debugger::SetInstrumentationBreakpointRequest::
+    SetInstrumentationBreakpointRequest()
+    : Request("Debugger.setInstrumentationBreakpoint") {}
+
+debugger::SetInstrumentationBreakpointRequest::
+    SetInstrumentationBreakpointRequest(const dynamic &obj)
+    : Request("Debugger.setInstrumentationBreakpoint") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(instrumentation, params, "instrumentation");
+}
+
+dynamic debugger::SetInstrumentationBreakpointRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "instrumentation", instrumentation);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void debugger::SetInstrumentationBreakpointRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 debugger::SetPauseOnExceptionsRequest::SetPauseOnExceptionsRequest()
     : Request("Debugger.setPauseOnExceptions") {}
 
@@ -683,33 +714,6 @@ void heapProfiler::TakeHeapSnapshotRequest::accept(
   handler.handle(*this);
 }
 
-hermes::SetPauseOnLoadRequest::SetPauseOnLoadRequest()
-    : Request("Hermes.setPauseOnLoad") {}
-
-hermes::SetPauseOnLoadRequest::SetPauseOnLoadRequest(const dynamic &obj)
-    : Request("Hermes.setPauseOnLoad") {
-  assign(id, obj, "id");
-  assign(method, obj, "method");
-
-  dynamic params = obj.at("params");
-  assign(state, params, "state");
-}
-
-dynamic hermes::SetPauseOnLoadRequest::toDynamic() const {
-  dynamic params = dynamic::object;
-  put(params, "state", state);
-
-  dynamic obj = dynamic::object;
-  put(obj, "id", id);
-  put(obj, "method", method);
-  put(obj, "params", std::move(params));
-  return obj;
-}
-
-void hermes::SetPauseOnLoadRequest::accept(RequestHandler &handler) const {
-  handler.handle(*this);
-}
-
 runtime::EvaluateRequest::EvaluateRequest() : Request("Runtime.evaluate") {}
 
 runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
@@ -866,6 +870,24 @@ dynamic debugger::SetBreakpointByUrlResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "breakpointId", breakpointId);
   put(res, "locations", locations);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+debugger::SetInstrumentationBreakpointResponse::
+    SetInstrumentationBreakpointResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(breakpointId, res, "breakpointId");
+}
+
+dynamic debugger::SetInstrumentationBreakpointResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "breakpointId", breakpointId);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);

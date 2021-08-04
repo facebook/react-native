@@ -701,7 +701,7 @@ const TouchableMixin = {
     globalY: number,
   ) {
     //don't do anything UIManager failed to measure node
-    if (!l && !t && !w && !h && !globalX && !globalY) {
+    if (!(l > 0 || t > 0 || w > 0 || h > 0 || globalX > 0 || globalY > 0)) {
       return;
     }
     this.state.touchable.positionOnActivate &&

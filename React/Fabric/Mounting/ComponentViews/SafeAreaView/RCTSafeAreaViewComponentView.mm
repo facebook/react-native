@@ -86,6 +86,12 @@ using namespace facebook::react;
   [self _updateStateIfNecessary];
 }
 
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _state.reset();
+}
+
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
   return concreteComponentDescriptorProvider<SafeAreaViewComponentDescriptor>();

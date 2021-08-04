@@ -10,6 +10,7 @@
 #include <memory>
 #include <mutex>
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include <react/componentregistry/ComponentDescriptorFactory.h>
 #include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/components/root/RootComponentDescriptor.h>
@@ -21,7 +22,6 @@
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UIManagerDelegate.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/RuntimeExecutor.h>
 
 namespace facebook {
 namespace react {
@@ -112,6 +112,7 @@ class Scheduler final : public UIManagerDelegate {
   std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
   EventDispatcher::Shared eventDispatcher_;
+  bool enableNewStateReconciliation_{false};
 };
 
 } // namespace react

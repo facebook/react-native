@@ -10,6 +10,7 @@ package com.facebook.react.bridge;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.view.View;
+import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -21,6 +22,15 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   @ThreadConfined(UI)
   <T extends View> int addRootView(
       final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
+
+  /** Registers a new root view with width and height. */
+  @AnyThread
+  <T extends View> int startSurface(
+      final T rootView,
+      final String moduleName,
+      final WritableMap initialProps,
+      int widthMeasureSpec,
+      int heightMeasureSpec);
 
   /**
    * Updates the layout specs of the RootShadowNode based on the Measure specs received by

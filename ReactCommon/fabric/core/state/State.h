@@ -48,6 +48,12 @@ class State {
   State::Shared getMostRecentState() const;
 
   /*
+   * Returns the most recent state (same as `getMostRecentState()` method)
+   * if this state is obsolete, otherwise returns `nullptr`.
+   */
+  State::Shared getMostRecentStateIfObsolete() const;
+
+  /*
    * Returns a revision number of the `State` object.
    * The number is being automatically assigned during the creation of `State`
    * objects.

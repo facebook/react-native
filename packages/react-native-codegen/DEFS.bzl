@@ -231,7 +231,7 @@ def rn_codegen_components(
             "//xplat/folly:headers_only",
             "//xplat/folly:memory",
             "//xplat/folly:molly",
-            "//xplat/third-party/glog:glog",
+            "//third-party/glog:glog",
             YOGA_CXX_TARGET,
             react_native_xplat_target("fabric/debug:debug"),
             react_native_xplat_target("fabric/core:core"),

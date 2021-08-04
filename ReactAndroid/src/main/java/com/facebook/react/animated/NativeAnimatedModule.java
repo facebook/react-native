@@ -130,7 +130,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     // TODO T59412313 Implement this API on FabricUIManager to use in bridgeless mode
     if (reactApplicationContext != null && !reactApplicationContext.isBridgeless()) {
       reactApplicationContext.addLifecycleEventListener(this);
-      UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
+      UIManagerModule uiManager =
+          Assertions.assertNotNull(reactApplicationContext.getNativeModule(UIManagerModule.class));
       uiManager.addUIManagerListener(this);
     }
   }
@@ -191,7 +192,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
       if (reactApplicationContext != null) {
-        UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
+        UIManagerModule uiManager =
+            Assertions.assertNotNull(
+                reactApplicationContext.getNativeModule(UIManagerModule.class));
         mNodesManager = new NativeAnimatedNodesManager(uiManager);
       }
     }

@@ -56,5 +56,5 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<NativeProps>('DatePicker', {
   paperComponentName: 'RCTDatePicker',
-  excludedPlatform: 'android',
+  excludedPlatforms: ['android'],
 }): HostComponent<NativeProps>);

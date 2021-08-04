@@ -1092,6 +1092,10 @@ function InternalTextInput(props: Props): React.Node {
     // This is a hack to let Flow know we want an exact object
   |} = {...null};
 
+  // The default value for `blurOnSubmit` is true for single-line fields and
+  // false for multi-line fields.
+  const blurOnSubmit = props.blurOnSubmit ?? !props.multiline;
+
   if (
     Platform.OS === 'ios' ||
     Platform.OS === 'macos' /* TODO(macOS GH#774) */
@@ -1111,6 +1115,7 @@ function InternalTextInput(props: Props): React.Node {
       <RCTTextInputView
         ref={_setNativeRef}
         {...props}
+        blurOnSubmit={blurOnSubmit}
         dataDetectorTypes={props.dataDetectorTypes}
         mostRecentEventCount={mostRecentEventCount}
         onBlur={_onBlur}
@@ -1146,6 +1151,7 @@ function InternalTextInput(props: Props): React.Node {
         ref={_setNativeRef}
         {...props}
         autoCapitalize={autoCapitalize}
+        blurOnSubmit={blurOnSubmit}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
         mostRecentEventCount={mostRecentEventCount}

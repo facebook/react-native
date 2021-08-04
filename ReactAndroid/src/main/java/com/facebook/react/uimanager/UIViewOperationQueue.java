@@ -113,11 +113,14 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
-      mReactApplicationContext
-          .getNativeModule(UIManagerModule.class)
-          .getEventDispatcher()
-          .dispatchEvent(
-              OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
+      UIManagerModule uiManager = mReactApplicationContext.getNativeModule(UIManagerModule.class);
+
+      if (uiManager != null) {
+        uiManager
+            .getEventDispatcher()
+            .dispatchEvent(
+                OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
+      }
     }
   }
 
