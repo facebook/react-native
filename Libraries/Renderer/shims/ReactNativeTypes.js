@@ -6,7 +6,9 @@
  *
  * @format
  * @flow strict
- * @generated SignedSource<<d970268c93059bcc9626426c0c280439>>
+ * @generated SignedSource<<67969011689de134487d7110b6519058>>
+ *
+ * This file was sync'd from the facebook/react repository.
  */
 
 import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';

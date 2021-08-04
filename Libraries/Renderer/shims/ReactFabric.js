@@ -6,7 +6,9 @@
  *
  * @format
  * @flow
- * @generated SignedSource<<dd0939e57b6f6addeff0b75ba29fbb41>>
+ * @generated SignedSource<<40f01afd3b6d95a617ac8e48748a2a76>>
+ *
+ * This file was sync'd from the facebook/react repository.
  */
 
 'use strict';
