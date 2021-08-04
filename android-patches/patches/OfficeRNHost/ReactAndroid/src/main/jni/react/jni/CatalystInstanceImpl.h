@@ -1,6 +1,6 @@
 --- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\jni\\react\\jni\\CatalystInstanceImpl.h"	2020-10-27 20:26:17.024172000 -0700
 +++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\jni\\react\\jni\\CatalystInstanceImpl.h"	2020-10-13 21:51:15.981376100 -0700
-@@ -48,17 +48,16 @@
+@@ -50,17 +50,16 @@
  
    CatalystInstanceImpl();
  
@@ -24,7 +24,7 @@
  
    void extendNativeModules(
        jni::alias_ref<jni::JCollection<
-@@ -95,6 +94,7 @@
+@@ -98,6 +97,7 @@
    void setGlobalVariable(std::string propName, std::string &&jsonValue);
    jlong getJavaScriptContext();
    void handleMemoryPressure(int pressureLevel);

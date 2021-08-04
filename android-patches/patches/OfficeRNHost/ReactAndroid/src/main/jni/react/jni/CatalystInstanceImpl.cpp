@@ -8,10 +8,10 @@
        makeNativeMethod(
            "initializeBridge", CatalystInstanceImpl::initializeBridge),
        makeNativeMethod(
-@@ -131,26 +132,39 @@
-       makeNativeMethod(
-           "jniHandleMemoryPressure",
+@@ -133,26 +134,39 @@
            CatalystInstanceImpl::handleMemoryPressure),
+       makeNativeMethod(
+           "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),           
 +      makeNativeMethod("getPointerOfInstancePointer", CatalystInstanceImpl::getPointerOfInstancePointer)
    });
  
@@ -56,7 +56,7 @@
  
    // This used to be:
    //
-@@ -169,12 +183,13 @@
+@@ -171,12 +185,13 @@
    // don't need jsModuleDescriptions any more, all the way up and down the
    // stack.
  
@@ -75,7 +75,7 @@
    instance_->initializeBridge(
        std::make_unique<JInstanceCallback>(callback, moduleMessageQueue_),
        jseh->getExecutorFactory(),
-@@ -284,6 +299,10 @@
+@@ -286,6 +301,10 @@
    instance_->handleMemoryPressure(pressureLevel);
  }
  

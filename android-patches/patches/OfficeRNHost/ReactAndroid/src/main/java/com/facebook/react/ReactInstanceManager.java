@@ -16,7 +16,7 @@
  
    private class ReactContextInitParams {
      private final JavaScriptExecutorFactory mJsExecutorFactory;
-@@ -915,6 +917,15 @@
+@@ -922,6 +924,15 @@
      }
    }
  
@@ -32,7 +32,7 @@
    /** Add a listener to be notified of react instance events. */
    public void addReactInstanceEventListener(ReactInstanceEventListener listener) {
      mReactInstanceEventListeners.add(listener);
-@@ -1230,7 +1241,8 @@
+@@ -1245,7 +1256,8 @@
              .setJSExecutor(jsExecutor)
              .setRegistry(nativeModuleRegistry)
              .setJSBundleLoader(jsBundleLoader)

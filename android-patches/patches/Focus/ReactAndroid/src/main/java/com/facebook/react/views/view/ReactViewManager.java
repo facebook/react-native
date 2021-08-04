@@ -53,7 +53,7 @@
    @ReactProp(name = "borderStyle")
    public void setBorderStyle(ReactViewGroup view, @Nullable String borderStyle) {
      view.setBorderStyle(borderStyle);
-@@ -285,7 +320,7 @@
+@@ -289,7 +324,7 @@
  
    @Override
    public Map<String, Integer> getCommandsMap() {
@@ -62,7 +62,7 @@
    }
  
    @Override
-@@ -301,6 +336,16 @@
+@@ -305,6 +340,16 @@
            handleSetPressed(root, args);
            break;
          }
@@ -79,7 +79,7 @@
      }
    }
  
-@@ -317,6 +362,16 @@
+@@ -321,6 +366,16 @@
            handleSetPressed(root, args);
            break;
          }

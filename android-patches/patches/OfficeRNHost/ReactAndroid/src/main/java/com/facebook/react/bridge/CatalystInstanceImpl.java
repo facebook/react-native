@@ -68,7 +68,7 @@
                                              FLog.d(
                                                  ReactConstants.TAG,
                                                  "CatalystInstanceImpl.destroy() end");
-@@ -670,6 +682,8 @@
+@@ -679,6 +691,8 @@
  
    private native long getJavaScriptContext();
  
@@ -77,7 +77,7 @@
    private void incrementPendingJSCalls() {
      int oldPendingCalls = mPendingJSCalls.getAndIncrement();
      boolean wasIdle = oldPendingCalls == 0;
-@@ -775,6 +789,7 @@
+@@ -784,6 +798,7 @@
      private @Nullable NativeModuleRegistry mRegistry;
      private @Nullable JavaScriptExecutor mJSExecutor;
      private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
@@ -85,7 +85,7 @@
  
      public Builder setReactQueueConfigurationSpec(
          ReactQueueConfigurationSpec ReactQueueConfigurationSpec) {
-@@ -802,13 +817,20 @@
+@@ -811,13 +826,20 @@
        return this;
      }
  
