@@ -701,4 +701,20 @@ if (__DEV__) {
       );
     },
   });
+  
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access Picker. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access Picker. */
+  Object.defineProperty(module.exports, 'Picker', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'Picker has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
+          'See https://github.com/react-native-picker/picker',
+      );
+    },
+  });
 }
