@@ -16,6 +16,8 @@ struct InspectorData {
   std::string fileName;
   int lineNumber;
   int columnNumber;
+  // TODO T97216348: remove folly::dynamic from InspectorData struct
+  folly::dynamic props;
 };
 
 } // namespace react

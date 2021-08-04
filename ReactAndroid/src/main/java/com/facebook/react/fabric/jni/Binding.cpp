@@ -251,6 +251,7 @@ Binding::getInspectorDataForInstance(
   result["lineNumber"] = data.lineNumber;
   result["columnNumber"] = data.columnNumber;
   result["selectedIndex"] = data.selectedIndex;
+  result["props"] = data.props;
   auto hierarchy = folly::dynamic::array();
   for (auto hierarchyItem : data.hierarchy) {
     hierarchy.push_back(hierarchyItem);

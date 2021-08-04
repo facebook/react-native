@@ -206,7 +206,7 @@ InspectorData Scheduler::getInspectorDataForInstance(
         auto value = uiManagerBinding->getInspectorDataForInstance(
             runtime, eventEmitter);
 
-        // TODO: avoid transforming jsi
+        // TODO T97216348: avoid transforming jsi into folly::dynamic
         auto dynamic = jsi::dynamicFromValue(runtime, value);
         auto source = dynamic["source"];
 
@@ -216,6 +216,8 @@ InspectorData Scheduler::getInspectorDataForInstance(
         result.lineNumber = (int)source["lineNumber"].getDouble();
         result.columnNumber = (int)source["columnNumber"].getDouble();
         result.selectedIndex = (int)dynamic["selectedIndex"].getDouble();
+        // TODO T97216348: remove folly::dynamic from InspectorData struct
+        result.props = dynamic["props"];
         auto hierarchy = dynamic["hierarchy"];
         for (size_t i = 0; i < hierarchy.size(); i++) {
           auto viewHierarchyValue = hierarchy[i]["name"];
