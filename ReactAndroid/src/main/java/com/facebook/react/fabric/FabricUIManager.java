@@ -224,6 +224,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
+  /**
+   * This API returns metadata associated to the React Component that rendered the Android View
+   * received as a parameter.
+   *
+   * @param surfaceId {@link int} that represents the surfaceId for the View received as a
+   *     parameter. In practice surfaceId can be retrieved calling the {@link View#getId()} method
+   *     on the {@link ReactRoot} that holds the View received as a second parameter.
+   * @param view {@link View} view that will be used to retrieve the React view hierarchy metadata.
+   * @return a {@link ReadableMap} that contains metadata associated to the React Component that
+   *     rendered the Android View received as a parameter. For more details about the keys stored
+   *     in the {@link ReadableMap} refer to the "getInspectorDataForInstance" method from
+   *     com/facebook/react/fabric/jni/Binding.cpp file.
+   */
   @UiThread
   @ThreadConfined(UI)
   public ReadableMap getInspectorDataForInstance(final int surfaceId, final View view) {
