@@ -22,7 +22,9 @@ LOCAL_LDLIBS := -llog
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall -llog
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall -llog
+
+LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog
 
 include $(BUILD_SHARED_LIBRARY)
 

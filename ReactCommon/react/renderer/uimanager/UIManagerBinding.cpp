@@ -12,11 +12,11 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-static jsi::Object getModule(
+static jsi::Value getModule(
     jsi::Runtime &runtime,
     std::string const &moduleName) {
   auto batchedBridge =
@@ -31,11 +31,35 @@ static jsi::Object getModule(
     LOG(ERROR) << "getModule of " << moduleName << " is not an object";
   }
   react_native_assert(moduleAsValue.isObject());
-  return moduleAsValue.asObject(runtime);
+  return moduleAsValue;
+}
+
+static bool checkBatchedBridgeIsActive(jsi::Runtime &runtime) {
+  if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge")) {
+    LOG(ERROR)
+        << "getPropertyAsObject: property '__fbBatchedBridge' is undefined, expected an Object";
+    return false;
+  }
+  return true;
+}
+
+static bool checkGetCallableModuleIsActive(jsi::Runtime &runtime) {
+  if (!checkBatchedBridgeIsActive(runtime)) {
+    return false;
+  }
+  auto batchedBridge =
+      runtime.global().getPropertyAsObject(runtime, "__fbBatchedBridge");
+  if (!batchedBridge.hasProperty(runtime, "getCallableModule")) {
+    LOG(ERROR)
+        << "getPropertyAsFunction: function 'getCallableModule' is undefined, expected a Function";
+    return false;
+  }
+  return true;
 }
 
 std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
-    jsi::Runtime &runtime) {
+    jsi::Runtime &runtime,
+    RuntimeExecutor const &runtimeExecutor) {
   auto uiManagerModuleName = "nativeFabricUIManager";
 
   auto uiManagerValue =
@@ -43,7 +67,7 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
   if (uiManagerValue.isUndefined()) {
     // The global namespace does not have an instance of the binding;
     // we need to create, install and return it.
-    auto uiManagerBinding = std::make_shared<UIManagerBinding>();
+    auto uiManagerBinding = std::make_shared<UIManagerBinding>(runtimeExecutor);
     auto object = jsi::Object::createFromHostObject(runtime, uiManagerBinding);
     runtime.global().setProperty(
         runtime, uiManagerModuleName, std::move(object));
@@ -70,35 +94,75 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
   return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
 }
 
+UIManagerBinding::UIManagerBinding(RuntimeExecutor const &runtimeExecutor)
+    : runtimeExecutor_(runtimeExecutor) {}
+
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
                << this << ").";
-
-  // We must detach the `UIBinding` on deallocation to prevent accessing
-  // deallocated `UIManagerBinding`.
-  // Since `UIManagerBinding` retains `UIManager`, `UIManager` always overlive
-  // `UIManagerBinding`, therefore we don't need similar logic in `UIManager`'s
-  // destructor.
-  attach(nullptr);
 }
 
 void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
-  if (uiManager_) {
-    uiManager_->uiManagerBinding_ = nullptr;
-  }
-
   uiManager_ = uiManager;
+}
 
-  if (uiManager_) {
-    uiManager_->uiManagerBinding_ = this;
+static jsi::Value callMethodOfModule(
+    jsi::Runtime &runtime,
+    std::string const &moduleName,
+    std::string const &methodName,
+    std::initializer_list<jsi::Value> args) {
+  if (checkGetCallableModuleIsActive(runtime)) {
+    auto module = getModule(runtime, moduleName.c_str());
+    if (module.isObject()) {
+      jsi::Object object = module.asObject(runtime);
+      react_native_assert(object.hasProperty(runtime, methodName.c_str()));
+      if (object.hasProperty(runtime, methodName.c_str())) {
+        auto method = object.getPropertyAsFunction(runtime, methodName.c_str());
+        return method.callWithThis(runtime, object, args);
+      } else {
+        LOG(ERROR) << "getPropertyAsFunction: property '" << methodName
+                   << "' is undefined, expected a Function";
+      }
+    }
   }
+
+  return jsi::Value::undefined();
+}
+
+jsi::Value UIManagerBinding::getInspectorDataForInstance(
+    jsi::Runtime &runtime,
+    SharedEventEmitter eventEmitter) const {
+  auto eventTarget = eventEmitter->eventTarget_;
+  EventEmitter::DispatchMutex().lock();
+
+  if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge") ||
+      !eventTarget) {
+    return jsi::Value::undefined();
+  }
+
+  eventTarget->retain(runtime);
+  auto instanceHandle = eventTarget->getInstanceHandle(runtime);
+  eventTarget->release(runtime);
+  EventEmitter::DispatchMutex().unlock();
+
+  if (instanceHandle.isUndefined()) {
+    return jsi::Value::undefined();
+  }
+
+  return callMethodOfModule(
+      runtime,
+      "ReactFabric",
+      "getInspectorDataForInstance",
+      {std::move(instanceHandle)});
 }
 
 void UIManagerBinding::startSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
     std::string const &moduleName,
-    folly::dynamic const &initalProps) const {
+    folly::dynamic const &initalProps,
+    DisplayMode displayMode) const {
+  SystraceSection s("UIManagerBinding::startSurface");
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
@@ -113,16 +177,50 @@ void UIManagerBinding::startSurface(
     method.call(
         runtime,
         {jsi::String::createFromUtf8(runtime, moduleName),
-         jsi::valueFromDynamic(runtime, parameters)});
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
   } else {
-    auto module = getModule(runtime, "AppRegistry");
-    auto method = module.getPropertyAsFunction(runtime, "runApplication");
-
-    method.callWithThis(
+    callMethodOfModule(
         runtime,
-        module,
+        "AppRegistry",
+        "runApplication",
         {jsi::String::createFromUtf8(runtime, moduleName),
-         jsi::valueFromDynamic(runtime, parameters)});
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
+  }
+}
+
+void UIManagerBinding::setSurfaceProps(
+    jsi::Runtime &runtime,
+    SurfaceId surfaceId,
+    std::string const &moduleName,
+    folly::dynamic const &initalProps,
+    DisplayMode displayMode) const {
+  SystraceSection s("UIManagerBinding::setSurfaceProps");
+  folly::dynamic parameters = folly::dynamic::object();
+  parameters["rootTag"] = surfaceId;
+  parameters["initialProps"] = initalProps;
+  parameters["fabric"] = true;
+
+  if (moduleName.compare("LogBox") != 0 &&
+      runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
+    auto registry =
+        runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+    auto method = registry.getPropertyAsFunction(runtime, "setSurfaceProps");
+
+    method.call(
+        runtime,
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
+  } else {
+    callMethodOfModule(
+        runtime,
+        "AppRegistry",
+        "setSurfaceProps",
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters),
+         jsi::Value(runtime, displayModeToInt(displayMode))});
   }
 }
 
@@ -138,11 +236,11 @@ void UIManagerBinding::stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId)
     global.getPropertyAsFunction(runtime, "RN$stopSurface")
         .call(runtime, {jsi::Value{surfaceId}});
   } else {
-    auto module = getModule(runtime, "ReactFabric");
-    auto method =
-        module.getPropertyAsFunction(runtime, "unmountComponentAtNode");
-
-    method.callWithThis(runtime, module, {jsi::Value{surfaceId}});
+    callMethodOfModule(
+        runtime,
+        "ReactFabric",
+        "unmountComponentAtNode",
+        {jsi::Value{surfaceId}});
   }
 }
 
@@ -150,6 +248,7 @@ void UIManagerBinding::dispatchEvent(
     jsi::Runtime &runtime,
     EventTarget const *eventTarget,
     std::string const &type,
+    ReactEventPriority priority,
     ValueFactory const &payloadFactory) const {
   SystraceSection s("UIManagerBinding::dispatchEvent");
 
@@ -180,11 +279,13 @@ void UIManagerBinding::dispatchEvent(
   auto &eventHandlerWrapper =
       static_cast<EventHandlerWrapper const &>(*eventHandler_);
 
+  currentEventPriority_ = priority;
   eventHandlerWrapper.callback.call(
       runtime,
       {std::move(instanceHandle),
        jsi::String::createFromUtf8(runtime, type),
        std::move(payload)});
+  currentEventPriority_ = ReactEventPriority::Default;
 }
 
 void UIManagerBinding::invalidate() const {
@@ -195,6 +296,7 @@ jsi::Value UIManagerBinding::get(
     jsi::Runtime &runtime,
     jsi::PropNameID const &name) {
   auto methodName = name.utf8(runtime);
+  SystraceSection s("UIManagerBinding::get", "name", methodName);
 
   // Convert shared_ptr<UIManager> to a raw ptr
   // Why? Because:
@@ -282,7 +384,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) noexcept -> jsi::Value {
           uiManager->setIsJSResponder(
               shadowNodeFromValue(runtime, arguments[0]),
-              arguments[1].getBool());
+              arguments[1].getBool(),
+              arguments[2].getBool());
 
           return jsi::Value::undefined();
         });
@@ -429,13 +532,14 @@ jsi::Value UIManagerBinding::get(
 
   if (methodName == "completeRoot") {
     if (uiManager->backgroundExecutor_) {
+      std::weak_ptr<UIManager> weakUIManager = uiManager_;
       // Enhanced version of the method that uses `backgroundExecutor` and
       // captures a shared pointer to `UIManager`.
       return jsi::Function::createFromHostFunction(
           runtime,
           name,
           2,
-          [sharedUIManager = uiManager_](
+          [weakUIManager, uiManager](
               jsi::Runtime &runtime,
               jsi::Value const &thisValue,
               jsi::Value const *arguments,
@@ -447,8 +551,11 @@ jsi::Value UIManagerBinding::get(
             static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
             completeRootEventCounter += 1;
             mostRecentSurfaceId = surfaceId;
-            sharedUIManager->backgroundExecutor_(
-                [=, eventCount = completeRootEventCounter.load()] {
+            uiManager->backgroundExecutor_(
+                [weakUIManager,
+                 weakShadowNodeList,
+                 surfaceId,
+                 eventCount = completeRootEventCounter.load()] {
                   auto shouldYield = [=]() -> bool {
                     // If `completeRootEventCounter` was incremented, another
                     // `completeSurface` call has been scheduled and current
@@ -458,8 +565,9 @@ jsi::Value UIManagerBinding::get(
                   };
                   auto shadowNodeList =
                       shadowNodeListFromWeakList(weakShadowNodeList);
-                  if (shadowNodeList) {
-                    sharedUIManager->completeSurface(
+                  auto strongUIManager = weakUIManager.lock();
+                  if (shadowNodeList && strongUIManager) {
+                    strongUIManager->completeSurface(
                         surfaceId, shadowNodeList, {true, shouldYield});
                   }
                 });
@@ -703,8 +811,29 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "unstable_getCurrentEventPriority") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [this](
+            jsi::Runtime &,
+            jsi::Value const &,
+            jsi::Value const *,
+            size_t) noexcept -> jsi::Value {
+          return jsi::Value(serialize(currentEventPriority_));
+        });
+  }
+
+  if (methodName == "unstable_DefaultEventPriority") {
+    return jsi::Value(serialize(ReactEventPriority::Default));
+  }
+
+  if (methodName == "unstable_DiscreteEventPriority") {
+    return jsi::Value(serialize(ReactEventPriority::Discrete));
+  }
+
   return jsi::Value::undefined();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -14,7 +14,7 @@
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/graphics/rounding.h>
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 
 #include "ParagraphState.h"
 
@@ -78,8 +78,8 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
         laytableShadowNode->measure(layoutContext, localLayoutConstraints);
 
     // Rounding to *next* value on the pixel grid.
-    size.width += 0.01;
-    size.height += 0.01;
+    size.width += 0.01f;
+    size.height += 0.01f;
     size = roundToPixel<&ceil>(size, layoutContext.pointScaleFactor);
 
     auto fragmentLayoutMetrics = LayoutMetrics{};
@@ -104,12 +104,8 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
   auto &state = getStateData();
 
   react_native_assert(textLayoutManager_);
-  react_native_assert(
-      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
-      "`StateData` refers to a different `TextLayoutManager`");
 
-  if (state.attributedString == content.attributedString &&
-      state.layoutManager == textLayoutManager_) {
+  if (state.attributedString == content.attributedString) {
     return;
   }
 
@@ -138,11 +134,6 @@ Size ParagraphShadowNode::measureContent(
     textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
     textAttributes.apply(getConcreteProps().textAttributes);
     attributedString.appendFragment({string, textAttributes, {}});
-  }
-
-  auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-  if (telemetry) {
-    telemetry->didMeasureText();
   }
 
   return textLayoutManager_
@@ -195,7 +186,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   react_native_assert(
       content.attachments.size() == measurement.attachments.size());
 
-  for (auto i = 0; i < content.attachments.size(); i++) {
+  for (size_t i = 0; i < content.attachments.size(); i++) {
     auto &attachment = content.attachments.at(i);
 
     if (!traitCast<LayoutableShadowNode const *>(attachment.shadowNode)) {

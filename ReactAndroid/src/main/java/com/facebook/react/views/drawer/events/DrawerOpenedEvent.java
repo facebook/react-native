@@ -33,10 +33,4 @@ public class DrawerOpenedEvent extends Event<DrawerOpenedEvent> {
   protected WritableMap getEventData() {
     return Arguments.createMap();
   }
-
-  @Override
-  public short getCoalescingKey() {
-    // All events for a given view can be coalesced.
-    return 0;
-  }
 }

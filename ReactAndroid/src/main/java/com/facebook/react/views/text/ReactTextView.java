@@ -32,7 +32,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -127,6 +126,17 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
+    if (layout == null) {
+      // Text layout is calculated during pre-draw phase, so in some cases it can be empty during
+      // layout phase, which usually happens before drawing.
+      // The text layout is created by private {@link assumeLayout} method, which we can try to
+      // invoke directly through reflection or indirectly through some methods that compute it
+      // (e.g. {@link getExtendedPaddingTop}).
+      // It is safer, however, to just early return here, as next measure/layout passes are way more
+      // likely to have the text layout computed.
+      return;
+    }
+
     TextInlineViewPlaceholderSpan[] placeholders =
         text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
     ArrayList inlineViewInfoArray =
@@ -268,13 +278,11 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setText(ReactTextUpdate update) {
     mContainsImages = update.containsImages();
-    if (ReactFeatureFlags.enableSettingEmptyLayoutParams) {
-      // Android's TextView crashes when it tries to relayout if LayoutParams are
-      // null; explicitly set the LayoutParams to prevent this crash. See:
-      // https://github.com/facebook/react-native/pull/7011
-      if (getLayoutParams() == null) {
-        setLayoutParams(EMPTY_LAYOUT_PARAMS);
-      }
+    // Android's TextView crashes when it tries to relayout if LayoutParams are
+    // null; explicitly set the LayoutParams to prevent this crash. See:
+    // https://github.com/facebook/react-native/pull/7011
+    if (getLayoutParams() == null) {
+      setLayoutParams(EMPTY_LAYOUT_PARAMS);
     }
     Spannable spannable = update.getText();
     if (mLinkifyMaskType > 0) {

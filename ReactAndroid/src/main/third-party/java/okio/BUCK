@@ -1,14 +1,24 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("//tools/build_defs/oss:rn_defs.bzl", "rn_prebuilt_jar")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target", "rn_android_library", "rn_prebuilt_jar")
+
+rn_android_library(
+    name = "okio",
+    autoglob = False,
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":okio-binary",
+        # Forces resolver to use OSS Kotlin version
+        react_native_target("third-party/kotlin:kotlin-stdlib"),
+    ],
+)
 
 rn_prebuilt_jar(
-    name = "okio",
+    name = "okio-binary",
     binary_jar = ":okio-binary.jar",
-    visibility = ["//ReactAndroid/..."],
 )
 
 fb_native.remote_file(
     name = "okio-binary.jar",
-    sha1 = "34336f82f14dde1c0752fd5f0546dbf3c3225aba",
-    url = "mvn:com.squareup.okio:okio:jar:1.17.5",
+    sha1 = "accaddddbb597fb70290fd40358b1ce66b8c2b3d",
+    url = "mvn:com.squareup.okio:okio:jar:2.10.0",
 )

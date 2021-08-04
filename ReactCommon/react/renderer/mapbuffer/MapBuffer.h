@@ -7,13 +7,14 @@
 
 #pragma once
 
-#include <react/renderer/mapbuffer/Primitives.h>
+#include <react/debug/react_native_assert.h>
+#include <react/renderer/mapbuffer/primitives.h>
+
+#include <stdlib.h>
+#include <limits>
 
 namespace facebook {
 namespace react {
-
-// 506 = 5 entries = 50*10 + 6 sizeof(header)
-const int INITIAL_SIZE = 506;
 
 /**
  * MapBuffer is an optimized map format for transferring data like props between
@@ -32,50 +33,42 @@ const int INITIAL_SIZE = 506;
  */
 class MapBuffer {
  private:
-  Header _header = {ALIGNMENT, 0, 0};
-
-  void makeSpace();
-
-  void putBytes(Key key, uint8_t *value, int valueSize);
-
   // Buffer and its size
-  uint8_t *_data;
+  const uint8_t *data_ = nullptr;
 
-  uint16_t _dataSize;
+  // amount of bytes in the MapBuffer
+  int32_t dataSize_ = 0;
+
+  // amount of items in the MapBuffer
+  uint16_t count_ = 0;
+
+  // returns the relative offset of the first byte of dynamic data
+  int32_t getDynamicDataOffset() const;
 
  public:
-  MapBuffer() : MapBuffer(INITIAL_SIZE) {}
-
-  MapBuffer(int initialSize);
+  MapBuffer(uint8_t *const data, int32_t dataSize);
 
   ~MapBuffer();
 
-  void putInt(Key key, int value);
+  int32_t getInt(Key key) const;
 
-  void putBool(Key key, bool value);
+  bool getBool(Key key) const;
 
-  void putDouble(Key key, double value);
+  double getDouble(Key key) const;
 
-  void putNull(Key key);
+  std::string getString(Key key) const;
 
-  // TODO: create a MapBufferBuilder instead or add checks to verify
-  // if it's ok to read and write the Map
-  void finish();
+  // TODO T83483191: review this declaration
+  MapBuffer getMapBuffer(Key key) const;
 
-  int getInt(Key key);
+  int32_t getBufferSize() const;
 
-  bool getBool(Key key);
+  // TODO T83483191: review parameters of copy method
+  void copy(uint8_t *output) const;
 
-  double getDouble(Key key);
+  bool isNull(Key key) const;
 
-  uint16_t getBufferSize();
-
-  // TODO: review parameters of copy method
-  void copy(uint8_t *output);
-
-  bool isNull(Key key);
-
-  uint16_t getSize();
+  uint16_t getCount() const;
 };
 
 } // namespace react

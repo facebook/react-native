@@ -30,10 +30,19 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidFinishTransaction:mountingCoordinator];
   }
 
-  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, const ShadowView &shadowView) override
+  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, const ShadowNode &shadowNode) override
   {
     // Does nothing.
-    // Preemptive allocation of native views on iOS does not require this call.
+    // This delegate method is not currently used on iOS.
+  }
+
+  void schedulerDidCloneShadowNode(
+      SurfaceId surfaceId,
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) override
+  {
+    // Does nothing.
+    // This delegate method is not currently used on iOS.
   }
 
   void schedulerDidDispatchCommand(
@@ -45,10 +54,13 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
   }
 
-  void schedulerDidSetIsJSResponder(ShadowView const &shadowView, bool isJSResponder) override
+  void schedulerDidSetIsJSResponder(ShadowView const &shadowView, bool isJSResponder, bool blockNativeResponder)
+      override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidSetIsJSResponder:isJSResponder forShadowView:shadowView];
+    [scheduler.delegate schedulerDidSetIsJSResponder:isJSResponder
+                                blockNativeResponder:blockNativeResponder
+                                       forShadowView:shadowView];
   }
 
   void schedulerDidSendAccessibilityEvent(const ShadowView &shadowView, std::string const &eventType) override
@@ -101,7 +113,7 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   BOOL _layoutAnimationsEnabled;
 }
 
-- (instancetype)initWithToolbox:(facebook::react::SchedulerToolbox)toolbox
+- (instancetype)initWithToolbox:(SchedulerToolbox)toolbox
 {
   if (self = [super init]) {
     auto reactNativeConfig =

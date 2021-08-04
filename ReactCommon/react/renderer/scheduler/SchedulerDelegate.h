@@ -34,7 +34,15 @@ class SchedulerDelegate {
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(
       SurfaceId surfaceId,
-      const ShadowView &shadowView) = 0;
+      const ShadowNode &shadowView) = 0;
+
+  /*
+   * Called right after a ShadowNode is cloned.
+   */
+  virtual void schedulerDidCloneShadowNode(
+      SurfaceId surfaceId,
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) = 0;
 
   virtual void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
@@ -50,7 +58,8 @@ class SchedulerDelegate {
    */
   virtual void schedulerDidSetIsJSResponder(
       ShadowView const &shadowView,
-      bool isJSResponder) = 0;
+      bool isJSResponder,
+      bool blockNativeResponder) = 0;
 
   virtual ~SchedulerDelegate() noexcept = default;
 };

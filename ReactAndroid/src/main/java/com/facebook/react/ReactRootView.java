@@ -27,7 +27,6 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -36,6 +35,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -50,8 +50,10 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -329,8 +331,28 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onViewAdded(View child) {
+  public void onViewAdded(final View child) {
     super.onViewAdded(child);
+
+    // See comments in {@code ReactRootViewProhibitedChildView} for why we want this mechanism.
+    if (child instanceof ReactClippingProhibitedView) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              if (!child.isShown()) {
+                ReactSoftException.logSoftException(
+                    TAG,
+                    new ReactNoCrashSoftException(
+                        "A view was illegally added as a child of a ReactRootView. "
+                            + "This View should not be a direct child of a ReactRootView, because it is not visible and will never be reachable. Child: "
+                            + child.getClass().getCanonicalName().toString()
+                            + " child ID: "
+                            + child.getId()));
+              }
+            }
+          });
+    }
 
     if (mShouldLogContentAppeared) {
       mShouldLogContentAppeared = false;
@@ -420,21 +442,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return mState;
   }
 
-  @UiThread
-  public static Point getViewportOffset(View v) {
-    int[] locationInWindow = new int[2];
-    v.getLocationInWindow(locationInWindow);
-
-    // we need to subtract visibleWindowCoords - to subtract possible window insets, split
-    // screen or multi window
-    Rect visibleWindowFrame = new Rect();
-    v.getWindowVisibleDisplayFrame(visibleWindowFrame);
-    locationInWindow[0] -= visibleWindowFrame.left;
-    locationInWindow[1] -= visibleWindowFrame.top;
-
-    return new Point(locationInWindow[0], locationInWindow[1]);
-  }
-
   /**
    * Call whenever measure specs change, or if you want to force an update of offsetX/offsetY. If
    * measureSpecsChanged is false and the offsetX/offsetY don't change, updateRootLayoutSpecs will
@@ -472,7 +479,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         int offsetX = 0;
         int offsetY = 0;
         if (getUIManagerType() == FABRIC) {
-          Point viewportOffset = getViewportOffset(this);
+          Point viewportOffset = RootViewUtil.getViewportOffset(this);
           offsetX = viewportOffset.x;
           offsetY = viewportOffset.y;
         }

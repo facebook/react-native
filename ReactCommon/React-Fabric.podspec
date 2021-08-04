@@ -11,13 +11,13 @@ version = package['version']
 source = { :git => 'https://github.com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
-  source[:commit] = `git rev-parse HEAD`.strip
+  source[:commit] = `git rev-parse HEAD`.strip if system("git rev-parse --git-dir > /dev/null 2>&1")
 else
   source[:tag] = "v#{version}"
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2020.01.13.00'
+folly_version = '2021.06.28.00'
 folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 
@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
   s.source_files           = "dummyFile.cpp"
   s.library                = "stdc++"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
+                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
 
   s.dependency folly_dep_name, folly_version
   s.dependency "React-graphics", version
@@ -82,7 +82,7 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/core/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/core/tests"
     ss.header_dir           = "react/renderer/core"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
   s.subspec "componentregistry" do |ss|
@@ -90,6 +90,14 @@ Pod::Spec.new do |s|
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/componentregistry/**/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/renderer/componentregistry"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
+  s.subspec "componentregistrynative" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/componentregistry/native/**/*.{m,mm,cpp,h}"
+    ss.header_dir           = "react/renderer/componentregistry/native"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
@@ -136,15 +144,6 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/modal/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/modal/tests"
       sss.header_dir           = "react/renderer/components/modal"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
-    end
-
-    ss.subspec "picker" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/picker/iospicker/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/picker/iospicker/tests"
-      sss.header_dir           = "react/renderer/components/iospicker"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
     end
 
@@ -307,6 +306,33 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/uimanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/uimanager/tests"
     ss.header_dir           = "react/renderer/uimanager"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
+  s.subspec "telemetry" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/telemetry/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/telemetry/tests"
+    ss.header_dir           = "react/renderer/telemetry"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
+  s.subspec "leakchecker" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/leakchecker/**/*.{cpp,h}"
+    ss.exclude_files        = "react/renderer/leakchecker/tests"
+    ss.header_dir           = "react/renderer/leakchecker"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+  end
+
+  s.subspec "runtimescheduler" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/runtimescheduler/**/*.{cpp,h}"
+    ss.exclude_files        = "react/renderer/runtimescheduler/tests"
+    ss.header_dir           = "react/renderer/runtimescheduler"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 

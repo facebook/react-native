@@ -40,6 +40,7 @@ namespace react {
 
 const componentTemplate = `
 ::_CLASSNAME_::::::_CLASSNAME_::(
+    const PropsParserContext &context,
     const ::_CLASSNAME_:: &sourceProps,
     const RawProps &rawProps):::_EXTEND_CLASSES_::
 
@@ -51,7 +52,7 @@ function generatePropsString(componentName: string, component: ComponentShape) {
   return component.props
     .map(prop => {
       const defaultValue = convertDefaultTypeToString(componentName, prop);
-      return `${prop.name}(convertRawProp(rawProps, "${prop.name}", sourceProps.${prop.name}, {${defaultValue}}))`;
+      return `${prop.name}(convertRawProp(context, rawProps, "${prop.name}", sourceProps.${prop.name}, {${defaultValue}}))`;
     })
     .join(',\n' + '    ');
 }
@@ -65,7 +66,7 @@ function getClassExtendString(component): string {
           case 'ReactNativeBuiltInType':
             switch (extendProps.knownTypeName) {
               case 'ReactNativeCoreViewProps':
-                return 'ViewProps(sourceProps, rawProps)';
+                return 'ViewProps(context, sourceProps, rawProps)';
               default:
                 (extendProps.knownTypeName: empty);
                 throw new Error('Invalid knownTypeName');
@@ -86,10 +87,12 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'Props.cpp';
     const allImports: Set<string> = new Set([
       '#include <react/renderer/core/propsConversions.h>',
+      '#include <react/renderer/core/PropsParserContext.h>',
     ]);
 
     const componentProps = Object.keys(schema.modules)
@@ -121,6 +124,7 @@ module.exports = {
             const extendString = getClassExtendString(component);
 
             const imports = getImports(component.props);
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             imports.forEach(allImports.add, allImports);
 
             const replacedTemplate = componentTemplate

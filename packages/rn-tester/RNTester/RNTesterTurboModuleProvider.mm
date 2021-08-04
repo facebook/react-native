@@ -28,14 +28,5 @@ std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name
   return nullptr;
 }
 
-std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name,
-                                                         const ObjCTurboModule::InitParams &params) {
-  if (name == "SampleTurboModule") {
-    return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
-  }
-
-  return nullptr;
-}
-
 } // namespace react
 } // namespace facebook

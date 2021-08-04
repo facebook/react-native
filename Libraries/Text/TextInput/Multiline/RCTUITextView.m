@@ -165,8 +165,6 @@ static UIColor *defaultPlaceholderColor()
   [self textDidChange];
 }
 
-#pragma mark - Overrides
-
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
 {
   if (!notifyDelegate) {
@@ -296,6 +294,17 @@ static UIColor *defaultPlaceholderColor()
   }
 
   return textAttributes;
+}
+
+#pragma mark - Caret Manipulation
+
+- (CGRect)caretRectForPosition:(UITextPosition *)position
+{
+  if (_caretHidden) {
+    return CGRectZero;
+  }
+
+  return [super caretRectForPosition:position];
 }
 
 #pragma mark - Utility Methods

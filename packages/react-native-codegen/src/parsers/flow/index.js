@@ -11,7 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema.js';
-// $FlowFixMe there's no flowtype flow-parser
+// $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 const fs = require('fs');
 const path = require('path');

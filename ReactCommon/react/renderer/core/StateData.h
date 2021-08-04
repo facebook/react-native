@@ -11,6 +11,8 @@
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook {
@@ -27,6 +29,7 @@ struct StateData final {
   StateData() = default;
   StateData(StateData const &previousState, folly::dynamic data){};
   folly::dynamic getDynamic() const;
+  MapBuffer getMapBuffer() const;
 #endif
 };
 

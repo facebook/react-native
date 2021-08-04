@@ -54,7 +54,7 @@ class EmitterSubscription<EventDefinitions: {...}, K: $Keys<EventDefinitions>>
    * for removing the subscription lies with the EventEmitter.
    */
   remove(): void {
-    this.emitter.removeSubscription(this);
+    this.emitter.__removeSubscription(this);
   }
 }
 
