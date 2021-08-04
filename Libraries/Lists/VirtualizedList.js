@@ -16,6 +16,7 @@ const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 const ViewabilityHelper = require('./ViewabilityHelper');
+import VirtualizedListInjection from './VirtualizedListInjection';
 
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const infoLog = require('../Utilities/infoLog');
@@ -221,6 +222,7 @@ type OptionalProps = {|
    * within half the visible length of the list.
    */
   onEndReachedThreshold?: ?number,
+  onLayout?: ?(e: LayoutEvent) => void,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
@@ -810,27 +812,45 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
       }
-      cells.push(
-        <CellRenderer
-          CellRendererComponent={CellRendererComponent}
-          ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
-          cellKey={key}
-          fillRateHelper={this._fillRateHelper}
-          horizontal={horizontal}
-          index={ii}
-          inversionStyle={inversionStyle}
-          item={item}
-          key={key}
-          prevCellKey={prevCellKey}
-          onUpdateSeparators={this._onUpdateSeparators}
-          onLayout={e => this._onCellLayout(e, key, ii)}
-          onUnmount={this._onCellUnmount}
-          parentProps={this.props}
-          ref={ref => {
-            this._cellRefs[key] = ref;
-          }}
-        />,
-      );
+      const cellRendererBaseProps: CellRendererBaseProps = {
+        CellRendererComponent: CellRendererComponent,
+        ItemSeparatorComponent: ii < end ? ItemSeparatorComponent : undefined,
+        cellKey: key,
+        fillRateHelper: this._fillRateHelper,
+        horizontal: horizontal,
+        index: ii,
+        inversionStyle: inversionStyle,
+        item: item,
+        key: key,
+        prevCellKey: prevCellKey,
+        onUpdateSeparators: this._onUpdateSeparators,
+        onUnmount: this._onCellUnmount,
+        extraData: extraData,
+        ref: ref => {
+          this._cellRefs[key] = ref;
+        },
+      };
+      if (VirtualizedListInjection.useVLOptimization) {
+        cells.push(
+          <CellRenderer
+            {...cellRendererBaseProps}
+            onLayout={this._onCellLayout}
+            getItemLayout={getItemLayout}
+            renderItem={renderItem}
+            ListItemComponent={ListItemComponent}
+            debug={debug}
+          />,
+        );
+      } else {
+        cells.push(
+          <CellRenderer
+            {...cellRendererBaseProps}
+            experimentalVirtualizedListOpt={false}
+            onLayout={e => this._onCellLayout(e, key, ii)}
+            parentProps={this.props}
+          />,
+        );
+      }
       prevCellKey = key;
     }
   }
@@ -1269,7 +1289,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
-  _onCellLayout(e, cellKey, index) {
+  _onCellLayout = (e, cellKey, index): void => {
     const layout = e.nativeEvent.layout;
     const next = {
       offset: this._selectOffset(layout),
@@ -1302,7 +1322,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     this._computeBlankness();
     this._updateViewableItems(this.props.data);
-  }
+  };
 
   _onCellUnmount = (cellKey: string) => {
     const curr = this._frames[cellKey];
@@ -1893,7 +1913,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 }
 
-type CellRendererProps = {
+type CellRendererBaseProps = {
   CellRendererComponent?: ?React.ComponentType<any>,
   ItemSeparatorComponent: ?React.ComponentType<
     any | {highlighted: boolean, leadingItem: ?Item},
@@ -1992,6 +2012,15 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
+  _onLayout = (e): void => {
+    if (VirtualizedListInjection.useVLOptimization) {
+      this.props.onLayout &&
+        this.props.onLayout(e, this.props.cellKey, this.props.index);
+    } else {
+      this.props.onLayout && this.props.onLayout(e);
+    }
+  };
+
   _renderElement(renderItem, ListItemComponent, item, index) {
     if (renderItem && ListItemComponent) {
       console.warn(
@@ -2037,9 +2066,25 @@ class CellRenderer extends React.Component<
       item,
       index,
       inversionStyle,
-      parentProps,
     } = this.props;
-    const {renderItem, getItemLayout, ListItemComponent} = parentProps;
+
+    let ListItemComponent: $PropertyType<OptionalProps, 'ListEmptyComponent'>;
+    let renderItem: $PropertyType<OptionalProps, 'renderItem'>;
+    let debug: $PropertyType<OptionalProps, 'debug'>;
+    let getItemLayout: $PropertyType<OptionalProps, 'getItemLayout'>;
+    if (this.props.experimentalVirtualizedListOpt === true) {
+      ListItemComponent = this.props.ListItemComponent;
+      renderItem = this.props.renderItem;
+      debug = this.props.debug;
+      getItemLayout = this.props.getItemLayout;
+    } else {
+      const parentProps = this.props.parentProps;
+      ListItemComponent = parentProps.ListItemComponent;
+      renderItem = parentProps.renderItem;
+      debug = parentProps.debug;
+      getItemLayout = parentProps.getItemLayout;
+    }
+
     const element = this._renderElement(
       renderItem,
       ListItemComponent,

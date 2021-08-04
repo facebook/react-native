@@ -15,6 +15,7 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Animated from '../../Animated/Animated';
 import * as React from 'react';
 import {useEffect, useMemo, useRef, useCallback} from 'react';
+import VirtualizedListInjection from '../../Lists/VirtualizedListInjection';
 
 const AnimatedView = Animated.View;
 
@@ -264,7 +265,11 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
     props.onLayout(event);
     const child = React.Children.only(props.children);
     if (child.props.onLayout) {
-      child.props.onLayout(event);
+      if (VirtualizedListInjection.useVLOptimization) {
+        child.props.onLayout(event, child.props.cellKey, child.props.index);
+      } else {
+        child.props.onLayout(event);
+      }
     }
   };
 
