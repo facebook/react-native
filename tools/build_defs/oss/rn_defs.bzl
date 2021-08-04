@@ -367,3 +367,13 @@ HERMES_BYTECODE_VERSION = -1
 RCT_IMAGE_DATA_DECODER_SOCKET = None
 RCT_IMAGE_URL_LOADER_SOCKET = None
 RCT_URL_REQUEST_HANDLER_SOCKET = None
+
+def make_resource_glob(path):
+    return native.glob([path + "/**/*." + x for x in [
+        "m4a",
+        "mp3",
+        "otf",
+        "png",
+        "ttf",
+        "caf",
+    ]])
