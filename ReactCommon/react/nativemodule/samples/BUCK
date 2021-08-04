@@ -42,10 +42,10 @@ rn_xplat_cxx_library(
     force_static = True,
     ios_deps = [
         "//xplat/FBBaseLite:FBBaseLite",
-        "//xplat/js:RCTLinking",
-        "//xplat/js:RCTPushNotification",
         "//xplat/js/react-native-github:RCTCxxBridge",
         "//xplat/js/react-native-github:RCTCxxModule",
+        "//xplat/js/react-native-github:RCTLinking",
+        "//xplat/js/react-native-github:RCTPushNotification",
         "//xplat/js/react-native-github:ReactInternal",
     ],
     ios_exported_headers = subdir_glob(

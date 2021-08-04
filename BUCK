@@ -2,6 +2,7 @@ load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/apple:config_utils_defs.bzl", "STATIC_LIBRARY_APPLETVOS_CONFIG", "fbobjc_configs")
 load("//tools/build_defs/apple:fb_apple_test.bzl", "fb_apple_test")
 load("//tools/build_defs/apple:flag_defs.bzl", "get_base_appletvos_flags", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
+load("//tools/build_defs/apple/plugins:plugin_defs.bzl", "plugin")
 load("//tools/build_defs/oss:metro_defs.bzl", "rn_library")
 load(
     "//tools/build_defs/oss:rn_codegen_defs.bzl",
@@ -13,8 +14,13 @@ load(
     "APPLETVOS",
     "HERMES_BYTECODE_VERSION",
     "IOS",
+    "RCT_IMAGE_DATA_DECODER_SOCKET",
+    "RCT_IMAGE_URL_LOADER_SOCKET",
+    "RCT_URL_REQUEST_HANDLER_SOCKET",
+    "YOGA_APPLE_TARGET",
     "YOGA_CXX_TARGET",
     "react_fabric_component_plugin_provider",
+    "react_module_plugin_providers",
     "react_native_root_target",
     "react_native_xplat_dep",
     "react_native_xplat_target",
@@ -501,11 +507,11 @@ rn_xplat_cxx_library2(
     deps = [
         ":RCTFabricComponentViewsBase",
         "//fbobjc/Libraries/FBReactKit/RCTFabricComponent/RCTFabricComponentPlugin:RCTFabricComponentPlugin",
-        "//xplat/js:RCTImage",
-        "//xplat/js:RCTPushNotification",
-        "//xplat/js:RCTText",
         "//xplat/js/react-native-github:RCTCxxBridge",
         "//xplat/js/react-native-github:RCTCxxUtils",
+        "//xplat/js/react-native-github:RCTImage",
+        "//xplat/js/react-native-github:RCTPushNotification",
+        "//xplat/js/react-native-github:RCTText",
         "//xplat/js/react-native-github:ReactInternal",
         react_native_xplat_target("react/renderer/attributedstring:attributedstring"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
@@ -580,8 +586,8 @@ fb_apple_test(
     deps = [
         ":RCTFabricApple",
         react_native_xplat_target("react/renderer/element:elementApple"),
-        "//xplat/js:RCTTextApple",
         "//xplat/js/react-native-github:RCTFabricComponentViewsBaseApple",
+        "//xplat/js/react-native-github:RCTTextApple",
         "//xplat/js/react-native-github/ReactCommon/react/renderer/attributedstring:attributedstringApple",
         "//xplat/js/react-native-github/ReactCommon/react/renderer/componentregistry:componentregistryApple",
         "//xplat/js/react-native-github/ReactCommon/react/renderer/components/legacyviewmanagerinterop:legacyviewmanagerinteropApple",
@@ -603,8 +609,8 @@ fb_apple_test(
     deps = [
         ":ImageView",
         ":RCTFabricApple",
-        "//xplat/js:RCTTextApple",
         "//xplat/js/react-native-github:RCTFabricComponentViewsBaseApple",
+        "//xplat/js/react-native-github:RCTTextApple",
         "//xplat/js/react-native-github/ReactCommon/react/renderer/attributedstring:attributedstringApple",
         "//xplat/js/react-native-github/ReactCommon/react/renderer/componentregistry:componentregistryApple",
         "//xplat/js/react-native-github/ReactCommon/react/renderer/components/legacyviewmanagerinterop:legacyviewmanagerinteropApple",
@@ -655,8 +661,8 @@ rn_xplat_cxx_library2(
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = ["PUBLIC"],
     deps = [
-        "//xplat/js:RCTImage",
-        "//xplat/js:RCTLinking",
+        "//xplat/js/react-native-github:RCTImage",
+        "//xplat/js/react-native-github:RCTLinking",
         react_native_xplat_target("react/renderer/imagemanager:imagemanager"),
         react_native_xplat_target("react/renderer/components/image:image"),
         react_native_xplat_target("react/renderer/components/view:view"),
@@ -730,4 +736,690 @@ rn_codegen(
     ios_assume_nonnull = False,
     library_labels = ["supermodule:xplat/default/public.react_native.infra"],
     src_prefix = "Libraries/",
+)
+
+rn_apple_library(
+    name = "RCTAnimationApple",
+    srcs = glob([
+        "Libraries/NativeAnimation/**/*.m",
+        "Libraries/NativeAnimation/**/*.mm",
+    ]),
+    headers = glob(
+        [
+            "Libraries/NativeAnimation/**/*.h",
+        ],
+    ),
+    header_namespace = "",
+    exported_headers = glob(
+        [
+            "Libraries/NativeAnimation/*.h",
+            "Libraries/NativeAnimation/Drivers/*.h",
+            "Libraries/NativeAnimation/Nodes/*.h",
+        ],
+    ),
+    autoglob = False,
+    frameworks = [
+        "Foundation",
+        "QuartzCore",
+        "UIKit",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "disable_plugins_only_validation",
+        "extension_api_allow_unsafe_unavailable_usages",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    plugins =
+        react_module_plugin_providers(
+            name = "NativeAnimatedModule",
+            native_class_func = "RCTNativeAnimatedModuleCls",
+        ) + react_module_plugin_providers(
+            name = "NativeAnimatedTurboModule",
+            native_class_func = "RCTNativeAnimatedTurboModuleCls",
+        ),
+    plugins_header = "FBRCTAnimationPlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+    ],
+)
+
+rn_apple_library(
+    name = "RCTBlobApple",
+    srcs = glob([
+        "Libraries/Blob/*.m",
+        "Libraries/Blob/*.mm",
+    ]),
+    headers = glob(
+        [
+            "Libraries/Blob/*.h",
+        ],
+    ),
+    exported_headers = glob(
+        [
+            "Libraries/Blob/*.h",
+        ],
+    ),
+    autoglob = False,
+    enable_exceptions = True,
+    frameworks = [
+        "Foundation",
+        "UIKit",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "disable_plugins_only_validation",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    plugins =
+        react_module_plugin_providers(
+            name = "FileReaderModule",
+            native_class_func = "RCTFileReaderModuleCls",
+        ) + react_module_plugin_providers(
+            name = "BlobModule",
+            native_class_func = "RCTBlobManagerCls",
+        ) + [
+            plugin(
+                RCT_URL_REQUEST_HANDLER_SOCKET,
+                name = "BlobModule",
+            ),
+        ],
+    plugins_header = "FBRCTBlobPlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        ":RCTNetworkApple",
+        "//xplat/js/react-native-github:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+        "//xplat/js/react-native-github/React/CoreModules:CoreModulesApple",
+        "//xplat/jsi:jsiApple",
+    ],
+)
+
+rn_apple_library(
+    name = "RCTLinkingApple",
+    srcs = glob([
+        "Libraries/LinkingIOS/*.m",
+        "Libraries/LinkingIOS/*.mm",
+    ]),
+    headers = glob(
+        [
+            "Libraries/LinkingIOS/*.h",
+        ],
+    ),
+    exported_headers = glob(
+        [
+            "Libraries/LinkingIOS/*.h",
+        ],
+    ),
+    autoglob = False,
+    enable_exceptions = True,
+    frameworks = [
+        "Foundation",
+        "UIKit",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "disable_plugins_only_validation",
+        "extension_api_allow_unsafe_unavailable_usages",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    plugins =
+        react_module_plugin_providers(
+            name = "LinkingManager",
+            native_class_func = "RCTLinkingManagerCls",
+        ),
+    plugins_header = "FBRCTLinkingPlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+        "//xplat/jsi:jsiApple",
+    ],
+)
+
+rn_apple_library(
+    name = "RCTPushNotificationApple",
+    srcs = glob([
+        "Libraries/PushNotificationIOS/*.m",
+        "Libraries/PushNotificationIOS/*.mm",
+    ]),
+    headers = glob(
+        [
+            "Libraries/PushNotificationIOS/*.h",
+        ],
+    ),
+    exported_headers = glob(
+        [
+            "Libraries/PushNotificationIOS/*.h",
+        ],
+    ),
+    autoglob = False,
+    enable_exceptions = True,
+    frameworks = [
+        "Foundation",
+        "UIKit",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "disable_plugins_only_validation",
+        "extension_api_allow_unsafe_unavailable_usages",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    plugins =
+        react_module_plugin_providers(
+            name = "PushNotificationManager",
+            native_class_func = "RCTPushNotificationManagerCls",
+        ),
+    plugins_header = "FBRCTPushNotificationPlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+        "//xplat/jsi:jsiApple",
+    ],
+)
+
+rn_apple_library(
+    name = "RCTImageApple",
+    srcs = glob([
+        "Libraries/Image/*.m",
+        "Libraries/Image/*.mm",
+    ]),
+    headers = glob(
+        [
+            "Libraries/Image/*.h",
+        ],
+    ),
+    exported_headers = glob(
+        [
+            "Libraries/Image/*.h",
+        ],
+    ),
+    autoglob = False,
+    frameworks = [
+        "AVFoundation",
+        "Accelerate",
+        "CoreMedia",
+        "Foundation",
+        "ImageIO",
+        "MobileCoreServices",
+        "QuartzCore",
+        "UIKit",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "disable_plugins_only_validation",
+        "extension_api_allow_unsafe_unavailable_usages",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    plugins =
+        react_module_plugin_providers(
+            name = "GIFImageDecoder",
+            native_class_func = "RCTGIFImageDecoderCls",
+        ) + react_module_plugin_providers(
+            name = "ImageEditingManager",
+            native_class_func = "RCTImageEditingManagerCls",
+        ) + react_module_plugin_providers(
+            name = "ImageLoader",
+            native_class_func = "RCTImageLoaderCls",
+        ) + react_module_plugin_providers(
+            name = "ImageStoreManager",
+            native_class_func = "RCTImageStoreManagerCls",
+        ) + react_module_plugin_providers(
+            name = "LocalAssetImageLoader",
+            native_class_func = "RCTLocalAssetImageLoaderCls",
+        ) + [
+            plugin(
+                RCT_IMAGE_DATA_DECODER_SOCKET,
+                name = "GIFImageDecoder",
+            ),
+            plugin(
+                RCT_IMAGE_URL_LOADER_SOCKET,
+                name = "LocalAssetImageLoader",
+            ),
+            plugin(
+                RCT_URL_REQUEST_HANDLER_SOCKET,
+                name = "ImageLoader",
+            ),
+            plugin(
+                RCT_URL_REQUEST_HANDLER_SOCKET,
+                name = "ImageStoreManager",
+            ),
+        ],
+    plugins_header = "FBRCTImagePlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        ":RCTNetworkApple",
+        "//xplat/js/react-native-github:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+    ],
+)
+
+RCTNETWORK_PUBLIC_HEADERS = [
+    "Libraries/Network/RCTNetworkTask.h",
+    "Libraries/Network/RCTNetworking.h",
+]
+
+rn_apple_library(
+    name = "RCTNetworkApple",
+    srcs = glob([
+        "Libraries/Network/*.m",
+        "Libraries/Network/*.mm",
+    ]),
+    headers = glob(
+        [
+            "Libraries/Network/*.h",
+        ],
+        exclude = RCTNETWORK_PUBLIC_HEADERS,
+    ),
+    exported_headers = RCTNETWORK_PUBLIC_HEADERS,
+    autoglob = False,
+    enable_exceptions = True,
+    frameworks = [
+        "CoreTelephony",
+        "Foundation",
+        "MobileCoreServices",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "disable_plugins_only_validation",
+        "extension_api_allow_unsafe_unavailable_usages",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    plugins =
+        react_module_plugin_providers(
+            name = "Networking",
+            native_class_func = "RCTNetworkingCls",
+        ) + react_module_plugin_providers(
+            name = "DataRequestHandler",
+            native_class_func = "RCTDataRequestHandlerCls",
+        ) + react_module_plugin_providers(
+            name = "FileRequestHandler",
+            native_class_func = "RCTFileRequestHandlerCls",
+        ) + react_module_plugin_providers(
+            name = "HTTPRequestHandler",
+            native_class_func = "RCTHTTPRequestHandlerCls",
+        ) + [
+            plugin(
+                RCT_URL_REQUEST_HANDLER_SOCKET,
+                name = "DataRequestHandler",
+            ),
+            plugin(
+                RCT_URL_REQUEST_HANDLER_SOCKET,
+                name = "FileRequestHandler",
+            ),
+            plugin(
+                RCT_URL_REQUEST_HANDLER_SOCKET,
+                name = "HTTPRequestHandler",
+            ),
+        ],
+    plugins_header = "FBRCTNetworkPlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+    ],
+)
+
+rn_apple_library(
+    name = "RCTSettingsApple",
+    srcs = glob([
+        "Libraries/Settings/*.m",
+        "Libraries/Settings/*.mm",
+    ]),
+    exported_headers = glob(
+        [
+            "Libraries/Settings/*.h",
+        ],
+    ),
+    autoglob = False,
+    frameworks = [
+        "Foundation",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "disable_plugins_only_validation",
+    ],
+    plugins = react_module_plugin_providers(
+        name = "SettingsManager",
+        native_class_func = "RCTSettingsManagerCls",
+    ),
+    plugins_header = "FBRCTSettingsPlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+    ],
+)
+
+rn_xplat_cxx_library2(
+    name = "RCTText",
+    srcs = glob([
+        "Libraries/Text/**/*.m",
+        "Libraries/Text/**/*.mm",
+    ]),
+    headers = glob(
+        [
+            "Libraries/Text/**/*.h",
+        ],
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            (
+                "Libraries/Text",
+                "*.h",
+            ),
+            (
+                "Libraries/Text/BaseText",
+                "*.h",
+            ),
+            (
+                "Libraries/Text/RawText",
+                "*.h",
+            ),
+            (
+                "Libraries/Text/Text",
+                "*.h",
+            ),
+            (
+                "Libraries/Text/TextInput",
+                "*.h",
+            ),
+            (
+                "Libraries/Text/TextInput/Multiline",
+                "*.h",
+            ),
+            (
+                "Libraries/Text/TextInput/Singleline",
+                "*.h",
+            ),
+            (
+                "Libraries/Text/VirtualText",
+                "*.h",
+            ),
+        ],
+        prefix = "React",
+    ),
+    frameworks = [
+        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
+    ],
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:RCTLinking",
+        "//xplat/js/react-native-github:RCTPushNotification",
+        "//xplat/js/react-native-github:ReactInternal",
+        YOGA_CXX_TARGET,
+    ],
+)
+
+rn_apple_library(
+    name = "RCTVibrationApple",
+    srcs = glob([
+        "Libraries/Vibration/**/*.m",
+        "Libraries/Vibration/**/*.mm",
+    ]),
+    exported_headers = glob(
+        [
+            "Libraries/Vibration/*.h",
+        ],
+    ),
+    autoglob = False,
+    frameworks = [
+        "AudioToolbox",
+        "Foundation",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "depslint_never_remove",
+        "disable_plugins_only_validation",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    plugins = react_module_plugin_providers(
+        name = "Vibration",
+        native_class_func = "RCTVibrationCls",
+    ),
+    plugins_header = "FBRCTVibrationPlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+    ],
+)
+
+rn_xplat_cxx_library2(
+    name = "RCTWrapper",
+    srcs = glob([
+        "Libraries/Wrapper/*.m",
+        "Libraries/Wrapper/*.mm",
+    ]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            (
+                "Libraries/Wrapper",
+                "*.h",
+            ),
+        ],
+        prefix = "RCTWrapper",
+    ),
+    frameworks = [
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+    ],
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:RCTLinking",
+        "//xplat/js/react-native-github:RCTPushNotification",
+        "//xplat/js/react-native-github:ReactInternal",
+    ],
+)
+
+rn_xplat_cxx_library2(
+    name = "RCTWrapperExample",
+    srcs = glob([
+        "Libraries/Wrapper/Example/*.m",
+        "Libraries/Wrapper/Example/*.mm",
+    ]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            (
+                "Libraries/Wrapper/Example",
+                "*.h",
+            ),
+        ],
+        prefix = "RCTWrapperExample",
+    ),
+    frameworks = [
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+    ],
+    labels = [
+        "depslint_never_remove",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
+    visibility = ["PUBLIC"],
+    deps = [
+        ":RCTWrapper",
+        "//xplat/js/react-native-github:RCTLinking",
+        "//xplat/js/react-native-github:RCTPushNotification",
+        "//xplat/js/react-native-github:ReactInternal",
+    ],
+)
+
+rn_xplat_cxx_library2(
+    name = "RCTSurfaceHostingComponent",
+    srcs = glob([
+        "Libraries/SurfaceHostingComponent/**/*.m",
+        "Libraries/SurfaceHostingComponent/**/*.mm",
+    ]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            (
+                "Libraries/SurfaceHostingComponent",
+                "*.h",
+            ),
+        ],
+        prefix = "RCTSurfaceHostingComponent",
+    ),
+    frameworks = [
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
+    ],
+    labels = [
+        "depslint_never_remove",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
+    visibility = ["PUBLIC"],
+    deps = [
+        "//fbobjc/Libraries/MobileUI/ComponentKit:ComponentKit",
+        "//xplat/js/react-native-github:RCTLinking",
+        "//xplat/js/react-native-github:RCTPushNotification",
+        "//xplat/js/react-native-github:ReactInternal",
+    ],
+)
+
+rn_xplat_cxx_library2(
+    name = "RCTSurfaceBackedComponent",
+    srcs = glob([
+        "Libraries/SurfaceBackedComponent/**/*.m",
+        "Libraries/SurfaceBackedComponent/**/*.mm",
+    ]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            (
+                "Libraries/SurfaceBackedComponent",
+                "*.h",
+            ),
+        ],
+        prefix = "RCTSurfaceBackedComponent",
+    ),
+    frameworks = [
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
+    ],
+    labels = [
+        "depslint_never_remove",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
+    visibility = ["PUBLIC"],
+    deps = [
+        ":RCTSurfaceHostingComponent",
+        "//fbobjc/Libraries/MobileUI/ComponentKit:ComponentKit",
+        "//xplat/js/react-native-github:RCTLinking",
+        "//xplat/js/react-native-github:RCTPushNotification",
+        "//xplat/js/react-native-github:ReactInternal",
+    ],
+)
+
+rn_xplat_cxx_library2(
+    name = "RCTMapView_RNHeader",
+    header_namespace = "",
+    exported_headers = {
+        "React/RCTConvert+CoreLocation.h": RCTVIEWS_PATH + "RCTConvert+CoreLocation.h",
+    },
+    labels = [
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    visibility = [
+        "//fbobjc/Libraries/FBReactKit:RCTMapView",
+        "//fbobjc/VendorLib/react-native-maps:react-native-maps",
+    ],
+)
+
+rn_apple_library(
+    name = "RCTTestApple",
+    srcs = glob([
+        "packages/rn-tester/RCTTest/**/*.m",
+        "packages/rn-tester/RCTTest/**/*.mm",
+    ]),
+    headers = glob([
+        "packages/rn-tester/RCTTest/**/*.h",
+    ]),
+    exported_headers = {
+        "RCTTest/RCTTestRunner.h": "packages/rn-tester/RCTTest/RCTTestRunner.h",
+    },
+    autoglob = False,
+    frameworks = [
+        "XCTest",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "disable_plugins_only_validation",
+    ],
+    plugins = react_module_plugin_providers(
+        name = "TestModule",
+        native_class_func = "RCTTestModuleCls",
+    ),
+    plugins_header = "FBRCTTestPlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+        "//xplat/js/react-native-github/React/CoreModules:CoreModulesApple",
+        YOGA_APPLE_TARGET,
+    ],
 )
