@@ -11,3 +11,6 @@
 
 [alias]
   rntester = //packages/rn-tester/android/app:app
+
+[project]
+  package_boundary_exceptions = .
