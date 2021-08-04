@@ -41,4 +41,20 @@ describe('URL', function() {
     const k = new URL('en-US/docs', 'https://developer.mozilla.org');
     expect(k.href).toBe('https://developer.mozilla.org/en-US/docs');
   });
+
+  it('should properly parse query strings', () => {
+    const a = new URL('/search?q=test', 'https://google.com');
+    expect(a.href).toBe('https://google.com/search?q=test');
+    expect([...a.searchParams].length).toBe(1);
+    const b = new URL('https://google.com/search?q=test');
+    expect(b.href).toBe('https://google.com/search?q=test');
+    expect([...b.searchParams].length).toBe(1);
+    const c = new URL('https://google.com/search?q=test&utm=facebook');
+    expect(c.href).toBe('https://google.com/search?q=test&utm=facebook');
+    expect([...c.searchParams].length).toBe(2);
+    const d = new URL('https://google.com/search?q=test');
+    d.searchParams.append('utm', 'facebook');
+    expect(d.href).toBe('https://google.com/search?q=test&utm=facebook');
+    expect([...d.searchParams].length).toBe(2);
+  });
 });
