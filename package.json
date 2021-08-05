@@ -90,9 +90,9 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
-    "@react-native-community/cli": "^6.0.0-rc.0",
-    "@react-native-community/cli-platform-android": "^6.0.0-rc.0",
-    "@react-native-community/cli-platform-ios": "^6.0.0-rc.0",
+    "@react-native-community/cli": "^6.0.0",
+    "@react-native-community/cli-platform-android": "^6.0.0",
+    "@react-native-community/cli-platform-ios": "^6.0.0",
     "@react-native/assets": "1.0.0",
     "@react-native/normalize-color": "1.0.0",
     "@react-native/polyfills": "1.0.0",
