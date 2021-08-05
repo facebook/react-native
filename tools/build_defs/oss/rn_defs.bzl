@@ -340,6 +340,7 @@ def fb_apple_library(*args, **kwargs):
     _ = kwargs.pop("inherited_buck_flags", [])
     _ = kwargs.pop("plugins", [])
     _ = kwargs.pop("complete_nullability", False)
+    _ = kwargs.pop("plugins_header", "")
 
     native.apple_library(*args, **kwargs)
 
@@ -355,7 +356,7 @@ def fb_xplat_cxx_test(**_kwargs):
     pass
 
 # iOS Plugin support.
-def react_module_plugin_providers():
+def react_module_plugin_providers(*args, **kwargs):
     # Noop for now
     return []
 
