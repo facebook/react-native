@@ -149,13 +149,12 @@ const Text: React.AbstractComponent<
     }
   }
 
-  const numberOfLines = restProps.numberOfLines;
-  if (numberOfLines != null) {
-    invariant(
-      numberOfLines >= 0,
-      'Number of lines in <Text/> component can not be negative, passed value: %s.',
-      [numberOfLines],
+  let numberOfLines = restProps.numberOfLines;
+  if (numberOfLines != null && !(numberOfLines >= 0)) {
+    console.error(
+      `'numberOfLines' in <Text> must be a non-negative number, received: ${numberOfLines}. The value will be set to 0.`,
     );
+    numberOfLines = 0;
   }
 
   const hasTextAncestor = useContext(TextAncestor);
@@ -165,6 +164,7 @@ const Text: React.AbstractComponent<
       {...restProps}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
+      numberOfLines={numberOfLines}
       selectionColor={selectionColor}
       style={style}
       ref={forwardedRef}
@@ -178,6 +178,7 @@ const Text: React.AbstractComponent<
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
+        numberOfLines={numberOfLines}
         selectionColor={selectionColor}
         style={style}
         ref={forwardedRef}
