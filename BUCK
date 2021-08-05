@@ -203,8 +203,6 @@ RCTLIB_PATH = "Libraries/"
 
 RCTBASE_PATH = "React/Base/"
 
-RCTCOREMODULES_PATH = "React/CoreModules/"
-
 RCTDEVSUPPORT_PATH = "React/DevSupport/"
 
 RCTMODULES_PATH = "React/Modules/"
@@ -235,7 +233,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTDisplayLink.h": RCTBASE_PATH + "RCTDisplayLink.h",
     "React/RCTErrorCustomizer.h": RCTBASE_PATH + "RCTErrorCustomizer.h",
     "React/RCTErrorInfo.h": RCTBASE_PATH + "RCTErrorInfo.h",
-    "React/RCTEventDispatcher.h": RCTCOREMODULES_PATH + "RCTEventDispatcher.h",
+    # NOTE: RCTEventDispatcher.h is exported from CoreModules:CoreModulesApple
     "React/RCTEventDispatcherProtocol.h": RCTBASE_PATH + "RCTEventDispatcherProtocol.h",
     "React/RCTEventEmitter.h": RCTMODULES_PATH + "RCTEventEmitter.h",
     "React/RCTFont.h": RCTVIEWS_PATH + "RCTFont.h",
