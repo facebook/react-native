@@ -90,8 +90,7 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
 
     if (mReactApplicationContext.hasActiveReactInstance()) {
       // Don't emit an event to JS if the dimensions haven't changed
-      WritableMap displayMetrics =
-          DisplayMetricsHolder.getDisplayMetricsWritableMap(mFontScale);
+      WritableMap displayMetrics = DisplayMetricsHolder.getDisplayMetricsWritableMap(mFontScale);
       if (mPreviousDisplayMetrics == null) {
         mPreviousDisplayMetrics = displayMetrics.copy();
       } else if (!displayMetrics.equals(mPreviousDisplayMetrics)) {

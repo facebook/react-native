@@ -7,6 +7,16 @@
 
 package com.facebook.react.modules.deviceinfo;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaOnlyMap;
@@ -15,9 +25,9 @@ import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
-
+import java.util.Arrays;
+import java.util.List;
 import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,29 +42,12 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
 @RunWith(RobolectricTestRunner.class)
-@PrepareForTest({
-  Arguments.class,
-  DisplayMetricsHolder.class
-})
+@PrepareForTest({Arguments.class, DisplayMetricsHolder.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class DeviceInfoModuleTest extends TestCase {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   private DeviceInfoModule mDeviceInfoModule;
   private DeviceEventManagerModule.RCTDeviceEventEmitter mRCTDeviceEventEmitterMock;
@@ -70,11 +63,12 @@ public class DeviceInfoModuleTest extends TestCase {
 
     mRCTDeviceEventEmitterMock = mock(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
 
-    final ReactApplicationContext context = spy(new ReactApplicationContext(RuntimeEnvironment.application));
+    final ReactApplicationContext context =
+        spy(new ReactApplicationContext(RuntimeEnvironment.application));
     CatalystInstance catalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
     context.initializeWithInstance(catalystInstanceMock);
     when(context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class))
-      .thenReturn(mRCTDeviceEventEmitterMock);
+        .thenReturn(mRCTDeviceEventEmitterMock);
 
     mDeviceInfoModule = new DeviceInfoModule(context);
   }
@@ -130,25 +124,23 @@ public class DeviceInfoModuleTest extends TestCase {
     givenDisplayMetricsHolderContains(fakeLandscapeDisplayMetrics);
     mDeviceInfoModule.emitUpdateDimensionsEvent();
 
-    verifyUpdateDimensionsEventsEmitted(mRCTDeviceEventEmitterMock,
-      fakeLandscapeDisplayMetrics,
-      fakePortraitDisplayMetrics,
-      fakeLandscapeDisplayMetrics
-    );
+    verifyUpdateDimensionsEventsEmitted(
+        mRCTDeviceEventEmitterMock,
+        fakeLandscapeDisplayMetrics,
+        fakePortraitDisplayMetrics,
+        fakeLandscapeDisplayMetrics);
   }
 
   private static void givenDisplayMetricsHolderContains(final WritableMap fakeDisplayMetrics) {
-    when(DisplayMetricsHolder.getDisplayMetricsWritableMap(1.0))
-      .thenReturn(fakeDisplayMetrics);
+    when(DisplayMetricsHolder.getDisplayMetricsWritableMap(1.0)).thenReturn(fakeDisplayMetrics);
   }
 
   private static void verifyUpdateDimensionsEventsEmitted(
-    DeviceEventManagerModule.RCTDeviceEventEmitter emitter,
-    WritableMap... expectedEvents
-  ) {
+      DeviceEventManagerModule.RCTDeviceEventEmitter emitter, WritableMap... expectedEvents) {
     List<WritableMap> expectedEventList = Arrays.asList(expectedEvents);
     ArgumentCaptor<WritableMap> captor = ArgumentCaptor.forClass(WritableMap.class);
-    verify(emitter, times(expectedEventList.size())).emit(eq("didUpdateDimensions"), captor.capture());
+    verify(emitter, times(expectedEventList.size()))
+        .emit(eq("didUpdateDimensions"), captor.capture());
 
     List<WritableMap> actualEvents = captor.getAllValues();
     assertThat(actualEvents).isEqualTo(expectedEventList);
@@ -157,13 +149,13 @@ public class DeviceInfoModuleTest extends TestCase {
   private void initTestData() {
     mockStatic(Arguments.class);
     when(Arguments.createMap())
-      .thenAnswer(
-        new Answer<Object>() {
-          @Override
-          public Object answer(InvocationOnMock invocation) throws Throwable {
-            return new JavaOnlyMap();
-          }
-        });
+        .thenAnswer(
+            new Answer<Object>() {
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                return new JavaOnlyMap();
+              }
+            });
 
     fakePortraitDisplayMetrics = Arguments.createMap();
     fakePortraitDisplayMetrics.putInt("width", 100);
