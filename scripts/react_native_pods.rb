@@ -194,7 +194,9 @@ def use_react_native_codegen!(spec, options={})
   end
 
   # Prepare filesystem by creating empty files that will be picked up as references by CocoaPods.
-  spec.prepare_command = "mkdir -p #{generated_dirs.join(" ")} && touch #{generated_files.join(" ")}"
+  prepare_command = "mkdir -p #{generated_dirs.join(" ")} && touch -a #{generated_files.join(" ")}"
+  system(prepare_command) # Always run prepare_command when a podspec uses the codegen, as CocoaPods may skip invoking this command in certain scenarios
+  spec.prepare_command = prepare_command
 
   spec.script_phase = {
     :name => 'Generate Specs',
