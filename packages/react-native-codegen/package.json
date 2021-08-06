@@ -16,7 +16,8 @@
   "license": "MIT",
   "files": [
     "lib",
-    "android"
+    "android",
+    "scripts"
   ],
   "dependencies": {
     "flow-parser": "^0.121.0",
