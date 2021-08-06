@@ -282,40 +282,6 @@ def findNodeModulePath(baseDir, packageName) {
     return null
 }
 
-def getNdkBuildName() {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        return "ndk-build.cmd"
-    } else {
-        return "ndk-build"
-    }
-}
-
-def findNdkBuildFullPath() {
-    // android.ndkDirectory should return project.android.ndkVersion ndkDirectory
-    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
-    if (ndkDir) {
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
-
-    // we allow to provide full path to ndk-build tool
-    if (hasProperty("ndk.command")) {
-        return property("ndk.command")
-    }
-    // or just a path to the containing directory
-    if (hasProperty("ndk.path")) {
-        ndkDir = property("ndk.path")
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
-
-    // @TODO ANDROID_NDK && ndk.dir is deprecated and will be removed in the future.
-    if (System.getenv("ANDROID_NDK") != null) {
-        ndkDir = System.getenv("ANDROID_NDK")
-        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
-    }
-
-    return null
-}
-
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
     return value != null ? value : "8081"
@@ -334,76 +300,20 @@ def reactNativeArchitectures() {
     return value != null && isDebug ? value : "all"
 }
 
-def getNdkBuildFullPath() {
-    def ndkBuildFullPath = findNdkBuildFullPath()
-    if (ndkBuildFullPath == null) {
-        throw new GradleScriptException(
-                "ndk-build binary cannot be found, check if you've set " +
-                        "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
-                        "setup in local.properties",
-                null)
-    }
-    if (!new File(ndkBuildFullPath).canExecute()) {
-        throw new GradleScriptException(
-                "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-                        "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
-                        "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
-                null)
-    }
-    return ndkBuildFullPath
+def ndkBuildJobs() {
+    return project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
 }
 
-def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
-    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractAARHeaders, extractJNIFiles)
-    dependsOn("generateCodegenArtifactsFromSchema");
-
-    inputs.dir("$projectDir/../ReactCommon")
-    inputs.dir("src/main/jni")
-    inputs.dir("src/main/java/com/facebook/react/turbomodule/core/jni")
-    inputs.dir("src/main/java/com/facebook/react/modules/blob")
-    outputs.dir("$buildDir/react-ndk/all")
-    commandLine(getNdkBuildFullPath(),
-            "APP_ABI=${reactNativeArchitectures()}",
-            "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),
-            "NDK_PROJECT_PATH=null",
-            "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-            "NDK_OUT=" + temporaryDir,
-            "NDK_LIBS_OUT=$buildDir/react-ndk/all",
-            "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
-            "REACT_COMMON_DIR=$projectDir/../ReactCommon",
-            "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
-            "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
-            "-C", file("src/main/jni/react/jni").absolutePath,
-            "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
-    )
-}
-
-def cleanReactNdkLib = tasks.register("cleanReactNdkLib", Exec) {
-    ignoreExitValue(true)
-    errorOutput(new ByteArrayOutputStream())
-    commandLine(getNdkBuildFullPath(),
-            "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-            "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
-            "REACT_COMMON_DIR=$projectDir/../ReactCommon",
-            "-C", file("src/main/jni/react/jni").absolutePath,
-            "clean")
-    doLast {
-        file(AAR_OUTPUT_URL).delete()
-        println("Deleted aar output dir at ${file(AAR_OUTPUT_URL)}")
+tasks.register("packageReactNdkLibsForBuck", Copy) {
+    if (nativeBuildType.equalsIgnoreCase("debug")) {
+        dependsOn("mergeDebugNativeLibs")
+        from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
+    } else {
+        dependsOn("mergeReleaseNativeLibs")
+        from("$buildDir/intermediates/merged_native_libs/release/out/lib/")
     }
-}
-
-def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
-    dependsOn(buildReactNdkLib)
-    from("$buildDir/react-ndk/all")
-    into("$buildDir/react-ndk/exported")
     exclude("**/libjsc.so")
     exclude("**/libhermes.so")
-}
-
-def packageReactNdkLibsForBuck = tasks.register("packageReactNdkLibsForBuck", Copy) {
-    dependsOn(packageReactNdkLibs)
-    from("$buildDir/react-ndk/exported")
     into("src/main/jni/prebuilt/lib")
 }
 
@@ -463,11 +373,30 @@ android {
 
         testApplicationId("com.facebook.react.tests.gradle")
         testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
+
+        externalNativeBuild {
+            ndkBuild {
+                arguments "APP_ABI=${reactNativeArchitectures()}",
+                        "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
+                        "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
+                        "REACT_COMMON_DIR=$projectDir/../ReactCommon",
+                        "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
+                        "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
+                        "-j${ndkBuildJobs()}"
+
+                if (Os.isFamily(Os.FAMILY_MAC)) {
+                    // This flag will suppress "fcntl(): Bad file descriptor" warnings on local builds.
+                    arguments "--output-sync=none"
+                }
+            }
+        }
     }
+
+    preBuild.dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractAARHeaders, extractJNIFiles)
+    preBuild.dependsOn("generateCodegenArtifactsFromSchema")
 
     sourceSets.main {
         jni.srcDirs = []
-        jniLibs.srcDir("$buildDir/react-ndk/exported")
         res.srcDirs = ["src/main/res/devsupport", "src/main/res/shell", "src/main/res/views/modal", "src/main/res/views/uimanager"]
         java {
             srcDirs = ["src/main/java", "src/main/libraries/soloader/java", "src/main/jni/first-party/fb/jni/java"]
@@ -475,9 +404,6 @@ android {
             exclude("com/facebook/react/module/processing")
         }
     }
-
-    preBuild.dependsOn(packageReactNdkLibs)
-    clean.dependsOn(cleanReactNdkLib)
 
     lintOptions {
         abortOnError(false)
@@ -492,6 +418,12 @@ android {
         extractHeaders
         extractJNI
         javadocDeps.extendsFrom api
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path "src/main/jni/react/jni/Android.mk"
+        }
     }
 }
 

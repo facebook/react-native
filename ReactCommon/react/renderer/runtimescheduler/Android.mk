@@ -15,7 +15,7 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../
 
-LOCAL_SHARED_LIBRARIES := libruntimeexecutor libreact_render_core
+LOCAL_SHARED_LIBRARIES := libruntimeexecutor libreact_render_core libreact_debug
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
