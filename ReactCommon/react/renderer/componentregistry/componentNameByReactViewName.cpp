@@ -29,7 +29,7 @@ std::string componentNameByReactViewName(std::string viewName) {
   }
 
   // TODO T63839307: remove this condition after deleting TextInlineImage from
-  // non-Fabric code
+  // old renderer code
   if (viewName == "TextInlineImage") {
     return "Image";
   }

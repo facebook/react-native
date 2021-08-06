@@ -41,8 +41,8 @@ class ComponentDescriptor {
    * and `ComponentHandle` (the particular custom implementation might use
    * stored `flavor` to return different values from those virtual methods).
    * Since it's a very niche requirement (e.g. we plan to use it for
-   * an interoperability layer with Paper), we are thinking about removing this
-   * feature completely after it's no longer needed.
+   * an interoperability layer with old renderer), we are thinking about
+   * removing this feature completely after it's no longer needed.
    */
   using Flavor = std::shared_ptr<void const>;
 
