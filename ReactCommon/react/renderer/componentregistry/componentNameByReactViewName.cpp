@@ -14,6 +14,7 @@ std::string componentNameByReactViewName(std::string viewName) {
   // We need this function only for the transition period;
   // eventually, all names will be unified.
 
+  // TODO T97384889: unify component names between JS - Android - iOS - C++
   std::string rctPrefix("RCT");
   if (std::mismatch(rctPrefix.begin(), rctPrefix.end(), viewName.begin())
           .first == rctPrefix.end()) {
