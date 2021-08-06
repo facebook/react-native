@@ -329,8 +329,8 @@ export function addIgnorePatterns(
     if (pattern instanceof RegExp) {
       for (const existingPattern of ignorePatterns.entries()) {
         if (
-          existingPattern instanceof RegExp &&
-          existingPattern.toString() === pattern.toString()
+          existingPattern[0] instanceof RegExp &&
+          existingPattern[0].toString() === pattern.toString()
         ) {
           return false;
         }
