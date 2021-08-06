@@ -30,9 +30,12 @@ namespace react {
 namespace {
 
 std::unique_ptr<HermesRuntime> makeHermesRuntimeSystraced(
-    const ::hermes::vm::RuntimeConfig &runtimeConfig) {
+    const folly::Optional<::hermes::vm::RuntimeConfig> &runtimeConfig) {
   SystraceSection s("HermesExecutorFactory::makeHermesRuntimeSystraced");
-  return hermes::makeHermesRuntime(runtimeConfig);
+  if (runtimeConfig.hasValue()) {
+    return hermes::makeHermesRuntime(runtimeConfig.value());
+  }
+  return hermes::makeHermesRuntime();
 }
 
 #ifdef HERMES_ENABLE_DEBUGGER
