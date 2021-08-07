@@ -327,6 +327,7 @@ export function getIgnorePatterns(): $ReadOnlyArray<IgnorePattern> {
 export function addIgnorePatterns(
   patterns: $ReadOnlyArray<IgnorePattern>,
 ): void {
+  const existingSize = ignorePatterns.size;
   // The same pattern may be added multiple times, but adding a new pattern
   // can be expensive so let's find only the ones that are new.
   patterns.forEach((pattern: IgnorePattern) => {
@@ -343,6 +344,9 @@ export function addIgnorePatterns(
     }
     ignorePatterns.add(pattern);
   });
+  if (ignorePatterns.size === existingSize) {
+    return;
+  }
   // We need to recheck all of the existing logs.
   // This allows adding an ignore pattern anywhere in the codebase.
   // Without this, if you ignore a pattern after the a log is created,
