@@ -330,7 +330,7 @@ export function addIgnorePatterns(
   // The same pattern may be added multiple times, but adding a new pattern
   // can be expensive so let's find only the ones that are new.
   patterns.forEach((pattern: IgnorePattern) => {
-    if (pattern instanceof RegExp) { 
+    if (pattern instanceof RegExp) {
       for (const existingPattern of ignorePatterns) {
         if (
           existingPattern instanceof RegExp &&
