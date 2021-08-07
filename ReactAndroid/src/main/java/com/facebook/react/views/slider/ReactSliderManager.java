@@ -149,7 +149,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
   @Override
   protected ReactSlider createViewInstance(ThemedReactContext context) {
     final ReactSlider slider = new ReactSlider(context, null, STYLE);
-    ViewCompat.setAccessibilityDelegate(slider, sAccessibilityDelegate);
+    ViewCompat.setAccessibilityDelegate(slider, new ReactSliderAccessibilityDelegate());
     return slider;
   }
 
@@ -278,8 +278,8 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
     return mDelegate;
   }
 
-  protected static class ReactSliderAccessibilityDelegate extends ReactAccessibilityDelegate {
-    private static boolean isSliderAction(int action) {
+  protected class ReactSliderAccessibilityDelegate extends ReactAccessibilityDelegate {
+    private boolean isSliderAction(int action) {
       return (action == AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId())
           || (action == AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId())
           || (action == AccessibilityActionCompat.ACTION_SET_PROGRESS.getId());
@@ -297,7 +297,4 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
       return rv;
     }
   };
-
-  protected static ReactSliderAccessibilityDelegate sAccessibilityDelegate =
-      new ReactSliderAccessibilityDelegate();
 }
