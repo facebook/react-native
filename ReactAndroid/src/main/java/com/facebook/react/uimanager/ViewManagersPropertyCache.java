@@ -45,13 +45,40 @@ import java.util.Map;
     protected final Method mSetter;
     protected final @Nullable Integer mIndex; /* non-null only for group setters */
 
-    // The following Object arrays are used to prevent extra allocations from varargs when we call
-    // Method.invoke. It's safe for those objects to be static as we update properties in a single
-    // thread sequentially
-    private static final Object[] VIEW_MGR_ARGS = new Object[2];
-    private static final Object[] VIEW_MGR_GROUP_ARGS = new Object[3];
-    private static final Object[] SHADOW_ARGS = new Object[1];
-    private static final Object[] SHADOW_GROUP_ARGS = new Object[2];
+     /**
+     * use ThreadLocal for every shadow thread
+     */
+    private static final ThreadLocal<Object[]> VIEW_MGR_ARGS = new ThreadLocal<Object[]>(){
+      @Nullable
+      @Override
+      protected Object[] initialValue() {
+        return new Object[2];
+      }
+    };
+
+    private static final ThreadLocal<Object[]> VIEW_MGR_GROUP_ARGS = new ThreadLocal<Object[]>(){
+      @Nullable
+      @Override
+      protected Object[] initialValue() {
+        return new Object[3];
+      }
+    };
+
+    private static final ThreadLocal<Object[]> SHADOW_ARGS = new ThreadLocal<Object[]>(){
+      @Nullable
+      @Override
+      protected Object[] initialValue() {
+        return new Object[1];
+      }
+    };
+
+    private static final ThreadLocal<Object[]> SHADOW_GROUP_ARGS = new ThreadLocal<Object[]>(){
+      @Nullable
+      @Override
+      protected Object[] initialValue() {
+        return new Object[2];
+      }
+    };
 
     private PropSetter(ReactProp prop, String defaultType, Method setter) {
       mPropName = prop.name();
@@ -82,16 +109,16 @@ import java.util.Map;
     public void updateViewProp(ViewManager viewManager, View viewToUpdate, Object value) {
       try {
         if (mIndex == null) {
-          VIEW_MGR_ARGS[0] = viewToUpdate;
-          VIEW_MGR_ARGS[1] = getValueOrDefault(value, viewToUpdate.getContext());
-          mSetter.invoke(viewManager, VIEW_MGR_ARGS);
-          Arrays.fill(VIEW_MGR_ARGS, null);
+          VIEW_MGR_ARGS.get()[0] = viewToUpdate;
+          VIEW_MGR_ARGS.get()[1] = getValueOrDefault(value, viewToUpdate.getContext());
+          mSetter.invoke(viewManager, VIEW_MGR_ARGS.get());
+          Arrays.fill(VIEW_MGR_ARGS.get(), null);
         } else {
-          VIEW_MGR_GROUP_ARGS[0] = viewToUpdate;
-          VIEW_MGR_GROUP_ARGS[1] = mIndex;
-          VIEW_MGR_GROUP_ARGS[2] = getValueOrDefault(value, viewToUpdate.getContext());
-          mSetter.invoke(viewManager, VIEW_MGR_GROUP_ARGS);
-          Arrays.fill(VIEW_MGR_GROUP_ARGS, null);
+          VIEW_MGR_GROUP_ARGS.get()[0] = viewToUpdate;
+          VIEW_MGR_GROUP_ARGS.get()[1] = mIndex;
+          VIEW_MGR_GROUP_ARGS.get()[2] = getValueOrDefault(value, viewToUpdate.getContext());
+          mSetter.invoke(viewManager, VIEW_MGR_GROUP_ARGS.get());
+          Arrays.fill(VIEW_MGR_GROUP_ARGS.get(), null);
         }
       } catch (Throwable t) {
         FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
@@ -107,14 +134,14 @@ import java.util.Map;
     public void updateShadowNodeProp(ReactShadowNode nodeToUpdate, Object value) {
       try {
         if (mIndex == null) {
-          SHADOW_ARGS[0] = getValueOrDefault(value, nodeToUpdate.getThemedContext());
-          mSetter.invoke(nodeToUpdate, SHADOW_ARGS);
-          Arrays.fill(SHADOW_ARGS, null);
+          SHADOW_ARGS.get()[0] = getValueOrDefault(value, nodeToUpdate.getThemedContext());
+          mSetter.invoke(nodeToUpdate, SHADOW_ARGS.get());
+          Arrays.fill(SHADOW_ARGS.get(), null);
         } else {
-          SHADOW_GROUP_ARGS[0] = mIndex;
-          SHADOW_GROUP_ARGS[1] = getValueOrDefault(value, nodeToUpdate.getThemedContext());
-          mSetter.invoke(nodeToUpdate, SHADOW_GROUP_ARGS);
-          Arrays.fill(SHADOW_GROUP_ARGS, null);
+          SHADOW_GROUP_ARGS.get()[0] = mIndex;
+          SHADOW_GROUP_ARGS.get()[1] = getValueOrDefault(value, nodeToUpdate.getThemedContext());
+          mSetter.invoke(nodeToUpdate, SHADOW_GROUP_ARGS.get());
+          Arrays.fill(SHADOW_GROUP_ARGS.get(), null);
         }
       } catch (Throwable t) {
         FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
