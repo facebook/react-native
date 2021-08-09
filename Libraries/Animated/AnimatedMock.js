@@ -41,7 +41,9 @@ export type CompositeAnimation = {
 const emptyAnimation = {
   start: (callback?: ?EndCallback) => {
     // we use setTimeout here so that the callbacks are async
-    if (callback) setTimeout(callback, 0);
+    if (callback) {
+      setTimeout(() => callback({finished: true}), 0);
+    }
   },
   stop: () => {},
   reset: () => {},

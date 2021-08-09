@@ -14,6 +14,13 @@ const AnimatedMock = require('../AnimatedMock');
 const AnimatedImplementation = require('../AnimatedImplementation');
 
 describe('Animated Mock', () => {
+  const mockStartCallback = jest.fn();
+  jest.useFakeTimers();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('matches implementation keys', () => {
     expect(Object.keys(AnimatedMock)).toEqual(
       Object.keys(AnimatedImplementation),
@@ -48,13 +55,6 @@ describe('Animated Mock', () => {
       }
     });
     done();
-  });
-
-  const mockStartCallback = jest.fn();
-  jest.useFakeTimers();
-
-  beforeEach(() => {
-    jest.clearAllMocks();
   });
 
   const itCallsStartCallback = () => {
