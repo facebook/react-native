@@ -49,4 +49,83 @@ describe('Animated Mock', () => {
     });
     done();
   });
+
+  const mockStartCallback = jest.fn();
+  jest.useFakeTimers();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const itCallsStartCallback = () => {
+    jest.runAllTimers();
+
+    expect(mockStartCallback).toHaveBeenCalledTimes(1);
+  };
+
+  describe('Animated.parallel', () => {
+    it('calls the start callback', () => {
+      AnimatedMock.parallel([]).start(mockStartCallback);
+
+      jest.runAllTimers();
+
+      itCallsStartCallback();
+    });
+  });
+
+  describe('Animated.sequence', () => {
+    it('calls the start callback', () => {
+      AnimatedMock.sequence([]).start(mockStartCallback);
+
+      jest.runAllTimers();
+
+      itCallsStartCallback();
+    });
+  });
+
+  describe('Animated.loop', () => {
+    it('calls the start callback', () => {
+      AnimatedMock.loop(AnimatedMock.timing(new AnimatedMock.Value(0))).start(
+        mockStartCallback,
+      );
+
+      itCallsStartCallback();
+    });
+  });
+
+  describe('Animated.delay', () => {
+    it('calls the start callback', () => {
+      AnimatedMock.decay(new AnimatedMock.Value(0)).start(mockStartCallback);
+
+      itCallsStartCallback();
+    });
+  });
+
+  describe('Animated.stagger', () => {
+    it('calls the start callback', () => {
+      AnimatedMock.stagger(50, []).start(mockStartCallback);
+
+      itCallsStartCallback();
+    });
+  });
+
+  describe('Animated.timing', () => {
+    it('calls the start callback', () => {
+      AnimatedMock.timing(new AnimatedMock.Value(0), {toValue: 20}).start(
+        mockStartCallback,
+      );
+
+      itCallsStartCallback();
+    });
+  });
+
+  describe('Animated.spring', () => {
+    it('calls the start callback', () => {
+      AnimatedMock.spring(new AnimatedMock.Value(0), {toValue: 20}).start(
+        mockStartCallback,
+      );
+
+      itCallsStartCallback();
+    });
+  });
 });
