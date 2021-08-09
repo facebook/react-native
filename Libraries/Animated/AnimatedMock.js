@@ -39,7 +39,10 @@ export type CompositeAnimation = {
 };
 
 const emptyAnimation = {
-  start: () => {},
+  start: (callback?: ?EndCallback) => {
+    // we use setTimeout here so that the callbacks are async
+    if (callback) setTimeout(callback, 0);
+  },
   stop: () => {},
   reset: () => {},
   _startNativeLoop: () => {},
@@ -57,7 +60,7 @@ const spring = function(
     ...emptyAnimation,
     start: (callback?: ?EndCallback): void => {
       anyValue.setValue(config.toValue);
-      callback && callback({finished: true});
+      emptyAnimation.start(callback);
     },
   };
 };
@@ -71,7 +74,7 @@ const timing = function(
     ...emptyAnimation,
     start: (callback?: ?EndCallback): void => {
       anyValue.setValue(config.toValue);
-      callback && callback({finished: true});
+      emptyAnimation.start(callback);
     },
   };
 };
