@@ -39,4 +39,5 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO", "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_TARGET_SRCROOT)/../../../\" \"$(PODS_ROOT)/RCT-Folly\"" }
 
   s.dependency "RCT-Folly/Fabric", folly_version
+  s.dependency "React-Core/Default", version
 end

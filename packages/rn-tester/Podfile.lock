@@ -583,6 +583,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-graphics (1000.0.0):
     - RCT-Folly/Fabric (= 2021.06.28.00)
+    - React-Core/Default (= 1000.0.0)
   - React-jsi (1000.0.0):
     - boost (= 1.76.0)
     - DoubleConversion
@@ -879,7 +880,7 @@ SPEC CHECKSUMS:
   React-CoreModules: 5ee1ed4f8b7f8bdbd45ed155a15c601dca9c73dd
   React-cxxreact: 20a63475c83c5450442c754305738c6db6070214
   React-Fabric: 7641eab239c5fc5669ef22ea08cf383f9066fdcb
-  React-graphics: 3ea907482e46997c9a14c60521918985f9425504
+  React-graphics: db797c4609216593a1a12d1661716898d303900f
   React-jsi: 7cc3d3691803478047e7d2c8eb5d4c2f9c6d2922
   React-jsiexecutor: 02ed9d4a28a8acf44788b4697e13c4aadc42cf72
   React-jsinspector: 7d223826b0e7a61b3540c21b9eca2603b1d4e823
