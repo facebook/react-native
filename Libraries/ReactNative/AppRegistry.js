@@ -52,7 +52,7 @@ export type Registry = {
   runnables: Runnables,
   ...
 };
-export type WrapperComponentProvider = any => React$ComponentType<*>;
+export type WrapperComponentProvider = any => React$ComponentType<any>;
 
 const runnables: Runnables = {};
 let runCount = 1;

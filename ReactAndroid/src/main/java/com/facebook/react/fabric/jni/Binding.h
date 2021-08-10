@@ -15,10 +15,12 @@
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
+
 #include <memory>
 #include <mutex>
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
+#include "EventEmitterWrapper.h"
 #include "JBackgroundExecutor.h"
 #include "SurfaceHandlerBinding.h"
 
@@ -95,6 +97,9 @@ class Binding : public jni::HybridClass<Binding>,
       jfloat offsetY,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
+
+  jni::local_ref<ReadableNativeMap::jhybridobject> getInspectorDataForInstance(
+      jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper);
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 

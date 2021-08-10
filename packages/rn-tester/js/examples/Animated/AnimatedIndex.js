@@ -13,9 +13,12 @@ import RotatingImagesExample from './RotatingImagesExample';
 import ContinuousInteractionsExample from './ContinuousInteractionsExample';
 import LoopingExample from './LoopingExample';
 import MovingBoxExample from './MovingBoxExample';
+import EasingExample from './EasingExample';
 import FadeInViewExample from './FadeInViewExample';
 import ComposeAnimationsWithEasingExample from './ComposeAnimationsWithEasingExample';
 import TransformBounceExample from './TransformBounceExample';
+import ComposingExample from './ComposingExample';
+import TransformStylesExample from './TransformStylesExample';
 
 export default ({
   framework: 'React',
@@ -25,8 +28,12 @@ export default ({
   description:
     'Library designed to make animations fluid, powerful, and painless to ' +
     'build and maintain.',
+  showIndividualExamples: true,
   examples: [
+    TransformStylesExample,
     FadeInViewExample,
+    ComposingExample,
+    EasingExample,
     ComposeAnimationsWithEasingExample,
     RotatingImagesExample,
     MovingBoxExample,

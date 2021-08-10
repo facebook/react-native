@@ -435,4 +435,38 @@ TEST_F(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
   EXPECT_EQ(stubQueue_->size(), 0);
 }
 
+TEST_F(RuntimeSchedulerTest, scheduleTaskFromTask) {
+  bool didRunFirstTask = false;
+  bool didRunSecondTask = false;
+  auto firstCallback = createHostFunctionFromLambda(
+      [this, &didRunFirstTask, &didRunSecondTask](bool didUserCallbackTimeout) {
+        didRunFirstTask = true;
+        EXPECT_FALSE(didUserCallbackTimeout);
+
+        auto secondCallback = createHostFunctionFromLambda(
+            [&didRunSecondTask](bool didUserCallbackTimeout) {
+              didRunSecondTask = true;
+              EXPECT_FALSE(didUserCallbackTimeout);
+              return jsi::Value::undefined();
+            });
+
+        runtimeScheduler_->scheduleTask(
+            SchedulerPriority::ImmediatePriority, std::move(secondCallback));
+        return jsi::Value::undefined();
+      });
+
+  runtimeScheduler_->scheduleTask(
+      SchedulerPriority::NormalPriority, std::move(firstCallback));
+
+  EXPECT_FALSE(didRunFirstTask);
+  EXPECT_FALSE(didRunSecondTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunFirstTask);
+  EXPECT_TRUE(didRunSecondTask);
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
 } // namespace facebook::react

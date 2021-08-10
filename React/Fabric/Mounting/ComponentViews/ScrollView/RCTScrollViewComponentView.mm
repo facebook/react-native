@@ -86,10 +86,9 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   // some other part of the system scrolls scroll view.
   BOOL _isUserTriggeredScrolling;
 
-  BOOL _isOnDemandViewMountingEnabled;
-
   CGPoint _contentOffsetWhenClipped;
   NSMutableArray<UIView<RCTComponentViewProtocol> *> *_childComponentViews;
+  BOOL _subviewClippingEnabled;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -106,7 +105,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     static const auto defaultProps = std::make_shared<const ScrollViewProps>();
     _props = defaultProps;
 
-    _isOnDemandViewMountingEnabled = RCTExperimentGetOnDemandViewMounting();
     _childComponentViews = [[NSMutableArray alloc] init];
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
@@ -115,6 +113,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
     _isUserTriggeredScrolling = NO;
     [self addSubview:_scrollView];
+    _subviewClippingEnabled = RCTGetRemoveClippedSubviewsEnabled();
 
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
     [_scrollView addSubview:_containerView];
@@ -327,27 +326,25 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (_isOnDemandViewMountingEnabled) {
-    [_childComponentViews insertObject:childComponentView atIndex:index];
-  } else {
+  if (_subviewClippingEnabled) {
     [_containerView insertSubview:childComponentView atIndex:index];
+  } else {
+    [_childComponentViews insertObject:childComponentView atIndex:index];
   }
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (_isOnDemandViewMountingEnabled) {
+  if (!_subviewClippingEnabled) {
     RCTAssert(
         [_childComponentViews objectAtIndex:index] == childComponentView,
         @"Attempt to unmount improperly mounted component view.");
     [_childComponentViews removeObjectAtIndex:index];
-    // In addition to removing a view from `_childComponentViews`,
-    // we have to unmount views immediately to not mess with recycling.
-    [childComponentView removeFromSuperview];
-  } else {
-    RCTAssert(childComponentView.superview == _containerView, @"Attempt to unmount improperly mounted component view.");
-    [childComponentView removeFromSuperview];
   }
+
+  // In addition to removing a view from `_childComponentViews`,
+  // we have to unmount views immediately to not mess with recycling.
+  [childComponentView removeFromSuperview];
 }
 
 /*
@@ -607,10 +604,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)_remountChildrenIfNeeded
 {
-  if (!_isOnDemandViewMountingEnabled) {
-    return;
-  }
-
   CGPoint contentOffset = _scrollView.contentOffset;
 
   if (std::abs(_contentOffsetWhenClipped.x - contentOffset.x) < kClippingLeeway &&
@@ -625,68 +618,68 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)_remountChildren
 {
-  if (!_isOnDemandViewMountingEnabled) {
-    return;
-  }
+  if (_subviewClippingEnabled) {
+    [_scrollView updateClippedSubviewsWithClipRect:CGRectInset(_scrollView.bounds, -kClippingLeeway, -kClippingLeeway)
+                                    relativeToView:_scrollView];
+  } else {
+    CGRect visibleFrame = [_scrollView convertRect:_scrollView.bounds toView:_containerView];
+    visibleFrame = CGRectInset(visibleFrame, -kClippingLeeway, -kClippingLeeway);
 
-  CGRect visibleFrame = [_scrollView convertRect:_scrollView.bounds toView:_containerView];
-  visibleFrame = CGRectInset(visibleFrame, -kClippingLeeway, -kClippingLeeway);
-
-  // `zoomScale` is negative in RTL. Absolute value is needed.
-  CGFloat scale = 1.0 / std::abs(_scrollView.zoomScale);
-  visibleFrame.origin.x *= scale;
-  visibleFrame.origin.y *= scale;
-  visibleFrame.size.width *= scale;
-  visibleFrame.size.height *= scale;
-
+    // `zoomScale` is negative in RTL. Absolute value is needed.
+    CGFloat scale = 1.0 / std::abs(_scrollView.zoomScale);
+    visibleFrame.origin.x *= scale;
+    visibleFrame.origin.y *= scale;
+    visibleFrame.size.width *= scale;
+    visibleFrame.size.height *= scale;
 #ifndef NDEBUG
-  NSMutableArray<UIView<RCTComponentViewProtocol> *> *expectedSubviews = [NSMutableArray new];
+    NSMutableArray<UIView<RCTComponentViewProtocol> *> *expectedSubviews = [NSMutableArray new];
 #endif
 
-  NSInteger mountedIndex = 0;
-  for (UIView *componentView in _childComponentViews) {
-    BOOL shouldBeMounted = YES;
-    BOOL isMounted = componentView.superview != nil;
+    NSInteger mountedIndex = 0;
+    for (UIView *componentView in _childComponentViews) {
+      BOOL shouldBeMounted = YES;
+      BOOL isMounted = componentView.superview != nil;
 
-    // It's simpler and faster to not mess with views that are not `RCTViewComponentView` subclasses.
-    if ([componentView isKindOfClass:[RCTViewComponentView class]]) {
-      RCTViewComponentView *viewComponentView = (RCTViewComponentView *)componentView;
-      auto layoutMetrics = viewComponentView->_layoutMetrics;
+      // It's simpler and faster to not mess with views that are not `RCTViewComponentView` subclasses.
+      if ([componentView isKindOfClass:[RCTViewComponentView class]]) {
+        RCTViewComponentView *viewComponentView = (RCTViewComponentView *)componentView;
+        auto layoutMetrics = viewComponentView->_layoutMetrics;
 
-      if (layoutMetrics.overflowInset == EdgeInsets{}) {
-        shouldBeMounted = CGRectIntersectsRect(visibleFrame, componentView.frame);
+        if (layoutMetrics.overflowInset == EdgeInsets{}) {
+          shouldBeMounted = CGRectIntersectsRect(visibleFrame, componentView.frame);
+        }
       }
-    }
 
-    if (shouldBeMounted != isMounted) {
+      if (shouldBeMounted != isMounted) {
+        if (shouldBeMounted) {
+          [_containerView insertSubview:componentView atIndex:mountedIndex];
+        } else {
+          [componentView removeFromSuperview];
+        }
+      }
+
       if (shouldBeMounted) {
-        [_containerView insertSubview:componentView atIndex:mountedIndex];
-      } else {
-        [componentView removeFromSuperview];
+        mountedIndex++;
       }
-    }
-
-    if (shouldBeMounted) {
-      mountedIndex++;
-    }
 
 #ifndef NDEBUG
-    if (shouldBeMounted) {
-      [expectedSubviews addObject:componentView];
-    }
+      if (shouldBeMounted) {
+        [expectedSubviews addObject:componentView];
+      }
 #endif
-  }
+    }
 
 #ifndef NDEBUG
-  RCTAssert(
-      _containerView.subviews.count == expectedSubviews.count,
-      @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
-  for (NSInteger i = 0; i < expectedSubviews.count; i++) {
     RCTAssert(
-        [_containerView.subviews objectAtIndex:i] == [expectedSubviews objectAtIndex:i],
+        _containerView.subviews.count == expectedSubviews.count,
         @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
-  }
+    for (NSInteger i = 0; i < expectedSubviews.count; i++) {
+      RCTAssert(
+          [_containerView.subviews objectAtIndex:i] == [expectedSubviews objectAtIndex:i],
+          @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
+    }
 #endif
+  }
 }
 
 #pragma mark - RCTScrollableProtocol

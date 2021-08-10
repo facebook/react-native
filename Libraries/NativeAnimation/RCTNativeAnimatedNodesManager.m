@@ -67,15 +67,6 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   return self;
 }
 
-- (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag
-{
-  RCTAnimatedNode *node = _animationNodes[tag];
-  if (node) {
-    return [node isManagedByFabric];
-  }
-  return false;
-}
-
 #pragma mark -- Graph
 
 - (void)createAnimatedNode:(nonnull NSNumber *)tag

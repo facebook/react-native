@@ -2,7 +2,7 @@
   "name": "react-native-codegen",
   "version": "0.0.7",
   "description": "⚛️ Code generation tools for React Native",
-  "homepage": "https://github.com/facebook/react-native/tree/master/packages/react-native-codegen",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git",

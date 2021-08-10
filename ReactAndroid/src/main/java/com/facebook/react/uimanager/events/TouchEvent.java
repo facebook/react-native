@@ -131,9 +131,25 @@ public class TouchEvent extends Event<TouchEvent> {
 
   @Override
   public void onDispose() {
-    Assertions.assertNotNull(mMotionEvent).recycle();
+    MotionEvent motionEvent = mMotionEvent;
     mMotionEvent = null;
-    EVENTS_POOL.release(this);
+    if (motionEvent != null) {
+      motionEvent.recycle();
+    }
+
+    // Either `this` is in the event pool, or motionEvent
+    // is null. It is in theory not possible for a TouchEvent to
+    // be in the EVENTS_POOL but for motionEvent to be null. However,
+    // out of an abundance of caution and to avoid memory leaks or
+    // other crashes at all costs, we attempt to release here and log
+    // a soft exception here if release throws an IllegalStateException
+    // due to `this` being over-released. This may indicate that there is
+    // a logic error in our events system or pooling mechanism.
+    try {
+      EVENTS_POOL.release(this);
+    } catch (IllegalStateException e) {
+      ReactSoftException.logSoftException(TAG, e);
+    }
   }
 
   @Override

@@ -153,7 +153,7 @@ class MultiColumnExample extends React.PureComponent<
     changed: Array<{
       key: string,
       isViewable: boolean,
-      item: {columns: Array<*>, ...},
+      item: {columns: Array<any>, ...},
       index: ?number,
       section?: any,
       ...

@@ -89,11 +89,8 @@ public class ReactContext extends ContextWrapper {
     initializeMessageQueueThreads(queueConfig);
   }
 
-  /**
-   * Initialize message queue threads using a ReactQueueConfiguration. TODO (janzer) T43898341 Make
-   * this package instead of public
-   */
-  public void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
+  /** Initialize message queue threads using a ReactQueueConfiguration. */
+  public synchronized void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
     if (mUiMessageQueueThread != null
         || mNativeModulesMessageQueueThread != null
         || mJSMessageQueueThread != null) {

@@ -233,6 +233,33 @@ std::shared_ptr<Scheduler> Binding::getScheduler() {
   return scheduler_;
 }
 
+jni::local_ref<ReadableNativeMap::jhybridobject>
+Binding::getInspectorDataForInstance(
+    jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper) {
+  std::shared_ptr<Scheduler> scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::startSurface: scheduler disappeared";
+    return ReadableNativeMap::newObjectCxxArgs(folly::dynamic::object());
+  }
+
+  EventEmitterWrapper *cEventEmitter = cthis(eventEmitterWrapper);
+  InspectorData data =
+      scheduler->getInspectorDataForInstance(cEventEmitter->eventEmitter);
+
+  folly::dynamic result = folly::dynamic::object;
+  result["fileName"] = data.fileName;
+  result["lineNumber"] = data.lineNumber;
+  result["columnNumber"] = data.columnNumber;
+  result["selectedIndex"] = data.selectedIndex;
+  result["props"] = data.props;
+  auto hierarchy = folly::dynamic::array();
+  for (auto hierarchyItem : data.hierarchy) {
+    hierarchy.push_back(hierarchyItem);
+  }
+  result["hierarchy"] = hierarchy;
+  return ReadableNativeMap::newObjectCxxArgs(result);
+}
+
 void Binding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
@@ -249,6 +276,7 @@ void Binding::startSurface(
   layoutContext.pointScaleFactor = pointScaleFactor_;
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
+  surfaceHandler.setContextContainer(scheduler->getContextContainer());
   surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout({}, layoutContext);
 
@@ -260,7 +288,9 @@ void Binding::startSurface(
       animationDriver_);
 
   {
+    SystraceSection s2("FabricUIManagerBinding::startSurface::surfaceId::lock");
     std::unique_lock<better::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    SystraceSection s3("FabricUIManagerBinding::startSurface::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
@@ -308,6 +338,7 @@ void Binding::startSurfaceWithConstraints(
       isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
+  surfaceHandler.setContextContainer(scheduler_->getContextContainer());
   surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout(constraints, context);
 
@@ -319,7 +350,11 @@ void Binding::startSurfaceWithConstraints(
       animationDriver_);
 
   {
+    SystraceSection s2(
+        "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId::lock");
     std::unique_lock<better::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    SystraceSection s3(
+        "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
@@ -1308,6 +1343,8 @@ void Binding::registerNatives() {
       makeNativeMethod(
           "installFabricUIManager", Binding::installFabricUIManager),
       makeNativeMethod("startSurface", Binding::startSurface),
+      makeNativeMethod(
+          "getInspectorDataForInstance", Binding::getInspectorDataForInstance),
       makeNativeMethod(
           "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
       makeNativeMethod(

@@ -493,16 +493,16 @@ public class TextLayoutManager {
 
           // The attachment array returns the positions of each of the attachments as
           attachmentsPositions[attachmentPosition] =
-              PixelUtil.toSPFromPixel(placeholderTopPosition);
+              PixelUtil.toDIPFromPixel(placeholderTopPosition);
           attachmentsPositions[attachmentPosition + 1] =
-              PixelUtil.toSPFromPixel(placeholderLeftPosition);
+              PixelUtil.toDIPFromPixel(placeholderLeftPosition);
           attachmentIndex++;
         }
       }
     }
 
-    float widthInSP = PixelUtil.toSPFromPixel(calculatedWidth);
-    float heightInSP = PixelUtil.toSPFromPixel(calculatedHeight);
+    float widthInSP = PixelUtil.toDIPFromPixel(calculatedWidth);
+    float heightInSP = PixelUtil.toDIPFromPixel(calculatedHeight);
 
     if (ENABLE_MEASURE_LOGGING) {
       FLog.e(

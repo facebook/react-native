@@ -10,7 +10,12 @@
 'use strict';
 
 const React = require('react');
-const {StyleSheet, View} = require('react-native');
+const {
+  StyleSheet,
+  View,
+  PlatformColor,
+  DynamicColorIOS,
+} = require('react-native');
 
 const styles = StyleSheet.create({
   box: {
@@ -23,6 +28,7 @@ const styles = StyleSheet.create({
   border1: {
     borderWidth: 10,
     borderColor: 'brown',
+    borderStyle: 'dotted',
   },
   borderRadius: {
     borderWidth: 10,
@@ -38,10 +44,10 @@ const styles = StyleSheet.create({
   },
   border3: {
     borderColor: 'purple',
-    borderTopWidth: 10,
+    borderTopWidth: 7,
     borderRightWidth: 20,
-    borderBottomWidth: 30,
-    borderLeftWidth: 40,
+    borderBottomWidth: 10,
+    borderLeftWidth: 5,
   },
   border4: {
     borderTopWidth: 10,
@@ -99,12 +105,14 @@ const styles = StyleSheet.create({
   },
   border8Left: {
     borderLeftWidth: 5,
+    borderStyle: 'dotted',
   },
   border8Bottom: {
     borderBottomWidth: 5,
   },
   border8Right: {
     borderRightWidth: 5,
+    borderStyle: 'dashed',
   },
   border9: {
     borderWidth: 10,
@@ -171,6 +179,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 40,
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 40,
+  },
+  border15: {
+    borderWidth: 10,
+    borderColor: PlatformColor('systemGray4', 'holo_orange_dark'),
+  },
+  border16: {
+    borderWidth: 10,
+    borderColor: DynamicColorIOS({light: 'magenta', dark: 'cyan'}),
   },
 });
 
@@ -297,6 +313,21 @@ exports.examples = [
     description: 'Make a non-uniform radius curved border',
     render() {
       return <View style={[styles.box, styles.border14]} />;
+    },
+  },
+  {
+    title: 'System color',
+    description: 'Using a platform color',
+    render() {
+      return <View style={[styles.box, styles.border15]} />;
+    },
+  },
+  {
+    title: 'Dynamic color',
+    description: 'Using a custom dynamic color',
+    platform: 'ios',
+    render() {
+      return <View style={[styles.box, styles.border16]} />;
     },
   },
 ];

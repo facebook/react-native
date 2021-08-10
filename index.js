@@ -77,7 +77,6 @@ import typeof PixelRatio from './Libraries/Utilities/PixelRatio';
 import typeof PushNotificationIOS from './Libraries/PushNotificationIOS/PushNotificationIOS';
 import typeof Settings from './Libraries/Settings/Settings';
 import typeof Share from './Libraries/Share/Share';
-import typeof StatusBarIOS from './Libraries/Components/StatusBar/StatusBarIOS';
 import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
 import typeof Systrace from './Libraries/Performance/Systrace';
 import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
@@ -384,13 +383,6 @@ module.exports = {
   get Share(): Share {
     return require('./Libraries/Share/Share');
   },
-  get StatusBarIOS(): StatusBarIOS {
-    warnOnce(
-      'StatusBarIOS-merged',
-      'StatusBarIOS has been merged with StatusBar and will be removed in a future release. Use StatusBar for mutating the status bar',
-    );
-    return require('./Libraries/Components/StatusBar/StatusBarIOS');
-  },
   get StyleSheet(): StyleSheet {
     return require('./Libraries/StyleSheet/StyleSheet');
   },
@@ -679,17 +671,17 @@ if (__DEV__) {
   });
 
   /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
-   * attempting to access Picker. */
+   * attempting to access StatusBarIOS. */
   /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
-   * attempting to access Picker. */
-  Object.defineProperty(module.exports, 'Picker', {
+   * attempting to access StatusBarIOS. */
+  Object.defineProperty(module.exports, 'StatusBarIOS', {
     configurable: true,
     get() {
       invariant(
         false,
-        'Picker has been removed from React Native. ' +
-          "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
-          'See https://github.com/react-native-picker/picker',
+        'StatusBarIOS has been removed from React Native. ' +
+          'Has been merged with StatusBar. ' +
+          'See https://reactnative.dev/docs/statusbar',
       );
     },
   });
@@ -704,6 +696,22 @@ if (__DEV__) {
       invariant(
         false,
         'PickerIOS has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
+          'See https://github.com/react-native-picker/picker',
+      );
+    },
+  });
+
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access Picker. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access Picker. */
+  Object.defineProperty(module.exports, 'Picker', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'Picker has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
           'See https://github.com/react-native-picker/picker',
       );

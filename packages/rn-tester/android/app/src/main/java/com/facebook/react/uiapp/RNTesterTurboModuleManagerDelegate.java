@@ -37,12 +37,8 @@ public class RNTesterTurboModuleManagerDelegate extends ReactPackageTurboModuleM
   }
 
   @Override
-  protected void maybeLoadOtherSoLibraries() {
-    maybeLoadSoLibraries();
-  }
-
-  // Prevents issues with initializer interruptions.
-  private static synchronized void maybeLoadSoLibraries() {
+  protected synchronized void maybeLoadOtherSoLibraries() {
+    // Prevents issues with initializer interruptions.
     if (!sIsSoLibraryLoaded) {
       SoLoader.loadLibrary("rntester_appmodules");
       sIsSoLibraryLoaded = true;

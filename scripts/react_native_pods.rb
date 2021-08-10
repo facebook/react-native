@@ -51,6 +51,7 @@ def use_react_native! (options={})
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
+  pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
 
   if fabric_enabled
@@ -69,7 +70,7 @@ def use_react_native! (options={})
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '0.93.0'
+  versions['Flipper'] ||= '0.99.0'
   versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
   versions['Flipper-DoubleConversion'] ||= '3.1.7'
   versions['Flipper-Fmt'] ||= '7.1.7'
@@ -193,7 +194,9 @@ def use_react_native_codegen!(spec, options={})
   end
 
   # Prepare filesystem by creating empty files that will be picked up as references by CocoaPods.
-  spec.prepare_command = "mkdir -p #{generated_dirs.join(" ")} && touch #{generated_files.join(" ")}"
+  prepare_command = "mkdir -p #{generated_dirs.join(" ")} && touch -a #{generated_files.join(" ")}"
+  system(prepare_command) # Always run prepare_command when a podspec uses the codegen, as CocoaPods may skip invoking this command in certain scenarios
+  spec.prepare_command = prepare_command
 
   spec.script_phase = {
     :name => 'Generate Specs',

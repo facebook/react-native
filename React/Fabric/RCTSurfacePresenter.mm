@@ -96,6 +96,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
     _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
     _mountingManager = [[RCTMountingManager alloc] init];
+    _mountingManager.contextContainer = contextContainer;
     _mountingManager.delegate = self;
 
     _observers = [NSMutableArray array];
@@ -127,6 +128,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
   _contextContainer = contextContainer;
+  _mountingManager.contextContainer = contextContainer;
 }
 
 - (RuntimeExecutor)runtimeExecutor
@@ -252,12 +254,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:scrollview_on_demand_mounting_ios")) {
-    RCTExperimentSetOnDemandViewMounting(YES);
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:preemptive_view_allocation_disabled_ios")) {
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_remove_clipped_subviews_ios")) {
+    RCTSetRemoveClippedSubviewsEnabled(YES);
   }
 
   auto componentRegistryFactory =

@@ -127,7 +127,7 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
   },
   {
-    key: 'SectionListExample',
+    key: 'SectionListIndex',
     module: require('../examples/SectionList/SectionListIndex'),
     category: 'ListView',
     supportsTVOS: true,
@@ -204,8 +204,8 @@ const APIs: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
   {
-    key: 'AnimatedExample',
-    module: require('../examples/Animated/AnimatedExample').default,
+    key: 'AnimatedIndex',
+    module: require('../examples/Animated/AnimatedIndex').default,
     supportsTVOS: true,
   },
   {

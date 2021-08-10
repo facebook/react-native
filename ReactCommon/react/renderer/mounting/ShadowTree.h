@@ -18,6 +18,7 @@
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/ShadowTreeDelegate.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
+#include <react/utils/ContextContainer.h>
 #include "MountingOverrideDelegate.h"
 
 namespace facebook {
@@ -70,7 +71,8 @@ class ShadowTree final {
       SurfaceId surfaceId,
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
-      ShadowTreeDelegate const &delegate);
+      ShadowTreeDelegate const &delegate,
+      ContextContainer const &contextContainer);
 
   ~ShadowTree();
 

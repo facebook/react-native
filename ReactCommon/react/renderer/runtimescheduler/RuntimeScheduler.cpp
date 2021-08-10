@@ -41,7 +41,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
   taskQueue_.push(task);
 
-  if (!isCallbackScheduled_) {
+  if (!isCallbackScheduled_ && !isPerformingWork_) {
     isCallbackScheduled_ = true;
     runtimeExecutor_([this](jsi::Runtime &runtime) {
       isCallbackScheduled_ = false;
@@ -87,6 +87,7 @@ void RuntimeScheduler::executeNowOnTheSameThread(
 
 void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
   auto previousPriority = currentPriority_;
+  isPerformingWork_ = true;
   while (!taskQueue_.empty()) {
     auto topPriorityTask = taskQueue_.top();
     auto now = now_();
@@ -103,10 +104,13 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
       topPriorityTask->callback =
           result.getObject(runtime).getFunction(runtime);
     } else {
-      taskQueue_.pop();
+      if (taskQueue_.top() == topPriorityTask) {
+        taskQueue_.pop();
+      }
     }
   }
   currentPriority_ = previousPriority;
+  isPerformingWork_ = false;
 }
 
 } // namespace facebook::react

@@ -928,11 +928,21 @@ public class SurfaceMountingManager {
     return viewState == null ? null : viewState.mEventEmitter;
   }
 
-  @NonNull
-  private ViewState getViewState(int tag) {
+  @UiThread
+  public View getView(int reactTag) {
+    ViewState state = getNullableViewState(reactTag);
+    View view = state == null ? null : state.mView;
+    if (view == null) {
+      throw new IllegalViewOperationException(
+          "Trying to resolve view with tag " + reactTag + " which doesn't exist");
+    }
+    return view;
+  }
+
+  private @NonNull ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
-      throw new RetryableMountingLayerException("Unable to find viewState view for tag " + tag);
+      throw new RetryableMountingLayerException("Unable to find viewState for tag " + tag);
     }
     return viewState;
   }

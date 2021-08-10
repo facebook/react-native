@@ -254,6 +254,7 @@ def rn_codegen_modules(
             srcs = [
                 ":{}".format(generate_module_mm_name),
             ],
+            autoglob = False,
             labels = library_labels + ["codegen_rule"],
             visibility = ["PUBLIC"],
             exported_deps = [
@@ -456,10 +457,12 @@ def rn_codegen_components(
         # Tests
         fb_xplat_cxx_test(
             name = "generated_tests-{}".format(name),
-            srcs = [
+            # TODO T96844980: Fix and enable generated_tests-codegen_testsAndroid
+            srcs = [] if ANDROID else [
                 ":{}".format(generate_tests_cpp_name),
             ],
             apple_sdks = (IOS, MACOSX),
+            fbandroid_use_instrumentation_test = True,
             compiler_flags = [
                 "-fexceptions",
                 "-frtti",
@@ -470,6 +473,8 @@ def rn_codegen_components(
             labels = library_labels + ["codegen_rule"],
             platforms = (ANDROID, APPLE, CXX),
             deps = [
+                YOGA_CXX_TARGET,
+                react_native_xplat_target("react/renderer/core:core"),
                 "//xplat/third-party/gmock:gtest",
                 ":generated_components-{}".format(name),
             ],

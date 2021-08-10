@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import androidx.annotation.Nullable;
-import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import com.facebook.react.bridge.ReactContext;
@@ -24,6 +23,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -149,7 +149,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
   @Override
   protected ReactSlider createViewInstance(ThemedReactContext context) {
     final ReactSlider slider = new ReactSlider(context, null, STYLE);
-    ViewCompat.setAccessibilityDelegate(slider, sAccessibilityDelegate);
+    ViewCompat.setAccessibilityDelegate(slider, new ReactSliderAccessibilityDelegate());
     return slider;
   }
 
@@ -278,8 +278,8 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
     return mDelegate;
   }
 
-  protected static class ReactSliderAccessibilityDelegate extends AccessibilityDelegateCompat {
-    private static boolean isSliderAction(int action) {
+  protected class ReactSliderAccessibilityDelegate extends ReactAccessibilityDelegate {
+    private boolean isSliderAction(int action) {
       return (action == AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId())
           || (action == AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId())
           || (action == AccessibilityActionCompat.ACTION_SET_PROGRESS.getId());
@@ -297,7 +297,4 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
       return rv;
     }
   };
-
-  protected static ReactSliderAccessibilityDelegate sAccessibilityDelegate =
-      new ReactSliderAccessibilityDelegate();
 }

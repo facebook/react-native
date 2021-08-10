@@ -20,6 +20,7 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
@@ -828,6 +829,15 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     LOG(ERROR) << "BEGINNING DONE DISPLAYING ONGOING inflightAnimations_!";
 #endif
 
+    // Stub PropsParserContext used for cloneProps.
+    // This is/should be safe because cloning doesn't actually need to
+    // parse props, and just copies them; therefore there should be no
+    // need to actually use anything in the PropsParserContext.
+    // If this ever changes, the LayoutAnimations API will need to change
+    // to pass in a real PropsParserContext.
+    ContextContainer contextContainer{};
+    PropsParserContext propsParserContext{surfaceId, contextContainer};
+
     // What to do if we detect a conflict? Get current value and make
     // that the baseline of the next animation. Scale the remaining time
     // in the animation
@@ -1082,7 +1092,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 haveComponentDescriptor) {
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
-                      .cloneProps(viewStart.props, {});
+                      .cloneProps(propsParserContext, viewStart.props, {});
 
               // Dynamic cast, because - we don't know the type of this
               // ShadowNode, it could be Image or Text or something else with
@@ -1107,7 +1117,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             if ((isScaleX || isScaleY) && haveComponentDescriptor) {
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
-                      .cloneProps(viewStart.props, {});
+                      .cloneProps(propsParserContext, viewStart.props, {});
 
               // Dynamic cast, because - we don't know the type of this
               // ShadowNode, it could be Image or Text or something else with
@@ -1210,7 +1220,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   haveComponentDescriptor) {
                 auto props =
                     getComponentDescriptorForShadowView(baselineShadowView)
-                        .cloneProps(viewFinal.props, {});
+                        .cloneProps(propsParserContext, viewFinal.props, {});
 
                 // Dynamic cast, because - we don't know the type of this
                 // ShadowNode, it could be Image or Text or something else with
@@ -1237,7 +1247,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               if ((isScaleX || isScaleY) && haveComponentDescriptor) {
                 auto props =
                     getComponentDescriptorForShadowView(baselineShadowView)
-                        .cloneProps(viewFinal.props, {});
+                        .cloneProps(propsParserContext, viewFinal.props, {});
 
                 // Dynamic cast, because - we don't know the type of this
                 // ShadowNode, it could be Image or Text or something else with
@@ -1721,6 +1731,16 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     react_native_assert(false);
     return finalView;
   }
+
+  // Stub PropsParserContext used for interpolateProps.
+  // This is/should be safe because interpolating doesn't actually need to
+  // parse props, and just copies them; therefore there should be no
+  // need to actually use anything in the PropsParserContext.
+  // If this ever changes, the LayoutAnimations API will need to change
+  // to pass in a real PropsParserContext.
+  ContextContainer contextContainer{};
+  PropsParserContext propsParserContext{-1, contextContainer};
+
   ComponentDescriptor const &componentDescriptor =
       getComponentDescriptorForShadowView(startingView);
 
@@ -1742,7 +1762,7 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
 
   // Animate opacity or scale/transform
   mutatedShadowView.props = componentDescriptor.interpolateProps(
-      progress, startingView.props, finalView.props);
+      propsParserContext, progress, startingView.props, finalView.props);
   react_native_assert(mutatedShadowView.props != nullptr);
   if (mutatedShadowView.props == nullptr) {
     return finalView;

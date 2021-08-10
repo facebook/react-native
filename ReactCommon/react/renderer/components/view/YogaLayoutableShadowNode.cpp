@@ -209,20 +209,25 @@ void YogaLayoutableShadowNode::appendChild(
   yogaNode_.setDirty(true);
 
   // All children of a non-leaf `YogaLayoutableShadowNode` must be a
-  // `YogaLayoutableShadowNode`s.
-  react_native_assert(
-      traitCast<YogaLayoutableShadowNode const *>(childNode.get()));
+  // `YogaLayoutableShadowNode`s to be appended. This happens when invalid
+  // string/numeric child is passed which is not YogaLayoutableShadowNode
+  // (e.g. RCTRawText). This used to throw an error, but we are ignoring it
+  // because we want core library components to be fault-tolerant and degrade
+  // gracefully. A soft error will be emitted from JavaScript.
+  if (traitCast<YogaLayoutableShadowNode const *>(childNode.get())) {
+    // Appending the Yoga node.
+    appendYogaChild(*childNode);
 
-  // Appending the Yoga node.
-  appendYogaChild(*childNode);
+    ensureYogaChildrenLookFine();
+    ensureYogaChildrenAlighment();
 
-  ensureYogaChildrenLookFine();
-  ensureYogaChildrenAlighment();
+    // Adopting the Yoga node.
+    adoptYogaChild(getChildren().size() - 1);
 
-  // Adopting the Yoga node.
-  adoptYogaChild(getChildren().size() - 1);
-
-  ensureConsistency();
+    ensureConsistency();
+  } else {
+    LOG(ERROR) << "Text strings must be rendered within a <Text> component.";
+  }
 }
 
 bool YogaLayoutableShadowNode::doesOwn(

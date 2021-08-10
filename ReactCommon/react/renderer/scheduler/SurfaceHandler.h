@@ -12,6 +12,7 @@
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -72,6 +73,12 @@ class SurfaceHandler final {
   SurfaceHandler &operator=(SurfaceHandler const &other) noexcept = delete;
 
 #pragma mark - Surface Life-Cycle Management
+
+  /*
+   * Must be called before surface is started.
+   */
+  void setContextContainer(
+      ContextContainer::Shared contextContainer) const noexcept;
 
   /*
    * Returns a momentum value of the status.
@@ -171,6 +178,7 @@ class SurfaceHandler final {
     folly::dynamic props{};
     LayoutConstraints layoutConstraints{};
     LayoutContext layoutContext{};
+    ContextContainer::Shared contextContainer{};
   };
 
   /*

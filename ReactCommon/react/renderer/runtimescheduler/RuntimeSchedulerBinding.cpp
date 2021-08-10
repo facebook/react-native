@@ -10,6 +10,7 @@
 #include "primitives.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <chrono>
 #include <memory>
 

@@ -35,6 +35,7 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
+import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -158,6 +159,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   // TODO T83943316: Deprecate and delete this constructor once StaticViewConfigs are enabled by
   // default
+  @Deprecated
   public FabricUIManager(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagerRegistry,
@@ -220,6 +222,29 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
     }
     return rootTag;
+  }
+
+  /**
+   * This API returns metadata associated to the React Component that rendered the Android View
+   * received as a parameter.
+   *
+   * @param surfaceId {@link int} that represents the surfaceId for the View received as a
+   *     parameter. In practice surfaceId can be retrieved calling the {@link View#getId()} method
+   *     on the {@link ReactRoot} that holds the View received as a second parameter.
+   * @param view {@link View} view that will be used to retrieve the React view hierarchy metadata.
+   * @return a {@link ReadableMap} that contains metadata associated to the React Component that
+   *     rendered the Android View received as a parameter. For more details about the keys stored
+   *     in the {@link ReadableMap} refer to the "getInspectorDataForInstance" method from
+   *     com/facebook/react/fabric/jni/Binding.cpp file.
+   */
+  @UiThread
+  @ThreadConfined(UI)
+  public ReadableMap getInspectorDataForInstance(final int surfaceId, final View view) {
+    UiThreadUtil.assertOnUiThread();
+    int reactTag = view.getId();
+
+    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
+    return mBinding.getInspectorDataForInstance(eventEmitter);
   }
 
   @Override
@@ -445,6 +470,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         minHeight,
         maxHeight,
         null);
+  }
+
+  @SuppressWarnings("unused")
+  public int getColor(int surfaceId, ReadableMap platformColor) {
+    ThemedReactContext context =
+        mMountingManager.getSurfaceManagerEnforced(surfaceId, "getColor").getContext();
+    Integer color = ColorPropConverter.getColor(platformColor, context);
+    return color != null ? color : 0;
   }
 
   @SuppressWarnings("unused")
@@ -782,6 +815,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         offsetY,
         isRTL,
         doLeftAndRightSwapInRTL);
+  }
+
+  @Override
+  public View resolveView(int reactTag) {
+    UiThreadUtil.assertOnUiThread();
+
+    SurfaceMountingManager surfaceManager = mMountingManager.getSurfaceManagerForView(reactTag);
+    return surfaceManager == null ? null : surfaceManager.getView(reactTag);
   }
 
   @Override

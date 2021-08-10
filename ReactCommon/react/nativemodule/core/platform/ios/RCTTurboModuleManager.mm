@@ -175,6 +175,8 @@ static Class getFallbackClassFromName(const char *name)
   std::atomic<bool> _invalidating;
 
   RCTModuleRegistry *_moduleRegistry;
+  RCTRetainJSCallback _retainJSCallback;
+  std::shared_ptr<LongLivedObjectCollection> _longLivedObjectCollection;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -198,6 +200,23 @@ static Class getFallbackClassFromName(const char *name)
                                              selector:@selector(bridgeDidInvalidateModules:)
                                                  name:RCTBridgeDidInvalidateModulesNotification
                                                object:_bridge.parentBridge];
+
+    if (RCTGetTurboModuleCleanupMode() == kRCTGlobalScope) {
+      // Use LongLivedObjectCollection singleton regularly
+      _retainJSCallback = nil;
+    } else if (RCTGetTurboModuleCleanupMode() == kRCTGlobalScopeUsingRetainJSCallback) {
+      // Use LongLivedObjectCollection singleton via the _retainJSCallback
+      _retainJSCallback = ^(jsi::Function &&callback, jsi::Runtime &runtime, std::shared_ptr<CallInvoker> jsInvoker2) {
+        return CallbackWrapper::createWeak(std::move(callback), runtime, jsInvoker2);
+      };
+    } else if (RCTGetTurboModuleCleanupMode() == kRCTTurboModuleManagerScope) {
+      // Use a LongLivedObjectCollection scoped to the TurboModuleManager
+      _longLivedObjectCollection = std::make_shared<LongLivedObjectCollection>();
+      __block std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection = _longLivedObjectCollection;
+      _retainJSCallback = ^(jsi::Function &&callback, jsi::Runtime &runtime, std::shared_ptr<CallInvoker> jsInvoker2) {
+        return CallbackWrapper::createWeak(longLivedObjectCollection, std::move(callback), runtime, jsInvoker2);
+      };
+    }
   }
   return self;
 }
@@ -304,6 +323,7 @@ static Class getFallbackClassFromName(const char *name)
       .jsInvoker = _jsInvoker,
       .nativeInvoker = nativeInvoker,
       .isSyncModule = methodQueue == RCTJSThread,
+      .retainJSCallback = _retainJSCallback,
   };
 
   /**
@@ -755,9 +775,17 @@ static Class getFallbackClassFromName(const char *name)
     return turboModule;
   };
 
-  runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-    react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
-  });
+  if (RCTGetTurboModuleCleanupMode() == kRCTGlobalScope ||
+      RCTGetTurboModuleCleanupMode() == kRCTGlobalScopeUsingRetainJSCallback) {
+    runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
+      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
+    });
+  } else if (RCTGetTurboModuleCleanupMode() == kRCTTurboModuleManagerScope) {
+    runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider),
+                     longLivedObjectCollection = _longLivedObjectCollection](jsi::Runtime &runtime) {
+      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider), longLivedObjectCollection);
+    });
+  }
 }
 
 #pragma mark RCTTurboModuleRegistry

@@ -528,16 +528,21 @@ using namespace facebook::react;
 
 - (void)_setAttributedString:(NSAttributedString *)attributedString
 {
-  UITextRange *selectedRange = [_backedTextInputView selectedTextRange];
+  UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
+  NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
   if (![self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
     _backedTextInputView.attributedText = attributedString;
   }
-  if (_lastStringStateWasUpdatedWith.length == attributedString.length) {
-    // Calling `[_backedTextInputView setAttributedText]` moves caret
-    // to the end of text input field. This cancels any selection as well
-    // as position in the text input field. In case the length of string
-    // doesn't change, selection and caret position is maintained.
-    [_backedTextInputView setSelectedTextRange:selectedRange notifyDelegate:NO];
+  if (selectedRange.empty) {
+    // Maintaining a cursor position relative to the end of the old text.
+    NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                          toPosition:selectedRange.start];
+    NSInteger offsetFromEnd = oldTextLength - offsetStart;
+    NSInteger newOffset = attributedString.string.length - offsetFromEnd;
+    UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                   offset:newOffset];
+    [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
+                                notifyDelegate:YES];
   }
   _lastStringStateWasUpdatedWith = attributedString;
 }

@@ -25,7 +25,7 @@ function renderApplication<Props: Object>(
   RootComponent: React.ComponentType<Props>,
   initialProps: Props,
   rootTag: any,
-  WrapperComponent?: ?React.ComponentType<*>,
+  WrapperComponent?: ?React.ComponentType<any>,
   fabric?: boolean,
   showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,

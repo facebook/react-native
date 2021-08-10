@@ -500,6 +500,7 @@ dependencies {
     api("com.facebook.yoga:proguard-annotations:1.19.0")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
+    api("androidx.autofill:autofill:1.1.0")
     api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
@@ -565,7 +566,7 @@ afterEvaluate {
                     licenses {
                         license {
                             name = "MIT License"
-                            url = "https://github.com/facebook/react-native/blob/master/LICENSE"
+                            url = "https://github.com/facebook/react-native/blob/HEAD/LICENSE"
                             distribution = "repo"
                         }
                     }

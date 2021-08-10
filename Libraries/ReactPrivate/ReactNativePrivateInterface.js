@@ -49,8 +49,7 @@ module.exports = {
     return require('../Utilities/differ/deepDiffer');
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
-    // $FlowFixMe[deprecated-type] - can't properly parameterize the getter's type
-    *,
+    {...} | Array<mixed>,
   > {
     return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
   },

@@ -473,12 +473,19 @@ if (Platform.OS === 'ios') {
       return <ScrollToOptions />;
     },
   });
-} else {
+} else if (Platform.OS === 'android') {
   exports.examples.push({
     title: '<ScrollView> EndFillColor & FadingEdgeLength\n',
     description: 'Toggle to set endFillColor and fadingEdgeLength.',
     render: function(): React.Node {
       return <EndFillColorFadingEdgeLen />;
+    },
+  });
+  exports.examples.push({
+    title: '<ScrollView> persistentScrollBar\n',
+    description: 'Toggle to set persistentScrollbar option.',
+    render: function(): React.Node {
+      return <AndroidScrollBarOptions />;
     },
   });
 }
