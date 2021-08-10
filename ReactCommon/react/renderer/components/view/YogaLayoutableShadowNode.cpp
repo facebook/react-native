@@ -14,6 +14,7 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/utils/ReactNativeLogger.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
@@ -226,7 +227,8 @@ void YogaLayoutableShadowNode::appendChild(
 
     ensureConsistency();
   } else {
-    LOG(ERROR) << "Text strings must be rendered within a <Text> component.";
+    ReactNativeLogger::error(
+        "Text strings must be rendered within a <Text> component.");
   }
 }
 
