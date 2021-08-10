@@ -33,6 +33,11 @@
   return self;
 }
 
+- (BOOL)isManagedByFabric
+{
+  return _managedByFabric;
+}
+
 - (void)connectToView:(NSNumber *)viewTag
              viewName:(NSString *)viewName
                bridge:(RCTBridge *)bridge
@@ -42,6 +47,7 @@
   _surfacePresenter = surfacePresenter;
   _connectedViewTag = viewTag;
   _connectedViewName = viewName;
+  _managedByFabric = RCTUIManagerTypeForTagIsFabric(viewTag);
   _rootTag = nil;
 }
 
