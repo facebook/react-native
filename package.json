@@ -121,7 +121,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.156.0",
+    "flow-bin": "^0.157.0",
     "react": "17.0.2"
   },
   "detox": {
