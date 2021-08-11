@@ -15,6 +15,7 @@ const {
   View,
   PlatformColor,
   DynamicColorIOS,
+  Platform,
 } = require('react-native');
 
 const styles = StyleSheet.create({
@@ -186,7 +187,10 @@ const styles = StyleSheet.create({
   },
   border16: {
     borderWidth: 10,
-    borderColor: DynamicColorIOS({light: 'magenta', dark: 'cyan'}),
+    borderColor:
+      Platform.OS === 'ios'
+        ? DynamicColorIOS({light: 'magenta', dark: 'cyan'})
+        : undefined,
   },
 });
 
