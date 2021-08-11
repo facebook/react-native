@@ -55,6 +55,26 @@ class AccessibilityIOSExample extends React.Component<Props> {
             This view's children are hidden from the accessibility tree
           </Text>
         </View>
+        <View>
+          <Text>
+            Nested accessibility elements do not have recursive text content
+          </Text>
+          <View accessible>
+            <Text>The label is View 1</Text>
+            <View accessible>
+              <Text>This text is not in the label</Text>
+            </View>
+          </View>
+          <View accessible>
+            <Text>The label is View 2</Text>
+            <View accessible>
+              <Text>This text is not in the label</Text>
+            </View>
+            <View>
+              <Text>and this text is in the label</Text>
+            </View>
+          </View>
+        </View>
       </RNTesterBlock>
     );
   }
