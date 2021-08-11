@@ -20,7 +20,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
@@ -174,7 +174,7 @@ public class SurfaceMountingManager {
             }
 
             if (rootView.getId() == mSurfaceId) {
-              ReactSoftException.logSoftException(
+              ReactSoftExceptionLogger.logSoftException(
                   TAG,
                   new IllegalViewOperationException(
                       "Race condition in addRootView detected. Trying to set an id of ["
@@ -322,7 +322,7 @@ public class SurfaceMountingManager {
     if (viewParent != null) {
       int actualParentId =
           viewParent instanceof ViewGroup ? ((ViewGroup) viewParent).getId() : View.NO_ID;
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "addViewAt: cannot insert view ["
@@ -380,7 +380,7 @@ public class SurfaceMountingManager {
 
     // TODO: throw exception here?
     if (parentViewState == null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           MountingManager.TAG,
           new IllegalStateException(
               "Unable to find viewState for tag: [" + parentTag + "] for removeViewAt"));
@@ -457,7 +457,7 @@ public class SurfaceMountingManager {
       // If we can fix the bug there, or remove the need for LayoutAnimation index adjustment
       // entirely, we can just throw this exception without regression user experience.
       logViewHierarchy(parentView, true);
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Tried to remove view ["
@@ -547,7 +547,7 @@ public class SurfaceMountingManager {
     // This represents a perf issue only, not a correctness issue. In the future we need to
     // refactor View preallocation to correct the currently incorrect assumptions.
     if (getNullableViewState(reactTag) != null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
               "Cannot CREATE view with tag [" + reactTag + "], already exists."));
@@ -879,7 +879,7 @@ public class SurfaceMountingManager {
     ViewState viewState = getNullableViewState(reactTag);
 
     if (viewState == null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           MountingManager.TAG,
           new IllegalStateException(
               "Unable to find viewState for tag: " + reactTag + " for deleteView"));
@@ -910,7 +910,7 @@ public class SurfaceMountingManager {
     // We treat this as a perf problem and not a logical error. View Preallocation or unexpected
     // changes to Differ or C++ Binding could cause some redundant Create instructions.
     if (getNullableViewState(reactTag) != null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Cannot Preallocate view with tag [" + reactTag + "], already exists."));

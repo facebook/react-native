@@ -78,7 +78,7 @@ public class ReactContext extends ContextWrapper {
       throw new IllegalStateException("ReactContext has been already initialized");
     }
     if (mDestroyed) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException("Cannot initialize ReactContext after it has been destroyed."));
     }

@@ -13,7 +13,7 @@ import com.facebook.fbreact.specs.NativeDeviceInfoSpec;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.module.annotations.ReactModule;
@@ -96,7 +96,7 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
             .emit("didUpdateDimensions", displayMetrics);
       }
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           NAME,
           new ReactNoCrashSoftException(
               "No active CatalystInstance, cannot emitUpdateDimensionsEvent"));

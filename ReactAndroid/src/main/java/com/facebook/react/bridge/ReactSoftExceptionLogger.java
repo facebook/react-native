@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @DoNotStrip
-public class ReactSoftException {
+public class ReactSoftExceptionLogger {
   public interface ReactSoftExceptionListener {
     void logSoftException(final String category, final Throwable cause);
   }

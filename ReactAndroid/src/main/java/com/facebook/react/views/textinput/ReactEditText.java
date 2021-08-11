@@ -40,7 +40,7 @@ import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
@@ -1035,7 +1035,7 @@ public class ReactEditText extends AppCompatEditText
       try {
         sb.append(currentText.subSequence(0, currentText.length()));
       } catch (IndexOutOfBoundsException e) {
-        ReactSoftException.logSoftException(TAG, e);
+        ReactSoftExceptionLogger.logSoftException(TAG, e);
       }
     }
 

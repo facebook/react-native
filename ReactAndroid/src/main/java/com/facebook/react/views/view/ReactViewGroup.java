@@ -30,7 +30,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -576,7 +576,7 @@ public class ReactViewGroup extends ViewGroup
             @Override
             public void run() {
               if (!child.isShown()) {
-                ReactSoftException.logSoftException(
+                ReactSoftExceptionLogger.logSoftException(
                     TAG,
                     new ReactNoCrashSoftException(
                         "Child view has been added to Parent view in which it is clipped and not visible."

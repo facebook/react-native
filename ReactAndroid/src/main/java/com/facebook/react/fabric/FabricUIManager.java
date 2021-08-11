@@ -43,7 +43,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -201,7 +201,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Deprecated
   public <T extends View> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
-    ReactSoftException.logSoftException(
+    ReactSoftExceptionLogger.logSoftException(
         TAG,
         new IllegalViewOperationException(
             "Do not call addRootView in Fabric; it is unsupported. Call startSurface instead."));
@@ -336,7 +336,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   public void stopSurface(final SurfaceHandler surfaceHandler) {
     if (!surfaceHandler.isRunning()) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           FabricUIManager.TAG,
           new IllegalStateException("Trying to stop surface that hasn't started yet"));
       return;
@@ -384,7 +384,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
 
     if (mDestroyed) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           FabricUIManager.TAG, new IllegalStateException("Cannot double-destroy FabricUIManager"));
       return;
     }
@@ -790,7 +790,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     // TODO T83615646: make this a hard-crash in the future.
     if (surfaceMountingManager == null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalViewOperationException(
               "Cannot updateRootLayoutSpecs on surfaceId that does not exist: " + surfaceId));

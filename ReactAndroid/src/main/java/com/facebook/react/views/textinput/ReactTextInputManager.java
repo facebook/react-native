@@ -37,7 +37,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -578,7 +578,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         view.setTextColor(defaultContextTextColor);
       } else {
         Context c = view.getContext();
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG,
             new IllegalStateException(
                 "Could not get default text color from View Context: "

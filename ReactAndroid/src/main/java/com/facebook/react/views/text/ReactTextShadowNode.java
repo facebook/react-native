@@ -21,7 +21,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -116,7 +116,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                   .getJSModule(RCTEventEmitter.class)
                   .receiveEvent(getReactTag(), "topTextLayout", event);
             } else {
-              ReactSoftException.logSoftException(
+              ReactSoftExceptionLogger.logSoftException(
                   "ReactTextShadowNode",
                   new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
             }

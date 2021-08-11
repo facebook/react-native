@@ -19,7 +19,7 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
@@ -104,7 +104,7 @@ public class MountingManager {
     // This *will* crash in Debug mode, but not in production.
     mSurfaceIdToManager.putIfAbsent(surfaceId, surfaceMountingManager);
     if (mSurfaceIdToManager.get(surfaceId) != surfaceMountingManager) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Called startSurface more than once for the SurfaceId [" + surfaceId + "]"));
@@ -121,7 +121,7 @@ public class MountingManager {
         getSurfaceManagerEnforced(surfaceId, "attachView");
 
     if (surfaceMountingManager.isStopped()) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG, new IllegalStateException("Trying to attach a view to a stopped surface"));
       return;
     }
@@ -148,7 +148,7 @@ public class MountingManager {
         mMostRecentSurfaceMountingManager = null;
       }
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Cannot call stopSurface on non-existent surface: [" + surfaceId + "]"));

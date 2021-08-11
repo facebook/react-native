@@ -17,7 +17,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
@@ -365,7 +365,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     if (nodesManager != null) {
       nodesManager.initializeEventListenerForUIManagerType(mUIManagerType);
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           NAME,
           new RuntimeException(
               "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"));

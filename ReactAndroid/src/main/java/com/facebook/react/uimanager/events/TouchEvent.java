@@ -11,7 +11,7 @@ import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.SoftAssertions;
 
 /**
@@ -148,7 +148,7 @@ public class TouchEvent extends Event<TouchEvent> {
     try {
       EVENTS_POOL.release(this);
     } catch (IllegalStateException e) {
-      ReactSoftException.logSoftException(TAG, e);
+      ReactSoftExceptionLogger.logSoftException(TAG, e);
     }
   }
 
@@ -182,7 +182,7 @@ public class TouchEvent extends Event<TouchEvent> {
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     if (!hasMotionEvent()) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
