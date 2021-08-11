@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @DoNotStrip
-@Deprecated
-// TODO T53446395: unify ReactSoftException with a more generic exception-handling utility
 public class ReactSoftException {
   public interface ReactSoftExceptionListener {
     void logSoftException(final String category, final Throwable cause);
