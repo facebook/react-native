@@ -12,8 +12,6 @@
 // TextInputs. All calls relating to the keyboard should be funneled
 // through here.
 
-'use strict';
-
 const React = require('react');
 const Platform = require('../../Utilities/Platform');
 const {findNodeHandle} = require('../../Renderer/shims/ReactNative');
@@ -112,7 +110,7 @@ function blurTextInput(textField: ?ComponentRef) {
   if (typeof textField === 'number') {
     if (__DEV__) {
       console.error(
-        'focusTextInput must be called with a host component. Passing a react tag is deprecated.',
+        'blurTextInput must be called with a host component. Passing a react tag is deprecated.',
       );
     }
 

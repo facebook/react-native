@@ -154,6 +154,8 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2) {
     @"systemGray4Color": @(0xFFd1d1d6),
     @"systemGray5Color": @(0xFFe5e5ea),
     @"systemGray6Color": @(0xFFf2f2f7),
+    // Clear Color
+    @"clearColor": @(0x00000000),
   };
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000

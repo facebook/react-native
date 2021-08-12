@@ -35,6 +35,7 @@ import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.ViewManagerResolver;
 import com.facebook.systrace.Systrace;
 import java.util.HashMap;
 import java.util.List;
@@ -175,8 +176,8 @@ public class CoreModulesPackage extends TurboReactPackage implements ReactPackag
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
     try {
       if (mLazyViewManagersEnabled) {
-        UIManagerModule.ViewManagerResolver resolver =
-            new UIManagerModule.ViewManagerResolver() {
+        ViewManagerResolver resolver =
+            new ViewManagerResolver() {
               @Override
               public @Nullable ViewManager getViewManager(String viewManagerName) {
                 return mReactInstanceManager.createViewManager(viewManagerName);

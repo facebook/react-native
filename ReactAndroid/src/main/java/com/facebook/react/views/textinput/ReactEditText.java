@@ -8,6 +8,7 @@
 package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
+import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -17,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -34,20 +36,29 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.FabricViewStateManager;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.text.CustomLetterSpacingSpan;
+import com.facebook.react.views.text.CustomLineHeightSpan;
+import com.facebook.react.views.text.CustomStyleSpan;
+import com.facebook.react.views.text.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -63,12 +74,15 @@ import java.util.ArrayList;
  */
 public class ReactEditText extends AppCompatEditText
     implements FabricViewStateManager.HasFabricViewStateManager {
-
   private final InputMethodManager mInputMethodManager;
+  private final String TAG = ReactEditText.class.getSimpleName();
+  public static final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;
+
   // This flag is set to true when we set the text of the EditText explicitly. In that case, no
   // *TextChanged events should be triggered. This is less expensive than removing the text
   // listeners and adding them back again after the text change is completed.
   protected boolean mIsSettingTextFromJS;
+  protected boolean mIsSettingTextFromCacheUpdate = false;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
 
@@ -93,20 +107,20 @@ public class ReactEditText extends AppCompatEditText
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
   private @Nullable String mFontFamily = null;
-  private int mFontWeight = ReactTypefaceUtils.UNSET;
-  private int mFontStyle = ReactTypefaceUtils.UNSET;
+  private int mFontWeight = UNSET;
+  private int mFontStyle = UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
-  protected @Nullable JavaOnlyMap mAttributedString = null;
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
   protected boolean mDisableTextDiffing = false;
 
   protected boolean mIsSettingTextFromState = false;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
+  private @Nullable EventDispatcher mEventDispatcher;
 
   public ReactEditText(Context context) {
     super(context);
@@ -141,15 +155,31 @@ public class ReactEditText extends AppCompatEditText
 
     ViewCompat.setAccessibilityDelegate(
         this,
-        new AccessibilityDelegateCompat() {
+        new ReactAccessibilityDelegate() {
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
+              int length = getText().length();
+              if (length > 0) {
+                // For some reason, when you swipe to focus on a text input that already has text in
+                // it, it clears the selection and resets the cursor to the beginning of the input.
+                // Since this is not typically (ever?) what you want, let's just explicitly set the
+                // selection on accessibility click to undo that.
+                setSelection(length);
+              }
               return requestFocusInternal();
             }
             return super.performAccessibilityAction(host, action, args);
           }
         });
+  }
+
+  @Override
+  protected void finalize() {
+    if (DEBUG_MODE) {
+      FLog.e(TAG, "finalize[" + getId() + "] delete cached spannable");
+    }
+    TextLayoutManager.deleteCachedSpannableForTag(getId());
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -219,7 +249,8 @@ public class ReactEditText extends AppCompatEditText
     InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
     if (inputConnection != null && mOnKeyPress) {
       inputConnection =
-          new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
+          new ReactEditTextInputConnectionWrapper(
+              inputConnection, reactContext, this, mEventDispatcher);
     }
 
     if (isMultiline() && getBlurOnSubmit()) {
@@ -300,19 +331,36 @@ public class ReactEditText extends AppCompatEditText
     }
 
     if (start != UNSET && end != UNSET) {
+      // clamp selection values for safety
+      start = clampToTextLength(start);
+      end = clampToTextLength(end);
+
       setSelection(start, end);
     }
   }
 
+  private int clampToTextLength(int value) {
+    int textLength = getText() == null ? 0 : getText().length();
+
+    return Math.max(0, Math.min(value, textLength));
+  }
+
   @Override
   public void setSelection(int start, int end) {
+    if (DEBUG_MODE) {
+      FLog.e(TAG, "setSelection[" + getId() + "]: " + start + " " + end);
+    }
     super.setSelection(start, end);
   }
 
   @Override
   protected void onSelectionChanged(int selStart, int selEnd) {
+    if (DEBUG_MODE) {
+      FLog.e(TAG, "onSelectionChanged[" + getId() + "]: " + selStart + " " + selEnd);
+    }
+
     super.onSelectionChanged(selStart, selEnd);
-    if (mSelectionWatcher != null && hasFocus()) {
+    if (!mIsSettingTextFromCacheUpdate && mSelectionWatcher != null && hasFocus()) {
       mSelectionWatcher.onSelectionChanged(selStart, selEnd);
     }
   }
@@ -481,8 +529,15 @@ public class ReactEditText extends AppCompatEditText
       return;
     }
 
-    if (reactTextUpdate.mAttributedString != null) {
-      mAttributedString = JavaOnlyMap.deepClone(reactTextUpdate.mAttributedString);
+    if (DEBUG_MODE) {
+      FLog.e(
+          TAG,
+          "maybeSetText["
+              + getId()
+              + "]: current text: "
+              + getText()
+              + " update: "
+              + reactTextUpdate.getText());
     }
 
     // The current text gets replaced with the text received from JS. However, the spans on the
@@ -491,7 +546,8 @@ public class ReactEditText extends AppCompatEditText
     // used instead (this is also used by the keyboard implementation underneath the covers).
     SpannableStringBuilder spannableStringBuilder =
         new SpannableStringBuilder(reactTextUpdate.getText());
-    manageSpans(spannableStringBuilder);
+
+    manageSpans(spannableStringBuilder, reactTextUpdate.mContainsMultipleFragments);
     mContainsImages = reactTextUpdate.containsImages();
 
     // When we update text, we trigger onChangeText code that will
@@ -516,6 +572,9 @@ public class ReactEditText extends AppCompatEditText
         setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
       }
     }
+
+    // Update cached spans (in Fabric only).
+    updateCachedSpannable(false);
   }
 
   /**
@@ -524,29 +583,41 @@ public class ReactEditText extends AppCompatEditText
    * will adapt to the new text, hence why {@link SpannableStringBuilder#replace} never removes
    * them.
    */
-  private void manageSpans(SpannableStringBuilder spannableStringBuilder) {
+  private void manageSpans(
+      SpannableStringBuilder spannableStringBuilder, boolean skipAddSpansForMeasurements) {
     Object[] spans = getText().getSpans(0, length(), Object.class);
     for (int spanIdx = 0; spanIdx < spans.length; spanIdx++) {
+      Object span = spans[spanIdx];
+      int spanFlags = getText().getSpanFlags(span);
+      boolean isExclusiveExclusive =
+          (spanFlags & Spanned.SPAN_EXCLUSIVE_EXCLUSIVE) == Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
+
       // Remove all styling spans we might have previously set
-      if (spans[spanIdx] instanceof ReactSpan) {
-        getText().removeSpan(spans[spanIdx]);
+      if (span instanceof ReactSpan) {
+        getText().removeSpan(span);
       }
 
-      if ((getText().getSpanFlags(spans[spanIdx]) & Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-          != Spanned.SPAN_EXCLUSIVE_EXCLUSIVE) {
+      // We only add spans back for EXCLUSIVE_EXCLUSIVE spans
+      if (!isExclusiveExclusive) {
         continue;
       }
-      Object span = spans[spanIdx];
-      final int spanStart = getText().getSpanStart(spans[spanIdx]);
-      final int spanEnd = getText().getSpanEnd(spans[spanIdx]);
-      final int spanFlags = getText().getSpanFlags(spans[spanIdx]);
+
+      final int spanStart = getText().getSpanStart(span);
+      final int spanEnd = getText().getSpanEnd(span);
 
       // Make sure the span is removed from existing text, otherwise the spans we set will be
       // ignored or it will cover text that has changed.
-      getText().removeSpan(spans[spanIdx]);
+      getText().removeSpan(span);
       if (sameTextForSpan(getText(), spannableStringBuilder, spanStart, spanEnd)) {
         spannableStringBuilder.setSpan(span, spanStart, spanEnd, spanFlags);
       }
+    }
+
+    // In Fabric only, apply necessary styles to entire span
+    // If the Spannable was constructed from multiple fragments, we don't apply any spans that could
+    // impact the whole Spannable, because that would override "local" styles per-fragment
+    if (!skipAddSpansForMeasurements) {
+      addSpansForMeasurement(getText());
     }
   }
 
@@ -564,6 +635,73 @@ public class ReactEditText extends AppCompatEditText
       }
     }
     return true;
+  }
+
+  // This is hacked in for Fabric. When we delete non-Fabric code, we might be able to simplify or
+  // clean this up a bit.
+  private void addSpansForMeasurement(Spannable spannable) {
+    if (!mFabricViewStateManager.hasStateWrapper()) {
+      return;
+    }
+
+    boolean originalDisableTextDiffing = mDisableTextDiffing;
+    mDisableTextDiffing = true;
+
+    int start = 0;
+    int end = spannable.length();
+
+    // Remove duplicate spans we might add here
+    Object[] spans = spannable.getSpans(0, length(), Object.class);
+    for (Object span : spans) {
+      int spanFlags = spannable.getSpanFlags(span);
+      boolean isInclusive =
+          (spanFlags & Spanned.SPAN_INCLUSIVE_INCLUSIVE) == Spanned.SPAN_INCLUSIVE_INCLUSIVE
+              || (spanFlags & Spanned.SPAN_INCLUSIVE_EXCLUSIVE) == Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
+      if (isInclusive
+          && span instanceof ReactSpan
+          && spannable.getSpanStart(span) == start
+          && spannable.getSpanEnd(span) == end) {
+        spannable.removeSpan(span);
+      }
+    }
+
+    List<TextLayoutManager.SetSpanOperation> ops = new ArrayList<>();
+
+    if (!Float.isNaN(mTextAttributes.getLetterSpacing())) {
+      ops.add(
+          new TextLayoutManager.SetSpanOperation(
+              start, end, new CustomLetterSpacingSpan(mTextAttributes.getLetterSpacing())));
+    }
+    ops.add(
+        new TextLayoutManager.SetSpanOperation(
+            start, end, new ReactAbsoluteSizeSpan((int) mTextAttributes.getEffectiveFontSize())));
+    if (mFontStyle != UNSET || mFontWeight != UNSET || mFontFamily != null) {
+      ops.add(
+          new TextLayoutManager.SetSpanOperation(
+              start,
+              end,
+              new CustomStyleSpan(
+                  mFontStyle,
+                  mFontWeight,
+                  null, // TODO: do we need to support FontFeatureSettings / fontVariant?
+                  mFontFamily,
+                  getReactContext(ReactEditText.this).getAssets())));
+    }
+    if (!Float.isNaN(mTextAttributes.getEffectiveLineHeight())) {
+      ops.add(
+          new TextLayoutManager.SetSpanOperation(
+              start, end, new CustomLineHeightSpan(mTextAttributes.getEffectiveLineHeight())));
+    }
+
+    int priority = 0;
+    for (TextLayoutManager.SetSpanOperation op : ops) {
+      // Actual order of calling {@code execute} does NOT matter,
+      // but the {@code priority} DOES matter.
+      op.execute(spannable, priority);
+      priority++;
+    }
+
+    mDisableTextDiffing = originalDisableTextDiffing;
   }
 
   protected boolean showSoftKeyboard() {
@@ -606,8 +744,9 @@ public class ReactEditText extends AppCompatEditText
     // wrapper 100% of the time.
     // Since the LocalData object is constructed by getting values from the underlying EditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
-    if (!mFabricViewStateManager.hasStateWrapper()) {
-      ReactContext reactContext = getReactContext(this);
+    ReactContext reactContext = getReactContext(this);
+
+    if (!mFabricViewStateManager.hasStateWrapper() && !reactContext.isBridgeless()) {
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
       if (uiManager != null) {
@@ -725,6 +864,13 @@ public class ReactEditText extends AppCompatEditText
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
+
+    // Used to ensure that text is selectable inside of removeClippedSubviews
+    // See https://github.com/facebook/react-native/issues/6805 for original
+    // fix that was ported to here.
+
+    super.setTextIsSelectable(true);
+
     if (mContainsImages) {
       Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
@@ -813,11 +959,9 @@ public class ReactEditText extends AppCompatEditText
     // `Float.NaN`.
     setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
-      if (!Float.isNaN(effectiveLetterSpacing)) {
-        setLetterSpacing(effectiveLetterSpacing);
-      }
+    float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+    if (!Float.isNaN(effectiveLetterSpacing)) {
+      setLetterSpacing(effectiveLetterSpacing);
     }
   }
 
@@ -827,13 +971,104 @@ public class ReactEditText extends AppCompatEditText
   }
 
   /**
+   * Update the cached Spannable used in TextLayoutManager to measure the text in Fabric. This is
+   * mostly copied from ReactTextInputShadowNode.java (the non-Fabric version) and
+   * TextLayoutManager.java with some very minor modifications. There's some duplication between
+   * here and TextLayoutManager, so there might be an opportunity for refactor.
+   */
+  private void updateCachedSpannable(boolean resetStyles) {
+    // Noops in non-Fabric
+    if (!mFabricViewStateManager.hasStateWrapper()) {
+      return;
+    }
+    // If this view doesn't have an ID yet, we don't have a cache key, so bail here
+    if (getId() == -1) {
+      return;
+    }
+
+    if (resetStyles) {
+      mIsSettingTextFromCacheUpdate = true;
+      addSpansForMeasurement(getText());
+      mIsSettingTextFromCacheUpdate = false;
+    }
+
+    Editable currentText = getText();
+    boolean haveText = currentText != null && currentText.length() > 0;
+
+    SpannableStringBuilder sb = new SpannableStringBuilder();
+
+    // A note of caution: appending currentText to sb appends all the spans of currentText - not
+    // copies of the Spans, but the actual span objects. Any modifications to sb after that point
+    // can modify the spans of sb/currentText, impact the text or spans visible on screen, and
+    // also call the TextChangeWatcher methods.
+    if (haveText) {
+      // This is here as a workaround for T76236115, which looks like this:
+      // Hopefully we can delete all this stuff if we can get rid of the soft errors.
+      // - android.text.SpannableStringBuilder.charAt (SpannableStringBuilder.java:123)
+      // - android.text.CharSequenceCharacterIterator.current
+      // (CharSequenceCharacterIterator.java:58)
+      // - android.text.CharSequenceCharacterIterator.setIndex
+      // (CharSequenceCharacterIterator.java:83)
+      // - android.icu.text.RuleBasedBreakIterator.CISetIndex32 (RuleBasedBreakIterator.java:1126)
+      // - android.icu.text.RuleBasedBreakIterator.isBoundary (RuleBasedBreakIterator.java:503)
+      // - android.text.method.WordIterator.isBoundary (WordIterator.java:95)
+      // - android.widget.Editor$SelectionHandleView.positionAtCursorOffset (Editor.java:6666)
+      // - android.widget.Editor$HandleView.invalidate (Editor.java:5241)
+      // - android.widget.Editor$SelectionModifierCursorController.invalidateHandles
+      // (Editor.java:7442)
+      // - android.widget.Editor.invalidateHandlesAndActionMode (Editor.java:2112)
+      // - android.widget.TextView.spanChange (TextView.java:11189)
+      // - android.widget.TextView$ChangeWatcher.onSpanAdded (TextView.java:14189)
+      // - android.text.SpannableStringBuilder.sendSpanAdded (SpannableStringBuilder.java:1283)
+      // - android.text.SpannableStringBuilder.sendToSpanWatchers (SpannableStringBuilder.java:663)
+      // - android.text.SpannableStringBuilder.replace (SpannableStringBuilder.java:579)
+      // - android.text.SpannableStringBuilder.append (SpannableStringBuilder.java:269)
+      // - ReactEditText.updateCachedSpannable (ReactEditText.java:995)
+      // - ReactEditText$TextWatcherDelegator.onTextChanged (ReactEditText.java:1044)
+      // - android.widget.TextView.sendOnTextChanged (TextView.java:10972)
+      // ...
+      // - android.text.method.BaseKeyListener.onKeyDown (BaseKeyListener.java:479)
+      // - android.text.method.QwertyKeyListener.onKeyDown (QwertyKeyListener.java:362)
+      // - ReactEditText$InternalKeyListener.onKeyDown (ReactEditText.java:1094)
+      // ...
+      // - android.app.Activity.dispatchKeyEvent (Activity.java:3447)
+      try {
+        sb.append(currentText.subSequence(0, currentText.length()));
+      } catch (IndexOutOfBoundsException e) {
+        ReactSoftExceptionLogger.logSoftException(TAG, e);
+      }
+    }
+
+    // If we don't have text, make sure we have *something* to measure.
+    // Hint has the same dimensions - the only thing that's different is background or foreground
+    // color
+    if (!haveText) {
+      if (getHint() != null && getHint().length() > 0) {
+        sb.append(getHint());
+      } else {
+        // Measure something so we have correct height, even if there's no string.
+        sb.append("I");
+      }
+
+      // Make sure that all text styles are applied when we're measurable the hint or "blank" text
+      addSpansForMeasurement(sb);
+    }
+
+    TextLayoutManager.setCachedSpannabledForTag(getId(), sb);
+  }
+
+  void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {
+    mEventDispatcher = eventDispatcher;
+  }
+
+  /**
    * This class will redirect *TextChanged calls to the listeners only in the case where the text is
    * changed by the user, and not explicitly set by JS.
    */
   private class TextWatcherDelegator implements TextWatcher {
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-      if (!mIsSettingTextFromJS && mListeners != null) {
+      if (!mIsSettingTextFromCacheUpdate && !mIsSettingTextFromJS && mListeners != null) {
         for (TextWatcher listener : mListeners) {
           listener.beforeTextChanged(s, start, count, after);
         }
@@ -842,10 +1077,20 @@ public class ReactEditText extends AppCompatEditText
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-      if (!mIsSettingTextFromJS && mListeners != null) {
-        for (TextWatcher listener : mListeners) {
-          listener.onTextChanged(s, start, before, count);
+      if (DEBUG_MODE) {
+        FLog.e(
+            TAG, "onTextChanged[" + getId() + "]: " + s + " " + start + " " + before + " " + count);
+      }
+
+      if (!mIsSettingTextFromCacheUpdate) {
+        if (!mIsSettingTextFromJS && mListeners != null) {
+          for (TextWatcher listener : mListeners) {
+            listener.onTextChanged(s, start, before, count);
+          }
         }
+
+        updateCachedSpannable(
+            !mIsSettingTextFromJS && !mIsSettingTextFromState && start == 0 && before == 0);
       }
 
       onContentSizeChange();
@@ -853,7 +1098,7 @@ public class ReactEditText extends AppCompatEditText
 
     @Override
     public void afterTextChanged(Editable s) {
-      if (!mIsSettingTextFromJS && mListeners != null) {
+      if (!mIsSettingTextFromCacheUpdate && !mIsSettingTextFromJS && mListeners != null) {
         for (TextWatcher listener : mListeners) {
           listener.afterTextChanged(s);
         }

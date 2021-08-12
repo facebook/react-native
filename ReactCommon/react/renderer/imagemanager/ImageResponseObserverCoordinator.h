@@ -74,6 +74,12 @@ class ImageResponseObserverCoordinator {
   mutable std::shared_ptr<void> imageData_;
 
   /*
+   * Cache image metadata.
+   * Mutable: protected by mutex_.
+   */
+  mutable std::shared_ptr<void> imageMetadata_;
+
+  /*
    * Observer and data mutex.
    */
   mutable std::mutex mutex_;

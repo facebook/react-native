@@ -72,6 +72,7 @@ module.exports = {
       },
       rules: {
         'react-native/no-inline-styles': 0,
+        quotes: [1, 'single', {avoidEscape: true, allowTemplateLiterals: true}],
       },
     },
   ],
@@ -81,6 +82,7 @@ module.exports = {
     __DEV__: true,
     __dirname: false,
     __fbBatchedBridgeConfig: false,
+    AbortController: false,
     alert: false,
     cancelAnimationFrame: false,
     cancelIdleCallback: false,
@@ -95,6 +97,7 @@ module.exports = {
     EventTarget: false,
     exports: false,
     fetch: false,
+    FileReader: false,
     FormData: false,
     global: false,
     Headers: false,
@@ -285,7 +288,7 @@ module.exports = {
 
     'react/display-name': 0,
     'react/jsx-boolean-value': 0,
-    'react/jsx-no-comment-textnodes': 1,
+    'react/jsx-no-comment-textnodes': 2,
     'react/jsx-no-duplicate-props': 2,
     'react/jsx-no-undef': 2,
     'react/jsx-sort-props': 0,

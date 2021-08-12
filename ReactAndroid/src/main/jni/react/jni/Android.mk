@@ -39,7 +39,7 @@ LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder libruntimeexecutor
 LOCAL_MODULE := reactnativeutilsjni
 
 # Compile all local c++ files.
-LOCAL_SRC_FILES := $(wildcard Cxx*.cpp) $(wildcard J*.cpp) $(wildcard M*.cpp) $(wildcard N*.cpp) $(wildcard P*.cpp) $(wildcard R*.cpp) $(wildcard W*.cpp)
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 ifeq ($(APP_OPTIM),debug)
   # Keep symbols by overriding the strip command invoked by ndk-build.
@@ -80,7 +80,7 @@ LOCAL_LDLIBS += -landroid
 LOCAL_SHARED_LIBRARIES := libreactnativeutilsjni libfolly_json libfb libfbjni libglog_init libyoga
 
 # The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder libruntimeexecutor
+LOCAL_STATIC_LIBRARIES := libreactnative libruntimeexecutor libcallinvokerholder
 
 # Name of this module.
 #
@@ -128,14 +128,14 @@ $(call import-module,callinvoker)
 $(call import-module,reactperflogger)
 $(call import-module,hermes)
 $(call import-module,runtimeexecutor)
+$(call import-module,react/nativemodule/core)
 
 include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
+# TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
+# Note: Update this only when ready to minimize breaking changes.
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
-
-ifeq ($(BUILD_FABRIC),true)
-  include $(REACT_SRC_DIR)/viewmanagers/jni/Android.mk
-  include $(REACT_SRC_DIR)/fabric/jni/Android.mk
-endif
+include $(REACT_SRC_DIR)/fabric/jni/Android.mk
+include $(REACT_SRC_DIR)/common/mapbuffer/jni/Android.mk
 
 # TODO(ramanpreet):
 #   Why doesn't this import-module call generate a jscexecutor.so file?
@@ -145,3 +145,5 @@ include $(REACT_SRC_DIR)/jscexecutor/Android.mk
 include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
 include $(REACT_SRC_DIR)/../hermes/instrumentation/Android.mk
 include $(REACT_SRC_DIR)/modules/blob/jni/Android.mk
+
+include $(REACT_GENERATED_SRC_DIR)/codegen/jni/Android.mk

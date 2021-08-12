@@ -76,8 +76,8 @@ public class NetworkingModuleTest {
 
   @Before
   public void prepareModules() {
-    mHttpClient = mock(OkHttpClient.class);
-    when(mHttpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
+    mHttpClient = PowerMockito.mock(OkHttpClient.class);
+    PowerMockito.when(mHttpClient.cookieJar()).thenReturn(mock(CookieJarContainer.class));
     when(mHttpClient.newCall(any(Request.class)))
         .thenAnswer(
             new Answer<Object>() {
@@ -87,8 +87,8 @@ public class NetworkingModuleTest {
                 return callMock;
               }
             });
-    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
-    when(clientBuilder.build()).thenReturn(mHttpClient);
+    OkHttpClient.Builder clientBuilder = PowerMockito.mock(OkHttpClient.Builder.class);
+    PowerMockito.when(clientBuilder.build()).thenReturn(mHttpClient);
     when(mHttpClient.newBuilder()).thenReturn(clientBuilder);
 
     mEmitter = mock(RCTDeviceEventEmitter.class);
@@ -96,7 +96,7 @@ public class NetworkingModuleTest {
     CatalystInstance reactInstance = mock(CatalystInstance.class);
     ReactApplicationContext reactContext = mock(ReactApplicationContext.class);
     when(reactContext.getCatalystInstance()).thenReturn(reactInstance);
-    when(reactContext.hasActiveCatalystInstance()).thenReturn(true);
+    when(reactContext.hasActiveReactInstance()).thenReturn(true);
     when(reactContext.getJSModule(any(Class.class))).thenReturn(mEmitter);
     mNetworkingModule = new NetworkingModule(reactContext, "", mHttpClient);
   }
@@ -453,7 +453,7 @@ public class NetworkingModuleTest {
         .thenCallRealMethod();
     when(inputStream.available()).thenReturn("imageUri".length());
 
-    final MultipartBody.Builder multipartBuilder = mock(MultipartBody.Builder.class);
+    final MultipartBody.Builder multipartBuilder = PowerMockito.mock(MultipartBody.Builder.class);
     PowerMockito.whenNew(MultipartBody.Builder.class)
         .withNoArguments()
         .thenReturn(multipartBuilder);
@@ -545,7 +545,7 @@ public class NetworkingModuleTest {
   }
 
   @Test
-  public void testCancelAllCallsOnCatalystInstanceDestroy() throws Exception {
+  public void testCancelAllCallsInvalidate() throws Exception {
     PowerMockito.mockStatic(OkHttpCallUtil.class);
     final int requests = 3;
     final Call[] calls = new Call[requests];
@@ -578,7 +578,7 @@ public class NetworkingModuleTest {
     }
     verify(mHttpClient, times(3)).newCall(any(Request.class));
 
-    mNetworkingModule.onCatalystInstanceDestroy();
+    mNetworkingModule.invalidate();
     PowerMockito.verifyStatic(OkHttpCallUtil.class, times(3));
     ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);
@@ -591,7 +591,7 @@ public class NetworkingModuleTest {
   }
 
   @Test
-  public void testCancelSomeCallsOnCatalystInstanceDestroy() throws Exception {
+  public void testCancelSomeCallsInvalidate() throws Exception {
     PowerMockito.mockStatic(OkHttpCallUtil.class);
     final int requests = 3;
     final Call[] calls = new Call[requests];
@@ -634,7 +634,7 @@ public class NetworkingModuleTest {
     // verifyStatic actually does not clear all calls so far, so we have to check for all of them.
     // If `cancelTag` would've been called again for the aborted call, we would have had
     // `requests + 1` calls.
-    mNetworkingModule.onCatalystInstanceDestroy();
+    mNetworkingModule.invalidate();
     PowerMockito.verifyStatic(OkHttpCallUtil.class, times(requests));
     clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     requestIdArguments = ArgumentCaptor.forClass(Integer.class);

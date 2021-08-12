@@ -9,7 +9,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -21,7 +21,7 @@
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
-  __weak RCTEventDispatcher *_eventDispatcher;
+  __weak id<RCTEventDispatcherProtocol> _eventDispatcher;
   BOOL _hasInputAccesoryView;
   NSString *_Nullable _predictedText;
   BOOL _didMoveToWindow;
@@ -245,7 +245,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                           };
 
       #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-        if (@available(iOS 11.0, tvOS 11.0, *)) {
+        if (@available(iOS 11.0, *)) {
           NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
                                                                   @"password": UITextContentTypePassword};
 
@@ -257,7 +257,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       #endif
 
       #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
-        if (@available(iOS 12.0, tvOS 12.0, *)) {
+        if (@available(iOS 12.0, *)) {
           NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
                                                                   @"oneTimeCode": UITextContentTypeOneTimeCode};
 
@@ -397,6 +397,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
+        if (allowedLength > 0) {
+          //make sure unicode characters that are longer than 16 bits (such as emojis) are not cut off
+          NSRange cutOffCharacterRange = [text rangeOfComposedCharacterSequenceAtIndex: allowedLength - 1];
+          if (cutOffCharacterRange.location + cutOffCharacterRange.length > allowedLength) {
+            //the character at the length limit takes more than 16bits, truncation should end at the character before
+            allowedLength = cutOffCharacterRange.location;
+          }
+        }
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
         NSMutableAttributedString *newAttributedText = [backedTextInputView.attributedText mutableCopy];
@@ -572,7 +580,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)setCustomInputAccessoryViewWithNativeID:(NSString *)nativeID
 {
-  #if !TARGET_OS_TV
   __weak RCTBaseTextInputView *weakSelf = self;
   [_bridge.uiManager rootViewForReactTag:self.reactTag withCompletion:^(UIView *rootView) {
     RCTBaseTextInputView *strongSelf = weakSelf;
@@ -585,12 +592,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       }
     }
   }];
-  #endif /* !TARGET_OS_TV */
 }
 
 - (void)setDefaultInputAccessoryView
 {
-  #if !TARGET_OS_TV
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
   UIKeyboardType keyboardType = textInputView.keyboardType;
 
@@ -629,7 +634,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     textInputView.inputAccessoryView = nil;
   }
   [self reloadInputViewsIfNecessary];
-  #endif /* !TARGET_OS_TV */
 }
 
 - (void)reloadInputViewsIfNecessary

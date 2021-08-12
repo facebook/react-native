@@ -10,26 +10,32 @@
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
-static BOOL RCTExperimentOnDemandViewMounting = NO;
+/*
+ * Preemptive View Allocation
+ */
+static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
 
-BOOL RCTExperimentGetOnDemandViewMounting()
+BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
 {
-  return RCTExperimentOnDemandViewMounting;
+  return RCTExperimentPreemptiveViewAllocationDisabled;
 }
 
-void RCTExperimentSetOnDemandViewMounting(BOOL value)
+void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
-  RCTExperimentOnDemandViewMounting = value;
+  RCTExperimentPreemptiveViewAllocationDisabled = value;
 }
 
-static BOOL RCTExperimentSyncPerformanceFlag = NO;
+/*
+ * Remove clipped subviews
+ */
+static BOOL RCTRemoveClippedSubviewsEnabled = NO;
 
-BOOL RCTExperimentGetSyncPerformanceFlag()
+BOOL RCTGetRemoveClippedSubviewsEnabled(void)
 {
-  return RCTExperimentSyncPerformanceFlag;
+  return RCTRemoveClippedSubviewsEnabled;
 }
 
-void RCTExperimentSetSyncPerformanceFlag(BOOL value)
+void RCTSetRemoveClippedSubviewsEnabled(BOOL value)
 {
-  RCTExperimentSyncPerformanceFlag = value;
+  RCTRemoveClippedSubviewsEnabled = value;
 }

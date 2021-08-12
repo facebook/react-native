@@ -36,11 +36,11 @@ Class<RCTComponentViewProtocol> RCTActivityIndicatorViewCls(void) __attribute__(
 Class<RCTComponentViewProtocol> RCTSliderCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTSwitchCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTUnimplementedNativeViewCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTImageCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTParagraphCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTTextInputCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTInputAccessoryCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTViewCls(void) __attribute__((used));
+Class<RCTComponentViewProtocol> RCTImageCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

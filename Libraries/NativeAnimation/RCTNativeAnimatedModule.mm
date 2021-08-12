@@ -8,6 +8,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTNativeAnimatedModule.h>
 #import <React/RCTNativeAnimatedNodesManager.h>
+#import <React/RCTLog.h>
 
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 
@@ -28,10 +29,26 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
 RCT_EXPORT_MODULE();
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _operations = [NSMutableArray new];
+    _preOperations = [NSMutableArray new];
+    _animIdIsManagedByFabric = [NSMutableDictionary new];
+  }
+  return self;
+}
+
 - (void)invalidate
 {
+  [super invalidate];
   [_nodesManager stopAnimationLoop];
-  [self.bridge.eventDispatcher removeDispatchObserver:self];
+  [[self.moduleRegistry moduleForName:"EventDispatcher"] removeDispatchObserver:self];
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
   [self.bridge.surfacePresenter removeObserver:self];
 }
@@ -47,15 +64,23 @@ RCT_EXPORT_MODULE();
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
-
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge];
-  _operations = [NSMutableArray new];
-  _preOperations = [NSMutableArray new];
-  _animIdIsManagedByFabric = [NSMutableDictionary new];
-
-  [bridge.eventDispatcher addDispatchObserver:self];
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:bridge.surfacePresenter];
   [bridge.uiManager.observerCoordinator addObserver:self];
   [bridge.surfacePresenter addObserver:self];
+}
+
+- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
+{
+  [super setModuleRegistry:moduleRegistry];
+  [[moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
+}
+
+/*
+ * This selector should only be invoked in bridgeless mode, which is not compatible with this non turbo module.
+ */
+- (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
+{
+  RCTLogWarn(@"setSurfacePresenter should only be invoked in RCTNativeAnimatedTurboModule");
 }
 
 #pragma mark -- API

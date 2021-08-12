@@ -159,13 +159,6 @@ Point LayoutableShadowNode::getContentOriginOffset() const {
   return {0, 0};
 }
 
-LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
-    LayoutableShadowNode const &ancestorLayoutableShadowNode,
-    LayoutInspectingPolicy policy) const {
-  return computeRelativeLayoutMetrics(
-      getFamily(), ancestorLayoutableShadowNode, policy);
-}
-
 LayoutableShadowNode::UnsharedList
 LayoutableShadowNode::getLayoutableChildNodes() const {
   LayoutableShadowNode::UnsharedList layoutableChildren;
@@ -223,7 +216,7 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     ShadowNode::Shared node,
     Point point) {
   auto layoutableShadowNode =
-      dynamic_cast<const LayoutableShadowNode *>(node.get());
+      traitCast<const LayoutableShadowNode *>(node.get());
 
   if (!layoutableShadowNode) {
     return nullptr;
@@ -238,7 +231,17 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
 
   auto newPoint = point - transformedFrame.origin -
       layoutableShadowNode->getContentOriginOffset();
-  for (const auto &childShadowNode : node->getChildren()) {
+
+  auto sortedChildren = node->getChildren();
+  std::stable_sort(
+      sortedChildren.begin(),
+      sortedChildren.end(),
+      [](auto const &lhs, auto const &rhs) -> bool {
+        return lhs->getOrderIndex() < rhs->getOrderIndex();
+      });
+
+  for (auto it = sortedChildren.rbegin(); it != sortedChildren.rend(); it++) {
+    auto const &childShadowNode = *it;
     auto hitView = findNodeAtPoint(childShadowNode, newPoint);
     if (hitView) {
       return hitView;

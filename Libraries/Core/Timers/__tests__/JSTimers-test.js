@@ -16,11 +16,8 @@ const NativeTiming = {
   setSendIdleEvents: jest.fn(),
 };
 
-const warning = jest.fn();
-
 jest
   .enableAutomock()
-  .mock('fbjs/lib/warning', () => warning, {virtual: true})
   .mock('../NativeTiming', () => ({
     __esModule: true,
     default: NativeTiming,
@@ -30,12 +27,13 @@ jest
 const JSTimers = require('../JSTimers');
 
 describe('JSTimers', function() {
-  const firstArgumentOfTheLastCallTo = function(func) {
-    return func.mock.calls[func.mock.calls.length - 1][0];
-  };
-
   beforeEach(function() {
+    jest.spyOn(console, 'warn');
     global.setTimeout = JSTimers.setTimeout;
+  });
+
+  afterEach(() => {
+    console.warn.mockRestore();
   });
 
   it('should call function with setTimeout', function() {
@@ -67,15 +65,15 @@ describe('JSTimers', function() {
     expect(callCount).toBe(1);
   });
 
-  it('should call nested setImmediate when cleared', function() {
+  it('should call nested queueReactNativeMicrotask when cleared', function() {
     let id1, id2, id3;
     let callCount = 0;
 
-    id1 = JSTimers.setImmediate(function() {
-      JSTimers.clearImmediate(id1);
-      id2 = JSTimers.setImmediate(function() {
-        JSTimers.clearImmediate(id2);
-        id3 = JSTimers.setImmediate(function() {
+    id1 = JSTimers.queueReactNativeMicrotask(function() {
+      JSTimers.clearReactNativeMicrotask(id1);
+      id2 = JSTimers.queueReactNativeMicrotask(function() {
+        JSTimers.clearReactNativeMicrotask(id2);
+        id3 = JSTimers.queueReactNativeMicrotask(function() {
           callCount += 1;
         });
       });
@@ -134,64 +132,64 @@ describe('JSTimers', function() {
     expect(callback).toBeCalledTimes(1);
   });
 
-  it('should call function with setImmediate', function() {
+  it('should call function with queueReactNativeMicrotask', function() {
     const callback = jest.fn();
-    JSTimers.setImmediate(callback);
-    JSTimers.callImmediates();
+    JSTimers.queueReactNativeMicrotask(callback);
+    JSTimers.callReactNativeMicrotasks();
     expect(callback).toBeCalledTimes(1);
   });
 
-  it('should not call function with clearImmediate', function() {
+  it('should not call function with clearReactNativeMicrotask', function() {
     const callback = jest.fn();
-    const id = JSTimers.setImmediate(callback);
-    JSTimers.clearImmediate(id);
-    JSTimers.callImmediates();
+    const id = JSTimers.queueReactNativeMicrotask(callback);
+    JSTimers.clearReactNativeMicrotask(id);
+    JSTimers.callReactNativeMicrotasks();
     expect(callback).not.toBeCalled();
   });
 
-  it('should call functions in the right order with setImmediate', function() {
+  it('should call functions in the right order with queueReactNativeMicrotask', function() {
     let count = 0;
     let firstCalled = null;
     let secondCalled = null;
-    JSTimers.setImmediate(function() {
+    JSTimers.queueReactNativeMicrotask(function() {
       firstCalled = count++;
     });
-    JSTimers.setImmediate(function() {
+    JSTimers.queueReactNativeMicrotask(function() {
       secondCalled = count++;
     });
-    JSTimers.callImmediates();
+    JSTimers.callReactNativeMicrotasks();
     expect(firstCalled).toBe(0);
     expect(secondCalled).toBe(1);
   });
 
-  it('should call functions in the right order with nested setImmediate', function() {
+  it('should call functions in the right order with nested queueReactNativeMicrotask', function() {
     let count = 0;
     let firstCalled = null;
     let secondCalled = null;
     let thirdCalled = null;
-    JSTimers.setImmediate(function() {
+    JSTimers.queueReactNativeMicrotask(function() {
       firstCalled = count++;
-      JSTimers.setImmediate(function() {
+      JSTimers.queueReactNativeMicrotask(function() {
         thirdCalled = count++;
       });
       secondCalled = count++;
     });
-    JSTimers.callImmediates();
+    JSTimers.callReactNativeMicrotasks();
     expect(firstCalled).toBe(0);
     expect(secondCalled).toBe(1);
     expect(thirdCalled).toBe(2);
   });
 
-  it('should call nested setImmediate', function() {
+  it('should call nested queueReactNativeMicrotask', function() {
     let firstCalled = false;
     let secondCalled = false;
-    JSTimers.setImmediate(function() {
+    JSTimers.queueReactNativeMicrotask(function() {
       firstCalled = true;
-      JSTimers.setImmediate(function() {
+      JSTimers.queueReactNativeMicrotask(function() {
         secondCalled = true;
       });
     });
-    JSTimers.callImmediates();
+    JSTimers.callReactNativeMicrotasks();
     expect(firstCalled).toBe(true);
     expect(secondCalled).toBe(true);
   });
@@ -277,12 +275,12 @@ describe('JSTimers', function() {
     JSTimers.clearTimeout(timerID);
     JSTimers.callTimers([timerID]);
     expect(callback).not.toBeCalled();
-    expect(firstArgumentOfTheLastCallTo(warning)).toBe(true);
+    expect(console.warn).not.toBeCalled();
   });
 
   it('should warn when callTimers is called with garbage timer id', function() {
     JSTimers.callTimers([1337]);
-    expect(firstArgumentOfTheLastCallTo(warning)).toBe(false);
+    expect(console.warn).toBeCalled();
   });
 
   it('should only call callback once for setTimeout', function() {
@@ -294,7 +292,7 @@ describe('JSTimers', function() {
     // Second time it should be ignored
     JSTimers.callTimers([timerID]);
     expect(callback).toBeCalledTimes(1);
-    expect(firstArgumentOfTheLastCallTo(warning)).toBe(true);
+    expect(console.warn).not.toBeCalled();
   });
 
   it('should only call callback once for requestAnimationFrame', function() {
@@ -306,7 +304,7 @@ describe('JSTimers', function() {
     // Second time it should be ignored
     JSTimers.callTimers([timerID]);
     expect(callback).toBeCalledTimes(1);
-    expect(firstArgumentOfTheLastCallTo(warning)).toBe(true);
+    expect(console.warn).not.toBeCalled();
   });
 
   it('should re-throw first exception', function() {
@@ -321,34 +319,34 @@ describe('JSTimers', function() {
     );
   });
 
-  it('should pass along errors thrown from setImmediate', function() {
-    JSTimers.setImmediate(function() {
-      throw new Error('error within setImmediate');
+  it('should pass along errors thrown from queueReactNativeMicrotask', function() {
+    JSTimers.queueReactNativeMicrotask(function() {
+      throw new Error('error within queueReactNativeMicrotask');
     });
 
     NativeTiming.createTimer = jest.fn();
-    JSTimers.callImmediates();
+    JSTimers.callReactNativeMicrotasks();
 
     // The remaining errors should be called within setTimeout, in case there
     // are a series of them
     expect(NativeTiming.createTimer).toBeCalled();
     const timerID = NativeTiming.createTimer.mock.calls[0][0];
     expect(JSTimers.callTimers.bind(null, [timerID])).toThrowError(
-      'error within setImmediate',
+      'error within queueReactNativeMicrotask',
     );
   });
 
-  it('should throw all errors from setImmediate', function() {
-    JSTimers.setImmediate(function() {
+  it('should throw all errors from queueReactNativeMicrotask', function() {
+    JSTimers.queueReactNativeMicrotask(function() {
       throw new Error('first error');
     });
 
-    JSTimers.setImmediate(function() {
+    JSTimers.queueReactNativeMicrotask(function() {
       throw new Error('second error');
     });
 
     NativeTiming.createTimer = jest.fn();
-    JSTimers.callImmediates();
+    JSTimers.callReactNativeMicrotasks();
 
     expect(NativeTiming.createTimer.mock.calls.length).toBe(2);
 

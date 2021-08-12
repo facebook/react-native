@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 import {Appearance} from 'react-native';
 import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
@@ -33,8 +31,11 @@ export type RNTesterTheme = {
   SeparatorColor: ColorValue,
   OpaqueSeparatorColor: ColorValue,
   LinkColor: ColorValue,
-  SystemPurpleColor: ColorValue,
+  SystemRedColor: ColorValue,
+  SystemGreenColor: ColorValue,
   ToolbarColor: ColorValue,
+  BackgroundColor: ColorValue,
+  BorderColor: ColorValue,
   ...
 };
 
@@ -57,8 +58,11 @@ export const RNTesterLightTheme = {
   SeparatorColor: '#3c3c4349',
   OpaqueSeparatorColor: '#c6c6c8ff',
   LinkColor: '#007affff',
-  SystemPurpleColor: '#af52deff',
+  SystemRedColor: '#ff3b30ff',
+  SystemGreenColor: '#34c759ff',
   ToolbarColor: '#e9eaedff',
+  BackgroundColor: '#f3f8ffff',
+  BorderColor: '#005dffff',
 };
 
 export const RNTesterDarkTheme = {
@@ -80,8 +84,11 @@ export const RNTesterDarkTheme = {
   SeparatorColor: '#54545899',
   OpaqueSeparatorColor: '#38383aff',
   LinkColor: '#0984ffff',
-  SystemPurpleColor: '#bf5af2ff',
+  SystemRedColor: '#ff375fff',
+  SystemGreenColor: '#30d158ff',
   ToolbarColor: '#3c3c43ff',
+  BackgroundColor: '#0c0700ff',
+  BorderColor: '#005dffff',
 };
 
 export const themes = {light: RNTesterLightTheme, dark: RNTesterDarkTheme};

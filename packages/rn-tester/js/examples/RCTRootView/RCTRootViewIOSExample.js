@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'RCTRootView';
+exports.category = 'Basic';
 exports.description =
   'Examples that show useful methods when embedding React Native in a native application';
 exports.examples = [

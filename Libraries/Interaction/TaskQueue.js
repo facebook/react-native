@@ -156,6 +156,7 @@ class TaskQueue {
     // happens once it is fully processed.
     this._queueStack.push({tasks: [], popable: false});
     const stackIdx = this._queueStack.length - 1;
+    const stackItem = this._queueStack[stackIdx];
     DEBUG && infoLog('TaskQueue: push new queue: ', {stackIdx});
     DEBUG && infoLog('TaskQueue: exec gen task ' + task.name);
     task
@@ -166,7 +167,7 @@ class TaskQueue {
             stackIdx,
             queueStackSize: this._queueStack.length,
           });
-        this._queueStack[stackIdx].popable = true;
+        stackItem.popable = true;
         this.hasTasksToProcess() && this._onMoreTasks();
       })
       .catch(ex => {

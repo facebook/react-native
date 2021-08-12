@@ -11,7 +11,7 @@ LOCAL_MODULE := fabricjni
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := libreactconfig libyoga libglog libfb libfbjni libglog_init libfolly_json libfolly_futures libreact_render_mounting libreactnativeutilsjni libreact_utils libreact_render_debug libreact_render_graphics libreact_render_core libreact_render_mapbuffer react_render_componentregistry libreact_render_components_view libreact_render_components_unimplementedview libreact_render_components_root libreact_render_components_scrollview libbetter libreact_render_attributedstring libreact_render_uimanager libreact_render_templateprocessor libreact_render_scheduler libreact_render_animations libreact_render_imagemanager libreact_render_textlayoutmanager libreact_render_viewmanagers react_render_components_text libreact_render_components_image
+LOCAL_SHARED_LIBRARIES := libreactconfig librrc_slider librrc_progressbar librrc_switch librrc_modal libyoga libglog libfb libfbjni libglog_init libfolly_json libfolly_futures libreact_render_mounting libreactnativeutilsjni libreact_utils libreact_render_debug libreact_render_graphics libreact_render_core react_render_componentregistry librrc_view librrc_unimplementedview librrc_root librrc_scrollview libbetter libreact_render_attributedstring libreact_render_uimanager libreact_render_templateprocessor libreact_render_scheduler libreact_render_animations libreact_render_imagemanager libreact_render_textlayoutmanager libreact_codegen_rncore rrc_text librrc_image librrc_textinput libreact_debug libreact_render_mapbuffer libmapbufferjni libreact_render_telemetry
 
 LOCAL_STATIC_LIBRARIES :=
 
@@ -22,7 +22,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 
@@ -34,16 +34,22 @@ $(call import-module,yogajni)
 $(call import-module,glog)
 
 $(call import-module,react/utils)
+$(call import-module,react/debug)
 $(call import-module,react/config)
 $(call import-module,react/renderer/animations)
 $(call import-module,react/renderer/attributedstring)
 $(call import-module,react/renderer/componentregistry)
 $(call import-module,react/renderer/core)
 $(call import-module,react/renderer/components/image)
+$(call import-module,react/renderer/components/modal)
 $(call import-module,react/renderer/components/root)
+$(call import-module,react/renderer/components/progressbar)
 $(call import-module,react/renderer/components/scrollview)
-$(call import-module,react/renderer/components/unimplementedview)
+$(call import-module,react/renderer/components/slider)
+$(call import-module,react/renderer/components/switch)
 $(call import-module,react/renderer/components/text)
+$(call import-module,react/renderer/components/textinput)
+$(call import-module,react/renderer/components/unimplementedview)
 $(call import-module,react/renderer/components/view)
 $(call import-module,react/renderer/debug)
 $(call import-module,react/renderer/graphics)
@@ -54,5 +60,4 @@ $(call import-module,react/renderer/scheduler)
 $(call import-module,react/renderer/templateprocessor)
 $(call import-module,react/renderer/textlayoutmanager)
 $(call import-module,react/renderer/uimanager)
-
-# $(call import-module,react/fabric/viewmanagers/jni)
+$(call import-module,react/renderer/telemetry)

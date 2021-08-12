@@ -46,6 +46,7 @@
       @"BridgeStartup",
       @"RootViewTTI",
       @"BundleSize",
+      @"ReactInstanceInit",
     ];
   }
   return self;

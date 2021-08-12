@@ -12,8 +12,14 @@
 #include <fbjni/fbjni.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/components/androidswitch/AndroidSwitchComponentDescriptor.h>
+#include <react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h>
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
+#include <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
+#include <react/renderer/components/progressbar/AndroidProgressBarComponentDescriptor.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
+#include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
+#include <react/renderer/components/slider/SliderComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
@@ -32,16 +38,37 @@ CoreComponentsRegistry::sharedProviderRegistry() {
     auto providerRegistry =
         std::make_shared<ComponentDescriptorProviderRegistry>();
 
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          AndroidProgressBarComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          AndroidSwipeRefreshLayoutComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          ActivityIndicatorViewComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          AndroidTextInputComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<ViewComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<ImageComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          ModalHostViewComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          AndroidSwitchComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<TextComponentDescriptor>());
     providerRegistry->add(
         concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
     providerRegistry->add(
+        concreteComponentDescriptorProvider<SliderComponentDescriptor>());
+    providerRegistry->add(
+        concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>());
+    providerRegistry->add(
+        concreteComponentDescriptorProvider<
+            AndroidHorizontalScrollContentViewComponentDescriptor>());
+    providerRegistry->add(
         concreteComponentDescriptorProvider<ParagraphComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          AndroidDrawerLayoutComponentDescriptor>());
 
     return providerRegistry;
   }();
@@ -63,7 +90,6 @@ CoreComponentsRegistry::initHybrid(
     auto registry = CoreComponentsRegistry::sharedProviderRegistry()
                         ->createComponentDescriptorRegistry(
                             {eventDispatcher, contextContainer});
-
     auto mutableRegistry =
         std::const_pointer_cast<ComponentDescriptorRegistry>(registry);
     mutableRegistry->setFallbackComponentDescriptor(

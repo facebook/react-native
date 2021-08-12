@@ -30,22 +30,19 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.autofill.HintConstants;
 import androidx.core.content.ContextCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.JavaOnlyArray;
-import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -76,6 +73,7 @@ import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextTransform;
 import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -88,6 +86,51 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final int[] SPACING_TYPES = {
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
+  private static final Map<String, String> REACT_PROPS_AUTOFILL_HINTS_MAP =
+      new HashMap<String, String>() {
+        {
+          put("birthdate-day", HintConstants.AUTOFILL_HINT_BIRTH_DATE_DAY);
+          put("birthdate-full", HintConstants.AUTOFILL_HINT_BIRTH_DATE_FULL);
+          put("birthdate-month", HintConstants.AUTOFILL_HINT_BIRTH_DATE_MONTH);
+          put("birthdate-year", HintConstants.AUTOFILL_HINT_BIRTH_DATE_YEAR);
+          put("cc-csc", HintConstants.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
+          put("cc-exp", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
+          put("cc-exp-day", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DAY);
+          put("cc-exp-month", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
+          put("cc-exp-year", HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
+          put("cc-number", HintConstants.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
+          put("email", HintConstants.AUTOFILL_HINT_EMAIL_ADDRESS);
+          put("gender", HintConstants.AUTOFILL_HINT_GENDER);
+          put("name", HintConstants.AUTOFILL_HINT_PERSON_NAME);
+          put("name-family", HintConstants.AUTOFILL_HINT_PERSON_NAME_FAMILY);
+          put("name-given", HintConstants.AUTOFILL_HINT_PERSON_NAME_GIVEN);
+          put("name-middle", HintConstants.AUTOFILL_HINT_PERSON_NAME_MIDDLE);
+          put("name-middle-initial", HintConstants.AUTOFILL_HINT_PERSON_NAME_MIDDLE_INITIAL);
+          put("name-prefix", HintConstants.AUTOFILL_HINT_PERSON_NAME_PREFIX);
+          put("name-suffix", HintConstants.AUTOFILL_HINT_PERSON_NAME_SUFFIX);
+          put("password", HintConstants.AUTOFILL_HINT_PASSWORD);
+          put("password-new", HintConstants.AUTOFILL_HINT_NEW_PASSWORD);
+          put("postal-address", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS);
+          put("postal-address-country", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_COUNTRY);
+          put(
+              "postal-address-extended",
+              HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_EXTENDED_ADDRESS);
+          put(
+              "postal-address-extended-postal-code",
+              HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_EXTENDED_POSTAL_CODE);
+          put("postal-address-locality", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_LOCALITY);
+          put("postal-address-region", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_REGION);
+          put("postal-code", HintConstants.AUTOFILL_HINT_POSTAL_CODE);
+          put("street-address", HintConstants.AUTOFILL_HINT_POSTAL_ADDRESS_STREET_ADDRESS);
+          put("sms-otp", HintConstants.AUTOFILL_HINT_SMS_OTP);
+          put("tel", HintConstants.AUTOFILL_HINT_PHONE_NUMBER);
+          put("tel-country-code", HintConstants.AUTOFILL_HINT_PHONE_COUNTRY_CODE);
+          put("tel-national", HintConstants.AUTOFILL_HINT_PHONE_NATIONAL);
+          put("tel-device", HintConstants.AUTOFILL_HINT_PHONE_NUMBER_DEVICE);
+          put("username", HintConstants.AUTOFILL_HINT_USERNAME);
+          put("username-new", HintConstants.AUTOFILL_HINT_NEW_USERNAME);
+        }
+      };
 
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
@@ -112,6 +155,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_NUMBER_PAD = "number-pad";
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
+  private static final String KEYBOARD_TYPE_URI = "url";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
 
@@ -250,8 +294,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  // TODO: if we're able to fill in all these values and call maybeSetText when appropriate
-  // I think this is all that's needed to fully support TextInput in Fabric
   private ReactTextUpdate getReactTextUpdate(
       String text, int mostRecentEventCount, int start, int end) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
@@ -286,9 +328,22 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         Spannable spannable = update.getText();
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
+
+      // Ensure that selection is handled correctly on text update
+      boolean isCurrentSelectionEmpty = view.getSelectionStart() == view.getSelectionEnd();
+      int selectionStart = update.getSelectionStart();
+      int selectionEnd = update.getSelectionEnd();
+      if ((selectionStart == UNSET || selectionEnd == UNSET) && isCurrentSelectionEmpty) {
+        // if selection is not set by state, shift current selection to ensure constant gap to
+        // text end
+        int textLength = view.getText() == null ? 0 : view.getText().length();
+        int selectionOffset = textLength - view.getSelectionStart();
+        selectionStart = update.getText().length() - selectionOffset;
+        selectionEnd = selectionStart;
+      }
+
       view.maybeSetTextFromState(update);
-      view.maybeSetSelection(
-          update.getJsEventCounter(), update.getSelectionStart(), update.getSelectionEnd());
+      view.maybeSetSelection(update.getJsEventCounter(), selectionStart, selectionEnd);
     }
   }
 
@@ -404,7 +459,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactProp(name = "placeholder")
-  public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
+  public void setPlaceholder(ReactEditText view, String placeholder) {
     view.setHint(placeholder);
   }
 
@@ -483,8 +538,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  private static boolean shouldHideCursorForEmailTextInput() {
+    String manufacturer = Build.MANUFACTURER.toLowerCase();
+    return (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q && manufacturer.contains("xiaomi"));
+  }
+
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public void setCaretHidden(ReactEditText view, boolean caretHidden) {
+    if (view.getStagedInputType() == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        && shouldHideCursorForEmailTextInput()) {
+      return;
+    }
     view.setCursorVisible(!caretHidden);
   }
 
@@ -514,7 +578,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         view.setTextColor(defaultContextTextColor);
       } else {
         Context c = view.getContext();
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG,
             new IllegalStateException(
                 "Could not get default text color from View Context: "
@@ -651,39 +715,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setFilters(newFilters);
   }
 
-  @ReactProp(name = "autoCompleteType")
-  public void setTextContentType(ReactEditText view, @Nullable String autoCompleteType) {
-    if (autoCompleteType == null) {
+  @ReactProp(name = "autoComplete")
+  public void setTextContentType(ReactEditText view, @Nullable String autoComplete) {
+    if (autoComplete == null) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
-    } else if ("username".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_USERNAME);
-    } else if ("password".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_PASSWORD);
-    } else if ("email".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_EMAIL_ADDRESS);
-    } else if ("name".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_NAME);
-    } else if ("tel".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_PHONE);
-    } else if ("street-address".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_ADDRESS);
-    } else if ("postal-code".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_CODE);
-    } else if ("cc-number".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
-    } else if ("cc-csc".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
-    } else if ("cc-exp".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
-    } else if ("cc-exp-month".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
-    } else if ("cc-exp-year".equals(autoCompleteType)) {
-      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
-    } else if ("off".equals(autoCompleteType)) {
+    } else if ("off".equals(autoComplete)) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
+    } else if (REACT_PROPS_AUTOFILL_HINTS_MAP.containsKey(autoComplete)) {
+      setAutofillHints(view, REACT_PROPS_AUTOFILL_HINTS_MAP.get(autoComplete));
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid autoCompleteType: " + autoCompleteType);
+      throw new JSApplicationIllegalArgumentException("Invalid autoComplete: " + autoComplete);
     }
   }
 
@@ -713,7 +754,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     updateStagedInputTypeFlag(
         view,
         password
-            ? 0
+            ? InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             : InputType.TYPE_NUMBER_VARIATION_PASSWORD | InputType.TYPE_TEXT_VARIATION_PASSWORD,
         password ? InputType.TYPE_TEXT_VARIATION_PASSWORD : 0);
     checkPasswordType(view);
@@ -756,12 +797,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       flagsToSet = INPUT_TYPE_KEYBOARD_DECIMAL_PAD;
     } else if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT;
+
+      // Set cursor's visibility to False to fix a crash on some Xiaomi devices with Android Q. This
+      // crash happens when focusing on a email EditText, during which a prompt will be triggered
+      // but
+      // the system fail to locate it properly. Here is an example post discussing about this
+      // issue: https://github.com/facebook/react-native/issues/27204
+      if (shouldHideCursorForEmailTextInput()) {
+        view.setCursorVisible(false);
+      }
     } else if (KEYBOARD_TYPE_PHONE_PAD.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_CLASS_PHONE;
     } else if (KEYBOARD_TYPE_VISIBLE_PASSWORD.equalsIgnoreCase(keyboardType)) {
       // This will supercede secureTextEntry={false}. If it doesn't, due to the way
       //  the flags work out, the underlying field will end up a URI-type field.
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+    } else if (KEYBOARD_TYPE_URI.equalsIgnoreCase(keyboardType)) {
+      flagsToSet = InputType.TYPE_TEXT_VARIATION_URI;
     }
 
     updateStagedInputTypeFlag(view, InputType.TYPE_MASK_CLASS, flagsToSet);
@@ -885,12 +937,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private EventDispatcher mEventDispatcher;
     private ReactEditText mEditText;
     private String mPreviousText;
+    private int mSurfaceId;
 
     public ReactTextInputTextWatcher(
         final ReactContext reactContext, final ReactEditText editText) {
       mEventDispatcher = getEventDispatcher(reactContext, editText);
       mEditText = editText;
       mPreviousText = null;
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -919,70 +973,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      // Fabric: update representation of AttributedString
-      final JavaOnlyMap attributedString = mEditText.mAttributedString;
-      if (attributedString != null && attributedString.hasKey("fragments")) {
-        String changedText = s.subSequence(start, start + count).toString();
-
-        String completeStr = attributedString.getString("string");
-        String newCompleteStr =
-            completeStr.substring(0, start)
-                + changedText
-                + (completeStr.length() > start + before
-                    ? completeStr.substring(start + before)
-                    : "");
-        attributedString.putString("string", newCompleteStr);
-
-        // Loop through all fragments and change them in-place
-        JavaOnlyArray fragments = (JavaOnlyArray) attributedString.getArray("fragments");
-        int positionInAttributedString = 0;
-        boolean found = false;
-        for (int i = 0; i < fragments.size() && !found; i++) {
-          JavaOnlyMap fragment = (JavaOnlyMap) fragments.getMap(i);
-          String fragmentStr = fragment.getString("string");
-          int positionBefore = positionInAttributedString;
-          positionInAttributedString += fragmentStr.length();
-          if (positionInAttributedString < start) {
-            continue;
-          }
-
-          int relativePosition = start - positionBefore;
-          found = true;
-
-          // Does the change span multiple Fragments?
-          // If so, we put any new text entirely in the first
-          // Fragment that we edit. For example, if you select two words
-          // across Fragment boundaries, "one | two", and replace them with a
-          // character "x", the first Fragment will replace "one " with "x", and the
-          // second Fragment will replace "two" with an empty string.
-          int remaining = fragmentStr.length() - relativePosition;
-
-          String newString =
-              fragmentStr.substring(0, relativePosition)
-                  + changedText
-                  + (fragmentStr.substring(relativePosition + Math.min(before, remaining)));
-          fragment.putString("string", newString);
-
-          // If we're changing 10 characters (before=10) and remaining=3,
-          // we want to remove 3 characters from this fragment (`Math.min(before, remaining)`)
-          // and 7 from the next Fragment (`before = 10 - 3`)
-          if (remaining < before) {
-            changedText = "";
-            start += remaining;
-            before = before - remaining;
-            found = false;
-          }
-        }
-      }
-
-      // Fabric: communicate to C++ layer that text has changed
-      // We need to call `incrementAndGetEventCounter` here explicitly because this
-      // update may race with other updates.
-      // TODO: currently WritableNativeMaps/WritableNativeArrays cannot be reused so
-      // we must recreate these data structures every time. It would be nice to have a
-      // reusable data-structure to use for TextInput because constructing these and copying
-      // on every keystroke is very expensive.
-      if (mEditText.getFabricViewStateManager().hasStateWrapper() && attributedString != null) {
+      if (mEditText.getFabricViewStateManager().hasStateWrapper()) {
+        // Fabric: communicate to C++ layer that text has changed
+        // We need to call `incrementAndGetEventCounter` here explicitly because this
+        // update may race with other updates.
+        // We simply pass in the cache ID, which never changes, but UpdateState will still be called
+        // on the native side, triggering a measure.
         mEditText
             .getFabricViewStateManager()
             .setState(
@@ -990,24 +986,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                   @Override
                   public WritableMap getStateUpdate() {
                     WritableMap map = new WritableNativeMap();
-                    WritableMap newAttributedString = new WritableNativeMap();
-
-                    WritableArray fragments = new WritableNativeArray();
-
-                    for (int i = 0; i < attributedString.getArray("fragments").size(); i++) {
-                      ReadableMap readableFragment =
-                          attributedString.getArray("fragments").getMap(i);
-                      WritableMap fragment = new WritableNativeMap();
-                      fragment.putDouble("reactTag", readableFragment.getInt("reactTag"));
-                      fragment.putString("string", readableFragment.getString("string"));
-                      fragments.pushMap(fragment);
-                    }
-
-                    newAttributedString.putString("string", attributedString.getString("string"));
-                    newAttributedString.putArray("fragments", fragments);
-
                     map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-                    map.putMap("textChanged", newAttributedString);
+                    map.putInt("opaqueCacheId", mEditText.getId());
                     return map;
                   }
                 });
@@ -1017,10 +997,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
-              mEditText.getId(), s.toString(), mEditText.incrementAndGetEventCounter()));
+              mSurfaceId,
+              mEditText.getId(),
+              s.toString(),
+              mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(
-          new ReactTextInputEvent(mEditText.getId(), newText, oldText, start, start + before));
+          new ReactTextInputEvent(
+              mSurfaceId, mEditText.getId(), newText, oldText, start, start + before));
     }
 
     @Override
@@ -1030,19 +1014,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Override
   protected void addEventEmitters(
       final ThemedReactContext reactContext, final ReactEditText editText) {
+    editText.setEventDispatcher(getEventDispatcher(reactContext, editText));
     editText.addTextChangedListener(new ReactTextInputTextWatcher(reactContext, editText));
     editText.setOnFocusChangeListener(
         new View.OnFocusChangeListener() {
           public void onFocusChange(View v, boolean hasFocus) {
+            int surfaceId = reactContext.getSurfaceId();
             EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
             if (hasFocus) {
-              eventDispatcher.dispatchEvent(new ReactTextInputFocusEvent(editText.getId()));
+              eventDispatcher.dispatchEvent(
+                  new ReactTextInputFocusEvent(surfaceId, editText.getId()));
             } else {
-              eventDispatcher.dispatchEvent(new ReactTextInputBlurEvent(editText.getId()));
+              eventDispatcher.dispatchEvent(
+                  new ReactTextInputBlurEvent(surfaceId, editText.getId()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
-                      editText.getId(), editText.getText().toString()));
+                      surfaceId, editText.getId(), editText.getText().toString()));
             }
           }
         });
@@ -1067,7 +1055,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               EventDispatcher eventDispatcher = getEventDispatcher(reactContext, editText);
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
-                      editText.getId(), editText.getText().toString()));
+                      reactContext.getSurfaceId(),
+                      editText.getId(),
+                      editText.getText().toString()));
 
               if (blurOnSubmit) {
                 editText.clearFocus();
@@ -1100,11 +1090,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private @Nullable EventDispatcher mEventDispatcher;
     private int mPreviousContentWidth = 0;
     private int mPreviousContentHeight = 0;
+    private int mSurfaceId;
 
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -1134,6 +1126,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         mEventDispatcher.dispatchEvent(
             new ReactContentSizeChangedEvent(
+                mSurfaceId,
                 mEditText.getId(),
                 PixelUtil.toDIPFromPixel(contentWidth),
                 PixelUtil.toDIPFromPixel(contentHeight)));
@@ -1147,12 +1140,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private EventDispatcher mEventDispatcher;
     private int mPreviousSelectionStart;
     private int mPreviousSelectionEnd;
+    private int mSurfaceId;
 
     public ReactSelectionWatcher(ReactEditText editText) {
       mReactEditText = editText;
 
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -1168,7 +1163,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       if (mPreviousSelectionStart != realStart || mPreviousSelectionEnd != realEnd) {
         mEventDispatcher.dispatchEvent(
-            new ReactTextInputSelectionEvent(mReactEditText.getId(), realStart, realEnd));
+            new ReactTextInputSelectionEvent(
+                mSurfaceId, mReactEditText.getId(), realStart, realEnd));
 
         mPreviousSelectionStart = realStart;
         mPreviousSelectionEnd = realEnd;
@@ -1182,11 +1178,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     private EventDispatcher mEventDispatcher;
     private int mPreviousHoriz;
     private int mPreviousVert;
+    private int mSurfaceId;
 
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
       ReactContext reactContext = getReactContext(editText);
       mEventDispatcher = getEventDispatcher(reactContext, editText);
+      mSurfaceId = UIManagerHelper.getSurfaceId(reactContext);
     }
 
     @Override
@@ -1194,6 +1192,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (mPreviousHoriz != horiz || mPreviousVert != vert) {
         ScrollEvent event =
             ScrollEvent.obtain(
+                mSurfaceId,
                 mReactEditText.getId(),
                 ScrollEventType.SCROLL,
                 horiz,
@@ -1245,13 +1244,25 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   public Object updateState(
       ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
 
+    if (ReactEditText.DEBUG_MODE) {
+      FLog.e(TAG, "updateState: [" + view.getId() + "]");
+    }
+
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
 
     if (stateWrapper == null) {
-      throw new IllegalArgumentException("Unable to update a NULL state.");
+      return null;
     }
-    ReadableNativeMap state = stateWrapper.getState();
 
+    ReadableNativeMap state = stateWrapper.getStateData();
+
+    if (state == null) {
+      return null;
+    }
+
+    if (!state.hasKey("attributedString")) {
+      return null;
+    }
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
 
@@ -1263,6 +1274,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
+    boolean containsMultipleFragments =
+        attributedString.getArray("fragments").toArrayList().size() > 1;
+
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
@@ -1272,6 +1286,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),
-        attributedString);
+        containsMultipleFragments);
   }
 }

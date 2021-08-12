@@ -7,16 +7,19 @@
 
 #import <Foundation/Foundation.h>
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
+#import "RCTDefines.h"
 
-extern NSString *const RCTBundleURLProviderUpdatedNotification;
+RCT_EXTERN NSString *const RCTBundleURLProviderUpdatedNotification;
+RCT_EXTERN const NSUInteger kRCTBundleURLProviderDefaultPort;
 
-extern const NSUInteger kRCTBundleURLProviderDefaultPort;
-
-#if defined(__cplusplus)
-}
+#if RCT_DEV_MENU
+/**
+ * Allow/disallow accessing the packager server for various runtime scenario.
+ * For instance, if a test run should never access the packager, disable it
+ * by calling this function before initializing React Native (RCTBridge etc).
+ * By default the access is enabled.
+ */
+RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 #endif
 
 @interface RCTBundleURLProvider : NSObject
@@ -37,7 +40,17 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  */
 - (NSString *)packagerServerHost;
 
-+ (BOOL)isPackagerRunning:(NSString *)host;
+/**
+ * Return the server host with optional port. If its a development build and there's no jsLocation defined,
+ * it will return the server host IP address
+ */
+- (NSString *)packagerServerHostPort;
+
+/**
+ * Returns if there's a packager running at the given host port.
+ * The port is optional, if not specified, kRCTBundleURLProviderDefaultPort will be used
+ */
++ (BOOL)isPackagerRunning:(NSString *)hostPort;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
@@ -86,8 +99,6 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
  * The IP address or hostname of the packager.
  */
 @property (nonatomic, copy) NSString *jsLocation;
-
-@property (nonatomic, assign) BOOL enableLiveReload;
 @property (nonatomic, assign) BOOL enableMinification;
 @property (nonatomic, assign) BOOL enableDev;
 

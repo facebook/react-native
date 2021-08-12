@@ -345,6 +345,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'WebSocket';
+exports.category = 'Basic';
 exports.description = 'WebSocket API';
 exports.examples = [
   {

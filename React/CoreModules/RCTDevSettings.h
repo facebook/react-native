@@ -8,6 +8,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTDefines.h>
 #import <React/RCTEventEmitter.h>
+#import <React/RCTInitializing.h>
 
 @protocol RCTPackagerClientMethod;
 
@@ -30,12 +31,21 @@
 
 @end
 
-@interface RCTDevSettings : RCTEventEmitter
+@protocol RCTDevSettingsInspectable <NSObject>
+
+/**
+ * Whether current jsi::Runtime is inspectable.
+ * Only set when using as a bridgeless turbo module.
+ */
+@property (nonatomic, assign, readwrite) BOOL isInspectable;
+
+@end
+
+@interface RCTDevSettings : RCTEventEmitter <RCTInitializing>
 
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource;
 
 @property (nonatomic, readonly) BOOL isHotLoadingAvailable;
-@property (nonatomic, readonly) BOOL isLiveReloadAvailable;
 @property (nonatomic, readonly) BOOL isRemoteDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isDeviceDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isJSCSamplingProfilerAvailable;

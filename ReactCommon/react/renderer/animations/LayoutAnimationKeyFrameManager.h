@@ -7,16 +7,11 @@
 
 #pragma once
 
-// Enable some or all of these to enable very verbose logging for
-// LayoutAnimations
-//#define LAYOUT_ANIMATION_VERBOSE_LOGGING 1
-//#define RN_SHADOW_TREE_INTROSPECTION
-//#define RN_DEBUG_STRING_CONVERTIBLE 1
-
 #include <ReactCommon/RuntimeExecutor.h>
 #include <better/optional.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/RawValue.h>
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
@@ -28,30 +23,37 @@
 namespace facebook {
 namespace react {
 
+#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
+void PrintMutationInstruction(
+    std::string message,
+    ShadowViewMutation const &mutation);
+void PrintMutationInstructionRelative(
+    std::string message,
+    ShadowViewMutation const &mutation,
+    ShadowViewMutation const &relativeMutation);
+#else
+#define PrintMutationInstruction(a, b)
+#define PrintMutationInstructionRelative(a, b, c)
+#endif
+
 // This corresponds exactly with JS.
 enum class AnimationType {
-  None,
-  Spring,
-  Linear,
-  EaseInEaseOut,
-  EaseIn,
-  EaseOut,
-  Keyboard
+  None = 0,
+  Spring = 1,
+  Linear = 2,
+  EaseInEaseOut = 4,
+  EaseIn = 8,
+  EaseOut = 16,
+  Keyboard = 32
 };
 enum class AnimationProperty {
-  NotApplicable,
-  Opacity,
-  ScaleX,
-  ScaleY,
-  ScaleXY
+  NotApplicable = 0,
+  Opacity = 1,
+  ScaleX = 2,
+  ScaleY = 4,
+  ScaleXY = 8
 };
-enum class AnimationConfigurationType {
-  Noop, // for animation placeholders that are not animated, and should be
-  // executed once other animations have completed
-  Create,
-  Update,
-  Delete
-};
+enum class AnimationConfigurationType { Create = 1, Update = 2, Delete = 4 };
 
 // This corresponds exactly with JS.
 struct AnimationConfig {
@@ -68,15 +70,17 @@ struct AnimationConfig {
 // This corresponds exactly with JS.
 struct LayoutAnimationConfig {
   double duration; // ms
-  better::optional<AnimationConfig> createConfig;
-  better::optional<AnimationConfig> updateConfig;
-  better::optional<AnimationConfig> deleteConfig;
+  AnimationConfig createConfig;
+  AnimationConfig updateConfig;
+  AnimationConfig deleteConfig;
 };
 
 struct AnimationKeyFrame {
-  // The mutation that should be executed once the animation completes
-  // (optional).
-  better::optional<ShadowViewMutation> finalMutationForKeyFrame;
+  // The mutation(s) that should be executed once the animation completes.
+  // This maybe empty.
+  // For CREATE/INSERT this will contain CREATE, INSERT in that order.
+  // For REMOVE/DELETE, same.
+  std::vector<ShadowViewMutation> finalMutationsForKeyFrame;
 
   // The type of animation this is (for configuration purposes)
   AnimationConfigurationType type;
@@ -90,9 +94,18 @@ struct AnimationKeyFrame {
   ShadowView viewStart;
   ShadowView viewEnd;
 
+  // ShadowView representing the previous frame of the animation.
+  ShadowView viewPrev;
+
   // If an animation interrupts an existing one, the starting state may actually
   // be halfway through the intended transition.
   double initialProgress;
+
+  bool invalidated{false};
+
+  // In the case where some mutation conflicts with this keyframe,
+  // should we generate final synthetic UPDATE mutations for this keyframe?
+  bool generateFinalSyntheticMutations{true};
 };
 
 class LayoutAnimationCallbackWrapper {
@@ -100,7 +113,6 @@ class LayoutAnimationCallbackWrapper {
   LayoutAnimationCallbackWrapper(jsi::Function &&callback)
       : callback_(std::make_shared<jsi::Function>(std::move(callback))) {}
   LayoutAnimationCallbackWrapper() : callback_(nullptr) {}
-  ~LayoutAnimationCallbackWrapper() {}
 
   // Copy and assignment-copy constructors should copy callback_, and not
   // std::move it. Copying is desirable, otherwise the shared_ptr and
@@ -116,7 +128,7 @@ class LayoutAnimationCallbackWrapper {
     }
 
     std::weak_ptr<jsi::Function> callable = callback_;
-    std::shared_ptr<bool> callComplete = callComplete_;
+    std::shared_ptr<std::atomic_bool> callComplete = callComplete_;
 
     runtimeExecutor(
         [=, callComplete = std::move(callComplete)](jsi::Runtime &runtime) {
@@ -132,7 +144,8 @@ class LayoutAnimationCallbackWrapper {
   }
 
  private:
-  std::shared_ptr<bool> callComplete_ = std::make_shared<bool>(false);
+  std::shared_ptr<std::atomic_bool> callComplete_ =
+      std::make_shared<std::atomic_bool>(false);
   std::shared_ptr<jsi::Function> callback_;
 };
 
@@ -153,19 +166,32 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       RuntimeExecutor runtimeExecutor,
       LayoutAnimationStatusDelegate *delegate)
       : runtimeExecutor_(runtimeExecutor),
-        layoutAnimationStatusDelegate_(delegate) {}
+        layoutAnimationStatusDelegate_(delegate),
+        now_([]() {
+          return std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::high_resolution_clock::now()
+                         .time_since_epoch())
+              .count();
+        }) {}
   ~LayoutAnimationKeyFrameManager() {}
+
+#pragma mark UIManagerAnimationDelegate methods
 
   void uiManagerDidConfigureNextLayoutAnimation(
       jsi::Runtime &runtime,
       RawValue const &config,
       const jsi::Value &successCallbackValue,
       const jsi::Value &failureCallbackValue) const override;
+
   void setComponentDescriptorRegistry(SharedComponentDescriptorRegistry const &
                                           componentDescriptorRegistry) override;
 
   // TODO: add SurfaceId to this API as well
   bool shouldAnimateFrame() const override;
+
+  void stopSurface(SurfaceId surfaceId) override;
+
+#pragma mark MountingOverrideDelegate methods
 
   bool shouldOverridePullTransaction() const override;
 
@@ -175,8 +201,13 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   better::optional<MountingTransaction> pullTransaction(
       SurfaceId surfaceId,
       MountingTransaction::Number number,
-      MountingTelemetry const &telemetry,
+      TransactionTelemetry const &telemetry,
       ShadowViewMutationList mutations) const override;
+
+  // Exposed for testing.
+ public:
+  void uiManagerDidConfigureNextLayoutAnimation(
+      LayoutAnimation layoutAnimation) const;
 
   // LayoutAnimationStatusDelegate - this is for the platform to get
   // signal when animations start and complete. Setting and resetting this
@@ -192,17 +223,29 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::mutex layoutAnimationStatusDelegateMutex_;
   mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
 
+  // Function that returns current time in milliseconds
+  std::function<uint64_t()> now_;
+
   void adjustImmediateMutationIndicesForDelayedMutations(
       SurfaceId surfaceId,
-      ShadowViewMutation &mutation) const;
+      ShadowViewMutation &mutation,
+      bool skipLastAnimation = false,
+      bool lastAnimationOnly = false) const;
 
   void adjustDelayedMutationIndicesForMutation(
       SurfaceId surfaceId,
-      ShadowViewMutation const &mutation) const;
+      ShadowViewMutation const &mutation,
+      bool skipLastAnimation = false) const;
+
+  void getAndEraseConflictingAnimations(
+      SurfaceId surfaceId,
+      ShadowViewMutationList const &mutations,
+      std::vector<AnimationKeyFrame> &conflictingAnimations) const;
+
+  mutable std::mutex surfaceIdsToStopMutex_;
+  mutable std::vector<SurfaceId> surfaceIdsToStop_{};
 
  protected:
-  bool mutatedViewIsVirtual(ShadowViewMutation const &mutation) const;
-
   bool hasComponentDescriptorForShadowView(ShadowView const &shadowView) const;
   ComponentDescriptor const &getComponentDescriptorForShadowView(
       ShadowView const &shadowView) const;
@@ -213,7 +256,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   ShadowView createInterpolatedShadowView(
       double progress,
-      AnimationConfig const &animationConfig,
       ShadowView startingView,
       ShadowView finalView) const;
 
@@ -224,10 +266,15 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowViewMutation::List &mutationsList,
       uint64_t now) const = 0;
 
-  virtual double getProgressThroughAnimation(
-      AnimationKeyFrame const &keyFrame,
-      LayoutAnimation const *layoutAnimation,
-      ShadowView const &animationStateView) const = 0;
+  /**
+   * Queue (and potentially synthesize) final mutations for a finished keyframe.
+   * Keyframe animation may have timed-out, or be canceled due to a conflict.
+   */
+  void queueFinalMutationsForCompletedKeyFrame(
+      AnimationKeyFrame const &keyframe,
+      ShadowViewMutation::List &mutationsList,
+      bool interrupted,
+      std::string logPrefix) const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable better::optional<LayoutAnimation> currentAnimation_{};
@@ -247,7 +294,68 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::mutex callbackWrappersPendingMutex_;
   mutable std::vector<std::unique_ptr<LayoutAnimationCallbackWrapper>>
       callbackWrappersPending_{};
+
+ public:
+  void setClockNow(std::function<uint64_t()> now);
 };
+
+static inline bool shouldFirstComeBeforeSecondRemovesOnly(
+    ShadowViewMutation const &lhs,
+    ShadowViewMutation const &rhs) noexcept {
+  // Make sure that removes on the same level are sorted - highest indices must
+  // come first.
+  return (lhs.type == ShadowViewMutation::Type::Remove &&
+          lhs.type == rhs.type) &&
+      (lhs.parentShadowView.tag == rhs.parentShadowView.tag) &&
+      (lhs.index > rhs.index);
+}
+
+static inline bool shouldFirstComeBeforeSecondMutation(
+    ShadowViewMutation const &lhs,
+    ShadowViewMutation const &rhs) noexcept {
+  if (lhs.type != rhs.type) {
+    // Deletes always come last
+    if (lhs.type == ShadowViewMutation::Type::Delete) {
+      return false;
+    }
+    if (rhs.type == ShadowViewMutation::Type::Delete) {
+      return true;
+    }
+
+    // Remove comes before insert
+    if (lhs.type == ShadowViewMutation::Type::Remove &&
+        rhs.type == ShadowViewMutation::Type::Insert) {
+      return true;
+    }
+    if (rhs.type == ShadowViewMutation::Type::Remove &&
+        lhs.type == ShadowViewMutation::Type::Insert) {
+      return false;
+    }
+
+    // Create comes before insert
+    if (lhs.type == ShadowViewMutation::Type::Create &&
+        rhs.type == ShadowViewMutation::Type::Insert) {
+      return true;
+    }
+    if (rhs.type == ShadowViewMutation::Type::Create &&
+        lhs.type == ShadowViewMutation::Type::Insert) {
+      return false;
+    }
+  } else {
+    // Make sure that removes on the same level are sorted - highest indices
+    // must come first.
+    if (lhs.type == ShadowViewMutation::Type::Remove &&
+        lhs.parentShadowView.tag == rhs.parentShadowView.tag) {
+      if (lhs.index > rhs.index) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  return false;
+}
 
 } // namespace react
 } // namespace facebook

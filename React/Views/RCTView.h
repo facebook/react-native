@@ -82,13 +82,13 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * Border colors (actually retained).
  */
-@property (nonatomic, assign) CGColorRef borderTopColor;
-@property (nonatomic, assign) CGColorRef borderRightColor;
-@property (nonatomic, assign) CGColorRef borderBottomColor;
-@property (nonatomic, assign) CGColorRef borderLeftColor;
-@property (nonatomic, assign) CGColorRef borderStartColor;
-@property (nonatomic, assign) CGColorRef borderEndColor;
-@property (nonatomic, assign) CGColorRef borderColor;
+@property (nonatomic, strong) UIColor *borderTopColor;
+@property (nonatomic, strong) UIColor *borderRightColor;
+@property (nonatomic, strong) UIColor *borderBottomColor;
+@property (nonatomic, strong) UIColor *borderLeftColor;
+@property (nonatomic, strong) UIColor *borderStartColor;
+@property (nonatomic, strong) UIColor *borderEndColor;
+@property (nonatomic, strong) UIColor *borderColor;
 
 /**
  * Border widths.

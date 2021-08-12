@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import LogBoxInspectorCodeFrame from './LogBoxInspectorCodeFrame';
 import * as React from 'react';
 import ScrollView from '../../Components/ScrollView/ScrollView';

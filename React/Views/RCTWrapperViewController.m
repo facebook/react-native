@@ -10,14 +10,12 @@
 #import <UIKit/UIScrollView.h>
 
 #import "RCTAutoInsetsProtocol.h"
-#import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
 @implementation RCTWrapperViewController {
   UIView *_wrapperView;
   UIView *_contentView;
-  RCTEventDispatcher *_eventDispatcher;
   CGFloat _previousTopLayoutLength;
   CGFloat _previousBottomLayoutLength;
 

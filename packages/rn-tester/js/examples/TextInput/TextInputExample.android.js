@@ -23,7 +23,7 @@ const {
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 class ToggleDefaultPaddingExample extends React.Component<
   $FlowFixMeProps,
@@ -144,7 +144,9 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<TextInput>';
+exports.title = 'TextInput';
+exports.documentationURL = 'https://reactnative.dev/docs/textinput';
+exports.category = 'Basic';
 exports.description = 'Single and multi-line text inputs.';
 exports.examples = ([
   ...TextInputSharedExamples,
@@ -194,6 +196,38 @@ exports.examples = ([
             selectionColor={'red'}
             style={styles.singleLine}
           />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Font Weight',
+    render: function(): React.Node {
+      return (
+        <View>
+          <TextInput
+            defaultValue="Font Weight (default)"
+            style={[styles.singleLine]}
+          />
+          {[
+            'normal',
+            'bold',
+            '900',
+            '800',
+            '700',
+            '600',
+            '500',
+            '400',
+            '300',
+            '200',
+            '100',
+          ].map(fontWeight => (
+            <TextInput
+              defaultValue={`Font Weight (${fontWeight})`}
+              key={fontWeight}
+              style={[styles.singleLine, {fontWeight}]}
+            />
+          ))}
         </View>
       );
     },
@@ -422,4 +456,4 @@ exports.examples = ([
       return <ToggleDefaultPaddingExample />;
     },
   },
-]: Array<RNTesterExampleModuleItem>);
+]: Array<RNTesterModuleExample>);

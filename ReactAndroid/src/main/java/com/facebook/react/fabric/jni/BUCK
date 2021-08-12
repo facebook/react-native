@@ -12,10 +12,10 @@ rn_xplat_cxx_library(
         prefix = "react/fabric",
     ),
     compiler_flags = [
-        "-Wall",
         "-fexceptions",
-        "-std=gnu++1y",
         "-frtti",
+        "-std=c++17",
+        "-Wall",
     ],
     fbandroid_allow_jni_merging = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
@@ -27,7 +27,7 @@ rn_xplat_cxx_library(
     soname = "libfabricjni.$(ext)",
     visibility = ["PUBLIC"],
     deps = [
-        react_native_xplat_target("better:better"),
+        react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
         react_native_xplat_target("react/config:config"),
         react_native_xplat_target("react/renderer/animations:animations"),
         react_native_xplat_target("react/renderer/uimanager:uimanager"),
@@ -46,6 +46,10 @@ rn_xplat_cxx_library(
         # The following dependencies are required by CoreComponentsRegistry
         "//xplat/js/react-native-github:generated_components-rncore",
         react_native_xplat_target("react/renderer/components/image:image"),
+        react_native_xplat_target("react/renderer/components/modal:modal"),
+        react_native_xplat_target("react/renderer/components/slider:slider"),
+        react_native_xplat_target("react/renderer/components/switch:androidswitch"),
+        react_native_xplat_target("react/renderer/components/progressbar:androidprogressbar"),
         react_native_xplat_target("react/renderer/components/text:text"),
         react_native_xplat_target("react/renderer/components/textinput:androidtextinput"),
     ],

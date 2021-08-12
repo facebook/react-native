@@ -8,10 +8,6 @@
 ; Ignore polyfills
 node_modules/react-native/Libraries/polyfills/.*
 
-; These should not be required directly
-; require from fbjs/lib instead: require('fbjs/lib/warning')
-node_modules/warning/.*
-
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
 
@@ -27,10 +23,9 @@ node_modules/react-native/flow/
 [options]
 emoji=true
 
-esproposal.optional_chaining=enable
-esproposal.nullish_coalescing=enable
-
 exact_by_default=true
+
+format.bracket_spacing=false
 
 module.file_ext=.js
 module.file_ext=.json
@@ -67,4 +62,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.131.0
+^0.157.0

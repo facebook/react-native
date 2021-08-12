@@ -136,6 +136,7 @@ static vm_size_t RCTGetResidentMemorySize(void)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -149,12 +150,11 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)setModuleRegistry:(RCTModuleRegistry *)moduleRegistry
 {
-  _bridge = bridge;
-
+  _moduleRegistry = moduleRegistry;
 #if __has_include(<React/RCTDevMenu.h>)
-  [_bridge.devMenu addItem:self.devMenuItem];
+  [(RCTDevMenu *)[_moduleRegistry moduleForName:"DevMenu"] addItem:self.devMenuItem];
 #endif
 }
 
@@ -168,7 +168,7 @@ RCT_EXPORT_MODULE()
 {
   if (!_devMenuItem) {
     __weak __typeof__(self) weakSelf = self;
-    __weak RCTDevSettings *devSettings = self.bridge.devSettings;
+    __weak RCTDevSettings *devSettings = [self->_moduleRegistry moduleForName:"DevSettings"];
     if (devSettings.isPerfMonitorShown) {
       [weakSelf show];
     }
@@ -557,6 +557,12 @@ RCT_EXPORT_MODULE()
 - (CGFloat)tableView:(__unused UITableView *)tableView heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
 {
   return 20;
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
 }
 
 @end

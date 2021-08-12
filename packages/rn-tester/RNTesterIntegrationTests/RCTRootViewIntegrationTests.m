@@ -9,7 +9,7 @@
 #import <XCTest/XCTest.h>
 
 #import <RCTTest/RCTTestRunner.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTRootView.h>
 #import <React/RCTRootViewDelegate.h>
 

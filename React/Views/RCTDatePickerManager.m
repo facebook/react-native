@@ -10,7 +10,6 @@
 #import <React/RCTUIManager.h>
 #import "RCTBridge.h"
 #import "RCTDatePicker.h"
-#import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
 @implementation RCTConvert (UIDatePicker)
@@ -26,6 +25,21 @@ RCT_ENUM_CONVERTER(
     UIDatePickerModeTime,
     integerValue)
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+
+RCT_ENUM_CONVERTER(
+    UIDatePickerStyle,
+    (@{
+      @"compact" : @(UIDatePickerStyleCompact),
+      @"spinner" : @(UIDatePickerStyleWheels),
+      @"inline" : @(UIDatePickerStyleInline),
+    }),
+    UIDatePickerStyleAutomatic,
+    integerValue)
+#endif
+#pragma clang diagnostic pop
 @end
 
 @implementation RCTDatePickerManager
@@ -55,16 +69,34 @@ RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *
       [(RCTDatePicker *)view setDate:date];
     } else {
       // This component is used in Fabric through LegacyInteropLayer.
-      // `RCTPicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
+      // `RCTDatePicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
       // `viewTag` passed as parameter to this method is tag of the `RCTLegacyViewManagerInteropComponentView`.
-      UIView *subview = view.subviews.firstObject;
+      UIView *subview = [uiManager viewForReactTag:viewTag].subviews.firstObject;
       if ([subview isKindOfClass:[RCTDatePicker class]]) {
         [(RCTDatePicker *)subview setDate:date];
       } else {
-        RCTLogError(@"view type must be RCTPicker");
+        RCTLogError(@"view type must be RCTDatePicker");
       }
     }
   }];
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+RCT_CUSTOM_VIEW_PROPERTY(pickerStyle, UIDatePickerStyle, RCTDatePicker)
+{
+  if (@available(iOS 14, *)) {
+    // If the style changed, then the date picker may need to be resized and will generate a layout pass to display
+    // correctly. We need to prevent that to get consistent layout. That's why we memorise the old frame and set it
+    // after style is changed.
+    CGRect oldFrame = view.frame;
+    if (json) {
+      UIDatePickerStyle style = [RCTConvert UIDatePickerStyle:json];
+      view.preferredDatePickerStyle = style;
+    } else {
+      view.preferredDatePickerStyle = UIDatePickerStyleWheels;
+    }
+    view.frame = oldFrame;
+  }
+}
+#endif
 @end

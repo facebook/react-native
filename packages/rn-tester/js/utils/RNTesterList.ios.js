@@ -10,28 +10,47 @@
 
 'use strict';
 
-import type {RNTesterExample} from '../types/RNTesterTypes';
+import type {RNTesterModuleInfo} from '../types/RNTesterTypes';
 
-const ComponentExamples: Array<RNTesterExample> = [
+const Components: Array<RNTesterModuleInfo> = [
   {
     key: 'ActivityIndicatorExample',
+    category: 'UI',
     module: require('../examples/ActivityIndicator/ActivityIndicatorExample'),
+    supportsTVOS: true,
   },
   {
     key: 'ButtonExample',
     module: require('../examples/Button/ButtonExample'),
-  },
-  {
-    key: 'DatePickerIOSExample',
-    module: require('../examples/DatePicker/DatePickerIOSExample'),
+    category: 'UI',
+    supportsTVOS: true,
   },
   {
     key: 'FlatListExample',
     module: require('../examples/FlatList/FlatListExample'),
+    category: 'ListView',
+    supportsTVOS: true,
+  },
+  {
+    key: 'FlatList-withSeparators',
+    module: require('../examples/FlatList/FlatList-withSeparators'),
+    category: 'ListView',
+  },
+  {
+    key: 'FlatList-onViewableItemsChanged',
+    module: require('../examples/FlatList/FlatList-onViewableItemsChanged'),
+    category: 'ListView',
+  },
+  {
+    key: 'FlatList-onEndReached',
+    module: require('../examples/FlatList/FlatList-onEndReached'),
+    category: 'ListView',
   },
   {
     key: 'ImageExample',
     module: require('../examples/Image/ImageExample'),
+    category: 'Basic',
+    supportsTVOS: true,
   },
   {
     key: 'JSResponderHandlerExample',
@@ -40,161 +59,180 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'InputAccessoryViewExample',
     module: require('../examples/InputAccessoryView/InputAccessoryViewExample'),
+    supportsTVOS: true,
   },
   {
     key: 'KeyboardAvoidingViewExample',
     module: require('../examples/KeyboardAvoidingView/KeyboardAvoidingViewExample'),
+    supportsTVOS: false,
   },
   {
     key: 'LayoutEventsExample',
     module: require('../examples/Layout/LayoutEventsExample'),
-  },
-  {
-    key: 'MaskedViewExample',
-    module: require('../examples/MaskedView/MaskedViewExample'),
+    supportsTVOS: true,
   },
   {
     key: 'ModalExample',
     module: require('../examples/Modal/ModalExample'),
+    supportsTVOS: true,
   },
   {
     key: 'MultiColumnExample',
     module: require('../examples/MultiColumn/MultiColumnExample'),
+    supportsTVOS: true,
   },
   {
     key: 'NewAppScreenExample',
     module: require('../examples/NewAppScreen/NewAppScreenExample'),
-  },
-  {
-    key: 'PickerExample',
-    module: require('../examples/Picker/PickerExample'),
-  },
-  {
-    key: 'PickerIOSExample',
-    module: require('../examples/Picker/PickerIOSExample'),
+    supportsTVOS: false,
   },
   {
     key: 'PressableExample',
     module: require('../examples/Pressable/PressableExample'),
-  },
-  {
-    key: 'ProgressViewIOSExample',
-    module: require('../examples/ProgressViewIOS/ProgressViewIOSExample'),
+    supportsTVOS: true,
   },
   {
     key: 'RefreshControlExample',
     module: require('../examples/RefreshControl/RefreshControlExample'),
+    supportsTVOS: false,
   },
   {
     key: 'ScrollViewSimpleExample',
     module: require('../examples/ScrollView/ScrollViewSimpleExample'),
+    category: 'Basic',
+    supportsTVOS: true,
   },
   {
     key: 'SafeAreaViewExample',
     module: require('../examples/SafeAreaView/SafeAreaViewExample'),
+    supportsTVOS: true,
   },
   {
     key: 'ScrollViewExample',
     module: require('../examples/ScrollView/ScrollViewExample'),
+    category: 'Basic',
+    supportsTVOS: true,
   },
   {
     key: 'ScrollViewAnimatedExample',
     module: require('../examples/ScrollView/ScrollViewAnimatedExample'),
+    supportsTVOS: true,
   },
   {
-    key: 'SectionListExample',
-    module: require('../examples/SectionList/SectionListExample'),
+    key: 'ScrollViewIndicatorInsetsExample',
+    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
   },
   {
-    key: 'SegmentedControlIOSExample',
-    module: require('../examples/SegmentedControlIOS/SegmentedControlIOSExample'),
-  },
-  {
-    key: 'SliderExample',
-    module: require('../examples/Slider/SliderExample'),
+    key: 'SectionListIndex',
+    module: require('../examples/SectionList/SectionListIndex'),
+    category: 'ListView',
+    supportsTVOS: true,
   },
   {
     key: 'StatusBarExample',
     module: require('../examples/StatusBar/StatusBarExample'),
+    supportsTVOS: false,
+  },
+  {
+    key: 'SwipeableCardExample',
+    module: require('../examples/SwipeableCardExample/SwipeableCardExample'),
+    category: 'UI',
+    supportsTVOS: false,
   },
   {
     key: 'SwitchExample',
     module: require('../examples/Switch/SwitchExample'),
+    category: 'UI',
+    supportsTVOS: false,
   },
   {
     key: 'TextExample',
     module: require('../examples/Text/TextExample.ios'),
+    category: 'Basic',
+    supportsTVOS: true,
   },
   {
     key: 'TextInputExample',
-    module: require('../examples/TextInput/TextInputExample.ios'),
+    module: require('../examples/TextInput/TextInputExample'),
+    category: 'Basic',
+    supportsTVOS: true,
   },
   {
     key: 'TouchableExample',
     module: require('../examples/Touchable/TouchableExample'),
+    supportsTVOS: true,
   },
   {
     key: 'TransparentHitTestExample',
     module: require('../examples/TransparentHitTest/TransparentHitTestExample'),
+    supportsTVOS: false,
   },
   {
     key: 'ViewExample',
     module: require('../examples/View/ViewExample'),
+    category: 'Basic',
+    supportsTVOS: true,
   },
 ];
 
-const APIExamples: Array<RNTesterExample> = [
+const APIs: Array<RNTesterModuleInfo> = [
   {
     key: 'AccessibilityExample',
     module: require('../examples/Accessibility/AccessibilityExample'),
+    supportsTVOS: false,
   },
   {
     key: 'AccessibilityIOSExample',
     module: require('../examples/Accessibility/AccessibilityIOSExample'),
+    category: 'iOS',
+    supportsTVOS: false,
   },
   {
     key: 'ActionSheetIOSExample',
     module: require('../examples/ActionSheetIOS/ActionSheetIOSExample'),
+    category: 'iOS',
+    supportsTVOS: true,
   },
   {
     key: 'AlertIOSExample',
     module: require('../examples/Alert/AlertIOSExample'),
+    category: 'iOS',
+    supportsTVOS: true,
   },
   {
-    key: 'AnimatedExample',
-    module: require('../examples/Animated/AnimatedExample'),
+    key: 'AnimatedIndex',
+    module: require('../examples/Animated/AnimatedIndex').default,
+    supportsTVOS: true,
   },
   {
     key: 'AnExApp',
-    module: require('../examples/Animated/AnimatedGratuitousApp/AnExApp'),
+    module: require('../examples/AnimatedGratuitousApp/AnExApp'),
+    supportsTVOS: true,
   },
   {
     key: 'AppearanceExample',
     module: require('../examples/Appearance/AppearanceExample'),
+    supportsTVOS: false,
   },
   {
     key: 'AppStateExample',
     module: require('../examples/AppState/AppStateExample'),
-  },
-  {
-    key: 'AsyncStorageExample',
-    module: require('../examples/AsyncStorage/AsyncStorageExample'),
+    supportsTVOS: true,
   },
   {
     key: 'BorderExample',
     module: require('../examples/Border/BorderExample'),
+    supportsTVOS: true,
   },
   {
     key: 'BoxShadowExample',
     module: require('../examples/BoxShadow/BoxShadowExample'),
-  },
-  {
-    key: 'ClipboardExample',
-    module: require('../examples/Clipboard/ClipboardExample'),
+    supportsTVOS: true,
   },
   {
     key: 'CrashExample',
     module: require('../examples/Crash/CrashExample'),
+    supportsTVOS: false,
   },
   {
     key: 'DevSettings',
@@ -203,98 +241,109 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'Dimensions',
     module: require('../examples/Dimensions/DimensionsExample'),
+    supportsTVOS: true,
   },
   {
     key: 'LayoutAnimationExample',
     module: require('../examples/Layout/LayoutAnimationExample'),
+    supportsTVOS: true,
   },
   {
     key: 'LayoutExample',
     module: require('../examples/Layout/LayoutExample'),
+    supportsTVOS: true,
   },
   {
     key: 'LinkingExample',
     module: require('../examples/Linking/LinkingExample'),
+    supportsTVOS: true,
   },
   {
     key: 'NativeAnimationsExample',
     module: require('../examples/NativeAnimation/NativeAnimationsExample'),
+    supportsTVOS: true,
   },
   {
     key: 'OrientationChangeExample',
     module: require('../examples/OrientationChange/OrientationChangeExample'),
+    supportsTVOS: false,
   },
   {
     key: 'PanResponderExample',
     module: require('../examples/PanResponder/PanResponderExample'),
+    supportsTVOS: false,
   },
   {
     key: 'PlatformColorExample',
     module: require('../examples/PlatformColor/PlatformColorExample'),
+    supportsTVOS: true,
   },
   {
     key: 'PointerEventsExample',
     module: require('../examples/PointerEvents/PointerEventsExample'),
-  },
-  {
-    key: 'PushNotificationIOSExample',
-    module: require('../examples/PushNotificationIOS/PushNotificationIOSExample'),
+    supportsTVOS: false,
   },
   {
     key: 'RCTRootViewIOSExample',
     module: require('../examples/RCTRootView/RCTRootViewIOSExample'),
+    supportsTVOS: true,
   },
   {
     key: 'RTLExample',
     module: require('../examples/RTL/RTLExample'),
+    supportsTVOS: true,
   },
   {
     key: 'ShareExample',
     module: require('../examples/Share/ShareExample'),
+    supportsTVOS: true,
   },
   {
     key: 'SnapshotExample',
     module: require('../examples/Snapshot/SnapshotExample'),
+    supportsTVOS: true,
   },
   {
     key: 'TimerExample',
     module: require('../examples/Timer/TimerExample'),
+    supportsTVOS: true,
   },
   {
     key: 'TransformExample',
     module: require('../examples/Transform/TransformExample'),
+    supportsTVOS: true,
   },
   {
     key: 'TurboModuleExample',
     module: require('../examples/TurboModule/TurboModuleExample'),
-  },
-  {
-    key: 'TVEventHandlerExample',
-    module: require('../examples/TVEventHandler/TVEventHandlerExample'),
+    supportsTVOS: false,
   },
   {
     key: 'VibrationExample',
     module: require('../examples/Vibration/VibrationExample'),
+    supportsTVOS: false,
   },
   {
     key: 'WebSocketExample',
     module: require('../examples/WebSocket/WebSocketExample'),
+    supportsTVOS: true,
   },
   {
     key: 'XHRExample',
     module: require('../examples/XHR/XHRExample'),
+    supportsTVOS: true,
   },
 ];
 
 const Modules: {...} = {};
 
-APIExamples.concat(ComponentExamples).forEach(Example => {
+APIs.concat(Components).forEach(Example => {
   Modules[Example.key] = Example.module;
 });
 
 const RNTesterList = {
-  APIExamples,
-  ComponentExamples,
+  APIs,
+  Components,
   Modules,
 };
 

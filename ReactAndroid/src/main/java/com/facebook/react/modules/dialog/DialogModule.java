@@ -129,7 +129,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     @Override
     public void onClick(DialogInterface dialog, int which) {
       if (!mCallbackConsumed) {
-        if (getReactApplicationContext().hasActiveCatalystInstance()) {
+        if (getReactApplicationContext().hasActiveReactInstance()) {
           mCallback.invoke(ACTION_BUTTON_CLICKED, which);
           mCallbackConsumed = true;
         }
@@ -139,7 +139,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
     @Override
     public void onDismiss(DialogInterface dialog) {
       if (!mCallbackConsumed) {
-        if (getReactApplicationContext().hasActiveCatalystInstance()) {
+        if (getReactApplicationContext().hasActiveReactInstance()) {
           mCallback.invoke(ACTION_DISMISSED);
           mCallbackConsumed = true;
         }
@@ -237,5 +237,15 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
       return null;
     }
     return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
   }
 }

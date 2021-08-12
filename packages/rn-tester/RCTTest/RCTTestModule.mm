@@ -8,7 +8,7 @@
 #import "RCTTestModule.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 #import <ReactCommon/RCTTurboModule.h>
@@ -79,6 +79,7 @@ namespace facebook {
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -120,7 +121,7 @@ RCT_EXPORT_METHOD(sendAppEvent:(NSString *)name body:(nullable id)body)
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendAppEventWithName:name body:body];
+  [[_moduleRegistry moduleForName:"EventDispatcher"] sendAppEventWithName:name body:body];
 #pragma clang diagnostic pop
 }
 

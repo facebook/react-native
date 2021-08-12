@@ -8,6 +8,8 @@
 #include "StateWrapperImpl.h"
 #include <fbjni/fbjni.h>
 #include <react/jni/ReadableNativeMap.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
 using namespace facebook::jni;
 
@@ -22,52 +24,37 @@ jni::local_ref<StateWrapperImpl::jhybriddata> StateWrapperImpl::initHybrid(
   return makeCxxInstance();
 }
 
-jni::local_ref<ReadableNativeMap::jhybridobject> StateWrapperImpl::getState() {
+jni::local_ref<ReadableNativeMap::jhybridobject>
+StateWrapperImpl::getStateDataImpl() {
   folly::dynamic map = state_->getDynamic();
   local_ref<ReadableNativeMap::jhybridobject> readableNativeMap =
       ReadableNativeMap::newObjectCxxArgs(map);
   return readableNativeMap;
 }
 
+jni::local_ref<ReadableMapBuffer::jhybridobject>
+StateWrapperImpl::getStateMapBufferDataImpl() {
+  MapBuffer map = state_->getMapBuffer();
+  auto ReadableMapBuffer =
+      ReadableMapBuffer::createWithContents(std::move(map));
+  return ReadableMapBuffer;
+}
+
 void StateWrapperImpl::updateStateImpl(NativeMap *map) {
   // Get folly::dynamic from map
   auto dynamicMap = map->consume();
   // Set state
-  state_->updateState(dynamicMap, nullptr);
-}
-
-void StateWrapperImpl::updateStateWithFailureCallbackImpl(
-    NativeMap *map,
-    jni::alias_ref<jobject> self,
-    int callbackRefId) {
-  // Get folly::dynamic from map
-  auto dynamicMap = map->consume();
-  // Turn the alias into a global_ref
-  // Note: this whole thing feels really janky, making StateWrapperImpl.java
-  // pass "this" into a function it's calling on "this". But after struggling
-  // for a while I couldn't figure out how to get a reference to the Java side
-  // of "this" in C++ in a way that's reasonably safe, and it maybe is even
-  // discouraged. Anyway, it might be weird, but this seems to work and be safe.
-  jni::global_ref<jobject> globalSelf = make_global(self);
-  // Set state
-  state_->updateState(
-      dynamicMap, [globalSelf = std::move(globalSelf), callbackRefId]() {
-        static auto method =
-            jni::findClassStatic(
-                StateWrapperImpl::StateWrapperImplJavaDescriptor)
-                ->getMethod<void(jint)>("updateStateFailed");
-        method(globalSelf, callbackRefId);
-      });
+  state_->updateState(dynamicMap);
 }
 
 void StateWrapperImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", StateWrapperImpl::initHybrid),
-      makeNativeMethod("getState", StateWrapperImpl::getState),
+      makeNativeMethod("getStateDataImpl", StateWrapperImpl::getStateDataImpl),
       makeNativeMethod("updateStateImpl", StateWrapperImpl::updateStateImpl),
       makeNativeMethod(
-          "updateStateWithFailureCallbackImpl",
-          StateWrapperImpl::updateStateWithFailureCallbackImpl),
+          "getStateMapBufferDataImpl",
+          StateWrapperImpl::getStateMapBufferDataImpl),
   });
 }
 

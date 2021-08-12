@@ -8,13 +8,10 @@
  * @flow
  */
 
-'use strict';
-
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-
-const invariant = require('invariant');
-const processColor = require('../../StyleSheet/processColor');
+import * as React from 'react';
+import Platform from '../../Utilities/Platform';
+import invariant from 'invariant';
+import processColor from '../../StyleSheet/processColor';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';

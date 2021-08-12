@@ -20,9 +20,9 @@ namespace react {
 class InputAccessoryState final {
  public:
   InputAccessoryState(){};
-  InputAccessoryState(Size screenSize_) : screenSize(screenSize_){};
+  InputAccessoryState(Size viewportSize_) : viewportSize(viewportSize_){};
 
-  const Size screenSize{};
+  const Size viewportSize{};
 };
 
 } // namespace react

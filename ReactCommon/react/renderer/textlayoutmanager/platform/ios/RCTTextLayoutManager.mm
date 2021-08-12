@@ -75,12 +75,14 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
                 UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
 
-                CGRect frame = {{glyphRect.origin.x,
-                                 glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
-                                attachmentSize};
+                CGRect frame = {
+                    {glyphRect.origin.x,
+                     glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
+                    attachmentSize};
 
-                auto rect = facebook::react::Rect{facebook::react::Point{frame.origin.x, frame.origin.y},
-                                                  facebook::react::Size{frame.size.width, frame.size.height}};
+                auto rect = facebook::react::Rect{
+                    facebook::react::Point{frame.origin.x, frame.origin.y},
+                    facebook::react::Size{frame.size.width, frame.size.height}};
 
                 attachments.push_back(TextMeasurement::Attachment{rect, false});
               }];
@@ -108,9 +110,19 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
+#if TARGET_OS_MACCATALYST
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSaveGState(context);
+  CGContextSetShouldSmoothFonts(context, NO);
+#endif
+
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:frame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:frame.origin];
+
+#if TARGET_OS_MACCATALYST
+  CGContextRestoreGState(context);
+#endif
 }
 
 - (LinesMeasurements)getLinesForAttributedString:(facebook::react::AttributedString)attributedString
@@ -146,12 +158,13 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                             auto rect = facebook::react::Rect{
                                                 facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
                                                 facebook::react::Size{usedRect.size.width, usedRect.size.height}};
-                                            auto line = LineMeasurement{std::string([renderedString UTF8String]),
-                                                                        rect,
-                                                                        -font.descender,
-                                                                        font.capHeight,
-                                                                        font.ascender,
-                                                                        font.xHeight};
+                                            auto line = LineMeasurement{
+                                                std::string([renderedString UTF8String]),
+                                                rect,
+                                                -font.descender,
+                                                font.capHeight,
+                                                font.ascender,
+                                                font.xHeight};
                                             blockParagraphLines->push_back(line);
                                           }];
   return paragraphLines;

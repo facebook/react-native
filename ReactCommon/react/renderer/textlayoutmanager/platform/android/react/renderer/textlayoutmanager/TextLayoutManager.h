@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/config/ReactNativeConfig.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/core/LayoutConstraints.h>
@@ -26,7 +27,11 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
 class TextLayoutManager {
  public:
   TextLayoutManager(const ContextContainer::Shared &contextContainer)
-      : contextContainer_(contextContainer){};
+      : contextContainer_(contextContainer) {
+    static auto value =
+        contextContainer->at<bool>("MapBufferSerializationEnabled");
+    mapBufferSerializationEnabled_ = value;
+  }
   ~TextLayoutManager();
 
   /*
@@ -36,6 +41,24 @@ class TextLayoutManager {
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
+
+  /**
+   * Measures an AttributedString on the platform, as identified by some
+   * opaque cache ID.
+   */
+  TextMeasurement measureCachedSpannableById(
+      int64_t cacheId,
+      ParagraphAttributes paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
+
+  /*
+   * Measures lines of `attributedString` using native text rendering
+   * infrastructure.
+   */
+  LinesMeasurements measureLines(
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      Size size) const;
 
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
@@ -49,8 +72,19 @@ class TextLayoutManager {
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
+  TextMeasurement doMeasureMapBuffer(
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
+
+  LinesMeasurements measureLinesMapBuffer(
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      Size size) const;
+
   void *self_;
   ContextContainer::Shared contextContainer_;
+  bool mapBufferSerializationEnabled_;
   TextMeasureCache measureCache_{};
 };
 

@@ -21,19 +21,12 @@ const {
   Platform,
   StyleSheet,
   Text,
+  TextInput,
   TouchableWithoutFeedback,
   Switch,
   View,
   Button,
 } = require('react-native');
-
-type State = {
-  toggleStatus: any,
-  pan: Object,
-  linear: Object,
-  isRTL: boolean,
-  ...
-};
 
 type RTLToggleState = {isRTL: boolean, ...};
 
@@ -94,6 +87,18 @@ const TextAlignmentExample = withRTLState(({isRTL, setRTL, ...props}) => {
   );
 });
 
+const TextInputExample = withRTLState(({isRTL, setRTL, ...props}) => {
+  return (
+    <View>
+      <RTLToggler setRTL={setRTL} isRTL={isRTL} />
+      <View style={directionStyle(isRTL)}>
+        <Text style={props.style}>LRT or RTL TextInput.</Text>
+        <TextInput style={props.style} />
+      </View>
+    </View>
+  );
+});
+
 const IconsExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
@@ -140,7 +145,10 @@ type RTLSwitcherComponentState = {|
 |};
 
 function withRTLState(Component) {
-  return class extends React.Component<*, RTLSwitcherComponentState> {
+  return class extends React.Component<
+    {style?: any},
+    RTLSwitcherComponentState,
+  > {
     constructor(...args) {
       super(...args);
       this.state = {
@@ -643,6 +651,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'RTLExample';
+exports.category = 'UI';
 exports.description = 'Examples to show how to apply components to RTL layout.';
 exports.examples = [
   {
@@ -662,6 +671,7 @@ exports.examples = [
     description: ('In iOS, it depends on active language. ' +
       'In Android, it depends on the text content.': string),
     render: function(): React.Element<any> {
+      // $FlowFixMe[speculation-ambiguous]
       return <TextAlignmentExample style={styles.fontSizeSmall} />;
     },
   },
@@ -671,6 +681,7 @@ exports.examples = [
       'languages or text content.': string),
     render: function(): React.Element<any> {
       return (
+        // $FlowFixMe[speculation-ambiguous]
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignLeft]}
         />
@@ -683,10 +694,19 @@ exports.examples = [
       'languages or text content.': string),
     render: function(): React.Element<any> {
       return (
+        // $FlowFixMe[speculation-ambiguous]
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignRight]}
         />
       );
+    },
+  },
+  {
+    title: "Using textAlign: 'right' for TextInput",
+    description: ('Flip TextInput direction to RTL': string),
+    render: function(): React.Element<any> {
+      // $FlowFixMe[speculation-ambiguous]
+      return <TextInputExample style={[styles.textAlignRight]} />;
     },
   },
   {

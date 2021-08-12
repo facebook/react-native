@@ -7,7 +7,7 @@
 
 #import "RCTUIManagerUtils.h"
 
-#import <libkern/OSAtomic.h>
+#import <stdatomic.h>
 
 #import "RCTAssert.h"
 
@@ -98,6 +98,6 @@ void RCTUnsafeExecuteOnUIManagerQueueSync(dispatch_block_t block)
 NSNumber *RCTAllocateRootViewTag()
 {
   // Numbering of these tags goes from 1, 11, 21, 31, ..., 100501, ...
-  static int64_t rootViewTagCounter = -1;
-  return @(OSAtomicIncrement64(&rootViewTagCounter) * 10 + 1);
+  static _Atomic int64_t rootViewTagCounter = 0;
+  return @(atomic_fetch_add_explicit(&rootViewTagCounter, 1, memory_order_relaxed) * 10 + 1);
 }

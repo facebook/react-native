@@ -85,35 +85,5 @@ class JavaNativeModule : public NativeModule {
   std::vector<folly::Optional<MethodInvoker>> syncMethods_;
 };
 
-// Experimental new implementation that uses direct method invocation
-class NewJavaNativeModule : public NativeModule {
- public:
-  NewJavaNativeModule(
-      std::weak_ptr<Instance> instance,
-      jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
-      std::shared_ptr<MessageQueueThread> messageQueueThread);
-
-  std::string getName() override;
-  std::vector<MethodDescriptor> getMethods() override;
-  folly::dynamic getConstants() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic &&params, int callId)
-      override;
-  MethodCallResult callSerializableNativeHook(
-      unsigned int reactMethodId,
-      folly::dynamic &&params) override;
-
- private:
-  std::weak_ptr<Instance> instance_;
-  jni::global_ref<JavaModuleWrapper::javaobject> wrapper_;
-  jni::global_ref<JBaseJavaModule::javaobject> module_;
-  std::shared_ptr<MessageQueueThread> messageQueueThread_;
-  std::vector<MethodInvoker> methods_;
-  std::vector<MethodDescriptor> methodDescriptors_;
-
-  MethodCallResult invokeInner(
-      unsigned int reactMethodId,
-      folly::dynamic &&params);
-};
-
 } // namespace react
 } // namespace facebook

@@ -8,6 +8,7 @@
 #include "AndroidTextInputShadowNode.h"
 
 #include <fbjni/fbjni.h>
+#include <react/debug/react_native_assert.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
@@ -118,16 +119,15 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   auto reactTreeAttributedString = getAttributedString();
   auto const &state = getStateData();
 
-  assert(textLayoutManager_);
-  assert(
-      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
-      "`StateData` refers to a different `TextLayoutManager`");
-
   // Tree is often out of sync with the value of the TextInput.
   // This is by design - don't change the value of the TextInput in the State,
   // and therefore in Java, unless the tree itself changes.
-  if (state.reactTreeAttributedString == reactTreeAttributedString &&
-      state.layoutManager == textLayoutManager_) {
+  if (state.reactTreeAttributedString == reactTreeAttributedString) {
+    return;
+  }
+
+  // If props event counter is less than what we already have in state, skip it
+  if (getConcreteProps().mostRecentEventCount < state.mostRecentEventCount) {
     return;
   }
 
@@ -150,17 +150,17 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   // current attributedString unchanged, and pass in zero for the "event count"
   // so no changes are applied There's no way to prevent a state update from
   // flowing to Java, so we just ensure it's a noop in those cases.
-  setStateData(AndroidTextInputState{newEventCount,
-                                     newAttributedString,
-                                     reactTreeAttributedString,
-                                     getConcreteProps().paragraphAttributes,
-                                     defaultTextAttributes,
-                                     ShadowView(*this),
-                                     textLayoutManager_,
-                                     state.defaultThemePaddingStart,
-                                     state.defaultThemePaddingEnd,
-                                     state.defaultThemePaddingTop,
-                                     state.defaultThemePaddingBottom});
+  setStateData(AndroidTextInputState{
+      newEventCount,
+      newAttributedString,
+      reactTreeAttributedString,
+      getConcreteProps().paragraphAttributes,
+      defaultTextAttributes,
+      ShadowView(*this),
+      state.defaultThemePaddingStart,
+      state.defaultThemePaddingEnd,
+      state.defaultThemePaddingTop,
+      state.defaultThemePaddingBottom});
 }
 
 #pragma mark - LayoutableShadowNode
@@ -168,6 +168,15 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 Size AndroidTextInputShadowNode::measureContent(
     LayoutContext const &layoutContext,
     LayoutConstraints const &layoutConstraints) const {
+  if (getStateData().cachedAttributedStringId != 0) {
+    return textLayoutManager_
+        ->measureCachedSpannableById(
+            getStateData().cachedAttributedStringId,
+            getConcreteProps().paragraphAttributes,
+            layoutConstraints)
+        .size;
+  }
+
   // Layout is called right after measure.
   // Measure is marked as `const`, and `layout` is not; so State can be updated
   // during layout, but not during `measure`. If State is out-of-date in layout,
@@ -179,7 +188,7 @@ Size AndroidTextInputShadowNode::measureContent(
     attributedString = getPlaceholderAttributedString();
   }
 
-  if (attributedString.isEmpty()) {
+  if (attributedString.isEmpty() && getStateData().mostRecentEventCount != 0) {
     return {0, 0};
   }
 

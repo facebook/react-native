@@ -210,6 +210,8 @@ using namespace facebook::react;
   }
 
   [super updateProps:props oldProps:oldProps];
+
+  [self setDefaultInputAccessoryView];
 }
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
@@ -249,13 +251,14 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
+  _state.reset();
   _backedTextInputView.attributedText = nil;
   _mostRecentEventCount = 0;
-  _state.reset();
   _comingFromJS = NO;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
   _didMoveToWindow = NO;
+  [_backedTextInputView resignFirstResponder];
 }
 
 #pragma mark - RCTBackedTextInputDelegate
@@ -333,6 +336,15 @@ using namespace facebook::react;
   if (props.maxLength) {
     NSInteger allowedLength = props.maxLength - _backedTextInputView.attributedText.string.length + range.length;
 
+    if (allowedLength > 0 && text.length > allowedLength) {
+      // make sure unicode characters that are longer than 16 bits (such as emojis) are not cut off
+      NSRange cutOffCharacterRange = [text rangeOfComposedCharacterSequenceAtIndex:allowedLength - 1];
+      if (cutOffCharacterRange.location + cutOffCharacterRange.length > allowedLength) {
+        // the character at the length limit takes more than 16bits, truncation should end at the character before
+        allowedLength = cutOffCharacterRange.location;
+      }
+    }
+
     if (allowedLength <= 0) {
       return nil;
     }
@@ -354,7 +366,7 @@ using namespace facebook::react;
     return;
   }
 
-  if (_ignoreNextTextInputCall) {
+  if (_ignoreNextTextInputCall && [_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     _ignoreNextTextInputCall = NO;
     return;
   }
@@ -409,11 +421,9 @@ using namespace facebook::react;
   }
   _comingFromJS = YES;
   if (![value isEqualToString:_backedTextInputView.attributedText.string]) {
-    NSMutableAttributedString *mutableString =
-        [[NSMutableAttributedString alloc] initWithAttributedString:_backedTextInputView.attributedText];
-    [mutableString replaceCharactersInRange:NSMakeRange(0, _backedTextInputView.attributedText.length)
-                                 withString:value];
-    [self _setAttributedString:mutableString];
+    NSAttributedString *attributedString =
+        [[NSAttributedString alloc] initWithString:value attributes:_backedTextInputView.defaultTextAttributes];
+    [self _setAttributedString:attributedString];
     [self _updateState];
   }
 
@@ -427,6 +437,58 @@ using namespace facebook::react;
     [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
   }
   _comingFromJS = NO;
+}
+
+#pragma mark - Default input accessory view
+
+- (void)setDefaultInputAccessoryView
+{
+  // InputAccessoryView component sets the inputAccessoryView when inputAccessoryViewID exists
+  if (_backedTextInputView.inputAccessoryViewID) {
+    if (_backedTextInputView.isFirstResponder) {
+      [_backedTextInputView reloadInputViews];
+    }
+    return;
+  }
+
+  UIKeyboardType keyboardType = _backedTextInputView.keyboardType;
+
+  // These keyboard types (all are number pads) don't have a "Done" button by default,
+  // so we create an `inputAccessoryView` with this button for them.
+  BOOL shouldHaveInputAccesoryView =
+      (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
+       keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
+      _backedTextInputView.returnKeyType == UIReturnKeyDone;
+
+  if ((_backedTextInputView.inputAccessoryView != nil) == shouldHaveInputAccesoryView) {
+    return;
+  }
+
+  if (shouldHaveInputAccesoryView) {
+    UIToolbar *toolbarView = [[UIToolbar alloc] init];
+    [toolbarView sizeToFit];
+    UIBarButtonItem *flexibleSpace =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem *doneButton =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                      target:self
+                                                      action:@selector(handleInputAccessoryDoneButton)];
+    toolbarView.items = @[ flexibleSpace, doneButton ];
+    _backedTextInputView.inputAccessoryView = toolbarView;
+  } else {
+    _backedTextInputView.inputAccessoryView = nil;
+  }
+
+  if (_backedTextInputView.isFirstResponder) {
+    [_backedTextInputView reloadInputViews];
+  }
+}
+
+- (void)handleInputAccessoryDoneButton
+{
+  if ([self textInputShouldReturn]) {
+    [_backedTextInputView endEditing:YES];
+  }
 }
 
 #pragma mark - Other
@@ -466,14 +528,21 @@ using namespace facebook::react;
 
 - (void)_setAttributedString:(NSAttributedString *)attributedString
 {
-  UITextRange *selectedRange = [_backedTextInputView selectedTextRange];
-  _backedTextInputView.attributedText = attributedString;
-  if (_lastStringStateWasUpdatedWith.length == attributedString.length) {
-    // Calling `[_backedTextInputView setAttributedText]` moves caret
-    // to the end of text input field. This cancels any selection as well
-    // as position in the text input field. In case the length of string
-    // doesn't change, selection and caret position is maintained.
-    [_backedTextInputView setSelectedTextRange:selectedRange notifyDelegate:NO];
+  UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
+  NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
+  if (![self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
+    _backedTextInputView.attributedText = attributedString;
+  }
+  if (selectedRange.empty) {
+    // Maintaining a cursor position relative to the end of the old text.
+    NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                          toPosition:selectedRange.start];
+    NSInteger offsetFromEnd = oldTextLength - offsetStart;
+    NSInteger newOffset = attributedString.string.length - offsetFromEnd;
+    UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                   offset:newOffset];
+    [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
+                                notifyDelegate:YES];
   }
   _lastStringStateWasUpdatedWith = attributedString;
 }
@@ -487,6 +556,38 @@ using namespace facebook::react;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
   [self addSubview:_backedTextInputView];
+}
+
+- (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText
+{
+  // When the dictation is running we can't update the attributed text on the backed up text view
+  // because setting the attributed string will kill the dictation. This means that we can't impose
+  // the settings on a dictation.
+  // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
+  // text that we should disregard. See
+  // https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc for more info. If
+  // the user added an emoji, the system adds a font attribute for the emoji and stores the original font in
+  // NSOriginalFont. Lastly, when entering a password, etc., there will be additional styling on the field as the native
+  // text view handles showing the last character for a split second.
+  __block BOOL fontHasBeenUpdatedBySystem = false;
+  [oldText enumerateAttribute:@"NSOriginalFont"
+                      inRange:NSMakeRange(0, oldText.length)
+                      options:0
+                   usingBlock:^(id value, NSRange range, BOOL *stop) {
+                     if (value) {
+                       fontHasBeenUpdatedBySystem = true;
+                     }
+                   }];
+
+  BOOL shouldFallbackToBareTextComparison =
+      [_backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+      _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
+
+  if (shouldFallbackToBareTextComparison) {
+    return ([newText.string isEqualToString:oldText.string]);
+  } else {
+    return ([newText isEqualToAttributedString:oldText]);
+  }
 }
 
 @end

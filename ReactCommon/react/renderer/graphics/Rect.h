@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <tuple>
 
 #include <folly/Hash.h>
@@ -93,9 +94,10 @@ struct Rect {
     rightBottomPoint.y = std::max(rightBottomPoint.y, c.y);
     rightBottomPoint.y = std::max(rightBottomPoint.y, d.y);
 
-    return {leftTopPoint,
-            {rightBottomPoint.x - leftTopPoint.x,
-             rightBottomPoint.y - leftTopPoint.y}};
+    return {
+        leftTopPoint,
+        {rightBottomPoint.x - leftTopPoint.x,
+         rightBottomPoint.y - leftTopPoint.y}};
   }
 };
 

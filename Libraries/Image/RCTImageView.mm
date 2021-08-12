@@ -9,7 +9,6 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
 #import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageSource.h>
 #import <React/RCTImageUtils.h>
@@ -332,7 +331,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       imageScale = source.scale;
     }
 
-    RCTImageLoaderCompletionBlock completionHandler = ^(NSError *error, UIImage *loadedImage) {
+    RCTImageLoaderCompletionBlockWithMetadata completionHandler = ^(NSError *error, UIImage *loadedImage, id metadata) {
       [weakSelf imageLoaderLoadedImage:loadedImage error:error forImageSource:source partial:NO];
     };
 

@@ -7,6 +7,7 @@
 
 #import "RCTLegacyViewManagerInteropComponentView.h"
 
+#import <React/RCTAssert.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
 #import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
@@ -28,6 +29,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+    RCTWarnNotAllowedForNewArchitecture(
+        self, @"ViewManager with interop layer is not allowed in the new architecture.");
     static const auto defaultProps = std::make_shared<const LegacyViewManagerInteropViewProps>();
     _props = defaultProps;
     _viewsToBeMounted = [NSMutableArray new];
@@ -37,10 +40,20 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   return self;
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  UIView *result = [super hitTest:point withEvent:event];
+
+  if (result == _adapter.paperView) {
+    return self;
+  }
+
+  return result;
+}
+
 + (NSMutableSet<NSString *> *)supportedViewManagers
 {
-  static NSMutableSet<NSString *> *supported = [NSMutableSet setWithObjects:@"Picker",
-                                                                            @"DatePicker",
+  static NSMutableSet<NSString *> *supported = [NSMutableSet setWithObjects:@"DatePicker",
                                                                             @"ProgressView",
                                                                             @"SegmentedControl",
                                                                             @"MaskedView",
@@ -101,7 +114,11 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_viewsToBeUnmounted addObject:childComponentView];
+  if (_adapter) {
+    [_adapter.paperView removeReactSubview:childComponentView];
+  } else {
+    [_viewsToBeUnmounted addObject:childComponentView];
+  }
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider

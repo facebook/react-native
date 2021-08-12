@@ -23,7 +23,7 @@ const {
 import type {
   ViewLayout,
   ViewLayoutEvent,
-} from '../../../../../Libraries/Components/View/ViewPropTypes';
+} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
 type Props = $ReadOnly<{||}>;
 type State = {
@@ -107,9 +107,10 @@ class LayoutEventExample extends React.Component<Props, State> {
           />
           <Text>
             ViewLayout:{' '}
-            {/* $FlowFixMe(>=0.95.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.95 was deployed. To see
-             * the error, delete this comment and run Flow. */
+            {/* $FlowFixMe[incompatible-type] (>=0.95.0 site=react_native_fb)
+             * This comment suppresses an error found when Flow v0.95 was
+             * deployed. To see the error, delete this comment and run Flow.
+             */
             JSON.stringify(this.state.viewLayout, null, '  ') + '\n\n'}
           </Text>
           <Text ref="txt" onLayout={this.onTextLayout} style={styles.text}>
@@ -153,6 +154,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Layout Events';
+exports.category = 'UI';
 exports.description = ('Examples that show how Layout events can be used to ' +
   'measure view size and position.': string);
 exports.examples = [

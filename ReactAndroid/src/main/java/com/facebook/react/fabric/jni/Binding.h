@@ -15,16 +15,58 @@
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
+
 #include <memory>
 #include <mutex>
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
+#include "EventEmitterWrapper.h"
 #include "JBackgroundExecutor.h"
+#include "SurfaceHandlerBinding.h"
 
 namespace facebook {
 namespace react {
 
 class Instance;
+
+struct CppMountItem final {
+#pragma mark - Designated Initializers
+  static CppMountItem CreateMountItem(ShadowView shadowView);
+  static CppMountItem DeleteMountItem(ShadowView shadowView);
+  static CppMountItem
+  InsertMountItem(ShadowView parentView, ShadowView shadowView, int index);
+  static CppMountItem
+  RemoveMountItem(ShadowView parentView, ShadowView shadowView, int index);
+  static CppMountItem UpdatePropsMountItem(ShadowView shadowView);
+  static CppMountItem UpdateStateMountItem(ShadowView shadowView);
+  static CppMountItem UpdateLayoutMountItem(ShadowView shadowView);
+  static CppMountItem UpdateEventEmitterMountItem(ShadowView shadowView);
+  static CppMountItem UpdatePaddingMountItem(ShadowView shadowView);
+
+#pragma mark - Type
+
+  enum Type {
+    Undefined = -1,
+    Multiple = 1,
+    Create = 2,
+    Delete = 4,
+    Insert = 8,
+    Remove = 16,
+    UpdateProps = 32,
+    UpdateState = 64,
+    UpdateLayout = 128,
+    UpdateEventEmitter = 256,
+    UpdatePadding = 512
+  };
+
+#pragma mark - Fields
+
+  Type type = {Create};
+  ShadowView parentShadowView = {};
+  ShadowView oldChildShadowView = {};
+  ShadowView newChildShadowView = {};
+  int index = {};
+};
 
 class Binding : public jni::HybridClass<Binding>,
                 public SchedulerDelegate,
@@ -35,6 +77,9 @@ class Binding : public jni::HybridClass<Binding>,
 
   constexpr static auto UIManagerJavaDescriptor =
       "com/facebook/react/fabric/FabricUIManager";
+
+  constexpr static auto ReactFeatureFlagsJavaDescriptor =
+      "com/facebook/react/config/ReactFeatureFlags";
 
   static void registerNatives();
 
@@ -48,8 +93,13 @@ class Binding : public jni::HybridClass<Binding>,
       jfloat maxWidth,
       jfloat minHeight,
       jfloat maxHeight,
+      jfloat offsetX,
+      jfloat offsetY,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
+
+  jni::local_ref<ReadableNativeMap::jhybridobject> getInspectorDataForInstance(
+      jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper);
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
@@ -74,6 +124,8 @@ class Binding : public jni::HybridClass<Binding>,
       jfloat maxWidth,
       jfloat minHeight,
       jfloat maxHeight,
+      jfloat offsetX,
+      jfloat offsetY,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 
@@ -81,25 +133,39 @@ class Binding : public jni::HybridClass<Binding>,
 
   void stopSurface(jint surfaceId);
 
+  void registerSurface(SurfaceHandlerBinding *surfaceHandler);
+
+  void unregisterSurface(SurfaceHandlerBinding *surfaceHandler);
+
   void schedulerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
 
+  void preallocateShadowView(
+      const SurfaceId surfaceId,
+      const ShadowView &shadowView);
+
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ShadowView &shadowView) override;
+      const ShadowNode &shadowNode) override;
+
+  void schedulerDidCloneShadowNode(
+      SurfaceId surfaceId,
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) override;
 
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,
       folly::dynamic const args) override;
 
-  void schedulerDidSetJSResponder(
-      SurfaceId surfaceId,
+  void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,
-      const ShadowView &initialShadowView,
-      bool blockNativeResponder) override;
+      std::string const &eventType) override;
 
-  void schedulerDidClearJSResponder() override;
+  void schedulerDidSetIsJSResponder(
+      ShadowView const &shadowView,
+      bool isJSResponder,
+      bool blockNativeResponder) override;
 
   void setPixelDensity(float pointScaleFactor);
 
@@ -121,15 +187,19 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;
 
+  better::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
+  better::shared_mutex
+      surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
+
   std::recursive_mutex commitMutex_;
 
   float pointScaleFactor_ = 1;
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
-  bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
   bool disableVirtualNodePreallocation_{false};
   bool enableFabricLogs_{false};
+  bool enableEarlyEventEmitterUpdate_{false};
 };
 
 } // namespace react

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const AnimatedNode = require('../Animated/src/nodes/AnimatedNode');
+const AnimatedNode = require('../Animated/nodes/AnimatedNode');
 
 import type {NativeColorValue} from './PlatformColorValueTypes';
 
@@ -675,3 +675,8 @@ export type ____Styles_Internal = {
   +[key: string]: $Shape<____DangerouslyImpreciseStyle_Internal>,
   ...,
 };
+
+export type ____FlattenStyleProp_Internal<+TStyleProp> = $Call<
+  <T>(GenericStyleProp<T>) => T,
+  TStyleProp,
+>;

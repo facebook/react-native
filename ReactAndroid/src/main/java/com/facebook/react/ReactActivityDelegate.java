@@ -20,9 +20,9 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
- * Delegate class for {@link ReactActivity} and {@link ReactFragmentActivity}. You can subclass this
- * to provide custom implementations for e.g. {@link #getReactNativeHost()}, if your Application
- * class doesn't implement {@link ReactApplication}.
+ * Delegate class for {@link ReactActivity}. You can subclass this to provide custom implementations
+ * for e.g. {@link #getReactNativeHost()}, if your Application class doesn't implement {@link
+ * ReactApplication}.
  */
 public class ReactActivityDelegate {
 
