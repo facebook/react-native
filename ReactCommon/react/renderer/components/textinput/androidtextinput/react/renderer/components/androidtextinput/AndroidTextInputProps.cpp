@@ -48,12 +48,6 @@ AndroidTextInputProps::AndroidTextInputProps(
           "autoComplete",
           sourceProps.autoComplete,
           {})),
-      autoCompleteType(convertRawProp(
-          context,
-          rawProps,
-          "autoCompleteType",
-          sourceProps.autoCompleteType,
-          {})),
       returnKeyLabel(convertRawProp(context, rawProps,
           "returnKeyLabel",
           sourceProps.returnKeyLabel,
@@ -267,7 +261,6 @@ AndroidTextInputProps::AndroidTextInputProps(
 // TODO T53300085: support this in codegen; this was hand-written
 folly::dynamic AndroidTextInputProps::getDynamic() const {
   folly::dynamic props = folly::dynamic::object();
-  props["autoCompleteType"] = autoCompleteType;
   props["autoComplete"] = autoComplete;
   props["returnKeyLabel"] = returnKeyLabel;
   props["numberOfLines"] = numberOfLines;

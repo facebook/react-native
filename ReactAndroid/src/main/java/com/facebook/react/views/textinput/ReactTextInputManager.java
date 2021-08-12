@@ -728,12 +728,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  // TODO: T96744578 - Delete autoCompleteType prop
-  @ReactProp(name = "autoCompleteType")
-  public void setTextContentTypeDeprecated(ReactEditText view, @Nullable String autoCompleteType) {
-    setTextContentType(view, autoCompleteType);
-  }
-
   @ReactProp(name = "autoCorrect")
   public void setAutoCorrect(ReactEditText view, @Nullable Boolean autoCorrect) {
     // clear auto correct flags, set SUGGESTIONS or NO_SUGGESTIONS depending on value
