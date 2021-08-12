@@ -331,7 +331,7 @@ type AndroidProps = $ReadOnly<{|
    *
    * @platform android
    */
-  autoCompleteType?: ?(
+  autoComplete?: ?(
     | 'birthdate-day'
     | 'birthdate-full'
     | 'birthdate-month'

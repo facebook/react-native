@@ -64,7 +64,7 @@ module.exports = {
    *
    * @platform android
    */
-  autoCompleteType: (PropTypes.oneOf([
+  autoComplete: (PropTypes.oneOf([
     'cc-csc',
     'cc-exp',
     'cc-exp-month',
