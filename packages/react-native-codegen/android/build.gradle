@@ -7,22 +7,30 @@
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
-buildscript {
-    repositories {
-        mavenLocal()
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:4.2.2")
-    }
+plugins {
+    id 'java-gradle-plugin'
 }
 
-allprojects {
-    repositories {
-        mavenLocal()
-        google()
-        mavenCentral()
+repositories {
+    mavenLocal()
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.android.tools.build:gradle:4.2.2'
+    // Use the same Gson version that `com.android.tools.build:gradle` depends on.
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.guava:guava:29.0-jre'
+    implementation 'com.squareup:javapoet:1.13.0'
+}
+
+gradlePlugin {
+    plugins {
+        codegen {
+            id = 'com.facebook.react.codegen'
+            implementationClass = 'com.facebook.react.codegen.plugin.CodegenPlugin'
+        }
     }
 }
 
