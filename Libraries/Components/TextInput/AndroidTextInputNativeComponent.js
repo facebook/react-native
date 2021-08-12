@@ -23,7 +23,6 @@ import type {
   ViewStyleProp,
   ColorValue,
 } from '../../StyleSheet/StyleSheet';
-import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
@@ -415,7 +414,7 @@ export type NativeProps = $ReadOnly<{|
   /**
    * The string that will be rendered before text input has been entered.
    */
-  placeholder?: ?string,
+  placeholder?: ?Stringish,
 
   /**
    * The text color of the placeholder string.

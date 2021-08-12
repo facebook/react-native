@@ -1163,6 +1163,7 @@ function InternalTextInput(props: Props): React.Node {
   } else if (Platform.OS === 'android') {
     const style = [props.style];
     const autoCapitalize = props.autoCapitalize || 'sentences';
+    const placeholder = props.placeholder ?? '';
     let children = props.children;
     const childCount = React.Children.count(children);
     invariant(
@@ -1205,6 +1206,7 @@ function InternalTextInput(props: Props): React.Node {
          * to get fixed */
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
+        placeholder={placeholder}
         selection={selection}
         style={style}
         text={text}
