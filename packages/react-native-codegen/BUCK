@@ -36,8 +36,7 @@ rn_codegen_modules(
 rn_android_library(
     name = "rn_codegen_library_java",
     srcs = glob(
-        ["**/*.java"],
-        exclude = ["android/gradlePlugin-build/**/*"],
+        ["buck_tests/*.java"],
     ),
     autoglob = False,
     visibility = [
