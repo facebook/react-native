@@ -25,6 +25,13 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
+  /**
+   * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
+   * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
+   * is used.
+   */
+  public static volatile boolean warnOnLegacyNativeModuleSystemUse = false;
+
   /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
   public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
 
