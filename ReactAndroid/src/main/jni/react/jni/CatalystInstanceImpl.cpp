@@ -29,6 +29,7 @@
 
 #include "CxxModuleWrapper.h"
 #include "JNativeRunnable.h"
+#include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
@@ -92,6 +93,15 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
+void logSoftException(std::string message) {
+  JReactSoftExceptionLogger::logNoThrowSoftExceptionWithMessage(
+      "ReactNativeLogger#warning", message);
+}
+
+void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
+  CxxNativeModule::setWarnOnUsageLogger(&logSoftException);
+}
+
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
@@ -127,6 +137,9 @@ void CatalystInstanceImpl::registerNatives() {
           CatalystInstanceImpl::handleMemoryPressure),
       makeNativeMethod(
           "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
+      makeNativeMethod(
+          "warnOnLegacyNativeModuleSystemUse",
+          CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
   });
 
   JNativeRunnable::registerNatives();

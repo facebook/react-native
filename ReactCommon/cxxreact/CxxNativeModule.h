@@ -20,6 +20,8 @@ namespace react {
 class Instance;
 class MessageQueueThread;
 
+typedef void (*WarnOnUsageLogger)(std::string message);
+
 std::function<void(folly::dynamic)> makeCallback(
     std::weak_ptr<Instance> instance,
     const folly::dynamic &callbackId);
@@ -46,6 +48,8 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
       unsigned int hookId,
       folly::dynamic &&args) override;
 
+  static void setWarnOnUsageLogger(WarnOnUsageLogger logger);
+
  private:
   void lazyInit();
 
@@ -55,6 +59,8 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
   std::shared_ptr<MessageQueueThread> messageQueueThread_;
   std::unique_ptr<xplat::module::CxxModule> module_;
   std::vector<xplat::module::CxxModule::Method> methods_;
+
+  static WarnOnUsageLogger warnOnUsageLogger_;
 };
 
 } // namespace react

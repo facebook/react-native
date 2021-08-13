@@ -54,6 +54,12 @@ CxxModule::Callback convertCallback(
 
 } // namespace
 
+WarnOnUsageLogger CxxNativeModule::warnOnUsageLogger_ = nullptr;
+
+void CxxNativeModule::setWarnOnUsageLogger(WarnOnUsageLogger logger) {
+  warnOnUsageLogger_ = logger;
+}
+
 std::string CxxNativeModule::getName() {
   return name_;
 }
@@ -85,6 +91,12 @@ folly::dynamic CxxNativeModule::getConstants() {
 
   if (!module_) {
     return nullptr;
+  }
+
+  if (warnOnUsageLogger_) {
+    warnOnUsageLogger_(
+        "Calling getConstants() on Cxx NativeModule (name = \"" + getName() +
+        "\").");
   }
 
   folly::dynamic constants = folly::dynamic::object();
@@ -119,6 +131,12 @@ void CxxNativeModule::invoke(
   if (!method.func) {
     throw std::runtime_error(folly::to<std::string>(
         "Method ", method.name, " is synchronous but invoked asynchronously"));
+  }
+
+  if (warnOnUsageLogger_) {
+    warnOnUsageLogger_(
+        "Calling " + method.name + "() on Cxx NativeModule (name = \"" +
+        getName() + "\").");
   }
 
   if (params.size() < method.callbacks) {
@@ -202,6 +220,12 @@ MethodCallResult CxxNativeModule::callSerializableNativeHook(
   if (!method.syncFunc) {
     throw std::runtime_error(folly::to<std::string>(
         "Method ", method.name, " is asynchronous but invoked synchronously"));
+  }
+
+  if (warnOnUsageLogger_) {
+    warnOnUsageLogger_(
+        "Calling " + method.name + "() on Cxx NativeModule (name = \"" +
+        getName() + "\").");
   }
 
   return method.syncFunc(std::move(args));
