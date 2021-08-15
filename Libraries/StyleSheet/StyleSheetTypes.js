@@ -582,6 +582,7 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
   borderRightWidth?: number | AnimatedNode,
   borderStartWidth?: number | AnimatedNode,
   borderTopWidth?: number | AnimatedNode,
+  cornerSmoothing?: boolean,
   opacity?: number | AnimatedNode,
   elevation?: number,
 |}>;

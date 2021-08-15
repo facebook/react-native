@@ -116,6 +116,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
   borderTopStartRadius: true,
+  cornerSmoothing: true,
   opacity: true,
 
   /**
