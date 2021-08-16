@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
+@property (nonatomic, strong, nullable) UIView *inputView;
 #endif // TODO(macOS GH#774)
 @property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
 @property (nonatomic, readonly) CGSize contentSize;

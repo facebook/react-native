@@ -28,11 +28,14 @@
 #import <react/config/ReactNativeConfig.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
+#import <react/scheduler/AsynchronousEventBeat.h>
 #import <react/scheduler/SchedulerToolbox.h>
+#import <react/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "MainRunLoopEventBeat.h"
+#import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
 #import "RuntimeEventBeat.h"
 
@@ -277,6 +280,8 @@ static inline LayoutContext RCTGetLayoutContext()
 
 - (RCTScheduler *)_createScheduler
 {
+  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
@@ -290,23 +295,35 @@ static inline LayoutContext RCTGetLayoutContext()
   toolbox.contextContainer = _contextContainer;
   toolbox.componentRegistryFactory = componentRegistryFactory;
   toolbox.runtimeExecutor = runtimeExecutor;
-
-  toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
-    return std::make_unique<MainRunLoopEventBeat>(ownerBox, runtimeExecutor);
+  toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
+                                          RunLoopObserver::WeakOwner const &owner) {
+    return std::make_unique<MainRunLoopObserver>(activities, owner);
   };
 
-  toolbox.asynchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
-    return std::make_unique<RuntimeEventBeat>(ownerBox, runtimeExecutor);
-  };
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_run_loop_based_event_beat_ios")) {
+    toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+      auto runLoopObserver =
+          std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+      return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
+    };
+
+    toolbox.asynchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+      auto runLoopObserver =
+          std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+      return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
+    };
+  } else {
+    toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+      return std::make_unique<MainRunLoopEventBeat>(ownerBox, runtimeExecutor);
+    };
+
+    toolbox.asynchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+      return std::make_unique<RuntimeEventBeat>(ownerBox, runtimeExecutor);
+    };
+  }
 
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
   scheduler.delegate = self;
-
-  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
-  if (reactNativeConfig) {
-    _mountingManager.useModernDifferentiatorMode =
-        reactNativeConfig->getBool("react_fabric:enabled_optimized_moves_differ_ios");
-  }
 
   return scheduler;
 }

@@ -13,10 +13,10 @@ namespace facebook {
 namespace react {
 
 static LayoutMetrics layoutMetricsFromShadowNode(ShadowNode const &shadowNode) {
-  auto layotableShadowNode =
+  auto layoutableShadowNode =
       traitCast<LayoutableShadowNode const *>(&shadowNode);
-  return layotableShadowNode ? layotableShadowNode->getLayoutMetrics()
-                             : EmptyLayoutMetrics;
+  return layoutableShadowNode ? layoutableShadowNode->getLayoutMetrics()
+                              : EmptyLayoutMetrics;
 }
 
 ShadowView::ShadowView(const ShadowNode &shadowNode)

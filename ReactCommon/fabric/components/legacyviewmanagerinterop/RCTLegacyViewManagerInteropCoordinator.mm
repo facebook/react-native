@@ -20,7 +20,7 @@ using namespace facebook::react;
 
 @implementation RCTLegacyViewManagerInteropCoordinator {
   RCTComponentData *_componentData;
-  RCTBridge *_bridge;
+  __weak RCTBridge *_bridge;
   /*
    Each instnace of `RCTLegacyViewManagerInteropComponentView` registers a block to which events are dispatched.
    This is the container that maps unretained UIView pointer to a block to which the event is dispatched.

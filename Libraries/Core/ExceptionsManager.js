@@ -76,7 +76,7 @@ function reportException(
     message =
       e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
-    const isHandledByLogBox = e.forceRedbox !== true;
+    const isHandledByLogBox = e.forceRedbox !== true && !global.RN$Bridgeless;
 
     const data = preprocessException({
       message,

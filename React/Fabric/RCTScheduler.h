@@ -64,6 +64,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (facebook::react::MountingCoordinator::Shared)mountingCoordinatorWithSurfaceId:(facebook::react::SurfaceId)surfaceId;
 
+- (void)onAnimationStarted;
+
+- (void)onAllAnimationsComplete;
+
+- (void)animationTick;
+
 @end
 
 NS_ASSUME_NONNULL_END

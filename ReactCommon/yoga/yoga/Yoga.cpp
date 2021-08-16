@@ -249,9 +249,6 @@ YOGA_EXPORT YGNodeRef YGNodeClone(YGNodeRef oldNode) {
 static YGConfigRef YGConfigClone(const YGConfig& oldConfig) {
   const YGConfigRef config = new YGConfig(oldConfig);
   YGAssert(config != nullptr, "Could not allocate memory for config");
-  if (config == nullptr) {
-    abort();
-  }
   gConfigInstanceCount++;
   return config;
 }
@@ -4341,6 +4338,7 @@ YOGA_EXPORT void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
 void YGAssert(const bool condition, const char* message) {
   if (!condition) {
     Log::log(YGNodeRef{nullptr}, YGLogLevelFatal, nullptr, "%s\n", message);
+    throwLogicalErrorWithMessage(message);
   }
 }
 
@@ -4350,6 +4348,7 @@ void YGAssertWithNode(
     const char* message) {
   if (!condition) {
     Log::log(node, YGLogLevelFatal, nullptr, "%s\n", message);
+    throwLogicalErrorWithMessage(message);
   }
 }
 
@@ -4359,6 +4358,7 @@ void YGAssertWithConfig(
     const char* message) {
   if (!condition) {
     Log::log(config, YGLogLevelFatal, nullptr, "%s\n", message);
+    throwLogicalErrorWithMessage(message);
   }
 }
 

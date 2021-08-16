@@ -185,7 +185,7 @@ class JSCRuntime : public jsi::Runtime {
 
   // TODO: revisit this implementation
   jsi::WeakObject createWeakObject(const jsi::Object &) override;
-  jsi::Value lockWeakObject(const jsi::WeakObject &) override;
+  jsi::Value lockWeakObject(jsi::WeakObject &) override;
 
   jsi::Array createArray(size_t length) override;
   size_t size(const jsi::Array &) override;
@@ -988,7 +988,7 @@ jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object &obj) {
 #endif
 }
 
-jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject &obj) {
+jsi::Value JSCRuntime::lockWeakObject(jsi::WeakObject &obj) {
 #ifdef RN_FABRIC_ENABLED
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);

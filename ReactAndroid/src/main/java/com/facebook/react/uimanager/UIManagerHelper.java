@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.EventDispatcherProvider;
 
 /** Helper class for {@link UIManager}. */
 public class UIManagerHelper {
@@ -43,32 +44,28 @@ public class UIManagerHelper {
       ReactContext context,
       @UIManagerType int uiManagerType,
       boolean returnNullIfCatalystIsInactive) {
-    if (context.isBridgeless()) {
-      return (UIManager) context.getJSIModule(JSIModuleType.UIManager);
-    } else {
-      if (!context.hasCatalystInstance()) {
-        ReactSoftException.logSoftException(
-            "UIManagerHelper",
-            new ReactNoCrashSoftException(
-                "Cannot get UIManager because the context doesn't contain a CatalystInstance."));
+    if (!context.hasCatalystInstance()) {
+      ReactSoftException.logSoftException(
+          "UIManagerHelper",
+          new ReactNoCrashSoftException(
+              "Cannot get UIManager because the context doesn't contain a CatalystInstance."));
+      return null;
+    }
+    // TODO T60461551: add tests to verify emission of events when the ReactContext is being turn
+    // down.
+    if (!context.hasActiveCatalystInstance()) {
+      ReactSoftException.logSoftException(
+          "UIManagerHelper",
+          new ReactNoCrashSoftException(
+              "Cannot get UIManager because the context doesn't contain an active CatalystInstance."));
+      if (returnNullIfCatalystIsInactive) {
         return null;
       }
-      // TODO T60461551: add tests to verify emission of events when the ReactContext is being turn
-      // down.
-      if (!context.hasActiveCatalystInstance()) {
-        ReactSoftException.logSoftException(
-            "UIManagerHelper",
-            new ReactNoCrashSoftException(
-                "Cannot get UIManager because the context doesn't contain an active CatalystInstance."));
-        if (returnNullIfCatalystIsInactive) {
-          return null;
-        }
-      }
-      CatalystInstance catalystInstance = context.getCatalystInstance();
-      return uiManagerType == FABRIC
-          ? (UIManager) catalystInstance.getJSIModule(JSIModuleType.UIManager)
-          : catalystInstance.getNativeModule(UIManagerModule.class);
     }
+    CatalystInstance catalystInstance = context.getCatalystInstance();
+    return uiManagerType == FABRIC
+        ? (UIManager) catalystInstance.getJSIModule(JSIModuleType.UIManager)
+        : catalystInstance.getNativeModule(UIManagerModule.class);
   }
 
   /**
@@ -87,6 +84,13 @@ public class UIManagerHelper {
   @Nullable
   public static EventDispatcher getEventDispatcher(
       ReactContext context, @UIManagerType int uiManagerType) {
+    // TODO T67518514 Clean this up once we migrate everything over to bridgeless mode
+    if (context.isBridgeless()) {
+      if (context instanceof ThemedReactContext) {
+        context = ((ThemedReactContext) context).getReactApplicationContext();
+      }
+      return ((EventDispatcherProvider) context).getEventDispatcher();
+    }
     UIManager uiManager = getUIManager(context, uiManagerType, false);
     return uiManager == null ? null : (EventDispatcher) uiManager.getEventDispatcher();
   }

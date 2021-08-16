@@ -189,7 +189,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   RCTAssertMainQueue();
   auto &recycledViews = _recyclePool[componentHandle];
 
-  if (recycledViews.size() == 0) {
+  if (recycledViews.empty()) {
     return [self.componentViewFactory createComponentViewWithComponentHandle:componentHandle];
   }
 

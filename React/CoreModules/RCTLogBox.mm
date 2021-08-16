@@ -9,18 +9,10 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
-#import <React/RCTConvert.h>
-#import <React/RCTDefines.h>
-#import <React/RCTErrorInfo.h>
-#import <React/RCTEventDispatcher.h>
-#import <React/RCTJSStackFrame.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTLog.h>
 #import <React/RCTRedBoxSetEnabled.h>
-#import <React/RCTReloadCommand.h>
-#import <React/RCTRootView.h>
 #import <React/RCTSurface.h>
-#import <React/RCTUtils.h>
-
-#import <objc/runtime.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -139,7 +131,7 @@
 
 #endif // ]TODO(macOS GH#774)
 
-@interface RCTLogBox () <NativeLogBoxSpec>
+@interface RCTLogBox () <NativeLogBoxSpec, RCTBridgeModule>
 @end
 
 @implementation RCTLogBox {

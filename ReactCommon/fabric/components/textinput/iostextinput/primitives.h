@@ -181,6 +181,12 @@ class TextInputTraits final {
   KeyboardType keyboardType{KeyboardType::Default};
 
   /*
+   * iOS & Android
+   * Default value: `true`.
+   */
+  bool showSoftInputOnFocus{true};
+
+  /*
    * Some values iOS- or Android-only (inherently particular-OS-specific)
    * Default value: `Default`.
    */

@@ -60,7 +60,9 @@ static jsi::Value scrollViewMetricsPayload(
 
 void ScrollViewEventEmitter::onScroll(
     const ScrollViewMetrics &scrollViewMetrics) const {
-  dispatchScrollViewEvent("scroll", scrollViewMetrics);
+  dispatchUniqueEvent("scroll", [scrollViewMetrics](jsi::Runtime &runtime) {
+    return scrollViewMetricsPayload(runtime, scrollViewMetrics);
+  });
 }
 
 void ScrollViewEventEmitter::onScrollBeginDrag(

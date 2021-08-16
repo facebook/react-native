@@ -113,4 +113,7 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
         break;
     }
   }
+
+  @Override
+  public void receiveCommand(T view, String commandName, ReadableArray args) {}
 }

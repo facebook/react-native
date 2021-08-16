@@ -90,6 +90,12 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment);
 
+  /*
+   * Not copyable.
+   */
+  ShadowNode(ShadowNode const &shadowNode) noexcept = delete;
+  ShadowNode &operator=(ShadowNode const &other) noexcept = delete;
+
   virtual ~ShadowNode() = default;
 
   /*

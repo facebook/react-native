@@ -13,6 +13,7 @@
 #include <react/attributedstring/AttributedStringBox.h>
 #include <react/attributedstring/ParagraphAttributes.h>
 #include <react/core/LayoutConstraints.h>
+#include <react/textlayoutmanager/TextMeasureCache.h>
 #include <react/utils/ContextContainer.h>
 
 namespace facebook {
@@ -34,7 +35,7 @@ class TextLayoutManager {
   /*
    * Measures `attributedStringBox` using native text rendering infrastructure.
    */
-  Size measure(
+  TextMeasurement measure(
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;

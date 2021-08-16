@@ -73,6 +73,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
           &initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
+  updateYogaChildrenOwnersIfNeeded();
 
   // Yoga node must inherit dirty flag.
   assert(
@@ -221,6 +222,14 @@ void YogaLayoutableShadowNode::appendChild(
 bool YogaLayoutableShadowNode::doesOwn(
     YogaLayoutableShadowNode const &child) const {
   return child.yogaNode_.getOwner() == &yogaNode_;
+}
+
+void YogaLayoutableShadowNode::updateYogaChildrenOwnersIfNeeded() {
+  for (auto &childYogaNode : yogaNode_.getChildren()) {
+    if (childYogaNode->getOwner() == &yogaNode_) {
+      childYogaNode->setOwner(reinterpret_cast<YGNodeRef>(0xBADC0FFEE0DDF00D));
+    }
+  }
 }
 
 void YogaLayoutableShadowNode::updateYogaChildren() {
@@ -597,7 +606,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenOwnersConsistency() const {
   // The owner might be not equal to the `yogaNode_` though.
   auto &yogaChildren = yogaNode_.getChildren();
 
-  if (yogaChildren.size() > 0) {
+  if (!yogaChildren.empty()) {
     auto owner = yogaChildren.at(0)->getOwner();
     for (auto const &child : yogaChildren) {
       assert(child->getOwner() == owner);
@@ -617,7 +626,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
   for (auto const &yogaChild : yogaChildren) {
     assert(yogaChild->getContext());
     assert(yogaChild->getChildren().size() < 16384);
-    if (yogaChild->getChildren().size() > 0) {
+    if (!yogaChild->getChildren().empty()) {
       assert(!yogaChild->hasMeasureFunc());
     }
   }
@@ -635,7 +644,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenAlighment() const {
   auto &children = getChildren();
 
   if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
-    assert(yogaChildren.size() == 0);
+    assert(yogaChildren.empty());
     return;
   }
 

@@ -317,28 +317,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
+- (void)setInternal_analyticTag:(NSString *)internal_analyticTag {
+    if (_internal_analyticTag != internal_analyticTag) {
+        _internal_analyticTag = internal_analyticTag;
+        _needsReload = YES;
+    }
+}
+
 - (void)cancelImageLoad
 {
-  if (_loaderRequest.cancellationBlock) {
-    _loaderRequest.cancellationBlock();
-  }
-
-  _loaderRequest = nil;
+  [_loaderRequest cancel];
   _pendingImageSource = nil;
 }
 
-- (void)clearImage
+- (void)cancelAndClearImageLoad
 {
   [self cancelImageLoad];
-  self.image = nil;
-  _imageSource = nil;
+
+  [_imageLoader trackURLImageRequestDidDestroy:_loaderRequest];
+  _loaderRequest = nil;
 }
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 - (void)clearImageIfDetached
 {
   if (!self.window) {
-    [self clearImage];
+    [self cancelAndClearImageLoad];
+    self.image = nil;
+    _imageSource = nil;
   }
 }
 #endif // TODO(macOS GH#774)
@@ -399,7 +405,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)reloadImage
 {
-  [self cancelImageLoad];
+  [self cancelAndClearImageLoad];
   _needsReload = NO;
 
   RCTImageSource *source = [self imageSourceForSize:self.frame.size];
@@ -454,13 +460,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                                                        attribution:{
                                                                                    .nativeViewTag = [self.reactTag intValue],
                                                                                    .surfaceId = [self.rootTag intValue],
+                                                                                   .analyticTag = self.internal_analyticTag
                                                                                    }
                                                                      progressBlock:progressHandler
                                                                   partialLoadBlock:partialLoadHandler
                                                                    completionBlock:completionHandler];
     _loaderRequest = loaderRequest;
   } else {
-    [self clearImage];
+    [self cancelAndClearImageLoad];
   }
 }
 
@@ -623,6 +630,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     // prioritise image requests that are actually on-screen, this removes
     // requests that have gotten "stuck" from the queue, unblocking other images
     // from loading.
+    // Do not clear _loaderRequest because this component can be visible again without changing image source
     [self cancelImageLoad];
   } else if ([self shouldChangeImageSource]) {
     [self reloadImage];

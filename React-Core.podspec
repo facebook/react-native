@@ -122,6 +122,7 @@ Pod::Spec.new do |s|
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-cxxreact", version
+  s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version
   s.dependency "Yoga"

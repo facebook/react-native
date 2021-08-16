@@ -214,13 +214,14 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
     super.setProperty(view, propName, value);
   }
 
-  public void receiveCommand(CommandNativeComponentManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+  @Override
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       case \\"flashScrollIndicators\\":
-        viewManager.flashScrollIndicators(view);
+        mViewManager.flashScrollIndicators(view);
         break;
       case \\"allTypes\\":
-        viewManager.allTypes(view, args.getInt(0), (float) args.getDouble(1), args.getDouble(2), args.getString(3), args.getBoolean(4));
+        mViewManager.allTypes(view, args.getInt(0), (float) args.getDouble(1), args.getDouble(2), args.getString(3), args.getBoolean(4));
         break;
     }
   }
@@ -264,13 +265,14 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
     }
   }
 
-  public void receiveCommand(CommandNativeComponentManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+  @Override
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       case \\"handleRootTag\\":
-        viewManager.handleRootTag(view, args.getDouble(0));
+        mViewManager.handleRootTag(view, args.getDouble(0));
         break;
       case \\"hotspotUpdate\\":
-        viewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
+        mViewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
         break;
     }
   }

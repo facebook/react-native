@@ -61,6 +61,7 @@ RCT_EXTERN CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale);
 // Method swizzling
 RCT_EXTERN IMP RCTSwapClassMethods(Class cls, SEL original, SEL replacement); // TODO(OSS Candidate ISS#2710739)
 RCT_EXTERN IMP RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement); // TODO(OSS Candidate ISS#2710739)
+RCT_EXTERN void RCTSwapInstanceMethodWithBlock(Class cls, SEL original, id replacementBlock, SEL replacementSelector);
 
 // Module subclass support
 RCT_EXTERN BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);

@@ -28,7 +28,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/deviceinfo:deviceinfo"),
         react_native_target("java/com/facebook/react/modules/share:share"),
         react_native_target("java/com/facebook/react/modules/systeminfo:systeminfo"),
-        react_native_target("java/com/facebook/react/modules/timepicker:timepicker"),
         react_native_target("java/com/facebook/react/touch:touch"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),

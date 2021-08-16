@@ -37,15 +37,10 @@ public class ReactDrawableHelper {
     String type = drawableDescriptionDict.getString("type");
     if ("ThemeAttrAndroid".equals(type)) {
       String attr = drawableDescriptionDict.getString("attribute");
-      SoftAssertions.assertNotNull(attr);
-      int attrID = context.getResources().getIdentifier(attr, "attr", "android");
-      if (attrID == 0) {
+      int attrId = getAttrId(context, attr);
+      if (!context.getTheme().resolveAttribute(attrId, sResolveOutValue, true)) {
         throw new JSApplicationIllegalArgumentException(
-            "Attribute " + attr + " couldn't be found in the resource list");
-      }
-      if (!context.getTheme().resolveAttribute(attrID, sResolveOutValue, true)) {
-        throw new JSApplicationIllegalArgumentException(
-            "Attribute " + attr + " couldn't be resolved into a drawable");
+            "Attribute " + attr + " with id " + attrId + " couldn't be resolved into a drawable");
       }
       Drawable drawable = getDefaultThemeDrawable(context);
       return setRadius(drawableDescriptionDict, drawable);
@@ -54,6 +49,18 @@ public class ReactDrawableHelper {
       return setRadius(drawableDescriptionDict, rd);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid type for android drawable: " + type);
+    }
+  }
+
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private static int getAttrId(Context context, String attr) {
+    SoftAssertions.assertNotNull(attr);
+    if ("selectableItemBackground".equals(attr)) {
+      return android.R.attr.selectableItemBackground;
+    } else if ("selectableItemBackgroundBorderless".equals(attr)) {
+      return android.R.attr.selectableItemBackgroundBorderless;
+    } else {
+      return context.getResources().getIdentifier(attr, "attr", "android");
     }
   }
 

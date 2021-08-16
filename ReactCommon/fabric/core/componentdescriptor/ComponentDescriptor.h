@@ -105,6 +105,15 @@ class ComponentDescriptor {
       const RawProps &rawProps) const = 0;
 
   /*
+   * Creates a new `Props` of a particular type with all values interpolated
+   * between `props` and `newProps`.
+   */
+  virtual SharedProps interpolateProps(
+      float animationProgress,
+      const SharedProps &props,
+      const SharedProps &newProps) const = 0;
+
+  /*
    * Create an initial State object that represents (and contains) an initial
    * State's data which can be constructed based on initial Props.
    */

@@ -30,6 +30,7 @@ typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
 @property (nonatomic, copy) NSArray<RCTImageSource *> *imageSources;
 @property (nonatomic, assign) CGFloat blurRadius;
 @property (nonatomic, assign) RCTResizeMode resizeMode;
+@property (nonatomic, copy) NSString *internal_analyticTag;
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
 @property (nonatomic, copy) NSColor *tintColor;

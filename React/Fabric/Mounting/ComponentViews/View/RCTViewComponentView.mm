@@ -15,6 +15,7 @@
 #import <react/components/view/ViewProps.h>
 
 #import "RCTConversions.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -179,7 +180,10 @@ using namespace facebook::react;
 
   // `hitSlop`
   if (oldViewProps.hitSlop != newViewProps.hitSlop) {
-    self.hitTestEdgeInsets = RCTUIEdgeInsetsFromEdgeInsets(newViewProps.hitSlop);
+    self.hitTestEdgeInsets = {-newViewProps.hitSlop.top,
+                              -newViewProps.hitSlop.left,
+                              -newViewProps.hitSlop.bottom,
+                              -newViewProps.hitSlop.right};
   }
 
   // `overflow`
@@ -518,7 +522,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   auto const &accessibilityActions = _props->accessibilityActions;
 
-  if (accessibilityActions.size() == 0) {
+  if (accessibilityActions.empty()) {
     return nil;
   }
 
@@ -584,3 +588,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTViewCls(void)
+{
+  return RCTViewComponentView.class;
+}

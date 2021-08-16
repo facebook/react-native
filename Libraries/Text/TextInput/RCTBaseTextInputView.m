@@ -348,6 +348,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
   }
 }
+
+- (void)setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
+{
+  (void)_showSoftInputOnFocus;
+  if (showSoftInputOnFocus) {
+    // Resets to default keyboard.
+    self.backedTextInputView.inputView = nil;
+  } else {
+    // Hides keyboard, but keeps blinking cursor.
+    self.backedTextInputView.inputView = [[UIView alloc] init];
+  }
+}
 #endif // TODO(macOS GH#774)
 
 #pragma mark - RCTBackedTextInputDelegate

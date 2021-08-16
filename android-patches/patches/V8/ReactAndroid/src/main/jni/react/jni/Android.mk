@@ -1,16 +1,17 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\jni\\react\\jni\\Android.mk"	2020-10-27 20:26:17.023172300 -0700
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\jni\\react\\jni\\Android.mk"	2020-10-13 21:47:10.404176500 -0700
-@@ -71,6 +71,7 @@
- $(call import-module,callinvoker)
+diff --git a/ReactAndroid/src/main/jni/react/jni/Android.mk b/ReactAndroid/src/main/jni/react/jni/Android.mk
+index 38a51019e..7425e65a5 100644
+--- a/ReactAndroid/src/main/jni/react/jni/Android.mk
++++ b/ReactAndroid/src/main/jni/react/jni/Android.mk
+@@ -72,6 +72,7 @@ $(call import-module,callinvoker)
+ $(call import-module,reactperflogger)
  $(call import-module,hermes)
  $(call import-module,runtimeexecutor)
 +$(call import-module,v8jsi)
  
  include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
  
-@@ -82,3 +83,4 @@
+@@ -83,3 +84,4 @@ include $(REACT_SRC_DIR)/jscexecutor/Android.mk
  include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
  include $(REACT_SRC_DIR)/../hermes/instrumentation/Android.mk
  include $(REACT_SRC_DIR)/modules/blob/jni/Android.mk
 +include $(REACT_SRC_DIR)/v8executor/Android.mk
-\ No newline at end of file

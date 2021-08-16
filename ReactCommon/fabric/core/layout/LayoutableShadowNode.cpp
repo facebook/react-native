@@ -17,54 +17,95 @@
 namespace facebook {
 namespace react {
 
-/*
- * `shadowNode` might not be the newest revision of `ShadowNodeFamily`.
- * This function looks at `parentNode`'s children and finds one that belongs
- * to the same family as `shadowNode`.
- */
-static ShadowNode const *findNewestChildInParent(
-    ShadowNode const &parentNode,
-    ShadowNode const &shadowNode) {
-  for (auto const &child : parentNode.getChildren()) {
-    if (ShadowNode::sameFamily(*child, shadowNode)) {
-      return child.get();
+LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
+    ShadowNodeFamily const &descendantNodeFamily,
+    LayoutableShadowNode const &ancestorNode,
+    LayoutInspectingPolicy policy) {
+  if (&descendantNodeFamily == &ancestorNode.getFamily()) {
+    // Layout metrics of a node computed relatively to the same node are equal
+    // to `transform`-ed layout metrics of the node with zero `origin`.
+    auto layoutMetrics = ancestorNode.getLayoutMetrics();
+    if (policy.includeTransform) {
+      layoutMetrics.frame = layoutMetrics.frame * ancestorNode.getTransform();
     }
+    layoutMetrics.frame.origin = {0, 0};
+    return layoutMetrics;
   }
-  return nullptr;
-}
 
-static LayoutMetrics calculateOffsetForLayoutMetrics(
-    LayoutMetrics layoutMetrics,
-    ShadowNode::AncestorList const &ancestors,
-    LayoutableShadowNode::LayoutInspectingPolicy const &policy) {
-  // `AncestorList` starts from the given ancestor node and ends with the parent
-  // node. We iterate from parent node (reverse iteration) and stop before the
-  // given ancestor (rend() - 1).
-  for (auto it = ancestors.rbegin(); it != ancestors.rend() - 1; ++it) {
-    auto &currentShadowNode = it->first.get();
+  auto ancestors = descendantNodeFamily.getAncestors(ancestorNode);
 
-    if (currentShadowNode.getTraits().check(
-            ShadowNodeTraits::Trait::RootNodeKind)) {
+  if (ancestors.size() == 0) {
+    // Specified nodes do not form an ancestor-descender relationship
+    // in the same tree. Aborting.
+    return EmptyLayoutMetrics;
+  }
+
+  // Step 1.
+  // Creating a list of nodes that form a chain from the descender node to
+  // ancestor node inclusively.
+  auto shadowNodeList = better::small_vector<ShadowNode const *, 16>{};
+
+  // Finding the measured node.
+  // The last element in the `AncestorList` is a pair of a parent of the node
+  // and an index of this node in the parent's children list.
+  auto &pair = ancestors.at(ancestors.size() - 1);
+  auto descendantNode = pair.first.get().getChildren().at(pair.second).get();
+
+  // Putting the node inside the list.
+  // Even if this is a node with a `RootNodeKind` trait, we don't treat it as
+  // root because we measure it from an outside tree perspective.
+  shadowNodeList.push_back(descendantNode);
+
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
+    auto &shadowNode = it->first.get();
+
+    shadowNodeList.push_back(&shadowNode);
+
+    if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::RootNodeKind)) {
+      // If this is a node with a `RootNodeKind` trait, we need to stop right
+      // there.
       break;
     }
+  }
 
-    auto layoutableCurrentShadowNode =
-        dynamic_cast<LayoutableShadowNode const *>(&currentShadowNode);
+  // Step 2.
+  // Computing the initial size of the measured node.
+  auto descendantLayoutableNode =
+      traitCast<LayoutableShadowNode const *>(descendantNode);
 
-    if (!layoutableCurrentShadowNode) {
+  if (!descendantLayoutableNode) {
+    return EmptyLayoutMetrics;
+  }
+
+  auto layoutMetrics = descendantLayoutableNode->getLayoutMetrics();
+  auto &resultFrame = layoutMetrics.frame;
+  resultFrame.origin = {0, 0};
+
+  // Step 3.
+  // Iterating on a list of nodes computing compound offset.
+  auto size = shadowNodeList.size();
+  for (int i = 0; i < size; i++) {
+    auto currentShadowNode =
+        traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
+
+    if (!currentShadowNode) {
       return EmptyLayoutMetrics;
     }
 
-    auto frame = layoutableCurrentShadowNode->getLayoutMetrics().frame;
-
-    if (policy.includeTransform) {
-      layoutMetrics.frame.size = layoutMetrics.frame.size *
-          layoutableCurrentShadowNode->getTransform();
-      frame = frame * layoutableCurrentShadowNode->getTransform();
+    auto currentFrame = currentShadowNode->getLayoutMetrics().frame;
+    if (i == size - 1) {
+      // If it's the last element, its origin is irrelevant.
+      currentFrame.origin = {0, 0};
     }
 
-    layoutMetrics.frame.origin += frame.origin;
+    if (policy.includeTransform) {
+      resultFrame.size = resultFrame.size * currentShadowNode->getTransform();
+      currentFrame = currentFrame * currentShadowNode->getTransform();
+    }
+
+    resultFrame.origin += currentFrame.origin;
   }
+
   return layoutMetrics;
 }
 
@@ -109,37 +150,8 @@ Transform LayoutableShadowNode::getTransform() const {
 LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
     LayoutableShadowNode const &ancestorLayoutableShadowNode,
     LayoutInspectingPolicy policy) const {
-  auto &ancestorShadowNode =
-      dynamic_cast<ShadowNode const &>(ancestorLayoutableShadowNode);
-  auto &shadowNode = dynamic_cast<ShadowNode const &>(*this);
-
-  if (ShadowNode::sameFamily(shadowNode, ancestorShadowNode)) {
-    auto layoutMetrics = getLayoutMetrics();
-    layoutMetrics.frame.origin = {0, 0};
-    return layoutMetrics;
-  }
-
-  auto ancestors = shadowNode.getFamily().getAncestors(ancestorShadowNode);
-
-  if (ancestors.size() == 0) {
-    return EmptyLayoutMetrics;
-  }
-
-  auto newestChild =
-      findNewestChildInParent(ancestors.rbegin()->first.get(), shadowNode);
-
-  if (!newestChild) {
-    return EmptyLayoutMetrics;
-  }
-
-  auto layoutableNewestChild =
-      dynamic_cast<LayoutableShadowNode const *>(newestChild);
-  auto layoutMetrics = layoutableNewestChild->getLayoutMetrics();
-  if (policy.includeTransform) {
-    layoutMetrics.frame =
-        layoutMetrics.frame * layoutableNewestChild->getTransform();
-  }
-  return calculateOffsetForLayoutMetrics(layoutMetrics, ancestors, policy);
+  return computeRelativeLayoutMetrics(
+      getFamily(), ancestorLayoutableShadowNode, policy);
 }
 
 LayoutableShadowNode::UnsharedList

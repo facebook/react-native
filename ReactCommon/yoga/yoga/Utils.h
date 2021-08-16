@@ -141,3 +141,5 @@ inline YGFloatOptional YGResolveValueMargin(
     const float ownerSize) {
   return value.isAuto() ? YGFloatOptional{0} : YGResolveValue(value, ownerSize);
 }
+
+void throwLogicalErrorWithMessage(const char* message);

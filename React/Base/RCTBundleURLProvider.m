@@ -116,6 +116,11 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   }
   return nil;
 }
+#else
++ (BOOL)isPackagerRunning:(NSString *)host
+{
+  return false;
+}
 #endif
 
 - (NSString *)packagerServerHost
@@ -194,6 +199,10 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
                                                kRCTPlatformName, // TODO(macOS GH#774)
                                                enableDev ? @"true" : @"false",
                                                enableMinification ? @"true" : @"false"];
+  NSString *bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleIdentifierKey];
+  if (bundleID) {
+    query = [NSString stringWithFormat:@"%@&app=%@", query, bundleID];
+  }
   return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost query:query];
 }
 

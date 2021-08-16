@@ -24,3 +24,4 @@ Runtime.consoleAPICalled
 Runtime.evaluate
 Runtime.executionContextCreated
 Runtime.getProperties
+Runtime.runIfWaitingForDebugger

@@ -15,7 +15,6 @@ import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
-import com.facebook.react.uimanager.LayoutShadowNode;
 
 public class SwitchManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & SwitchManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public SwitchManagerDelegate(U viewManager) {
@@ -53,10 +52,11 @@ public class SwitchManagerDelegate<T extends View, U extends BaseViewManagerInte
     }
   }
 
-  public void receiveCommand(SwitchManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+  @Override
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       case "setValue":
-        viewManager.setValue(view, args.getBoolean(0));
+        mViewManager.setValue(view, args.getBoolean(0));
         break;
     }
   }

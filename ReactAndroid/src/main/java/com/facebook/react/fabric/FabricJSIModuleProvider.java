@@ -33,7 +33,6 @@ import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
 import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
 import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
-import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePaddingMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
@@ -123,7 +122,6 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     SendAccessibilityEvent.class.getClass();
     UpdateEventEmitterMountItem.class.getClass();
     UpdateLayoutMountItem.class.getClass();
-    UpdateLocalDataMountItem.class.getClass();
     UpdatePaddingMountItem.class.getClass();
     UpdatePropsMountItem.class.getClass();
     UpdateStateMountItem.class.getClass();

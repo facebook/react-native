@@ -12,25 +12,38 @@
 
 import processColor from '../StyleSheet/processColor';
 import NativeDevLoadingView from './NativeDevLoadingView';
+import Appearance from './Appearance';
 
 module.exports = {
   showMessage(message: string, type: 'load' | 'refresh') {
     if (NativeDevLoadingView) {
-      const loadColor = processColor('#404040');
-      const refreshColor = processColor('#2584e8');
-      const white = processColor('#ffffff');
+      if (type === 'refresh') {
+        const backgroundColor = processColor('#2584e8');
+        const textColor = processColor('#ffffff');
 
-      NativeDevLoadingView.showMessage(
-        message,
-        typeof white === 'number' ? white : null,
-        type && type === 'load'
-          ? typeof loadColor === 'number'
-            ? loadColor
-            : null
-          : typeof refreshColor === 'number'
-          ? refreshColor
-          : null,
-      );
+        NativeDevLoadingView.showMessage(
+          message,
+          typeof textColor === 'number' ? textColor : null,
+          typeof backgroundColor === 'number' ? backgroundColor : null,
+        );
+      } else if (type === 'load') {
+        let backgroundColor;
+        let textColor;
+
+        if (Appearance.getColorScheme() === 'dark') {
+          backgroundColor = processColor('#fafafa');
+          textColor = processColor('#242526');
+        } else {
+          backgroundColor = processColor('#404040');
+          textColor = processColor('#ffffff');
+        }
+
+        NativeDevLoadingView.showMessage(
+          message,
+          typeof textColor === 'number' ? textColor : null,
+          typeof backgroundColor === 'number' ? backgroundColor : null,
+        );
+      }
     }
   },
   hide() {

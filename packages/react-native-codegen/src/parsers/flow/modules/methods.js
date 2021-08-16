@@ -142,6 +142,7 @@ function getElementTypeForArrayOrObject(
     case 'UnionTypeAnnotation':
       return undefined;
     default:
+      // TODO T67565166: Generic objects are not type safe and should be disallowed in the schema.
       return {
         type: 'GenericObjectTypeAnnotation',
       };

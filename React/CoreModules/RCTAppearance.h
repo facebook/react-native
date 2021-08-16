@@ -12,6 +12,11 @@
 
 RCT_EXTERN void RCTEnableAppearancePreference(BOOL enabled);
 RCT_EXTERN void RCTOverrideAppearancePreference(NSString *const);
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+RCT_EXTERN NSString *RCTColorSchemePreference(UITraitCollection *traitCollection);
+#else // [TODO(macOS GH#774)
+RCT_EXTERN NSString *RCTColorSchemePreference(NSAppearance *appearance);
+#endif // ]TODO(macOS GH#774)
 
 @interface RCTAppearance : RCTEventEmitter <RCTBridgeModule>
 @end

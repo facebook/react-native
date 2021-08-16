@@ -11,6 +11,7 @@
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include "Instance.h"
 #include "JSBigString.h"
@@ -55,10 +56,14 @@ class JsToNativeBridge : public react::ExecutorDelegate {
     m_batchHadNativeModuleOrTurboModuleCalls =
         m_batchHadNativeModuleOrTurboModuleCalls || !calls.empty();
 
+    std::vector<MethodCall> methodCalls = parseMethodCalls(std::move(calls));
+    BridgeNativeModulePerfLogger::asyncMethodCallBatchPreprocessEnd(
+        (int)methodCalls.size());
+
     // An exception anywhere in here stops processing of the batch.  This
     // was the behavior of the Android bridge, and since exception handling
     // terminates the whole bridge, there's not much point in continuing.
-    for (auto &call : parseMethodCalls(std::move(calls))) {
+    for (auto &call : methodCalls) {
       m_registry->callNativeMethod(
           call.moduleId, call.methodId, std::move(call.arguments), call.callId);
     }

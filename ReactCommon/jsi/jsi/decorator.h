@@ -256,7 +256,7 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   WeakObject createWeakObject(const Object& o) override {
     return plain_.createWeakObject(o);
   };
-  Value lockWeakObject(const WeakObject& wo) override {
+  Value lockWeakObject(WeakObject& wo) override {
     return plain_.lockWeakObject(wo);
   };
 
@@ -633,7 +633,7 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::createWeakObject(o);
   };
-  Value lockWeakObject(const WeakObject& wo) override {
+  Value lockWeakObject(WeakObject& wo) override {
     Around around{with_};
     return RD::lockWeakObject(wo);
   };

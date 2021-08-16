@@ -18,6 +18,7 @@
 #include <react/mounting/MountingCoordinator.h>
 #include <react/mounting/ShadowTreeDelegate.h>
 #include <react/mounting/ShadowTreeRevision.h>
+#include "MountingOverrideDelegate.h"
 
 namespace facebook {
 namespace react {
@@ -38,7 +39,8 @@ class ShadowTree final {
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext,
       RootComponentDescriptor const &rootComponentDescriptor,
-      ShadowTreeDelegate const &delegate);
+      ShadowTreeDelegate const &delegate,
+      MountingOverrideDelegate *mountingOverrideDelegate);
 
   ~ShadowTree();
 
@@ -68,6 +70,13 @@ class ShadowTree final {
    * Commit an empty tree (a new `RootShadowNode` with no children).
    */
   void commitEmptyTree() const;
+
+  /**
+   * Forces the ShadowTree to ping its delegate that an update is available.
+   * Useful for animations on Android.
+   * @return
+   */
+  void notifyDelegatesOfUpdates() const;
 
   MountingCoordinator::Shared getMountingCoordinator() const;
 

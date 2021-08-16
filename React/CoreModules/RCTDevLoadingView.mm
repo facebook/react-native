@@ -10,6 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTAppearance.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
@@ -243,27 +244,65 @@ RCT_EXPORT_METHOD(hide)
   });
 }
 
+- (void)showProgressMessage:(NSString *)message
+{
+  if (self->_window != nil) {
+    // This is an optimization. Since the progress can come in quickly,
+    // we want to do the minimum amount of work to update the UI,
+    // which is to only update the label text.
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+    self->_label.text = message;
+#else // [TODO(macOS GH#774)
+    self->_label.stringValue = message;
+#endif // ]TODO(macOS GH#774)
+    return;
+  }
+
+  RCTUIColor *color = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+  RCTUIColor *backgroundColor = [RCTUIColor colorWithHue:105 saturation:0 brightness:.25 alpha:1]; // TODO(macOS GH#774)
+
+  if ([self isDarkModeEnabled]) {
+    color = [RCTUIColor colorWithHue:208 saturation:0.03 brightness:.14 alpha:1]; // TODO(macOS GH#774)
+    backgroundColor = [RCTUIColor colorWithHue:0 saturation:0 brightness:0.98 alpha:1]; // TODO(macOS GH#774)
+  }
+
+  [self showMessage:message color:color backgroundColor:backgroundColor];
+}
+
+- (void)showOfflineMessage
+{
+  RCTUIColor *color = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+  RCTUIColor *backgroundColor = [RCTUIColor blackColor]; // TODO(macOS GH#774)
+
+  if ([self isDarkModeEnabled]) {
+    color = [RCTUIColor blackColor]; // TODO(macOS GH#774)
+    backgroundColor = [RCTUIColor whiteColor]; // TODO(macOS GH#774)
+  }
+
+  NSString *message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
+  [self showMessage:message color:color backgroundColor:backgroundColor];
+}
+
+- (BOOL)isDarkModeEnabled
+{
+  // We pass nil here to match the behavior of the native module.
+  // If we were to pass a view, then it's possible that this native
+  // banner would have a different color than the JavaScript banner
+  // (which always passes nil). This would result in an inconsistent UI.
+  return [RCTColorSchemePreference(nil) isEqualToString:@"dark"];
+}
 - (void)showWithURL:(NSURL *)URL
 {
-  RCTUIColor *color; // TODO(macOS GH#774)
-  RCTUIColor *backgroundColor; // TODO(macOS GH#774)
-  NSString *message;
   if (URL.fileURL) {
     // If dev mode is not enabled, we don't want to show this kind of notification.
 #if !RCT_DEV
     return;
 #endif
-    color = [RCTUIColor whiteColor]; //TODO(OSS Candidate ISS#2710739) UIColor -> RCTUIColor
-    backgroundColor = [RCTUIColor blackColor]; // TODO(OSS Candidate ISS#2710739)
-    message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
-    [self showMessage:message color:color backgroundColor:backgroundColor];
+    [self showOfflineMessage];
   } else {
-    color = [RCTUIColor whiteColor]; // TODO(OSS Candidate ISS#2710739)
-    backgroundColor = [RCTUIColor colorWithHue:105 saturation:0 brightness:.25 alpha:1]; // TODO(OSS Candidate ISS#2710739)
-    message = [NSString stringWithFormat:@"Loading from %@\u2026", RCT_PACKAGER_NAME];
-
     [self showInitialMessageDelayed:^{
-      [self showMessage:message color:color backgroundColor:backgroundColor];
+      NSString *message = [NSString stringWithFormat:@"Loading from %@\u2026", RCT_PACKAGER_NAME];
+      [self showProgressMessage:message];
     }];
   }
 }
@@ -278,22 +317,7 @@ RCT_EXPORT_METHOD(hide)
   [self clearInitialMessageDelay];
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (self->_window == nil) {
-      // If we didn't show the initial message, then there's no banner window.
-      // We need to create it here so that the progress is actually displayed.
-      RCTUIColor *color = [RCTUIColor whiteColor];
-      RCTUIColor *backgroundColor = [RCTUIColor colorWithHue:105 saturation:0 brightness:.25 alpha:1];
-      [self showMessage:[progress description] color:color backgroundColor:backgroundColor];
-    } else {
-      // This is an optimization. Since the progress can come in quickly,
-      // we want to do the minimum amount of work to update the UI,
-      // which is to only update the label text.
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
-      self->_label.text = [progress description];
-#else // [TODO(macOS GH#774)
-      self->_label.stringValue = [progress description];
-#endif // ]TODO(macOS GH#774)
-    }
+    [self showProgressMessage:[progress description]];
   });
 }
 

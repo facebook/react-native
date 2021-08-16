@@ -1,6 +1,16 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactViewManager.java"	2020-10-27 20:26:16.993188900 -0700
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\views\\view\\ReactViewManager.java"	2020-10-13 21:46:27.236639400 -0700
-@@ -48,8 +48,13 @@
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewManager.java b/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewManager.java
+index 851ec10c6..4fe93de49 100644
+--- a/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewManager.java
++++ b/ReactAndroid/src/main/java/com/facebook/react/views/view/ReactViewManager.java
+@@ -25,6 +25,7 @@ import com.facebook.react.uimanager.PointerEvents;
+ import com.facebook.react.uimanager.Spacing;
+ import com.facebook.react.uimanager.ThemedReactContext;
+ import com.facebook.react.uimanager.UIManagerHelper;
++import com.facebook.react.uimanager.UIManagerModule;
+ import com.facebook.react.uimanager.ViewProps;
+ import com.facebook.react.uimanager.annotations.ReactProp;
+ import com.facebook.react.uimanager.annotations.ReactPropGroup;
+@@ -48,8 +49,13 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
      Spacing.START,
      Spacing.END,
    };
@@ -16,7 +26,7 @@
    private static final String HOTSPOT_UPDATE_KEY = "hotspotUpdate";
  
    @ReactProp(name = "accessible")
-@@ -120,6 +125,36 @@
+@@ -120,6 +126,36 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
      }
    }
  
@@ -53,7 +63,7 @@
    @ReactProp(name = "borderStyle")
    public void setBorderStyle(ReactViewGroup view, @Nullable String borderStyle) {
      view.setBorderStyle(borderStyle);
-@@ -289,7 +324,7 @@
+@@ -287,7 +323,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
  
    @Override
    public Map<String, Integer> getCommandsMap() {
@@ -62,7 +72,7 @@
    }
  
    @Override
-@@ -305,6 +340,16 @@
+@@ -303,6 +339,16 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
            handleSetPressed(root, args);
            break;
          }
@@ -79,7 +89,7 @@
      }
    }
  
-@@ -321,6 +366,16 @@
+@@ -319,6 +365,16 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
            handleSetPressed(root, args);
            break;
          }

@@ -1558,6 +1558,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5BEC8567F3741044B6A5EFC5 /* Pods-RNTester.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CODE_SIGN_ENTITLEMENTS = RNTester/RNTester.entitlements;

@@ -651,10 +651,6 @@ const MatrixMath = {
     skew[0] = MatrixMath.v3Dot(row[0], row[1]);
     row[1] = MatrixMath.v3Combine(row[1], row[0], 1.0, -skew[0]);
 
-    // Compute XY shear factor and make 2nd row orthogonal to 1st.
-    skew[0] = MatrixMath.v3Dot(row[0], row[1]);
-    row[1] = MatrixMath.v3Combine(row[1], row[0], 1.0, -skew[0]);
-
     // Now, compute Y scale and normalize 2nd row.
     scale[1] = MatrixMath.v3Length(row[1]);
     row[1] = MatrixMath.v3Normalize(row[1], scale[1]);

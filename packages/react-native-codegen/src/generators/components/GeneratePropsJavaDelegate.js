@@ -55,7 +55,8 @@ const propSetterTemplate = `
 `;
 
 const commandsTemplate = `
-  public void receiveCommand(::_INTERFACE_CLASSNAME_::<T> viewManager, T view, String commandName, ReadableArray args) {
+  @Override
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       ::_COMMAND_CASES_::
     }
@@ -198,7 +199,7 @@ function generateCommandCasesString(
   const commandMethods = component.commands
     .map(command => {
       return `case "${command.name}":
-        viewManager.${toSafeJavaString(
+        mViewManager.${toSafeJavaString(
           command.name,
           false,
         )}(${getCommandArguments(command)});

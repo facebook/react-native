@@ -35,10 +35,9 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
-    fbandroid_labels = ["supermodule:android/default/public.react_native.infra"],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_labels = ["supermodule:ios/default/public.react_native.infra"],
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [

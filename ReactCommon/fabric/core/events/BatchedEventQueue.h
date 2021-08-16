@@ -21,6 +21,14 @@ class BatchedEventQueue final : public EventQueue {
   using EventQueue::EventQueue;
 
   void onEnqueue() const override;
+
+  /*
+   * Enqueues and (probably later) dispatch a given event.
+   * Deletes previous RawEvent of the same type and with same target
+   * from the queue.
+   * Can be called on any thread.
+   */
+  void enqueueUniqueEvent(const RawEvent &rawEvent) const;
 };
 
 } // namespace react

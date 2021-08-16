@@ -94,6 +94,7 @@ class Connection::Impl : public inspector::InspectorObserver,
       const m::heapProfiler::StopTrackingHeapObjectsRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
+  void handle(const m::runtime::RunIfWaitingForDebuggerRequest &req) override;
 
  private:
   std::vector<m::runtime::PropertyDescriptor> makePropsFromScope(
@@ -312,6 +313,9 @@ void Connection::Impl::onPause(
       note.reason = "exception";
       break;
     case debugger::PauseReason::ScriptLoaded: {
+      // This case covers both wait-for-debugger and instrumentation
+      // breakpoints, since both are implemented as pauses on script load.
+
       note.reason = "other";
       note.hitBreakpoints = std::vector<m::debugger::BreakpointId>();
 
@@ -325,7 +329,8 @@ void Connection::Impl::onPause(
       // in the extremely unlikely event that it did *and* did it exactly
       // between us 1. checking that we should stop, and 2. adding the stop
       // reason here, then just resume and skip sending a pause notification.
-      if (note.hitBreakpoints->empty()) {
+      if (!inspector_->isAwaitingDebuggerOnStart() &&
+          note.hitBreakpoints->empty()) {
         sendNotification = false;
         inspector_->resume();
       }
@@ -528,7 +533,7 @@ void Connection::Impl::handle(
     const m::heapProfiler::StopTrackingHeapObjectsRequest &req) {
   sendSnapshot(
       req.id,
-      "HeapSnapshot.takeHeapSnapshot",
+      "HeapSnapshot.stopTrackingHeapObjects",
       req.reportProgress && *req.reportProgress,
       /* stopStackTraceCapture */ true);
 }
@@ -864,6 +869,16 @@ void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
       .via(executor_.get())
       .thenValue([this, resp](auto &&) { sendResponseToClient(*resp); })
       .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::runtime::RunIfWaitingForDebuggerRequest &req) {
+  if (inspector_->isAwaitingDebuggerOnStart()) {
+    sendResponseToClientViaExecutor(inspector_->resume(), req.id);
+  } else {
+    // We weren't awaiting a debugger. Just send an 'ok'.
+    sendResponseToClientViaExecutor(req.id);
+  }
 }
 
 /*

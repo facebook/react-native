@@ -91,6 +91,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private int mFinalAnimatedPositionScrollX = 0;
   private int mFinalAnimatedPositionScrollY = 0;
 
+  private int mLastStateUpdateScrollX = -1;
+  private int mLastStateUpdateScrollY = -1;
+
   private final Rect mTempRect = new Rect();
 
   public ReactHorizontalScrollView(Context context) {
@@ -409,7 +412,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
-      updateStateOnScroll(getScrollX(), getScrollY());
+      updateStateOnScroll();
 
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
@@ -604,11 +607,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
    * runnable that checks if we scrolled in the last frame and if so assumes we are still scrolling.
    */
   private void handlePostTouchScrolling(int velocityX, int velocityY) {
-    // If we aren't going to do anything (send events or snap to page), we can early exit out.
-    if (!mSendMomentumEvents && !mPagingEnabled && !isScrollPerfLoggingEnabled()) {
-      return;
-    }
-
     // Check if we are already handling this which may occur if this is called by both the touch up
     // and a fling call
     if (mPostTouchRunnable != null) {
@@ -624,16 +622,29 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         new Runnable() {
 
           private boolean mSnappingToPage = false;
+          private boolean mRunning = true;
+          private int mStableFrames = 0;
 
           @Override
           public void run() {
             if (mActivelyScrolling) {
-              // We are still scrolling so we just post to check again a frame later
+              // We are still scrolling.
               mActivelyScrolling = false;
-              ViewCompat.postOnAnimationDelayed(
-                  ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
+              mStableFrames = 0;
+              mRunning = true;
             } else {
-              updateStateOnScroll(getScrollX(), getScrollY());
+              // There has not been a scroll update since the last time this Runnable executed.
+              updateStateOnScroll();
+
+              // We keep checking for updates until the ScrollView has "stabilized" and hasn't
+              // scrolled for N consecutive frames. This number is arbitrary: big enough to catch
+              // a number of race conditions, but small enough to not cause perf regressions, etc.
+              // In anecdotal testing, it seemed like a decent number.
+              // Without this check, sometimes this Runnable stops executing too soon - it will
+              // fire before the first scroll event of an animated scroll/fling, and stop
+              // immediately.
+              mStableFrames++;
+              mRunning = (mStableFrames < 3);
 
               if (mPagingEnabled && !mSnappingToPage) {
                 // Only if we have pagingEnabled and we have not snapped to the page do we
@@ -647,14 +658,21 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
                 }
-                ReactHorizontalScrollView.this.mPostTouchRunnable = null;
                 disableFpsListener();
               }
+            }
+
+            // We are still scrolling so we just post to check again a frame later
+            if (mRunning) {
+              ViewCompat.postOnAnimationDelayed(
+                  ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
+            } else {
+              mPostTouchRunnable = null;
             }
           }
         };
     ViewCompat.postOnAnimationDelayed(
-        ReactHorizontalScrollView.this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+        this, mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
   /** Get current X position or position after current animation finishes, if any. */
@@ -960,7 +978,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
               int scrollValueX = (Integer) valueAnimator.getAnimatedValue("scrollX");
               int scrollValueY = (Integer) valueAnimator.getAnimatedValue("scrollY");
-              ReactHorizontalScrollView.this.scrollTo(scrollValueX, scrollValueY);
+              scrollTo(scrollValueX, scrollValueY);
             }
           });
       mScrollAnimator.addListener(
@@ -973,6 +991,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
               mFinalAnimatedPositionScrollX = -1;
               mFinalAnimatedPositionScrollY = -1;
               mScrollAnimator = null;
+              updateStateOnScroll();
             }
 
             @Override
@@ -1031,10 +1050,22 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       return;
     }
 
+    // Dedupe events to reduce JNI traffic
+    if (scrollX == mLastStateUpdateScrollX && scrollY == mLastStateUpdateScrollY) {
+      return;
+    }
+
+    mLastStateUpdateScrollX = scrollX;
+    mLastStateUpdateScrollY = scrollY;
+
     WritableMap map = new WritableNativeMap();
     map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(scrollX));
     map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(scrollY));
 
     mStateWrapper.updateState(map);
+  }
+
+  private void updateStateOnScroll() {
+    updateStateOnScroll(getScrollX(), getScrollY());
   }
 }

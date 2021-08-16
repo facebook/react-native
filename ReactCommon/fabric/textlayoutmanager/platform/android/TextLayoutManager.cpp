@@ -50,7 +50,7 @@ TextMeasurement TextLayoutManager::doMeasure(
     }
   }
   auto env = Environment::current();
-  auto attachmentPositions = env->NewIntArray(attachmentsCount * 2);
+  auto attachmentPositions = env->NewFloatArray(attachmentsCount * 2);
 
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
@@ -64,7 +64,7 @@ TextMeasurement TextLayoutManager::doMeasure(
               jfloat,
               jfloat,
               jfloat,
-              jintArray)>("measure");
+              jfloatArray)>("measure");
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
@@ -93,7 +93,7 @@ TextMeasurement TextLayoutManager::doMeasure(
       maximumSize.height,
       attachmentPositions));
 
-  jint *attachmentData = env->GetIntArrayElements(attachmentPositions, 0);
+  jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {
@@ -104,8 +104,8 @@ TextMeasurement TextLayoutManager::doMeasure(
       if (fragment["isAttachment"] == true) {
         float top = attachmentData[attachmentIndex * 2];
         float left = attachmentData[attachmentIndex * 2 + 1];
-        float width = fragment["width"].getInt();
-        float height = fragment["height"].getInt();
+        float width = (float)fragment["width"].getDouble();
+        float height = (float)fragment["height"].getDouble();
 
         auto rect = facebook::react::Rect{{left, top},
                                           facebook::react::Size{width, height}};

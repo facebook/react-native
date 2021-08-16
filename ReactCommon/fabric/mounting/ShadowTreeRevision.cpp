@@ -22,6 +22,10 @@ MountingTelemetry const &ShadowTreeRevision::getTelemetry() const {
   return telemetry_;
 }
 
+ShadowNode::Shared ShadowTreeRevision::getSharedRootShadowNode() {
+  return rootShadowNode_;
+}
+
 ShadowNode const &ShadowTreeRevision::getRootShadowNode() {
   return *rootShadowNode_;
 }

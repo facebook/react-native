@@ -48,7 +48,7 @@ inline static void executeAsynchronously(
  * Executes a `callback` in a *synchronous* manner using given
  * `RuntimeExecutor`.
  * Use this method when the caller needs to *be blocked* by executing the
- * callback but does not concerted about the particular thread on which the
+ * callback but does not concerned about the particular thread on which the
  * `callback` will be executed.
  */
 inline static void executeSynchronously_CAN_DEADLOCK(
@@ -89,8 +89,18 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
 
   jsi::Runtime *runtimePtr;
 
+  auto threadId = std::this_thread::get_id();
+
   runtimeExecutor([&](jsi::Runtime &runtime) {
     runtimePtr = &runtime;
+
+    if (threadId == std::this_thread::get_id()) {
+      // In case of a synchronous call, we should unlock mutexes and return.
+      mutex1.unlock();
+      mutex3.unlock();
+      return;
+    }
+
     mutex1.unlock();
     // `callback` is called somewhere here.
     mutex2.lock();

@@ -51,12 +51,62 @@ function getSafePropertyName(name: string) {
   return name;
 }
 
+function getNamespacedStructName(structName: string, propertyName: string) {
+  return `JS::Native::_MODULE_NAME_::::Spec${structName}${capitalizeFirstLetter(
+    getSafePropertyName(propertyName),
+  )}`;
+}
+
+function getElementTypeForArray(
+  property: ObjectParamTypeAnnotation,
+  name: string,
+): string {
+  const {typeAnnotation} = property;
+  if (typeAnnotation.type !== 'ArrayTypeAnnotation') {
+    throw new Error(
+      `Cannot get array element type for non-array type ${typeAnnotation.type}`,
+    );
+  }
+
+  if (!typeAnnotation.elementType) {
+    return 'id<NSObject>';
+  }
+
+  const {type} = typeAnnotation.elementType;
+  switch (type) {
+    case 'StringTypeAnnotation':
+      return 'NSString *';
+    case 'DoubleTypeAnnotation':
+    case 'NumberTypeAnnotation':
+    case 'FloatTypeAnnotation':
+    case 'Int32TypeAnnotation':
+      return 'double';
+    case 'ObjectTypeAnnotation':
+      return getNamespacedStructName(name, property.name);
+    case 'GenericObjectTypeAnnotation':
+      // TODO T67565166: Generic objects are not type safe and should be disallowed in the schema.
+      return 'id<NSObject>';
+    case 'BooleanTypeAnnotation':
+    case 'AnyObjectTypeAnnotation':
+    case 'AnyTypeAnnotation':
+    case 'ArrayTypeAnnotation':
+    case 'FunctionTypeAnnotation':
+    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedPropTypeAnnotation':
+    case 'StringEnumTypeAnnotation':
+      throw new Error(`Unsupported array element type, found: ${type}"`);
+    default:
+      (type: empty);
+      throw new Error(`Unknown array element type, found: ${type}"`);
+  }
+}
+
 function getInlineMethodSignature(
   property: ObjectParamTypeAnnotation,
   name: string,
 ): string {
   const {typeAnnotation} = property;
-  function markOptionalTypeIfNecessary(type) {
+  function markOptionalTypeIfNecessary(type: string) {
     if (property.optional) {
       return `folly::Optional<${type}>`;
     }
@@ -86,22 +136,20 @@ function getInlineMethodSignature(
     case 'ObjectTypeAnnotation':
       return (
         markOptionalTypeIfNecessary(
-          `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-            getSafePropertyName(property.name),
-          )}`,
+          getNamespacedStructName(name, property.name),
         ) + ` ${getSafePropertyName(property.name)}() const;`
       );
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
-      if (property.optional) {
-        return `id<NSObject> _Nullable ${getSafePropertyName(
-          property.name,
-        )}() const;`;
-      }
-      return `id<NSObject> ${getSafePropertyName(property.name)}() const;`;
+      return `id<NSObject> ${
+        property.optional ? '_Nullable ' : ' '
+      }${getSafePropertyName(property.name)}() const;`;
     case 'ArrayTypeAnnotation':
       return `${markOptionalTypeIfNecessary(
-        'facebook::react::LazyVector<id<NSObject>>',
+        `facebook::react::LazyVector<${getElementTypeForArray(
+          property,
+          name,
+        )}>`,
       )} ${getSafePropertyName(property.name)}() const;`;
     case 'FunctionTypeAnnotation':
     default:
@@ -114,17 +162,57 @@ function getInlineMethodImplementation(
   name: string,
 ): string {
   const {typeAnnotation} = property;
-  function markOptionalTypeIfNecessary(type) {
+  function markOptionalTypeIfNecessary(type: string): string {
     if (property.optional) {
       return `folly::Optional<${type}> `;
     }
     return `${type} `;
   }
-  function markOptionalValueIfNecessary(value) {
+  function markOptionalValueIfNecessary(value: string): string {
     if (property.optional) {
       return `RCTBridgingToOptional${capitalizeFirstLetter(value)}`;
     }
     return `RCTBridgingTo${capitalizeFirstLetter(value)}`;
+  }
+  function bridgeArrayElementValueIfNecessary(element: string): string {
+    if (typeAnnotation.type !== 'ArrayTypeAnnotation') {
+      throw new Error(
+        `Cannot get array element type for non-array type ${typeAnnotation.type}`,
+      );
+    }
+
+    if (!typeAnnotation.elementType) {
+      throw new Error(`Cannot get array element type for ${name}`);
+    }
+
+    const {type} = typeAnnotation.elementType;
+    switch (type) {
+      case 'StringTypeAnnotation':
+        return `RCTBridgingToString(${element})`;
+      case 'DoubleTypeAnnotation':
+      case 'NumberTypeAnnotation':
+      case 'FloatTypeAnnotation':
+      case 'Int32TypeAnnotation':
+        return `RCTBridgingToDouble(${element})`;
+      case 'BooleanTypeAnnotation':
+        return `RCTBridgingToBool(${element})`;
+      case 'ObjectTypeAnnotation':
+        return `${getNamespacedStructName(name, property.name)}(${element})`;
+      case 'GenericObjectTypeAnnotation':
+        return element;
+      case 'AnyObjectTypeAnnotation':
+      case 'AnyTypeAnnotation':
+      case 'ArrayTypeAnnotation':
+      case 'FunctionTypeAnnotation':
+      case 'ReservedFunctionValueTypeAnnotation':
+      case 'ReservedPropTypeAnnotation':
+      case 'StringEnumTypeAnnotation':
+      case 'TupleTypeAnnotation':
+        throw new Error(`Unsupported array element type, found: ${type}"`);
+      default:
+        (type: empty);
+        throw new Error(`Unknown array element type, found: ${type}"`);
+    }
   }
 
   switch (typeAnnotation.type) {
@@ -171,34 +259,37 @@ function getInlineMethodImplementation(
         .replace(
           /::_RETURN_TYPE_::/,
           markOptionalTypeIfNecessary(
-            `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-              getSafePropertyName(property.name),
-            )}`,
+            getNamespacedStructName(name, property.name),
           ),
         )
         .replace(
           /::_RETURN_VALUE_::/,
           property.optional
-            ? `(p == nil ? folly::none : folly::make_optional(JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-                getSafePropertyName(property.name),
+            ? `(p == nil ? folly::none : folly::make_optional(${getNamespacedStructName(
+                name,
+                property.name,
               )}(p)))`
-            : `JS::Native::_MODULE_NAME_::::Spec${name}${capitalizeFirstLetter(
-                getSafePropertyName(property.name),
-              )}(p)`,
+            : `${getNamespacedStructName(name, property.name)}(p)`,
         );
     case 'ArrayTypeAnnotation':
       return inlineTemplate
         .replace(
           /::_RETURN_TYPE_::/,
           markOptionalTypeIfNecessary(
-            'facebook::react::LazyVector<id<NSObject>>',
+            `facebook::react::LazyVector<${getElementTypeForArray(
+              property,
+              name,
+            )}>`,
           ),
         )
         .replace(
           /::_RETURN_VALUE_::/,
-          `${markOptionalValueIfNecessary(
-            'vec',
-          )}(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; })`,
+          `${markOptionalValueIfNecessary('vec')}(p, ^${getElementTypeForArray(
+            property,
+            name,
+          )}(id itemValue_0) { return ${bridgeArrayElementValueIfNecessary(
+            'itemValue_0',
+          )}; })`,
         );
     case 'FunctionTypeAnnotation':
     default:

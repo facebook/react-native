@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <Foundation/Foundation.h>
+#import <React/RCTUIKit.h> // TODO(macOS GH#774)
+
 @interface RCTUtilsUIOverride : NSObject
 /**
  Set the global presented view controller instance override.

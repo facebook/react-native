@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<575de63c36edd2a9a0f191501fd4f662>>
+// @generated SignedSource<<f251363b69dd291d2c70e893c3fed04d>>
 
 #include "MessageTypes.h"
 
@@ -50,6 +50,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
+      {"Runtime.runIfWaitingForDebugger",
+       makeUnique<runtime::RunIfWaitingForDebuggerRequest>},
   };
 
   dynamic obj = folly::parseJson(str);
@@ -780,6 +782,28 @@ dynamic runtime::GetPropertiesRequest::toDynamic() const {
 }
 
 void runtime::GetPropertiesRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+runtime::RunIfWaitingForDebuggerRequest::RunIfWaitingForDebuggerRequest()
+    : Request("Runtime.runIfWaitingForDebugger") {}
+
+runtime::RunIfWaitingForDebuggerRequest::RunIfWaitingForDebuggerRequest(
+    const dynamic &obj)
+    : Request("Runtime.runIfWaitingForDebugger") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic runtime::RunIfWaitingForDebuggerRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void runtime::RunIfWaitingForDebuggerRequest::accept(
+    RequestHandler &handler) const {
   handler.handle(*this);
 }
 

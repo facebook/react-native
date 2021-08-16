@@ -58,6 +58,18 @@ std::string CxxNativeModule::getName() {
   return name_;
 }
 
+std::string CxxNativeModule::getSyncMethodName(unsigned int reactMethodId) {
+  if (reactMethodId >= methods_.size()) {
+    throw std::invalid_argument(folly::to<std::string>(
+        "methodId ",
+        reactMethodId,
+        " out of range [0..",
+        methods_.size(),
+        "]"));
+  }
+  return methods_[reactMethodId].name;
+}
+
 std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
   lazyInit();
 

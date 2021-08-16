@@ -7,13 +7,14 @@
 
 package com.facebook.react.bridge;
 
+import static org.mockito.Mockito.when;
+
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -56,14 +57,14 @@ public class BaseJavaModuleTest {
   @Test(expected = NativeArgumentsParseException.class)
   public void testCallMethodWithoutEnoughArgs() throws Exception {
     int methodId = findMethod("regularMethod", mMethods);
-    Mockito.stub(mArguments.size()).toReturn(1);
+    when(mArguments.size()).thenReturn(1);
     mWrapper.invoke(methodId, mArguments);
   }
 
   @Test
   public void testCallMethodWithEnoughArgs() {
     int methodId = findMethod("regularMethod", mMethods);
-    Mockito.stub(mArguments.size()).toReturn(2);
+    when(mArguments.size()).thenReturn(2);
     mWrapper.invoke(methodId, mArguments);
   }
 
@@ -71,14 +72,14 @@ public class BaseJavaModuleTest {
   public void testCallAsyncMethodWithEnoughArgs() {
     // Promise block evaluates to 2 args needing to be passed from JS
     int methodId = findMethod("asyncMethod", mMethods);
-    Mockito.stub(mArguments.size()).toReturn(3);
+    when(mArguments.size()).thenReturn(3);
     mWrapper.invoke(methodId, mArguments);
   }
 
   @Test
   public void testCallSyncMethod() {
     int methodId = findMethod("syncMethod", mMethods);
-    Mockito.stub(mArguments.size()).toReturn(2);
+    when(mArguments.size()).thenReturn(2);
     mWrapper.invoke(methodId, mArguments);
   }
 

@@ -46,6 +46,7 @@ def use_react_native! (options={})
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
+  pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 

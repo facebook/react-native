@@ -607,6 +607,7 @@ export default class Pressability {
                     this._config.delayHoverIn,
                   );
                   if (delayHoverIn > 0) {
+                    event.persist();
                     this._hoverInDelayTimeout = setTimeout(() => {
                       onHoverIn(event);
                     }, delayHoverIn);
@@ -627,6 +628,7 @@ export default class Pressability {
                     this._config.delayHoverOut,
                   );
                   if (delayHoverOut > 0) {
+                    event.persist();
                     this._hoverInDelayTimeout = setTimeout(() => {
                       onHoverOut(event);
                     }, delayHoverOut);
@@ -764,6 +766,7 @@ export default class Pressability {
         normalizeDelay(this._config.delayPressOut),
       );
       if (delayPressOut > 0) {
+        event.persist();
         this._pressOutDelayTimeout = setTimeout(() => {
           onPressOut(event);
         }, delayPressOut);
@@ -787,16 +790,7 @@ export default class Pressability {
   }
 
   _measureCallback = (left, top, width, height, pageX, pageY) => {
-    if (
-      !(
-        left > 0 ||
-        top > 0 ||
-        width > 0 ||
-        height > 0 ||
-        pageX > 0 ||
-        pageY > 0
-      )
-    ) {
+    if (!left && !top && !width && !height && !pageX && !pageY) {
       return;
     }
     this._responderRegion = {

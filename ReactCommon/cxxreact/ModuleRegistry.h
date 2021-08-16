@@ -59,6 +59,11 @@ class RN_EXPORT ModuleRegistry {
       unsigned int methodId,
       folly::dynamic &&args);
 
+  std::string getModuleName(unsigned int moduleId);
+  std::string getModuleSyncMethodName(
+      unsigned int moduleId,
+      unsigned int methodName);
+
  private:
   // This is always populated
   std::vector<std::unique_ptr<NativeModule>> modules_;

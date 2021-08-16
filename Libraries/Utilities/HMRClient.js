@@ -16,6 +16,7 @@ const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 const Platform = require('./Platform');
 const prettyFormat = require('pretty-format');
 
+import getDevServer from '../Core/Devtools/getDevServer';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 import * as LogBoxData from '../LogBox/Data/LogBoxData';
 import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
@@ -159,8 +160,15 @@ const HMRClient: HMRClientNativeInterface = {
     const client = new MetroHMRClient(`ws://${wsHost}/hot`);
     hmrClient = client;
 
+    const {fullBundleUrl} = getDevServer();
     pendingEntryPoints.push(
-      `ws://${wsHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
+      // HMRServer understands regular bundle URLs, so prefer that in case
+      // there are any important URL parameters we can't reconstruct from
+      // `setup()`'s arguments.
+      fullBundleUrl ??
+        // The ws://.../hot?bundleEntry= format is an alternative to specifying
+        // a regular HTTP bundle URL.
+        `ws://${wsHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
     );
 
     client.on('connection-error', e => {

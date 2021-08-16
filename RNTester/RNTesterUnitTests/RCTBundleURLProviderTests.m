@@ -20,12 +20,12 @@ static NSURL *mainBundleURL()
 
 static NSURL *localhostBundleURL()
 {
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=%@&dev=true&minify=false", testFile, kRCTPlatformName]]; // TODO(macOS ISS#3536887)
+  return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=%@&dev=true&minify=false&app=com.apple.dt.xctest.tool", testFile, kRCTPlatformName]]; // TODO(macOS ISS#3536887)
 }
 
 static NSURL *ipBundleURL()
 {
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://192.168.1.1:8081/%@.bundle?platform=%@&dev=true&minify=false", testFile, kRCTPlatformName]]; // TODO(macOS ISS#3536887)
+  return [NSURL URLWithString:[NSString stringWithFormat:@"http://192.168.1.1:8081/%@.bundle?platform=%@&dev=true&minify=false&app=com.apple.dt.xctest.tool", testFile, kRCTPlatformName]]; // TODO(macOS ISS#3536887)
 }
 
 @implementation NSBundle (RCTBundleURLProviderTests)

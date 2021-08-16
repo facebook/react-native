@@ -404,6 +404,19 @@ IMP RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement) // TODO(OSS
   return originalImplementation; // TODO(OSS Candidate ISS#2710739)
 }
 
+void RCTSwapInstanceMethodWithBlock(Class cls, SEL original, id replacementBlock, SEL replacementSelector)
+{
+  Method originalMethod = class_getInstanceMethod(cls, original);
+  if (!originalMethod) {
+    return;
+  }
+
+  IMP implementation = imp_implementationWithBlock(replacementBlock);
+  class_addMethod(cls, replacementSelector, implementation, method_getTypeEncoding(originalMethod));
+  Method newMethod = class_getInstanceMethod(cls, replacementSelector);
+  method_exchangeImplementations(originalMethod, newMethod);
+}
+
 BOOL RCTClassOverridesClassMethod(Class cls, SEL selector)
 {
   return RCTClassOverridesInstanceMethod(object_getClass(cls), selector);

@@ -98,6 +98,15 @@ NSString *kBundleNameJS = @"RNTesterApp";
   _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
                                                              delegate:self
                                                             jsInvoker:bridge.jsCallInvoker];
+
+#if RCT_DEV
+  /**
+   * Eagerly initialize RCTDevMenu so CMD + d, CMD + i, and CMD + r work.
+   * This is a stop gap until we have a system to eagerly init Turbo Modules.
+   */
+  [_turboModuleManager moduleForName:"RCTDevMenu"];
+#endif
+
   __weak __typeof(self) weakSelf = self;
   return std::make_unique<facebook::react::JSCExecutorFactory>(
     facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
@@ -132,11 +141,7 @@ NSString *kBundleNameJS = @"RNTesterApp";
   return _turboModulesProvider->getModule(name, jsInvoker);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                       instance:(id<RCTTurboModule>)instance
-                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                                                      nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                                                      perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return nullptr;
 }

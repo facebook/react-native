@@ -17,6 +17,7 @@ rn_apple_library(
     compiler_flags = [
         "-Wno-error=unguarded-availability-new",
         "-Wno-unknown-warning-option",
+        "-Wno-unused-property-ivar",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     enable_exceptions = True,
@@ -35,7 +36,7 @@ rn_apple_library(
     header_path_prefix = "React",
     labels = [
         "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
-        "supermodule:ios/default/public.react_native.infra",
+        "supermodule:xplat/default/public.react_native.infra",
     ],
     link_whole = True,
     platform_preprocessor_flags = [(

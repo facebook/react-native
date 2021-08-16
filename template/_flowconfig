@@ -47,10 +47,6 @@ suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
-suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
-
 [lints]
 sketchy-null-number=warn
 sketchy-null-mixed=warn
@@ -73,4 +69,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.124.0
+^0.125.0

@@ -6,6 +6,7 @@
  */
 
 #import "RCTEnhancedScrollView.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTEnhancedScrollView {
   __weak id<UIScrollViewDelegate> _publicDelegate;
@@ -82,6 +83,29 @@
   }
 
   return self;
+}
+
+/*
+ * Automatically centers the content such that if the content is smaller than the
+ * ScrollView, we force it to be centered, but when you zoom or the content otherwise
+ * becomes larger than the ScrollView, there is no padding around the content but it
+ * can still fill the whole view.
+ */
+- (void)setContentOffset:(CGPoint)contentOffset
+{
+  if (_centerContent && !CGSizeEqualToSize(self.contentSize, CGSizeZero)) {
+    CGSize scrollViewSize = self.bounds.size;
+    if (self.contentSize.width <= scrollViewSize.width) {
+      contentOffset.x = -(scrollViewSize.width - self.contentSize.width) / 2.0;
+    }
+    if (self.contentSize.height <= scrollViewSize.height) {
+      contentOffset.y = -(scrollViewSize.height - self.contentSize.height) / 2.0;
+    }
+  }
+
+  super.contentOffset = CGPointMake(
+      RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
+      RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
 }
 
 @end

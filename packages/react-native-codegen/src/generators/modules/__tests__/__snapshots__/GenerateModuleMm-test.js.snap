@@ -40,6 +40,14 @@ Map {
 @end
 
 
+@implementation RCTCxxConvert (NativeSampleTurboModule_SpecGetArraysOptions)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecGetArraysOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeSampleTurboModule::SpecGetArraysOptions>(json);
+}
+@end
+
+
 @implementation RCTCxxConvert (NativeSampleTurboModule_SpecDifficultAE)
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecDifficultAE:(id)json
 {
@@ -73,13 +81,20 @@ namespace facebook {
          .invokeObjCMethod(rt, VoidKind, \\"optionalMethod\\", @selector(optionalMethod:callback:extras:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getArrays(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule &>(turboModule)
+         .invokeObjCMethod(rt, VoidKind, \\"getArrays\\", @selector(getArrays:), args, count);
+    }
+
     NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
           methodMap_[\\"difficult\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_difficult};
       methodMap_[\\"optionals\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_optionals};
       methodMap_[\\"optionalMethod\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleSpecJSI_optionalMethod};
+      methodMap_[\\"getArrays\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getArrays};
       setMethodArgConversionSelector(@\\"difficult\\", 0, @\\"JS_NativeSampleTurboModule_SpecDifficultA:\\");
       setMethodArgConversionSelector(@\\"optionals\\", 0, @\\"JS_NativeSampleTurboModule_SpecOptionalsA:\\");
+      setMethodArgConversionSelector(@\\"getArrays\\", 0, @\\"JS_NativeSampleTurboModule_SpecGetArraysOptions:\\");
     }
   } // namespace react
 } // namespace facebook

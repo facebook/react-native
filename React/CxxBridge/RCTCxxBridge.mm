@@ -36,6 +36,7 @@
 #import <cxxreact/RAMBundleRegistry.h>
 #import <cxxreact/ReactMarker.h>
 #import <jsireact/JSIExecutor.h>
+#import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #if TARGET_OS_OSX && __has_include(<hermes/hermes.h>)
 #define RCT_USE_HERMES 1
@@ -77,6 +78,12 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 };
 
 namespace {
+
+int32_t getUniqueId()
+{
+  static std::atomic<int32_t> counter{0};
+  return counter++;
+}
 
 class GetDescAdapter : public JSExecutorFactory {
  public:
@@ -258,23 +265,9 @@ struct RCTInstanceCallback : public InstanceCallback {
     _moduleDataByID = [NSMutableArray new];
 
     [RCTBridge setCurrentBridge:self];
-
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleMemoryWarning)
-                                                 name:UIApplicationDidReceiveMemoryWarningNotification
-                                               object:nil];
-#endif // TODO(macOS GH#774)
   }
   return self;
 }
-
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-#endif // TODO(macOS GH#774)
 
 + (void)runRunLoop
 {
@@ -306,13 +299,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSError *error = tryAndReturnError(block);
   if (error) {
     [self handleError:error];
-  }
-}
-
-- (void)handleMemoryWarning
-{
-  if (_reactInstance) {
-    _reactInstance->handleMemoryPressure(15 /* TRIM_MEMORY_RUNNING_CRITICAL */);
   }
 }
 
@@ -702,7 +688,10 @@ struct RCTInstanceCallback : public InstanceCallback {
 
     // Instantiate moduleData
     // TODO #13258411: can we defer this until config generation?
+    int32_t moduleDataId = getUniqueId();
+    BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
     moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass bridge:self];
+    BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
     [_moduleClassesByID addObject:moduleClass];
@@ -762,7 +751,11 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
 
     // Instantiate moduleData container
+    int32_t moduleDataId = getUniqueId();
+    BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
     RCTModuleData *moduleData = [[RCTModuleData alloc] initWithModuleInstance:module bridge:self];
+    BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
+
     _moduleDataByName[moduleName] = moduleData;
     [_moduleClassesByID addObject:moduleClass];
     [_moduleDataByID addObject:moduleData];
@@ -809,7 +802,10 @@ struct RCTInstanceCallback : public InstanceCallback {
         }
       }
 
+      int32_t moduleDataId = getUniqueId();
+      BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
       moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass bridge:self];
+      BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
       _moduleDataByName[moduleName] = moduleData;
       [_moduleClassesByID addObject:moduleClass];

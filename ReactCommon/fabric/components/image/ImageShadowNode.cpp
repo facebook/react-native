@@ -45,19 +45,23 @@ void ImageShadowNode::updateStateIfNeeded() {
 ImageSource ImageShadowNode::getImageSource() const {
   auto sources = getConcreteProps().sources;
 
-  if (sources.size() == 0) {
+  if (sources.empty()) {
     return {
         /* .type = */ ImageSource::Type::Invalid,
     };
   }
 
-  if (sources.size() == 1) {
-    return sources[0];
-  }
-
   auto layoutMetrics = getLayoutMetrics();
   auto size = layoutMetrics.getContentFrame().size;
   auto scale = layoutMetrics.pointScaleFactor;
+
+  if (sources.size() == 1) {
+    auto source = sources[0];
+    source.size = size;
+    source.scale = scale;
+    return source;
+  }
+
   auto targetImageArea = size.width * size.height * scale * scale;
   auto bestFit = std::numeric_limits<Float>::infinity();
 
@@ -76,6 +80,9 @@ ImageSource ImageShadowNode::getImageSource() const {
       bestSource = source;
     }
   }
+
+  bestSource.size = size;
+  bestSource.scale = scale;
 
   return bestSource;
 }

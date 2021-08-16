@@ -65,3 +65,7 @@ YGFloatOptional YGFloatOptionalMax(YGFloatOptional op1, YGFloatOptional op2) {
   }
   return op1.isUndefined() ? op2 : op1;
 }
+
+void throwLogicalErrorWithMessage(const char* message) {
+  throw std::logic_error(message);
+}

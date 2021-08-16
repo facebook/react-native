@@ -57,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *inputAccessoryViewID;
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 @property (nonatomic, assign) UIKeyboardType keyboardType;
+@property (nonatomic, assign) BOOL showSoftInputOnFocus;
 #endif // TODO(macOS GH#774)
 
 /**

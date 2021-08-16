@@ -41,7 +41,7 @@ static ShadowNode::Unshared progressState(ShadowNode const &shadowNode) {
   }
 
   auto newChildren = ShadowNode::ListOfShared{};
-  if (shadowNode.getChildren().size() > 0) {
+  if (!shadowNode.getChildren().empty()) {
     auto index = size_t{0};
     for (auto const &childNode : shadowNode.getChildren()) {
       auto newChildNode = progressState(*childNode);
@@ -170,7 +170,7 @@ static void updateMountedFlag(
     return;
   }
 
-  if (oldChildren.size() == 0 && newChildren.size() == 0) {
+  if (oldChildren.empty() && newChildren.empty()) {
     // Both lists are empty, nothing to do.
     return;
   }
@@ -221,7 +221,8 @@ ShadowTree::ShadowTree(
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext,
     RootComponentDescriptor const &rootComponentDescriptor,
-    ShadowTreeDelegate const &delegate)
+    ShadowTreeDelegate const &delegate,
+    MountingOverrideDelegate *mountingOverrideDelegate)
     : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
@@ -240,7 +241,7 @@ ShadowTree::ShadowTree(
           family));
 
   mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
-      ShadowTreeRevision{rootShadowNode_, 0, {}});
+      ShadowTreeRevision{rootShadowNode_, 0, {}}, mountingOverrideDelegate);
 }
 
 ShadowTree::~ShadowTree() {
@@ -357,7 +358,7 @@ bool ShadowTree::tryCommit(
   mountingCoordinator_->push(
       ShadowTreeRevision{newRootShadowNode, revisionNumber, telemetry});
 
-  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
+  notifyDelegatesOfUpdates();
 
   return true;
 }
@@ -396,6 +397,10 @@ void ShadowTree::emitLayoutEvents(
 
     viewEventEmitter.onLayout(layoutableNode->getLayoutMetrics());
   }
+}
+
+void ShadowTree::notifyDelegatesOfUpdates() const {
+  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
 }
 
 } // namespace react

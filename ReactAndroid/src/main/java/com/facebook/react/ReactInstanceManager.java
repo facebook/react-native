@@ -1152,18 +1152,30 @@ public class ReactInstanceManager {
 
     final int rootTag;
 
-    if (reactRoot.getUIManagerType() == FABRIC) {
-      rootTag =
-          uiManager.startSurface(
-              reactRoot.getRootViewGroup(),
-              reactRoot.getJSModuleName(),
-              initialProperties == null
-                  ? new WritableNativeMap()
-                  : Arguments.fromBundle(initialProperties),
-              reactRoot.getWidthMeasureSpec(),
-              reactRoot.getHeightMeasureSpec());
-      reactRoot.setRootViewTag(rootTag);
-      reactRoot.setShouldLogContentAppeared(true);
+    if (ReactFeatureFlags.enableFabricStartSurfaceWithLayoutMetrics) {
+      if (reactRoot.getUIManagerType() == FABRIC) {
+        rootTag =
+            uiManager.startSurface(
+                reactRoot.getRootViewGroup(),
+                reactRoot.getJSModuleName(),
+                initialProperties == null
+                    ? new WritableNativeMap()
+                    : Arguments.fromBundle(initialProperties),
+                reactRoot.getWidthMeasureSpec(),
+                reactRoot.getHeightMeasureSpec());
+        reactRoot.setRootViewTag(rootTag);
+        reactRoot.setShouldLogContentAppeared(true);
+      } else {
+        rootTag =
+            uiManager.addRootView(
+                reactRoot.getRootViewGroup(),
+                initialProperties == null
+                    ? new WritableNativeMap()
+                    : Arguments.fromBundle(initialProperties),
+                reactRoot.getInitialUITemplate());
+        reactRoot.setRootViewTag(rootTag);
+        reactRoot.runApplication();
+      }
     } else {
       rootTag =
           uiManager.addRootView(
@@ -1173,8 +1185,17 @@ public class ReactInstanceManager {
                   : Arguments.fromBundle(initialProperties),
               reactRoot.getInitialUITemplate());
       reactRoot.setRootViewTag(rootTag);
-      reactRoot.runApplication();
+      if (reactRoot.getUIManagerType() == FABRIC) {
+        // Fabric requires to call updateRootLayoutSpecs before starting JS Application,
+        // this ensures the root will hace the correct pointScaleFactor.
+        uiManager.updateRootLayoutSpecs(
+            rootTag, reactRoot.getWidthMeasureSpec(), reactRoot.getHeightMeasureSpec());
+        reactRoot.setShouldLogContentAppeared(true);
+      } else {
+        reactRoot.runApplication();
+      }
     }
+
     Systrace.beginAsyncSection(
         TRACE_TAG_REACT_JAVA_BRIDGE, "pre_rootView.onAttachedToReactInstance", rootTag);
     UiThreadUtil.runOnUiThread(
@@ -1302,6 +1323,9 @@ public class ReactInstanceManager {
           registry.getModule(moduleName);
         }
       }
+    }
+    if (ReactFeatureFlags.eagerInitializeFabric) {
+      catalystInstance.getJSIModule(JSIModuleType.UIManager);
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);

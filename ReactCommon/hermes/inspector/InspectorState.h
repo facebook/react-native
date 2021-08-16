@@ -52,7 +52,7 @@ class InspectorState {
    */
 
   /**
-   * detach clears all debuger state and transitions to RunningDetached.
+   * detach clears all debugger state and transitions to RunningDetached.
    */
   virtual void detach(std::shared_ptr<folly::Promise<folly::Unit>> promise) {
     // As we're not attached we'd like for the operation to be idempotent
@@ -185,6 +185,8 @@ class InspectorState::RunningDetached : public InspectorState {
 
   std::pair<NextStatePtr, CommandPtr> didPause(MonitorLock &lock) override;
   std::pair<NextStatePtr, bool> enable() override;
+
+  void onEnter(InspectorState *prevState) override;
 
   bool isRunningDetached() const override {
     return true;

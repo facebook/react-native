@@ -25,7 +25,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.util.ActivityController;
+import org.robolectric.android.controller.ActivityController;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})

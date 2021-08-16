@@ -17,8 +17,8 @@ namespace facebook {
 namespace react {
 
 ScrollViewProps::ScrollViewProps(
-    const ScrollViewProps &sourceProps,
-    const RawProps &rawProps)
+    ScrollViewProps const &sourceProps,
+    RawProps const &rawProps)
     : ViewProps(sourceProps, rawProps),
       alwaysBounceHorizontal(convertRawProp(
           rawProps,
@@ -126,6 +126,11 @@ ScrollViewProps::ScrollViewProps(
           "contentInset",
           sourceProps.contentInset,
           {})),
+      contentOffset(convertRawProp(
+          rawProps,
+          "contentOffset",
+          sourceProps.contentOffset,
+          {})),
       scrollIndicatorInsets(convertRawProp(
           rawProps,
           "scrollIndicatorInsets",
@@ -232,6 +237,10 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
               "contentInset",
               contentInset,
               defaultScrollViewProps.contentInset),
+          debugStringConvertibleItem(
+              "contentOffset",
+              contentOffset,
+              defaultScrollViewProps.contentOffset),
           debugStringConvertibleItem(
               "scrollIndicatorInsets",
               scrollIndicatorInsets,

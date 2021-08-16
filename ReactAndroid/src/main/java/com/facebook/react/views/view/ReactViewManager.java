@@ -24,7 +24,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -233,14 +233,12 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
           new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              UIManagerModule uiManager =
-                  ((ReactContext) view.getContext()).getNativeModule(UIManagerModule.class);
-
-              if (uiManager == null) {
+              final EventDispatcher mEventDispatcher =
+                  UIManagerHelper.getEventDispatcherForReactTag(
+                      (ReactContext) view.getContext(), view.getId());
+              if (mEventDispatcher == null) {
                 return;
               }
-
-              final EventDispatcher mEventDispatcher = uiManager.getEventDispatcher();
               mEventDispatcher.dispatchEvent(new ViewGroupClickEvent(view.getId()));
             }
           });

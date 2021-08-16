@@ -38,7 +38,11 @@ AttributedStringBox TextInputShadowNode::attributedStringBoxToMeasure() const {
     auto placeholder = getConcreteProps().placeholder;
     // Note: `zero-width space` is insufficient in some cases (e.g. when we need
     // to measure the "hight" of the font).
-    auto string = !placeholder.empty() ? placeholder : "I";
+    // TODO T67606511: We will redefine the measurement of empty strings as part
+    // of T67606511
+    auto string = !placeholder.empty()
+        ? placeholder
+        : BaseTextShadowNode::getEmptyPlaceholder();
     auto textAttributes = getConcreteProps().getEffectiveTextAttributes();
     attributedString.appendFragment({string, textAttributes, {}});
   }

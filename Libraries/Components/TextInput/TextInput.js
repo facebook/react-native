@@ -423,7 +423,6 @@ type AndroidProps = $ReadOnly<{|
   /**
    * When `false`, it will prevent the soft keyboard from showing when the field is focused.
    * Defaults to `true`.
-   * @platform android
    */
   showSoftInputOnFocus?: ?boolean,
 |}>;

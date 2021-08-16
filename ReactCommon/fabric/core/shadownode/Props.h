@@ -43,7 +43,7 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   int const revision{0};
 
 #ifdef ANDROID
-  folly::dynamic const rawProps = folly::dynamic::object();
+  folly::dynamic rawProps = folly::dynamic::object();
 #endif
 };
 

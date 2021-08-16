@@ -18,6 +18,7 @@ namespace react {
 struct ImageURLLoaderAttribution {
   int32_t nativeViewTag = 0;
   int32_t surfaceId = 0;
+  NSString *analyticTag;
 };
 
 } // namespace react
@@ -68,6 +69,11 @@ struct ImageURLLoaderAttribution {
  * Image instrumentation - start tracking the on-screen visibility of the native image view.
  */
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView; // TODO(macOS GH#774)
+
+/**
+ * Image instrumentation - notify that the request was destroyed.
+ */
+- (void)trackURLImageRequestDidDestroy:(RCTImageURLLoaderRequest *)loaderRequest;
 
 /**
  * Image instrumentation - notify that the native image view was destroyed.

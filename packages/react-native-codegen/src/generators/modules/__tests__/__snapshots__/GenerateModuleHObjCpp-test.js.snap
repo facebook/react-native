@@ -74,9 +74,30 @@ namespace JS {
 
 namespace JS {
   namespace NativeSampleTurboModule {
+    struct SpecGetArraysOptions {
+      facebook::react::LazyVector<double> arrayOfNumbers() const;
+      folly::Optional<facebook::react::LazyVector<double>> optionalArrayOfNumbers() const;
+      facebook::react::LazyVector<NSString *> arrayOfStrings() const;
+      folly::Optional<facebook::react::LazyVector<NSString *>> optionalArrayOfStrings() const;
+      facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjects> arrayOfObjects() const;
+
+      SpecGetArraysOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeSampleTurboModule_SpecGetArraysOptions)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecGetArraysOptions:(id)json;
+@end
+
+
+namespace JS {
+  namespace NativeSampleTurboModule {
     struct SpecOptionalsA {
       folly::Optional<double> optionalNumberProperty() const;
-      folly::Optional<facebook::react::LazyVector<id<NSObject>>> optionalArrayProperty() const;
+      folly::Optional<facebook::react::LazyVector<double>> optionalArrayProperty() const;
       folly::Optional<JS::NativeSampleTurboModule::SpecOptionalsAOptionalObjectProperty> optionalObjectProperty() const;
       id<NSObject> _Nullable optionalGenericObjectProperty() const;
       folly::Optional<bool> optionalBooleanTypeProperty() const;
@@ -179,10 +200,10 @@ inline folly::Optional<double> JS::NativeSampleTurboModule::SpecOptionalsA::opti
 }
 
 
-inline folly::Optional<facebook::react::LazyVector<id<NSObject>>> JS::NativeSampleTurboModule::SpecOptionalsA::optionalArrayProperty() const
+inline folly::Optional<facebook::react::LazyVector<double>> JS::NativeSampleTurboModule::SpecOptionalsA::optionalArrayProperty() const
 {
   id const p = _v[@\\"optionalArrayProperty\\"];
-  return RCTBridgingToOptionalVec(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; });
+  return RCTBridgingToOptionalVec(p, ^double(id itemValue_0) { return RCTBridgingToDouble(itemValue_0); });
 }
 
 
@@ -204,6 +225,41 @@ inline folly::Optional<bool> JS::NativeSampleTurboModule::SpecOptionalsA::option
 {
   id const p = _v[@\\"optionalBooleanTypeProperty\\"];
   return RCTBridgingToOptionalBool(p);
+}
+
+
+inline facebook::react::LazyVector<double> JS::NativeSampleTurboModule::SpecGetArraysOptions::arrayOfNumbers() const
+{
+  id const p = _v[@\\"arrayOfNumbers\\"];
+  return RCTBridgingToVec(p, ^double(id itemValue_0) { return RCTBridgingToDouble(itemValue_0); });
+}
+
+
+inline folly::Optional<facebook::react::LazyVector<double>> JS::NativeSampleTurboModule::SpecGetArraysOptions::optionalArrayOfNumbers() const
+{
+  id const p = _v[@\\"optionalArrayOfNumbers\\"];
+  return RCTBridgingToOptionalVec(p, ^double(id itemValue_0) { return RCTBridgingToDouble(itemValue_0); });
+}
+
+
+inline facebook::react::LazyVector<NSString *> JS::NativeSampleTurboModule::SpecGetArraysOptions::arrayOfStrings() const
+{
+  id const p = _v[@\\"arrayOfStrings\\"];
+  return RCTBridgingToVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
+}
+
+
+inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeSampleTurboModule::SpecGetArraysOptions::optionalArrayOfStrings() const
+{
+  id const p = _v[@\\"optionalArrayOfStrings\\"];
+  return RCTBridgingToOptionalVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
+}
+
+
+inline facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjects> JS::NativeSampleTurboModule::SpecGetArraysOptions::arrayOfObjects() const
+{
+  id const p = _v[@\\"arrayOfObjects\\"];
+  return RCTBridgingToVec(p, ^JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjects(id itemValue_0) { return JS::NativeSampleTurboModule::SpecGetArraysOptionsArrayOfObjects(itemValue_0); });
 }
 
 
@@ -256,6 +312,7 @@ inline double JS::NativeSampleTurboModule::SpecOptionalsAOptionalObjectProperty:
 - (void) optionalMethod:(NSDictionary *)options
    callback:(RCTResponseSenderBlock)callback
    extras:(NSArray * _Nullable)extras;
+- (void) getArrays:(JS::NativeSampleTurboModule::SpecGetArraysOptions&)options;
 @end
 
 

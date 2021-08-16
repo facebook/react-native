@@ -22,7 +22,6 @@ module.exports = {
   getConstants: (): {...} => ({}),
   getConstantsForViewManager: (viewManagerName: string) => {},
   getDefaultEventTypes: (): Array<$FlowFixMe> => [],
-  playTouchSound: () => {},
   lazilyLoadView: (name: string) => {},
   createView: (
     reactTag: ?number,

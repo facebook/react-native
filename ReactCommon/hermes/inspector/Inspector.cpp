@@ -120,6 +120,7 @@ Inspector::Inspector(
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (pauseOnFirstStatement) {
+      awaitingDebuggerOnStart_ = true;
       TRANSITION(std::make_unique<InspectorState::RunningWaitEnable>(*this));
     } else {
       TRANSITION(std::make_unique<InspectorState::RunningDetached>(*this));
@@ -137,6 +138,7 @@ Inspector::~Inspector() {
 
 void Inspector::installConsoleFunction(
     jsi::Object &console,
+    std::shared_ptr<jsi::Object> &originalConsole,
     const std::string &name,
     const std::string &chromeTypeDefault = "") {
   jsi::Runtime &rt = adapter_->getRuntime();
@@ -150,11 +152,22 @@ void Inspector::installConsoleFunction(
           rt,
           nameID,
           1,
-          [weakInspector, chromeType](
+          [weakInspector, originalConsole, name, chromeType](
               jsi::Runtime &runtime,
               const jsi::Value &thisVal,
               const jsi::Value *args,
               size_t count) {
+            if (originalConsole) {
+              auto val = originalConsole->getProperty(runtime, name.c_str());
+              if (val.isObject()) {
+                auto obj = val.getObject(runtime);
+                if (obj.isFunction(runtime)) {
+                  auto func = obj.getFunction(runtime);
+                  func.call(runtime, args, count);
+                }
+              }
+            }
+
             if (auto inspector = weakInspector.lock()) {
               jsi::Array argsArray(runtime, count);
               for (size_t index = 0; index < count; ++index)
@@ -170,22 +183,28 @@ void Inspector::installConsoleFunction(
 void Inspector::installLogHandler() {
   jsi::Runtime &rt = adapter_->getRuntime();
   auto console = jsi::Object(rt);
-  installConsoleFunction(console, "assert");
-  installConsoleFunction(console, "clear");
-  installConsoleFunction(console, "debug");
-  installConsoleFunction(console, "dir");
-  installConsoleFunction(console, "dirxml");
-  installConsoleFunction(console, "error");
-  installConsoleFunction(console, "group", "startGroup");
-  installConsoleFunction(console, "groupCollapsed", "startGroupCollapsed");
-  installConsoleFunction(console, "groupEnd", "endGroup");
-  installConsoleFunction(console, "info");
-  installConsoleFunction(console, "log");
-  installConsoleFunction(console, "profile");
-  installConsoleFunction(console, "profileEnd");
-  installConsoleFunction(console, "table");
-  installConsoleFunction(console, "trace");
-  installConsoleFunction(console, "warn", "warning");
+  auto val = rt.global().getProperty(rt, "console");
+  std::shared_ptr<jsi::Object> originalConsole;
+  if (val.isObject()) {
+    originalConsole = std::make_shared<jsi::Object>(val.getObject(rt));
+  }
+  installConsoleFunction(console, originalConsole, "assert");
+  installConsoleFunction(console, originalConsole, "clear");
+  installConsoleFunction(console, originalConsole, "debug");
+  installConsoleFunction(console, originalConsole, "dir");
+  installConsoleFunction(console, originalConsole, "dirxml");
+  installConsoleFunction(console, originalConsole, "error");
+  installConsoleFunction(console, originalConsole, "group", "startGroup");
+  installConsoleFunction(
+      console, originalConsole, "groupCollapsed", "startGroupCollapsed");
+  installConsoleFunction(console, originalConsole, "groupEnd", "endGroup");
+  installConsoleFunction(console, originalConsole, "info");
+  installConsoleFunction(console, originalConsole, "log");
+  installConsoleFunction(console, originalConsole, "profile");
+  installConsoleFunction(console, originalConsole, "profileEnd");
+  installConsoleFunction(console, originalConsole, "table");
+  installConsoleFunction(console, originalConsole, "trace");
+  installConsoleFunction(console, originalConsole, "warn", "warning");
   rt.global().setProperty(rt, "console", console);
 }
 
@@ -659,6 +678,10 @@ bool Inspector::isExecutingSupersededFile() {
     return it->second > info.fileId;
   }
   return false;
+}
+
+bool Inspector::isAwaitingDebuggerOnStart() {
+  return awaitingDebuggerOnStart_;
 }
 
 } // namespace inspector

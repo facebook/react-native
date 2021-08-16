@@ -609,6 +609,87 @@ const COMPLEX_OBJECTS: SchemaType = {
                 optional: true,
               },
             },
+            {
+              name: 'getArrays',
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                returnTypeAnnotation: {
+                  nullable: false,
+                  type: 'VoidTypeAnnotation',
+                },
+                params: [
+                  {
+                    nullable: false,
+                    name: 'options',
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          optional: false,
+                          name: 'arrayOfNumbers',
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'NumberTypeAnnotation',
+                            },
+                          },
+                        },
+                        {
+                          optional: true,
+                          name: 'optionalArrayOfNumbers',
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'NumberTypeAnnotation',
+                            },
+                          },
+                        },
+                        {
+                          optional: false,
+                          name: 'arrayOfStrings',
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'StringTypeAnnotation',
+                            },
+                          },
+                        },
+                        {
+                          optional: true,
+                          name: 'optionalArrayOfStrings',
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'StringTypeAnnotation',
+                            },
+                          },
+                        },
+                        {
+                          optional: false,
+                          name: 'arrayOfObjects',
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'ObjectTypeAnnotation',
+                              properties: [
+                                {
+                                  optional: false,
+                                  name: 'numberProperty',
+                                  typeAnnotation: {
+                                    type: 'NumberTypeAnnotation',
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+                optional: false,
+              },
+            },
           ],
         },
       },

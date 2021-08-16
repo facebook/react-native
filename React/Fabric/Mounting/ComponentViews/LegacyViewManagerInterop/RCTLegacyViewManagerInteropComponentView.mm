@@ -15,8 +15,11 @@
 
 using namespace facebook::react;
 
+static NSString *const kRCTLegacyInteropChildComponentKey = @"childComponentView";
+static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
+
 @implementation RCTLegacyViewManagerInteropComponentView {
-  NSMutableDictionary<NSNumber *, UIView *> *_viewsToBeMounted;
+  NSMutableArray<NSDictionary *> *_viewsToBeMounted;
   NSMutableArray<UIView *> *_viewsToBeUnmounted;
   RCTLegacyViewManagerInteropCoordinatorAdapter *_adapter;
   LegacyViewManagerInteropShadowNode::ConcreteState::Shared _state;
@@ -27,7 +30,7 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const LegacyViewManagerInteropViewProps>();
     _props = defaultProps;
-    _viewsToBeMounted = [NSMutableDictionary new];
+    _viewsToBeMounted = [NSMutableArray new];
     _viewsToBeUnmounted = [NSMutableArray new];
   }
 
@@ -89,7 +92,10 @@ using namespace facebook::react;
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_viewsToBeMounted setObject:childComponentView forKey:[NSNumber numberWithInteger:index]];
+  [_viewsToBeMounted addObject:@{
+    kRCTLegacyInteropChildIndexKey : [NSNumber numberWithInteger:index],
+    kRCTLegacyInteropChildComponentKey : childComponentView
+  }];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
@@ -126,8 +132,10 @@ using namespace facebook::react;
     self.contentView = _adapter.paperView;
   }
 
-  for (NSNumber *key in _viewsToBeMounted) {
-    [_adapter.paperView insertReactSubview:_viewsToBeMounted[key] atIndex:key.integerValue];
+  for (NSDictionary *mountInstruction in _viewsToBeMounted) {
+    NSNumber *index = mountInstruction[kRCTLegacyInteropChildIndexKey];
+    UIView *childView = mountInstruction[kRCTLegacyInteropChildComponentKey];
+    [_adapter.paperView insertReactSubview:childView atIndex:index.integerValue];
   }
 
   [_viewsToBeMounted removeAllObjects];

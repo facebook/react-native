@@ -163,6 +163,10 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     _scrollView.contentInset = RCTUIEdgeInsetsFromEdgeInsets(newScrollViewProps.contentInset);
   }
 
+  if (oldScrollViewProps.contentOffset != newScrollViewProps.contentOffset) {
+    _scrollView.contentOffset = RCTCGPointFromPoint(newScrollViewProps.contentOffset);
+  }
+
   // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
   // MAP_SCROLL_VIEW_PROP(snapToInterval);
   // MAP_SCROLL_VIEW_PROP(snapToAlignment);
@@ -223,7 +227,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)prepareForRecycle
 {
-  _scrollView.contentOffset = CGPointZero;
+  const auto &props = *std::static_pointer_cast<const ScrollViewProps>(_props);
+  _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
   _state.reset();
   _isUserTriggeredScrolling = NO;
   [super prepareForRecycle];

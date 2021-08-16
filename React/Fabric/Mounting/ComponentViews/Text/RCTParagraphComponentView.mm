@@ -19,6 +19,7 @@
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "RCTConversions.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -169,3 +170,8 @@ using namespace facebook::react;
 }
 
 @end
+
+Class<RCTComponentViewProtocol> RCTParagraphCls(void)
+{
+  return RCTParagraphComponentView.class;
+}

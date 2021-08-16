@@ -6,7 +6,7 @@
  */
 
 /**
- * This protocol should be adopted when a turbo module needs to directly call into Javascript.
+ * This protocol should be adopted when a turbo module needs to directly call into JavaScript.
  * In bridge-less React Native, it is a replacement for [_bridge enqueueJSCall:].
  */
 @protocol RCTJSInvokerModule

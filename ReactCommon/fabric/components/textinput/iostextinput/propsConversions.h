@@ -88,6 +88,11 @@ static TextInputTraits convertRawProp(
       "keyboardType",
       sourceTraits.keyboardType,
       defaultTraits.keyboardType);
+  traits.showSoftInputOnFocus = convertRawProp(
+      rawProps,
+      "showSoftInputOnFocus",
+      sourceTraits.showSoftInputOnFocus,
+      defaultTraits.showSoftInputOnFocus);
   traits.returnKeyType = convertRawProp(
       rawProps,
       "returnKeyType",

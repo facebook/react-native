@@ -69,6 +69,7 @@ $(call import-module,cxxreact)
 $(call import-module,jsi)
 $(call import-module,jsiexecutor)
 $(call import-module,callinvoker)
+$(call import-module,reactperflogger)
 $(call import-module,hermes)
 $(call import-module,runtimeexecutor)
 

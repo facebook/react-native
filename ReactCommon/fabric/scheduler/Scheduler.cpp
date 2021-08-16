@@ -13,15 +13,23 @@
 #include <react/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/core/LayoutContext.h>
 #include <react/debug/SystraceSection.h>
+#include <react/mounting/MountingOverrideDelegate.h>
+#include <react/mounting/ShadowViewMutation.h>
 #include <react/templateprocessor/UITemplateProcessor.h>
 #include <react/uimanager/UIManager.h>
 #include <react/uimanager/UIManagerBinding.h>
+
+#ifdef RN_SHADOW_TREE_INTROSPECTION
+#include <react/mounting/stubs.h>
+#include <iostream>
+#endif
 
 namespace facebook {
 namespace react {
 
 Scheduler::Scheduler(
     SchedulerToolbox schedulerToolbox,
+    UIManagerAnimationDelegate *animationDelegate,
     SchedulerDelegate *delegate) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
 
@@ -29,8 +37,13 @@ Scheduler::Scheduler(
       schedulerToolbox.contextContainer
           ->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
 
+  // Creating a container for future `EventDispatcher` instance.
+  eventDispatcher_ =
+      std::make_shared<better::optional<EventDispatcher const>>();
+
   auto uiManager = std::make_shared<UIManager>();
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
+  eventOwnerBox->owner = eventDispatcher_;
 
   auto eventPipe = [uiManager](
                        jsi::Runtime &runtime,
@@ -47,20 +60,24 @@ Scheduler::Scheduler(
     uiManager->updateState(stateUpdate);
   };
 
-  eventDispatcher_ = std::make_shared<EventDispatcher>(
+  // Creating an `EventDispatcher` instance inside the already allocated
+  // container (inside the optional).
+  eventDispatcher_->emplace(
       eventPipe,
       statePipe,
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
       eventOwnerBox);
 
-  eventOwnerBox->owner = eventDispatcher_;
+  // Casting to `std::shared_ptr<EventDispatcher const>`.
+  auto eventDispatcher =
+      EventDispatcher::Shared{eventDispatcher_, &eventDispatcher_->value()};
 
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
-      eventDispatcher_, schedulerToolbox.contextContainer);
+      eventDispatcher, schedulerToolbox.contextContainer);
 
   rootComponentDescriptor_ = std::make_unique<const RootComponentDescriptor>(
-      ComponentDescriptorParameters{eventDispatcher_, nullptr, nullptr});
+      ComponentDescriptorParameters{eventDispatcher, nullptr, nullptr});
 
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
@@ -81,12 +98,22 @@ Scheduler::Scheduler(
   delegate_ = delegate;
   uiManager_ = uiManager;
 
+  if (animationDelegate != nullptr) {
+    animationDelegate->setComponentDescriptorRegistry(
+        componentDescriptorRegistry_);
+  }
+  uiManager_->setAnimationDelegate(animationDelegate);
+
 #ifdef ANDROID
   enableNewStateReconciliation_ = reactNativeConfig_->getBool(
       "react_fabric:enable_new_state_reconciliation_android");
+  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
+      "react_fabric:remove_outstanding_surfaces_on_destruction_android");
 #else
   enableNewStateReconciliation_ = reactNativeConfig_->getBool(
       "react_fabric:enable_new_state_reconciliation_ios");
+  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
+      "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
 #endif
 }
 
@@ -109,10 +136,10 @@ Scheduler::~Scheduler() {
       });
 
   assert(
-      surfaceIds.size() == 0 &&
+      surfaceIds.empty() &&
       "Scheduler was destroyed with outstanding Surfaces.");
 
-  if (surfaceIds.size() == 0) {
+  if (surfaceIds.empty()) {
     return;
   }
 
@@ -131,6 +158,12 @@ Scheduler::~Scheduler() {
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId,
         [](ShadowTree const &shadowTree) { shadowTree.commitEmptyTree(); });
+
+    // Removing surfaces is gated because it acquires mutex waiting for commits
+    // in flight; in theory, it can deadlock.
+    if (removeOutstandingSurfacesOnDestruction_) {
+      uiManager_->getShadowTreeRegistry().remove(surfaceId);
+    }
   }
 }
 
@@ -139,7 +172,8 @@ void Scheduler::startSurface(
     const std::string &moduleName,
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const {
+    const LayoutContext &layoutContext,
+    MountingOverrideDelegate *mountingOverrideDelegate) const {
   SystraceSection s("Scheduler::startSurface");
 
   auto shadowTree = std::make_unique<ShadowTree>(
@@ -147,7 +181,8 @@ void Scheduler::startSurface(
       layoutConstraints,
       layoutContext,
       *rootComponentDescriptor_,
-      *uiManager_);
+      *uiManager_,
+      mountingOverrideDelegate);
 
   shadowTree->setEnableNewStateReconciliation(enableNewStateReconciliation_);
 
@@ -168,7 +203,7 @@ void Scheduler::renderTemplateToSurface(
     const std::string &uiTemplate) {
   SystraceSection s("Scheduler::renderTemplateToSurface");
   try {
-    if (uiTemplate.size() == 0) {
+    if (uiTemplate.empty()) {
       return;
     }
     NativeModuleRegistry nMR;
@@ -291,6 +326,12 @@ SchedulerDelegate *Scheduler::getDelegate() const {
   return delegate_;
 }
 
+#pragma mark - UIManagerAnimationDelegate
+
+void Scheduler::animationTick() const {
+  uiManager_->animationTick();
+}
+
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
@@ -301,7 +342,6 @@ void Scheduler::uiManagerDidFinishTransaction(
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
 }
-
 void Scheduler::uiManagerDidCreateShadowNode(
     const ShadowNode::Shared &shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");

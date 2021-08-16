@@ -15,7 +15,7 @@ fb_apple_library(
         "Foundation",
         "UIKit",
     ],
-    labels = ["supermodule:ios/default/public.react_native.infra"],
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     reexport_all_header_dependencies = True,
     deps = [
         "//xplat/js/react-native-github:RCTTypeSafety",
