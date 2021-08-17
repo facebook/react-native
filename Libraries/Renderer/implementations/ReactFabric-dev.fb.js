@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<6c8346987db638ec0cd71246cb829ef6>>
+ * @generated SignedSource<<903768081f51a5abfed30db7d6f33dd7>>
  */
 
 'use strict';
@@ -5913,7 +5913,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "18.0.0-19092ac8c-20210803";
+var ReactVersion = "18.0.0-424fe5870-20210816";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
