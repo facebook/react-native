@@ -352,8 +352,7 @@ afterEvaluate {
         }
 
         if (enableVmCleanup) {
-            def task = tasks.findByName("package${targetName}")
-            task.doFirst(vmSelectionAction)
+            packageTask.doFirst(vmSelectionAction)
         }
     }
 }
