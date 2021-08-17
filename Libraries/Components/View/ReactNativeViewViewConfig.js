@@ -254,7 +254,6 @@ const ReactNativeViewConfig: ViewConfig = {
       borderWidth: true,
       bottom: true,
       color: {process: require('../../StyleSheet/processColor')},
-      cornerSmoothing: true,
       decomposedMatrix: true,
       direction: true,
       display: true,
