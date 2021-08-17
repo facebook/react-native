@@ -259,6 +259,14 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
     view.removeClippedSubviews = json ? [RCTConvert BOOL:json] : defaultView.removeClippedSubviews;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(cornerSmoothing, BOOL, RCTView)
+{
+  if ([RCTConvert BOOL:json]) {
+    view.layer.cornerCurve = @"continuous";
+  } else {
+    view.layer.cornerCurve = @"circular";
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderRadius:)]) {

@@ -80,6 +80,11 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, assign) CGFloat borderBottomEndRadius;
 
 /**
+ * Corner smoothing
+ */ 
+@property (nonatomic, assign) BOOL cornerSmoothing;
+
+/**
  * Border colors (actually retained).
  */
 @property (nonatomic, strong) UIColor *borderTopColor;
