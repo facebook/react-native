@@ -115,7 +115,10 @@ NSString *kBundleNameJS = @"RNTesterApp";
       }
       __typeof(self) strongSelf = weakSelf;
       if (strongSelf) {
-        [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
+        facebook::react::RuntimeExecutor syncRuntimeExecutor = [&](std::function<void(facebook::jsi::Runtime &runtime_)> &&callback) {
+          callback(runtime);
+        };
+        [strongSelf->_turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
       }
     })
   );

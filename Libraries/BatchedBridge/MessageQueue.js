@@ -112,13 +112,6 @@ class MessageQueue {
     return this.flushedQueue();
   }
 
-  // Deprecated. T61834641: Remove me once native clients have updated
-  callFunctionReturnResultAndFlushedQueue(
-    module: string,
-    method: string,
-    args: any[],
-  ): void {}
-
   invokeCallbackAndReturnFlushedQueue(
     cbID: number,
     args: any[],

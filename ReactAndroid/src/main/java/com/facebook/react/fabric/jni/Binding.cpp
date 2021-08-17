@@ -73,10 +73,6 @@ std::shared_ptr<Scheduler> Binding::getScheduler() {
   return scheduler_;
 }
 
-LayoutAnimationDriver *Binding::getAnimationDriver() {
-  return (animationDriver_ ? animationDriver_.get() : nullptr);
-}
-
 void Binding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
@@ -97,7 +93,7 @@ void Binding::startSurface(
       initialProps->consume(),
       {},
       context,
-      getAnimationDriver());
+      animationDriver_);
 }
 
 void Binding::startSurfaceWithConstraints(
@@ -144,7 +140,7 @@ void Binding::startSurfaceWithConstraints(
       initialProps->consume(),
       constraints,
       context,
-      getAnimationDriver());
+      animationDriver_);
 }
 
 void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
@@ -214,6 +210,7 @@ void Binding::setConstraints(
 
 void Binding::installFabricUIManager(
     jlong jsContextNativePointer,
+    jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
@@ -247,15 +244,23 @@ void Binding::installFabricUIManager(
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
 
-  Runtime *runtime = (Runtime *)jsContextNativePointer;
-  RuntimeExecutor runtimeExecutor =
-      [runtime, sharedJSMessageQueueThread](
-          std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
-        sharedJSMessageQueueThread->runOnQueue(
-            [runtime, callback = std::move(callback)]() {
-              callback(*runtime);
-            });
-      };
+  bool useRuntimeExecutor =
+      config->getBool("react_fabric:use_shared_runtime_executor_android");
+
+  RuntimeExecutor runtimeExecutor;
+  if (useRuntimeExecutor) {
+    runtimeExecutor = runtimeExecutorHolder->cthis()->get();
+  } else {
+    Runtime *runtime = (Runtime *)jsContextNativePointer;
+    runtimeExecutor =
+        [runtime, sharedJSMessageQueueThread](
+            std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
+          sharedJSMessageQueueThread->runOnQueue(
+              [runtime, callback = std::move(callback)]() {
+                callback(*runtime);
+              });
+        };
+  }
 
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
@@ -297,9 +302,10 @@ void Binding::installFabricUIManager(
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
   if (enableLayoutAnimations_) {
-    animationDriver_ = std::make_unique<LayoutAnimationDriver>(this);
+    animationDriver_ = std::make_shared<LayoutAnimationDriver>(this);
   }
-  scheduler_ = std::make_shared<Scheduler>(toolbox, getAnimationDriver(), this);
+  scheduler_ = std::make_shared<Scheduler>(
+      toolbox, (animationDriver_ ? animationDriver_.get() : nullptr), this);
 }
 
 void Binding::uninstallFabricUIManager() {
@@ -844,11 +850,15 @@ void Binding::schedulerDidFinishTransaction(
   static auto createMountItemsBatchContainer =
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(
-              jtypeArray<JMountItem::javaobject>, jint, jint)>(
+              jint, jtypeArray<JMountItem::javaobject>, jint, jint)>(
               "createBatchMountItem");
 
   auto batch = createMountItemsBatchContainer(
-      localJavaUIManager, mountItemsArray.get(), position, commitNumber);
+      localJavaUIManager,
+      surfaceId,
+      mountItemsArray.get(),
+      position,
+      commitNumber);
 
   static auto scheduleMountItem = jni::findClassStatic(UIManagerJavaDescriptor)
                                       ->getMethod<void(

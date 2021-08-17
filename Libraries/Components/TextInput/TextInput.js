@@ -1133,8 +1133,7 @@ function InternalTextInput(props: Props): React.Node {
     const style = [props.style];
     const autoCapitalize = props.autoCapitalize || 'sentences';
     let children = props.children;
-    let childCount = 0;
-    React.Children.forEach(children, () => ++childCount);
+    const childCount = React.Children.count(children);
     invariant(
       !(props.value && childCount),
       'Cannot specify both value and children.',

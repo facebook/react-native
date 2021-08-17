@@ -31,6 +31,40 @@ export interface Spec extends TurboModule {
   +setHidden: (hidden: boolean) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
-  'StatusBarManager',
-): Spec);
+const NativeModule = TurboModuleRegistry.getEnforcing<Spec>('StatusBarManager');
+let constants = null;
+
+const NativeStatusBarManager = {
+  getConstants(): {|
+    +HEIGHT: number,
+    +DEFAULT_BACKGROUND_COLOR?: number,
+  |} {
+    if (constants == null) {
+      constants = NativeModule.getConstants();
+    }
+    return constants;
+  },
+
+  setColor(color: number, animated: boolean): void {
+    NativeModule.setColor(color, animated);
+  },
+
+  setTranslucent(translucent: boolean): void {
+    NativeModule.setTranslucent(translucent);
+  },
+
+  /**
+   *  - statusBarStyles can be:
+   *    - 'default'
+   *    - 'dark-content'
+   */
+  setStyle(statusBarStyle?: ?string): void {
+    NativeModule.setStyle(statusBarStyle);
+  },
+
+  setHidden(hidden: boolean): void {
+    NativeModule.setHidden(hidden);
+  },
+};
+
+export default NativeStatusBarManager;

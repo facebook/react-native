@@ -8,6 +8,7 @@
 #import "RCTSampleTurboModule.h"
 
 #import <React/RCTUIKit.h> // TODO(macOS GH#774)
+#import <React/RCTUtils.h>
 
 using namespace facebook::react;
 
@@ -45,19 +46,24 @@ RCT_EXPORT_MODULE()
 
 - (NSDictionary *)getConstants
 {
+  __block NSDictionary *constants;
+  RCTUnsafeExecuteOnMainQueueSync(^{
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
-  UIScreen *mainScreen = UIScreen.mainScreen;
-  CGSize screenSize = mainScreen.bounds.size;
+    UIScreen *mainScreen = UIScreen.mainScreen;
+    CGSize screenSize = mainScreen.bounds.size;
 #else // [TODO(macOS GH#774)
-  NSScreen *mainScreen = NSScreen.mainScreen;
-  CGSize screenSize = mainScreen.frame.size;
+    NSScreen *mainScreen = NSScreen.mainScreen;
+    CGSize screenSize = mainScreen.frame.size;
 #endif // ]TODO(macOS GH#774)
 
-  return @{
-    @"const1" : @YES,
-    @"const2" : @(screenSize.width),
-    @"const3" : @"something",
-  };
+    constants = @{
+      @"const1" : @YES,
+      @"const2" : @(screenSize.width),
+      @"const3" : @"something",
+    };
+  });
+
+  return constants;
 }
 
 // TODO: Remove once fully migrated to TurboModule.

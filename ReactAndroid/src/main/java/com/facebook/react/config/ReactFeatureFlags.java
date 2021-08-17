@@ -23,9 +23,6 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
-  /** Should we output debug logs to debug the TurboModule infra? */
-  public static volatile boolean enableTurboModuleDebugLogs = false;
-
   /*
    * This feature flag enables logs for Fabric
    */
@@ -89,4 +86,7 @@ public class ReactFeatureFlags {
 
   /** Feature flag to configure initialization of Fabric surfaces. */
   public static boolean enableFabricStartSurfaceWithLayoutMetrics = true;
+
+  /** Feature flag to have FabricUIManager teardown stop all active surfaces. */
+  public static boolean enableFabricStopAllSurfacesOnTeardown = false;
 }

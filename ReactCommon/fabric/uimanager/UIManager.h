@@ -46,7 +46,7 @@ class UIManager final : public ShadowTreeDelegate {
    * The delegate is stored as a raw pointer, so the owner must null
    * the pointer before being destroyed.
    */
-  void setAnimationDelegate(UIManagerAnimationDelegate *delegate) const;
+  void setAnimationDelegate(UIManagerAnimationDelegate *delegate);
 
   void animationTick();
 
@@ -140,7 +140,7 @@ class UIManager final : public ShadowTreeDelegate {
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
-  mutable UIManagerAnimationDelegate *animationDelegate_{nullptr};
+  UIManagerAnimationDelegate *animationDelegate_{nullptr};
   UIManagerBinding *uiManagerBinding_;
   ShadowTreeRegistry shadowTreeRegistry_{};
 };

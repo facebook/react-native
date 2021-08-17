@@ -43,6 +43,7 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.pointerEvents == PointerEventsMode::None ||
       !viewProps.nativeId.empty() || viewProps.accessible ||
       viewProps.opacity != 1.0 || viewProps.transform != Transform{} ||
+      viewProps.elevation != 0 ||
       (viewProps.zIndex != 0 &&
        viewProps.yogaStyle.positionType() == YGPositionTypeAbsolute) ||
       viewProps.getClipsContentToBounds() ||

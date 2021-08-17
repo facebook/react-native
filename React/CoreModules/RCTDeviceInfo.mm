@@ -138,18 +138,23 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 
 - (NSDictionary<NSString *, id> *)getConstants
 {
-  return @{
+  __block NSDictionary<NSString *, id> *constants;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    constants = @{
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
-    @"Dimensions" : RCTExportedDimensions(_bridge),
+      @"Dimensions" : RCTExportedDimensions(self->_bridge),
 #else // [TODO(macOS GH#774)
-    @"Dimensions": RCTExportedDimensions(nil),
+      @"Dimensions": RCTExportedDimensions(nil),
 #endif // ]TODO(macOS GH#774)
-    // Note:
-    // This prop is deprecated and will be removed in a future release.
-    // Please use this only for a quick and temporary solution.
-    // Use <SafeAreaView> instead.
-    @"isIPhoneX_deprecated" : @(RCTIsIPhoneX()),
-  };
+      // Note:
+      // This prop is deprecated and will be removed in a future release.
+      // Please use this only for a quick and temporary solution.
+      // Use <SafeAreaView> instead.
+      @"isIPhoneX_deprecated" : @(RCTIsIPhoneX()),
+    };
+  });
+
+  return constants;
 }
 
 - (void)didReceiveNewContentSizeMultiplier

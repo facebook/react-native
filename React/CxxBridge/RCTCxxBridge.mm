@@ -265,8 +265,22 @@ struct RCTInstanceCallback : public InstanceCallback {
     _moduleDataByID = [NSMutableArray new];
 
     [RCTBridge setCurrentBridge:self];
+
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleMemoryWarning)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
+#endif // TODO(macOS GH#774)
   }
   return self;
+}
+
+- (void)dealloc
+{
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+#endif // TODO9macOS GH#774)
 }
 
 + (void)runRunLoop
@@ -299,6 +313,20 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSError *error = tryAndReturnError(block);
   if (error) {
     [self handleError:error];
+  }
+}
+
+- (void)handleMemoryWarning
+{
+  if (!_valid || !_loading) {
+    return;
+  }
+
+  // We need to hold a local retaining pointer to react instance
+  // in case if some other tread resets it.
+  auto reactInstance = _reactInstance;
+  if (reactInstance) {
+    reactInstance->handleMemoryPressure(15 /* TRIM_MEMORY_RUNNING_CRITICAL */);
   }
 }
 
@@ -911,7 +939,9 @@ struct RCTInstanceCallback : public InstanceCallback {
         if (self.valid && ![moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
           [self->_performanceLogger appendStartForTag:RCTPLNativeModuleMainThread];
           (void)[moduleData instance];
-          [moduleData gatherConstants];
+          if (!RCTIsMainQueueExecutionOfConstantsToExportDisabled()) {
+            [moduleData gatherConstants];
+          }
           [self->_performanceLogger appendStopForTag:RCTPLNativeModuleMainThread];
         }
       };
