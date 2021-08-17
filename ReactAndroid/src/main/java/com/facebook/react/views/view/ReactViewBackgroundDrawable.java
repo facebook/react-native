@@ -129,7 +129,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   @Override
   public void draw(Canvas canvas) {
     updatePathEffect();
-    if (!hasRoundedBorders() && mBorderStyle == BorderStyle.SOLID) {
+    if (!hasRoundedBorders()) {
       drawRectangularBackgroundWithBorders(canvas);
     } else {
       drawRoundedBackgroundWithBorders(canvas);
