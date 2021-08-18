@@ -384,7 +384,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   scrollToEnd(params?: ?{animated?: ?boolean, ...}) {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
-    const frame = this._getFrameMetricsApprox(veryLast);
+    const frame = this._getFrameMetricsApprox(
+      veryLast,
+      /*useRawMetrics*/ true,
+    );
     const offset = Math.max(
       0,
       frame.offset +
@@ -458,7 +461,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       });
       return;
     }
-    const frame = this._getFrameMetricsApprox(index);
+    const frame = this._getFrameMetricsApprox(index, /*useRawMetrics*/ true);
     const offset =
       Math.max(
         0,
@@ -1073,6 +1076,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     const scrollProps = {
       ...this.props,
+      contentContainerStyle: contentInversionStyle
+        ? [contentInversionStyle, this.props.contentContainerStyle]
+        : this.props.contentContainerStyle,
       onContentSizeChange: this._onContentSizeChange,
       onLayout: this._onLayout,
       onScroll: this._onScroll,
@@ -1230,7 +1236,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._fillRateHelper.computeBlankness(
       this.props,
       this.state,
-      this._scrollMetrics,
+      this._getScrollMetrics(),
     );
   }
 
@@ -1502,7 +1508,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onEndReached,
       onEndReachedThreshold,
     } = this.props;
-    const {contentLength, visibleLength, offset} = this._scrollMetrics;
+    const {contentLength, visibleLength, offset} = this._getScrollMetrics();
     const distanceFromEnd = contentLength - visibleLength - offset;
     const threshold =
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
@@ -1641,7 +1647,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _scheduleCellsToRenderUpdate() {
     const {first, last} = this.state;
-    const {offset, visibleLength, velocity} = this._scrollMetrics;
+    const {offset, visibleLength, velocity} = this._getScrollMetrics();
     const itemCount = this.props.getItemCount(this.props.data);
     let hiPri = false;
     const onEndReachedThreshold = onEndReachedThresholdOrDefault(
@@ -1743,7 +1749,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     this.setState(state => {
       let newState;
-      const {contentLength, offset, visibleLength} = this._scrollMetrics;
+      const {contentLength, offset, visibleLength} = this._getScrollMetrics();
       if (!isVirtualizationDisabled) {
         // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
         // and wipe out the initialNumToRender rendered elements.
@@ -1754,7 +1760,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
           // So let's wait until we've scrolled the view to the right place. And until then,
           // we will trust the initialScrollIndex suggestion.
-          if (!this.props.initialScrollIndex || this._scrollMetrics.offset) {
+          if (!this.props.initialScrollIndex || offset) {
             newState = computeWindowedRenderLimits(
               this.props.data,
               this.props.getItemCount,
@@ -1762,7 +1768,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               windowSizeOrDefault(this.props.windowSize),
               state,
               this._getFrameMetricsApprox,
-              this._scrollMetrics,
+              this._getScrollMetrics(),
             );
           }
         }
@@ -1827,6 +1833,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _getFrameMetricsApprox = (
     index: number,
+    useRawMetrics?: boolean,
   ): {
     length: number,
     offset: number,
@@ -1882,7 +1889,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.onUpdate(
         getItemCount(data),
-        this._scrollMetrics.offset,
+        this._getScrollMetrics().offset,
         this._scrollMetrics.visibleLength,
         this._getFrameMetrics,
         this._createViewToken,
