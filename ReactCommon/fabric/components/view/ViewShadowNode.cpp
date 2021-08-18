@@ -46,6 +46,7 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.elevation != 0 ||
       (viewProps.zIndex != 0 &&
        viewProps.yogaStyle.positionType() == YGPositionTypeAbsolute) ||
+      viewProps.yogaStyle.display() == YGDisplayNone ||
       viewProps.getClipsContentToBounds() ||
       isColorMeaningful(viewProps.shadowColor);
 

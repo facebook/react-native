@@ -291,7 +291,7 @@ void Binding::installFabricUIManager(
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 
-  bool enableLayoutAnimations_ = reactNativeConfig_->getBool(
+  bool enableLayoutAnimations = reactNativeConfig_->getBool(
       "react_fabric:enabled_layout_animations_android");
 
   auto toolbox = SchedulerToolbox{};
@@ -301,7 +301,7 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
-  if (enableLayoutAnimations_) {
+  if (enableLayoutAnimations) {
     animationDriver_ = std::make_shared<LayoutAnimationDriver>(this);
   }
   scheduler_ = std::make_shared<Scheduler>(
@@ -320,6 +320,7 @@ void Binding::uninstallFabricUIManager() {
   std::lock_guard<std::mutex> uiManagerLock(
       javaUIManagerMutex_, std::adopt_lock);
 
+  animationDriver_ = nullptr;
   scheduler_ = nullptr;
   javaUIManager_ = nullptr;
   reactNativeConfig_ = nullptr;

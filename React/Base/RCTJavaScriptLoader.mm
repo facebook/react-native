@@ -301,9 +301,23 @@ static void attemptAsynchronousLoadOfBundleAtURL(
         NSString *contentType = headers[@"Content-Type"];
         NSString *mimeType = [[contentType componentsSeparatedByString:@";"] firstObject];
         if (![mimeType isEqualToString:@"application/javascript"] && ![mimeType isEqualToString:@"text/javascript"]) {
-          NSString *description = [NSString
-              stringWithFormat:@"Expected MIME-Type to be 'application/javascript' or 'text/javascript', but got '%@'.",
-                               mimeType];
+          NSString *description;
+          if ([mimeType isEqualToString:@"application/json"]) {
+            NSError *parseError;
+            NSDictionary *jsonError = [NSJSONSerialization JSONObjectWithData:data options:0 error:&parseError];
+            if (!parseError && [jsonError isKindOfClass:[NSDictionary class]] &&
+                [[jsonError objectForKey:@"message"] isKindOfClass:[NSString class]] &&
+                [[jsonError objectForKey:@"message"] length]) {
+              description = [jsonError objectForKey:@"message"];
+            } else {
+              description = [NSString stringWithFormat:@"Unknown error fetching '%@'.", scriptURL.absoluteString];
+            }
+          } else {
+            description = [NSString
+                stringWithFormat:
+                    @"Expected MIME-Type to be 'application/javascript' or 'text/javascript', but got '%@'.", mimeType];
+          }
+
           error = [NSError
               errorWithDomain:@"JSServer"
                          code:NSURLErrorCannotParseResponse

@@ -763,6 +763,26 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeDevSplitBundleLoaderSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)loadBundle:(NSString *)bundlePath
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'DevSplitBundleLoader'
+     */
+
+    class JSI_EXPORT NativeDevSplitBundleLoaderSpecJSI : public ObjCTurboModule {
+    public:
+      NativeDevSplitBundleLoaderSpecJSI(const ObjCTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeDeviceEventManagerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)invokeDefaultBackPressHandler;

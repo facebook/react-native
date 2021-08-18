@@ -445,7 +445,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 #endif
 }
 
-- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL
+- (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL
 {
   if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
     NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
@@ -459,6 +459,20 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
                       completion:NULL];
     } else {
       self.invokeJS(@"HMRClient", @"setup", @[ kRCTPlatformName, path, host, RCTNullIfNil(port), @(YES) ]); // TODO(macOS GH#774)
+    }
+  }
+}
+
+- (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL
+{
+  if (bundleURL && !bundleURL.fileURL) { // isHotLoadingAvailable check
+    if (self.bridge) {
+      [self.bridge enqueueJSCall:@"HMRClient"
+                          method:@"registerBundle"
+                            args:@[ [bundleURL absoluteString] ]
+                      completion:NULL];
+    } else {
+      self.invokeJS(@"HMRClient", @"registerBundle", @[ [bundleURL absoluteString] ]);
     }
   }
 }
@@ -554,7 +568,10 @@ RCT_EXPORT_MODULE()	// TODO(macOS GH#774)
 - (void)toggleElementInspector
 {
 }
-- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL
+- (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL
+{
+}
+- (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL
 {
 }
 - (void)addMenuItem:(NSString *)title
