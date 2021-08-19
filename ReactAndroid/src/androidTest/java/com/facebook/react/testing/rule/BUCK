@@ -1,4 +1,3 @@
-# BUILD FILE SYNTAX: SKYLARK
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "IS_OSS_BUILD",
