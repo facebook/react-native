@@ -598,34 +598,41 @@ public class ReactInstanceManager {
     mCurrentActivity = activity;
 
     if (mUseDeveloperSupport) {
-      // Resume can be called from one of two different states:
+      // Resume can be called from one of three different states:
       // a) when activity was paused
       // b) when activity has just been created
+      // c) when there is no activity
       // In case of (a) the activity is attached to window and it is ok to add new views to it or
       // open dialogs. In case of (b) there is often a slight delay before such a thing happens.
       // As dev support manager can add views or open dialogs immediately after it gets enabled
       // (e.g. in the case when JS bundle is being fetched in background) we only want to enable
       // it once we know for sure the current activity is attached.
+      // We want to enable the various devsupport tools in case of (c) even without any activity
 
-      // We check if activity is attached to window by checking if decor view is attached
-      final View decorView = mCurrentActivity.getWindow().getDecorView();
-      if (!ViewCompat.isAttachedToWindow(decorView)) {
-        decorView.addOnAttachStateChangeListener(
-            new View.OnAttachStateChangeListener() {
-              @Override
-              public void onViewAttachedToWindow(View v) {
-                // we can drop listener now that we know the view is attached
-                decorView.removeOnAttachStateChangeListener(this);
-                mDevSupportManager.setDevSupportEnabled(true);
-              }
+      if (mCurrentActivity != null) {
+        // We check if activity is attached to window by checking if decor view is attached
+        final View decorView = mCurrentActivity.getWindow().getDecorView();
+        if (!ViewCompat.isAttachedToWindow(decorView)) {
+          decorView.addOnAttachStateChangeListener(
+              new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                  // we can drop listener now that we know the view is attached
+                  decorView.removeOnAttachStateChangeListener(this);
+                  mDevSupportManager.setDevSupportEnabled(true);
+                }
 
-              @Override
-              public void onViewDetachedFromWindow(View v) {
-                // do nothing
-              }
-            });
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                  // do nothing
+                }
+              });
+        } else {
+          // activity is attached to window, we can enable dev support immediately
+          mDevSupportManager.setDevSupportEnabled(true);
+        }
       } else {
-        // activity is attached to window, we can enable dev support immediately
+        // there is no activity, we can enable dev support
         mDevSupportManager.setDevSupportEnabled(true);
       }
     }
