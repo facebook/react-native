@@ -608,6 +608,8 @@ PODS:
     - React-jsi (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
   - React-jsinspector (1000.0.0)
+  - React-logger (1000.0.0):
+    - glog
   - React-perflogger (1000.0.0)
   - React-RCTActionSheet (1000.0.0):
     - React-Core/RCTActionSheetHeaders (= 1000.0.0)
@@ -688,6 +690,7 @@ PODS:
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
+    - React-logger (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
   - ReactCommon/turbomodule/samples (1000.0.0):
     - DoubleConversion
@@ -697,6 +700,7 @@ PODS:
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
+    - React-logger (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - Yoga (1.14.0)
@@ -747,6 +751,7 @@ DEPENDENCIES:
   - React-jsi/Fabric (from `../../ReactCommon/jsi`)
   - React-jsiexecutor (from `../../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../ReactCommon/jsinspector`)
+  - React-logger (from `../../ReactCommon/logger`)
   - React-perflogger (from `../../ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../../Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../../Libraries/NativeAnimation`)
@@ -819,6 +824,8 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../../ReactCommon/jsinspector"
+  React-logger:
+    :path: "../../ReactCommon/logger"
   React-perflogger:
     :path: "../../ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -884,6 +891,7 @@ SPEC CHECKSUMS:
   React-jsi: 7cc3d3691803478047e7d2c8eb5d4c2f9c6d2922
   React-jsiexecutor: 02ed9d4a28a8acf44788b4697e13c4aadc42cf72
   React-jsinspector: 7d223826b0e7a61b3540c21b9eca2603b1d4e823
+  React-logger: 2009c0280c286a76200d6b7c5fe242fad51ddd7a
   React-perflogger: fe66bd6d8b17ebcfdf0159bf41fe28d8035ac20c
   React-RCTActionSheet: 3131a0b9280aa0e51bdf54b3d79aecd8503db62c
   React-RCTAnimation: 73ba515a4fab8ca55d15b41935547cdb45fa5e0b
@@ -898,7 +906,7 @@ SPEC CHECKSUMS:
   React-RCTText: e9146b2c0550a83d1335bfe2553760070a2d75c7
   React-RCTVibration: 1a58f6ab1ae5fad004119979b676cb5e912f2e44
   React-runtimeexecutor: 4b0c6eb341c7d3ceb5e2385cb0fdb9bf701024f3
-  ReactCommon: 877082c706646737624b505f7120052794ae75dd
+  ReactCommon: 632474905edd9a20ec4f4084142ff4b4a4f3fd8b
   Yoga: c0d06f5380d34e939f55420669a60fe08b79bd75
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
