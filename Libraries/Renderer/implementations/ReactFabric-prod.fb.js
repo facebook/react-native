@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<dd5900b4130b4f7db16a3c40d6b8eda4>>
+ * @generated SignedSource<<3e8d175b2c3ba66f1b2515a048381533>>
  */
 
 "use strict";
@@ -1946,8 +1946,6 @@ function createTextInstance(
   hostContext,
   internalInstanceHandle
 ) {
-  if (!hostContext.isInAParentText)
-    throw Error("Text strings must be rendered within a <Text> component.");
   hostContext = nextReactTag;
   nextReactTag += 2;
   return {
@@ -7935,7 +7933,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_948 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "18.0.0-424fe5870-20210816",
+    version: "18.0.0-bd255700d-20210816",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -7977,7 +7975,7 @@ var internals$jscomp$inline_1189 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-424fe5870-20210816"
+  reconcilerVersion: "18.0.0-bd255700d-20210816"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1190 = __REACT_DEVTOOLS_GLOBAL_HOOK__;

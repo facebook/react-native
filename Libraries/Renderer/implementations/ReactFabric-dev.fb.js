@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<903768081f51a5abfed30db7d6f33dd7>>
+ * @generated SignedSource<<76d2205d7282245af6b7c335e7882e8b>>
  */
 
 'use strict';
@@ -4988,8 +4988,10 @@ function createTextInstance(
   hostContext,
   internalInstanceHandle
 ) {
-  if (!hostContext.isInAParentText) {
-    throw Error("Text strings must be rendered within a <Text> component.");
+  {
+    if (!hostContext.isInAParentText) {
+      error("Text strings must be rendered within a <Text> component.");
+    }
   }
 
   var tag = nextReactTag;
@@ -5913,7 +5915,7 @@ var Passive$1 =
   /*   */
   4;
 
-var ReactVersion = "18.0.0-424fe5870-20210816";
+var ReactVersion = "18.0.0-bd255700d-20210816";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;

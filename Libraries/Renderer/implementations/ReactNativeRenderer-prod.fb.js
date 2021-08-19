@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<31a717b21f9596e634345cda771448c2>>
+ * @generated SignedSource<<9112b01579a4d968086ddc0c467e93b0>>
  */
 
 "use strict";
@@ -8024,7 +8024,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_984 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "18.0.0-424fe5870-20210816",
+    version: "18.0.0-bd255700d-20210816",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8066,7 +8066,7 @@ var internals$jscomp$inline_1237 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-424fe5870-20210816"
+  reconcilerVersion: "18.0.0-bd255700d-20210816"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1238 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
