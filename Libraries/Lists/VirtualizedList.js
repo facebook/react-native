@@ -1175,9 +1175,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this.context == null
             ) {
               // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
-              console.warn(
+              console.error(
                 'VirtualizedLists should never be nested inside plain ScrollViews with the same ' +
-                  'orientation - use another VirtualizedList-backed container instead.',
+                  'orientation because it can break windowing and other functionality - use another ' +
+                  'VirtualizedList-backed container instead.',
               );
               this._hasWarned.nesting = true;
             }

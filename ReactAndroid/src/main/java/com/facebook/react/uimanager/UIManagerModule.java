@@ -437,6 +437,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public void stopSurface(final int surfaceId) {
+    throw new UnsupportedOperationException();
+  }
+
   /** Unregisters a new root view. */
   @ReactMethod
   public void removeRootView(int rootViewTag) {
@@ -944,5 +949,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         .getUIViewOperationQueue()
         .getNativeViewHierarchyManager()
         .resolveView(tag);
+  }
+
+  @Override
+  public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event) {
+    getReactApplicationContext()
+        .getJSModule(RCTEventEmitter.class)
+        .receiveEvent(targetTag, eventName, event);
   }
 }

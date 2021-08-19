@@ -601,6 +601,10 @@ const COMPLEX_OBJECTS: SchemaType = {
                               type: 'StringTypeAnnotation',
                             },
                           },
+                          {
+                            optional: false,
+                            name: 'value',
+                          },
                         ],
                       },
                     },

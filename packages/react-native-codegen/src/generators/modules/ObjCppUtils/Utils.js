@@ -66,6 +66,7 @@ function flatObjects(
           objectTypesToFlatten = objectTypesToFlatten.concat(
             properties.reduce((acc, curr) => {
               if (
+                curr.typeAnnotation &&
                 curr.typeAnnotation.type === 'ObjectTypeAnnotation' &&
                 curr.typeAnnotation.properties
               ) {

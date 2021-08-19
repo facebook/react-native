@@ -17,7 +17,7 @@ import type {DefaultInputsArray} from './AlertMacOS'; // TODO(macOS GH#774)
 export type Args = {|
   title?: string,
   message?: string,
-  buttons?: Array<Object>, // TODO: have a better type
+  buttons?: Array<Object>, // TODO(T67565166): have a better type
   type?: string,
   defaultValue?: string,
   cancelButtonKey?: string,

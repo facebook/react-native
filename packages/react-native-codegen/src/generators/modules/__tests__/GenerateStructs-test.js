@@ -23,7 +23,7 @@ describe('GenerateStructs', () => {
       it(`can generate fixture ${fixtureName}`, () => {
         expect(
           generator
-            .translateObjectsForStructs(fixture)
+            .translateObjectsForStructs(fixture, fixtureName)
             .replace(/::_MODULE_NAME_::/g, 'SampleTurboModule'),
         ).toMatchSnapshot();
       });

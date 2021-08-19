@@ -134,12 +134,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @GuardedBy("mPreMountItemsLock")
   @NonNull
-  private ArrayDeque<MountItem> mPreMountItems =
+  private ArrayDeque<PreAllocateViewMountItem> mPreMountItems =
       new ArrayDeque<>(PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
 
   @ThreadConfined(UI)
   @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
+
+  @ThreadConfined(UI)
+  private int mLastExecutedMountItemSurfaceId = -1;
+
+  @ThreadConfined(UI)
+  private boolean mLastExecutedMountItemSurfaceIdActive = false;
 
   /**
    * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
@@ -242,6 +248,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @AnyThread
   @ThreadConfined(ANY)
+  @Override
   public void stopSurface(int surfaceID) {
     mBinding.stopSurface(surfaceID);
     mReactContextForRootTag.remove(surfaceID);
@@ -673,15 +680,47 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
-  private ArrayDeque<MountItem> getAndResetPreMountItems() {
+  private ArrayDeque<PreAllocateViewMountItem> getAndResetPreMountItems() {
     synchronized (mPreMountItemsLock) {
-      ArrayDeque<MountItem> result = mPreMountItems;
+      ArrayDeque<PreAllocateViewMountItem> result = mPreMountItems;
       if (result.isEmpty()) {
         return null;
       }
       mPreMountItems = new ArrayDeque<>(PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
       return result;
     }
+  }
+
+  /**
+   * Check if a surfaceId is active and ready for MountItems to be executed against it. It is safe
+   * and cheap to call this repeatedly because we expect many operations to be batched with the same
+   * surfaceId in a row and we memoize the parameters and results.
+   *
+   * @param surfaceId
+   * @param context
+   * @return
+   */
+  @UiThread
+  @ThreadConfined(UI)
+  private boolean surfaceActiveForExecution(int surfaceId, String context) {
+    if (mLastExecutedMountItemSurfaceId != surfaceId) {
+      mLastExecutedMountItemSurfaceId = surfaceId;
+      mLastExecutedMountItemSurfaceIdActive = mReactContextForRootTag.get(surfaceId) != null;
+
+      // If there are many MountItems with the same SurfaceId, we only
+      // log a warning for the first one that is skipped.
+      if (!mLastExecutedMountItemSurfaceIdActive) {
+        ReactSoftException.logSoftException(
+            TAG,
+            new ReactNoCrashSoftException(
+                "dispatchMountItems: skipping "
+                    + context
+                    + ", because surface not available: "
+                    + surfaceId));
+      }
+    }
+
+    return mLastExecutedMountItemSurfaceIdActive;
   }
 
   @UiThread
@@ -755,7 +794,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     // If there are MountItems to dispatch, we make sure all the "pre mount items" are executed
     // first
-    ArrayDeque<MountItem> mPreMountItemsToDispatch = getAndResetPreMountItems();
+    ArrayDeque<PreAllocateViewMountItem> mPreMountItemsToDispatch = getAndResetPreMountItems();
 
     if (mPreMountItemsToDispatch != null) {
       Systrace.beginSection(
@@ -764,7 +803,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
               + mPreMountItemsToDispatch.size());
 
       while (!mPreMountItemsToDispatch.isEmpty()) {
-        mPreMountItemsToDispatch.pollFirst().execute(mMountingManager);
+        PreAllocateViewMountItem mountItem = mPreMountItemsToDispatch.pollFirst();
+        if (surfaceActiveForExecution(
+            mountItem.getRootTag(), "dispatchMountItems PreAllocateViewMountItem")) {
+          mountItem.execute(mMountingManager);
+        }
       }
 
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -791,14 +834,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         // TODO T68118357: clean up this logic and simplify this method overall
         if (mountItem instanceof BatchMountItem) {
           BatchMountItem batchMountItem = (BatchMountItem) mountItem;
-          int rootTag = batchMountItem.getRootTag();
-          if (mReactContextForRootTag.get(rootTag) == null) {
-            ReactSoftException.logSoftException(
-                TAG,
-                new ReactNoCrashSoftException(
-                    "dispatchMountItems: skipping batched item: surface not available ["
-                        + rootTag
-                        + "]"));
+          if (!surfaceActiveForExecution(
+              batchMountItem.getRootTag(), "dispatchMountItems BatchMountItem")) {
             continue;
           }
         }
@@ -854,15 +891,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           break;
         }
 
-        MountItem preMountItemsToDispatch;
+        PreAllocateViewMountItem preMountItemToDispatch;
         synchronized (mPreMountItemsLock) {
           if (mPreMountItems.isEmpty()) {
             break;
           }
-          preMountItemsToDispatch = mPreMountItems.pollFirst();
+          preMountItemToDispatch = mPreMountItems.pollFirst();
         }
 
-        preMountItemsToDispatch.execute(mMountingManager);
+        if (surfaceActiveForExecution(
+            preMountItemToDispatch.getRootTag(), "dispatchPreMountItems")) {
+          preMountItemToDispatch.execute(mMountingManager);
+        }
       }
     } finally {
       mInDispatch = false;
@@ -906,6 +946,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         doLeftAndRightSwapInRTL);
   }
 
+  @Override
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(reactTag);
     if (eventEmitter == null) {
