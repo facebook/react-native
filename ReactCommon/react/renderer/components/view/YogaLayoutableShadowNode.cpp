@@ -6,6 +6,7 @@
  */
 
 #include "YogaLayoutableShadowNode.h"
+#include <logger/react_native_log.h>
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewProps.h>
@@ -14,7 +15,6 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/debug/SystraceSection.h>
-#include <react/utils/react_native_log.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
