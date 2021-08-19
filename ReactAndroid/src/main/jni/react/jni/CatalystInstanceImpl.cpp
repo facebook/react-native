@@ -26,6 +26,9 @@
 #include <fb/log.h>
 #include <fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
+
+#include <logger/react_native_log.h>
 
 #include "CxxModuleWrapper.h"
 #include "JNativeRunnable.h"
@@ -93,13 +96,8 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
-void logSoftException(std::string message) {
-  JReactSoftExceptionLogger::logNoThrowSoftExceptionWithMessage(
-      "ReactNativeLogger#warning", message);
-}
-
 void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
-  CxxNativeModule::setWarnOnUsageLogger(&logSoftException);
+  CxxNativeModule::setShouldWarnOnUse(true);
 }
 
 void CatalystInstanceImpl::registerNatives() {
@@ -145,6 +143,25 @@ void CatalystInstanceImpl::registerNatives() {
   JNativeRunnable::registerNatives();
 }
 
+void log(ReactNativeLogLevel level, const char *message) {
+  switch (level) {
+    case ReactNativeLogLevelInfo:
+      LOG(INFO) << message;
+      break;
+    case ReactNativeLogLevelWarning:
+      LOG(WARNING) << message;
+      JReactSoftExceptionLogger::logNoThrowSoftExceptionWithMessage(
+          "react_native_log#warning", message);
+      break;
+    case ReactNativeLogLevelError:
+      LOG(ERROR) << message;
+      break;
+    case ReactNativeLogLevelFatal:
+      LOG(FATAL) << message;
+      break;
+  }
+}
+
 void CatalystInstanceImpl::initializeBridge(
     jni::alias_ref<ReactCallback::javaobject> callback,
     // This executor is actually a factory holder.
@@ -155,6 +172,8 @@ void CatalystInstanceImpl::initializeBridge(
         javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
         cxxModules) {
+  set_react_native_logfunc(&log);
+
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be
   // called once");

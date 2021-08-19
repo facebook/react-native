@@ -262,6 +262,7 @@ PODS:
     - React-callinvoker (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsinspector (= 1000.0.0)
+    - React-logger (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
     - React-runtimeexecutor (= 1000.0.0)
   - React-Fabric (1000.0.0):
@@ -885,7 +886,7 @@ SPEC CHECKSUMS:
   React-callinvoker: c5d61e29df57793f0dc10ec2bc01c846f863e51f
   React-Core: 15d3fbb3cc863fa9990cc14c303a021cc66892a5
   React-CoreModules: 5ee1ed4f8b7f8bdbd45ed155a15c601dca9c73dd
-  React-cxxreact: 20a63475c83c5450442c754305738c6db6070214
+  React-cxxreact: 2fe718ab7094db2941ddaf35b2a44b8b57a7cece
   React-Fabric: 7641eab239c5fc5669ef22ea08cf383f9066fdcb
   React-graphics: db797c4609216593a1a12d1661716898d303900f
   React-jsi: 7cc3d3691803478047e7d2c8eb5d4c2f9c6d2922

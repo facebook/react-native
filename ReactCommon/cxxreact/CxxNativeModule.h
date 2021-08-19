@@ -48,7 +48,7 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
       unsigned int hookId,
       folly::dynamic &&args) override;
 
-  static void setWarnOnUsageLogger(WarnOnUsageLogger logger);
+  static void setShouldWarnOnUse(bool value);
 
  private:
   void lazyInit();
@@ -59,8 +59,11 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
   std::shared_ptr<MessageQueueThread> messageQueueThread_;
   std::unique_ptr<xplat::module::CxxModule> module_;
   std::vector<xplat::module::CxxModule::Method> methods_;
+  void emitWarnIfWarnOnUsage(
+      const std::string &method_name,
+      const std::string &module_name);
 
-  static WarnOnUsageLogger warnOnUsageLogger_;
+  static bool shouldWarnOnUse_;
 };
 
 } // namespace react
