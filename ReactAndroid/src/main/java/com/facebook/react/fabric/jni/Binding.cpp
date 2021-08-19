@@ -557,9 +557,6 @@ void Binding::installFabricUIManager(
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 
-  disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
-      "react_fabric:disable_virtual_node_preallocation");
-
   enableEarlyEventEmitterUpdate_ = reactNativeConfig_->getBool(
       "react_fabric:enable_early_event_emitter_update");
 
@@ -1194,8 +1191,7 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
 
   auto shadowView = ShadowView(shadowNode);
 
-  if (disableVirtualNodePreallocation_ &&
-      !shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
+  if (!shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
     return;
   }
 
@@ -1208,9 +1204,6 @@ void Binding::schedulerDidCloneShadowNode(
     const ShadowNode &newShadowNode) {
   // This is only necessary if view preallocation was skipped during
   // createShadowNode
-  if (!disableVirtualNodePreallocation_) {
-    return;
-  }
 
   // We may need to PreAllocate a ShadowNode at this point if this is the
   // earliest point it is possible to do so:

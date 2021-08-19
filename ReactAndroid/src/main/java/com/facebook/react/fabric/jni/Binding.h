@@ -197,7 +197,6 @@ class Binding : public jni::HybridClass<Binding>,
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
   bool disablePreallocateViews_{false};
-  bool disableVirtualNodePreallocation_{false};
   bool enableFabricLogs_{false};
   bool enableEarlyEventEmitterUpdate_{false};
 };
