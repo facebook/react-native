@@ -1175,7 +1175,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this.context == null
             ) {
               // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
-              console.error(
+              // TODO(macOS GH#774): Temporarily ignoring commit 646605b90e666c4b0d1c1200a137eacf62b46f87
+              // to suppress errors in RNTester's MultiColumn and SectionList example pages
+              console.warn(
                 'VirtualizedLists should never be nested inside plain ScrollViews with the same ' +
                   'orientation because it can break windowing and other functionality - use another ' +
                   'VirtualizedList-backed container instead.',
