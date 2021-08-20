@@ -20,13 +20,12 @@ void BatchedEventQueue::onEnqueue() const {
 void BatchedEventQueue::enqueueUniqueEvent(const RawEvent &rawEvent) const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
-    auto const position = std::find_if(
-        eventQueue_.begin(), eventQueue_.end(), [&rawEvent](auto const &event) {
-          return event.type == rawEvent.type &&
-              event.eventTarget == rawEvent.eventTarget;
-        });
-    if (position != eventQueue_.end()) {
-      eventQueue_.erase(position);
+    if (!eventQueue_.empty()) {
+      auto const position = eventQueue_.back();
+      if (position.type == rawEvent.type &&
+          position.eventTarget == rawEvent.eventTarget) {
+        eventQueue_.pop_back();
+      }
     }
 
     eventQueue_.push_back(rawEvent);

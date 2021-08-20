@@ -23,7 +23,8 @@ RawTextProps::RawTextProps(
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList RawTextProps::getDebugProps() const {
-  return {debugStringConvertibleItem("text", text)};
+  return SharedDebugStringConvertibleList{
+      debugStringConvertibleItem("text", text)};
 }
 #endif
 

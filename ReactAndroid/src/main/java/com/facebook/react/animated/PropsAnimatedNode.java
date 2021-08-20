@@ -45,17 +45,20 @@ import java.util.Map;
   public void connectToView(int viewTag, UIManager uiManager) {
     if (mConnectedViewTag != -1) {
       throw new JSApplicationIllegalArgumentException(
-          "Animated node " + mTag + " is " + "already attached to a view");
+          "Animated node " + mTag + " is " + "already attached to a view: " + mConnectedViewTag);
     }
     mConnectedViewTag = viewTag;
     mUIManager = uiManager;
   }
 
   public void disconnectFromView(int viewTag) {
-    if (mConnectedViewTag != viewTag) {
+    if (mConnectedViewTag != viewTag && mConnectedViewTag != -1) {
       throw new JSApplicationIllegalArgumentException(
           "Attempting to disconnect view that has "
-              + "not been connected with the given animated node");
+              + "not been connected with the given animated node: "
+              + viewTag
+              + " but is connected to view "
+              + mConnectedViewTag);
     }
 
     mConnectedViewTag = -1;
