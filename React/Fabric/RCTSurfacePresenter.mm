@@ -27,9 +27,6 @@
 
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
-#import <react/renderer/components/root/RootShadowNode.h>
-#import <react/renderer/core/LayoutConstraints.h>
-#import <react/renderer/core/LayoutContext.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
