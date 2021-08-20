@@ -12,7 +12,7 @@ rn_android_library(
     srcs = glob(["*.java"]),
     autoglob = False,
     is_androidx = True,
-    deps = ([
+    deps = [
         react_native_dep("third-party/android/androidx:test-espresso-core"),
         react_native_dep("third-party/java/fest:fest"),
         react_native_dep("third-party/java/junit:junit"),
@@ -27,7 +27,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/shell:shell"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
-    ]) + ([
+    ] + [
         react_native_dep("java/com/facebook/fbreact/testing:testing"),
-    ]) if not IS_OSS_BUILD else [],
+    ] if not IS_OSS_BUILD else [],
 )

@@ -85,7 +85,7 @@ rn_xplat_cxx_library(
         "-std=c++17",
         "-Wall",
     ],
-    platforms = (APPLE),
+    platforms = APPLE,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
