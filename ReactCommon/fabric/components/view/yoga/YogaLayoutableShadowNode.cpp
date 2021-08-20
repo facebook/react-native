@@ -12,6 +12,7 @@
 #include <react/core/LayoutContext.h>
 #include <react/debug/DebugStringConvertibleItem.h>
 #include <react/debug/SystraceSection.h>
+#include <react/utils/ThreadStorage.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
@@ -328,6 +329,8 @@ void YogaLayoutableShadowNode::layoutTree(
 
   applyLayoutConstraints(yogaNode_.getStyle(), layoutConstraints);
 
+  ThreadStorage<LayoutContext>::getInstance().set(layoutContext);
+
   if (layoutContext.swapLeftAndRightInRTL) {
     swapLeftAndRightInTree(*this);
   }
@@ -442,7 +445,10 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       break;
   }
 
-  auto size = shadowNodeRawPtr->measure({minimumSize, maximumSize});
+  auto layoutContext = ThreadStorage<LayoutContext>::getInstance().get();
+
+  auto size = shadowNodeRawPtr->measureContent(
+      layoutContext.value_or(LayoutContext{}), {minimumSize, maximumSize});
 
   return YGSize{yogaFloatFromFloat(size.width),
                 yogaFloatFromFloat(size.height)};

@@ -240,6 +240,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
   }
 
+  @Override
+  public void loadSplitBundleFromFile(String fileName, String sourceURL) {
+    jniLoadScriptFromFile(fileName, sourceURL, false);
+  }
+
   private native void jniSetSourceURL(String sourceURL);
 
   private native void jniRegisterSegment(int segmentId, String path);

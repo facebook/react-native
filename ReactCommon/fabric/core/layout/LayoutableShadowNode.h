@@ -76,7 +76,9 @@ class LayoutableShadowNode : public ShadowNode {
    * given constrains and relying on possible layout.
    * Default implementation returns zero size.
    */
-  virtual Size measure(LayoutConstraints layoutConstraints) const;
+  virtual Size measureContent(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const;
 
   /*
    * Measures the node with given `layoutContext` and `layoutConstraints`.

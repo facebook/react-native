@@ -21,8 +21,6 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   @Retention(RetentionPolicy.SOURCE)
   @interface ImageEventType {}
 
-  // Currently ON_PROGRESS is not implemented, these can be added
-  // easily once support exists in fresco.
   public static final int ON_ERROR = 1;
   public static final int ON_LOAD = 2;
   public static final int ON_LOAD_END = 3;
@@ -34,18 +32,30 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   private final @Nullable String mSourceUri;
   private final int mWidth;
   private final int mHeight;
+  private final int mLoaded;
+  private final int mTotal;
 
   public static final ImageLoadEvent createLoadStartEvent(int viewId) {
     return new ImageLoadEvent(viewId, ON_LOAD_START);
   }
 
+  /**
+   * @param loaded Amount of the image that has been loaded. It should be number of bytes, but
+   *     Fresco does not currently provides that information.
+   * @param total Amount that `loaded` will be when the image is fully loaded.
+   */
+  public static final ImageLoadEvent createProgressEvent(
+      int viewId, @Nullable String imageUri, int loaded, int total) {
+    return new ImageLoadEvent(viewId, ON_PROGRESS, null, imageUri, 0, 0, loaded, total);
+  }
+
   public static final ImageLoadEvent createLoadEvent(
       int viewId, @Nullable String imageUri, int width, int height) {
-    return new ImageLoadEvent(viewId, ON_LOAD, null, imageUri, width, height);
+    return new ImageLoadEvent(viewId, ON_LOAD, null, imageUri, width, height, 0, 0);
   }
 
   public static final ImageLoadEvent createErrorEvent(int viewId, Throwable throwable) {
-    return new ImageLoadEvent(viewId, ON_ERROR, throwable.getMessage(), null, 0, 0);
+    return new ImageLoadEvent(viewId, ON_ERROR, throwable.getMessage(), null, 0, 0, 0, 0);
   }
 
   public static final ImageLoadEvent createLoadEndEvent(int viewId) {
@@ -53,7 +63,7 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   }
 
   private ImageLoadEvent(int viewId, @ImageEventType int eventType) {
-    this(viewId, eventType, null, null, 0, 0);
+    this(viewId, eventType, null, null, 0, 0, 0, 0);
   }
 
   private ImageLoadEvent(
@@ -62,13 +72,17 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
       @Nullable String errorMessage,
       @Nullable String sourceUri,
       int width,
-      int height) {
+      int height,
+      int loaded,
+      int total) {
     super(viewId);
     mEventType = eventType;
     mErrorMessage = errorMessage;
     mSourceUri = sourceUri;
     mWidth = width;
     mHeight = height;
+    mLoaded = loaded;
+    mTotal = total;
   }
 
   public static String eventNameForType(@ImageEventType int eventType) {
@@ -105,6 +119,11 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
     WritableMap eventData = null;
 
     switch (mEventType) {
+      case ON_PROGRESS:
+        eventData = Arguments.createMap();
+        eventData.putInt("loaded", mLoaded);
+        eventData.putInt("total", mTotal);
+        break;
       case ON_LOAD:
         eventData = Arguments.createMap();
         eventData.putMap("source", createEventDataSource());

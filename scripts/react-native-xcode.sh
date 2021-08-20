@@ -79,6 +79,11 @@ else
    ENTRY_FILE=${1:-index.js}
 fi
 
+if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
+  echo "error: Entry file $ENTRY_FILE does not exist. If you use another file as your entry point, pass ENTRY_FILE=myindex.js" >&2
+  exit 2
+fi
+
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
   . "$HOME/.nvm/nvm.sh"
 elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then

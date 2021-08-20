@@ -58,8 +58,10 @@ TextInputProps::TextInputProps(
       autoFocus(
           convertRawProp(rawProps, "autoFocus", sourceProps.autoFocus, {})){};
 
-TextAttributes TextInputProps::getEffectiveTextAttributes() const {
+TextAttributes TextInputProps::getEffectiveTextAttributes(
+    Float fontSizeMultiplier) const {
   auto result = TextAttributes::defaultTextAttributes();
+  result.fontSizeMultiplier = fontSizeMultiplier;
   result.apply(textAttributes);
 
   /*

@@ -69,6 +69,8 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
 
   void reloadJSFromServer(final String bundleURL);
 
+  void loadSplitBundleFromServer(String bundlePath, DevSplitBundleCallback callback);
+
   void isPackagerRunning(PackagerStatusCallback callback);
 
   void setHotModuleReplacementEnabled(final boolean isHotModuleReplacementEnabled);

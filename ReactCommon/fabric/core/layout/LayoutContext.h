@@ -55,6 +55,11 @@ struct LayoutContext {
    * - border(Left|Right)Color → border(Start|End)Color
    */
   bool swapLeftAndRightInRTL{false};
+
+  /*
+   * Multiplier used to change size of the font in surface.
+   */
+  Float fontSizeMultiplier{1.0};
 };
 
 } // namespace react

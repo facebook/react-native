@@ -25,6 +25,10 @@ static std::string moduleNameFromComponentName(const std::string &componentName)
     return "FBStickerInputViewManager";
   }
 
+  if (componentName == "FDSTooltipView") {
+    return "FBReactFDSTooltipViewManager";
+  }
+
   if (componentName == "FBRotatablePhotoPlayer") {
     return "FBRotatablePhotoPlayerViewManager";
   }

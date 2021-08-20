@@ -16,6 +16,8 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -321,8 +323,12 @@ import java.util.Queue;
     UIManager uiManager =
         UIManagerHelper.getUIManagerForReactTag(mReactApplicationContext, viewTag);
     if (uiManager == null) {
-      throw new IllegalStateException(
-          "Animated node could not be connected to UIManager: " + viewTag);
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Animated node could not be connected to UIManager - uiManager disappeared for tag: "
+                  + viewTag));
+      return;
     }
 
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
