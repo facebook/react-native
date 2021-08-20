@@ -52,6 +52,12 @@ function getPropertyType(name, optional, typeAnnotation) {
         name,
         optional,
       };
+    case '$ReadOnly':
+      return getPropertyType(
+        name,
+        optional,
+        typeAnnotation.typeParameters.params[0],
+      );
     case 'ObjectTypeAnnotation':
       return {
         type: 'ObjectTypeAnnotation',

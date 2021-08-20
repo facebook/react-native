@@ -240,8 +240,7 @@ public class ReactImageView extends GenericDraweeView {
           new BaseControllerListener<ImageInfo>() {
             @Override
             public void onSubmit(String id, Object callerContext) {
-              mEventDispatcher.dispatchEvent(
-                  new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_START));
+              mEventDispatcher.dispatchEvent(ImageLoadEvent.createLoadStartEvent(getId()));
             }
 
             @Override
@@ -249,22 +248,18 @@ public class ReactImageView extends GenericDraweeView {
                 String id, @Nullable final ImageInfo imageInfo, @Nullable Animatable animatable) {
               if (imageInfo != null) {
                 mEventDispatcher.dispatchEvent(
-                    new ImageLoadEvent(
+                    ImageLoadEvent.createLoadEvent(
                         getId(),
-                        ImageLoadEvent.ON_LOAD,
                         mImageSource.getSource(),
                         imageInfo.getWidth(),
                         imageInfo.getHeight()));
-                mEventDispatcher.dispatchEvent(
-                    new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
+                mEventDispatcher.dispatchEvent(ImageLoadEvent.createLoadEndEvent(getId()));
               }
             }
 
             @Override
             public void onFailure(String id, Throwable throwable) {
-              mEventDispatcher.dispatchEvent(
-                  new ImageLoadEvent(
-                      getId(), ImageLoadEvent.ON_ERROR, true, throwable.getMessage()));
+              mEventDispatcher.dispatchEvent(ImageLoadEvent.createErrorEvent(getId(), throwable));
             }
           };
     }
