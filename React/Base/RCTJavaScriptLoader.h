@@ -92,7 +92,6 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, RCTSource *source);
  * RCTJavaScriptLoaderErrorDomain and the code RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously.
  */
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
-                               runtimeBCVersion:(int32_t)runtimeBCVersion
                                    sourceLength:(int64_t *)sourceLength
                                           error:(NSError **)error;
 

@@ -87,6 +87,7 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   [_viewsToBeMounted removeAllObjects];
   [_viewsToBeUnmounted removeAllObjects];
   _state.reset();
+  self.contentView = nil;
   [super prepareForRecycle];
 }
 

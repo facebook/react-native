@@ -19,8 +19,6 @@
 
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
 
-static const int32_t JSNoBytecodeFileFormatVersion = -1;
-
 const UInt32 RCT_BYTECODE_ALIGNMENT = 4;
 UInt32 RCTReadUInt32LE(NSData *script, UInt32 offset)
 {
@@ -92,10 +90,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   int64_t sourceLength;
   NSError *error;
-  NSData *data = [self attemptSynchronousLoadOfBundleAtURL:scriptURL
-                                          runtimeBCVersion:JSNoBytecodeFileFormatVersion
-                                              sourceLength:&sourceLength
-                                                     error:&error];
+  NSData *data = [self attemptSynchronousLoadOfBundleAtURL:scriptURL sourceLength:&sourceLength error:&error];
   if (data) {
     onComplete(nil, RCTSourceCreate(scriptURL, data, sourceLength));
     return;
@@ -112,7 +107,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 + (NSData *)attemptSynchronousLoadOfBundleAtURL:(NSURL *)scriptURL
-                               runtimeBCVersion:(int32_t)runtimeBCVersion
                                    sourceLength:(int64_t *)sourceLength
                                           error:(NSError **)error
 {
@@ -203,27 +197,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
       return nil;
 #endif
     }
-    case facebook::react::ScriptTag::BCBundle:
-      if (runtimeBCVersion == JSNoBytecodeFileFormatVersion || runtimeBCVersion < 0) {
-        if (error) {
-          *error = [NSError
-              errorWithDomain:RCTJavaScriptLoaderErrorDomain
-                         code:RCTJavaScriptLoaderErrorBCNotSupported
-                     userInfo:@{NSLocalizedDescriptionKey : @"Bytecode bundles are not supported by this runtime."}];
-        }
-        return nil;
-      } else if ((uint32_t)runtimeBCVersion != header.version) {
-        if (error) {
-          NSString *errDesc = [NSString
-              stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %u", runtimeBCVersion, header.version];
-
-          *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
-                                       code:RCTJavaScriptLoaderErrorBCVersion
-                                   userInfo:@{NSLocalizedDescriptionKey : errDesc}];
-        }
-        return nil;
-      }
-      break;
   }
 
   struct stat statInfo;
