@@ -28,6 +28,11 @@ AccessibilityProps::AccessibilityProps(
           "accessibilityRole",
           sourceProps.accessibilityTraits,
           AccessibilityTraits::None)),
+      accessibilityState(convertRawProp(
+          rawProps,
+          "accessibilityState",
+          sourceProps.accessibilityState,
+          {})),
       accessibilityLabel(convertRawProp(
           rawProps,
           "accessibilityLabel",

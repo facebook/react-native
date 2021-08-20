@@ -50,6 +50,7 @@ static better::optional<AnimationType> parseAnimationType(std::string param) {
     return better::optional<AnimationType>(AnimationType::Keyboard);
   }
 
+  LOG(ERROR) << "Error parsing animation type: " << param;
   return {};
 }
 
@@ -68,6 +69,7 @@ static better::optional<AnimationProperty> parseAnimationProperty(
     return better::optional<AnimationProperty>(AnimationProperty::ScaleXY);
   }
 
+  LOG(ERROR) << "Error parsing animation property: " << param;
   return {};
 }
 
@@ -87,14 +89,19 @@ static better::optional<AnimationConfig> parseAnimationConfig(
 
   auto const typeIt = config.find("type");
   if (typeIt == config.items().end()) {
+    LOG(ERROR) << "Error parsing animation config: could not find field `type`";
     return {};
   }
   auto const animationTypeParam = typeIt->second;
   if (animationTypeParam.empty() || !animationTypeParam.isString()) {
+    LOG(ERROR)
+        << "Error parsing animation config: could not unwrap field `type`";
     return {};
   }
   const auto animationType = parseAnimationType(animationTypeParam.asString());
   if (!animationType) {
+    LOG(ERROR)
+        << "Error parsing animation config: could not parse field `type`";
     return {};
   }
 
@@ -102,15 +109,21 @@ static better::optional<AnimationConfig> parseAnimationConfig(
   if (parsePropertyType) {
     auto const propertyIt = config.find("property");
     if (propertyIt == config.items().end()) {
+      LOG(ERROR)
+          << "Error parsing animation config: could not find field `property`";
       return {};
     }
     auto const animationPropertyParam = propertyIt->second;
     if (animationPropertyParam.empty() || !animationPropertyParam.isString()) {
+      LOG(ERROR)
+          << "Error parsing animation config: could not unwrap field `property`";
       return {};
     }
     const auto animationPropertyParsed =
         parseAnimationProperty(animationPropertyParam.asString());
     if (!animationPropertyParsed) {
+      LOG(ERROR)
+          << "Error parsing animation config: could not parse field `property`";
       return {};
     }
     animationProperty = *animationPropertyParsed;
@@ -126,6 +139,8 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     if (durationIt->second.isDouble()) {
       duration = durationIt->second.asDouble();
     } else {
+      LOG(ERROR)
+          << "Error parsing animation config: field `duration` must be a number";
       return {};
     }
   }
@@ -135,6 +150,8 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     if (delayIt->second.isDouble()) {
       delay = delayIt->second.asDouble();
     } else {
+      LOG(ERROR)
+          << "Error parsing animation config: field `delay` must be a number";
       return {};
     }
   }
@@ -145,6 +162,8 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     if (springDampingIt->second.isDouble()) {
       springDamping = springDampingIt->second.asDouble();
     } else {
+      LOG(ERROR)
+          << "Error parsing animation config: field `springDamping` must be a number";
       return {};
     }
   }
@@ -154,6 +173,8 @@ static better::optional<AnimationConfig> parseAnimationConfig(
     if (initialVelocityIt->second.isDouble()) {
       initialVelocity = initialVelocityIt->second.asDouble();
     } else {
+      LOG(ERROR)
+          << "Error parsing animation config: field `initialVelocity` must be a number";
       return {};
     }
   }
@@ -173,27 +194,28 @@ static better::optional<LayoutAnimationConfig> parseLayoutAnimationConfig(
     return {};
   }
 
-  auto const durationIt = config.find("duration");
+  const auto durationIt = config.find("duration");
   if (durationIt == config.items().end() || !durationIt->second.isDouble()) {
     return {};
   }
   const double duration = durationIt->second.asDouble();
 
-  const auto createConfig =
-      parseAnimationConfig(config["create"], duration, true);
-  if (!createConfig) {
-    return {};
-  }
+  const auto createConfigIt = config.find("create");
+  const auto createConfig = createConfigIt == config.items().end()
+      ? better::optional<AnimationConfig>(AnimationConfig{})
+      : parseAnimationConfig(createConfigIt->second, duration, true);
 
-  const auto updateConfig =
-      parseAnimationConfig(config["update"], duration, false);
-  if (!updateConfig) {
-    return {};
-  }
+  const auto updateConfigIt = config.find("update");
+  const auto updateConfig = updateConfigIt == config.items().end()
+      ? better::optional<AnimationConfig>(AnimationConfig{})
+      : parseAnimationConfig(updateConfigIt->second, duration, false);
 
-  const auto deleteConfig =
-      parseAnimationConfig(config["delete"], duration, true);
-  if (!deleteConfig) {
+  const auto deleteConfigIt = config.find("delete");
+  const auto deleteConfig = deleteConfigIt == config.items().end()
+      ? better::optional<AnimationConfig>(AnimationConfig{})
+      : parseAnimationConfig(deleteConfigIt->second, duration, true);
+
+  if (!createConfig || !updateConfig || !deleteConfig) {
     return {};
   }
 
@@ -255,6 +277,10 @@ LayoutAnimationKeyFrameManager::calculateAnimationProgress(
     uint64_t now,
     const LayoutAnimation &animation,
     const AnimationConfig &mutationConfig) const {
+  if (mutationConfig.animationType == AnimationType::None) {
+    return {1, 1};
+  }
+
   uint64_t startTime = animation.startTime;
   uint64_t delay = mutationConfig.delay;
   uint64_t endTime = startTime + delay + mutationConfig.duration;
@@ -861,9 +887,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     }
   }
 
-  // TODO: fill in telemetry
   return MountingTransaction{
-      surfaceId, transactionNumber, std::move(mutations), {}};
+      surfaceId, transactionNumber, std::move(mutations), telemetry};
 }
 
 bool LayoutAnimationKeyFrameManager::mutatedViewIsVirtual(

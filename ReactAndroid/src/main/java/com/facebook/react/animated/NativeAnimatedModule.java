@@ -10,6 +10,7 @@ package com.facebook.react.animated;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativeAnimatedModuleSpec;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -27,10 +28,13 @@ import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIBlock;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Module that exposes interface for creating and managing animated nodes on the "native" side.
@@ -81,6 +85,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     implements LifecycleEventListener, UIManagerListener {
 
   public static final String NAME = "NativeAnimatedModule";
+  public static final boolean ANIMATED_MODULE_DEBUG = false;
 
   private interface UIThreadOperation {
     void execute(NativeAnimatedNodesManager animatedNodesManager);
@@ -88,13 +93,20 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @NonNull private final GuardedFrameCallback mAnimatedFrameCallback;
   private final ReactChoreographer mReactChoreographer;
-  @NonNull private List<UIThreadOperation> mOperations = new ArrayList<>();
-  @NonNull private List<UIThreadOperation> mPreOperations = new ArrayList<>();
 
-  @NonNull private List<UIBlock> mPreOperationsUIBlock = new ArrayList<>();
-  @NonNull private List<UIBlock> mOperationsUIBlock = new ArrayList<>();
+  @NonNull
+  private ConcurrentLinkedQueue<UIThreadOperation> mOperations = new ConcurrentLinkedQueue<>();
+
+  @NonNull
+  private ConcurrentLinkedQueue<UIThreadOperation> mPreOperations = new ConcurrentLinkedQueue<>();
 
   private @Nullable NativeAnimatedNodesManager mNodesManager;
+
+  private volatile boolean mFabricBatchCompleted = false;
+  private boolean mInitializedForFabric = false;
+  private @UIManagerType int mUIManagerType = UIManagerType.DEFAULT;
+  private int mNumFabricAnimations = 0;
+  private int mNumNonFabricAnimations = 0;
 
   public NativeAnimatedModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -147,68 +159,69 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     enqueueFrameCallback();
   }
 
-  // For FabricUIManager
+  // For FabricUIManager only
+  @Override
+  public void didScheduleMountItems(UIManager uiManager) {
+    if (mUIManagerType != UIManagerType.FABRIC) {
+      return;
+    }
+
+    mFabricBatchCompleted = true;
+  }
+
+  // For FabricUIManager only
   @Override
   @UiThread
-  public void willDispatchPreMountItems() {
-    if (mPreOperationsUIBlock.size() != 0) {
-      List<UIBlock> preOperations = mPreOperationsUIBlock;
-      mPreOperationsUIBlock = new ArrayList<>();
+  public void didDispatchMountItems(UIManager uiManager) {
+    if (mUIManagerType != UIManagerType.FABRIC) {
+      return;
+    }
 
-      for (UIBlock op : preOperations) {
-        op.execute(null);
-      }
+    if (mFabricBatchCompleted) {
+      // This will execute all operations and preOperations queued
+      // since the last time this was run, and will race with anything
+      // being queued from the JS thread. That is, if the JS thread
+      // is still queuing operations, we might execute some of them
+      // at the very end until we exhaust the queue faster than the
+      // JS thread can queue up new items.
+      executeAllOperations(mPreOperations);
+      executeAllOperations(mOperations);
+      mFabricBatchCompleted = false;
     }
   }
 
-  // For FabricUIManager
-  @Override
-  @UiThread
-  public void willDispatchMountItems() {
-    if (mOperationsUIBlock.size() != 0) {
-      List<UIBlock> operations = mOperationsUIBlock;
-      mOperationsUIBlock = new ArrayList<>();
-
-      for (UIBlock op : operations) {
-        op.execute(null);
-      }
+  private void executeAllOperations(Queue<UIThreadOperation> operationQueue) {
+    NativeAnimatedNodesManager nodesManager = getNodesManager();
+    while (!operationQueue.isEmpty()) {
+      operationQueue.poll().execute(nodesManager);
     }
   }
 
-  // For non-FabricUIManager
+  // For non-FabricUIManager only
   @Override
   @UiThread
   public void willDispatchViewUpdates(final UIManager uiManager) {
     if (mOperations.isEmpty() && mPreOperations.isEmpty()) {
       return;
     }
+    if (mUIManagerType == UIManagerType.FABRIC) {
+      return;
+    }
 
-    final AtomicBoolean hasRunPreOperations = new AtomicBoolean(false);
-    final AtomicBoolean hasRunOperations = new AtomicBoolean(false);
-    final List<UIThreadOperation> preOperations = mPreOperations;
-    final List<UIThreadOperation> operations = mOperations;
-    mPreOperations = new ArrayList<>();
-    mOperations = new ArrayList<>();
-
-    // This is kind of a hack. Basically UIManagerListener cannot import UIManagerModule
-    // (that would cause an import cycle) and they're not in the same package. But,
-    // UIManagerModule is the only thing that calls `willDispatchViewUpdates` so we
-    // know this is safe.
-    // This goes away entirely in Fabric/Venice.
-    UIManagerModule uiManagerModule = (UIManagerModule) uiManager;
+    final Queue<UIThreadOperation> preOperations = new LinkedList<>();
+    final Queue<UIThreadOperation> operations = new LinkedList<>();
+    while (!mPreOperations.isEmpty()) {
+      preOperations.add(mPreOperations.poll());
+    }
+    while (!mOperations.isEmpty()) {
+      operations.add(mOperations.poll());
+    }
 
     UIBlock preOperationsUIBlock =
         new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            if (!hasRunPreOperations.compareAndSet(false, true)) {
-              return;
-            }
-
-            NativeAnimatedNodesManager nodesManager = getNodesManager();
-            for (UIThreadOperation operation : preOperations) {
-              operation.execute(nodesManager);
-            }
+            executeAllOperations(preOperations);
           }
         };
 
@@ -216,23 +229,13 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         new UIBlock() {
           @Override
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            if (!hasRunOperations.compareAndSet(false, true)) {
-              return;
-            }
-
             NativeAnimatedNodesManager nodesManager = getNodesManager();
-            for (UIThreadOperation operation : operations) {
-              operation.execute(nodesManager);
-            }
+            executeAllOperations(operations);
           }
         };
 
-    // Queue up operations for Fabric
-    mPreOperationsUIBlock.add(preOperationsUIBlock);
-    mOperationsUIBlock.add(operationsUIBlock);
-
-    // Here we queue up the UI Blocks for the old, non-Fabric UIManager.
-    // We queue them in both systems, let them race, and see which wins.
+    assert (uiManager instanceof UIManagerModule);
+    UIManagerModule uiManagerModule = (UIManagerModule) uiManager;
     uiManagerModule.prependUIBlock(preOperationsUIBlock);
     uiManagerModule.addUIBlock(operationsUIBlock);
   }
@@ -265,10 +268,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
       if (reactApplicationContext != null) {
-        UIManagerModule uiManager =
-            Assertions.assertNotNull(
-                reactApplicationContext.getNativeModule(UIManagerModule.class));
-        mNodesManager = new NativeAnimatedNodesManager(uiManager);
+        mNodesManager = new NativeAnimatedNodesManager(reactApplicationContext);
       }
     }
 
@@ -295,11 +295,23 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void createAnimatedNode(final double tagDouble, final ReadableMap config) {
     final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME, "queue createAnimatedNode: " + tag + " config: " + config.toHashMap().toString());
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute createAnimatedNode: "
+                      + tag
+                      + " config: "
+                      + config.toHashMap().toString());
+            }
             animatedNodesManager.createAnimatedNode(tag, config);
           }
         });
@@ -308,6 +320,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void startListeningToAnimatedNodeValue(final double tagDouble) {
     final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(NAME, "queue startListeningToAnimatedNodeValue: " + tag);
+    }
 
     final AnimatedNodeValueListener listener =
         new AnimatedNodeValueListener() {
@@ -330,6 +345,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(NAME, "execute startListeningToAnimatedNodeValue: " + tag);
+            }
             animatedNodesManager.startListeningToAnimatedNodeValue(tag, listener);
           }
         });
@@ -338,11 +356,17 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void stopListeningToAnimatedNodeValue(final double tagDouble) {
     final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(NAME, "queue stopListeningToAnimatedNodeValue: " + tag);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(NAME, "execute stopListeningToAnimatedNodeValue: " + tag);
+            }
             animatedNodesManager.stopListeningToAnimatedNodeValue(tag);
           }
         });
@@ -351,11 +375,17 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void dropAnimatedNode(final double tagDouble) {
     final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(NAME, "queue dropAnimatedNode: " + tag);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(NAME, "execute dropAnimatedNode: " + tag);
+            }
             animatedNodesManager.dropAnimatedNode(tag);
           }
         });
@@ -364,11 +394,17 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void setAnimatedNodeValue(final double tagDouble, final double value) {
     final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(NAME, "queue setAnimatedNodeValue: " + tag + " value: " + value);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(NAME, "execute setAnimatedNodeValue: " + tag + " value: " + value);
+            }
             animatedNodesManager.setAnimatedNodeValue(tag, value);
           }
         });
@@ -377,11 +413,17 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void setAnimatedNodeOffset(final double tagDouble, final double value) {
     final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(NAME, "queue setAnimatedNodeOffset: " + tag + " offset: " + value);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(NAME, "execute setAnimatedNodeOffset: " + tag + " offset: " + value);
+            }
             animatedNodesManager.setAnimatedNodeOffset(tag, value);
           }
         });
@@ -390,11 +432,17 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void flattenAnimatedNodeOffset(final double tagDouble) {
     final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(NAME, "queue flattenAnimatedNodeOffset: " + tag);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(NAME, "execute flattenAnimatedNodeOffset: " + tag);
+            }
             animatedNodesManager.flattenAnimatedNodeOffset(tag);
           }
         });
@@ -403,11 +451,17 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void extractAnimatedNodeOffset(final double tagDouble) {
     final int tag = (int) tagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(NAME, "queue extractAnimatedNodeOffset: " + tag);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(NAME, "execute extractAnimatedNodeOffset: " + tag);
+            }
             animatedNodesManager.extractAnimatedNodeOffset(tag);
           }
         });
@@ -421,11 +475,19 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       final Callback endCallback) {
     final int animationId = (int) animationIdDouble;
     final int animatedNodeTag = (int) animatedNodeTagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(NAME, "queue startAnimatingNode: ID: " + animationId + " tag: " + animatedNodeTag);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute startAnimatingNode: ID: " + animationId + " tag: " + animatedNodeTag);
+            }
             animatedNodesManager.startAnimatingNode(
                 animationId, animatedNodeTag, animationConfig, endCallback);
           }
@@ -435,11 +497,17 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void stopAnimation(final double animationIdDouble) {
     final int animationId = (int) animationIdDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(NAME, "queue stopAnimation: ID: " + animationId);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(NAME, "execute stopAnimation: ID: " + animationId);
+            }
             animatedNodesManager.stopAnimation(animationId);
           }
         });
@@ -450,11 +518,23 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       final double parentNodeTagDouble, final double childNodeTagDouble) {
     final int parentNodeTag = (int) parentNodeTagDouble;
     final int childNodeTag = (int) childNodeTagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME, "queue connectAnimatedNodes: parent: " + parentNodeTag + " child: " + childNodeTag);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute connectAnimatedNodes: parent: "
+                      + parentNodeTag
+                      + " child: "
+                      + childNodeTag);
+            }
             animatedNodesManager.connectAnimatedNodes(parentNodeTag, childNodeTag);
           }
         });
@@ -465,11 +545,24 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       final double parentNodeTagDouble, final double childNodeTagDouble) {
     final int parentNodeTag = (int) parentNodeTagDouble;
     final int childNodeTag = (int) childNodeTagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME,
+          "queue disconnectAnimatedNodes: parent: " + parentNodeTag + " child: " + childNodeTag);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute disconnectAnimatedNodes: parent: "
+                      + parentNodeTag
+                      + " child: "
+                      + childNodeTag);
+            }
             animatedNodesManager.disconnectAnimatedNodes(parentNodeTag, childNodeTag);
           }
         });
@@ -480,11 +573,27 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       final double animatedNodeTagDouble, final double viewTagDouble) {
     final int animatedNodeTag = (int) animatedNodeTagDouble;
     final int viewTag = (int) viewTagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME,
+          "queue connectAnimatedNodeToView: animatedNodeTag: "
+              + animatedNodeTag
+              + " viewTag: "
+              + viewTag);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute connectAnimatedNodeToView: animatedNodeTag: "
+                      + animatedNodeTag
+                      + " viewTag: "
+                      + viewTag);
+            }
             animatedNodesManager.connectAnimatedNodeToView(animatedNodeTag, viewTag);
           }
         });
@@ -495,11 +604,27 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       final double animatedNodeTagDouble, final double viewTagDouble) {
     final int animatedNodeTag = (int) animatedNodeTagDouble;
     final int viewTag = (int) viewTagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME,
+          "queue connectAnimatedNodeToView: disconnectAnimatedNodeFromView: "
+              + animatedNodeTag
+              + " viewTag: "
+              + viewTag);
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute connectAnimatedNodeToView: disconnectAnimatedNodeFromView: "
+                      + animatedNodeTag
+                      + " viewTag: "
+                      + viewTag);
+            }
             animatedNodesManager.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag);
           }
         });
@@ -508,11 +633,21 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void restoreDefaultValues(final double animatedNodeTagDouble) {
     final int animatedNodeTag = (int) animatedNodeTagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME, "queue restoreDefaultValues: disconnectAnimatedNodeFromView: " + animatedNodeTag);
+    }
 
     mPreOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute restoreDefaultValues: disconnectAnimatedNodeFromView: "
+                      + animatedNodeTag);
+            }
             animatedNodesManager.restoreDefaultValues(animatedNodeTag);
           }
         });
@@ -522,11 +657,52 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   public void addAnimatedEventToView(
       final double viewTagDouble, final String eventName, final ReadableMap eventMapping) {
     final int viewTag = (int) viewTagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME,
+          "queue addAnimatedEventToView: "
+              + viewTag
+              + " eventName: "
+              + eventName
+              + " eventMapping: "
+              + eventMapping.toHashMap().toString());
+    }
+
+    mUIManagerType = ViewUtil.getUIManagerType(viewTag);
+    if (mUIManagerType == UIManagerType.FABRIC) {
+      mNumFabricAnimations++;
+    } else {
+      mNumNonFabricAnimations++;
+    }
+
+    // Subscribe to FabricUIManager lifecycle events if we haven't yet
+    if (!mInitializedForFabric && mUIManagerType == UIManagerType.FABRIC) {
+      ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+      if (reactApplicationContext != null) {
+        @Nullable
+        UIManager uiManager =
+            UIManagerHelper.getUIManager(reactApplicationContext, UIManagerType.FABRIC);
+        if (uiManager != null) {
+          uiManager.addUIManagerEventListener(this);
+          mInitializedForFabric = true;
+        }
+      }
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute addAnimatedEventToView: "
+                      + viewTag
+                      + " eventName: "
+                      + eventName
+                      + " eventMapping: "
+                      + eventMapping.toHashMap().toString());
+            }
             animatedNodesManager.addAnimatedEventToView(viewTag, eventName, eventMapping);
           }
         });
@@ -537,11 +713,53 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       final double viewTagDouble, final String eventName, final double animatedValueTagDouble) {
     final int viewTag = (int) viewTagDouble;
     final int animatedValueTag = (int) animatedValueTagDouble;
+    if (ANIMATED_MODULE_DEBUG) {
+      FLog.d(
+          NAME,
+          "queue addAnimatedEventToView: removeAnimatedEventFromView: "
+              + viewTag
+              + " eventName: "
+              + eventName
+              + " animatedValueTag: "
+              + animatedValueTag);
+    }
+
+    @UIManagerType int animationManagerType = ViewUtil.getUIManagerType(viewTag);
+    if (animationManagerType == UIManagerType.FABRIC) {
+      mNumFabricAnimations--;
+    } else {
+      mNumNonFabricAnimations--;
+    }
+
+    // Should we switch to a different animation mode?
+    // This can be useful when navigating between Fabric and non-Fabric screens:
+    // If there are ongoing Fabric animations from a previous screen,
+    // and we tear down the current non-Fabric screen, we should expect
+    // the animation mode to switch back - and vice-versa.
+    if (mNumNonFabricAnimations == 0
+        && mNumFabricAnimations > 0
+        && mUIManagerType != UIManagerType.FABRIC) {
+      mUIManagerType = UIManagerType.FABRIC;
+    } else if (mNumFabricAnimations == 0
+        && mNumNonFabricAnimations > 0
+        && mUIManagerType != UIManagerType.DEFAULT) {
+      mUIManagerType = UIManagerType.DEFAULT;
+    }
 
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            if (ANIMATED_MODULE_DEBUG) {
+              FLog.d(
+                  NAME,
+                  "execute addAnimatedEventToView: removeAnimatedEventFromView: "
+                      + viewTag
+                      + " eventName: "
+                      + eventName
+                      + " animatedValueTag: "
+                      + animatedValueTag);
+            }
             animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName, animatedValueTag);
           }
         });

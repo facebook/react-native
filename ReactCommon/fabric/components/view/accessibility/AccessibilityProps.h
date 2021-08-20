@@ -26,6 +26,7 @@ class AccessibilityProps {
 
   bool accessible{false};
   AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
+  AccessibilityState accessibilityState;
   std::string accessibilityLabel{""};
   std::string accessibilityHint{""};
   std::vector<std::string> accessibilityActions{};

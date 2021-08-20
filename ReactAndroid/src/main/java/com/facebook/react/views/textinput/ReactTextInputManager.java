@@ -7,6 +7,10 @@
 
 package com.facebook.react.views.textinput;
 
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_BOTTOM_INDEX;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_END_INDEX;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_START_INDEX;
+import static com.facebook.react.uimanager.UIManagerHelper.PADDING_TOP_INDEX;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
 import android.content.Context;
@@ -31,7 +35,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
@@ -1254,7 +1257,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       ReactContext reactContext = UIManagerHelper.getReactContext(view);
       if (reactContext instanceof ThemedReactContext) {
         ThemedReactContext themedReactContext = (ThemedReactContext) reactContext;
-        EditText editText = createInternalEditText(themedReactContext);
 
         // Even though we check `data["textChanged"].empty()` before using the value in C++,
         // state updates crash without this value on key exception. It's unintuitive why
@@ -1262,13 +1264,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         // so leave this here until we can figure out a better way of key-existence-checking in C++.
         update.putNull("textChanged");
 
-        update.putDouble(
-            "themePaddingStart", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText)));
-        update.putDouble(
-            "themePaddingEnd", PixelUtil.toDIPFromPixel(ViewCompat.getPaddingEnd(editText)));
-        update.putDouble("themePaddingTop", PixelUtil.toDIPFromPixel(editText.getPaddingTop()));
-        update.putDouble(
-            "themePaddingBottom", PixelUtil.toDIPFromPixel(editText.getPaddingBottom()));
+        // TODO T68526882 review is themePadding can be removed from TextInput
+        float[] padding = UIManagerHelper.getDefaultTextInputPadding(themedReactContext);
+        update.putDouble("themePaddingStart", padding[PADDING_START_INDEX]);
+        update.putDouble("themePaddingEnd", padding[PADDING_END_INDEX]);
+        update.putDouble("themePaddingTop", padding[PADDING_TOP_INDEX]);
+        update.putDouble("themePaddingBottom", padding[PADDING_BOTTOM_INDEX]);
 
         stateWrapper.updateState(update);
       } else {

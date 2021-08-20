@@ -11,6 +11,11 @@
 
 extern NSString *const RCTJavaScriptLoaderErrorDomain;
 
+extern const UInt32 RCT_BYTECODE_ALIGNMENT;
+
+UInt32 RCTReadUInt32LE(NSData *script, UInt32 offset);
+bool RCTIsBytecodeBundle(NSData *script);
+
 NS_ENUM(NSInteger){
     RCTJavaScriptLoaderErrorNoScriptURL = 1,
     RCTJavaScriptLoaderErrorFailedOpeningFile = 2,

@@ -107,10 +107,15 @@ Transform::SRT Transform::ExtractSRT(Transform const &t) {
   // matrices, in that order. Matrices must be in this form: [a b c d] [e f g h]
   // [i j k l]
   // [0 0 0 1]
-  // We also assume that all scale factors are non-negative, because in
-  assert(
-      t.matrix[12] == 0 && t.matrix[13] == 0 && t.matrix[14] == 0 &&
-      t.matrix[15] == 1 && "Last row of matrix must be [0,0,0,1]");
+  // We also assume that all scale factors are non-negative.
+  // TODO T68587989: If ViewProps retains the underlying transform props instead
+  // of just the matrix version of transforms, then we can use those properties
+  // directly instead of decomposing properties from a matrix which will always
+  // be lossy. Because of these assumptions, animations involving negative
+  // scale/rotation and anything involving skews will not look great.
+  //  assert(
+  //      t.matrix[12] == 0 && t.matrix[13] == 0 && t.matrix[14] == 0 &&
+  //      t.matrix[15] == 1 && "Last row of matrix must be [0,0,0,1]");
 
   // lhs:
   // Translation: extract the values from the rightmost column

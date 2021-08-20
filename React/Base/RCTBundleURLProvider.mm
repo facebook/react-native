@@ -10,6 +10,11 @@
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 
+#if __has_include("hermes.h") || __has_include(<hermes/hermes.h>)
+#import <hermes/hermes.h>
+#define HAS_BYTECODE_VERSION
+#endif
+
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
@@ -220,13 +225,22 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
                           runModule:(BOOL)runModule
 {
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
+#ifdef HAS_BYTECODE_VERSION
+  NSString *runtimeBytecodeVersion =
+      [NSString stringWithFormat:@"&runtimeBytecodeVersion=%u", facebook::hermes::HermesRuntime::getBytecodeVersion()];
+#else
+  NSString *runtimeBytecodeVersion = @"";
+#endif
+
   // When we support only iOS 8 and above, use queryItems for a better API.
-  NSString *query = [NSString stringWithFormat:@"platform=%@&dev=%@&minify=%@&modulesOnly=%@&runMdoule=%@",
+  NSString *query = [NSString stringWithFormat:@"platform=%@&dev=%@&minify=%@&modulesOnly=%@&runModule=%@%@",
                                                kRCTPlatformName, // TODO(macOS GH#774)
                                                enableDev ? @"true" : @"false",
                                                enableMinification ? @"true" : @"false",
                                                modulesOnly ? @"true" : @"false",
-                                               runModule ? @"true" : @"false"];
+                                               runModule ? @"true" : @"false",
+                                               runtimeBytecodeVersion];
+
   NSString *bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleIdentifierKey];
   if (bundleID) {
     query = [NSString stringWithFormat:@"%@&app=%@", query, bundleID];

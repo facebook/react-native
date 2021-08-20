@@ -34,12 +34,10 @@ public class BatchMountItem implements MountItem {
   private final int mCommitNumber;
 
   public BatchMountItem(int rootTag, MountItem[] items, int size, int commitNumber) {
-    if (items == null) {
-      throw new NullPointerException();
-    }
-    if (size < 0 || size > items.length) {
+    int itemsLength = (items == null ? 0 : items.length);
+    if (size < 0 || size > itemsLength) {
       throw new IllegalArgumentException(
-          "Invalid size received by parameter size: " + size + " items.size = " + items.length);
+          "Invalid size received by parameter size: " + size + " items.size = " + itemsLength);
     }
     mRootTag = rootTag;
     mMountItems = items;
@@ -72,6 +70,10 @@ public class BatchMountItem implements MountItem {
 
   public int getRootTag() {
     return mRootTag;
+  }
+
+  public int getSize() {
+    return mSize;
   }
 
   @Override

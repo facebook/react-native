@@ -1655,10 +1655,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.initialScrollIndex > 0 &&
       !this._hasDoneInitialScroll
     ) {
-      this.scrollToIndex({
-        animated: false,
-        index: this.props.initialScrollIndex,
-      });
+      if (this.props.contentOffset == null) {
+        this.scrollToIndex({
+          animated: false,
+          index: this.props.initialScrollIndex,
+        });
+      }
       this._hasDoneInitialScroll = true;
     }
     if (this.props.onContentSizeChange) {

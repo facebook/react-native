@@ -29,12 +29,12 @@ State::Shared const &ShadowNodeFragment::statePlaceholder() {
 using Value = ShadowNodeFragment::Value;
 
 Value::Value(ShadowNodeFragment const &fragment)
-    : props_(fragment.props),
-      children_(fragment.children),
-      state_(fragment.state) {}
+    : props(fragment.props),
+      children(fragment.children),
+      state(fragment.state) {}
 
 Value::operator ShadowNodeFragment() const {
-  return ShadowNodeFragment{props_, children_, state_};
+  return ShadowNodeFragment{props, children, state};
 }
 
 } // namespace react
