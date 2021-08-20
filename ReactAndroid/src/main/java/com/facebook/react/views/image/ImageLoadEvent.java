@@ -107,14 +107,10 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
     switch (mEventType) {
       case ON_LOAD:
         eventData = Arguments.createMap();
-        // TODO: Remove this (to be less redundant and to be consistent with iOS).
-        eventData.putString("uri", mSourceUri);
         eventData.putMap("source", createEventDataSource());
         break;
       case ON_ERROR:
         eventData = Arguments.createMap();
-        // TODO: Remove this (to be less redundant and to be consistent with iOS).
-        eventData.putString("uri", mSourceUri);
         eventData.putString("error", mErrorMessage);
         break;
     }
@@ -124,9 +120,9 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
 
   private WritableMap createEventDataSource() {
     WritableMap source = Arguments.createMap();
+    source.putString("uri", mSourceUri);
     source.putDouble("width", mWidth);
     source.putDouble("height", mHeight);
-    source.putString("url", mSourceUri);
     return source;
   }
 }

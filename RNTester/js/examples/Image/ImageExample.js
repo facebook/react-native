@@ -77,7 +77,7 @@ class NetworkImageCallbackExample extends React.Component<
           }
           onLoad={event => {
             if (event.nativeEvent.source) {
-              const url = event.nativeEvent.source.url;
+              const url = event.nativeEvent.source.uri;
               this._loadEventFired(
                 `✔ onLoad (+${new Date() - mountTime}ms) for URL ${url}`,
               );
@@ -128,7 +128,7 @@ class NetworkImageCallbackExample extends React.Component<
             onLoad={event => {
               // Currently this image source feature is only available on iOS.
               if (event.nativeEvent.source) {
-                const url = event.nativeEvent.source.url;
+                const url = event.nativeEvent.source.uri;
                 this._loadEventFired(
                   `✔ (prefetched) onLoad (+${new Date() -
                     mountTime}ms) for URL ${url}`,
