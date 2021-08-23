@@ -208,7 +208,6 @@ using namespace facebook::react;
   if (newTextInputProps.inputAccessoryViewID != oldTextInputProps.inputAccessoryViewID) {
     _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
   }
-
   [super updateProps:props oldProps:oldProps];
 
   [self setDefaultInputAccessoryView];

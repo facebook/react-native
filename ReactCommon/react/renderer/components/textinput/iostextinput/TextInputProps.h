@@ -58,6 +58,7 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   int const mostRecentEventCount{0};
 
   bool autoFocus{false};
+  better::optional<Selection> selection{};
 
   std::string const inputAccessoryViewID{};
 
@@ -66,10 +67,6 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
    */
   TextAttributes getEffectiveTextAttributes(Float fontSizeMultiplier) const;
   ParagraphAttributes getEffectiveParagraphAttributes() const;
-
-#ifdef ANDROID
-  folly::dynamic getDynamic() const;
-#endif
 };
 
 } // namespace react

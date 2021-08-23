@@ -77,6 +77,12 @@ enum class KeyboardType {
   VisiblePassword,
 };
 
+class Selection final {
+ public:
+  int start{0};
+  int end{0};
+};
+
 /*
  * Controls features of text inputs.
  */
