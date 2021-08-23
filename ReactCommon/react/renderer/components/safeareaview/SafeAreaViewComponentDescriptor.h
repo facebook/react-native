@@ -20,7 +20,7 @@ namespace react {
 class SafeAreaViewComponentDescriptor final
     : public ConcreteComponentDescriptor<SafeAreaViewShadowNode> {
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
-  void adopt(UnsharedShadowNode shadowNode) const override {
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     react_native_assert(
         std::dynamic_pointer_cast<SafeAreaViewShadowNode>(shadowNode));
     auto safeAreaViewShadowNode =

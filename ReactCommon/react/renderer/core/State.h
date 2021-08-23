@@ -9,6 +9,8 @@
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 #include <react/renderer/core/ShadowNodeFamily.h>
@@ -65,6 +67,7 @@ class State {
 
 #ifdef ANDROID
   virtual folly::dynamic getDynamic() const = 0;
+  virtual MapBuffer getMapBuffer() const = 0;
   virtual void updateState(folly::dynamic data) const = 0;
 #endif
 

@@ -16,21 +16,27 @@
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
+#include <react/renderer/leakchecker/LeakChecker.h>
 #include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/mounting/ShadowTreeDelegate.h>
 #include <react/renderer/mounting/ShadowTreeRegistry.h>
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 #include <react/renderer/uimanager/primitives.h>
+#include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class UIManagerBinding;
 class UIManagerCommitHook;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
+  UIManager(
+      RuntimeExecutor const &runtimeExecutor,
+      BackgroundExecutor const &backgroundExecutor,
+      ContextContainer::Shared contextContainer);
+
   ~UIManager();
 
   void setComponentDescriptorRegistry(
@@ -43,10 +49,6 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void setDelegate(UIManagerDelegate *delegate);
   UIManagerDelegate *getDelegate();
-
-  void setRuntimeExecutor(RuntimeExecutor const &runtimeExecutor);
-
-  void setBackgroundExecutor(BackgroundExecutor const &backgroundExecutor);
 
   /**
    * Sets and gets the UIManager's Animation APIs delegate.
@@ -83,14 +85,19 @@ class UIManager final : public ShadowTreeDelegate {
 
 #pragma mark - Surface Start & Stop
 
-  ShadowTree const &startSurface(
+  void startSurface(
+      ShadowTree::Unique &&shadowTree,
+      std::string const &moduleName,
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
+
+  void setSurfaceProps(
       SurfaceId surfaceId,
       std::string const &moduleName,
       folly::dynamic const &props,
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext) const;
+      DisplayMode displayMode) const;
 
-  void stopSurface(SurfaceId surfaceId) const;
+  ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
 #pragma mark - ShadowTreeDelegate
 
@@ -107,6 +114,9 @@ class UIManager final : public ShadowTreeDelegate {
   friend class UIManagerBinding;
   friend class Scheduler;
   friend class SurfaceHandler;
+
+  // `TimelineController` needs to call private `getShadowTreeRegistry()`.
+  friend class TimelineController;
 
   ShadowNode::Shared createNode(
       Tag tag,
@@ -131,7 +141,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   void setIsJSResponder(
       ShadowNode::Shared const &shadowNode,
-      bool isJSResponder) const;
+      bool isJSResponder,
+      bool blockNativeResponder) const;
 
   ShadowNode::Shared findNodeAtPoint(
       ShadowNode::Shared const &shadowNode,
@@ -177,16 +188,15 @@ class UIManager final : public ShadowTreeDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
-  UIManagerBinding *uiManagerBinding_;
-  RuntimeExecutor runtimeExecutor_{};
+  RuntimeExecutor const runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
-  BackgroundExecutor backgroundExecutor_{};
+  BackgroundExecutor const backgroundExecutor_{};
+  ContextContainer::Shared contextContainer_;
 
   mutable better::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;
 
-  bool extractUIManagerBindingOnDemand_{};
+  std::unique_ptr<LeakChecker> leakChecker_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

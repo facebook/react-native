@@ -33,7 +33,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/uimanager/util:util"),
-        react_native_target("java/com/facebook/react/views/picker:picker"),
         react_native_target("java/com/facebook/react/views/progressbar:progressbar"),
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
         react_native_target("java/com/facebook/react/views/slider:slider"),

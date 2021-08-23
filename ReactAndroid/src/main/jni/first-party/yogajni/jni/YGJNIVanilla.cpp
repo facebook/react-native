@@ -367,11 +367,7 @@ static void jni_YGNodeCalculateLayoutJNI(
     void* layoutContext = nullptr;
     auto map = PtrJNodeMapVanilla{};
     if (nativePointers) {
-      size_t nativePointersSize = env->GetArrayLength(nativePointers);
-      jlong result[nativePointersSize];
-      env->GetLongArrayRegion(nativePointers, 0, nativePointersSize, result);
-
-      map = PtrJNodeMapVanilla{result, nativePointersSize, javaNodes};
+      map = PtrJNodeMapVanilla{nativePointers, javaNodes};
       layoutContext = &map;
     }
 
@@ -726,8 +722,7 @@ static void jni_YGNodePrintJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   YGNodePrint(
       node,
-      (YGPrintOptions)(
-          YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
+      (YGPrintOptions) (YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
 #endif
 }
 

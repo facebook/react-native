@@ -194,4 +194,14 @@ public class FrescoModule extends ReactContextBaseJavaModule
     }
     return mImagePipeline;
   }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+
+    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (applicationContext != null) {
+      applicationContext.removeLifecycleEventListener(this);
+    }
+  }
 }

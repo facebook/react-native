@@ -104,7 +104,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
 
   public EventDispatcherImpl(ReactApplicationContext reactContext) {
     mReactContext = reactContext;
-    mReactContext.addLifecycleEventListenerAndCheckState(this);
+    mReactContext.addLifecycleEventListener(this);
     mReactEventEmitter = new ReactEventEmitter(mReactContext);
   }
 

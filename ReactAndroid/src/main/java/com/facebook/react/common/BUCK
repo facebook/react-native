@@ -2,6 +2,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_build
 
 SUB_PROJECTS = [
     "network/**/*",
+    "mapbuffer/**/*",
 ]
 
 rn_android_library(

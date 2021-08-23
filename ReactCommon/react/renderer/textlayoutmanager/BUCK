@@ -39,7 +39,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     cxx_exported_headers = subdir_glob(
@@ -62,6 +62,7 @@ rn_xplat_cxx_library(
     cxx_tests = [":tests"],
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
+        react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],
     fbandroid_exported_headers = subdir_glob(
         [
@@ -129,6 +130,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("react/renderer/graphics:graphics"),
         react_native_xplat_target("react/renderer/uimanager:uimanager"),
+        react_native_xplat_target("react/renderer/mounting:mounting"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
     ],
 )
@@ -140,7 +142,7 @@ fb_xplat_cxx_test(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],

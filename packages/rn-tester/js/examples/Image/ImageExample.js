@@ -32,6 +32,58 @@ type ImageSource = $ReadOnly<{|
   uri: string,
 |}>;
 
+type BlobImageState = {|
+  objectURL: ?string,
+|};
+
+type BlobImageProps = $ReadOnly<{|
+  url: string,
+|}>;
+
+class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
+  state = {
+    objectURL: null,
+  };
+
+  UNSAFE_componentWillMount() {
+    (async () => {
+      const result = await fetch(this.props.url);
+      const blob = await result.blob();
+      const objectURL = URL.createObjectURL(blob);
+      this.setState({objectURL});
+    })();
+  }
+
+  render() {
+    return this.state.objectURL !== null ? (
+      <Image source={{uri: this.state.objectURL}} style={styles.base} />
+    ) : (
+      <Text>Object URL not created yet</Text>
+    );
+  }
+}
+
+type BlobImageExampleState = {||};
+
+type BlobImageExampleProps = $ReadOnly<{|
+  urls: string[],
+|}>;
+
+class BlobImageExample extends React.Component<
+  BlobImageExampleProps,
+  BlobImageExampleState,
+> {
+  render() {
+    return (
+      <View style={styles.horizontal}>
+        {this.props.urls.map(url => (
+          <BlobImage key={url} url={url} />
+        ))}
+      </View>
+    );
+  }
+}
+
 type NetworkImageCallbackExampleState = {|
   events: Array<string>,
   startLoadPrefetched: boolean,
@@ -609,6 +661,21 @@ exports.examples = [
     },
   },
   {
+    title: 'Plain Blob Image',
+    description: ('If the `source` prop `uri` property is an object URL, ' +
+      'then it will be resolved using `BlobProvider` (Android) or `RCTBlobManager` (iOS).': string),
+    render: function(): React.Node {
+      return (
+        <BlobImageExample
+          urls={[
+            'https://www.facebook.com/favicon.ico',
+            'https://www.facebook.com/ads/pics/successstories.png',
+          ]}
+        />
+      );
+    },
+  },
+  {
     title: 'Plain Static Image',
     description: ('Static assets should be placed in the source code tree, and ' +
       'required in the same way as JavaScript modules.': string),
@@ -972,9 +1039,10 @@ exports.examples = [
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
+                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
+                   * native_fb) This comment suppresses an error found when
+                   * Flow v0.115 was deployed. To see the error, delete this
+                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
                     <Text style={[styles.resizeModeText]}>Cover</Text>
                     <Image
@@ -993,9 +1061,10 @@ exports.examples = [
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
+                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
+                   * native_fb) This comment suppresses an error found when
+                   * Flow v0.115 was deployed. To see the error, delete this
+                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
                     <Text style={[styles.resizeModeText]}>Repeat</Text>
                     <Image
@@ -1004,9 +1073,10 @@ exports.examples = [
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment
-                   * suppresses an error found when Flow v0.115 was deployed.
-                   * To see the error, delete this comment and run Flow. */}
+                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
+                   * native_fb) This comment suppresses an error found when
+                   * Flow v0.115 was deployed. To see the error, delete this
+                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
                     <Text style={[styles.resizeModeText]}>Center</Text>
                     <Image
@@ -1058,9 +1128,12 @@ exports.examples = [
   {
     title: 'Image Size',
     render: function(): React.Node {
-      /* $FlowFixMe(>=0.115.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.115 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[prop-missing] (>=0.115.0 site=react_native_fb) This comment
+       * suppresses an error found when Flow v0.115 was deployed. To see the
+       * error, delete this comment and run Flow. */
+      /* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_native_fb) This
+       * comment suppresses an error found when Flow v0.115 was deployed. To
+       * see the error, delete this comment and run Flow. */
       return <ImageSizeExample source={fullImage} />;
     },
   },

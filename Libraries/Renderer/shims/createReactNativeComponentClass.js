@@ -6,7 +6,12 @@
  *
  * @format
  * @flow strict-local
+ * @generated SignedSource<<435ec24b3531c66986fe5d529795713b>>
+ *
+ * This file was sync'd from the facebook/react repository.
  */
+
+'use strict';
 
 import {ReactNativeViewConfigRegistry} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 import {type ViewConfig} from './ReactNativeTypes';

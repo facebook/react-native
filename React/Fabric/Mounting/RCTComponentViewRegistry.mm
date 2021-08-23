@@ -29,15 +29,11 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 - (instancetype)init
 {
   if (self = [super init]) {
-    _componentViewFactory = [RCTComponentViewFactory standardComponentViewFactory];
+    _componentViewFactory = [RCTComponentViewFactory currentComponentViewFactory];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleApplicationDidReceiveMemoryWarningNotification)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleApplicationDidEnterBackgroundNotification)
-                                                 name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -164,13 +160,6 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 - (void)handleApplicationDidReceiveMemoryWarningNotification
 {
   _recyclePool.clear();
-}
-
-- (void)handleApplicationDidEnterBackgroundNotification
-{
-  if (RCTExperimentGetReleaseResourcesWhenBackgrounded()) {
-    _recyclePool.clear();
-  }
 }
 
 @end

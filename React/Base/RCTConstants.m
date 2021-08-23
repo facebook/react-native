@@ -11,36 +11,6 @@ NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceS
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
 /*
- * On-demand view mounting
- */
-static BOOL RCTExperimentOnDemandViewMounting = NO;
-
-BOOL RCTExperimentGetOnDemandViewMounting()
-{
-  return RCTExperimentOnDemandViewMounting;
-}
-
-void RCTExperimentSetOnDemandViewMounting(BOOL value)
-{
-  RCTExperimentOnDemandViewMounting = value;
-}
-
-/*
- * Optimized hit-testing
- */
-static BOOL RCTExperimentOptimizedHitTesting = NO;
-
-BOOL RCTExperimentGetOptimizedHitTesting()
-{
-  return RCTExperimentOptimizedHitTesting;
-}
-
-void RCTExperimentSetOptimizedHitTesting(BOOL value)
-{
-  RCTExperimentOptimizedHitTesting = value;
-}
-
-/*
  * Preemptive View Allocation
  */
 static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
@@ -56,16 +26,31 @@ void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 }
 
 /*
- * Release resources when app enters background
+ * Initial maximum surface size
  */
-static BOOL RCTExperimentReleaseResourcesWhenBackgrounded = NO;
+static BOOL RCTInitialMaxSizeEnabled = NO;
 
-BOOL RCTExperimentGetReleaseResourcesWhenBackgrounded()
+BOOL RCTGetInitialMaxSizeEnabled()
 {
-  return RCTExperimentReleaseResourcesWhenBackgrounded;
+  return RCTInitialMaxSizeEnabled;
 }
 
-void RCTExperimentSetReleaseResourcesWhenBackgrounded(BOOL value)
+void RCTSetInitialMaxSizeEnabled(BOOL value)
 {
-  RCTExperimentReleaseResourcesWhenBackgrounded = value;
+  RCTInitialMaxSizeEnabled = value;
+}
+
+/*
+ * Remove clipped subviews
+ */
+static BOOL RCTRemoveClippedSubviewsEnabled = NO;
+
+BOOL RCTGetRemoveClippedSubviewsEnabled(void)
+{
+  return RCTRemoveClippedSubviewsEnabled;
+}
+
+void RCTSetRemoveClippedSubviewsEnabled(BOOL value)
+{
+  RCTRemoveClippedSubviewsEnabled = value;
 }

@@ -8,8 +8,8 @@
 #pragma once
 
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/mounting/SurfaceTelemetry.h>
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/SurfaceTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 
 namespace facebook {
 namespace react {

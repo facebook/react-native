@@ -6,14 +6,12 @@
  *
  * @format
  * @flow strict
+ * @generated SignedSource<<67969011689de134487d7110b6519058>>
+ *
+ * This file was sync'd from the facebook/react repository.
  */
 
-import type {
-  ElementRef,
-  ElementType,
-  MixedElement,
-  AbstractComponent,
-} from 'react';
+import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
 
 export type MeasureOnSuccessCallback = (
   x: number,
@@ -38,7 +36,7 @@ export type MeasureLayoutOnSuccessCallback = (
   height: number,
 ) => void;
 
-type AttributeType<T, V> =
+export type AttributeType<T, V> =
   | true
   | $ReadOnly<{|
       diff?: (arg1: T, arg2: T) => boolean,
@@ -47,9 +45,9 @@ type AttributeType<T, V> =
 
 // We either force that `diff` and `process` always use mixed,
 // or we allow them to define specific types and use this hack
-type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
+export type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
 
-type AttributeConfiguration = $ReadOnly<{
+export type AttributeConfiguration = $ReadOnly<{
   [propName: string]: AnyAttributeType,
   style: $ReadOnly<{
     [propName: string]: AnyAttributeType,
@@ -58,7 +56,7 @@ type AttributeConfiguration = $ReadOnly<{
   ...
 }>;
 
-type PartialAttributeConfiguration = $ReadOnly<{
+export type PartialAttributeConfiguration = $ReadOnly<{
   [propName: string]: AnyAttributeType,
   style?: $ReadOnly<{
     [propName: string]: AnyAttributeType,
@@ -99,7 +97,7 @@ export type PartialViewConfig = $ReadOnly<{
   validAttributes?: PartialAttributeConfiguration,
 }>;
 
-export type NativeMethods = {|
+export type NativeMethods = $ReadOnly<{|
   blur(): void,
   focus(): void,
   measure(callback: MeasureOnSuccessCallback): void,
@@ -110,7 +108,7 @@ export type NativeMethods = {|
     onFail?: () => void,
   ): void,
   setNativeProps(nativeProps: {...}): void,
-|};
+|}>;
 
 export type HostComponent<T> = AbstractComponent<T, $ReadOnly<NativeMethods>>;
 
@@ -184,7 +182,7 @@ export type ReactNativeType = {
     eventType: string,
   ): void,
   render(
-    element: MixedElement,
+    element: Element<ElementType>,
     containerTag: number,
     callback: ?() => void,
   ): ?ElementRef<ElementType>,
@@ -212,9 +210,10 @@ export type ReactFabricType = {
     eventType: string,
   ): void,
   render(
-    element: MixedElement,
+    element: Element<ElementType>,
     containerTag: number,
     callback: ?() => void,
+    concurrentRoot: ?boolean,
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   ...

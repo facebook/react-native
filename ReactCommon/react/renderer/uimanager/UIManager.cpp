@@ -8,6 +8,7 @@
 #include "UIManager.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
@@ -16,8 +17,25 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
+
+static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
+    RuntimeExecutor const &runtimeExecutor) {
+#ifdef REACT_NATIVE_DEBUG
+  return std::make_unique<LeakChecker>(runtimeExecutor);
+#else
+  return {};
+#endif
+}
+
+UIManager::UIManager(
+    RuntimeExecutor const &runtimeExecutor,
+    BackgroundExecutor const &backgroundExecutor,
+    ContextContainer::Shared contextContainer)
+    : runtimeExecutor_(runtimeExecutor),
+      backgroundExecutor_(backgroundExecutor),
+      contextContainer_(contextContainer),
+      leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
 
 UIManager::~UIManager() {
   LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
@@ -36,10 +54,13 @@ SharedShadowNode UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
+  PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
+
   auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
   auto family =
       componentDescriptor.createFamily(fragment, std::move(eventTarget));
-  auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
+  auto const props =
+      componentDescriptor.cloneProps(propsParserContext, nullptr, rawProps);
   auto const state =
       componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
 
@@ -50,7 +71,9 @@ SharedShadowNode UIManager::createNode(
                   fallbackDescriptor->getComponentHandle() ==
                       componentDescriptor.getComponentHandle()
               ? componentDescriptor.cloneProps(
-                    props, RawProps(folly::dynamic::object("name", name)))
+                    propsParserContext,
+                    props,
+                    RawProps(folly::dynamic::object("name", name)))
               : props,
           /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
           /* .state = */ state,
@@ -58,7 +81,10 @@ SharedShadowNode UIManager::createNode(
       family);
 
   if (delegate_) {
-    delegate_->uiManagerDidCreateShadowNode(shadowNode);
+    delegate_->uiManagerDidCreateShadowNode(*shadowNode.get());
+  }
+  if (leakChecker_) {
+    leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
   }
 
   return shadowNode;
@@ -70,16 +96,24 @@ SharedShadowNode UIManager::cloneNode(
     const RawProps *rawProps) const {
   SystraceSection s("UIManager::cloneNode");
 
+  PropsParserContext propsParserContext{
+      shadowNode->getFamily().getSurfaceId(), *contextContainer_.get()};
+
   auto &componentDescriptor = shadowNode->getComponentDescriptor();
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       *shadowNode,
       {
           /* .props = */
           rawProps ? componentDescriptor.cloneProps(
-                         shadowNode->getProps(), *rawProps)
+                         propsParserContext, shadowNode->getProps(), *rawProps)
                    : ShadowNodeFragment::propsPlaceholder(),
           /* .children = */ children,
       });
+
+  if (delegate_) {
+    delegate_->uiManagerDidCloneShadowNode(
+        *shadowNode.get(), *clonedShadowNode.get());
+  }
 
   return clonedShadowNode;
 }
@@ -115,24 +149,42 @@ void UIManager::completeSurface(
 
 void UIManager::setIsJSResponder(
     ShadowNode::Shared const &shadowNode,
-    bool isJSResponder) const {
+    bool isJSResponder,
+    bool blockNativeResponder) const {
   if (delegate_) {
-    delegate_->uiManagerDidSetIsJSResponder(shadowNode, isJSResponder);
+    delegate_->uiManagerDidSetIsJSResponder(
+        shadowNode, isJSResponder, blockNativeResponder);
   }
 }
 
-ShadowTree const &UIManager::startSurface(
+void UIManager::startSurface(
+    ShadowTree::Unique &&shadowTree,
+    std::string const &moduleName,
+    folly::dynamic const &props,
+    DisplayMode displayMode) const {
+  SystraceSection s("UIManager::startSurface");
+
+  auto surfaceId = shadowTree->getSurfaceId();
+  shadowTreeRegistry_.add(std::move(shadowTree));
+
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    SystraceSection s("UIManager::startSurface::onRuntime");
+    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+    if (!uiManagerBinding) {
+      return;
+    }
+
+    uiManagerBinding->startSurface(
+        runtime, surfaceId, moduleName, props, displayMode);
+  });
+}
+
+void UIManager::setSurfaceProps(
     SurfaceId surfaceId,
     std::string const &moduleName,
     folly::dynamic const &props,
-    LayoutConstraints const &layoutConstraints,
-    LayoutContext const &layoutContext) const {
-  SystraceSection s("UIManager::startSurface");
-
-  auto shadowTree = std::make_unique<ShadowTree>(
-      surfaceId, layoutConstraints, layoutContext, *this);
-  auto shadowTreePointer = shadowTree.get();
-  shadowTreeRegistry_.add(std::move(shadowTree));
+    DisplayMode displayMode) const {
+  SystraceSection s("UIManager::setSurfaceProps");
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
@@ -140,13 +192,12 @@ ShadowTree const &UIManager::startSurface(
       return;
     }
 
-    uiManagerBinding->startSurface(runtime, surfaceId, moduleName, props);
+    uiManagerBinding->setSurfaceProps(
+        runtime, surfaceId, moduleName, props, displayMode);
   });
-
-  return *shadowTreePointer;
 }
 
-void UIManager::stopSurface(SurfaceId surfaceId) const {
+ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("UIManager::stopSurface");
 
   // Stop any ongoing animations.
@@ -155,13 +206,6 @@ void UIManager::stopSurface(SurfaceId surfaceId) const {
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
-
-  // As part of stopping a Surface, we need to properly destroy all
-  // mounted views, so we need to commit an empty tree to trigger all
-  // side-effects (including destroying and removing mounted views).
-  if (shadowTree) {
-    shadowTree->commitEmptyTree();
-  }
 
   // We execute JavaScript/React part of the process at the very end to minimize
   // any visible side-effects of stopping the Surface. Any possible commits from
@@ -175,6 +219,12 @@ void UIManager::stopSurface(SurfaceId surfaceId) const {
 
     uiManagerBinding->stopSurface(runtime, surfaceId);
   });
+
+  if (leakChecker_) {
+    leakChecker_->stopSurface(surfaceId);
+  }
+
+  return shadowTree;
 }
 
 ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
@@ -324,31 +374,13 @@ UIManagerDelegate *UIManager::getDelegate() {
   return delegate_;
 }
 
-void UIManager::setBackgroundExecutor(
-    BackgroundExecutor const &backgroundExecutor) {
-  backgroundExecutor_ = backgroundExecutor;
-}
-
-void UIManager::setRuntimeExecutor(RuntimeExecutor const &runtimeExecutor) {
-  runtimeExecutor_ = runtimeExecutor;
-}
-
 void UIManager::visitBinding(
     std::function<void(UIManagerBinding const &uiManagerBinding)> callback,
     jsi::Runtime &runtime) const {
-  if (extractUIManagerBindingOnDemand_) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (uiManagerBinding) {
-      callback(*uiManagerBinding_);
-    }
-    return;
+  auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
+  if (uiManagerBinding) {
+    callback(*uiManagerBinding);
   }
-
-  if (!uiManagerBinding_) {
-    return;
-  }
-
-  callback(*uiManagerBinding_);
 }
 
 ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
@@ -424,5 +456,4 @@ void UIManager::animationTick() {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

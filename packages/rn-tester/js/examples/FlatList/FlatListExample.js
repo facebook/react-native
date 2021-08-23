@@ -188,6 +188,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
             getItemLayout={
               this.state.fixedHeight ? this._getItemLayout : undefined
             }
+            accessibilityRole="list"
             horizontal={this.state.horizontal}
             inverted={this.state.inverted}
             key={
@@ -235,9 +236,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
 
     return {
       renderItem: undefined,
-      /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.111 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
+       * This comment suppresses an error found when Flow v0.111 was deployed.
+       * To see the error, delete this comment and run Flow. */
       [flatListPropKey]: ({item, separators}) => {
         return (
           <ItemComponent
@@ -314,7 +315,6 @@ exports.title = 'FlatList';
 exports.category = 'ListView';
 exports.documentationURL = 'https://reactnative.dev/docs/flatlist';
 exports.description = 'Performant, scrollable list of data.';
-exports.simpleExampleContainer = true;
 exports.examples = [
   {
     title: 'Simple list of items',

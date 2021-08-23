@@ -12,7 +12,8 @@ import org.gradle.api.Project
 
 fun Project.configureDevPorts(androidExt: BaseExtension) {
   val devServerPort = project.properties["reactNativeDevServerPort"]?.toString() ?: "8081"
-  val inspectorProxyPort = project.properties["reactNativeInspectorProxyPort"]?.toString() ?: devServerPort
+  val inspectorProxyPort =
+      project.properties["reactNativeInspectorProxyPort"]?.toString() ?: devServerPort
 
   androidExt.buildTypes.all {
     resValue("integer", "react_native_dev_server_port", devServerPort)

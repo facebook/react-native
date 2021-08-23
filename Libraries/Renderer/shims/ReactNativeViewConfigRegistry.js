@@ -6,7 +6,14 @@
  *
  * @format
  * @flow strict-local
+ * @generated SignedSource<<5b2da3e92f44ee2684113b45af052f5d>>
+ *
+ * This file was sync'd from the facebook/react repository.
  */
+
+/* eslint-disable react-internal/invariant-args */
+
+'use strict';
 
 import {type ViewConfig} from './ReactNativeTypes';
 import invariant from 'invariant';

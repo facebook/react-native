@@ -41,7 +41,7 @@ function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   }, {});
 }
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 export type ASTNode = Object;
 
 const invariant = require('invariant');

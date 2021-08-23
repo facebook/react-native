@@ -30,7 +30,7 @@ using namespace facebook::react;
     static auto const defaultProps = std::make_shared<ImageProps const>();
     _props = defaultProps;
 
-    _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
+    _imageView = [RCTUIImageViewAnimated new];
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = RCTContentModeFromImageResizeMode(defaultProps->resizeMode);
     _imageView.layer.minificationFilter = kCAFilterTrilinear;

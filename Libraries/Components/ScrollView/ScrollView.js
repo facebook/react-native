@@ -26,7 +26,6 @@ import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import invariant from 'invariant';
 import processDecelerationRate from './processDecelerationRate';
-import resolveAssetSource from '../../Image/resolveAssetSource';
 import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
 import setAndForwardRef from '../../Utilities/setAndForwardRef';
 
@@ -172,6 +171,12 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   automaticallyAdjustContentInsets?: ?boolean,
+  /**
+   * Controls whether iOS should automatically adjust the scroll indicator
+   * insets. The default value is true. Available on iOS 13 and later.
+   * @platform ios
+   */
+  automaticallyAdjustsScrollIndicatorInsets?: ?boolean,
   /**
    * The amount by which the scroll view content is inset from the edges
    * of the scroll view. Defaults to `{top: 0, left: 0, bottom: 0, right: 0}`.
@@ -428,32 +433,15 @@ type AndroidProps = $ReadOnly<{|
   fadingEdgeLength?: ?number,
 |}>;
 
-type VRProps = $ReadOnly<{|
-  /**
-   * Optionally an image can be used for the scroll bar thumb. This will
-   * override the color. While the image is loading or the image fails to
-   * load the color will be used instead. Use an alpha of 0 in the color
-   * to avoid seeing it while the image is loading.
-   *
-   * - `uri` - a string representing the resource identifier for the image, which
-   * should be either a local file path or the name of a static image resource
-   * - `number` - Opaque type returned by something like
-   * `import IMAGE from './image.jpg'`.
-   * @platform vr
-   */
-  scrollBarThumbImage?: ?($ReadOnly<{||}> | number), // Opaque type returned by import IMAGE from './image.jpg'
-|}>;
-
 type StickyHeaderComponentType = React.AbstractComponent<
   ScrollViewStickyHeaderProps,
-  $ReadOnly<{setNextHeaderY: number => void, ...}>,
+  $ReadOnly<interface {setNextHeaderY: number => void}>,
 >;
 
 export type Props = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
   ...AndroidProps,
-  ...VRProps,
 
   /**
    * These styles will be applied to the scroll view content container which
@@ -590,6 +578,11 @@ export type Props = $ReadOnly<{|
    */
   showsVerticalScrollIndicator?: ?boolean,
   /**
+   * When true, Sticky header is hidden when scrolling down, and dock at the top
+   * when scrolling up
+   */
+  stickyHeaderHiddenOnScroll?: ?boolean,
+  /**
    * An array of child indices determining which children get docked to the
    * top of the screen when scrolling. For example, passing
    * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
@@ -652,7 +645,8 @@ export type Props = $ReadOnly<{|
    *
    * See [RefreshControl](docs/refreshcontrol.html).
    */
-  // $FlowFixMe - how to handle generic type without existential operator?
+  /* $FlowFixMe[unclear-type] - how to handle generic type without existential
+   * operator? */
   refreshControl?: ?React.Element<any>,
   children?: React.Node,
   /**
@@ -717,6 +711,7 @@ type ScrollViewComponentStatics = $ReadOnly<{|
  */
 class ScrollView extends React.Component<Props, State> {
   static Context: typeof ScrollViewContext = ScrollViewContext;
+
   constructor(props: Props) {
     super(props);
 
@@ -724,13 +719,9 @@ class ScrollView extends React.Component<Props, State> {
       this.props.contentOffset?.y ?? 0,
     );
     this._scrollAnimatedValue.setOffset(this.props.contentInset?.top ?? 0);
-    this._stickyHeaderRefs = new Map();
-    this._headerLayoutYs = new Map();
   }
 
-  _scrollAnimatedValue: AnimatedImplementation.Value = new AnimatedImplementation.Value(
-    0,
-  );
+  _scrollAnimatedValue: AnimatedImplementation.Value;
   _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
   _stickyHeaderRefs: Map<
     string,
@@ -868,7 +859,7 @@ class ScrollView extends React.Component<Props, State> {
    * to the underlying scroll responder's methods.
    */
   getScrollResponder: () => ScrollResponderType = () => {
-    // $FlowFixMe
+    // $FlowFixMe[unclear-type]
     return ((this: any): ScrollResponderType);
   };
 
@@ -1003,6 +994,7 @@ class ScrollView extends React.Component<Props, State> {
       UIManager.measureLayout(
         nodeHandle,
         ReactNative.findNodeHandle(this),
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
         this._inputMeasureAndScrollToKeyboard,
       );
@@ -1010,6 +1002,7 @@ class ScrollView extends React.Component<Props, State> {
       nodeHandle.measureLayout(
         this._innerViewRef,
         this._inputMeasureAndScrollToKeyboard,
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
       );
     }
@@ -1077,23 +1070,38 @@ class ScrollView extends React.Component<Props, State> {
     height: number,
   ) => void = (left: number, top: number, width: number, height: number) => {
     let keyboardScreenY = Dimensions.get('window').height;
-    if (this._keyboardWillOpenTo != null) {
-      keyboardScreenY = this._keyboardWillOpenTo.endCoordinates.screenY;
-    }
-    let scrollOffsetY =
-      top - keyboardScreenY + height + this._additionalScrollOffset;
 
-    // By default, this can scroll with negative offset, pulling the content
-    // down so that the target component's bottom meets the keyboard's top.
-    // If requested otherwise, cap the offset at 0 minimum to avoid content
-    // shifting down.
-    if (this._preventNegativeScrollOffset === true) {
-      scrollOffsetY = Math.max(0, scrollOffsetY);
-    }
-    this.scrollTo({x: 0, y: scrollOffsetY, animated: true});
+    const scrollTextInputIntoVisibleRect = () => {
+      if (this._keyboardWillOpenTo != null) {
+        keyboardScreenY = this._keyboardWillOpenTo.endCoordinates.screenY;
+      }
+      let scrollOffsetY =
+        top - keyboardScreenY + height + this._additionalScrollOffset;
 
-    this._additionalScrollOffset = 0;
-    this._preventNegativeScrollOffset = false;
+      // By default, this can scroll with negative offset, pulling the content
+      // down so that the target component's bottom meets the keyboard's top.
+      // If requested otherwise, cap the offset at 0 minimum to avoid content
+      // shifting down.
+      if (this._preventNegativeScrollOffset === true) {
+        scrollOffsetY = Math.max(0, scrollOffsetY);
+      }
+      this.scrollTo({x: 0, y: scrollOffsetY, animated: true});
+
+      this._additionalScrollOffset = 0;
+      this._preventNegativeScrollOffset = false;
+    };
+
+    if (this._keyboardWillOpenTo == null) {
+      // `_keyboardWillOpenTo` is set inside `scrollResponderKeyboardWillShow` which
+      // is not guaranteed to be called before `_inputMeasureAndScrollToKeyboard` but native has already scheduled it.
+      // In case it was not called before `_inputMeasureAndScrollToKeyboard`, we postpone scrolling to
+      // text input.
+      setTimeout(() => {
+        scrollTextInputIntoVisibleRect();
+      }, 0);
+    } else {
+      scrollTextInputIntoVisibleRect();
+    }
   };
 
   _getKeyForIndex(index, childArray) {
@@ -1642,6 +1650,7 @@ class ScrollView extends React.Component<Props, State> {
               onLayout={event => this._onStickyHeaderLayout(index, event, key)}
               scrollAnimatedValue={this._scrollAnimatedValue}
               inverted={this.props.invertStickyHeaders}
+              hiddenOnScroll={this.props.stickyHeaderHiddenOnScroll}
               scrollViewHeight={this.state.layoutHeight}>
               {child}
             </StickyHeaderComponent>
@@ -1718,7 +1727,6 @@ class ScrollView extends React.Component<Props, State> {
       onTouchStart: this._handleTouchStart,
       onTouchCancel: this._handleTouchCancel,
       onScroll: this._handleScroll,
-      scrollBarThumbImage: resolveAssetSource(this.props.scrollBarThumbImage),
       scrollEventThrottle: hasStickyHeaders
         ? 1
         : this.props.scrollEventThrottle,
@@ -1812,7 +1820,7 @@ function Wrapper(props, ref) {
 Wrapper.displayName = 'ScrollView';
 const ForwardedScrollView = React.forwardRef(Wrapper);
 
-// $FlowFixMe Add static context to ForwardedScrollView
+// $FlowFixMe[prop-missing] Add static context to ForwardedScrollView
 ForwardedScrollView.Context = ScrollViewContext;
 
 ForwardedScrollView.displayName = 'ScrollView';

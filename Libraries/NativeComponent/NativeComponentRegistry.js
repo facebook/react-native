@@ -22,6 +22,8 @@ import * as React from 'react';
 
 let getRuntimeConfig;
 
+let componentNameToExists: Map<string, boolean> = new Map();
+
 /**
  * Configures a function that is called to determine whether a given component
  * should be registered using reflection of the native component at runtime.
@@ -133,4 +135,23 @@ export function unstable_hasStaticViewConfig(name: string): boolean {
     native: true,
   };
   return !native;
+}
+
+/**
+ * Unstable API. Do not use!
+ *
+ * This method returns if the component with name received as a parameter
+ * is registed in the native platform.
+ */
+export function unstable_hasComponent(name: string): boolean {
+  let hasNativeComponent = componentNameToExists.get(name);
+  if (hasNativeComponent == null) {
+    if (global.__nativeComponentRegistry__hasComponent) {
+      hasNativeComponent = global.__nativeComponentRegistry__hasComponent(name);
+      componentNameToExists.set(name, hasNativeComponent);
+    } else {
+      throw `unstable_hasComponent('${name}'): Global function is not registered`;
+    }
+  }
+  return hasNativeComponent;
 }

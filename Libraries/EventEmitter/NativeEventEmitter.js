@@ -18,11 +18,10 @@ import Platform from '../Utilities/Platform';
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
 import invariant from 'invariant';
 
-type NativeModule = $ReadOnly<{
-  addListener: (eventType: string) => void,
-  removeListeners: (count: number) => void,
-  ...
-}>;
+interface NativeModule {
+  addListener(eventType: string): void;
+  removeListeners(count: number): void;
+}
 
 export type {EventSubscription};
 
@@ -46,7 +45,28 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
         nativeModule != null,
         '`new NativeEventEmitter()` requires a non-null argument.',
       );
+    }
+
+    const hasAddListener =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      !!nativeModule && typeof nativeModule.addListener === 'function';
+    const hasRemoveListeners =
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      !!nativeModule && typeof nativeModule.removeListeners === 'function';
+
+    if (nativeModule && hasAddListener && hasRemoveListeners) {
       this._nativeModule = nativeModule;
+    } else if (nativeModule != null) {
+      if (!hasAddListener) {
+        console.warn(
+          '`new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.',
+        );
+      }
+      if (!hasRemoveListeners) {
+        console.warn(
+          '`new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.',
+        );
+      }
     }
   }
 
@@ -66,11 +86,25 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
       remove: () => {
         if (subscription != null) {
           this._nativeModule?.removeListeners(1);
+          // $FlowFixMe[incompatible-use]
           subscription.remove();
           subscription = null;
         }
       },
     };
+  }
+
+  /**
+   * @deprecated Use `remove` on the EventSubscription from `addListener`.
+   */
+  removeListener<TEvent: $Keys<TEventToArgsMap>>(
+    eventType: TEvent,
+    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
+  ): void {
+    this._nativeModule?.removeListeners(1);
+    // NOTE: This will report a deprecation notice via `console.error`.
+    // $FlowFixMe[prop-missing] - `removeListener` exists but is deprecated.
+    RCTDeviceEventEmitter.removeListener(eventType, listener);
   }
 
   emit<TEvent: $Keys<TEventToArgsMap>>(

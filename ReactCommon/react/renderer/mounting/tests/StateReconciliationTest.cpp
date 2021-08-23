@@ -11,13 +11,14 @@
 
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/element/ComponentBuilder.h>
 #include <react/renderer/element/Element.h>
-#include <react/renderer/element/testUtils.h>
-
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/mounting/ShadowTreeDelegate.h>
+
+#include <react/renderer/element/testUtils.h>
 
 using namespace facebook::react;
 
@@ -77,14 +78,19 @@ TEST(StateReconciliationTest, testStateReconciliation) {
             .reference(shadowNodeAB)
             .children({
               Element<ViewShadowNode>()
-                .reference(shadowNodeABA),
-              Element<ViewShadowNode>()
-                .reference(shadowNodeABB),
-              Element<ViewShadowNode>()
-                .reference(shadowNodeABC)
+              .children({
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABA),
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABB),
+                Element<ViewShadowNode>()
+                  .reference(shadowNodeABC)
+              })
             })
         });
   // clang-format on
+
+  ContextContainer contextContainer{};
 
   auto shadowNode = builder.build(element);
 
@@ -95,7 +101,11 @@ TEST(StateReconciliationTest, testStateReconciliation) {
   auto state1 = shadowNodeAB->getState();
   auto shadowTreeDelegate = DummyShadowTreeDelegate{};
   ShadowTree shadowTree{
-      SurfaceId{11}, LayoutConstraints{}, LayoutContext{}, shadowTreeDelegate};
+      SurfaceId{11},
+      LayoutConstraints{},
+      LayoutContext{},
+      shadowTreeDelegate,
+      contextContainer};
 
   shadowTree.commit(
       [&](RootShadowNode const &oldRootShadowNode) {

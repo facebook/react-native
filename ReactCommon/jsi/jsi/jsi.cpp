@@ -106,6 +106,9 @@ Instrumentation& Runtime::instrumentation() {
             std::vector<HeapStatsUpdate>)>) override {}
     void stopTrackingHeapObjectStackTraces() override {}
 
+    void startHeapSampling(size_t) override {}
+    void stopHeapSampling(std::ostream&) override {}
+
     void createSnapshotToFile(const std::string&) override {
       throw JSINativeException(
           "Default instrumentation cannot create a heap snapshot");

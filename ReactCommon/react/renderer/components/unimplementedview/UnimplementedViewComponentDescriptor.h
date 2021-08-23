@@ -9,6 +9,7 @@
 
 #include <react/renderer/components/unimplementedview/UnimplementedViewShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
@@ -32,8 +33,10 @@ class UnimplementedViewComponentDescriptor final
    * In addtion to base implementation, stores a component name inside cloned
    * `Props` object.
    */
-  Props::Shared cloneProps(Props::Shared const &props, RawProps const &rawProps)
-      const override;
+  Props::Shared cloneProps(
+      PropsParserContext const &context,
+      Props::Shared const &props,
+      RawProps const &rawProps) const override;
 };
 
 } // namespace react

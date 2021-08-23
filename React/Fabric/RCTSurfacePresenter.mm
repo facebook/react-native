@@ -10,6 +10,7 @@
 #import <mutex>
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTConstants.h>
@@ -26,9 +27,7 @@
 
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
-#import <react/renderer/components/root/RootShadowNode.h>
-#import <react/renderer/core/LayoutConstraints.h>
-#import <react/renderer/core/LayoutContext.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/renderer/scheduler/SynchronousEventBeat.h>
@@ -89,12 +88,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   if (self = [super init]) {
     assert(contextContainer && "RuntimeExecutor must be not null.");
-
     _runtimeExecutor = runtimeExecutor;
     _contextContainer = contextContainer;
 
     _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
     _mountingManager = [[RCTMountingManager alloc] init];
+    _mountingManager.contextContainer = contextContainer;
     _mountingManager.delegate = self;
 
     _observers = [NSMutableArray array];
@@ -126,6 +125,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
   _contextContainer = contextContainer;
+  _mountingManager.contextContainer = contextContainer;
 }
 
 - (RuntimeExecutor)runtimeExecutor
@@ -251,20 +251,16 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:scrollview_on_demand_mounting_ios")) {
-    RCTExperimentSetOnDemandViewMounting(YES);
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:optimized_hit_testing_ios")) {
-    RCTExperimentSetOptimizedHitTesting(YES);
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:preemptive_view_allocation_disabled_ios")) {
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:release_resources_when_backgrounded_ios")) {
-    RCTExperimentSetReleaseResourcesWhenBackgrounded(YES);
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_remove_clipped_subviews_ios")) {
+    RCTSetRemoveClippedSubviewsEnabled(YES);
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_initial_max_size_ios")) {
+    RCTSetInitialMaxSizeEnabled(YES);
   }
 
   auto componentRegistryFactory =
@@ -279,7 +275,19 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = _contextContainer;
   toolbox.componentRegistryFactory = componentRegistryFactory;
+
+  auto weakRuntimeScheduler = _contextContainer->find<std::weak_ptr<RuntimeScheduler>>("RuntimeScheduler");
+  auto runtimeScheduler = weakRuntimeScheduler.hasValue() ? weakRuntimeScheduler.value().lock() : nullptr;
+  if (runtimeScheduler) {
+    runtimeScheduler->setEnableYielding(
+        reactNativeConfig->getBool("react_native_new_architecture:runtimescheduler_enable_yielding_ios"));
+    runtimeExecutor = [runtimeScheduler](std::function<void(jsi::Runtime & runtime)> &&callback) {
+      runtimeScheduler->scheduleWork(std::move(callback));
+    };
+  }
+
   toolbox.runtimeExecutor = runtimeExecutor;
+
   toolbox.mainRunLoopObserverFactory = [](RunLoopObserver::Activity activities,
                                           RunLoopObserver::WeakOwner const &owner) {
     return std::make_unique<MainRunLoopObserver>(activities, owner);
@@ -289,13 +297,15 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
 
-  toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
-    auto runLoopObserver =
-        std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-    return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
-  };
+  toolbox.synchronousEventBeatFactory =
+      [runtimeExecutor, runtimeScheduler = runtimeScheduler](EventBeat::SharedOwnerBox const &ownerBox) {
+        auto runLoopObserver =
+            std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+        return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor, runtimeScheduler);
+      };
 
-  toolbox.asynchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+  toolbox.asynchronousEventBeatFactory =
+      [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
         std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
     return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
@@ -354,9 +364,13 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   [self->_mountingManager sendAccessibilityEvent:tag eventType:eventTypeStr];
 }
 
-- (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder forShadowView:(facebook::react::ShadowView const &)shadowView;
+- (void)schedulerDidSetIsJSResponder:(BOOL)isJSResponder
+                blockNativeResponder:(BOOL)blockNativeResponder
+                       forShadowView:(facebook::react::ShadowView const &)shadowView;
 {
-  [self->_mountingManager setIsJSResponder:isJSResponder forShadowView:shadowView];
+  [self->_mountingManager setIsJSResponder:isJSResponder
+                      blockNativeResponder:blockNativeResponder
+                             forShadowView:shadowView];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer

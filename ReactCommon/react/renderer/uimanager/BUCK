@@ -34,7 +34,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
@@ -62,6 +62,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/components/view:view"),
         react_native_xplat_target("react/renderer/mounting:mounting"),
         react_native_xplat_target("react/renderer/core:core"),
+        react_native_xplat_target("react/renderer/leakchecker:leakchecker"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
@@ -75,7 +76,7 @@ fb_xplat_cxx_test(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],

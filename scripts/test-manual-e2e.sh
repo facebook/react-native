@@ -40,7 +40,7 @@ rm -rf android
 
 success "Generated artifacts for Maven"
 
-npm install
+yarn
 
 success "Killing any running packagers"
 lsof -i :8081 | grep LISTEN
@@ -121,4 +121,4 @@ open "/tmp/${project_name}/ios/${project_name}.xcworkspace"
 cd "$repo_root"
 
 info "Next steps:"
-info "   - https://github.com/facebook/react-native/blob/master/Releases.md"
+info "   - https://github.com/facebook/react-native/blob/HEAD/Releases.md"

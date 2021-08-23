@@ -1,5 +1,402 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderComponent present 1`] = `
+<RCTScrollView
+  ListHeaderComponent={[Function]}
+  data={
+    Array [
+      Object {
+        "key": 0,
+        "sticky": true,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+        "sticky": true,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+        "sticky": true,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+        "sticky": true,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={10}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={
+    Array [
+      0,
+      3,
+      6,
+      9,
+    ]
+  }
+>
+  <View>
+    <View
+      onLayout={[Function]}
+    >
+      <Header />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={9}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initial render window 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+        "sticky": true,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+        "sticky": true,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+        "sticky": true,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+        "sticky": true,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={10}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={
+    Array [
+      0,
+      3,
+      6,
+      9,
+    ]
+  }
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={9}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in initial render window 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+        "sticky": true,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+        "sticky": true,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+        "sticky": true,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+        "sticky": true,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={
+    Array [
+      0,
+      3,
+    ]
+  }
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 50,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
 exports[`VirtualizedList handles nested lists 1`] = `
 <RCTScrollView
   data={
@@ -14,12 +411,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -29,8 +421,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -51,11 +441,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
         getItem={[Function]}
         getItemCount={[Function]}
         horizontal={false}
-        initialNumToRender={10}
-        keyExtractor={[Function]}
-        maxToRenderPerBatch={10}
         onContentSizeChange={[Function]}
-        onEndReachedThreshold={2}
         onLayout={[Function]}
         onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}
@@ -65,8 +451,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
         renderItem={[Function]}
         scrollEventThrottle={50}
         stickyHeaderIndices={Array []}
-        updateCellsBatchingPeriod={50}
-        windowSize={21}
       >
         <View
           onLayout={[Function]}
@@ -104,11 +488,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
         getItem={[Function]}
         getItemCount={[Function]}
         horizontal={true}
-        initialNumToRender={10}
-        keyExtractor={[Function]}
-        maxToRenderPerBatch={10}
         onContentSizeChange={[Function]}
-        onEndReachedThreshold={2}
         onLayout={[Function]}
         onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}
@@ -118,8 +498,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
         renderItem={[Function]}
         scrollEventThrottle={50}
         stickyHeaderIndices={Array []}
-        updateCellsBatchingPeriod={50}
-        windowSize={21}
       >
         <View>
           <View
@@ -177,12 +555,7 @@ exports[`VirtualizedList handles separators correctly 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -192,8 +565,6 @@ exports[`VirtualizedList handles separators correctly 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -258,12 +629,7 @@ exports[`VirtualizedList handles separators correctly 2`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -273,8 +639,6 @@ exports[`VirtualizedList handles separators correctly 2`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -339,12 +703,7 @@ exports[`VirtualizedList handles separators correctly 3`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -354,8 +713,6 @@ exports[`VirtualizedList handles separators correctly 3`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -403,6 +760,220 @@ exports[`VirtualizedList handles separators correctly 3`] = `
 </RCTScrollView>
 `;
 
+exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+        "sticky": true,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+        "sticky": true,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+        "sticky": true,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+        "sticky": true,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+        "sticky": true,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+        "sticky": true,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+        "sticky": true,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={
+    Array [
+      0,
+      2,
+      4,
+      7,
+      10,
+      13,
+    ]
+  }
+  windowSize={1}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={0}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 50,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={6}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 20,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={9}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={10}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={11}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={12}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={13}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={14}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={15}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={16}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={17}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={18}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={19}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
 exports[`VirtualizedList renders all the bells and whistles 1`] = `
 <RCTScrollView
   ItemSeparatorComponent={[Function]}
@@ -431,14 +1002,10 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
   invertStickyHeaders={true}
   inverted={true}
   keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -468,8 +1035,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       undefined,
     ]
   }
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <RCTRefreshControl />
   <View>
@@ -614,12 +1179,7 @@ exports[`VirtualizedList renders empty list 1`] = `
   data={Array []}
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -629,8 +1189,26 @@ exports[`VirtualizedList renders empty list 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
+>
+  <View />
+</RCTScrollView>
+`;
+
+exports[`VirtualizedList renders empty list after batch 1`] = `
+<RCTScrollView
+  data={Array []}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
 >
   <View />
 </RCTScrollView>
@@ -644,12 +1222,7 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   data={Array []}
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -659,8 +1232,6 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -690,12 +1261,7 @@ exports[`VirtualizedList renders list with empty component 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -705,8 +1271,6 @@ exports[`VirtualizedList renders list with empty component 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -725,12 +1289,7 @@ exports[`VirtualizedList renders null list 1`] = `
 <RCTScrollView
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -740,8 +1299,6 @@ exports[`VirtualizedList renders null list 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View />
 </RCTScrollView>
@@ -764,12 +1321,7 @@ exports[`VirtualizedList renders simple list 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -779,8 +1331,6 @@ exports[`VirtualizedList renders simple list 1`] = `
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -829,12 +1379,7 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -843,8 +1388,6 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
   onScrollEndDrag={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -875,6 +1418,116 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
 </RCTScrollView>
 `;
 
+exports[`VirtualizedList renders sticky headers in viewport on batched render 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+        "sticky": true,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+        "sticky": true,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+        "sticky": true,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+        "sticky": true,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={
+    Array [
+      0,
+      3,
+    ]
+  }
+  windowSize={1}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 50,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
 exports[`VirtualizedList test getItem functionality where data is not an Array 1`] = `
 <RCTScrollView
   data={
@@ -886,12 +1539,7 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -901,8 +1549,6 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -929,12 +1575,7 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
   }
   getItem={[Function]}
   getItemCount={[Function]}
-  horizontal={false}
-  initialNumToRender={10}
-  keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
@@ -944,8 +1585,6 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
-  updateCellsBatchingPeriod={50}
-  windowSize={21}
 >
   <View>
     <View
@@ -957,6 +1596,3011 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
         value="i1"
       />
     </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  initialScrollIndex={1}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={10}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={9}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={10}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={11}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={12}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={13}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={14}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={15}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={16}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={17}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={18}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={19}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`constrains batch render region when an item is removed 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`discards intitial render if initialScrollIndex != 0 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  initialScrollIndex={5}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      style={
+        Object {
+          "height": 90,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={9}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={10}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={11}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={12}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={13}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={14}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={15}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={16}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={17}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={18}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={19}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`does not adjust render area until content area layed out 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={10}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 150,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`does not adjust render area with non-zero initialScrollIndex until scrolled 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  initialScrollIndex={1}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={10}
+>
+  <View>
+    <View
+      style={
+        Object {
+          "height": 10,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 140,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`does not over-render when there is less than initialNumToRender cells 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={20}
+  initialScrollIndex={4}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={9}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`eventually renders all items when virtualization disabled 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  disableVirtualization={true}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  initialScrollIndex={1}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`expands first in viewport to render up to maxToRenderPerBatch on initial render 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={2}
+  initialScrollIndex={4}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  maxToRenderPerBatch={2}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 130,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders a zero-height tail spacer on initial render if getItemLayout not defined 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  initialNumToRender={3}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 0,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders full tail spacer if all cells measured 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  initialNumToRender={3}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 50,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  disableVirtualization={true}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  initialScrollIndex={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders items before initialScrollIndex on first batch tick when virtualization disabled 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  disableVirtualization={true}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  initialScrollIndex={5}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={
+        Object {
+          "height": 50,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders no spacers up to initialScrollIndex on first render when virtualization disabled 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  disableVirtualization={true}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={2}
+  initialScrollIndex={4}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders offset cells in initial render when initialScrollIndex set 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={4}
+  initialScrollIndex={4}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 20,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders tail spacer up to last measured index if getItemLayout not defined 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  initialNumToRender={3}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 20,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders tail spacer up to last measured with irregular layout when getItemLayout undefined 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  initialNumToRender={3}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 18,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders windowSize derived region at bottom 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={3}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={9}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders windowSize derived region at top 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={3}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 60,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders windowSize derived region in middle 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={3}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 10,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 10,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders zero-height tail spacer on batch render if cells not yet measured and getItemLayout not defined 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  initialNumToRender={3}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 0,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`retains batch render region when an item is appended 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  maxToRenderPerBatch={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={9}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 10,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`retains initial render region when an item is appended 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={3}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 80,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`retains intitial render if initialScrollIndex == 0 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={5}
+  initialScrollIndex={0}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={9}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={10}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={11}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={12}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={13}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={14}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={15}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={16}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={17}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={18}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={19}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`unmounts sticky headers moved below viewport 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+        "sticky": true,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+        "sticky": true,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+        "sticky": true,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+        "sticky": true,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+        "sticky": true,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+        "sticky": true,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+        "sticky": true,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={
+    Array [
+      0,
+      3,
+    ]
+  }
+  windowSize={1}
+>
+  <View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={0}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        sticky={true}
+        value={3}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 150,
+        }
+      }
+    />
   </View>
 </RCTScrollView>
 `;

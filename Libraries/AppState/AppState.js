@@ -12,6 +12,7 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import logError from '../Utilities/logError';
 import NativeAppState from './NativeAppState';
+import Platform from '../Utilities/Platform';
 
 export type AppStateValues = 'inactive' | 'background' | 'active';
 
@@ -47,7 +48,9 @@ class AppState {
       this.isAvailable = true;
 
       const emitter: NativeEventEmitter<NativeAppStateEventDefinitions> = new NativeEventEmitter(
-        NativeAppState,
+        // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+        // If you want to use the native module on other platforms, please remove this condition and test its behavior
+        Platform.OS !== 'ios' ? null : NativeAppState,
       );
       this._emitter = emitter;
 
@@ -122,6 +125,38 @@ class AppState {
         });
     }
     throw new Error('Trying to subscribe to unknown event: ' + type);
+  }
+
+  /**
+   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
+   */
+  removeEventListener<K: $Keys<AppStateEventDefinitions>>(
+    type: K,
+    listener: (...$ElementType<AppStateEventDefinitions, K>) => mixed,
+  ): void {
+    const emitter = this._emitter;
+    if (emitter == null) {
+      throw new Error('Cannot use AppState when `isAvailable` is false.');
+    }
+    // NOTE: This will report a deprecation notice via `console.error`.
+    switch (type) {
+      case 'change':
+        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        // $FlowIssue[incompatible-call]
+        emitter.removeListener('appStateDidChange', listener);
+        return;
+      case 'memoryWarning':
+        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        emitter.removeListener('memoryWarning', listener);
+        return;
+      case 'blur':
+      case 'focus':
+        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        // $FlowIssue[incompatible-call]
+        emitter.addListener('appStateFocusChange', listener);
+        return;
+    }
+    throw new Error('Trying to unsubscribe from unknown event: ' + type);
   }
 }
 

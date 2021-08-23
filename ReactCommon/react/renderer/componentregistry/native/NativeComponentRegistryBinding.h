@@ -14,8 +14,6 @@
 namespace facebook {
 namespace react {
 
-class JSCallInvoker;
-
 /**
  * An app/platform-specific provider function to determine if a component
  * is registered in the native platform.
