@@ -280,7 +280,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 {
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-#endif // TODO9macOS GH#774)
+#endif // TODO(macOS GH#774)
 }
 
 + (void)runRunLoop
