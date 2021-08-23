@@ -655,9 +655,9 @@ public class ReactInstanceManager {
     }
   }
 
-  /** Temporary: due to T62192299, log sources of destroy calls. TODO T62192299: delete */
+  /** Temporary: due to T67035147, log sources of destroy calls. TODO T67035147: delete */
   private void logOnDestroy() {
-    FLog.e(
+    FLog.d(
         TAG,
         "ReactInstanceManager.destroy called",
         new RuntimeException("ReactInstanceManager.destroy called"));
@@ -669,7 +669,6 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
     PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Destroy");
 
-    // TODO T62192299: remove when investigation is complete
     logOnDestroy();
 
     if (mHasStartedDestroying) {
@@ -1134,8 +1133,7 @@ public class ReactInstanceManager {
   }
 
   private void attachRootViewToInstance(final ReactRoot reactRoot) {
-    // TODO: downgrade back to FLog.d once T62192299 is resolved.
-    FLog.e(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
+    FLog.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
 
     @Nullable
@@ -1281,38 +1279,14 @@ public class ReactInstanceManager {
 
     reactContext.initializeWithInstance(catalystInstance);
 
-    if (ReactFeatureFlags.enableTurboModuleDebugLogs) {
-      // TODO(T46487253): Remove after task is closed
-      FLog.e(
-          ReactConstants.TAG,
-          "ReactInstanceManager.createReactContext: mJSIModulePackage "
-              + (mJSIModulePackage != null ? "not null" : "null"));
-    }
-
     if (mJSIModulePackage != null) {
       catalystInstance.addJSIModules(
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
 
-      if (ReactFeatureFlags.enableTurboModuleDebugLogs) {
-        // TODO(T46487253): Remove after task is closed
-        FLog.e(
-            ReactConstants.TAG,
-            "ReactInstanceManager.createReactContext: ReactFeatureFlags.useTurboModules == "
-                + (ReactFeatureFlags.useTurboModules == false ? "false" : "true"));
-      }
-
       if (ReactFeatureFlags.useTurboModules) {
         JSIModule turboModuleManager =
             catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager);
-
-        if (ReactFeatureFlags.enableTurboModuleDebugLogs) {
-          // TODO(T46487253): Remove after task is closed
-          FLog.e(
-              ReactConstants.TAG,
-              "ReactInstanceManager.createReactContext: TurboModuleManager "
-                  + (turboModuleManager == null ? "not created" : "created"));
-        }
 
         catalystInstance.setTurboModuleManager(turboModuleManager);
 

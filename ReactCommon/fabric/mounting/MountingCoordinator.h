@@ -40,7 +40,7 @@ class MountingCoordinator final {
    */
   MountingCoordinator(
       ShadowTreeRevision baseRevision,
-      MountingOverrideDelegate *delegate);
+      std::weak_ptr<MountingOverrideDelegate const> delegate);
 
   /*
    * Returns the id of the surface that the coordinator belongs to.
@@ -102,7 +102,7 @@ class MountingCoordinator final {
   mutable better::optional<ShadowTreeRevision> lastRevision_{};
   mutable MountingTransaction::Number number_{0};
   mutable std::condition_variable signal_;
-  mutable MountingOverrideDelegate *mountingOverrideDelegate_{nullptr};
+  std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate_;
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   void validateTransactionAgainstStubViewTree(

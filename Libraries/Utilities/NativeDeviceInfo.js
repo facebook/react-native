@@ -43,7 +43,18 @@ export interface Spec extends TurboModule {
 }
 
 const NativeModule: Spec = TurboModuleRegistry.getEnforcing<Spec>('DeviceInfo');
+let constants = null;
 
-const NativeDeviceInfo = NativeModule;
+const NativeDeviceInfo = {
+  getConstants(): {|
+    +Dimensions: DimensionsPayload,
+    +isIPhoneX_deprecated?: boolean,
+  |} {
+    if (constants == null) {
+      constants = NativeModule.getConstants();
+    }
+    return constants;
+  },
+};
 
 export default NativeDeviceInfo;

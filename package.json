@@ -144,7 +144,7 @@
     "eslint-plugin-react-hooks": "^3.0.0",
     "eslint-plugin-react-native": "3.8.1",
     "eslint-plugin-relay": "1.7.1",
-    "flow-bin": "^0.125.1",
+    "flow-bin": "^0.126.1",
     "flow-remove-types": "1.2.3",
     "hermes-engine-darwin": "~0.5.0",
     "jest": "^26.0.1",

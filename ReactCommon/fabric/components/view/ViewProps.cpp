@@ -92,7 +92,9 @@ ViewProps::ViewProps(ViewProps const &sourceProps, RawProps const &rawProps)
           rawProps,
           "collapsable",
           sourceProps.collapsable,
-          true)){};
+          true)),
+      elevation(
+          convertRawProp(rawProps, "elevation", sourceProps.elevation, {})){};
 
 #pragma mark - Convenience Methods
 

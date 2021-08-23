@@ -38,6 +38,53 @@ export interface Spec extends TurboModule {
   +setHidden: (hidden: boolean, withAnimation: string) => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>(
-  'StatusBarManager',
-): Spec);
+const NativeModule = TurboModuleRegistry.getEnforcing<Spec>('StatusBarManager');
+let constants = null;
+
+const NativeStatusBarManager = {
+  getConstants(): {|
+    +HEIGHT: number,
+    +DEFAULT_BACKGROUND_COLOR?: number,
+  |} {
+    if (constants == null) {
+      constants = NativeModule.getConstants();
+    }
+    return constants;
+  },
+
+  // TODO(T47754272) Can we remove this method?
+  getHeight(callback: (result: {|height: number|}) => void): void {
+    NativeModule.getHeight(callback);
+  },
+
+  setNetworkActivityIndicatorVisible(visible: boolean): void {
+    NativeModule.setNetworkActivityIndicatorVisible(visible);
+  },
+
+  addListener(eventType: string): void {
+    NativeModule.addListener(eventType);
+  },
+
+  removeListeners(count: number): void {
+    NativeModule.removeListeners(count);
+  },
+
+  /**
+   *  - statusBarStyles can be:
+   *    - 'default'
+   *    - 'dark-content'
+   *    - 'light-content'
+   */
+  setStyle(statusBarStyle?: ?string, animated: boolean): void {
+    NativeModule.setStyle(statusBarStyle, animated);
+  },
+
+  /**
+   *  - withAnimation can be: 'none' | 'fade' | 'slide'
+   */
+  setHidden(hidden: boolean, withAnimation: string): void {
+    NativeModule.setHidden(hidden, withAnimation);
+  },
+};
+
+export default NativeStatusBarManager;

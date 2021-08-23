@@ -20,12 +20,24 @@ static NSURL *mainBundleURL()
 
 static NSURL *localhostBundleURL()
 {
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=%@&dev=true&minify=false&app=com.apple.dt.xctest.tool", testFile, kRCTPlatformName]]; // TODO(macOS ISS#3536887)
+  return [NSURL
+      URLWithString:
+          [NSString
+              stringWithFormat:
+                  @"http://localhost:8081/%@.bundle?platform=%@&dev=true&minify=false&modulesOnly=false&runMdoule=true&app=com.apple.dt.xctest.tool",
+                  testFile,
+                  kRCTPlatformName]]; // TODO(macOS GH#774)
 }
 
 static NSURL *ipBundleURL()
 {
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://192.168.1.1:8081/%@.bundle?platform=%@&dev=true&minify=false&app=com.apple.dt.xctest.tool", testFile, kRCTPlatformName]]; // TODO(macOS ISS#3536887)
+  return [NSURL
+      URLWithString:
+          [NSString
+              stringWithFormat:
+                  @"http://192.168.1.1:8081/%@.bundle?platform=%@&dev=true&minify=false&modulesOnly=false&runMdoule=true&app=com.apple.dt.xctest.tool",
+                  testFile,
+                  kRCTPlatformName]]; // TODO(macOS GH#774)
 }
 
 @implementation NSBundle (RCTBundleURLProviderTests)
@@ -50,16 +62,14 @@ static NSURL *ipBundleURL()
 {
   [super setUp];
 
-  RCTSwapInstanceMethods([NSBundle class],
-                         @selector(URLForResource:withExtension:),
-                          @selector(RCT_URLForResource:withExtension:));
+  RCTSwapInstanceMethods(
+      [NSBundle class], @selector(URLForResource:withExtension:), @selector(RCT_URLForResource:withExtension:));
 }
 
 - (void)tearDown
 {
-  RCTSwapInstanceMethods([NSBundle class],
-                         @selector(URLForResource:withExtension:),
-                         @selector(RCT_URLForResource:withExtension:));
+  RCTSwapInstanceMethods(
+      [NSBundle class], @selector(URLForResource:withExtension:), @selector(RCT_URLForResource:withExtension:));
 
   [super tearDown];
 }

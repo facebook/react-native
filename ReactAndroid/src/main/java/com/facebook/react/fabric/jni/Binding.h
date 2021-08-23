@@ -10,6 +10,7 @@
 #include <fbjni/fbjni.h>
 #include <react/animations/LayoutAnimationDriver.h>
 #include <react/jni/JMessageQueueThread.h>
+#include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/scheduler/Scheduler.h>
 #include <react/scheduler/SchedulerDelegate.h>
@@ -50,6 +51,7 @@ class Binding : public jni::HybridClass<Binding>,
 
   void installFabricUIManager(
       jlong jsContextNativePointer,
+      jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
       jni::alias_ref<jobject> javaUIManager,
       EventBeatManager *eventBeatManager,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
@@ -110,7 +112,7 @@ class Binding : public jni::HybridClass<Binding>,
   virtual void onAnimationStarted() override;
   virtual void onAllAnimationsComplete() override;
   LayoutAnimationDriver *getAnimationDriver();
-  std::unique_ptr<LayoutAnimationDriver> animationDriver_;
+  std::shared_ptr<LayoutAnimationDriver> animationDriver_;
 
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;

@@ -523,8 +523,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
       mShouldLogContentAppeared = true;
 
-      // TODO T62192299: remove this
-      FLog.e(TAG, "runApplication: call AppRegistry.runApplication");
       catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);

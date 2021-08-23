@@ -11,6 +11,7 @@
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <jsi/jsi.h>
 #include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include "Instance.h"
@@ -337,19 +338,37 @@ std::shared_ptr<CallInvoker> NativeToJsBridge::getDecoratedNativeCallInvoker(
 }
 
 RuntimeExecutor NativeToJsBridge::getRuntimeExecutor() {
-  auto runtimeExecutor =
-      [this, isDestroyed = m_destroyed](
-          std::function<void(jsi::Runtime & runtime)> &&callback) {
-        if (*isDestroyed) {
-          return;
+  auto runtimeExecutor = [this, isDestroyed = m_destroyed](
+                             std::function<void(jsi::Runtime & runtime)>
+                                 &&callback) {
+    if (*isDestroyed) {
+      return;
+    }
+    runOnExecutorQueue([callback = std::move(callback)](JSExecutor *executor) {
+      jsi::Runtime *runtime = (jsi::Runtime *)executor->getJavaScriptContext();
+      try {
+        callback(*runtime);
+      } catch (jsi::JSError &originalError) {
+        auto errorUtils = runtime->global().getProperty(*runtime, "ErrorUtils");
+        if (errorUtils.isUndefined() || !errorUtils.isObject() ||
+            !errorUtils.getObject(*runtime).hasProperty(
+                *runtime, "reportFatalError")) {
+          // ErrorUtils was not set up. This probably means the bundle didn't
+          // load properly.
+          throw jsi::JSError(
+              *runtime,
+              "ErrorUtils is not set up properly. Something probably went wrong trying to load the JS bundle. Trying to report error " +
+                  originalError.getMessage(),
+              originalError.getStack());
         }
-        runOnExecutorQueue(
-            [callback = std::move(callback)](JSExecutor *executor) {
-              jsi::Runtime *runtime =
-                  (jsi::Runtime *)executor->getJavaScriptContext();
-              callback(*runtime);
-            });
-      };
+        // TODO(janzer): Rewrite this function to return the processed error
+        // instead of just reporting it through the native module
+        auto func = errorUtils.asObject(*runtime).getPropertyAsFunction(
+            *runtime, "reportFatalError");
+        func.call(*runtime, originalError.value(), jsi::Value(true));
+      }
+    });
+  };
   return runtimeExecutor;
 }
 

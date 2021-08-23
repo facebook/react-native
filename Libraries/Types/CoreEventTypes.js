@@ -91,7 +91,7 @@ export type PressEvent = ResponderSyntheticEvent<
     button?: ?number, // TODO(macOS GH#774)
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
     ctrlKey?: ?boolean, // TODO(macOS GH#774)
-    force: number,
+    force?: number,
     identifier: number,
     locationX: number,
     locationY: number,

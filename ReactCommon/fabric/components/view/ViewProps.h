@@ -59,6 +59,8 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 
   bool collapsable{true};
 
+  int elevation{};
+
 #pragma mark - Convenience Methods
 
   BorderMetrics resolveBorderMetrics(LayoutMetrics const &layoutMetrics) const;

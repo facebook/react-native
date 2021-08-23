@@ -40,7 +40,7 @@ class ShadowTree final {
       LayoutContext const &layoutContext,
       RootComponentDescriptor const &rootComponentDescriptor,
       ShadowTreeDelegate const &delegate,
-      MountingOverrideDelegate *mountingOverrideDelegate);
+      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate);
 
   ~ShadowTree();
 
