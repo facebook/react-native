@@ -26,7 +26,7 @@ static std::string normalizeEventType(const std::string &type) {
   auto prefixedType = type;
   if (type.find("top", 0) != 0) {
     prefixedType.insert(0, "top");
-    prefixedType[3] = toupper(prefixedType[3]);
+    prefixedType[3] = static_cast<char>(toupper(prefixedType[3]));
   }
   return prefixedType;
 }
@@ -53,18 +53,24 @@ void EventEmitter::dispatchEvent(
     const std::string &type,
     const folly::dynamic &payload,
     EventPriority priority) const {
-  dispatchEvent(
-      type,
-      [payload](jsi::Runtime &runtime) {
-        return valueFromDynamic(runtime, payload);
-      },
-      priority);
+  dispatchEvent(type, [payload](jsi::Runtime &runtime) {
+    return valueFromDynamic(runtime, payload);
+  });
+}
+
+void EventEmitter::dispatchUniqueEvent(
+    const std::string &type,
+    const folly::dynamic &payload) const {
+  dispatchUniqueEvent(type, [payload](jsi::Runtime &runtime) {
+    return valueFromDynamic(runtime, payload);
+  });
 }
 
 void EventEmitter::dispatchEvent(
     const std::string &type,
     const ValueFactory &payloadFactory,
-    EventPriority priority) const {
+    EventPriority priority,
+    RawEvent::Category category) const {
   SystraceSection s("EventEmitter::dispatchEvent");
 
   auto eventDispatcher = eventDispatcher_.lock();
@@ -73,7 +79,8 @@ void EventEmitter::dispatchEvent(
   }
 
   eventDispatcher->dispatchEvent(
-      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_),
+      RawEvent(
+          normalizeEventType(type), payloadFactory, eventTarget_, category),
       priority);
 }
 
@@ -87,8 +94,11 @@ void EventEmitter::dispatchUniqueEvent(
     return;
   }
 
-  eventDispatcher->dispatchUniqueEvent(
-      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_));
+  eventDispatcher->dispatchUniqueEvent(RawEvent(
+      normalizeEventType(type),
+      payloadFactory,
+      eventTarget_,
+      RawEvent::Category::Continuous));
 }
 
 void EventEmitter::setEnabled(bool enabled) const {

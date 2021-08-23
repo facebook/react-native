@@ -166,23 +166,34 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       RuntimeExecutor runtimeExecutor,
       LayoutAnimationStatusDelegate *delegate)
       : runtimeExecutor_(runtimeExecutor),
-        layoutAnimationStatusDelegate_(delegate) {}
+        layoutAnimationStatusDelegate_(delegate),
+        now_([]() {
+          return std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::high_resolution_clock::now()
+                         .time_since_epoch())
+              .count();
+        }) {}
   ~LayoutAnimationKeyFrameManager() {}
+
+#pragma mark UIManagerAnimationDelegate methods
 
   void uiManagerDidConfigureNextLayoutAnimation(
       jsi::Runtime &runtime,
       RawValue const &config,
       const jsi::Value &successCallbackValue,
       const jsi::Value &failureCallbackValue) const override;
+
   void setComponentDescriptorRegistry(SharedComponentDescriptorRegistry const &
                                           componentDescriptorRegistry) override;
 
   // TODO: add SurfaceId to this API as well
   bool shouldAnimateFrame() const override;
 
-  bool shouldOverridePullTransaction() const override;
-
   void stopSurface(SurfaceId surfaceId) override;
+
+#pragma mark MountingOverrideDelegate methods
+
+  bool shouldOverridePullTransaction() const override;
 
   // This is used to "hijack" the diffing process to figure out which mutations
   // should be animated. The mutations returned by this function will be
@@ -192,6 +203,11 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       MountingTransaction::Number number,
       TransactionTelemetry const &telemetry,
       ShadowViewMutationList mutations) const override;
+
+  // Exposed for testing.
+ public:
+  void uiManagerDidConfigureNextLayoutAnimation(
+      LayoutAnimation layoutAnimation) const;
 
   // LayoutAnimationStatusDelegate - this is for the platform to get
   // signal when animations start and complete. Setting and resetting this
@@ -206,6 +222,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   RuntimeExecutor runtimeExecutor_;
   mutable std::mutex layoutAnimationStatusDelegateMutex_;
   mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
+
+  // Function that returns current time in milliseconds
+  std::function<uint64_t()> now_;
 
   void adjustImmediateMutationIndicesForDelayedMutations(
       SurfaceId surfaceId,
@@ -275,6 +294,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::mutex callbackWrappersPendingMutex_;
   mutable std::vector<std::unique_ptr<LayoutAnimationCallbackWrapper>>
       callbackWrappersPending_{};
+
+ public:
+  void setClockNow(std::function<uint64_t()> now);
 };
 
 static inline bool shouldFirstComeBeforeSecondRemovesOnly(

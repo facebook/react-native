@@ -8,14 +8,13 @@
  * @format
  */
 
-const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');
-const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('../StyleSheet/StyleSheet');
+import DeprecatedImagePropType from '../DeprecatedPropTypes/DeprecatedImagePropType';
+import * as React from 'react';
+import StyleSheet from '../StyleSheet/StyleSheet';
 
-const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const resolveAssetSource = require('./resolveAssetSource');
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import resolveAssetSource from './resolveAssetSource';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 

@@ -224,4 +224,4 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   }
 }
 
-module.exports = KeyboardAvoidingView;
+export default KeyboardAvoidingView;

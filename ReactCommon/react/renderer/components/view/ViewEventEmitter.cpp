@@ -15,7 +15,7 @@ namespace react {
 void ViewEventEmitter::onAccessibilityAction(const std::string &name) const {
   dispatchEvent("accessibilityAction", [name](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
-    payload.setProperty(runtime, "action", name);
+    payload.setProperty(runtime, "actionName", name);
     return payload;
   });
 }

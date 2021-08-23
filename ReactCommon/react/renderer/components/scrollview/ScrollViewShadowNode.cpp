@@ -34,7 +34,7 @@ void ScrollViewShadowNode::updateStateIfNeeded() {
 void ScrollViewShadowNode::updateScrollContentOffsetIfNeeded() {
 #ifndef ANDROID
   if (getLayoutMetrics().layoutDirection == LayoutDirection::RightToLeft) {
-    // Yoga place `contentView` on the right side of `scrollView` when RTL
+    // Yoga places `contentView` on the right side of `scrollView` when RTL
     // layout is enforced. To correct for this, in RTL setting, correct the
     // frame's origin. React Native Classic does this as well in
     // `RCTScrollContentShadowView.m`.
@@ -58,8 +58,9 @@ void ScrollViewShadowNode::layout(LayoutContext layoutContext) {
 }
 
 Point ScrollViewShadowNode::getContentOriginOffset() const {
-  auto contentOffset = getStateData().contentOffset;
-  return {-contentOffset.x, -contentOffset.y};
+  auto stateData = getStateData();
+  auto contentOffset = stateData.contentOffset;
+  return {-contentOffset.x, -contentOffset.y + stateData.scrollAwayPaddingTop};
 }
 
 } // namespace react

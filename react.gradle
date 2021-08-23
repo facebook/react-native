@@ -28,17 +28,11 @@ def detectCliPath(config) {
     if (config.cliPath) {
         return config.cliPath
     }
-
-    def cliPath = ["node", "-e", "console.log(require('react-native/cli').bin);"].execute([], projectDir).text.trim()
-
-    if (cliPath) {
-        return cliPath
-    } else if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
+    if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
         return "${projectDir}/../../node_modules/react-native/cli.js"
-    } else {
-        throw new Exception("Couldn't determine CLI location. " +
-            "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
     }
+    throw new Exception("Couldn't determine CLI location. " +
+             "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
 }
 
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"

@@ -21,7 +21,7 @@ import type {
   ExtendedExceptionData,
 } from './parseLogBoxLog';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
-import type {ExtendedError} from '../../Core/Devtools/parseErrorStack';
+import type {ExtendedError} from '../../Core/ExtendedError';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = $ReadOnly<{|
@@ -407,6 +407,8 @@ export function withSubscription(
     }
 
     componentDidCatch(err: Error, errorInfo: {componentStack: string, ...}) {
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
       reportLogBoxError(err, errorInfo.componentStack);
     }
 

@@ -171,8 +171,8 @@ class StackingContextTest : public ::testing::Test {
     callback(buildStubViewTreeUsingDifferentiator(*rootShadowNode_));
     callback(buildStubViewTreeWithoutUsingDifferentiator(*rootShadowNode_));
 
-    auto mutations = calculateShadowViewMutations(
-        *currentRootShadowNode_, *rootShadowNode_, true);
+    auto mutations =
+        calculateShadowViewMutations(*currentRootShadowNode_, *rootShadowNode_);
     currentRootShadowNode_ = rootShadowNode_;
     currentStubViewTree_.mutate(mutations);
     callback(currentStubViewTree_);

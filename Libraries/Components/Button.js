@@ -20,7 +20,11 @@ import TouchableOpacity from './Touchable/TouchableOpacity';
 import View from './View/View';
 import invariant from 'invariant';
 
-import type {AccessibilityState} from './View/ViewAccessibility';
+import type {
+  AccessibilityState,
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+} from './View/ViewAccessibility';
 import type {PressEvent} from '../Types/CoreEventTypes';
 
 type ButtonProps = $ReadOnly<{|
@@ -137,6 +141,9 @@ type ButtonProps = $ReadOnly<{|
   /**
    * Accessibility props.
    */
+  accessible?: ?boolean,
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityState?: ?AccessibilityState,
 |}>;
 
@@ -152,7 +159,7 @@ type ButtonProps = $ReadOnly<{|
   [button:examples].
 
   [button:source]:
-  https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js
+  https://github.com/facebook/react-native/blob/HEAD/Libraries/Components/Button.js
 
   [button:examples]:
   https://js.coach/?menu%5Bcollections%5D=React%20Native&page=1&query=button
@@ -266,6 +273,9 @@ class Button extends React.Component<ButtonProps> {
       nextFocusRight,
       nextFocusUp,
       testID,
+      accessible,
+      accessibilityActions,
+      onAccessibilityAction,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -303,6 +313,9 @@ class Button extends React.Component<ButtonProps> {
 
     return (
       <Touchable
+        accessible={accessible}
+        accessibilityActions={accessibilityActions}
+        onAccessibilityAction={onAccessibilityAction}
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
         accessibilityState={accessibilityState}

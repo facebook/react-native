@@ -37,11 +37,6 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
-}
-
 RCT_EXPORT_METHOD(loadBundle
                   : (NSString *)bundlePath resolve
                   : (RCTPromiseResolveBlock)resolve reject

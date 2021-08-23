@@ -61,6 +61,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
           cxxModules);
 
+  // When called from CatalystInstanceImpl.java, warnings will be logged when
+  // CxxNativeModules are used. Java NativeModule usages log error in Java.
+  void warnOnLegacyNativeModuleSystemUse();
+
   void extendNativeModules(
       jni::alias_ref<jni::JCollection<
           JavaModuleWrapper::javaobject>::javaobject> javaModules,
@@ -93,8 +97,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   void jniCallJSCallback(jint callbackId, NativeArray *arguments);
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
   jni::alias_ref<CallInvokerHolder::javaobject> getNativeCallInvokerHolder();
-  jni::alias_ref<JRuntimeExecutor::javaobject> getRuntimeExecutor(
-      bool shouldFlush);
+  jni::alias_ref<JRuntimeExecutor::javaobject> getRuntimeExecutor();
   void setGlobalVariable(std::string propName, std::string &&jsonValue);
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);

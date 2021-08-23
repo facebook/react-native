@@ -142,6 +142,7 @@ public class IntBufferBatchMountItem implements MountItem {
               mIntBuffer[i++],
               castToProps(mObjBuffer[j++]),
               castToState(mObjBuffer[j++]),
+              castToEventEmitter(mObjBuffer[j++]),
               mIntBuffer[i++] == 1);
         } else if (type == INSTRUCTION_DELETE) {
           surfaceMountingManager.deleteView(mIntBuffer[i++]);
@@ -202,7 +203,7 @@ public class IntBufferBatchMountItem implements MountItem {
         for (int k = 0; k < numInstructions; k++) {
           if (type == INSTRUCTION_CREATE) {
             String componentName = getFabricComponentName((String) mObjBuffer[j++]);
-            j += 2;
+            j += 3;
             s.append(
                 String.format(
                     "CREATE [%d] - layoutable:%d - %s\n",

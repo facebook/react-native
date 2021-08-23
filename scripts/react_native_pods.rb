@@ -46,11 +46,13 @@ def use_react_native! (options={})
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
+  pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
+  pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
 
   if fabric_enabled
@@ -69,12 +71,14 @@ def use_react_native! (options={})
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
-  versions['Flipper'] ||= '~> 0.75.1'
-  versions['Flipper-DoubleConversion'] ||= '1.1.7'
-  versions['Flipper-Folly'] ||= '~> 2.5.3'
+  versions['Flipper'] ||= '0.99.0'
+  versions['Flipper-Boost-iOSX'] ||= '1.76.0.1.11'
+  versions['Flipper-DoubleConversion'] ||= '3.1.7'
+  versions['Flipper-Fmt'] ||= '7.1.7'
+  versions['Flipper-Folly'] ||= '2.6.7'
   versions['Flipper-Glog'] ||= '0.3.6'
-  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
-  versions['Flipper-RSocket'] ||= '~> 1.3'
+  versions['Flipper-PeerTalk'] ||= '0.0.4'
+  versions['Flipper-RSocket'] ||= '1.4.3'
   pod 'FlipperKit', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
@@ -83,7 +87,9 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   # List all transitive dependencies for FlipperKit pods
   # to avoid them being linked in Release builds
   pod 'Flipper', versions['Flipper'], :configurations => configurations
+  pod 'Flipper-Boost-iOSX', versions['Flipper-Boost-iOSX'], :configurations => configurations
   pod 'Flipper-DoubleConversion', versions['Flipper-DoubleConversion'], :configurations => configurations
+  pod 'Flipper-Fmt', versions['Flipper-Fmt'], :configurations => configurations
   pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
   pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
   pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
@@ -148,31 +154,33 @@ end
 def use_react_native_codegen!(spec, options={})
   return if ENV['DISABLE_CODEGEN'] == '1'
 
-  # The path to react-native
-  prefix = options[:path] ||= "${PODS_TARGET_SRCROOT}/../.."
+  # The prefix to react-native
+  prefix = options[:react_native_path] ||= "../.."
 
   # The path to JavaScript files
   js_srcs = options[:js_srcs_dir] ||= "#{prefix}/Libraries"
 
   # Library name (e.g. FBReactNativeSpec)
-  modules_library_name = spec.name
-  modules_output_dir = "React/#{modules_library_name}/#{modules_library_name}"
+  modules_library_name = options[:library_name] ||= spec.name
 
-  # Run the codegen as part of the Xcode build pipeline.
-  env_vars = "SRCS_DIR=#{js_srcs}"
-  env_vars += " MODULES_OUTPUT_DIR=#{prefix}/#{modules_output_dir}"
-  env_vars += " MODULES_LIBRARY_NAME=#{modules_library_name}"
+  # Output dir, relative to podspec that invoked this method
+  modules_output_dir = options[:modules_output_dir] ||= "#{prefix}/React/#{modules_library_name}/#{modules_library_name}"
 
   generated_dirs = [ modules_output_dir ]
   generated_filenames = [ "#{modules_library_name}.h", "#{modules_library_name}-generated.mm" ]
   generated_files = generated_filenames.map { |filename| "#{modules_output_dir}/#{filename}" }
 
+  # Run the codegen as part of the Xcode build pipeline.
+  env_vars = "SRCS_DIR='${PODS_TARGET_SRCROOT}/#{js_srcs}'"
+  env_vars += " MODULES_OUTPUT_DIR='${PODS_TARGET_SRCROOT}/#{modules_output_dir}'"
+  env_vars += " MODULES_LIBRARY_NAME='#{modules_library_name}'"
+
   if ENV['USE_FABRIC'] == '1'
     # We use a different library name for components, as well as an additional set of files.
     # Eventually, we want these to be part of the same library as #{modules_library_name} above.
-    components_output_dir = "ReactCommon/react/renderer/components/rncore/"
+    components_output_dir = options[:components_output_dir] ||= "#{prefix}/ReactCommon/react/renderer/components/rncore/"
     generated_dirs.push components_output_dir
-    env_vars += " COMPONENTS_OUTPUT_DIR=#{prefix}/#{components_output_dir}"
+    env_vars += " COMPONENTS_OUTPUT_DIR='${PODS_TARGET_SRCROOT}/#{components_output_dir}'"
     components_generated_filenames = [
       "ComponentDescriptors.h",
       "EventEmitters.cpp",
@@ -186,13 +194,21 @@ def use_react_native_codegen!(spec, options={})
     generated_files = generated_files.concat(components_generated_filenames.map { |filename| "#{components_output_dir}/#{filename}" })
   end
 
+  # Prepare filesystem by creating empty files that will be picked up as references by CocoaPods.
+  prepare_command = "mkdir -p #{generated_dirs.join(" ")} && touch -a #{generated_files.join(" ")}"
+  system(prepare_command) # Always run prepare_command when a podspec uses the codegen, as CocoaPods may skip invoking this command in certain scenarios
+  spec.prepare_command = prepare_command
+
   spec.script_phase = {
     :name => 'Generate Specs',
-    :input_files => [js_srcs],
-    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{modules_library_name}.log"].concat(generated_files.map { |filename| "#{prefix}/#{filename}"} ),
-    :script => "set -o pipefail\n\nbash -l -c '#{env_vars} ${PODS_TARGET_SRCROOT}/../../scripts/generate-specs.sh' 2>&1 | tee \"${SCRIPT_OUTPUT_FILE_0}\"",
+    :input_files => [ "${PODS_TARGET_SRCROOT}/#{js_srcs}" ], # This also needs to be relative to Xcode
+    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{modules_library_name}.log"].concat(generated_files.map { |filename| " ${PODS_TARGET_SRCROOT}/#{filename}"} ),
+    # The final generated files will be created when this script is invoked at Xcode build time.
+    :script => %{set -o pipefail
+
+bash -l -c '#{env_vars} $\{PODS_TARGET_SRCROOT\}/#{prefix}/scripts/generate-specs.sh' 2>&1 | tee "${SCRIPT_OUTPUT_FILE_0}"
+    },
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
-  spec.prepare_command = "mkdir -p #{generated_dirs.reduce("") { |str, dir| "#{str} ../../#{dir}" }} && touch #{generated_files.reduce("") { |str, filename| "#{str} ../../#{filename}" }}"
 end

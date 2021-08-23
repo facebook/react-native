@@ -59,6 +59,8 @@ const PERMISSIONS = Object.freeze({
   RECEIVE_MMS: 'android.permission.RECEIVE_MMS',
   READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
   WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
+  BLUETOOTH_CONNECT: 'android.permission.BLUETOOTH_CONNECT',
+  BLUETOOTH_SCAN: 'android.permission.BLUETOOTH_SCAN',
 });
 
 /**
@@ -73,6 +75,8 @@ class PermissionsAndroid {
     ACCESS_COARSE_LOCATION: string,
     ACCESS_FINE_LOCATION: string,
     ADD_VOICEMAIL: string,
+    BLUETOOTH_CONNECT: string,
+    BLUETOOTH_SCAN: string,
     BODY_SENSORS: string,
     CALL_PHONE: string,
     CAMERA: string,

@@ -36,14 +36,14 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.FabricViewStateManager;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.CustomLetterSpacingSpan;
@@ -107,8 +107,8 @@ public class ReactEditText extends AppCompatEditText
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
   private @Nullable String mFontFamily = null;
-  private int mFontWeight = ReactTypefaceUtils.UNSET;
-  private int mFontStyle = ReactTypefaceUtils.UNSET;
+  private int mFontWeight = UNSET;
+  private int mFontStyle = UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
 
@@ -155,7 +155,7 @@ public class ReactEditText extends AppCompatEditText
 
     ViewCompat.setAccessibilityDelegate(
         this,
-        new AccessibilityDelegateCompat() {
+        new ReactAccessibilityDelegate() {
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
@@ -331,8 +331,18 @@ public class ReactEditText extends AppCompatEditText
     }
 
     if (start != UNSET && end != UNSET) {
+      // clamp selection values for safety
+      start = clampToTextLength(start);
+      end = clampToTextLength(end);
+
       setSelection(start, end);
     }
+  }
+
+  private int clampToTextLength(int value) {
+    int textLength = getText() == null ? 0 : getText().length();
+
+    return Math.max(0, Math.min(value, textLength));
   }
 
   @Override
@@ -1025,7 +1035,7 @@ public class ReactEditText extends AppCompatEditText
       try {
         sb.append(currentText.subSequence(0, currentText.length()));
       } catch (IndexOutOfBoundsException e) {
-        ReactSoftException.logSoftException(TAG, e);
+        ReactSoftExceptionLogger.logSoftException(TAG, e);
       }
     }
 

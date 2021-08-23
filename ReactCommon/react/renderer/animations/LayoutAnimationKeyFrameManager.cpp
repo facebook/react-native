@@ -14,12 +14,12 @@
 #include <react/debug/react_native_assert.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
-#include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
@@ -307,20 +307,25 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
   if (layoutAnimationConfig) {
     std::lock_guard<std::mutex> lock(currentAnimationMutex_);
 
-    currentAnimation_ = better::optional<LayoutAnimation>{LayoutAnimation{
+    uiManagerDidConfigureNextLayoutAnimation(LayoutAnimation{
         -1,
         0,
         false,
         *layoutAnimationConfig,
         successCallback,
         failureCallback,
-        {}}};
+        {}});
   } else {
     LOG(ERROR) << "Parsing LayoutAnimationConfig failed: "
                << (folly::dynamic)config;
 
     callCallback(failureCallback);
   }
+}
+
+void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
+    LayoutAnimation layoutAnimation) const {
+  currentAnimation_ = better::optional<LayoutAnimation>{layoutAnimation};
 }
 
 void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
@@ -733,6 +738,11 @@ void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
   }
 }
 
+void LayoutAnimationKeyFrameManager::setClockNow(
+    std::function<uint64_t()> now) {
+  now_ = now;
+}
+
 better::optional<MountingTransaction>
 LayoutAnimationKeyFrameManager::pullTransaction(
     SurfaceId surfaceId,
@@ -740,10 +750,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     TransactionTelemetry const &telemetry,
     ShadowViewMutationList mutations) const {
   // Current time in milliseconds
-  uint64_t now =
-      std::chrono::duration_cast<std::chrono::milliseconds>(
-          std::chrono::high_resolution_clock::now().time_since_epoch())
-          .count();
+  uint64_t now = now_();
 
   bool inflightAnimationsExistInitially = !inflightAnimations_.empty();
 
@@ -820,6 +827,15 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     }
     LOG(ERROR) << "BEGINNING DONE DISPLAYING ONGOING inflightAnimations_!";
 #endif
+
+    // Stub PropsParserContext used for cloneProps.
+    // This is/should be safe because cloning doesn't actually need to
+    // parse props, and just copies them; therefore there should be no
+    // need to actually use anything in the PropsParserContext.
+    // If this ever changes, the LayoutAnimations API will need to change
+    // to pass in a real PropsParserContext.
+    ContextContainer contextContainer{};
+    PropsParserContext propsParserContext{surfaceId, contextContainer};
 
     // What to do if we detect a conflict? Get current value and make
     // that the baseline of the next animation. Scale the remaining time
@@ -906,7 +922,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         bool haveComponentDescriptor =
             hasComponentDescriptorForShadowView(baselineShadowView);
 
-        bool executeMutationImmediately = false;
+        // Immediately execute any mutations on a root node
+        if (baselineShadowView.traits.check(
+                ShadowNodeTraits::Trait::RootNodeKind)) {
+          immediateMutations.push_back(mutation);
+          continue;
+        }
+
+        better::optional<ShadowViewMutation> executeMutationImmediately{};
 
         bool isRemoveReinserted =
             mutation.type == ShadowViewMutation::Type::Remove &&
@@ -972,7 +995,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         if (isRemoveReinserted || !haveConfiguration || isReparented ||
             mutation.type == ShadowViewMutation::Type::Create ||
             mutation.type == ShadowViewMutation::Type::Insert) {
-          executeMutationImmediately = true;
+          executeMutationImmediately = mutation;
 
           // It is possible, especially in the case of "moves", that we have a
           // sequence of operations like:
@@ -1007,6 +1030,36 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 }
               }
             }
+          } else if (mutation.type == ShadowViewMutation::Type::Remove) {
+            for (auto &keyframe : keyFramesToAnimate) {
+              if (keyframe.tag == baselineShadowView.tag) {
+                // If there's already an animation queued up, followed by this
+                // Insert, it *must* be an Update mutation animation. Other
+                // sequences should not be possible.
+                react_native_assert(
+                    keyframe.type == AnimationConfigurationType::Update);
+
+                // The mutation is a "remove", so it must have a
+                // "oldChildShadowView"
+                react_native_assert(mutation.oldChildShadowView.tag > 0);
+
+                // Those asserts don't run in prod. If there's some edge-case
+                // that we haven't caught yet, we'd crash in debug; make sure we
+                // don't mutate the prevView in prod.
+                // Since normally the UPDATE would have been executed first and
+                // now it's deferred, we need to change the `oldChildShadowView`
+                // that is being referenced by the REMOVE mutation.
+                if (keyframe.type == AnimationConfigurationType::Update &&
+                    mutation.oldChildShadowView.tag > 0) {
+                  executeMutationImmediately = ShadowViewMutation{
+                      mutation.type,
+                      mutation.parentShadowView,
+                      keyframe.viewPrev,
+                      {},
+                      mutation.index};
+                }
+              }
+            }
           }
         }
 
@@ -1038,7 +1091,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 haveComponentDescriptor) {
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
-                      .cloneProps(viewStart.props, {});
+                      .cloneProps(propsParserContext, viewStart.props, {});
 
               // Dynamic cast, because - we don't know the type of this
               // ShadowNode, it could be Image or Text or something else with
@@ -1063,7 +1116,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             if ((isScaleX || isScaleY) && haveComponentDescriptor) {
               auto props =
                   getComponentDescriptorForShadowView(baselineShadowView)
-                      .cloneProps(viewStart.props, {});
+                      .cloneProps(propsParserContext, viewStart.props, {});
 
               // Dynamic cast, because - we don't know the type of this
               // ShadowNode, it could be Image or Text or something else with
@@ -1166,7 +1219,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   haveComponentDescriptor) {
                 auto props =
                     getComponentDescriptorForShadowView(baselineShadowView)
-                        .cloneProps(viewFinal.props, {});
+                        .cloneProps(propsParserContext, viewFinal.props, {});
 
                 // Dynamic cast, because - we don't know the type of this
                 // ShadowNode, it could be Image or Text or something else with
@@ -1193,7 +1246,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
               if ((isScaleX || isScaleY) && haveComponentDescriptor) {
                 auto props =
                     getComponentDescriptorForShadowView(baselineShadowView)
-                        .cloneProps(viewFinal.props, {});
+                        .cloneProps(propsParserContext, viewFinal.props, {});
 
                 // Dynamic cast, because - we don't know the type of this
                 // ShadowNode, it could be Image or Text or something else with
@@ -1282,10 +1335,10 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           keyFramesToAnimate.push_back(keyFrame);
         }
 
-        if (executeMutationImmediately) {
+        if (executeMutationImmediately.hasValue()) {
           PrintMutationInstruction(
-              "Queue Up Animation For Immediate Execution", mutation);
-          immediateMutations.push_back(mutation);
+              "Queue Up For Immediate Execution", *executeMutationImmediately);
+          immediateMutations.push_back(*executeMutationImmediately);
         }
       }
 
@@ -1672,9 +1725,21 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   react_native_assert(startingView.tag > 0);
   react_native_assert(finalView.tag > 0);
   if (!hasComponentDescriptorForShadowView(startingView)) {
+    LOG(ERROR) << "No ComponentDescriptor for ShadowView being animated: ["
+               << startingView.tag << "]";
     react_native_assert(false);
     return finalView;
   }
+
+  // Stub PropsParserContext used for interpolateProps.
+  // This is/should be safe because interpolating doesn't actually need to
+  // parse props, and just copies them; therefore there should be no
+  // need to actually use anything in the PropsParserContext.
+  // If this ever changes, the LayoutAnimations API will need to change
+  // to pass in a real PropsParserContext.
+  ContextContainer contextContainer{};
+  PropsParserContext propsParserContext{-1, contextContainer};
+
   ComponentDescriptor const &componentDescriptor =
       getComponentDescriptorForShadowView(startingView);
 
@@ -1696,7 +1761,7 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
 
   // Animate opacity or scale/transform
   mutatedShadowView.props = componentDescriptor.interpolateProps(
-      progress, startingView.props, finalView.props);
+      propsParserContext, progress, startingView.props, finalView.props);
   react_native_assert(mutatedShadowView.props != nullptr);
   if (mutatedShadowView.props == nullptr) {
     return finalView;

@@ -17,7 +17,8 @@ namespace facebook::react {
  */
 class RuntimeSchedulerBinding : public jsi::HostObject {
  public:
-  RuntimeSchedulerBinding(std::unique_ptr<RuntimeScheduler> runtimeScheduler);
+  RuntimeSchedulerBinding(
+      std::shared_ptr<RuntimeScheduler> const &runtimeScheduler);
 
   /*
    * Installs RuntimeSchedulerBinding into JavaScript runtime if needed.
@@ -27,7 +28,7 @@ class RuntimeSchedulerBinding : public jsi::HostObject {
    */
   static std::shared_ptr<RuntimeSchedulerBinding> createAndInstallIfNeeded(
       jsi::Runtime &runtime,
-      RuntimeExecutor runtimeExecutor);
+      std::shared_ptr<RuntimeScheduler> const &runtimeScheduler);
 
   /*
    * `jsi::HostObject` specific overloads.
@@ -35,7 +36,7 @@ class RuntimeSchedulerBinding : public jsi::HostObject {
   jsi::Value get(jsi::Runtime &runtime, jsi::PropNameID const &name) override;
 
  private:
-  std::unique_ptr<RuntimeScheduler> runtimeScheduler_;
+  std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
 };
 
 } // namespace facebook::react

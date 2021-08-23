@@ -15,7 +15,6 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -41,8 +40,8 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param props
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
-    final ViewManagerDelegate<T> delegate;
-    if (ReactFeatureFlags.useViewManagerDelegates && (delegate = getDelegate()) != null) {
+    final ViewManagerDelegate<T> delegate = getDelegate();
+    if (delegate != null) {
       ViewManagerPropertyUpdater.updateProps(delegate, viewToUpdate, props);
     } else {
       ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);

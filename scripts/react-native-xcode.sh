@@ -74,7 +74,7 @@ else
   ENTRY_FILE=${1:-index.js}
 fi
 
-if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
+if [[ $DEV != true && ! -f "../$ENTRY_FILE" ]]; then
   echo "error: Entry file $ENTRY_FILE does not exist. If you use another file as your entry point, pass ENTRY_FILE=myindex.js" >&2
   exit 2
 fi
@@ -127,6 +127,10 @@ case "$PLATFORM_NAME" in
     BUNDLE_PLATFORM="ios"
     ;;
 esac
+
+if [ "${IS_MACCATALYST}" = "YES" ]; then
+  BUNDLE_PLATFORM="ios"
+fi
 
 EMIT_SOURCEMAP=
 if [[ ! -z "$SOURCEMAP_FILE" ]]; then

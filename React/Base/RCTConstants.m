@@ -11,21 +11,6 @@ NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceS
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
 /*
- * On-demand view mounting
- */
-static BOOL RCTExperimentOnDemandViewMounting = NO;
-
-BOOL RCTExperimentGetOnDemandViewMounting()
-{
-  return RCTExperimentOnDemandViewMounting;
-}
-
-void RCTExperimentSetOnDemandViewMounting(BOOL value)
-{
-  RCTExperimentOnDemandViewMounting = value;
-}
-
-/*
  * Preemptive View Allocation
  */
 static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
@@ -38,4 +23,34 @@ BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
 void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 {
   RCTExperimentPreemptiveViewAllocationDisabled = value;
+}
+
+/*
+ * Initial maximum surface size
+ */
+static BOOL RCTInitialMaxSizeEnabled = NO;
+
+BOOL RCTGetInitialMaxSizeEnabled()
+{
+  return RCTInitialMaxSizeEnabled;
+}
+
+void RCTSetInitialMaxSizeEnabled(BOOL value)
+{
+  RCTInitialMaxSizeEnabled = value;
+}
+
+/*
+ * Remove clipped subviews
+ */
+static BOOL RCTRemoveClippedSubviewsEnabled = NO;
+
+BOOL RCTGetRemoveClippedSubviewsEnabled(void)
+{
+  return RCTRemoveClippedSubviewsEnabled;
+}
+
+void RCTSetRemoveClippedSubviewsEnabled(BOOL value)
+{
+  RCTRemoveClippedSubviewsEnabled = value;
 }
