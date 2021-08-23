@@ -191,6 +191,13 @@ static inline LayoutContext RCTGetLayoutContext()
                                                 surfaceId:surface.rootTag];
 }
 
+- (UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag
+{
+  UIView<RCTComponentViewProtocol> *componentView =
+      [_mountingManager.componentViewRegistry findComponentViewWithTag:tag];
+  return componentView;
+}
+
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props
 {
   RCTScheduler *scheduler = [self _scheduler];

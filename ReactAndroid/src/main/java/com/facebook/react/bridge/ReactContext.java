@@ -296,9 +296,6 @@ public class ReactContext extends ContextWrapper {
     mDestroyed = true;
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
-      if (ReactFeatureFlags.nullifyCatalystInstanceOnDestroy) {
-        mCatalystInstance = null;
-      }
     }
   }
 

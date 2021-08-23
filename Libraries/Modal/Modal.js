@@ -11,7 +11,6 @@
 'use strict';
 
 const AppContainer = require('../ReactNative/AppContainer');
-const {RootTagContext} = require('../ReactNative/RootTag');
 const I18nManager = require('../ReactNative/I18nManager');
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
 import NativeModalManager from './NativeModalManager';
@@ -22,12 +21,14 @@ const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
-import type {RootTag} from '../ReactNative/RootTag';
+const {RootTagContext} = require('../ReactNative/RootTag');
+
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import type {DirectEventHandler} from '../Types/CodegenTypes';
-import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
-import RCTModalHostView from './RCTModalHostViewNativeComponent';
 import {VirtualizedListContextResetter} from '../Lists/VirtualizedListContext.js';
+import type {RootTag} from '../ReactNative/RootTag';
+import type {DirectEventHandler} from '../Types/CodegenTypes';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import RCTModalHostView from './RCTModalHostViewNativeComponent';
 
 const ModalEventEmitter =
   Platform.OS === 'ios' && NativeModalManager != null
@@ -161,7 +162,7 @@ class Modal extends React.Component<Props> {
   static contextType: React.Context<RootTag> = RootTagContext;
 
   _identifier: number;
-  _eventSubscription: ?EmitterSubscription;
+  _eventSubscription: ?EventSubscription;
 
   constructor(props: Props) {
     super(props);

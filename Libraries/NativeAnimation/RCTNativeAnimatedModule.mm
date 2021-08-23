@@ -216,6 +216,12 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(double)viewTag
   }];
 }
 
+RCT_EXPORT_METHOD(getValue:(double)nodeTag saveCallback:(RCTResponseSenderBlock)saveCallback) {
+  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+      [nodesManager getValue:[NSNumber numberWithDouble:nodeTag] saveCallback:saveCallback];
+  }];
+}
+
 #pragma mark -- Batch handling
 
 - (void)addOperationBlock:(AnimatedOperation)operation
@@ -300,7 +306,6 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(double)viewTag
       operation(self->_nodesManager);
     }
   }];
-
   [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) { // TODO(macOS ISS#3536887)
     for (AnimatedOperation operation in operations) {
       operation(self->_nodesManager);

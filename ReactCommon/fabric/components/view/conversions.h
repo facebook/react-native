@@ -422,6 +422,8 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
       for (auto number : numbers) {
         transformMatrix.matrix[i++] = number;
       }
+      transformMatrix.operations.push_back(
+          TransformOperation{TransformOperationType::Arbitrary, 0, 0, 0});
     } else if (operation == "perspective") {
       transformMatrix =
           transformMatrix * Transform::Perspective((Float)parameters);

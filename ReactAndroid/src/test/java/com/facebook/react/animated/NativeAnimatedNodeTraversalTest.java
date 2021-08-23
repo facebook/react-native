@@ -861,6 +861,19 @@ public class NativeAnimatedNodeTraversalTest {
   }
 
   @Test
+  public void testGetValue() {
+    int tag = 1;
+    mNativeAnimatedNodesManager.createAnimatedNode(
+        tag, JavaOnlyMap.of("type", "value", "value", 1d, "offset", 0d));
+
+    Callback saveValueCallbackMock = mock(Callback.class);
+
+    mNativeAnimatedNodesManager.getValue(tag, saveValueCallbackMock);
+
+    verify(saveValueCallbackMock, times(1)).invoke(1d);
+  }
+
+  @Test
   public void testInterpolationNode() {
     mNativeAnimatedNodesManager.createAnimatedNode(
         1, JavaOnlyMap.of("type", "value", "value", 10d, "offset", 0d));

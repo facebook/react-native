@@ -53,18 +53,6 @@ using namespace facebook::react;
   }
 }
 
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-  // Consider whether using `updateLayoutMetrics:oldLayoutMetrics`
-  // isn't more appropriate for your use case. `layoutSubviews` is called
-  // by UIKit while `updateLayoutMetrics:oldLayoutMetrics` is called
-  // by React Native Renderer within `CATransaction`.
-  // If you are calling `setFrame:` or other methods that cause
-  // `layoutSubviews` to be triggered, `_contentView`'s and `_borderLayout`'s
-  // frames might get out of sync with `self.bounds`.
-}
-
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
   if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {

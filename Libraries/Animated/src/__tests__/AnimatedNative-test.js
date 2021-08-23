@@ -36,6 +36,7 @@ describe('Native Animated', () => {
 
   beforeEach(() => {
     Object.assign(NativeAnimatedModule, {
+      getValue: jest.fn(),
       addAnimatedEventToView: jest.fn(),
       connectAnimatedNodes: jest.fn(),
       connectAnimatedNodeToView: jest.fn(),
@@ -113,6 +114,26 @@ describe('Native Animated', () => {
       expect(NativeAnimatedModule.flattenAnimatedNodeOffset).toBeCalledWith(
         expect.any(Number),
       );
+    });
+
+    it('should save value on unmount', () => {
+      NativeAnimatedModule.getValue = jest.fn((tag, saveCallback) => {
+        saveCallback(1);
+      });
+      const opacity = new Animated.Value(0);
+
+      opacity.__makeNative();
+
+      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      const tag = opacity.__getNativeTag();
+
+      root.unmount();
+
+      expect(NativeAnimatedModule.getValue).toBeCalledWith(
+        tag,
+        expect.any(Function),
+      );
+      expect(opacity.__getValue()).toBe(1);
     });
 
     it('should extract offset', () => {

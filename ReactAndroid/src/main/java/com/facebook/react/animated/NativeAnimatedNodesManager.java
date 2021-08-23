@@ -352,6 +352,15 @@ import java.util.Queue;
     propsAnimatedNode.disconnectFromView(viewTag);
   }
 
+  public void getValue(int tag, Callback callback) {
+    AnimatedNode node = mAnimatedNodes.get(tag);
+    if (node == null || !(node instanceof ValueAnimatedNode)) {
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node with tag " + tag + " does not exists or is not a 'value' node");
+    }
+    callback.invoke(((ValueAnimatedNode) node).getValue());
+  }
+
   public void restoreDefaultValues(int animatedNodeTag) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     // Restoring default values needs to happen before UIManager operations so it is

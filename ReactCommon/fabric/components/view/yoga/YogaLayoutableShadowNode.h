@@ -73,9 +73,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   void dirtyLayout() override;
   bool getIsLayoutClean() const override;
 
-  void setHasNewLayout(bool hasNewLayout) override;
-  bool getHasNewLayout() const override;
-
   /*
    * Computes layout using Yoga layout engine.
    * See `LayoutableShadowNode` for more details.
@@ -84,7 +81,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       LayoutContext layoutContext,
       LayoutConstraints layoutConstraints) override;
 
-  void layoutChildren(LayoutContext layoutContext) override;
+  void layout(LayoutContext layoutContext) override;
 
  protected:
   /*

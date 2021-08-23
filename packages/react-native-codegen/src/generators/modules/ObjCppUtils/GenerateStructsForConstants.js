@@ -96,6 +96,7 @@ function getBuilderInputFieldDeclaration(
           property.name,
         )}::Builder`,
       );
+    case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       if (property.optional) {
@@ -185,6 +186,7 @@ function getObjectProperty(property: ObjectParamTypeAnnotation): string {
     case 'BooleanTypeAnnotation':
       return boolGetter(property.name, property.optional);
     case 'StringTypeAnnotation':
+    case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       return safeGetter(property.name, property.optional);

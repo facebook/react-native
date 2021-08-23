@@ -10,13 +10,11 @@
 
 'use strict';
 
-const EventEmitter = require('../vendor/emitter/EventEmitter');
-const Platform = require('../Utilities/Platform');
-const RCTDeviceEventEmitter = require('./RCTDeviceEventEmitter');
-
-const invariant = require('invariant');
-
-import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import Platform from '../Utilities/Platform';
+import EventEmitter from '../vendor/emitter/EventEmitter';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
+import invariant from 'invariant';
 
 type NativeModule = {
   +addListener: (eventType: string) => void,
@@ -46,7 +44,7 @@ class NativeEventEmitter extends EventEmitter {
     eventType: string,
     listener: Function,
     context: ?Object,
-  ): EmitterSubscription {
+  ): EventSubscription {
     if (this._nativeModule != null) {
       this._nativeModule.addListener(eventType);
     }
@@ -62,7 +60,7 @@ class NativeEventEmitter extends EventEmitter {
     super.removeAllListeners(eventType);
   }
 
-  removeSubscription(subscription: EmitterSubscription) {
+  removeSubscription(subscription: EventSubscription) {
     if (this._nativeModule != null) {
       this._nativeModule.removeListeners(1);
     }

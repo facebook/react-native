@@ -11,7 +11,11 @@
 'use strict';
 
 import type {ObjectParamTypeAnnotation} from '../../../CodegenSchema';
-const {flatObjects, capitalizeFirstLetter} = require('./Utils');
+const {
+  flatObjects,
+  capitalizeFirstLetter,
+  getSafePropertyName,
+} = require('./Utils');
 const {generateStructsForConstants} = require('./GenerateStructsForConstants');
 
 const template = `
@@ -44,16 +48,12 @@ inline ::_RETURN_TYPE_::JS::Native::_MODULE_NAME_::::Spec::_STRUCT_NAME_::::::_P
 }
 `;
 
-function getSafePropertyName(name: string) {
-  if (name === 'id') {
-    return `${name}_`;
-  }
-  return name;
-}
-
-function getNamespacedStructName(structName: string, propertyName: string) {
+function getNamespacedStructName(
+  structName: string,
+  property: ObjectParamTypeAnnotation,
+) {
   return `JS::Native::_MODULE_NAME_::::Spec${structName}${capitalizeFirstLetter(
-    getSafePropertyName(propertyName),
+    getSafePropertyName(property),
   )}`;
 }
 
@@ -91,7 +91,8 @@ function getElementTypeForArray(
     case 'Int32TypeAnnotation':
       return 'double';
     case 'ObjectTypeAnnotation':
-      return getNamespacedStructName(name, property.name) + 'Element';
+      return getNamespacedStructName(name, property) + 'Element';
+    case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
     case 'GenericObjectTypeAnnotation':
       // TODO(T67565166): Generic objects are not type safe and should be disallowed in the schema. This case should throw an error once it is disallowed in schema.
       console.error(
@@ -131,41 +132,40 @@ function getInlineMethodSignature(
     console.error(
       `Warning: Unsafe type found (see '${property.name}' in ${moduleName}'s ${name})`,
     );
-    return `id<NSObject> ${getSafePropertyName(property.name)}() const;`;
+    return `id<NSObject> ${getSafePropertyName(property)}() const;`;
   }
 
   switch (typeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
-          return `double ${getSafePropertyName(property.name)}() const;`;
+          return `double ${getSafePropertyName(property)}() const;`;
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
       }
     case 'StringTypeAnnotation':
-      return `NSString *${getSafePropertyName(property.name)}() const;`;
+      return `NSString *${getSafePropertyName(property)}() const;`;
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
       return `${markOptionalTypeIfNecessary('double')} ${getSafePropertyName(
-        property.name,
+        property,
       )}() const;`;
     case 'BooleanTypeAnnotation':
       return `${markOptionalTypeIfNecessary('bool')} ${getSafePropertyName(
-        property.name,
+        property,
       )}() const;`;
     case 'ObjectTypeAnnotation':
       return (
-        markOptionalTypeIfNecessary(
-          getNamespacedStructName(name, property.name),
-        ) + ` ${getSafePropertyName(property.name)}() const;`
+        markOptionalTypeIfNecessary(getNamespacedStructName(name, property)) +
+        ` ${getSafePropertyName(property)}() const;`
       );
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       return `id<NSObject> ${
         property.optional ? '_Nullable ' : ' '
-      }${getSafePropertyName(property.name)}() const;`;
+      }${getSafePropertyName(property)}() const;`;
     case 'ArrayTypeAnnotation':
       return `${markOptionalTypeIfNecessary(
         `facebook::react::LazyVector<${getElementTypeForArray(
@@ -173,7 +173,7 @@ function getInlineMethodSignature(
           name,
           moduleName,
         )}>`,
-      )} ${getSafePropertyName(property.name)}() const;`;
+      )} ${getSafePropertyName(property)}() const;`;
     case 'FunctionTypeAnnotation':
     default:
       throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);
@@ -228,10 +228,8 @@ function getInlineMethodImplementation(
       case 'BooleanTypeAnnotation':
         return `RCTBridgingToBool(${element})`;
       case 'ObjectTypeAnnotation':
-        return `${getNamespacedStructName(
-          name,
-          property.name,
-        )}Element(${element})`;
+        return `${getNamespacedStructName(name, property)}Element(${element})`;
+      case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
       case 'GenericObjectTypeAnnotation':
         return element;
       case 'AnyObjectTypeAnnotation':
@@ -305,18 +303,16 @@ function getInlineMethodImplementation(
       return inlineTemplate
         .replace(
           /::_RETURN_TYPE_::/,
-          markOptionalTypeIfNecessary(
-            getNamespacedStructName(name, property.name),
-          ),
+          markOptionalTypeIfNecessary(getNamespacedStructName(name, property)),
         )
         .replace(
           /::_RETURN_VALUE_::/,
           property.optional
             ? `(p == nil ? folly::none : folly::make_optional(${getNamespacedStructName(
                 name,
-                property.name,
+                property,
               )}(p)))`
-            : `${getNamespacedStructName(name, property.name)}(p)`,
+            : `${getNamespacedStructName(name, property)}(p)`,
         );
     case 'ArrayTypeAnnotation':
       return inlineTemplate
@@ -366,10 +362,7 @@ function translateObjectsForStructs(
         acc.concat(
           object.properties.map(property =>
             getInlineMethodImplementation(property, object.name, moduleName)
-              .replace(
-                /::_PROPERTY_NAME_::/g,
-                getSafePropertyName(property.name),
-              )
+              .replace(/::_PROPERTY_NAME_::/g, getSafePropertyName(property))
               .replace(/::_STRUCT_NAME_::/g, object.name),
           ),
         ),

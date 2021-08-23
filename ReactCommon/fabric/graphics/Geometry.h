@@ -259,6 +259,15 @@ using EdgeInsets = RectangleEdges<Float>;
  */
 using CornerInsets = RectangleCorners<Float>;
 
+/*
+ * Adjusts a rectangle by the given edge insets.
+ */
+inline Rect insetBy(Rect rect, EdgeInsets insets) {
+  return Rect{{rect.origin.x + insets.left, rect.origin.y + insets.top},
+              {rect.size.width - insets.left - insets.right,
+               rect.size.height - insets.top - insets.bottom}};
+}
+
 } // namespace react
 } // namespace facebook
 

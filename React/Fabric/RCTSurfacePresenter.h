@@ -74,6 +74,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;
 
+/*
+ * Please do not use this, this will be deleted soon.
+ */
+- (nullable UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag;
+
 @end
 
 NS_ASSUME_NONNULL_END

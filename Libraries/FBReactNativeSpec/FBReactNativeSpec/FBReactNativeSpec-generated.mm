@@ -233,6 +233,10 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "createAnimatedNode", @selector(createAnimatedNode:config:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getValue", @selector(getValue:saveValueCallback:), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_startListeningToAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "startListeningToAnimatedNodeValue", @selector(startListeningToAnimatedNodeValue:), args, count);
     }
@@ -310,6 +314,9 @@ namespace facebook {
       : ObjCTurboModule(params) {
         
         methodMap_["createAnimatedNode"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode};
+        
+        
+        methodMap_["getValue"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_getValue};
         
         
         methodMap_["startListeningToAnimatedNodeValue"] = MethodMetadata {1, __hostFunction_NativeAnimatedModuleSpecJSI_startListeningToAnimatedNodeValue};

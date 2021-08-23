@@ -210,7 +210,10 @@ function FallbackColorsExample() {
       color: PlatformColor('bogus', '@color/catalyst_redbox_background'),
     };
   } else {
-    throw 'Unexpected Platform.OS: ' + Platform.OS;
+    color = {
+      label: 'Unexpected Platform.OS: ' + Platform.OS,
+      color: 'red',
+    };
   }
 
   return (
@@ -312,6 +315,7 @@ function VariantColorsExample() {
             ios: "DynamicColorIOS({light: 'red', dark: 'blue'})",
             android: "PlatformColor('?attr/colorAccent')",
             macos: "DynamicColorMacOS({light: 'red', dark: 'blue'})",
+            default: 'Unexpected Platform.OS: ' + Platform.OS,
           })
           // ]TODO(OSS Candidate ISS#2710739)
           }
@@ -326,7 +330,9 @@ function VariantColorsExample() {
                 Platform.OS === 'macos'
                 ? DynamicColorMacOS({light: 'red', dark: 'blue'})
                 : // ]TODO(macOS GH#774)
-                  PlatformColor('?attr/colorAccent'),
+                Platform.OS === 'android'
+                ? PlatformColor('?attr/colorAccent')
+                : 'red',
           }}
         />
       </View>
