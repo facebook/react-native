@@ -1,15 +1,17 @@
---- "E:\\github\\rnm-63-fresh\\Libraries\\Components\\View\\ReactNativeViewViewConfigAndroid.js"	2020-10-27 20:26:16.000189500 -0700
-+++ "E:\\github\\rnm-63\\Libraries\\Components\\View\\ReactNativeViewViewConfigAndroid.js"	2020-10-13 21:21:38.700969000 -0700
-@@ -19,6 +19,12 @@
+diff --git a/Libraries/Components/View/ReactNativeViewViewConfigAndroid.js b/Libraries/Components/View/ReactNativeViewViewConfigAndroid.js
+index ad2542dfa..b6d868022 100644
+--- a/Libraries/Components/View/ReactNativeViewViewConfigAndroid.js
++++ b/Libraries/Components/View/ReactNativeViewViewConfigAndroid.js
+@@ -19,6 +19,12 @@ const ReactNativeViewViewConfigAndroid = {
          captured: 'onSelectCapture',
        },
      },
 +    topOnFocusChange: {
 +      phasedRegistrationNames: {
-+        bubbled: 'onFocusChange',
-+        captured: 'onFocusChangeCapture',
++      bubbled: 'onFocusChange',
++      captured: 'onFocusChangeCapture',
 +      },
 +    },
-   },
-   directEventTypes: {
-     topClick: {
+     topAssetDidLoad: {
+       phasedRegistrationNames: {
+         bubbled: 'onAssetDidLoad',
