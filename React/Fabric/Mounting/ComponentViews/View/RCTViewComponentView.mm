@@ -336,6 +336,24 @@ using namespace facebook::react;
 #endif
   }
 
+  // `accessibilityValue`
+  if (oldViewProps.accessibilityValue != newViewProps.accessibilityValue) {
+    if (newViewProps.accessibilityValue.text.hasValue()) {
+      self.accessibilityElement.accessibilityValue =
+          RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityValue.text.value());
+    } else if (
+        newViewProps.accessibilityValue.now.hasValue() && newViewProps.accessibilityValue.min.hasValue() &&
+        newViewProps.accessibilityValue.max.hasValue()) {
+      CGFloat val = (CGFloat)(newViewProps.accessibilityValue.now.value()) /
+          (newViewProps.accessibilityValue.max.value() - newViewProps.accessibilityValue.min.value());
+      self.accessibilityElement.accessibilityValue =
+          [NSNumberFormatter localizedStringFromNumber:@(val) numberStyle:NSNumberFormatterPercentStyle];
+      ;
+    } else {
+      self.accessibilityElement.accessibilityValue = nil;
+    }
+  }
+
   // `testId`
   if (oldViewProps.testId != newViewProps.testId) {
     self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);

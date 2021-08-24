@@ -224,5 +224,40 @@ inline void fromRawValue(
   }
 }
 
+inline void fromRawValue(
+    const PropsParserContext &,
+    const RawValue &value,
+    AccessibilityValue &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto min = map.find("min");
+  if (min != map.end()) {
+    if (min->second.hasType<int>()) {
+      result.min = (int)min->second;
+    }
+  }
+
+  auto max = map.find("max");
+  if (max != map.end()) {
+    if (max->second.hasType<int>()) {
+      result.max = (int)max->second;
+    }
+  }
+
+  auto now = map.find("now");
+  if (now != map.end()) {
+    if (now->second.hasType<int>()) {
+      result.now = (int)now->second;
+    }
+  }
+
+  auto text = map.find("text");
+  if (text != map.end()) {
+    if (text->second.hasType<std::string>()) {
+      result.text = (std::string)text->second;
+    }
+  }
+}
+
 } // namespace react
 } // namespace facebook

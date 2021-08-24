@@ -75,6 +75,26 @@ constexpr bool operator!=(
   return !(rhs == lhs);
 }
 
+struct AccessibilityValue {
+  better::optional<int> min;
+  better::optional<int> max;
+  better::optional<int> now;
+  better::optional<std::string> text{};
+};
+
+constexpr bool operator==(
+    AccessibilityValue const &lhs,
+    AccessibilityValue const &rhs) {
+  return lhs.min == rhs.min && lhs.max == rhs.max && lhs.now == rhs.now &&
+      lhs.text == rhs.text;
+}
+
+constexpr bool operator!=(
+    AccessibilityValue const &lhs,
+    AccessibilityValue const &rhs) {
+  return !(rhs == lhs);
+}
+
 enum class ImportantForAccessibility {
   Auto,
   Yes,
