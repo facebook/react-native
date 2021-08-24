@@ -79,10 +79,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   ShadowNode::Unshared cloneShadowNode(
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment) const override {
-    react_native_assert(
-        dynamic_cast<ConcreteShadowNode const *>(&sourceShadowNode) &&
-        "Provided `sourceShadowNode` has an incompatible type.");
-
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
 
     adopt(shadowNode);
@@ -92,10 +88,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   void appendChild(
       const ShadowNode::Shared &parentShadowNode,
       const ShadowNode::Shared &childShadowNode) const override {
-    react_native_assert(
-        dynamic_cast<ConcreteShadowNode const *>(parentShadowNode.get()) &&
-        "Provided `parentShadowNode` has an incompatible type.");
-
     auto concreteParentShadowNode =
         std::static_pointer_cast<const ShadowNodeT>(parentShadowNode);
     auto concreteNonConstParentShadowNode =
@@ -107,11 +99,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       const PropsParserContext &context,
       const SharedProps &props,
       const RawProps &rawProps) const override {
-    react_native_assert(
-        !props ||
-        dynamic_cast<ConcreteProps const *>(props.get()) &&
-            "Provided `props` has an incompatible type.");
-
     // Optimization:
     // Quite often nodes are constructed with default/empty props: the base
     // `props` object is `null` (there no base because it's not cloning) and the
