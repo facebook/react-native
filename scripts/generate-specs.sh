@@ -27,7 +27,6 @@ set -e
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
-USE_FABRIC="${USE_FABRIC:-0}"
 
 # Find path to Node
 # shellcheck source=/dev/null
@@ -42,7 +41,7 @@ cleanup () {
 }
 
 describe () {
-  printf "\\n\\n>>>>> %s\\n\\n\\n" "$1"
+  printf "\\n\\n>>>>> %s\\n\\n\\n" "$1" >&2
 }
 
 main() {
@@ -80,7 +79,7 @@ main() {
     bash "$CODEGEN_PATH/scripts/oss/build.sh"
   fi
 
-  describe "Generating schema from flow types"
+  describe "Generating schema from Flow types"
   "$NODE_BINARY" "$CODEGEN_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE" "$SRCS_DIR"
 
   describe "Generating native code from schema (iOS)"
@@ -88,7 +87,6 @@ main() {
     "$NODE_BINARY" scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$MODULES_LIBRARY_NAME"
   popd >/dev/null || exit 1
 
-  describe "Copying output to final directory"
   mkdir -p "$COMPONENTS_OUTPUT_DIR" "$MODULES_OUTPUT_DIR"
   cp -R "$TEMP_OUTPUT_DIR/$MODULES_LIBRARY_NAME.h" "$TEMP_OUTPUT_DIR/$MODULES_LIBRARY_NAME-generated.mm" "$MODULES_OUTPUT_DIR" || exit 1
   find "$TEMP_OUTPUT_DIR" -type f | xargs sed -i.bak "s/$MODULES_LIBRARY_NAME/$COMPONENTS_LIBRARY_NAME/g" || exit 1
