@@ -21,8 +21,8 @@ if (__DEV__) {
 
 // Currently, Hermes `Promise` is implemented via Internal Bytecode.
 const hasHermesPromiseQueuedToJSVM =
-  global?.HermesInternal?.hasPromise?.() &&
-  global?.HermesInternal?.useEngineQueue?.();
+  global.HermesInternal?.hasPromise?.() === true &&
+  global.HermesInternal?.useEngineQueue?.() === true;
 
 const hasNativePromise = isNativeFunction(Promise);
 const hasPromiseQueuedToJSVM = hasNativePromise || hasHermesPromiseQueuedToJSVM;
@@ -83,7 +83,7 @@ if (hasPromiseQueuedToJSVM) {
  */
 if (hasHermesPromiseQueuedToJSVM) {
   // Fast path for Hermes.
-  polyfillGlobal('queueMicrotask', () => global.HermesInternal.enqueueJob);
+  polyfillGlobal('queueMicrotask', () => global.HermesInternal?.enqueueJob);
 } else {
   // Polyfill it with promise (regardless it's polyfiled or native) otherwise.
   polyfillGlobal(

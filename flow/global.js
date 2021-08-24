@@ -16,6 +16,8 @@
  * writeability (`+`) when defining types.
  */
 declare var global: {
+  +HermesInternal: ?$HermesInternalType,
+
   // Undeclared properties are implicitly `any`.
   [string | symbol]: any,
 };
