@@ -58,7 +58,7 @@ declare type $HermesInternalType = {
    */
   +getRuntimeProperties?: () => {
     'OSS Release Version': string,
-    'Build': string,
+    Build: string,
     [string]: mixed,
   },
 
