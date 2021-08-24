@@ -618,6 +618,8 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
       return "switch";
     case AccessibilityRole::Tab:
       return "tab";
+    case AccessibilityRole::TabBar:
+      return "tabbar";
     case AccessibilityRole::Tablist:
       return "tablist";
     case AccessibilityRole::Timer:
@@ -687,6 +689,8 @@ inline void fromRawValue(
       result = AccessibilityRole::Switch;
     } else if (string == "tab") {
       result = AccessibilityRole::Tab;
+    } else if (string == "tabbar") {
+      result = AccessibilityRole::TabBar;
     } else if (string == "tablist") {
       result = AccessibilityRole::Tablist;
     } else if (string == "timer") {

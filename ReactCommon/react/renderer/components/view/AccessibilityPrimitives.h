@@ -33,6 +33,7 @@ enum class AccessibilityTraits : uint32_t {
   CausesPageTurn = (1 << 14),
   Header = (1 << 15),
   Switch = (1 << 16),
+  TabBar = (1 << 17),
 };
 
 constexpr enum AccessibilityTraits operator|(

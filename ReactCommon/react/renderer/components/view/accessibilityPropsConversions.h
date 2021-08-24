@@ -94,6 +94,10 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
     result = AccessibilityTraits::Switch;
     return;
   }
+  if (string == "tabbar") {
+    result = AccessibilityTraits::TabBar;
+    return;
+  }
   result = AccessibilityTraits::None;
 }
 

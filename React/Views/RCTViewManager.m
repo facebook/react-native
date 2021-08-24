@@ -58,6 +58,7 @@ RCT_MULTI_ENUM_CONVERTER(
       @"spinbutton" : @(UIAccessibilityTraitNone),
       @"switch" : @(SwitchAccessibilityTrait),
       @"tab" : @(UIAccessibilityTraitNone),
+      @"tabbar" : @(UIAccessibilityTraitTabBar),
       @"tablist" : @(UIAccessibilityTraitNone),
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),

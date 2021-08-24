@@ -288,6 +288,9 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
       case AccessibilityRole::Tab:
         attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tab");
         break;
+      case AccessibilityRole::TabBar:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tabbar");
+        break;
       case AccessibilityRole::Tablist:
         attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tablist");
         break;

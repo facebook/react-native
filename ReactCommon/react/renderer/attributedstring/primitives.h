@@ -112,6 +112,7 @@ enum class AccessibilityRole {
   Spinbutton,
   Switch,
   Tab,
+  TabBar,
   Tablist,
   Timer,
   Toolbar,
