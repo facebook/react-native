@@ -1,6 +1,8 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\bridge\\CatalystInstanceImpl.java"	2020-10-27 20:26:16.742190400 -0700
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\bridge\\CatalystInstanceImpl.java"	2020-10-13 22:13:10.906813300 -0700
-@@ -121,7 +121,8 @@
+diff --git a/ReactAndroid/src/main/java/com/facebook/react/bridge/CatalystInstanceImpl.java b/ReactAndroid/src/main/java/com/facebook/react/bridge/CatalystInstanceImpl.java
+index dae969346..4b60fd1a7 100644
+--- a/ReactAndroid/src/main/java/com/facebook/react/bridge/CatalystInstanceImpl.java
++++ b/ReactAndroid/src/main/java/com/facebook/react/bridge/CatalystInstanceImpl.java
+@@ -121,7 +121,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
        final JavaScriptExecutor jsExecutor,
        final NativeModuleRegistry nativeModuleRegistry,
        final JSBundleLoader jsBundleLoader,
@@ -10,16 +12,14 @@
      FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
      Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
  
-@@ -139,15 +140,23 @@
+@@ -139,15 +140,21 @@ public class CatalystInstanceImpl implements CatalystInstance {
      mTraceListener = new JSProfilerTraceListener(this);
      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
  
 +    FLog.d(ReactConstants.TAG, "Create module registry");
-+
 +    createModuleRegistry(mNativeModulesQueueThread,
 +      mNativeModuleRegistry.getJavaModules(this),
 +      mNativeModuleRegistry.getCxxModules());
-+
 +    if (catalystInstanceEventListener != null) {
 +      FLog.d(ReactConstants.TAG, "Invoking callback onModuleRegistryCreated");
 +      catalystInstanceEventListener.onModuleRegistryCreated(this);
@@ -38,7 +38,7 @@
      FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
  
-@@ -208,13 +217,15 @@
+@@ -208,13 +215,15 @@ public class CatalystInstanceImpl implements CatalystInstance {
    private native void jniExtendNativeModules(
        Collection<JavaModuleWrapper> javaModules, Collection<ModuleHolder> cxxModules);
  
@@ -58,26 +58,25 @@
  
    @Override
    public void setSourceURLs(String deviceURL, String remoteURL) {
-@@ -403,7 +414,8 @@
+@@ -398,7 +407,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
                                              mJavaScriptContextHolder.clear();
  
                                              mHybridData.resetNative();
 -                                            getReactQueueConfiguration().destroy();
-+                                            // TODO :: Office patch :: Not sure why is this needed ? 
++                                            // TODO :: Office patch :: Not sure why is this needed ?
 +                                            // getReactQueueConfiguration().destroy();
                                              FLog.d(
                                                  ReactConstants.TAG,
                                                  "CatalystInstanceImpl.destroy() end");
-@@ -679,6 +691,8 @@
+@@ -568,6 +578,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
+   }
  
    private native long getJavaScriptContext();
- 
 +  public native long getPointerOfInstancePointer();
-+
+ 
    private void incrementPendingJSCalls() {
      int oldPendingCalls = mPendingJSCalls.getAndIncrement();
-     boolean wasIdle = oldPendingCalls == 0;
-@@ -784,6 +798,7 @@
+@@ -671,6 +682,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
      private @Nullable NativeModuleRegistry mRegistry;
      private @Nullable JavaScriptExecutor mJSExecutor;
      private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
@@ -85,14 +84,14 @@
  
      public Builder setReactQueueConfigurationSpec(
          ReactQueueConfigurationSpec ReactQueueConfigurationSpec) {
-@@ -811,13 +826,20 @@
+@@ -698,13 +710,20 @@ public class CatalystInstanceImpl implements CatalystInstance {
        return this;
      }
  
 +    public Builder setCatalystInstanceEventListener(
 +      CatalystInstanceEventListener catalystInstanceEventListener) {
-+      mCatalystInstanceEventListener = catalystInstanceEventListener;
-+      return this;
++        mCatalystInstanceEventListener = catalystInstanceEventListener;
++        return this;
 +    }
 +
      public CatalystInstanceImpl build() {
