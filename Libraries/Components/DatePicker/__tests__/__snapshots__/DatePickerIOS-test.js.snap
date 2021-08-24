@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DatePickerIOS should render DatePciker with the datetime mode if no mode is passed inside the props: should deep render when mocked (please verify output manually) 1`] = `
+exports[`DatePickerIOS should render DatePicker with the datetime mode if no mode is passed inside the props: should deep render when mocked (please verify output manually) 1`] = `
 <View>
   <RCTDatePicker
     date={1555883690956}
@@ -17,7 +17,7 @@ exports[`DatePickerIOS should render DatePciker with the datetime mode if no mod
 </View>
 `;
 
-exports[`DatePickerIOS should render DatePciker with the datetime mode if no mode is passed inside the props: should deep render when not mocked (please verify output manually) 1`] = `
+exports[`DatePickerIOS should render DatePicker with the datetime mode if no mode is passed inside the props: should deep render when not mocked (please verify output manually) 1`] = `
 <View>
   <RCTDatePicker
     date={1555883690956}
@@ -34,14 +34,14 @@ exports[`DatePickerIOS should render DatePciker with the datetime mode if no mod
 </View>
 `;
 
-exports[`DatePickerIOS should render DatePciker with the datetime mode if no mode is passed inside the props: should shallow render as <DatePickerIOS /> when mocked 1`] = `
+exports[`DatePickerIOS should render DatePicker with the datetime mode if no mode is passed inside the props: should shallow render as <DatePickerIOS /> when mocked 1`] = `
 <DatePickerIOS
   date={2019-04-21T21:54:50.956Z}
   onDateChange={[MockFunction]}
 />
 `;
 
-exports[`DatePickerIOS should render DatePciker with the datetime mode if no mode is passed inside the props: should shallow render as <DatePickerIOS /> when not mocked 1`] = `
+exports[`DatePickerIOS should render DatePicker with the datetime mode if no mode is passed inside the props: should shallow render as <DatePickerIOS /> when not mocked 1`] = `
 <DatePickerIOS
   date={2019-04-21T21:54:50.956Z}
   onDateChange={[MockFunction]}

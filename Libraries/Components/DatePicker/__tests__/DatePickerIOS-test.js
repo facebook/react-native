@@ -32,7 +32,7 @@ describe('DatePickerIOS', () => {
       },
     );
   });
-  it('should render DatePciker with the datetime mode if no mode is passed inside the props', () => {
+  it('should render DatePicker with the datetime mode if no mode is passed inside the props', () => {
     ReactNativeTestTools.expectRendersMatchingSnapshot(
       'DatePickerIOS',
       () => (
