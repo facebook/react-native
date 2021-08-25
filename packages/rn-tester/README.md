@@ -24,9 +24,12 @@ You'll need to have all the [prerequisites](https://github.com/facebook/react-na
 
 Start an Android emulator.
 
-    cd react-native
-    ./gradlew :packages:rn-tester:android:app:installJscDebug
-    ./scripts/packager.sh
+```sh
+cd react-native
+# In order to use Hermes engine, run `installHermesDebug` instead.
+./gradlew :packages:rn-tester:android:app:installJscDebug
+./scripts/packager.sh
+```
 
 _Note: Building for the first time can take a while._
 
