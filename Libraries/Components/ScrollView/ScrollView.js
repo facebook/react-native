@@ -308,15 +308,6 @@ type IOSProps = $ReadOnly<{|
    * @platform macos
    */
   verticalLineScroll?: number, // TODO(macOS GH#774)
-  /**
-   * When true, ScrollView will emit updateChildFrames data in scroll events,
-   * otherwise will not compute or emit child frame data.  This only exists
-   * to support legacy issues, `onLayout` should be used instead to retrieve
-   * frame data.
-   * The default value is false.
-   * @platform ios
-   */
-  DEPRECATED_sendUpdatedChildFrames?: ?boolean,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -1187,6 +1178,7 @@ class ScrollView extends React.Component<Props, State> {
           return (
             <StickyHeaderComponent
               key={key}
+              nativeID={'StickyHeader-' + key}
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(
                 this._getKeyForIndex(nextIndex, childArray),
@@ -1248,9 +1240,6 @@ class ScrollView extends React.Component<Props, State> {
         ? this.props.alwaysBounceVertical
         : !this.props.horizontal;
 
-    const DEPRECATED_sendUpdatedChildFrames = !!this.props
-      .DEPRECATED_sendUpdatedChildFrames;
-
     const baseStyle =
       this.props.horizontal === true
         ? styles.baseHorizontal
@@ -1301,7 +1290,6 @@ class ScrollView extends React.Component<Props, State> {
         this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd
           ? true
           : false,
-      DEPRECATED_sendUpdatedChildFrames,
       // default to true
       snapToStart: this.props.snapToStart !== false,
       // default to true

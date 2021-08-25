@@ -999,9 +999,49 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 
   if (self.devSettings.isDevModeEnabled) { // TODO(OSS Candidate ISS#2710739)
-    [self.devSettings setupHotModuleReloadClientIfApplicableForURL:self.bundleURL];
+    [self.devSettings setupHMRClientWithBundleURL:self.bundleURL];
   }
 }
+
+#if RCT_DEV_MENU
+- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
+                             onError:(RCTLoadAndExecuteErrorBlock)onError
+                          onComplete:(dispatch_block_t)onComplete
+{
+  __weak __typeof(self) weakSelf = self;
+  [RCTJavaScriptLoader loadBundleAtURL:bundleURL
+      onProgress:^(RCTLoadingProgress *progressData) {
+#if (RCT_DEV_MENU | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+        id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView"
+                                                      lazilyLoadIfNecessary:YES];
+        [loadingView updateProgress:progressData];
+#endif
+      }
+      onComplete:^(NSError *error, RCTSource *source) {
+        if (error) {
+          onError(error);
+          return;
+        }
+
+        [self enqueueApplicationScript:source.data
+                                   url:source.url
+                            onComplete:^{
+                              [[NSNotificationCenter defaultCenter]
+                                  postNotificationName:RCTAdditionalJavaScriptDidLoadNotification
+                                                object:self->_parentBridge
+                                              userInfo:@{@"bridge" : self}];
+                              [self.devSettings setupHMRClientWithAdditionalBundleURL:source.url];
+                              onComplete();
+                            }];
+      }];
+}
+#else
+- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
+                             onError:(RCTLoadAndExecuteErrorBlock)onError
+                          onComplete:(dispatch_block_t)onComplete
+{
+}
+#endif
 
 - (void)handleError:(NSError *)error
 {
@@ -1408,7 +1448,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     // hold a local reference to reactInstance in case a parallel thread
     // resets it between null check and usage
     auto reactInstance = self->_reactInstance;
-    if (isRAMBundle(script)) {
+    if (reactInstance && RCTIsBytecodeBundle(script)) {
+      UInt32 offset = 8;
+      while (offset < script.length) {
+        UInt32 fileLength = RCTReadUInt32LE(script, offset);
+        NSData *unit = [script subdataWithRange:NSMakeRange(offset + 4, fileLength)];
+        reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(unit), sourceUrlStr.UTF8String, false);
+        offset += ((fileLength + RCT_BYTECODE_ALIGNMENT - 1) & ~(RCT_BYTECODE_ALIGNMENT - 1)) + 4;
+      }
+    } else if (isRAMBundle(script)) {
       [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
       auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();

@@ -211,6 +211,10 @@ jest
         };
       },
     },
+    DevSettings: {
+      addMenuItem: jest.fn(),
+      reload: jest.fn(),
+    },
     ImageLoader: {
       getSize: jest.fn(url => Promise.resolve({width: 320, height: 240})),
       prefetchImage: jest.fn(),

@@ -580,16 +580,7 @@ if (global.nativeLoggingHook) {
       const reactNativeMethod = console[methodName];
       if (originalConsole[methodName]) {
         console[methodName] = function() {
-          // TODO(T43930203): remove this special case once originalConsole.assert properly checks
-          // the condition
-          if (methodName === 'assert') {
-            if (!arguments[0] && originalConsole.hasOwnProperty('assert')) {
-              // TODO(macOS GH#774)
-              originalConsole.assert(...arguments);
-            }
-          } else {
-            originalConsole[methodName](...arguments);
-          }
+          originalConsole[methodName](...arguments);
           reactNativeMethod.apply(console, arguments);
         };
       }

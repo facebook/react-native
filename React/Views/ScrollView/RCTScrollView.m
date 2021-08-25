@@ -413,7 +413,6 @@
 #pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
 
     _automaticallyAdjustContentInsets = YES;
-    _DEPRECATED_sendUpdatedChildFrames = NO;
     _contentInset = UIEdgeInsetsZero;
     _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
@@ -865,13 +864,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
    */
   if (_allowNextScrollNoMatterWhat ||
       (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
-    if (_DEPRECATED_sendUpdatedChildFrames) {
-      // Calculate changed frames
-      RCT_SEND_SCROLL_EVENT(onScroll, (@{@"updatedChildFrames" : [self calculateChildFramesData]}));
-    } else {
-      RCT_SEND_SCROLL_EVENT(onScroll, nil);
-    }
-
+    RCT_SEND_SCROLL_EVENT(onScroll, nil);
     // Update dispatch time
     _lastScrollDispatchTime = now;
     _allowNextScrollNoMatterWhat = NO;
@@ -881,38 +874,6 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 #else // ]TODO(macOS GH#774)
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll : scrollView);
 #endif // TODO(macOS GH#774)
-}
-
-- (NSArray<NSDictionary *> *)calculateChildFramesData
-{
-  NSMutableArray<NSDictionary *> *updatedChildFrames = [NSMutableArray new];
-  [[self.contentView reactSubviews] enumerateObjectsUsingBlock: // TODO(OSS Candidate ISS#2710739) use p
-    ^(RCTPlatformView *subview, NSUInteger idx, __unused BOOL *stop) { // TODO(macOS GH#774)
-
-    // Check if new or changed
-    CGRect newFrame = subview.frame;
-    BOOL frameChanged = NO;
-    if (self->_cachedChildFrames.count <= idx) {
-      frameChanged = YES;
-      [self->_cachedChildFrames addObject:NSValueWithCGRect(newFrame)]; // TODO(macOS GH#774)
-    } else if (!CGRectEqualToRect(newFrame, CGRectValue(self->_cachedChildFrames[idx]))) { // TODO(macOS GH#774)
-      frameChanged = YES;
-      self->_cachedChildFrames[idx] = NSValueWithCGRect(newFrame); // TODO(macOS GH#774)
-    }
-
-    // Create JS frame object
-    if (frameChanged) {
-      [updatedChildFrames addObject:@{
-        @"index" : @(idx),
-        @"x" : @(newFrame.origin.x),
-        @"y" : @(newFrame.origin.y),
-        @"width" : @(newFrame.size.width),
-        @"height" : @(newFrame.size.height),
-      }];
-    }
-  }];
-
-  return updatedChildFrames;
 }
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)

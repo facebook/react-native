@@ -54,7 +54,8 @@ static inline LayoutContext RCTGetLayoutContext()
 {
   return {.pointScaleFactor = RCTScreenScale(),
           .swapLeftAndRightInRTL =
-              [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]};
+              [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL],
+          .fontSizeMultiplier = RCTFontSizeMultiplier()};
 }
 
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
@@ -188,6 +189,13 @@ static inline LayoutContext RCTGetLayoutContext()
   [scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
                                             layoutContext:layoutContext
                                                 surfaceId:surface.rootTag];
+}
+
+- (UIView *)findComponentViewWithTag_DO_NOT_USE_DEPRECATED:(NSInteger)tag
+{
+  UIView<RCTComponentViewProtocol> *componentView =
+      [_mountingManager.componentViewRegistry findComponentViewWithTag:tag];
+  return componentView;
 }
 
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props

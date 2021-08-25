@@ -10,12 +10,14 @@
 #import "NSTextStorage+FontScaling.h"
 #import "RCTAttributedTextUtils.h"
 
+#import <React/RCTUtils.h>
+#import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SimpleThreadSafeCache.h>
 
 using namespace facebook::react;
 
 @implementation RCTTextLayoutManager {
-  SimpleThreadSafeCache<AttributedString, std::shared_ptr<const void>, 256> _cache;
+  SimpleThreadSafeCache<AttributedString, std::shared_ptr<void>, 256> _cache;
 }
 
 static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsizeMode)
@@ -54,6 +56,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
   CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
+
+  size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
 
   __block auto attachments = TextMeasurement::Attachments{};
 
@@ -171,12 +175,11 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
 - (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
 {
-  auto sharedNSAttributedString = _cache.get(attributedString, [](const AttributedString attributedString) {
-    return std::shared_ptr<void>(
-        (__bridge_retained void *)RCTNSAttributedStringFromAttributedString(attributedString), CFRelease);
+  auto sharedNSAttributedString = _cache.get(attributedString, [](AttributedString attributedString) {
+    return wrapManagedObject(RCTNSAttributedStringFromAttributedString(attributedString));
   });
 
-  return (__bridge NSAttributedString *)sharedNSAttributedString.get();
+  return unwrapManagedObject(sharedNSAttributedString);
 }
 
 @end

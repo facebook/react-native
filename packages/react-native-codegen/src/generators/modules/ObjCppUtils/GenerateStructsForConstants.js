@@ -62,6 +62,14 @@ function getBuilderInputFieldDeclaration(
     return 'folly::Optional<' + annotation + '> ' + property.name + ';';
   }
   const {typeAnnotation} = property;
+
+  // TODO(T67898313): Workaround for NativeLinking's use of union type. This check may be removed once typeAnnotation is non-optional.
+  if (!typeAnnotation) {
+    throw new Error(
+      `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+    );
+  }
+
   switch (typeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (typeAnnotation.name) {
@@ -88,6 +96,7 @@ function getBuilderInputFieldDeclaration(
           property.name,
         )}::Builder`,
       );
+    case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       if (property.optional) {
@@ -153,6 +162,14 @@ function unsafeGetter(name: string, optional: boolean) {
 
 function getObjectProperty(property: ObjectParamTypeAnnotation): string {
   const {typeAnnotation} = property;
+
+  // TODO(T67898313): Workaround for NativeLinking's use of union type. This check may be removed once typeAnnotation is non-optional.
+  if (!typeAnnotation) {
+    throw new Error(
+      `Cannot get array element type, property ${property.name} does not contain a type annotation`,
+    );
+  }
+
   switch (typeAnnotation.type) {
     case 'ReservedFunctionValueTypeAnnotation':
       switch (typeAnnotation.name) {
@@ -169,6 +186,7 @@ function getObjectProperty(property: ObjectParamTypeAnnotation): string {
     case 'BooleanTypeAnnotation':
       return boolGetter(property.name, property.optional);
     case 'StringTypeAnnotation':
+    case 'TypeAliasTypeAnnotation': // TODO: Handle aliases
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       return safeGetter(property.name, property.optional);

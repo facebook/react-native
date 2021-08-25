@@ -30,9 +30,9 @@ inline NSString *_Nullable RCTNSStringFromStringNilIfEmpty(
   return string.empty() ? nil : RCTNSStringFromString(string, encoding);
 }
 
-inline std::string RCTStringFromNSString(NSString *string, const NSStringEncoding &encoding = NSUTF8StringEncoding)
+inline std::string RCTStringFromNSString(NSString *string)
 {
-  return [string cStringUsingEncoding:encoding];
+  return std::string([string UTF8String]);
 }
 
 inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)

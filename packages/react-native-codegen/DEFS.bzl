@@ -166,6 +166,7 @@ def rn_codegen_components(
         srcs = [":{}".format(copy_generated_java_files)],
         out = "{}.src.zip".format(zip_generated_java_files),
         visibility = ["PUBLIC"],
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(

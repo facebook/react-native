@@ -1175,9 +1175,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this.context == null
             ) {
               // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
+              // TODO (GitHub #818): Use console.error (as per 646605b90e666c4b0d1c1200a137eacf62b46f87)
+              // instead of console.warn after resolving problems3 in RNTester's MultiColumn and SectionList example pages
               console.warn(
                 'VirtualizedLists should never be nested inside plain ScrollViews with the same ' +
-                  'orientation - use another VirtualizedList-backed container instead.',
+                  'orientation because it can break windowing and other functionality - use another ' +
+                  'VirtualizedList-backed container instead.',
               );
               this._hasWarned.nesting = true;
             }
@@ -1652,10 +1655,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.initialScrollIndex > 0 &&
       !this._hasDoneInitialScroll
     ) {
-      this.scrollToIndex({
-        animated: false,
-        index: this.props.initialScrollIndex,
-      });
+      if (this.props.contentOffset == null) {
+        this.scrollToIndex({
+          animated: false,
+          index: this.props.initialScrollIndex,
+        });
+      }
       this._hasDoneInitialScroll = true;
     }
     if (this.props.onContentSizeChange) {

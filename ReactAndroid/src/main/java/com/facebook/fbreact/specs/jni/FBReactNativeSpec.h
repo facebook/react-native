@@ -244,6 +244,20 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
+     * C++ class for module 'DevSplitBundleLoader'
+     */
+
+    class JSI_EXPORT NativeDevSplitBundleLoaderSpecJSI : public JavaTurboModule {
+    public:
+      NativeDevSplitBundleLoaderSpecJSI(const JavaTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    /**
      * C++ class for module 'DeviceEventManager'
      */
 

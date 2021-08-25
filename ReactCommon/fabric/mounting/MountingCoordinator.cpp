@@ -130,14 +130,18 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   auto telemetry =
       (lastRevision_.hasValue() ? lastRevision_->getTelemetry()
                                 : MountingTelemetry{});
+  if (!lastRevision_.hasValue()) {
+    telemetry.willLayout();
+    telemetry.didLayout();
+    telemetry.willCommit();
+    telemetry.didCommit();
+  }
+  telemetry.willDiff();
   if (lastRevision_.hasValue()) {
-    telemetry.willDiff();
-
     diffMutations = calculateShadowViewMutations(
         baseRevision_.getRootShadowNode(), lastRevision_->getRootShadowNode());
-
-    telemetry.didDiff();
   }
+  telemetry.didDiff();
 
   better::optional<MountingTransaction> transaction{};
 

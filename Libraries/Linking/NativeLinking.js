@@ -26,7 +26,7 @@ export interface Spec extends TurboModule {
     action: string,
     extras: ?Array<{
       key: string,
-      value: string | number | boolean,
+      value: string | number | boolean, // TODO(T67672788): Union types are not type safe
       ...
     }>,
   ) => Promise<void>;

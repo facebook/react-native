@@ -866,6 +866,23 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   [_uiManager verify];
 }
 
+- (void) testGetValue
+{
+  __block NSInteger saveValueCallbackCalls = 0;
+  NSNumber *nodeTag = @100;
+  [_nodesManager createAnimatedNode:nodeTag
+                             config:@{@"type": @"value", @"value": @1, @"offset": @0}];
+  RCTResponseSenderBlock saveValueCallback = ^(NSArray *response) {
+    saveValueCallbackCalls++;
+    XCTAssertEqualObjects(response, @[@1]);
+  };
+  
+  XCTAssertEqual(saveValueCallbackCalls, 0);
+  
+  [_nodesManager getValue:nodeTag saveCallback:saveValueCallback];
+  XCTAssertEqual(saveValueCallbackCalls, 1);
+}
+
 /**
  * Creates a following graph of nodes:
  * Value(3, initialValue) ----> Style(4) ---> Props(5) ---> View(viewTag)

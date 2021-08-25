@@ -23,12 +23,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
@@ -43,6 +45,7 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
+import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
@@ -70,6 +73,7 @@ public abstract class DevSupportManagerBase
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
+  private static final String JS_SPLIT_BUNDLES_DIR_NAME = "dev_js_split_bundles";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
   private static final String FLIPPER_DEBUGGER_URL =
       "flipper://null/Hermesdebuggerrn?device=React%20Native";
@@ -97,6 +101,7 @@ public abstract class DevSupportManagerBase
   private final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleTempFile;
+  private final File mJSSplitBundlesDir;
   private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
   private final DevLoadingViewController mDevLoadingViewController;
 
@@ -104,6 +109,7 @@ public abstract class DevSupportManagerBase
   private @Nullable AlertDialog mDevOptionsDialog;
   private @Nullable DebugOverlayController mDebugOverlayController;
   private boolean mDevLoadingViewVisible = false;
+  private int mPendingJSSplitBundleRequests = 0;
   private @Nullable ReactContext mCurrentContext;
   private DevInternalSettings mDevSettings;
   private boolean mIsReceiverRegistered = false;
@@ -113,7 +119,6 @@ public abstract class DevSupportManagerBase
   private @Nullable String mLastErrorTitle;
   private @Nullable StackFrame[] mLastErrorStack;
   private int mLastErrorCookie = 0;
-  private @Nullable ErrorType mLastErrorType;
   private @Nullable DevBundleDownloadListener mBundleDownloadListener;
   private @Nullable List<ErrorCustomizer> mErrorCustomizers;
   private @Nullable PackagerLocationCustomizer mPackagerLocationCustomizer;
@@ -204,13 +209,15 @@ public abstract class DevSupportManagerBase
     // TODO(6418010): Fix readers-writers problem in debug reload from HTTP server
     mJSBundleTempFile = new File(applicationContext.getFilesDir(), JS_BUNDLE_FILE_NAME);
 
+    mJSSplitBundlesDir =
+        mApplicationContext.getDir(JS_SPLIT_BUNDLES_DIR_NAME, Context.MODE_PRIVATE);
+
     mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
 
     setDevSupportEnabled(enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
-    mDevLoadingViewController =
-        new DevLoadingViewController(applicationContext, reactInstanceManagerHelper);
+    mDevLoadingViewController = new DevLoadingViewController(reactInstanceManagerHelper);
 
     mExceptionLoggers.add(new JSExceptionLogger());
 
@@ -776,26 +783,6 @@ public abstract class DevSupportManagerBase
     return false;
   }
 
-  /**
-   * @return {@code true} if JS bundle {@param bundleAssetName} exists, in that case {@link
-   *     com.facebook.react.ReactInstanceManager} should use that file from assets instead of
-   *     downloading bundle from dev server
-   */
-  public boolean hasBundleInAssets(String bundleAssetName) {
-    try {
-      String[] assets = mApplicationContext.getAssets().list("");
-      for (int i = 0; i < assets.length; i++) {
-        if (assets[i].equals(bundleAssetName)) {
-          return true;
-        }
-      }
-    } catch (IOException e) {
-      // Ignore this error and just fallback to downloading JS from devserver
-      FLog.e(ReactConstants.TAG, "Error while loading assets list");
-    }
-    return false;
-  }
-
   private void resetCurrentContext(@Nullable ReactContext reactContext) {
     if (mCurrentContext == reactContext) {
       // new context is the same as the old one - do nothing
@@ -872,6 +859,82 @@ public abstract class DevSupportManagerBase
       String bundleURL =
           mDevServerHelper.getDevServerBundleURL(Assertions.assertNotNull(mJSAppBundleName));
       reloadJSFromServer(bundleURL);
+    }
+  }
+
+  @Override
+  public void loadSplitBundleFromServer(String bundlePath, final DevSplitBundleCallback callback) {
+    final String bundleUrl = mDevServerHelper.getDevServerSplitBundleURL(bundlePath);
+    // The bundle path may contain the '/' character, which is not allowed in file names.
+    final File bundleFile =
+        new File(mJSSplitBundlesDir, bundlePath.replaceAll("/", "_") + ".jsbundle");
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            showSplitBundleDevLoadingView(bundleUrl);
+            mDevServerHelper.downloadBundleFromURL(
+                new DevBundleDownloadListener() {
+                  @Override
+                  public void onSuccess() {
+                    UiThreadUtil.runOnUiThread(
+                        new Runnable() {
+                          @Override
+                          public void run() {
+                            hideSplitBundleDevLoadingView();
+                          }
+                        });
+
+                    @Nullable ReactContext context = mCurrentContext;
+                    if (context == null || !context.hasActiveCatalystInstance()) {
+                      return;
+                    }
+
+                    JSBundleLoader.createCachedSplitBundleFromNetworkLoader(
+                            bundleUrl, bundleFile.getAbsolutePath())
+                        .loadScript(context.getCatalystInstance());
+                    context.getJSModule(HMRClient.class).registerBundle(bundleUrl);
+
+                    callback.onSuccess();
+                  }
+
+                  @Override
+                  public void onProgress(
+                      @Nullable String status, @Nullable Integer done, @Nullable Integer total) {
+                    mDevLoadingViewController.updateProgress(status, done, total);
+                  }
+
+                  @Override
+                  public void onFailure(Exception cause) {
+                    UiThreadUtil.runOnUiThread(
+                        new Runnable() {
+                          @Override
+                          public void run() {
+                            hideSplitBundleDevLoadingView();
+                          }
+                        });
+                    callback.onError(bundleUrl, cause);
+                  }
+                },
+                bundleFile,
+                bundleUrl,
+                null);
+          }
+        });
+  }
+
+  @UiThread
+  private void showSplitBundleDevLoadingView(String bundleUrl) {
+    mDevLoadingViewController.showForUrl(bundleUrl);
+    mDevLoadingViewVisible = true;
+    mPendingJSSplitBundleRequests++;
+  }
+
+  @UiThread
+  private void hideSplitBundleDevLoadingView() {
+    if (--mPendingJSSplitBundleRequests == 0) {
+      mDevLoadingViewController.hide();
+      mDevLoadingViewVisible = false;
     }
   }
 
@@ -988,7 +1051,6 @@ public abstract class DevSupportManagerBase
     mLastErrorTitle = message;
     mLastErrorStack = stack;
     mLastErrorCookie = errorCookie;
-    mLastErrorType = errorType;
   }
 
   private void reloadJSInProxyMode() {
@@ -1107,24 +1169,28 @@ public abstract class DevSupportManagerBase
               mBundleDownloadListener.onFailure(cause);
             }
             FLog.e(ReactConstants.TAG, "Unable to download JS bundle", cause);
-            UiThreadUtil.runOnUiThread(
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    if (cause instanceof DebugServerException) {
-                      DebugServerException debugServerException = (DebugServerException) cause;
-                      showNewJavaError(debugServerException.getMessage(), cause);
-                    } else {
-                      showNewJavaError(
-                          mApplicationContext.getString(R.string.catalyst_reload_error), cause);
-                    }
-                  }
-                });
+            reportBundleLoadingFailure(cause);
           }
         },
         mJSBundleTempFile,
         bundleURL,
         bundleInfo);
+  }
+
+  private void reportBundleLoadingFailure(final Exception cause) {
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (cause instanceof DebugServerException) {
+              DebugServerException debugServerException = (DebugServerException) cause;
+              showNewJavaError(debugServerException.getMessage(), cause);
+            } else {
+              showNewJavaError(
+                  mApplicationContext.getString(R.string.catalyst_reload_error), cause);
+            }
+          }
+        });
   }
 
   @Override

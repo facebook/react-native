@@ -17,6 +17,7 @@ const EMPTY_NATIVE_MODULES: SchemaType = {
     SampleTurboModule: {
       nativeModules: {
         SampleTurboModule: {
+          aliases: {},
           properties: [],
         },
       },
@@ -29,6 +30,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
     SampleTurboModule: {
       nativeModules: {
         SampleTurboModule: {
+          aliases: {},
           properties: [
             {
               name: 'getConstants',
@@ -291,6 +293,7 @@ const TWO_MODULES_SAME_FILE: SchemaType = {
     NativeSampleTurboModule: {
       nativeModules: {
         SampleTurboModule: {
+          aliases: {},
           properties: [
             {
               name: 'voidFunc',
@@ -307,6 +310,7 @@ const TWO_MODULES_SAME_FILE: SchemaType = {
           ],
         },
         Sample2TurboModule: {
+          aliases: {},
           properties: [
             {
               name: 'voidFunc',
@@ -332,6 +336,7 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
     NativeSampleTurboModule: {
       nativeModules: {
         SampleTurboModule: {
+          aliases: {},
           properties: [
             {
               name: 'voidFunc',
@@ -352,6 +357,7 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
     NativeSampleTurboModule2: {
       nativeModules: {
         Sample2TurboModule: {
+          aliases: {},
           properties: [
             {
               name: 'getConstants',
@@ -390,6 +396,7 @@ const COMPLEX_OBJECTS: SchemaType = {
     NativeSampleTurboModule: {
       nativeModules: {
         SampleTurboModule: {
+          aliases: {},
           properties: [
             {
               name: 'difficult',
@@ -600,6 +607,10 @@ const COMPLEX_OBJECTS: SchemaType = {
                             typeAnnotation: {
                               type: 'StringTypeAnnotation',
                             },
+                          },
+                          {
+                            optional: false,
+                            name: 'value',
                           },
                         ],
                       },

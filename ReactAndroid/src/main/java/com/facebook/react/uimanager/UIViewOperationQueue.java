@@ -25,7 +25,6 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -596,7 +595,6 @@ public class UIViewOperationQueue {
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
   private final ReactApplicationContext mReactApplicationContext;
 
-  private final boolean mAllowViewCommandsQueue;
   private ArrayList<DispatchCommandViewOperation> mViewCommandOperations = new ArrayList<>();
 
   // Only called from the UIManager queue?
@@ -637,7 +635,6 @@ public class UIViewOperationQueue {
                 ? DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS
                 : minTimeLeftInFrameForNonBatchedOperationMs);
     mReactApplicationContext = reactContext;
-    mAllowViewCommandsQueue = ReactFeatureFlags.allowEarlyViewCommandExecution;
   }
 
   /*package*/ NativeViewHierarchyManager getNativeViewHierarchyManager() {
@@ -709,22 +706,14 @@ public class UIViewOperationQueue {
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     final DispatchCommandOperation command =
         new DispatchCommandOperation(reactTag, commandId, commandArgs);
-    if (mAllowViewCommandsQueue) {
-      mViewCommandOperations.add(command);
-    } else {
-      mOperations.add(command);
-    }
+    mViewCommandOperations.add(command);
   }
 
   public void enqueueDispatchCommand(
       int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     final DispatchStringCommandOperation command =
         new DispatchStringCommandOperation(reactTag, commandId, commandArgs);
-    if (mAllowViewCommandsQueue) {
-      mViewCommandOperations.add(command);
-    } else {
-      mOperations.add(command);
-    }
+    mViewCommandOperations.add(command);
   }
 
   public void enqueueUpdateExtraData(int reactTag, Object extraData) {

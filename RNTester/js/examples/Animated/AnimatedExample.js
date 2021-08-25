@@ -336,6 +336,115 @@ exports.examples = [
     },
   },
   {
+    title: 'Moving box example',
+    description: ('Click arrow buttons to move the box.' +
+      'Then hide the box and reveal it again.' +
+      'After that the box position will reset to initial position.': string),
+    render: (): React.Node => {
+      const containerWidth = 200;
+      const boxSize = 50;
+
+      const movingBoxStyles = StyleSheet.create({
+        container: {
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'column',
+          backgroundColor: '#fff',
+          padding: 30,
+        },
+        boxContainer: {
+          backgroundColor: '#d3d3d3',
+          height: boxSize,
+          width: containerWidth,
+        },
+        box: {
+          width: boxSize,
+          height: boxSize,
+          margin: 0,
+        },
+        buttonsContainer: {
+          marginTop: 20,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          width: containerWidth,
+        },
+      });
+      type Props = $ReadOnly<{||}>;
+      type State = {|boxVisible: boolean|};
+
+      class MovingBoxExample extends React.Component<Props, State> {
+        x: Animated.Value;
+        constructor(props) {
+          super(props);
+          this.x = new Animated.Value(0);
+          this.state = {
+            boxVisible: true,
+          };
+        }
+
+        render() {
+          const {boxVisible} = this.state;
+          const toggleText = boxVisible ? 'Hide' : 'Show';
+          return (
+            <View style={movingBoxStyles.container}>
+              {this.renderBox()}
+              <View style={movingBoxStyles.buttonsContainer}>
+                <RNTesterButton onPress={() => this.moveTo(0)}>
+                  {'<-'}
+                </RNTesterButton>
+                <RNTesterButton onPress={this.toggleVisibility}>
+                  {toggleText}
+                </RNTesterButton>
+                <RNTesterButton
+                  onPress={() => this.moveTo(containerWidth - boxSize)}>
+                  {'->'}
+                </RNTesterButton>
+              </View>
+            </View>
+          );
+        }
+
+        renderBox = () => {
+          if (this.state.boxVisible) {
+            const horizontalLocation = {transform: [{translateX: this.x}]};
+            return (
+              <View style={movingBoxStyles.boxContainer}>
+                <Animated.View
+                  style={[
+                    styles.content,
+                    movingBoxStyles.box,
+                    horizontalLocation,
+                  ]}
+                />
+              </View>
+            );
+          } else {
+            return (
+              <View style={movingBoxStyles.boxContainer}>
+                <Text>The box view is not being rendered</Text>
+              </View>
+            );
+          }
+        };
+
+        moveTo = x => {
+          Animated.timing(this.x, {
+            toValue: x,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start();
+        };
+
+        toggleVisibility = () => {
+          const {boxVisible} = this.state;
+          this.setState({boxVisible: !boxVisible});
+        };
+      }
+      return <MovingBoxExample />;
+    },
+  },
+  {
     title: 'Continuous Interactions',
     description: ('Gesture events, chaining, 2D ' +
       'values, interrupting and transitioning ' +

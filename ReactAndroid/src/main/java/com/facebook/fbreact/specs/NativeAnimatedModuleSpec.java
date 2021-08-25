@@ -67,6 +67,9 @@ public abstract class NativeAnimatedModuleSpec extends ReactContextBaseJavaModul
       Callback endCallback);
 
   @ReactMethod
+  public abstract void getValue(double tag, Callback saveValueCallback);
+
+  @ReactMethod
   public abstract void stopListeningToAnimatedNodeValue(double tag);
 
   @ReactMethod

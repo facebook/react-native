@@ -32,6 +32,9 @@ class Binding : public jni::HybridClass<Binding>,
   constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/Binding;";
 
+  constexpr static auto UIManagerJavaDescriptor =
+      "com/facebook/react/fabric/FabricUIManager";
+
   static void registerNatives();
 
  private:
@@ -122,7 +125,6 @@ class Binding : public jni::HybridClass<Binding>,
   float pointScaleFactor_ = 1;
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
-  bool shouldCollateRemovesAndDeletes_{false};
   bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
   bool disableVirtualNodePreallocation_{false};

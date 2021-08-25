@@ -84,6 +84,7 @@ rn_xplat_cxx_library(
 
 CXXREACT_PUBLIC_HEADERS = [
     "CxxNativeModule.h",
+    "ErrorUtils.h",
     "Instance.h",
     "JSBundleType.h",
     "JSDeltaBundleClient.h",

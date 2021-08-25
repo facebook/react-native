@@ -276,6 +276,8 @@ namespace JS {
 
 - (void)createAnimatedNode:(double)tag
                     config:(NSDictionary *)config;
+- (void)getValue:(double)tag
+saveValueCallback:(RCTResponseSenderBlock)saveValueCallback;
 - (void)startListeningToAnimatedNodeValue:(double)tag;
 - (void)stopListeningToAnimatedNodeValue:(double)tag;
 - (void)connectAnimatedNodes:(double)parentTag
@@ -759,6 +761,26 @@ namespace facebook {
     class JSI_EXPORT NativeDevSettingsSpecJSI : public ObjCTurboModule {
     public:
       NativeDevSettingsSpecJSI(const ObjCTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
+@protocol NativeDevSplitBundleLoaderSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)loadBundle:(NSString *)bundlePath
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'DevSplitBundleLoader'
+     */
+
+    class JSI_EXPORT NativeDevSplitBundleLoaderSpecJSI : public ObjCTurboModule {
+    public:
+      NativeDevSplitBundleLoaderSpecJSI(const ObjCTurboModule::InitParams &params);
 
     };
   } // namespace react

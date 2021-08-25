@@ -195,6 +195,87 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 #endif // ]TODO(macOS GH#774)
 }
 
+#pragma mark - Hit Testing
+
+- (void)setPointerEvents:(RCTPointerEvents)pointerEvents
+{
+  _pointerEvents = pointerEvents;
+  self.userInteractionEnabled = (pointerEvents != RCTPointerEventsNone);
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+  if (pointerEvents == RCTPointerEventsBoxNone) {
+    self.accessibilityViewIsModal = NO;
+  }
+#endif // TODO(macOS GH#774)
+}
+
+- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // TODO(macOS GH#774)
+{
+  BOOL canReceiveTouchEvents = ([self isUserInteractionEnabled] && ![self isHidden]);
+  if (!canReceiveTouchEvents) {
+    return nil;
+  }
+
+  // `hitSubview` is the topmost subview which was hit. The hit point can
+  // be outside the bounds of `view` (e.g., if -clipsToBounds is NO).
+  RCTPlatformView *hitSubview = nil; // TODO(macOS GH#774)
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+  BOOL needsHitSubview = !(_pointerEvents == RCTPointerEventsNone || _pointerEvents == RCTPointerEventsBoxOnly);
+  if (needsHitSubview && (![self clipsToBounds] || isPointInside)) {
+    // Take z-index into account when calculating the touch target.
+    NSArray<RCTUIView *> *sortedSubviews = [self reactZIndexSortedSubviews]; // TODO(macOS ISS#3536887)
+
+    // The default behaviour of UIKit is that if a view does not contain a point,
+    // then no subviews will be returned from hit testing, even if they contain
+    // the hit point. By doing hit testing directly on the subviews, we bypass
+    // the strict containment policy (i.e., UIKit guarantees that every ancestor
+    // of the hit view will return YES from -pointInside:withEvent:). See:
+    //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
+    for (RCTUIView *subview in [sortedSubviews reverseObjectEnumerator]) { // TODO(macOS ISS#3536887)
+      CGPoint pointForHitTest = CGPointZero; // [TODO(macOS GH#774)
+#if TARGET_OS_OSX
+      if ([subview isKindOfClass:[RCTView class]]) {
+        pointForHitTest = [subview convertPoint:point fromView:self];
+      } else {
+        pointForHitTest = point;
+      }
+#else
+      pointForHitTest = [subview convertPoint:point fromView:self];
+#endif
+      hitSubview = RCTUIViewHitTestWithEvent(subview, pointForHitTest, event); // ]TODO(macOS GH#774) and TODO(macOS ISS#3536887)
+      if (hitSubview != nil) {
+        break;
+      }
+    }
+  }
+
+  RCTPlatformView *hitView = (isPointInside ? self : nil); // TODO(macOS GH#774)
+
+  switch (_pointerEvents) {
+    case RCTPointerEventsNone:
+      return nil;
+    case RCTPointerEventsUnspecified:
+      return hitSubview ?: hitView;
+    case RCTPointerEventsBoxOnly:
+      return hitView;
+    case RCTPointerEventsBoxNone:
+      return hitSubview;
+    default:
+      RCTLogError(@"Invalid pointer-events specified %lld on %@", (long long)_pointerEvents, self);
+      return hitSubview ?: hitView;
+  }
+}
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
+{
+  if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
+    return [super pointInside:point withEvent:event];
+  }
+  CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+  return CGRectContainsPoint(hitFrame, point);
+}
+
+#pragma mark - Accessibility
+
 - (NSString *)accessibilityLabel
 {
   NSString *label = super.accessibilityLabel;
@@ -239,10 +320,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   if (!_onAccessibilityAction || !accessibilityActionsLabelMap) {
     return NO;
   }
-
-  // iOS defines the name as the localized label, so use our map to convert this back to the non-localized action namne
+  // iOS defines the name as the localized label, so use our map to convert this back to the non-localized action name
   // when passing to JS. This allows for standard action names across platforms.
-
   NSDictionary *actionObject = accessibilityActionsLabelMap[action.name];
   if (actionObject) {
     _onAccessibilityAction(@{@"actionName" : actionObject[@"name"], @"actionTarget" : self.reactTag});
@@ -270,6 +349,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
       }
     }
     if (rolesAndStatesDescription == nil) {
+      // Falling back to hardcoded English list.
       NSLog(@"Cannot load localized accessibility strings.");
       rolesAndStatesDescription = @{
         @"alert" : @"alert",
@@ -298,6 +378,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     }
   });
 
+  // Handle Switch.
   if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
     for (NSString *state in self.accessibilityState) {
       id val = self.accessibilityState[state];
@@ -314,6 +395,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   if (roleDescription) {
     [valueComponents addObject:roleDescription];
   }
+
+  // Handle states which haven't already been handled in RCTViewManager.
   for (NSString *state in self.accessibilityState) {
     id val = self.accessibilityState[state];
     if (!val) {
@@ -334,8 +417,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     }
   }
 
-  // handle accessibilityValue
-
+  // Handle accessibilityValue.
   if (self.accessibilityValueInternal) {
     id min = self.accessibilityValueInternal[@"min"];
     id now = self.accessibilityValueInternal[@"now"];
@@ -518,83 +600,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 }
 
 #endif // ]TODO(macOS GH#774)
-
-- (void)setPointerEvents:(RCTPointerEvents)pointerEvents
-{
-  _pointerEvents = pointerEvents;
-  self.userInteractionEnabled = (pointerEvents != RCTPointerEventsNone);
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
-  if (pointerEvents == RCTPointerEventsBoxNone) {
-    self.accessibilityViewIsModal = NO;
-  }
-#endif // TODO(macOS GH#774)
-}
-
-- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // TODO(macOS GH#774)
-{
-  BOOL canReceiveTouchEvents = ([self isUserInteractionEnabled] && ![self isHidden]);
-  if (!canReceiveTouchEvents) {
-    return nil;
-  }
-
-  // `hitSubview` is the topmost subview which was hit. The hit point can
-  // be outside the bounds of `view` (e.g., if -clipsToBounds is NO).
-  RCTPlatformView *hitSubview = nil; // TODO(macOS GH#774)
-  BOOL isPointInside = [self pointInside:point withEvent:event];
-  BOOL needsHitSubview = !(_pointerEvents == RCTPointerEventsNone || _pointerEvents == RCTPointerEventsBoxOnly);
-  if (needsHitSubview && (![self clipsToBounds] || isPointInside)) {
-    // Take z-index into account when calculating the touch target.
-    NSArray<RCTUIView *> *sortedSubviews = [self reactZIndexSortedSubviews]; // TODO(macOS ISS#3536887)
-
-    // The default behaviour of UIKit is that if a view does not contain a point,
-    // then no subviews will be returned from hit testing, even if they contain
-    // the hit point. By doing hit testing directly on the subviews, we bypass
-    // the strict containment policy (i.e., UIKit guarantees that every ancestor
-    // of the hit view will return YES from -pointInside:withEvent:). See:
-    //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
-    for (RCTUIView *subview in [sortedSubviews reverseObjectEnumerator]) { // TODO(macOS ISS#3536887)
-      CGPoint pointForHitTest = CGPointZero; // [TODO(macOS GH#774)
-#if TARGET_OS_OSX
-      if ([subview isKindOfClass:[RCTView class]]) {
-        pointForHitTest = [subview convertPoint:point fromView:self];
-      } else {
-        pointForHitTest = point;
-      }
-#else
-      pointForHitTest = [subview convertPoint:point fromView:self];
-#endif
-      hitSubview = RCTUIViewHitTestWithEvent(subview, pointForHitTest, event); // ]TODO(macOS GH#774) and TODO(macOS ISS#3536887)
-      if (hitSubview != nil) {
-        break;
-      }
-    }
-  }
-
-  RCTPlatformView *hitView = (isPointInside ? self : nil); // TODO(macOS GH#774)
-
-  switch (_pointerEvents) {
-    case RCTPointerEventsNone:
-      return nil;
-    case RCTPointerEventsUnspecified:
-      return hitSubview ?: hitView;
-    case RCTPointerEventsBoxOnly:
-      return hitView;
-    case RCTPointerEventsBoxNone:
-      return hitSubview;
-    default:
-      RCTLogError(@"Invalid pointer-events specified %lld on %@", (long long)_pointerEvents, self);
-      return hitSubview ?: hitView;
-  }
-}
-
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
-{
-  if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
-    return [super pointInside:point withEvent:event];
-  }
-  CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
-  return CGRectContainsPoint(hitFrame, point);
-}
 
 - (RCTPlatformView *)reactAccessibilityElement // TODO(macOS GH#774)
 {
@@ -825,7 +830,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 }
 #endif // TODO(macOS GH#774)
 
-#pragma mark - View unmounting
+#pragma mark - View Unmounting
 
 - (void)react_remountAllSubviews
 {

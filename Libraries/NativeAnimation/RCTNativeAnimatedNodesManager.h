@@ -22,6 +22,9 @@
 
 - (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag;
 
+- (void)getValue:(nonnull NSNumber *)nodeTag
+        saveCallback:(nullable RCTResponseSenderBlock)saveCallback;
+
 // graph
 
 - (void)createAnimatedNode:(nonnull NSNumber *)tag

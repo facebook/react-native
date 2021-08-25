@@ -186,6 +186,10 @@ namespace facebook {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "createAnimatedNode", "(DLcom/facebook/react/bridge/ReadableMap;)V", args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_getValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "getValue", "(DLcom/facebook/react/bridge/Callback;)V", args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_startListeningToAnimatedNodeValue(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, VoidKind, "startListeningToAnimatedNodeValue", "(D)V", args, count);
     }
@@ -263,6 +267,9 @@ namespace facebook {
       : JavaTurboModule(params) {
         
         methodMap_["createAnimatedNode"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode};
+        
+        
+        methodMap_["getValue"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_getValue};
         
         
         methodMap_["startListeningToAnimatedNodeValue"] = MethodMetadata {1, __hostFunction_NativeAnimatedModuleSpecJSI_startListeningToAnimatedNodeValue};
@@ -782,6 +789,26 @@ namespace facebook {
         
         
         methodMap_["setIsShakeToShowDevMenuEnabled"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setIsShakeToShowDevMenuEnabled};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeDevSplitBundleLoaderSpecJSI_loadBundle(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<JavaTurboModule&>(turboModule).invokeJavaMethod(rt, PromiseKind, "loadBundle", "(Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count);
+    }
+
+
+    NativeDevSplitBundleLoaderSpecJSI::NativeDevSplitBundleLoaderSpecJSI(const JavaTurboModule::InitParams &params)
+      : JavaTurboModule(params) {
+        
+        methodMap_["loadBundle"] = MethodMetadata {1, __hostFunction_NativeDevSplitBundleLoaderSpecJSI_loadBundle};
         
         
 

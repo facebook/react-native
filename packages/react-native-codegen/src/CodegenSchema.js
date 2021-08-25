@@ -55,6 +55,11 @@ export type StringTypeAnnotation = $ReadOnly<{|
   type: 'StringTypeAnnotation',
 |}>;
 
+export type TypeAliasTypeAnnotation = $ReadOnly<{|
+  type: 'TypeAliasTypeAnnotation',
+  name: string,
+|}>;
+
 export type EventObjectPropertyType =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
@@ -223,19 +228,25 @@ export type FunctionTypeAnnotationParamTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
-      elementType: ?FunctionTypeAnnotationParamTypeAnnotation,
+      elementType:
+        | ?FunctionTypeAnnotationParamTypeAnnotation
+        | ?TypeAliasTypeAnnotation,
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
       properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
     |}>;
 
-export type FunctionTypeAnnotationReturnArrayElementType = FunctionTypeAnnotationParamTypeAnnotation;
+export type FunctionTypeAnnotationReturnArrayElementType =
+  | FunctionTypeAnnotationParamTypeAnnotation
+  | TypeAliasTypeAnnotation;
 
 export type ObjectParamTypeAnnotation = $ReadOnly<{|
   optional: boolean,
   name: string,
-  typeAnnotation: FunctionTypeAnnotationParamTypeAnnotation,
+  typeAnnotation?:
+    | FunctionTypeAnnotationParamTypeAnnotation
+    | TypeAliasTypeAnnotation, // TODO (T67898313): Workaround for NativeLinking's use of union type, typeAnnotations should not be optional
 |}>;
 
 export type FunctionTypeAnnotationReturn =
@@ -265,7 +276,9 @@ export type FunctionTypeAnnotationReturn =
 export type FunctionTypeAnnotationParam = $ReadOnly<{|
   nullable: boolean,
   name: string,
-  typeAnnotation: FunctionTypeAnnotationParamTypeAnnotation,
+  typeAnnotation:
+    | FunctionTypeAnnotationParamTypeAnnotation
+    | TypeAliasTypeAnnotation,
 |}>;
 
 export type FunctionTypeAnnotation = $ReadOnly<{|
@@ -280,7 +293,13 @@ export type NativeModuleMethodTypeShape = $ReadOnly<{|
   typeAnnotation: FunctionTypeAnnotation,
 |}>;
 
+export type ObjectTypeAliasTypeShape = $ReadOnly<{|
+  type: 'ObjectTypeAnnotation',
+  properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
+|}>;
+
 export type NativeModuleShape = $ReadOnly<{|
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
   properties: $ReadOnlyArray<NativeModuleMethodTypeShape>,
 |}>;
 

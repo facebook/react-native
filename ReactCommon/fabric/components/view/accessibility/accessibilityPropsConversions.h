@@ -9,6 +9,7 @@
 
 #include <folly/dynamic.h>
 #include <react/components/view/AccessibilityPrimitives.h>
+#include <react/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -107,6 +108,18 @@ inline void fromRawValue(const RawValue &value, AccessibilityTraits &result) {
   }
 
   abort();
+}
+
+inline void fromRawValue(const RawValue &value, AccessibilityState &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+  auto selected = map.find("selected");
+  if (selected != map.end()) {
+    fromRawValue(selected->second, result.selected);
+  }
+  auto disabled = map.find("disabled");
+  if (disabled != map.end()) {
+    fromRawValue(disabled->second, result.disabled);
+  }
 }
 
 } // namespace react

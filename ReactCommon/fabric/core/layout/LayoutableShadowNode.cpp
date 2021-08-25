@@ -168,7 +168,9 @@ LayoutableShadowNode::getLayoutableChildNodes() const {
   return layoutableChildren;
 }
 
-Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {
+Size LayoutableShadowNode::measureContent(
+    LayoutContext const &layoutContext,
+    LayoutConstraints const &layoutConstraints) const {
   return Size();
 }
 
@@ -202,26 +204,7 @@ void LayoutableShadowNode::layoutTree(
 }
 
 void LayoutableShadowNode::layout(LayoutContext layoutContext) {
-  layoutChildren(layoutContext);
-
-  for (auto child : getLayoutableChildNodes()) {
-    if (!child->getHasNewLayout()) {
-      continue;
-    }
-
-    child->ensureUnsealed();
-    child->setHasNewLayout(false);
-
-    auto childLayoutMetrics = child->getLayoutMetrics();
-    if (childLayoutMetrics.displayType == DisplayType::None) {
-      continue;
-    }
-
-    auto childLayoutContext = LayoutContext(layoutContext);
-    childLayoutContext.absolutePosition += childLayoutMetrics.frame.origin;
-
-    child->layout(layoutContext);
-  }
+  // Default implementation does nothing.
 }
 
 ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
@@ -251,18 +234,9 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
   return isPointInside ? node : nullptr;
 }
 
-void LayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
-  // Default implementation does nothing.
-}
-
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
   auto list = SharedDebugStringConvertibleList{};
-
-  if (getHasNewLayout()) {
-    list.push_back(
-        std::make_shared<DebugStringConvertibleItem>("hasNewLayout"));
-  }
 
   if (!getIsLayoutClean()) {
     list.push_back(std::make_shared<DebugStringConvertibleItem>("dirty"));

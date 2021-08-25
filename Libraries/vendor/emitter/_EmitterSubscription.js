@@ -10,10 +10,9 @@
 
 'use strict';
 
-const EventSubscription = require('./EventSubscription');
-
 import type EventEmitter from './EventEmitter';
-import type EventSubscriptionVendor from './EventSubscriptionVendor';
+import EventSubscription from './_EventSubscription';
+import type EventSubscriptionVendor from './_EventSubscriptionVendor';
 
 /**
  * EmitterSubscription represents a subscription with listener and context data.

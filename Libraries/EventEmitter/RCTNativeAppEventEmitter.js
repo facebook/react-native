@@ -10,7 +10,7 @@
 
 'use strict';
 
-const RCTDeviceEventEmitter = require('./RCTDeviceEventEmitter');
+import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
 
 /**
  * Deprecated - subclass NativeEventEmitter to create granular event modules instead of

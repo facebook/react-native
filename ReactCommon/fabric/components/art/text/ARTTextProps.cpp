@@ -7,6 +7,7 @@
 
 #include <react/components/art/ARTTextProps.h>
 #include <react/core/propsConversions.h>
+#include <react/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
@@ -40,8 +41,9 @@ ARTTextProps::ARTTextProps(
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-SharedDebugStringConvertibleList RawTextProps::getDebugProps() const {
-  return {debugStringConvertibleItem("opacity", opacity)};
+SharedDebugStringConvertibleList ARTTextProps::getDebugProps() const {
+  return SharedDebugStringConvertibleList{
+      debugStringConvertibleItem("opacity", opacity)};
 }
 #endif
 

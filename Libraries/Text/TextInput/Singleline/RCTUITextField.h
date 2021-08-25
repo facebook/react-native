@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, getter=isEditable) BOOL editable;
 #endif // ]TODO(macOS GH#774)
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
+@property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
 @property (nonatomic, copy, nullable) NSString *text;

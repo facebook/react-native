@@ -45,10 +45,9 @@ class ShadowNodeFamilyFragment final {
      */
     explicit operator ShadowNodeFamilyFragment() const;
 
-   private:
-    Tag const tag_;
-    SurfaceId const surfaceId_;
-    EventEmitter::Shared const eventEmitter_;
+    Tag tag;
+    SurfaceId surfaceId;
+    EventEmitter::Shared eventEmitter;
   };
 };
 
