@@ -199,7 +199,7 @@ function e2e_suite() {
         return 1
       fi
 
-      echo "Starting packager server"
+      echo "Starting Metro"
       npm start >> /dev/null &
       SERVER_PID=$!
       sleep 15

@@ -62,8 +62,8 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
-experimental.well_formed_exports=true
-experimental.types_first=true
+well_formed_exports=true
+types_first=true
 experimental.abstract_locations=true
 
 [lints]
@@ -89,4 +89,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.127.0
+^0.128.0

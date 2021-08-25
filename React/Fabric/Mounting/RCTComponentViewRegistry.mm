@@ -146,6 +146,8 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
     return;
   }
 
+  RCTAssert(
+      componentViewDescriptor.view.superview == nil, @"RCTComponentViewRegistry: Attempt to recycle a mounted view.");
   [componentViewDescriptor.view prepareForRecycle];
 
   recycledViews.push_back(componentViewDescriptor);

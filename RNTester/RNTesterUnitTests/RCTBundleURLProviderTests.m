@@ -10,6 +10,8 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTUtils.h>
 
+#import "OCMock/OCMock.h"
+
 static NSString *const testFile = @"test.jsbundle";
 static NSString *const mainBundle = @"main.jsbundle";
 
@@ -96,6 +98,8 @@ static NSURL *ipBundleURL()
 
 - (void)testIPURL
 {
+  id classMock = OCMClassMock([RCTBundleURLProvider class]);
+  [[[classMock stub] andReturnValue:@YES] isPackagerRunning:[OCMArg any]];
   RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
   settings.jsLocation = @"192.168.1.1";
   NSURL *URL = [settings jsBundleURLForBundleRoot:testFile fallbackResource:nil];

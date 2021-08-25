@@ -217,8 +217,7 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
   auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto transformedFrame = frame * layoutableShadowNode->getTransform();
-  auto isPointInside = transformedFrame.containsPoint(point);
+  auto isPointInside = frame.containsPoint(point);
 
   if (!isPointInside) {
     return nullptr;

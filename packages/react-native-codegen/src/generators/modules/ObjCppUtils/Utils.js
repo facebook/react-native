@@ -10,7 +10,10 @@
 
 'use strict';
 
-import type {ObjectParamTypeAnnotation} from '../../../CodegenSchema';
+import type {
+  ObjectParamTypeAnnotation,
+  ObjectTypeAliasTypeShape,
+} from '../../../CodegenSchema';
 
 function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -27,6 +30,7 @@ function flatObjects(
     |}>,
   >,
   forConstants: boolean = false,
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
 ): $ReadOnlyArray<
   $ReadOnly<{|
     name: string,
@@ -37,17 +41,23 @@ function flatObjects(
     properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
     name: string,
   |}> = annotations
-    .map(annotation => ({
-      name: annotation.name,
-      properties: annotation.object.properties,
-    }))
+    .map(annotation => {
+      if (annotation.object.type === 'TypeAliasTypeAnnotation') {
+        const alias = getTypeAliasTypeAnnotation(annotation.name, aliases);
+        return {name: annotation.name, properties: alias.properties};
+      }
+      return {
+        name: annotation.name,
+        properties: annotation.object.properties,
+      };
+    })
     .filter(
       annotation =>
-        (annotation.name === 'GetConstantsReturnType') === forConstants,
+        (annotation.name === 'SpecGetConstantsReturnType') === forConstants,
     )
     .filter(
       annotation =>
-        annotation.name !== 'GetConstantsReturnType' ||
+        annotation.name !== 'SpecGetConstantsReturnType' ||
         annotation.properties.length > 0,
     );
 
@@ -94,8 +104,35 @@ function getSafePropertyName(property: ObjectParamTypeAnnotation): string {
   return property.name;
 }
 
+function getTypeAliasTypeAnnotation(
+  name: string,
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
+): $ReadOnly<ObjectTypeAliasTypeShape> {
+  const typeAnnotation = aliases[name];
+  if (!typeAnnotation) {
+    throw Error(`No type annotation found for "${name}" in schema`);
+  }
+  if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+    if (typeAnnotation.properties) {
+      return typeAnnotation;
+    }
+
+    throw new Error(
+      `Unsupported type for "${name}". Please provide properties.`,
+    );
+  }
+  if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
+    return getTypeAliasTypeAnnotation(typeAnnotation.name, aliases);
+  }
+
+  throw Error(
+    `Unsupported type annotation in alias "${name}", found: ${typeAnnotation.type}`,
+  );
+}
+
 module.exports = {
   flatObjects,
   capitalizeFirstLetter,
   getSafePropertyName,
+  getTypeAliasTypeAnnotation,
 };

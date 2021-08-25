@@ -152,7 +152,7 @@ public class ReactInstanceManager {
   private final JavaScriptExecutorFactory mJavaScriptExecutorFactory;
 
   private final @Nullable JSBundleLoader mBundleLoader;
-  private final @Nullable String mJSMainModulePath; /* path to JS bundle root on packager server */
+  private final @Nullable String mJSMainModulePath; /* path to JS bundle root on Metro */
   private final List<ReactPackage> mPackages;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;

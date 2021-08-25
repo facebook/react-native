@@ -81,6 +81,31 @@ target 'macOSBuild' do
 end
 # ]TODO(macOS GH#774)
 
+def frameworks_pre_install(installer)
+  static_frameworks = ['FlipperKit', 'Flipper', 'Flipper-Folly',
+      'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
+      'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket',
+      'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
+
+  Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
+  installer.pod_targets.each do |pod|
+    if static_frameworks.include?(pod.name)
+      def pod.build_type
+        Pod::Target::BuildType.static_library
+      end
+    end
+  end
+end
+
+def codegen_pre_install(installer)
+  system("../scripts/generate-native-modules-specs.sh")
+end
+
+pre_install do |installer|
+  frameworks_pre_install(installer) if ENV['USE_FRAMEWORKS'] == '1'
+  codegen_pre_install(installer) if ENV['USE_CODEGEN'] == '1'
+end
+
 post_install do |installer|
   flipper_post_install(installer)
 end
