@@ -124,7 +124,7 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
 @synthesize maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks;
 @synthesize maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks;
 @synthesize maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes;
-@synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate;
+@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -657,7 +657,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 {
   // Check if networking module is available
   if (RCT_DEBUG && ![_bridge respondsToSelector:@selector(networking)]
-      && ![_turboModuleLookupDelegate moduleForName:"RCTNetworking"]) {
+      && ![_turboModuleRegistry moduleForName:"RCTNetworking"]) {
     RCTLogError(@"No suitable image URL loader found for %@. You may need to "
                 " import the RCTNetwork library in order to load images.",
                 request.URL.absoluteString);
@@ -666,7 +666,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
   RCTNetworking *networking = [_bridge networking];
   if (!networking) {
-    networking = [_turboModuleLookupDelegate moduleForName:"RCTNetworking"];
+    networking = [_turboModuleRegistry moduleForName:"RCTNetworking"];
   }
 
   // Check if networking module can load image
@@ -1260,7 +1260,7 @@ RCT_EXPORT_METHOD(queryCache:(NSArray *)uris
 - (RCTImageLoader *)imageLoader
 {
   RCTLogWarn(@"Calling bridge.imageLoader is deprecated and will not work in newer versions of RN. Please update to the "
-             "moduleForClass API or turboModuleLookupDelegate API.");
+             "moduleForClass API or turboModuleRegistry API.");
   return [self moduleForClass:[RCTImageLoader class]];
 }
 
