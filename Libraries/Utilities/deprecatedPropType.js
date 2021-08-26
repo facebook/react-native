@@ -20,7 +20,7 @@ function deprecatedPropType(
   return function validate(props, propName, componentName, ...rest) {
     // Don't warn for native components.
     if (
-      !global.RN$Bridgeless &&
+      global.RN$Bridgeless !== true &&
       UIManager.hasViewManagerConfig(componentName) &&
       props[propName] !== undefined
     ) {
