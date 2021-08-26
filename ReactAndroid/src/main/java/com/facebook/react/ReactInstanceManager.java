@@ -65,6 +65,7 @@ import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactCxxErrorHandler;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -107,6 +108,7 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -291,6 +293,8 @@ public class ReactInstanceManager {
     if (mUseDeveloperSupport) {
       mDevSupportManager.startInspector();
     }
+
+    registerCxxErrorHandlerFunc();
   }
 
   private ReactInstanceDevHelper createDevHelperInterface() {
@@ -362,6 +366,22 @@ public class ReactInstanceManager {
 
   public List<ReactPackage> getPackages() {
     return new ArrayList<>(mPackages);
+  }
+
+  public void handleCxxError(Exception e) {
+    mDevSupportManager.handleException(e);
+  }
+
+  public void registerCxxErrorHandlerFunc() {
+    Class[] parameterTypes = new Class[1];
+    parameterTypes[0] = Exception.class;
+    Method handleCxxErrorFunc = null;
+    try {
+      handleCxxErrorFunc = ReactInstanceManager.class.getMethod("handleCxxError", parameterTypes);
+    } catch (NoSuchMethodException e) {
+      FLog.e("ReactInstanceHolder", "Failed to set cxx error hanlder function", e);
+    }
+    ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
   }
 
   static void initializeSoLoaderIfNecessary(Context applicationContext) {
