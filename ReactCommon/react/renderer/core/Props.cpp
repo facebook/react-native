@@ -13,8 +13,16 @@
 namespace facebook {
 namespace react {
 
-Props::Props(const Props &sourceProps, const RawProps &rawProps)
-    : nativeId(convertRawProp(rawProps, "nativeID", sourceProps.nativeId, {})),
+Props::Props(
+    const PropsParserContext &context,
+    const Props &sourceProps,
+    const RawProps &rawProps)
+    : nativeId(convertRawProp(
+          context,
+          rawProps,
+          "nativeID",
+          sourceProps.nativeId,
+          {})),
       revision(sourceProps.revision + 1)
 #ifdef ANDROID
       ,

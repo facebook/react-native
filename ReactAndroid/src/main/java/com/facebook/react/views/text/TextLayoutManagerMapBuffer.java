@@ -24,6 +24,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
@@ -298,13 +300,19 @@ public class TextLayoutManagerMapBuffer {
       }
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
+      int boringLayoutWidth = boring.width;
+      if (boring.width < 0) {
+        ReactSoftExceptionLogger.logSoftException(
+            TAG, new ReactNoCrashSoftException("Text width is invalid: " + boring.width));
+        boringLayoutWidth = 0;
+      }
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout =
           BoringLayout.make(
               text,
               textPaint,
-              boring.width,
+              boringLayoutWidth,
               Layout.Alignment.ALIGN_NORMAL,
               1.f,
               0.f,
@@ -506,16 +514,16 @@ public class TextLayoutManagerMapBuffer {
 
           // The attachment array returns the positions of each of the attachments as
           attachmentsPositions[attachmentPosition] =
-              PixelUtil.toSPFromPixel(placeholderTopPosition);
+              PixelUtil.toDIPFromPixel(placeholderTopPosition);
           attachmentsPositions[attachmentPosition + 1] =
-              PixelUtil.toSPFromPixel(placeholderLeftPosition);
+              PixelUtil.toDIPFromPixel(placeholderLeftPosition);
           attachmentIndex++;
         }
       }
     }
 
-    float widthInSP = PixelUtil.toSPFromPixel(calculatedWidth);
-    float heightInSP = PixelUtil.toSPFromPixel(calculatedHeight);
+    float widthInSP = PixelUtil.toDIPFromPixel(calculatedWidth);
+    float heightInSP = PixelUtil.toDIPFromPixel(calculatedHeight);
 
     if (ENABLE_MEASURE_LOGGING) {
       FLog.e(

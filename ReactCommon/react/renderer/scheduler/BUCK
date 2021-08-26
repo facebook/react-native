@@ -33,7 +33,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
@@ -60,6 +60,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/mounting:mounting"),
         react_native_xplat_target("react/renderer/uimanager:uimanager"),
+        react_native_xplat_target("react/renderer/runtimescheduler:runtimescheduler"),
         react_native_xplat_target("react/renderer/templateprocessor:templateprocessor"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/renderer/debug:debug"),

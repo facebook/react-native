@@ -26,9 +26,13 @@
 #include <fb/log.h>
 #include <fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
+
+#include <logger/react_native_log.h>
 
 #include "CxxModuleWrapper.h"
 #include "JNativeRunnable.h"
+#include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
@@ -92,6 +96,10 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
+void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
+  CxxNativeModule::setShouldWarnOnUse(true);
+}
+
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
@@ -127,9 +135,31 @@ void CatalystInstanceImpl::registerNatives() {
           CatalystInstanceImpl::handleMemoryPressure),
       makeNativeMethod(
           "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
+      makeNativeMethod(
+          "warnOnLegacyNativeModuleSystemUse",
+          CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
   });
 
   JNativeRunnable::registerNatives();
+}
+
+void log(ReactNativeLogLevel level, const char *message) {
+  switch (level) {
+    case ReactNativeLogLevelInfo:
+      LOG(INFO) << message;
+      break;
+    case ReactNativeLogLevelWarning:
+      LOG(WARNING) << message;
+      JReactSoftExceptionLogger::logNoThrowSoftExceptionWithMessage(
+          "react_native_log#warning", message);
+      break;
+    case ReactNativeLogLevelError:
+      LOG(ERROR) << message;
+      break;
+    case ReactNativeLogLevelFatal:
+      LOG(FATAL) << message;
+      break;
+  }
 }
 
 void CatalystInstanceImpl::initializeBridge(
@@ -142,6 +172,8 @@ void CatalystInstanceImpl::initializeBridge(
         javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
         cxxModules) {
+  set_react_native_logfunc(&log);
+
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be
   // called once");

@@ -39,7 +39,7 @@ LOCAL_STATIC_LIBRARIES := libreactnative libcallinvokerholder libruntimeexecutor
 LOCAL_MODULE := reactnativeutilsjni
 
 # Compile all local c++ files.
-LOCAL_SRC_FILES := $(wildcard Cxx*.cpp) $(wildcard J*.cpp) $(wildcard M*.cpp) $(wildcard N*.cpp) $(wildcard P*.cpp) $(wildcard R*.cpp) $(wildcard W*.cpp)
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 ifeq ($(APP_OPTIM),debug)
   # Keep symbols by overriding the strip command invoked by ndk-build.
@@ -77,7 +77,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libreactnativeutilsjni libfolly_json libfb libfbjni libglog_init libyoga
+LOCAL_SHARED_LIBRARIES := libreactnativeutilsjni libfolly_json libfb libfbjni libglog_init libyoga logger
 
 # The static libraries (.a files) that this module depends on.
 LOCAL_STATIC_LIBRARIES := libreactnative libruntimeexecutor libcallinvokerholder
@@ -124,6 +124,7 @@ $(call import-module,yogajni)
 $(call import-module,cxxreact)
 $(call import-module,jsi)
 $(call import-module,jsiexecutor)
+$(call import-module,logger)
 $(call import-module,callinvoker)
 $(call import-module,reactperflogger)
 $(call import-module,hermes)

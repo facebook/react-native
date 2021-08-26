@@ -10,16 +10,12 @@ buildscript {
         mavenLocal()
         google()
         mavenCentral()
-        jcenter {
-          content {
-            includeModule("org.jetbrains.trove4j", "trove4j")
-          }
-        }
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.0")
-        classpath("de.undercouch:gradle-download-task:4.0.2")
-
+        val kotlin_version: String by project
+        classpath("com.android.tools.build:gradle:4.2.2")
+        classpath("de.undercouch:gradle-download-task:4.1.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -38,18 +34,12 @@ allprojects {
         mavenLocal()
         google()
         mavenCentral()
-        jcenter {
-          content {
-            includeModule("org.jetbrains.trove4j", "trove4j")
-            includeModule("com.facebook.yoga", "proguard-annotations")
-            includeModule("com.facebook.fbjni", "fbjni-java-only")
-            includeModule("com.facebook.fresco", "stetho")
-          }
-        }
     }
 
-    // used to override ndk path on CI
+    // used to override ndk path/version from env variables on CI
+    ext["ANDROID_NDK_PATH"] = null
     if (System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
-      setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
+        setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
+        ext["ANDROID_NDK_PATH"] =  System.getenv("ANDROID_NDK")
     }
 }

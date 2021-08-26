@@ -29,10 +29,15 @@ public class ReactAndroidHWInputDeviceHelper {
           .put(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, "playPause")
           .put(KeyEvent.KEYCODE_MEDIA_REWIND, "rewind")
           .put(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, "fastForward")
+          .put(KeyEvent.KEYCODE_MEDIA_STOP, "stop")
+          .put(KeyEvent.KEYCODE_MEDIA_NEXT, "next")
+          .put(KeyEvent.KEYCODE_MEDIA_PREVIOUS, "previous")
           .put(KeyEvent.KEYCODE_DPAD_UP, "up")
           .put(KeyEvent.KEYCODE_DPAD_RIGHT, "right")
           .put(KeyEvent.KEYCODE_DPAD_DOWN, "down")
           .put(KeyEvent.KEYCODE_DPAD_LEFT, "left")
+          .put(KeyEvent.KEYCODE_INFO, "info")
+          .put(KeyEvent.KEYCODE_MENU, "menu")
           .build();
 
   /**

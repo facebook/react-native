@@ -22,5 +22,5 @@ LOCAL_SHARED_LIBRARIES := libfbjni libglog libfolly_json libyoga libreact_native
 LOCAL_STATIC_LIBRARIES := libsampleturbomodule
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 include $(BUILD_SHARED_LIBRARY)

@@ -13,7 +13,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     labels = ["supermodule:xplat/default/public.react_native.infra"],

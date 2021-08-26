@@ -39,15 +39,21 @@ Transform RootShadowNode::getTransform() const {
 }
 
 RootShadowNode::Unshared RootShadowNode::clone(
+    PropsParserContext const &propsParserContext,
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext) const {
   auto props = std::make_shared<RootProps const>(
-      getConcreteProps(), layoutConstraints, layoutContext);
+      propsParserContext, getConcreteProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode = std::make_shared<RootShadowNode>(
       *this,
       ShadowNodeFragment{
           /* .props = */ props,
       });
+
+  if (layoutConstraints != getConcreteProps().layoutConstraints) {
+    newRootShadowNode->dirtyLayout();
+  }
+
   return newRootShadowNode;
 }
 

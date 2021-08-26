@@ -21,7 +21,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -116,7 +116,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                   .getJSModule(RCTEventEmitter.class)
                   .receiveEvent(getReactTag(), "topTextLayout", event);
             } else {
-              ReactSoftException.logSoftException(
+              ReactSoftExceptionLogger.logSoftException(
                   "ReactTextShadowNode",
                   new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
             }
@@ -231,7 +231,14 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       // than the width of the text.
       layout =
           BoringLayout.make(
-              text, textPaint, boring.width, alignment, 1.f, 0.f, boring, mIncludeFontPadding);
+              text,
+              textPaint,
+              Math.max(boring.width, 0),
+              alignment,
+              1.f,
+              0.f,
+              boring,
+              mIncludeFontPadding);
     } else {
       // Is used for multiline, boring text and the width is known.
 
@@ -319,6 +326,11 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               mTextBreakStrategy,
               mJustificationMode);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
+    }
+
+    if (mAdjustsFontSizeToFit) {
+      // Nodes with `adjustsFontSizeToFit` enabled need to be remeasured on every relayout.
+      markUpdated();
     }
   }
 

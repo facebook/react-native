@@ -45,4 +45,6 @@ public interface SurfaceHandler {
       boolean doLeftAndRightSwapInRTL,
       boolean isRTL,
       float pixelDensity);
+
+  void setMountable(boolean mountable);
 }

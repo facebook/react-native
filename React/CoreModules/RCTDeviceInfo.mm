@@ -28,7 +28,6 @@ using namespace facebook::react;
 }
 
 @synthesize moduleRegistry = _moduleRegistry;
-@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
 

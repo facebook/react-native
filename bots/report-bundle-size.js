@@ -25,7 +25,7 @@ const datastore = require('./datastore');
 const {createOrUpdateComment} = require('./make-comment');
 
 /**
- * Generates and submits a comment. If this is run on master branch, data is
+ * Generates and submits a comment. If this is run on main branch, data is
  * committed to the store instead.
  * @param {{
       'android-hermes-arm64-v8a'?: number;
@@ -47,7 +47,7 @@ async function reportSizeStats(stats, replacePattern) {
   );
   const collection = datastore.getBinarySizesCollection(store);
 
-  if (GITHUB_REF === 'master') {
+  if (GITHUB_REF === 'main') {
     // Ensure we only store numbers greater than zero.
     const validatedStats = Object.keys(stats).reduce((validated, key) => {
       const value = stats[key];

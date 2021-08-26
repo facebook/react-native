@@ -29,7 +29,7 @@ class SliderComponentDescriptor final
                 ? std::make_shared<SliderMeasurementsManager>(contextContainer_)
                 : nullptr) {}
 
-  void adopt(UnsharedShadowNode shadowNode) const override {
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
     react_native_assert(

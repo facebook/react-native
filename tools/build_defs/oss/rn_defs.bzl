@@ -49,6 +49,8 @@ IOS = "ios"
 
 MACOSX = "macosx"
 
+APPLETVOS = "appletvos"
+
 YOGA_TARGET = "//ReactAndroid/src/main/java/com/facebook:yoga"
 
 YOGA_CXX_TARGET = "//ReactCommon/yoga:yoga"
@@ -85,6 +87,8 @@ def rn_xplat_cxx_library(name, **kwargs):
         visibility = kwargs.get("visibility", []),
         **new_kwargs
     )
+
+rn_xplat_cxx_library2 = rn_xplat_cxx_library
 
 # Example: react_native_target('java/com/facebook/react/common:common')
 def react_native_target(path):
@@ -174,14 +178,7 @@ def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("enable_exceptions", True)
     kwargs.setdefault("target_sdk_version", "11.0")
 
-    # Unsupported kwargs
-    _ = kwargs.pop("autoglob", False)
-    _ = kwargs.pop("plugins_only", False)
-    _ = kwargs.pop("enable_exceptions", False)
-    _ = kwargs.pop("extension_api_only", False)
-    _ = kwargs.pop("sdks", [])
-
-    native.apple_library(*args, **kwargs)
+    fb_apple_library(*args, **kwargs)
 
 def rn_java_library(*args, **kwargs):
     _ = kwargs.pop("is_androidx", False)
@@ -207,7 +204,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
 
     kwargs["deps"] = kwargs.pop("deps", []) + [
         react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
-        react_native_dep("third-party/java/robolectric/4.4:robolectric"),
+        react_native_dep("third-party/java/robolectric:robolectric"),
         react_native_tests_target("resources:robolectric"),
         react_native_xplat_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock2"),
     ]
@@ -216,8 +213,8 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
         "-XX:+UseConcMarkSweepGC",  # required by -XX:+CMSClassUnloadingEnabled
         "-XX:+CMSClassUnloadingEnabled",
         "-XX:ReservedCodeCacheSize=150M",
-        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.4",
-        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/4.4/*.jar",
+        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric",
+        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/*.jar",
         "-Drobolectric.logging.enabled=true",
         "-XX:MaxPermSize=620m",
         "-Drobolectric.offline=true",
@@ -334,6 +331,17 @@ def _single_subdir_glob(dirpath, glob_pattern, exclude = None, prefix = None):
     return results
 
 def fb_apple_library(*args, **kwargs):
+    # Unsupported kwargs
+    _ = kwargs.pop("autoglob", False)
+    _ = kwargs.pop("plugins_only", False)
+    _ = kwargs.pop("enable_exceptions", False)
+    _ = kwargs.pop("extension_api_only", False)
+    _ = kwargs.pop("sdks", [])
+    _ = kwargs.pop("inherited_buck_flags", [])
+    _ = kwargs.pop("plugins", [])
+    _ = kwargs.pop("complete_nullability", False)
+    _ = kwargs.pop("plugins_header", "")
+
     native.apple_library(*args, **kwargs)
 
 def oss_cxx_library(**kwargs):
@@ -348,6 +356,25 @@ def fb_xplat_cxx_test(**_kwargs):
     pass
 
 # iOS Plugin support.
-def react_module_plugin_providers():
+def react_module_plugin_providers(*args, **kwargs):
     # Noop for now
     return []
+
+def react_fabric_component_plugin_provider(name, native_class_func):
+    return None
+
+HERMES_BYTECODE_VERSION = -1
+
+RCT_IMAGE_DATA_DECODER_SOCKET = None
+RCT_IMAGE_URL_LOADER_SOCKET = None
+RCT_URL_REQUEST_HANDLER_SOCKET = None
+
+def make_resource_glob(path):
+    return native.glob([path + "/**/*." + x for x in [
+        "m4a",
+        "mp3",
+        "otf",
+        "png",
+        "ttf",
+        "caf",
+    ]])

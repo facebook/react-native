@@ -12,9 +12,11 @@ import androidx.annotation.NonNull;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.fabric.events.EventBeatManager;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.uimanager.PixelUtil;
 
 @DoNotStrip
@@ -75,6 +77,9 @@ public class Binding {
       boolean doLeftAndRightSwapInRTL);
 
   public native void driveCxxAnimations();
+
+  public native ReadableNativeMap getInspectorDataForInstance(
+      EventEmitterWrapper eventEmitterWrapper);
 
   public void register(
       @NonNull RuntimeExecutor runtimeExecutor,

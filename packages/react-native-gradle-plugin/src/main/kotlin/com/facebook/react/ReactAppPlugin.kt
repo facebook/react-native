@@ -24,17 +24,13 @@ class ReactAppPlugin : Plugin<Project> {
       configureDevPorts(androidConfiguration)
 
       val isAndroidLibrary = plugins.hasPlugin("com.android.library")
-      val variants = if (isAndroidLibrary) {
-        extensions.getByType<LibraryExtension>().libraryVariants
-      } else {
-        extensions.getByType<AppExtension>().applicationVariants
-      }
-      variants.all {
-        configureReactTasks(
-          variant = this,
-          config = config
-        )
-      }
+      val variants =
+          if (isAndroidLibrary) {
+            extensions.getByType<LibraryExtension>().libraryVariants
+          } else {
+            extensions.getByType<AppExtension>().applicationVariants
+          }
+      variants.all { configureReactTasks(variant = this, config = config) }
     }
   }
 }

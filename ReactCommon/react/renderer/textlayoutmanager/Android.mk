@@ -11,7 +11,7 @@ LOCAL_MODULE := react_render_textlayoutmanager
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/platform/android/react/renderer/textlayoutmanager/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := libfolly_futures libreactnativeutilsjni libreact_utils libfb libfbjni libreact_render_uimanager libreact_render_componentregistry libreact_render_attributedstring libreact_render_mounting libfolly_json libyoga libfolly_json libreact_render_core libreact_render_debug libreact_render_graphics libreact_debug libreact_render_mapbuffer libmapbufferjni libreact_render_telemetry
+LOCAL_SHARED_LIBRARIES := libfolly_futures libreactnativeutilsjni libreact_utils libfb libfbjni libreact_render_uimanager libreact_render_componentregistry libreact_render_attributedstring libreact_render_mounting glog libfolly_json libglog_init libyoga libreact_render_core libreact_render_debug libreact_render_graphics libreact_debug libreact_render_mapbuffer libmapbufferjni libreact_render_telemetry
 
 LOCAL_STATIC_LIBRARIES :=
 
@@ -22,7 +22,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/platform/androi
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 

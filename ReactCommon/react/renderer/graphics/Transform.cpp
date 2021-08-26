@@ -190,7 +190,7 @@ Transform Transform::Interpolate(
   // transform If at any point we hit an "Arbitrary" Transform, return at that
   // point
   Transform result = Transform::Identity();
-  for (int i = 0, j = 0;
+  for (size_t i = 0, j = 0;
        i < lhs.operations.size() || j < rhs.operations.size();) {
     bool haveLHS = i < lhs.operations.size();
     bool haveRHS = j < rhs.operations.size();

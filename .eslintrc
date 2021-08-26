@@ -23,6 +23,14 @@
     },
     {
       "files": [
+        "flow-typed/**/*.js",
+      ],
+      "rules": {
+        quotes: 0
+      }
+    },
+    {
+      "files": [
         "**/__fixtures__/**/*.js",
         "**/__mocks__/**/*.js",
         "**/__tests__/**/*.js",

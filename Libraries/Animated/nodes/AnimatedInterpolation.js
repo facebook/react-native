@@ -205,14 +205,12 @@ function createInterpolationFromStringOutputRange(
   //   [200, 250],
   //   [0, 0.5],
   // ]
-  /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need to
-   * guard against this possibility.
-   */
+  /* $FlowFixMe[incompatible-use] (>=0.18.0): `outputRange[0].match()` can
+   * return `null`. Need to guard against this possibility. */
   const outputRanges = outputRange[0].match(stringShapeRegex).map(() => []);
   outputRange.forEach(value => {
-    /* $FlowFixMe(>=0.18.0): `value.match()` can return `null`. Need to guard
-     * against this possibility.
-     */
+    /* $FlowFixMe[incompatible-use] (>=0.18.0): `value.match()` can return
+     * `null`. Need to guard against this possibility. */
     value.match(stringShapeRegex).forEach((number, i) => {
       outputRanges[i].push(+number);
     });
@@ -220,8 +218,10 @@ function createInterpolationFromStringOutputRange(
 
   const interpolations = outputRange[0]
     .match(stringShapeRegex)
-    /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need
-     * to guard against this possibility. */
+    /* $FlowFixMe[incompatible-use] (>=0.18.0): `outputRange[0].match()` can
+     * return `null`. Need to guard against this possibility. */
+    /* $FlowFixMe[incompatible-call] (>=0.18.0): `outputRange[0].match()` can
+     * return `null`. Need to guard against this possibility. */
     .map((value, i) => {
       return createInterpolation({
         ...config,
@@ -277,12 +277,11 @@ function checkValidInputRange(arr: $ReadOnlyArray<number>) {
   for (let i = 1; i < arr.length; ++i) {
     invariant(
       arr[i] >= arr[i - 1],
-      /* $FlowFixMe(>=0.13.0) - In the addition expression below this comment,
-       * one or both of the operands may be something that doesn't cleanly
-       * convert to a string, like undefined, null, and object, etc. If you really
-       * mean this implicit string conversion, you can do something like
-       * String(myThing)
-       */
+      /* $FlowFixMe[incompatible-type] (>=0.13.0) - In the addition expression
+       * below this comment, one or both of the operands may be something that
+       * doesn't cleanly convert to a string, like undefined, null, and object,
+       * etc. If you really mean this implicit string conversion, you can do
+       * something like String(myThing) */
       'inputRange must be monotonically non-decreasing ' + arr,
     );
   }
@@ -292,12 +291,11 @@ function checkInfiniteRange(name: string, arr: $ReadOnlyArray<number>) {
   invariant(arr.length >= 2, name + ' must have at least 2 elements');
   invariant(
     arr.length !== 2 || arr[0] !== -Infinity || arr[1] !== Infinity,
-    /* $FlowFixMe(>=0.13.0) - In the addition expression below this comment,
-     * one or both of the operands may be something that doesn't cleanly convert
-     * to a string, like undefined, null, and object, etc. If you really mean
-     * this implicit string conversion, you can do something like
-     * String(myThing)
-     */
+    /* $FlowFixMe[incompatible-type] (>=0.13.0) - In the addition expression
+     * below this comment, one or both of the operands may be something that
+     * doesn't cleanly convert to a string, like undefined, null, and object,
+     * etc. If you really mean this implicit string conversion, you can do
+     * something like String(myThing) */
     name + 'cannot be ]-infinity;+infinity[ ' + arr,
   );
 }
@@ -358,8 +356,9 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     return {
       inputRange: this._config.inputRange,
       // Only the `outputRange` can contain strings so we don't need to transform `inputRange` here
-      /* $FlowFixMe(>=0.38.0) - Flow error detected during the deployment of
-       * v0.38.0. To see the error, remove this comment and run flow */
+      /* $FlowFixMe[incompatible-call] (>=0.38.0) - Flow error detected during
+       * the deployment of v0.38.0. To see the error, remove this comment and
+       * run flow */
       outputRange: this.__transformDataType(this._config.outputRange),
       extrapolateLeft:
         this._config.extrapolateLeft || this._config.extrapolate || 'extend',

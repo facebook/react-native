@@ -11,14 +11,15 @@
 'use strict';
 
 import * as React from 'react';
-import ReactTestRenderer from 'react-test-renderer';
 import Text from '../../../Text/Text';
 import View from '../../View/View';
 import TouchableHighlight from '../TouchableHighlight';
 
+const render = require('../../../../jest/renderer');
+
 describe('TouchableHighlight', () => {
   it('renders correctly', () => {
-    const instance = ReactTestRenderer.create(
+    const instance = render.create(
       <TouchableHighlight style={{}}>
         <Text>Touchable</Text>
       </TouchableHighlight>,
@@ -26,12 +27,16 @@ describe('TouchableHighlight', () => {
 
     expect(instance.toJSON()).toMatchSnapshot();
   });
+
+  it('has displayName', () => {
+    expect(TouchableHighlight.displayName).toEqual('TouchableHighlight');
+  });
 });
 
 describe('TouchableHighlight with disabled state', () => {
   it('should be disabled when disabled is true', () => {
     expect(
-      ReactTestRenderer.create(
+      render.create(
         <TouchableHighlight disabled={true}>
           <View />
         </TouchableHighlight>,
@@ -41,7 +46,7 @@ describe('TouchableHighlight with disabled state', () => {
 
   it('should be disabled when disabled is true and accessibilityState is empty', () => {
     expect(
-      ReactTestRenderer.create(
+      render.create(
         <TouchableHighlight disabled={true} accessibilityState={{}}>
           <View />
         </TouchableHighlight>,
@@ -51,7 +56,7 @@ describe('TouchableHighlight with disabled state', () => {
 
   it('should keep accessibilityState when disabled is true', () => {
     expect(
-      ReactTestRenderer.create(
+      render.create(
         <TouchableHighlight
           disabled={true}
           accessibilityState={{checked: true}}>
@@ -63,7 +68,7 @@ describe('TouchableHighlight with disabled state', () => {
 
   it('should overwrite accessibilityState with value of disabled prop', () => {
     expect(
-      ReactTestRenderer.create(
+      render.create(
         <TouchableHighlight
           disabled={true}
           accessibilityState={{disabled: false}}>
@@ -75,7 +80,7 @@ describe('TouchableHighlight with disabled state', () => {
 
   it('should disable button when accessibilityState is disabled', () => {
     expect(
-      ReactTestRenderer.create(
+      render.create(
         <TouchableHighlight accessibilityState={{disabled: true}}>
           <View />
         </TouchableHighlight>,
