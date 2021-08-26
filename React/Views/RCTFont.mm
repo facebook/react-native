@@ -57,13 +57,13 @@ static RCTFontWeight weightOfFont(UIFont *font)
   for (NSString *suffix in weightSuffixes) {
     // CFStringFind is much faster than any variant of rangeOfString: because it does not use a locale.
     auto options = kCFCompareCaseInsensitive | kCFCompareAnchored | kCFCompareBackwards;
-    if (CFStringFind((CFStringRef)fontName, (CFStringRef)suffix, options).location != NSNotFound) {
+    if (CFStringFind((CFStringRef)fontName, (CFStringRef)suffix, options).location != kCFNotFound) {
       return (RCTFontWeight)fontWeights[i].doubleValue;
     }
     i++;
   }
 
-  auto traits = (__bridge NSDictionary *)CTFontCopyTraits((CTFontRef)font);
+  auto traits = (__bridge_transfer NSDictionary *)CTFontCopyTraits((CTFontRef)font);
   return (RCTFontWeight)[traits[UIFontWeightTrait] doubleValue];
 }
 
@@ -157,11 +157,9 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
 // Caching wrapper around expensive +[UIFont fontNamesForFamilyName:]
 static NSArray<NSString *> *fontNamesForFamilyName(NSString *familyName) {
   static NSCache<NSString *, NSArray<NSString *> *> *cache;
-  static id ncObserver;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     cache = [NSCache new];
-    ncObserver =
     [NSNotificationCenter.defaultCenter
      addObserverForName:(NSNotificationName)kCTFontManagerRegisteredFontsChangedNotification
      object:nil
