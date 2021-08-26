@@ -80,7 +80,16 @@ function asyncRequest(
 }
 
 function buildUrlForBundle(bundlePath, params) {
-  const {fullBundleUrl, url: serverUrl} = getDevServer();
+  const {
+    fullBundleUrl,
+    url: serverUrl,
+    bundleLoadedFromServer,
+  } = getDevServer();
+  if (!bundleLoadedFromServer) {
+    throw new Error(
+      'This bundle was compiled with transformer.experimentalImportBundleSupport and can only be used when connected to a Metro server.',
+    );
+  }
   let query = {};
   if (fullBundleUrl != null) {
     const queryStart = fullBundleUrl.indexOf('?');
