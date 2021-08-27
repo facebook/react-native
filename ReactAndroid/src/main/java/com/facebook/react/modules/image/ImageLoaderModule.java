@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.util.SparseArray;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import android.text.TextUtils;
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
@@ -276,12 +277,14 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
         ImagePipeline imagePipeline = getImagePipeline();
         for (int i = 0; i < uris.size(); i++) {
           String uriString = uris.getString(i);
-          final Uri uri = Uri.parse(uriString);
-          if (imagePipeline.isInBitmapMemoryCache(uri)) {
-            result.putString(uriString, "memory");
-          } else if (imagePipeline.isInDiskCacheSync(uri)) {
-            result.putString(uriString, "disk");
-          }
+          if (!TextUtils.isEmpty(uriString)) {
+            final Uri uri = Uri.parse(uriString);
+            if (imagePipeline.isInBitmapMemoryCache(uri)) {
+              result.putString(uriString, "memory");
+            } else if (imagePipeline.isInDiskCacheSync(uri)) {
+              result.putString(uriString, "disk");
+            }
+          } 
         }
         promise.resolve(result);
       }
