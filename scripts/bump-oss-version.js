@@ -127,9 +127,11 @@ fs.writeFileSync(
 );
 
 let packageJson = JSON.parse(cat('package.json'));
+const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
 packageJson.version = version;
 delete packageJson.workspaces;
 delete packageJson.private;
+packageJson.devDependencies = {...packageJson.devDependencies, ...repoConfigJson.dependencies};
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // Change ReactAndroid/gradle.properties
