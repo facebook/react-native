@@ -96,7 +96,7 @@ inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
 
   LOG(ERROR) << "Unsupported TextBreakStrategy value";
   react_native_assert(false);
-  return "simple";
+  return "highQuality";
 }
 
 inline void fromRawValue(
@@ -116,14 +116,14 @@ inline void fromRawValue(
       // sane default
       LOG(ERROR) << "Unsupported TextBreakStrategy value: " << string;
       react_native_assert(false);
-      result = TextBreakStrategy::Simple;
+      result = TextBreakStrategy::HighQuality;
     }
     return;
   }
 
   LOG(ERROR) << "Unsupported TextBreakStrategy type";
   react_native_assert(false);
-  result = TextBreakStrategy::Simple;
+  result = TextBreakStrategy::HighQuality;
 }
 
 inline void fromRawValue(

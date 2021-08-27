@@ -45,7 +45,7 @@ class ParagraphAttributes : public DebugStringConvertible {
   /*
    * (Android only) Break strategy for breaking paragraphs into lines.
    */
-  TextBreakStrategy textBreakStrategy{};
+  TextBreakStrategy textBreakStrategy{TextBreakStrategy::HighQuality};
 
   /*
    * Enables font size adjustment to fit constrained boundaries.
@@ -59,7 +59,8 @@ class ParagraphAttributes : public DebugStringConvertible {
   bool includeFontPadding{true};
 
   /*
-   * (Android only) Frequency of automatic hyphenation to use when determining word breaks.
+   * (Android only) Frequency of automatic hyphenation to use when determining
+   * word breaks.
    */
   HyphenationFrequency android_hyphenationFrequency{};
 

@@ -55,8 +55,8 @@ enum class EllipsizeMode {
 
 enum class TextBreakStrategy {
   Simple, // Simple strategy.
-  Balanced, // Balances line lengths.
-  HighQuality // High-quality strategy, including hyphenation.
+  HighQuality, // High-quality strategy, including hyphenation.
+  Balanced // Balances line lengths.
 };
 
 enum class TextAlignment {
