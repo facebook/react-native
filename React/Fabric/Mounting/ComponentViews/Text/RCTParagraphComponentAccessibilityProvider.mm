@@ -49,7 +49,9 @@ using namespace facebook::react;
     return _accessibilityElements;
   }
 
-  __block NSInteger numOfLink = 0;
+  __block NSInteger numberOfLinks = 0;
+  __block NSInteger numberOfButtons = 0;
+  __block NSString *truncatedText;
   // build an array of the accessibleElements
   NSMutableArray<UIAccessibilityElement *> *elements = [NSMutableArray new];
 
@@ -63,6 +65,9 @@ using namespace facebook::react;
   firstElement.accessibilityTraits = UIAccessibilityTraitStaticText;
   firstElement.accessibilityLabel = accessibilityLabel;
   firstElement.accessibilityFrameInContainerSpace = _view.bounds;
+  [firstElement setAccessibilityActivationPoint:CGPointMake(
+                                                    firstElement.accessibilityFrame.origin.x + 1.0,
+                                                    firstElement.accessibilityFrame.origin.y + 1.0)];
   [elements addObject:firstElement];
 
   // add additional elements for those parts of text with embedded link so VoiceOver could specially recognize links
@@ -72,28 +77,67 @@ using namespace facebook::react;
                            enumerateAttribute:RCTTextAttributesAccessibilityRoleAttributeName
                                         frame:_frame
                                    usingBlock:^(CGRect fragmentRect, NSString *_Nonnull fragmentText, NSString *value) {
+                                     if (![value isEqualToString:@"button"] && ![value isEqualToString:@"link"]) {
+                                       return;
+                                     }
+                                     if ([value isEqualToString:@"button"] &&
+                                         ([fragmentText isEqualToString:@"See Less"] ||
+                                          [fragmentText isEqualToString:@"See More"])) {
+                                       truncatedText = fragmentText;
+                                       return;
+                                     }
                                      UIAccessibilityElement *element =
                                          [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self->_view];
                                      element.isAccessibilityElement = YES;
                                      if ([value isEqualToString:@"link"]) {
                                        element.accessibilityTraits = UIAccessibilityTraitLink;
-                                       numOfLink++;
+                                       numberOfLinks++;
+                                     } else if ([value isEqualToString:@"button"]) {
+                                       element.accessibilityTraits = UIAccessibilityTraitButton;
+                                       numberOfButtons++;
                                      }
                                      element.accessibilityLabel = fragmentText;
                                      element.accessibilityFrameInContainerSpace = fragmentRect;
                                      [elements addObject:element];
                                    }];
 
-  if (numOfLink > 0) {
+  if (numberOfLinks > 0 || numberOfButtons > 0) {
+    __block NSInteger indexOfLink = 1;
+    __block NSInteger indexOfButton = 1;
     [elements enumerateObjectsUsingBlock:^(UIAccessibilityElement *element, NSUInteger idx, BOOL *_Nonnull stop) {
-      element.accessibilityHint = [NSString stringWithFormat:@"Link %ld of %ld.", (unsigned long)idx, (long)numOfLink];
+      if (idx == 0) {
+        return;
+      }
+      if (element.accessibilityTraits & UIAccessibilityTraitLink) {
+        element.accessibilityHint =
+            [NSString stringWithFormat:@"Link %ld of %ld.", (long)indexOfLink++, (long)numberOfLinks];
+      } else {
+        element.accessibilityHint =
+            [NSString stringWithFormat:@"Button %ld of %ld.", (long)indexOfButton++, (long)numberOfButtons];
+      }
     }];
+  }
 
-    NSString *firstElementHint = (numOfLink == 1)
-        ? @"One link found, swipe right to move to the link."
-        : [NSString stringWithFormat:@"%ld links found, swipe right to move to the first link.", (long)numOfLink];
+  if (numberOfLinks > 0 && numberOfButtons > 0) {
+    firstElement.accessibilityHint = @"Links and buttons are found, swipe to move to them.";
 
+  } else if (numberOfLinks > 0) {
+    NSString *firstElementHint = (numberOfLinks == 1)
+        ? @"One link found, swipe to move to the link."
+        : [NSString stringWithFormat:@"%ld links found, swipe to move to the first link.", (long)numberOfLinks];
     firstElement.accessibilityHint = firstElementHint;
+
+  } else if (numberOfButtons > 0) {
+    NSString *firstElementHint = (numberOfButtons == 1)
+        ? @"One button found, swipe to move to the button."
+        : [NSString stringWithFormat:@"%ld buttons found, swipe to move to the first button.", (long)numberOfButtons];
+    firstElement.accessibilityHint = firstElementHint;
+  }
+
+  if (truncatedText && truncatedText.length > 0) {
+    firstElement.accessibilityHint = (numberOfLinks > 0 || numberOfButtons > 0)
+        ? [NSString stringWithFormat:@"%@ Double tap to %@.", firstElement.accessibilityHint, truncatedText]
+        : firstElement.accessibilityHint = [NSString stringWithFormat:@"Double tap to %@.", truncatedText];
   }
 
   // add accessible element for truncation attributed string for automation purposes only

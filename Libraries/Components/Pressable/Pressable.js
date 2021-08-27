@@ -240,7 +240,8 @@ function Pressable(props: Props, forwardedRef): React.Node {
       focusable={focusable !== false}
       hitSlop={hitSlop}
       ref={viewRef}
-      style={typeof style === 'function' ? style({pressed}) : style}>
+      style={typeof style === 'function' ? style({pressed}) : style}
+      collapsable={false}>
       {typeof children === 'function' ? children({pressed}) : children}
       {__DEV__ ? <PressabilityDebugView color="red" hitSlop={hitSlop} /> : null}
     </View>

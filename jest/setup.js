@@ -17,6 +17,10 @@ jest.requireActual('../Libraries/polyfills/error-guard');
 
 global.__DEV__ = true;
 
+global.performance = {
+  now: jest.fn(Date.now),
+};
+
 global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 

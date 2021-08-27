@@ -314,7 +314,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       @Nullable ReadableMap props,
       @Nullable Object stateWrapper,
       boolean isLayoutable) {
-    ThemedReactContext context = mReactContextForRootTag.get(rootTag);
+
+    // This could be null if teardown/navigation away from a surface on the main thread happens
+    // while a commit is being processed in a different thread. By contract we expect this to be
+    // possible at teardown, but this race should *never* happen at startup.
+    @Nullable ThemedReactContext context = mReactContextForRootTag.get(rootTag);
 
     String component = getFabricComponentName(componentName);
     synchronized (mPreMountItemsLock) {
@@ -342,10 +346,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int reactTag,
       boolean isLayoutable) {
     String component = getFabricComponentName(componentName);
-    ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
-    if (reactContext == null) {
-      throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
-    }
+
+    // This could be null if teardown/navigation away from a surface on the main thread happens
+    // while a commit is being processed in a different thread. By contract we expect this to be
+    // possible at teardown, but this race should *never* happen at startup.
+    @Nullable ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
+
     return new CreateMountItem(
         reactContext,
         reactRootTag,
@@ -460,8 +466,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float minHeight,
       float maxHeight,
       @Nullable float[] attachmentsPositions) {
+
+    // This could be null if teardown/navigation away from a surface on the main thread happens
+    // while a commit is being processed in a different thread. By contract we expect this to be
+    // possible at teardown, but this race should *never* happen at startup.
+    @Nullable
     ReactContext context =
         rootTag < 0 ? mReactApplicationContext : mReactContextForRootTag.get(rootTag);
+
+    // Don't both measuring if we can't get a context.
+    if (context == null) {
+      return 0;
+    }
+
     return mMountingManager.measure(
         context,
         componentName,
@@ -1048,6 +1065,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void profileNextBatch() {
     // TODO T31905686: Remove this method and add support for multi-threading performance counters
+  }
+
+  @Override
+  @Deprecated
+  @Nullable
+  public String resolveCustomDirectEventName(@Nullable String eventName) {
+    if (eventName == null) {
+      return null;
+    }
+    if (eventName.substring(0, 3).equals("top")) {
+      return "on" + eventName.substring(3);
+    }
+    return eventName;
   }
 
   // Called from Binding.cpp

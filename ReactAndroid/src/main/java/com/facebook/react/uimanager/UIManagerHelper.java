@@ -51,6 +51,22 @@ public class UIManagerHelper {
       ReactContext context,
       @UIManagerType int uiManagerType,
       boolean returnNullIfCatalystIsInactive) {
+    if (context.isBridgeless()) {
+      @Nullable
+      UIManager uiManager =
+          context.getJSIModule(JSIModuleType.UIManager) != null
+              ? (UIManager) context.getJSIModule(JSIModuleType.UIManager)
+              : null;
+      if (uiManager == null) {
+        ReactSoftException.logSoftException(
+            "UIManagerHelper",
+            new ReactNoCrashSoftException(
+                "Cannot get UIManager because the instance hasn't been initialized yet."));
+        return null;
+      }
+      return uiManager;
+    }
+
     if (!context.hasCatalystInstance()) {
       ReactSoftException.logSoftException(
           "UIManagerHelper",

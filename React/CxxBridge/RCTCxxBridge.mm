@@ -411,7 +411,7 @@ struct RCTInstanceCallback : public InstanceCallback {
    * id<RCTCxxBridgeDelegate> jsExecutorFactory may create and assign an id<RCTTurboModuleRegistry> object to
    * RCTCxxBridge If id<RCTTurboModuleRegistry> is assigned by this time, eagerly initialize all TurboModules
    */
-  if (_turboModuleRegistry) {
+  if (_turboModuleRegistry && RCTTurboModuleEagerInitEnabled()) {
     for (NSString *moduleName in [_turboModuleRegistry eagerInitModuleNames]) {
       [_turboModuleRegistry moduleForName:[moduleName UTF8String]];
     }

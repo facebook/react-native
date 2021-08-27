@@ -38,7 +38,7 @@ debug server. For instance, running this:
 will run a WebSocket server on port 9999 that debugs script.js in Hermes. Chrome
 can connect to this debugging session using a URL like this:
 
-  chrome-devtools://devtools/bundled/inspector.html?experiments=false&v8only=true&ws=127.0.0.1:9999
+  devtools://devtools/bundled/inspector.html?experiments=false&v8only=true&ws=127.0.0.1:9999
 
 Options:
 

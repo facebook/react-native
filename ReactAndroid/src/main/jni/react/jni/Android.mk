@@ -73,6 +73,7 @@ $(call import-module,reactperflogger)
 $(call import-module,hermes)
 $(call import-module,runtimeexecutor)
 
+include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 
 # TODO(ramanpreet):

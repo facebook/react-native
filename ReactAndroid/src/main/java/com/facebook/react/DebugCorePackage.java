@@ -37,7 +37,7 @@ public class DebugCorePackage extends TurboReactPackage {
         return new JSCHeapCapture(reactContext);
       default:
         throw new IllegalArgumentException(
-            "In CoreModulesPackage, could not find Native module for " + name);
+            "In DebugCorePackage, could not find Native module for " + name);
     }
   }
 

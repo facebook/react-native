@@ -116,6 +116,17 @@ void RCTEnableTurboModule(BOOL enabled)
   turboModuleEnabled = enabled;
 }
 
+static BOOL turboModuleEagerInitEnabled = NO;
+BOOL RCTTurboModuleEagerInitEnabled(void)
+{
+  return turboModuleEagerInitEnabled;
+}
+
+void RCTEnableTurboModuleEagerInit(BOOL enabled)
+{
+  turboModuleEagerInitEnabled = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
