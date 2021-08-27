@@ -182,9 +182,6 @@ static Class getFallbackClassFromName(const char *name)
     _bridge = bridge;
     _invalidating = false;
 
-    // Necessary to allow NativeModules to lookup TurboModules
-    [bridge setRCTTurboModuleRegistry:self];
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
                                                  name:RCTBridgeWillInvalidateModulesNotification
