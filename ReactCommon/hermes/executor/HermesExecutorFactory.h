@@ -11,7 +11,6 @@
 #include <jsireact/JSIExecutor.h>
 #include <functional>
 #include <utility>
-#include <folly/Optional.h>
 
 namespace facebook {
 namespace react {
@@ -21,16 +20,8 @@ class HermesExecutorFactory : public JSExecutorFactory {
   explicit HermesExecutorFactory(
       JSIExecutor::RuntimeInstaller runtimeInstaller,
       const JSIScopedTimeoutInvoker &timeoutInvoker =
-          JSIExecutor::defaultTimeoutInvoker)
-      : runtimeInstaller_(runtimeInstaller),
-        timeoutInvoker_(timeoutInvoker) {
-    assert(timeoutInvoker_ && "Should not have empty timeoutInvoker");
-  }
-
-  explicit HermesExecutorFactory(
-      JSIExecutor::RuntimeInstaller runtimeInstaller,
-      const JSIScopedTimeoutInvoker &timeoutInvoker,
-      ::hermes::vm::RuntimeConfig runtimeConfig)
+          JSIExecutor::defaultTimeoutInvoker,
+      ::hermes::vm::RuntimeConfig runtimeConfig = ::hermes::vm::RuntimeConfig())
       : runtimeInstaller_(runtimeInstaller),
         timeoutInvoker_(timeoutInvoker),
         runtimeConfig_(std::move(runtimeConfig)) {
@@ -44,7 +35,7 @@ class HermesExecutorFactory : public JSExecutorFactory {
  private:
   JSIExecutor::RuntimeInstaller runtimeInstaller_;
   JSIScopedTimeoutInvoker timeoutInvoker_;
-  folly::Optional<::hermes::vm::RuntimeConfig> runtimeConfig_;
+  ::hermes::vm::RuntimeConfig runtimeConfig_;
 };
 
 class HermesExecutor : public JSIExecutor {
