@@ -11,11 +11,11 @@
 'use strict';
 
 import Image from './Image';
-import * as React  from 'react';
-import StyleSheet  from '../StyleSheet/StyleSheet';
+import * as React from 'react';
+import StyleSheet from '../StyleSheet/StyleSheet';
 import flattenStyle from '../StyleSheet/flattenStyle';
-import View  from '../Components/View/View';
-import type {ImageBackgroundProps} from './ImageProps'
+import View from '../Components/View/View';
+import type {ImageBackgroundProps} from './ImageProps';
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -58,7 +58,7 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
 
   render(): React.Node {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
-    const flattenedStyle = flattenStyle(style)
+    const flattenedStyle = flattenStyle(style);
     return (
       <View
         accessibilityIgnoresInvertColors={true}

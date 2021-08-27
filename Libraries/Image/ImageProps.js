@@ -16,7 +16,7 @@ import type {ImageSource} from './ImageSource';
 import type {ViewStyleProp, ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {Node, Ref} from 'react';
-import typeof Image from './Image'
+import typeof Image from './Image';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -174,29 +174,28 @@ export type ImageProps = {|
   children?: empty,
 |};
 
-
 export type ImageBackgroundProps = $ReadOnly<{|
   ...ImageProps,
   children?: Node,
 
   /**
    * Style applied to the outer View component
-   * 
+   *
    * See https://reactnative.dev/docs/imagebackground#style
    */
   style?: ?ViewStyleProp,
 
   /**
    * Style applied to the inner Image component
-   * 
+   *
    * See https://reactnative.dev/docs/imagebackground#imagestyle
    */
   imageStyle?: ?ImageStyleProp,
-  
+
   /**
    * Allows to set a reference to the inner Image component
-   * 
+   *
    * See https://reactnative.dev/docs/imagebackground#imageref
    */
-  imageRef?: Ref<Image>
+  imageRef?: Ref<Image>,
 |}>;
