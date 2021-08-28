@@ -27,8 +27,8 @@ public class HermesExecutor extends JavaScriptExecutor {
     }
   }
 
-  HermesExecutor(@Nullable RuntimeConfig config) {
-    super(config == null ? initHybridDefaultConfig() : initHybrid(config.heapSizeMB));
+  HermesExecutor() {
+    super(initHybrid());
   }
 
   @Override
@@ -45,7 +45,5 @@ public class HermesExecutor extends JavaScriptExecutor {
    */
   public static native boolean canLoadFile(String path);
 
-  private static native HybridData initHybridDefaultConfig();
-
-  private static native HybridData initHybrid(long heapSizeMB);
+  private static native HybridData initHybrid();
 }
