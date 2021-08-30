@@ -417,10 +417,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   if (_blurOnSubmit) {
 #endif // ]TODO(macOS Candidate ISS#2710739)
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
-                                  reactTag:self.reactTag
-                                      text:[self.backedTextInputView.attributedText.string copy]
+                                   reactTag:self.reactTag
+                                       text:[self.backedTextInputView.attributedText.string copy]
                                         key:nil
-                                eventCount:_nativeEventCount];
+                                 eventCount:_nativeEventCount];
 #if TARGET_OS_OSX // [TODO(macOS Candidate ISS#2710739)
   }
 #endif // ]TODO(macOS Candidate ISS#2710739)
