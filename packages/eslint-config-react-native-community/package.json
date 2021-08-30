@@ -26,9 +26,11 @@
     "prettier": "^2.0.2"
   },
   "peerDependencies": {
-    "eslint": ">=7"
+    "eslint": ">=7",
+    "prettier": ">=2"
   },
   "devDependencies": {
-    "eslint": "7.12.0"
+    "eslint": "7.12.0",
+    "prettier": "^2.3.2"
   }
 }
