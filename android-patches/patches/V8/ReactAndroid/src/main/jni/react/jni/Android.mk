@@ -8,9 +8,9 @@ index 38a51019e..7425e65a5 100644
  $(call import-module,runtimeexecutor)
 +$(call import-module,v8jsi)
  
+ include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
  include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
- 
-@@ -83,3 +84,4 @@ include $(REACT_SRC_DIR)/jscexecutor/Android.mk
+@@ -84,3 +85,4 @@ include $(REACT_SRC_DIR)/jscexecutor/Android.mk
  include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
  include $(REACT_SRC_DIR)/../hermes/instrumentation/Android.mk
  include $(REACT_SRC_DIR)/modules/blob/jni/Android.mk
