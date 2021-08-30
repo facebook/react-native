@@ -179,6 +179,8 @@ const char* YGOverflowToString(const YGOverflow value) {
 
 const char* YGPositionTypeToString(const YGPositionType value) {
   switch (value) {
+    case YGPositionTypeStatic:
+      return "static";
     case YGPositionTypeRelative:
       return "relative";
     case YGPositionTypeAbsolute:

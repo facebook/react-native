@@ -87,7 +87,7 @@
     "postinstall": "node scripts/postInstall.js"
   },
   "peerDependencies": {
-    "react": "16.13.1"
+    "react": "0.0.0-experimental-aae83a4b9"
   },
   "dependencies": {
     "@react-native-community/cli": "^4.10.0",
@@ -113,7 +113,7 @@
     "react-devtools-core": "^4.6.0",
     "react-refresh": "^0.4.0",
     "regenerator-runtime": "^0.13.2",
-    "scheduler": "0.19.1",
+    "scheduler": "0.0.0-experimental-aae83a4b9",
     "stacktrace-parser": "^0.1.3",
     "use-subscription": "^1.0.0",
     "whatwg-fetch": "^3.0.0"
@@ -151,8 +151,8 @@
     "jscodeshift": "^0.9.0",
     "mkdirp": "^0.5.1",
     "prettier": "1.19.1",
-    "react": "16.13.1",
-    "react-test-renderer": "16.13.1",
+    "react": "0.0.0-experimental-aae83a4b9",
+    "react-test-renderer": "0.0.0-experimental-aae83a4b9",
     "react-shallow-renderer": "16.13.1",
     "shelljs": "^0.7.8",
     "signedsource": "^1.0.0",
