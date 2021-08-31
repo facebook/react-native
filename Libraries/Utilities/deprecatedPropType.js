@@ -21,7 +21,7 @@ function deprecatedPropType(
     // Don't warn for native components.
     if (
       global.RN$Bridgeless !== true &&
-      UIManager.hasViewManagerConfig(componentName) &&
+      !UIManager.hasViewManagerConfig(componentName) &&
       props[propName] !== undefined
     ) {
       console.warn(
