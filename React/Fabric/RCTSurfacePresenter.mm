@@ -23,6 +23,8 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
 
+#import <React/RCTScrollViewComponentView.h>
+
 #import <react/componentregistry/ComponentDescriptorFactory.h>
 #import <react/components/root/RootShadowNode.h>
 #import <react/config/ReactNativeConfig.h>
@@ -290,6 +292,10 @@ static inline LayoutContext RCTGetLayoutContext()
 {
   auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:scrollview_on_demand_mounting_ios")) {
+    RCTSetEnableOnDemandViewMounting(YES);
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
@@ -361,6 +367,7 @@ static inline LayoutContext RCTGetLayoutContext()
 
   RCTMountingManager *mountingManager = _mountingManager;
   RCTExecuteOnMainQueue(^{
+    surface.view.rootView = nil;
     RCTComponentViewDescriptor rootViewDescriptor =
         [mountingManager.componentViewRegistry componentViewDescriptorWithTag:surface.rootTag];
     [mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()

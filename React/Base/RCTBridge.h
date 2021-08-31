@@ -158,6 +158,10 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
 RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
+// Turn on TurboModule eager initialization
+RCT_EXTERN BOOL RCTTurboModuleEagerInitEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
+
 /**
  * Async batched bridge used to communicate with the JavaScript application.
  */
@@ -221,9 +225,9 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
 /**
  * When a NativeModule performs a lookup for a TurboModule, we need to query
- * the lookupDelegate.
+ * the TurboModuleRegistry.
  */
-- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate;
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.

@@ -170,7 +170,7 @@ try {
       throw Error(exitCode);
     }
 
-    describe(`Start packager server, ${SERVER_PID}`);
+    describe(`Start Metro, ${SERVER_PID}`);
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerProcess = spawn('yarn', ['start', '--max-workers 1'], {
       env: process.env,
@@ -200,7 +200,7 @@ try {
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
-    describe('Start packager server');
+    describe('Start Metro');
     const packagerProcess = spawn('yarn', ['start'], {
       stdio: 'inherit',
       env: packagerEnv,
@@ -211,7 +211,7 @@ try {
     exec(
       'response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.bundle?platform=ios&dev=true)',
     );
-    echo(`Packager server up and running, ${SERVER_PID}`);
+    echo(`Metro is running, ${SERVER_PID}`);
 
     describe('Install CocoaPod dependencies');
     exec('pod install');

@@ -116,6 +116,17 @@ void RCTEnableTurboModule(BOOL enabled)
   turboModuleEnabled = enabled;
 }
 
+static BOOL turboModuleEagerInitEnabled = NO;
+BOOL RCTTurboModuleEagerInitEnabled(void)
+{
+  return turboModuleEagerInitEnabled;
+}
+
+void RCTEnableTurboModuleEagerInit(BOOL enabled)
+{
+  turboModuleEagerInitEnabled = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
@@ -191,9 +202,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self invalidate];
 }
 
-- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
-  [self.batchedBridge setRCTTurboModuleLookupDelegate:turboModuleLookupDelegate];
+  [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
 - (void)didReceiveReloadCommand

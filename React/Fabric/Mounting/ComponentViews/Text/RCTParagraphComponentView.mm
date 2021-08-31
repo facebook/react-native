@@ -6,6 +6,7 @@
  */
 
 #import "RCTParagraphComponentView.h"
+#import "RCTParagraphComponentAccessibilityProvider.h"
 
 #import <react/components/text/ParagraphComponentDescriptor.h>
 #import <react/components/text/ParagraphProps.h>
@@ -26,6 +27,7 @@ using namespace facebook::react;
 @implementation RCTParagraphComponentView {
   ParagraphShadowNode::ConcreteState::Shared _state;
   ParagraphAttributes _paragraphAttributes;
+  RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -35,7 +37,6 @@ using namespace facebook::react;
     _props = defaultProps;
 
     self.isAccessibilityElement = YES;
-    self.accessibilityTraits |= UIAccessibilityTraitStaticText;
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
   }
@@ -136,6 +137,29 @@ using namespace facebook::react;
   }
 
   return RCTNSStringFromString(_state->getData().attributedString.getString());
+}
+
+- (NSArray *)accessibilityElements
+{
+  if (![_accessibilityProvider isUpToDate:_state->getData().attributedString]) {
+    RCTTextLayoutManager *textLayoutManager =
+        (RCTTextLayoutManager *)unwrapManagedObject(_state->getData().layoutManager->getNativeTextLayoutManager());
+    CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+    _accessibilityProvider =
+        [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:_state->getData().attributedString
+                                                             layoutManager:textLayoutManager
+                                                       paragraphAttributes:_state->getData().paragraphAttributes
+                                                                     frame:frame
+                                                                      view:self];
+  }
+
+  self.isAccessibilityElement = NO;
+  return _accessibilityProvider.accessibilityElements;
+}
+
+- (UIAccessibilityTraits)accessibilityTraits
+{
+  return [super accessibilityTraits] | UIAccessibilityTraitStaticText;
 }
 
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point

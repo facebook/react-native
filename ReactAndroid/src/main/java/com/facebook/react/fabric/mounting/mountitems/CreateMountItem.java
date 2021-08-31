@@ -25,7 +25,7 @@ public class CreateMountItem implements MountItem {
   private final boolean mIsLayoutable;
 
   public CreateMountItem(
-      @NonNull ThemedReactContext context,
+      @Nullable ThemedReactContext context,
       int rootTag,
       int reactTag,
       @NonNull String component,
@@ -43,6 +43,13 @@ public class CreateMountItem implements MountItem {
 
   @Override
   public void execute(@NonNull MountingManager mountingManager) {
+    if (mContext == null) {
+      throw new IllegalStateException(
+          "Cannot execute PreAllocateViewMountItem without Context for ReactTag: "
+              + mReactTag
+              + " and rootTag: "
+              + mRootTag);
+    }
     mountingManager.createView(
         mContext, mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
   }

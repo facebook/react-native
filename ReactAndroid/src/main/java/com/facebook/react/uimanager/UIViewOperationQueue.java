@@ -866,8 +866,7 @@ public class UIViewOperationQueue {
                 long runStartTime = SystemClock.uptimeMillis();
 
                 // All ViewCommands should be executed first as a perf optimization.
-                // This entire block is only executed if there's a separate viewCommand queue,
-                // which is currently gated by a ReactFeatureFlag.
+                // This entire block is only executed if there's at least one ViewCommand queued.
                 if (viewCommandOperations != null) {
                   for (DispatchCommandViewOperation op : viewCommandOperations) {
                     try {

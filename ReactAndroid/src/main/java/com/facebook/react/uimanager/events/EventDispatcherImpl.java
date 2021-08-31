@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -88,7 +89,8 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
   private final Map<String, Short> mEventNameToEventId = MapBuilder.newHashMap();
   private final DispatchEventsRunnable mDispatchEventsRunnable = new DispatchEventsRunnable();
   private final ArrayList<Event> mEventStaging = new ArrayList<>();
-  private final ArrayList<EventDispatcherListener> mListeners = new ArrayList<>();
+  private final CopyOnWriteArrayList<EventDispatcherListener> mListeners =
+      new CopyOnWriteArrayList<>();
   private final List<BatchEventDispatchedListener> mPostEventDispatchListeners = new ArrayList<>();
   private final ScheduleDispatchFrameCallback mCurrentFrameCallback =
       new ScheduleDispatchFrameCallback();

@@ -87,6 +87,36 @@ enum class TextDecorationLinePattern {
   DashDotDot,
 };
 
+enum class AccessibilityRole {
+  None,
+  Button,
+  Link,
+  Search,
+  Image,
+  Imagebutton,
+  Keyboardkey,
+  Text,
+  Adjustable,
+  Summary,
+  Header,
+  Alert,
+  Checkbox,
+  Combobox,
+  Menu,
+  Menubar,
+  Menuitem,
+  Progressbar,
+  Radio,
+  Radiogroup,
+  Scrollbar,
+  Spinbutton,
+  Switch,
+  Tab,
+  Tablist,
+  Timer,
+  Toolbar,
+};
+
 } // namespace react
 } // namespace facebook
 
@@ -157,6 +187,13 @@ struct hash<facebook::react::EllipsizeMode> {
 template <>
 struct hash<facebook::react::TextBreakStrategy> {
   size_t operator()(const facebook::react::TextBreakStrategy &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::AccessibilityRole> {
+  size_t operator()(const facebook::react::AccessibilityRole &v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

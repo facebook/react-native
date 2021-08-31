@@ -118,9 +118,9 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
-   * Path to your app's main module on the packager server. This is used when reloading JS during
-   * development. All paths are relative to the root folder the packager is serving files from.
-   * Examples: {@code "index.android"} or {@code "subdirectory/index.android"}
+   * Path to your app's main module on Metro. This is used when reloading JS during development. All
+   * paths are relative to the root folder the packager is serving files from. Examples: {@code
+   * "index.android"} or {@code "subdirectory/index.android"}
    */
   public ReactInstanceManagerBuilder setJSMainModulePath(String jsMainModulePath) {
     mJSMainModulePath = jsMainModulePath;
