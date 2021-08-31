@@ -362,7 +362,8 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
     inputs.dir("src/main/java/com/facebook/react/turbomodule/core/jni")
     inputs.dir("src/main/java/com/facebook/react/modules/blob")
     outputs.dir("$buildDir/react-ndk/all")
-    commandLine(getNdkBuildFullPath(),
+    def commandLineArgs = [
+            getNdkBuildFullPath(),
             "APP_ABI=${reactNativeArchitectures()}",
             "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),
             "NDK_PROJECT_PATH=null",
@@ -375,7 +376,12 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
             "-C", file("src/main/jni/react/jni").absolutePath,
             "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
-    )
+    ]
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        // This flag will suppress "fcntl(): Bad file descriptor" warnings on local builds.
+        commandLineArgs.add("--output-sync=none")
+    }
+    commandLine(commandLineArgs)
 }
 
 def cleanReactNdkLib = tasks.register("cleanReactNdkLib", Exec) {
