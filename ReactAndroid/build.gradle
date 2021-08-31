@@ -56,7 +56,6 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
 
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
     from(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
-    from("src/main/jni/third-party/boost/Android.mk")
     from("src/main/jni/third-party/boost")
     include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp", "asm/**/*.S")
     includeEmptyDirs = false
@@ -171,6 +170,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
 // executed by automake. This way we can avoid dependencies on make/automake
 task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) {
+    duplicatesStrategy("warn")
     from(dependenciesPath ?: tarTree(downloadGlog.dest))
     from("src/main/jni/third-party/glog/")
     include("glog-${GLOG_VERSION}/src/**/*", "Android.mk", "config.h")
