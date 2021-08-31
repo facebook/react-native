@@ -704,6 +704,9 @@ PODS:
     - React-logger (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
+  - ScreenshotManager (0.0.1):
+    - RCT-Folly (= 2021.06.28.00)
+    - React
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -769,6 +772,7 @@ DEPENDENCIES:
   - React-runtimeexecutor (from `../../ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../../ReactCommon`)
   - ReactCommon/turbomodule/samples (from `../../ReactCommon`)
+  - ScreenshotManager (from `NativeModuleExample`)
   - Yoga (from `../../ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -857,6 +861,8 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../../ReactCommon"
+  ScreenshotManager:
+    :path: NativeModuleExample
   Yoga:
     :path: "../../ReactCommon/yoga"
 
@@ -908,9 +914,10 @@ SPEC CHECKSUMS:
   React-RCTVibration: 1a58f6ab1ae5fad004119979b676cb5e912f2e44
   React-runtimeexecutor: 4b0c6eb341c7d3ceb5e2385cb0fdb9bf701024f3
   ReactCommon: 632474905edd9a20ec4f4084142ff4b4a4f3fd8b
+  ScreenshotManager: a23f618c2a205e3087f29b05154a7c3d6e515d8a
   Yoga: c0d06f5380d34e939f55420669a60fe08b79bd75
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 6e910a576b7db9347c60dfc58f7852f692200116
+PODFILE CHECKSUM: ae3037f2256663bd77e3b1cffcac23908027fdb1
 
 COCOAPODS: 1.10.1

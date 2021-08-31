@@ -105,6 +105,7 @@ package-lock.json
 /React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
 /ReactCommon/react/renderer/components/rncore/
+/packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec
 
 # Visual studio
 .vscode
