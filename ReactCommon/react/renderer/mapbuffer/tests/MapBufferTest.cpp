@@ -70,7 +70,8 @@ TEST(MapBufferTest, testNullEntries) {
   EXPECT_EQ(map.getCount(), 2);
   EXPECT_EQ(map.isNull(0), true);
   EXPECT_EQ(map.isNull(1), false);
-  // TODO: serialize null values to be distinguishable from '0' values
+  // TODO T83483191: serialize null values to be distinguishable from '0'
+  // values
   // EXPECT_EQ(map.isNull(1),  false);
   // EXPECT_EQ(map.getBool(1),  false);
 }
@@ -98,13 +99,24 @@ TEST(MapBufferTest, testStringEntries) {
   EXPECT_EQ(map.getString(0), "This is a test");
 }
 
-TEST(MapBufferTest, testUTFStringEntries) {
+TEST(MapBufferTest, testUTFStringEntry) {
   auto builder = MapBufferBuilder();
 
   builder.putString(0, "Let's count: 的, 一, 是");
   auto map = builder.build();
 
   EXPECT_EQ(map.getString(0), "Let's count: 的, 一, 是");
+}
+
+TEST(MapBufferTest, testUTFStringEntries) {
+  auto builder = MapBufferBuilder();
+
+  builder.putString(0, "Let's count: 的, 一, 是");
+  builder.putString(1, "This is a test");
+  auto map = builder.build();
+
+  EXPECT_EQ(map.getString(0), "Let's count: 的, 一, 是");
+  EXPECT_EQ(map.getString(1), "This is a test");
 }
 
 TEST(MapBufferTest, testEmptyMap) {

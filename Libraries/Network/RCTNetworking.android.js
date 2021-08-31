@@ -14,6 +14,7 @@ import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeNetworkingAndroid from './NativeNetworkingAndroid';
 import convertRequestBody from './convertRequestBody';
 import type {RequestBody} from './convertRequestBody';
+import Platform from '../Utilities/Platform';
 
 type Header = [string, string];
 
@@ -39,7 +40,11 @@ function generateRequestId(): number {
 // FIXME: use typed events
 class RCTNetworking extends NativeEventEmitter<$FlowFixMe> {
   constructor() {
-    super(NativeNetworkingAndroid);
+    super(
+      // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+      // If you want to use the native module on other platforms, please remove this condition and test its behavior
+      Platform.OS !== 'ios' ? null : NativeNetworkingAndroid,
+    );
   }
 
   sendRequest(

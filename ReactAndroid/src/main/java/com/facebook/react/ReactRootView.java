@@ -35,7 +35,8 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
@@ -49,6 +50,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
@@ -329,8 +331,28 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onViewAdded(View child) {
+  public void onViewAdded(final View child) {
     super.onViewAdded(child);
+
+    // See comments in {@code ReactRootViewProhibitedChildView} for why we want this mechanism.
+    if (child instanceof ReactClippingProhibitedView) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              if (!child.isShown()) {
+                ReactSoftExceptionLogger.logSoftException(
+                    TAG,
+                    new ReactNoCrashSoftException(
+                        "A view was illegally added as a child of a ReactRootView. "
+                            + "This View should not be a direct child of a ReactRootView, because it is not visible and will never be reachable. Child: "
+                            + child.getClass().getCanonicalName().toString()
+                            + " child ID: "
+                            + child.getId()));
+              }
+            }
+          });
+    }
 
     if (mShouldLogContentAppeared) {
       mShouldLogContentAppeared = false;
@@ -507,7 +529,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           removeAllViews();
 
           if (surfaceId == NO_ID) {
-            ReactSoftException.logSoftException(
+            ReactSoftExceptionLogger.logSoftException(
                 TAG,
                 new RuntimeException(
                     "unmountReactApplication called on ReactRootView with invalid id"));

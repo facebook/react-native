@@ -46,10 +46,4 @@ import com.facebook.react.uimanager.events.Event;
     eventData.putBoolean("value", getIsChecked());
     return eventData;
   }
-
-  @Override
-  public short getCoalescingKey() {
-    // All switch events for a given view can be coalesced.
-    return 0;
-  }
 }

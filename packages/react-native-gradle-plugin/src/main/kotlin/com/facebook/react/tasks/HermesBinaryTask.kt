@@ -7,32 +7,25 @@
 
 package com.facebook.react.tasks
 
+import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import java.io.File
 
 open class HermesBinaryTask : DefaultTask() {
   internal lateinit var reactRoot: File
 
-  @get:Input
-  internal lateinit var hermesCommand: String
-  @get:Input
-  internal var hermesFlags: List<String> = emptyList()
-  @get:InputFile
-  internal lateinit var jsBundleFile: File
+  @get:Input internal lateinit var hermesCommand: String
+  @get:Input internal var hermesFlags: List<String> = emptyList()
+  @get:InputFile internal lateinit var jsBundleFile: File
 
-  @get:Input
-  internal lateinit var composeSourceMapsCommand: List<String>
-  @get:Input
-  internal lateinit var jsPackagerSourceMapFile: File
+  @get:Input internal lateinit var composeSourceMapsCommand: List<String>
+  @get:Input internal lateinit var jsPackagerSourceMapFile: File
 
-  @get:OutputFile
-  internal lateinit var jsCompilerSourceMapFile: File
-  @get:OutputFile
-  internal lateinit var jsOutputSourceMapFile: File
+  @get:OutputFile internal lateinit var jsCompilerSourceMapFile: File
+  @get:OutputFile internal lateinit var jsOutputSourceMapFile: File
 
   @TaskAction
   fun run() {
@@ -51,12 +44,12 @@ open class HermesBinaryTask : DefaultTask() {
     project.exec {
       @Suppress("SpreadOperator")
       windowsAwareCommandLine(
-        hermesCommand,
-        "-emit-binary",
-        "-out", outputFile,
-        jsBundleFile,
-        *hermesFlags.toTypedArray()
-      )
+          hermesCommand,
+          "-emit-binary",
+          "-out",
+          outputFile,
+          jsBundleFile,
+          *hermesFlags.toTypedArray())
     }
   }
 
@@ -66,11 +59,11 @@ open class HermesBinaryTask : DefaultTask() {
 
       @Suppress("SpreadOperator")
       windowsAwareCommandLine(
-        *composeSourceMapsCommand.toTypedArray(),
-        jsPackagerSourceMapFile,
-        jsCompilerSourceMapFile,
-        "-o", jsOutputSourceMapFile
-      )
+          *composeSourceMapsCommand.toTypedArray(),
+          jsPackagerSourceMapFile,
+          jsCompilerSourceMapFile,
+          "-o",
+          jsOutputSourceMapFile)
     }
   }
 

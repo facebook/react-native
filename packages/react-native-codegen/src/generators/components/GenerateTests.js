@@ -34,6 +34,7 @@ const fileTemplate = `
  * */
 
 #include <gtest/gtest.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/components/::_LIBRARY_NAME_::/Props.h>
 ::_IMPORTS_::
 
@@ -47,8 +48,12 @@ TEST(::_COMPONENT_NAME_::_::_TEST_NAME_::, etc) {
   propParser.prepare<::_COMPONENT_NAME_::>();
   auto const &sourceProps = ::_COMPONENT_NAME_::();
   auto const &rawProps = RawProps(folly::dynamic::object("::_PROP_NAME_::", ::_PROP_VALUE_::));
-  rawProps.parse(propParser);
-  ::_COMPONENT_NAME_::(sourceProps, rawProps);
+
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
+  rawProps.parse(propParser, parserContext);
+  ::_COMPONENT_NAME_::(parserContext, sourceProps, rawProps);
 }
 `;
 
@@ -140,6 +145,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'Tests.cpp';
     const allImports = new Set([
@@ -166,6 +172,7 @@ module.exports = {
             const name = `${componentName}Props`;
 
             const imports = getImports(component.props);
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             imports.forEach(allImports.add, allImports);
 
             return generateTestsString(name, component);

@@ -53,13 +53,7 @@ enum class AnimationProperty {
   ScaleY = 4,
   ScaleXY = 8
 };
-enum class AnimationConfigurationType {
-  Noop = 0, // for animation placeholders that are not animated, and should be
-  // executed once other animations have completed
-  Create = 1,
-  Update = 2,
-  Delete = 4
-};
+enum class AnimationConfigurationType { Create = 1, Update = 2, Delete = 4 };
 
 // This corresponds exactly with JS.
 struct AnimationConfig {
@@ -82,9 +76,11 @@ struct LayoutAnimationConfig {
 };
 
 struct AnimationKeyFrame {
-  // The mutation that should be executed once the animation completes
-  // (optional).
-  better::optional<ShadowViewMutation> finalMutationForKeyFrame;
+  // The mutation(s) that should be executed once the animation completes.
+  // This maybe empty.
+  // For CREATE/INSERT this will contain CREATE, INSERT in that order.
+  // For REMOVE/DELETE, same.
+  std::vector<ShadowViewMutation> finalMutationsForKeyFrame;
 
   // The type of animation this is (for configuration purposes)
   AnimationConfigurationType type;
@@ -106,6 +102,10 @@ struct AnimationKeyFrame {
   double initialProgress;
 
   bool invalidated{false};
+
+  // In the case where some mutation conflicts with this keyframe,
+  // should we generate final synthetic UPDATE mutations for this keyframe?
+  bool generateFinalSyntheticMutations{true};
 };
 
 class LayoutAnimationCallbackWrapper {
@@ -166,23 +166,34 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       RuntimeExecutor runtimeExecutor,
       LayoutAnimationStatusDelegate *delegate)
       : runtimeExecutor_(runtimeExecutor),
-        layoutAnimationStatusDelegate_(delegate) {}
+        layoutAnimationStatusDelegate_(delegate),
+        now_([]() {
+          return std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::high_resolution_clock::now()
+                         .time_since_epoch())
+              .count();
+        }) {}
   ~LayoutAnimationKeyFrameManager() {}
+
+#pragma mark UIManagerAnimationDelegate methods
 
   void uiManagerDidConfigureNextLayoutAnimation(
       jsi::Runtime &runtime,
       RawValue const &config,
       const jsi::Value &successCallbackValue,
       const jsi::Value &failureCallbackValue) const override;
+
   void setComponentDescriptorRegistry(SharedComponentDescriptorRegistry const &
                                           componentDescriptorRegistry) override;
 
   // TODO: add SurfaceId to this API as well
   bool shouldAnimateFrame() const override;
 
-  bool shouldOverridePullTransaction() const override;
-
   void stopSurface(SurfaceId surfaceId) override;
+
+#pragma mark MountingOverrideDelegate methods
+
+  bool shouldOverridePullTransaction() const override;
 
   // This is used to "hijack" the diffing process to figure out which mutations
   // should be animated. The mutations returned by this function will be
@@ -192,6 +203,11 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       MountingTransaction::Number number,
       TransactionTelemetry const &telemetry,
       ShadowViewMutationList mutations) const override;
+
+  // Exposed for testing.
+ public:
+  void uiManagerDidConfigureNextLayoutAnimation(
+      LayoutAnimation layoutAnimation) const;
 
   // LayoutAnimationStatusDelegate - this is for the platform to get
   // signal when animations start and complete. Setting and resetting this
@@ -207,6 +223,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::mutex layoutAnimationStatusDelegateMutex_;
   mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
 
+  // Function that returns current time in milliseconds
+  std::function<uint64_t()> now_;
+
   void adjustImmediateMutationIndicesForDelayedMutations(
       SurfaceId surfaceId,
       ShadowViewMutation &mutation,
@@ -218,9 +237,10 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowViewMutation const &mutation,
       bool skipLastAnimation = false) const;
 
-  std::vector<AnimationKeyFrame> getAndEraseConflictingAnimations(
+  void getAndEraseConflictingAnimations(
       SurfaceId surfaceId,
-      ShadowViewMutationList const &mutations) const;
+      ShadowViewMutationList const &mutations,
+      std::vector<AnimationKeyFrame> &conflictingAnimations) const;
 
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable std::vector<SurfaceId> surfaceIdsToStop_{};
@@ -246,6 +266,16 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowViewMutation::List &mutationsList,
       uint64_t now) const = 0;
 
+  /**
+   * Queue (and potentially synthesize) final mutations for a finished keyframe.
+   * Keyframe animation may have timed-out, or be canceled due to a conflict.
+   */
+  void queueFinalMutationsForCompletedKeyFrame(
+      AnimationKeyFrame const &keyframe,
+      ShadowViewMutation::List &mutationsList,
+      bool interrupted,
+      std::string logPrefix) const;
+
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable better::optional<LayoutAnimation> currentAnimation_{};
   mutable std::mutex currentAnimationMutex_;
@@ -264,6 +294,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::mutex callbackWrappersPendingMutex_;
   mutable std::vector<std::unique_ptr<LayoutAnimationCallbackWrapper>>
       callbackWrappersPending_{};
+
+ public:
+  void setClockNow(std::function<uint64_t()> now);
 };
 
 static inline bool shouldFirstComeBeforeSecondRemovesOnly(
@@ -289,14 +322,6 @@ static inline bool shouldFirstComeBeforeSecondMutation(
       return true;
     }
 
-    // Update comes last, before deletes
-    if (rhs.type == ShadowViewMutation::Type::Update) {
-      return true;
-    }
-    if (lhs.type == ShadowViewMutation::Type::Update) {
-      return false;
-    }
-
     // Remove comes before insert
     if (lhs.type == ShadowViewMutation::Type::Remove &&
         rhs.type == ShadowViewMutation::Type::Insert) {
@@ -320,9 +345,12 @@ static inline bool shouldFirstComeBeforeSecondMutation(
     // Make sure that removes on the same level are sorted - highest indices
     // must come first.
     if (lhs.type == ShadowViewMutation::Type::Remove &&
-        lhs.parentShadowView.tag == rhs.parentShadowView.tag &&
-        lhs.index > rhs.index) {
-      return true;
+        lhs.parentShadowView.tag == rhs.parentShadowView.tag) {
+      if (lhs.index > rhs.index) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 

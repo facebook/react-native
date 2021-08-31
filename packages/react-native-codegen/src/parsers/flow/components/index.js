@@ -167,7 +167,7 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
   return properties;
 }
 
-// $FlowFixMe there's no flowtype for AST
+// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
 function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const {
     componentName,

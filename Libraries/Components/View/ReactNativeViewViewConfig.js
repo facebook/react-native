@@ -8,7 +8,7 @@
  * @format
  */
 
-import {type ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+import type {ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
 import {Platform} from 'react-native';
 

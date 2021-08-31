@@ -20,7 +20,7 @@
     "@babel/preset-flow": "^7.2.0",
     "diff": "3.5.0",
     "extend": "3.0.2",
-    "jest": "^24.9.0",
+    "jest": "^26.6.3",
     "nwmatcher": "1.4.4",
     "randomatic": "3.0.0",
     "sshpk": "1.16.1",

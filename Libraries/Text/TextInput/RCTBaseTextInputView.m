@@ -397,6 +397,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
+        if (allowedLength > 0) {
+          //make sure unicode characters that are longer than 16 bits (such as emojis) are not cut off
+          NSRange cutOffCharacterRange = [text rangeOfComposedCharacterSequenceAtIndex: allowedLength - 1];
+          if (cutOffCharacterRange.location + cutOffCharacterRange.length > allowedLength) {
+            //the character at the length limit takes more than 16bits, truncation should end at the character before
+            allowedLength = cutOffCharacterRange.location;
+          }
+        }
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
         NSMutableAttributedString *newAttributedText = [backedTextInputView.attributedText mutableCopy];

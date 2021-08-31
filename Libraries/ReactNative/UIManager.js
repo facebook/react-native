@@ -10,6 +10,7 @@
 
 import UIManagerInjection from './UIManagerInjection';
 import type {Spec} from './NativeUIManager';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 interface UIManagerJSInterface extends Spec {
   +getViewManagerConfig: (viewManagerName: string) => Object;
@@ -17,7 +18,7 @@ interface UIManagerJSInterface extends Spec {
   +createView: (
     reactTag: ?number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: Object,
   ) => void;
   +updateView: (reactTag: number, viewName: string, props: Object) => void;

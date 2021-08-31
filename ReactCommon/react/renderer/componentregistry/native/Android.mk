@@ -20,7 +20,7 @@ LOCAL_SHARED_LIBRARIES := libjsi libfolly_futures libfolly_json libreact_render_
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 

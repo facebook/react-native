@@ -92,6 +92,12 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   }
 
   @Override
+  @ReactProp(name = "visible")
+  public void setVisible(ReactModalHostView view, boolean visible) {
+    // iOS only
+  }
+
+  @Override
   public void setPresentationStyle(ReactModalHostView view, @Nullable String value) {}
 
   @Override

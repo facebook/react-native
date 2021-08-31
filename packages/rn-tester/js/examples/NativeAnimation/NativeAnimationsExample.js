@@ -145,9 +145,9 @@ class LoopExample extends React.Component<{...}, $FlowFixMeState> {
             {
               opacity: this.state.value.interpolate({
                 inputRange: [0, 0.5, 1],
-                /* $FlowFixMe(>=0.38.0) - Flow error detected during the
-                 * deployment of v0.38.0. To see the error, remove this comment
-                 * and run flow */
+                /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
+                 * detected during the deployment of v0.38.0. To see the error,
+                 * remove this comment and run flow */
                 outputRange: [0, 1, 0],
               }),
             },
@@ -175,9 +175,9 @@ class InternalSettings extends React.Component<
           initialValue={false}
           label="Force JS Stalls"
           onEnable={() => {
-            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.63 was deployed. To see
-             * the error delete this comment and run Flow. */
+            /* $FlowFixMe[incompatible-type] (>=0.63.0 site=react_native_fb)
+             * This comment suppresses an error found when Flow v0.63 was
+             * deployed. To see the error delete this comment and run Flow. */
             this._stallInterval = setInterval(() => {
               const start = Date.now();
               console.warn('burn CPU');
@@ -185,9 +185,9 @@ class InternalSettings extends React.Component<
             }, 300);
           }}
           onDisable={() => {
-            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.63 was deployed. To see
-             * the error delete this comment and run Flow. */
+            /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb)
+             * This comment suppresses an error found when Flow v0.63 was
+             * deployed. To see the error delete this comment and run Flow. */
             clearInterval(this._stallInterval || 0);
           }}
         />
@@ -243,9 +243,9 @@ class EventExample extends React.Component<{...}, $FlowFixMeState> {
                 {
                   rotate: this.state.anim.interpolate({
                     inputRange: [0, 1],
-                    /* $FlowFixMe(>=0.38.0) - Flow error detected during the
-                     * deployment of v0.38.0. To see the error, remove this
-                     * comment and run flow */
+                    /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow
+                     * error detected during the deployment of v0.38.0. To see
+                     * the error, remove this comment and run flow */
                     outputRange: ['0deg', '1deg'],
                   }),
                 },

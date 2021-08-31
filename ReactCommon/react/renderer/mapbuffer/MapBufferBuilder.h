@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/primitives.h>
 #include <stdlib.h>
@@ -15,11 +16,11 @@ namespace facebook {
 namespace react {
 
 // Default initial size for _keyValues array
-// 106 = 10 entries = 10*10 + 6 sizeof(header)
-constexpr uint16_t INITIAL_KEY_VALUE_SIZE = 106;
+// 108 = 10 entries = 10*10 + 8 sizeof(header)
+constexpr uint16_t INITIAL_KEY_VALUE_SIZE = 108;
 
 // Default initial size for _dynamicDataValues array
-constexpr int INITIAL_DYNAMIC_DATA_SIZE = 200;
+constexpr int32_t INITIAL_DYNAMIC_DATA_SIZE = 200;
 
 /**
  * MapBufferBuilder is a builder class for MapBuffer
@@ -30,35 +31,35 @@ class MapBufferBuilder {
 
   void ensureKeyValueSpace();
 
-  void ensureDynamicDataSpace(int size);
+  void ensureDynamicDataSpace(int32_t size);
 
-  void storeKeyValue(Key key, uint8_t *value, int valueSize);
+  void storeKeyValue(Key key, uint8_t *value, int32_t valueSize);
 
   // Array of [key,value] map entries:
   // - Key is represented in 2 bytes
   // - Value is stored into 8 bytes. The 8 bytes of the value will contain the
   // actual value for the key or a pointer to the actual value (based on the
   // type)
-  uint8_t *keyValues_;
+  uint8_t *keyValues_ = nullptr;
 
   // Amount of bytes allocated on _keyValues
-  uint16_t keyValuesSize_;
+  uint16_t keyValuesSize_ = 0;
 
   // Relative offset on the _keyValues array.
   // This represents the first byte that can be written in _keyValues array
-  int keyValuesOffset_;
+  int32_t keyValuesOffset_ = 0;
 
   // This array contains data for dynamic values in the MapBuffer.
   // A dynamic value is a String or another MapBuffer.
-  uint8_t *dynamicDataValues_;
+  uint8_t *dynamicDataValues_ = nullptr;
 
   // Amount of bytes allocated on _dynamicDataValues
-  uint16_t dynamicDataSize_;
+  int32_t dynamicDataSize_ = 0;
 
   // Relative offset on the _dynamicDataValues array.
   // This represents the first byte that can be written in _dynamicDataValues
   // array
-  int dynamicDataOffset_;
+  int32_t dynamicDataOffset_ = 0;
 
   // Minimmum key to store in the MapBuffer (this is used to guarantee
   // consistency)
@@ -73,7 +74,7 @@ class MapBufferBuilder {
 
   static MapBuffer EMPTY();
 
-  void putInt(Key key, int value);
+  void putInt(Key key, int32_t value);
 
   void putBool(Key key, bool value);
 
@@ -85,7 +86,7 @@ class MapBufferBuilder {
 
   void putMapBuffer(Key key, MapBuffer &map);
 
-  // TODO This should return MapBuffer!
+  // TODO T83483191: This should return MapBuffer!
   MapBuffer build();
 };
 

@@ -172,6 +172,12 @@ type IOSProps = $ReadOnly<{|
    */
   automaticallyAdjustContentInsets?: ?boolean,
   /**
+   * Controls whether iOS should automatically adjust the scroll indicator
+   * insets. The default value is true. Available on iOS 13 and later.
+   * @platform ios
+   */
+  automaticallyAdjustsScrollIndicatorInsets?: ?boolean,
+  /**
    * The amount by which the scroll view content is inset from the edges
    * of the scroll view. Defaults to `{top: 0, left: 0, bottom: 0, right: 0}`.
    * @platform ios
@@ -639,7 +645,8 @@ export type Props = $ReadOnly<{|
    *
    * See [RefreshControl](docs/refreshcontrol.html).
    */
-  // $FlowFixMe - how to handle generic type without existential operator?
+  /* $FlowFixMe[unclear-type] - how to handle generic type without existential
+   * operator? */
   refreshControl?: ?React.Element<any>,
   children?: React.Node,
   /**
@@ -704,6 +711,7 @@ type ScrollViewComponentStatics = $ReadOnly<{|
  */
 class ScrollView extends React.Component<Props, State> {
   static Context: typeof ScrollViewContext = ScrollViewContext;
+
   constructor(props: Props) {
     super(props);
 
@@ -711,13 +719,9 @@ class ScrollView extends React.Component<Props, State> {
       this.props.contentOffset?.y ?? 0,
     );
     this._scrollAnimatedValue.setOffset(this.props.contentInset?.top ?? 0);
-    this._stickyHeaderRefs = new Map();
-    this._headerLayoutYs = new Map();
   }
 
-  _scrollAnimatedValue: AnimatedImplementation.Value = new AnimatedImplementation.Value(
-    0,
-  );
+  _scrollAnimatedValue: AnimatedImplementation.Value;
   _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
   _stickyHeaderRefs: Map<
     string,
@@ -855,7 +859,7 @@ class ScrollView extends React.Component<Props, State> {
    * to the underlying scroll responder's methods.
    */
   getScrollResponder: () => ScrollResponderType = () => {
-    // $FlowFixMe
+    // $FlowFixMe[unclear-type]
     return ((this: any): ScrollResponderType);
   };
 
@@ -990,6 +994,7 @@ class ScrollView extends React.Component<Props, State> {
       UIManager.measureLayout(
         nodeHandle,
         ReactNative.findNodeHandle(this),
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
         this._inputMeasureAndScrollToKeyboard,
       );
@@ -997,6 +1002,7 @@ class ScrollView extends React.Component<Props, State> {
       nodeHandle.measureLayout(
         this._innerViewRef,
         this._inputMeasureAndScrollToKeyboard,
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
       );
     }
@@ -1064,23 +1070,38 @@ class ScrollView extends React.Component<Props, State> {
     height: number,
   ) => void = (left: number, top: number, width: number, height: number) => {
     let keyboardScreenY = Dimensions.get('window').height;
-    if (this._keyboardWillOpenTo != null) {
-      keyboardScreenY = this._keyboardWillOpenTo.endCoordinates.screenY;
-    }
-    let scrollOffsetY =
-      top - keyboardScreenY + height + this._additionalScrollOffset;
 
-    // By default, this can scroll with negative offset, pulling the content
-    // down so that the target component's bottom meets the keyboard's top.
-    // If requested otherwise, cap the offset at 0 minimum to avoid content
-    // shifting down.
-    if (this._preventNegativeScrollOffset === true) {
-      scrollOffsetY = Math.max(0, scrollOffsetY);
-    }
-    this.scrollTo({x: 0, y: scrollOffsetY, animated: true});
+    const scrollTextInputIntoVisibleRect = () => {
+      if (this._keyboardWillOpenTo != null) {
+        keyboardScreenY = this._keyboardWillOpenTo.endCoordinates.screenY;
+      }
+      let scrollOffsetY =
+        top - keyboardScreenY + height + this._additionalScrollOffset;
 
-    this._additionalScrollOffset = 0;
-    this._preventNegativeScrollOffset = false;
+      // By default, this can scroll with negative offset, pulling the content
+      // down so that the target component's bottom meets the keyboard's top.
+      // If requested otherwise, cap the offset at 0 minimum to avoid content
+      // shifting down.
+      if (this._preventNegativeScrollOffset === true) {
+        scrollOffsetY = Math.max(0, scrollOffsetY);
+      }
+      this.scrollTo({x: 0, y: scrollOffsetY, animated: true});
+
+      this._additionalScrollOffset = 0;
+      this._preventNegativeScrollOffset = false;
+    };
+
+    if (this._keyboardWillOpenTo == null) {
+      // `_keyboardWillOpenTo` is set inside `scrollResponderKeyboardWillShow` which
+      // is not guaranteed to be called before `_inputMeasureAndScrollToKeyboard` but native has already scheduled it.
+      // In case it was not called before `_inputMeasureAndScrollToKeyboard`, we postpone scrolling to
+      // text input.
+      setTimeout(() => {
+        scrollTextInputIntoVisibleRect();
+      }, 0);
+    } else {
+      scrollTextInputIntoVisibleRect();
+    }
   };
 
   _getKeyForIndex(index, childArray) {
@@ -1799,7 +1820,7 @@ function Wrapper(props, ref) {
 Wrapper.displayName = 'ScrollView';
 const ForwardedScrollView = React.forwardRef(Wrapper);
 
-// $FlowFixMe Add static context to ForwardedScrollView
+// $FlowFixMe[prop-missing] Add static context to ForwardedScrollView
 ForwardedScrollView.Context = ScrollViewContext;
 
 ForwardedScrollView.displayName = 'ScrollView';

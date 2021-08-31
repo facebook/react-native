@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/mapbuffer/primitives.h>
 
 #include <stdlib.h>
@@ -33,23 +34,23 @@ namespace react {
 class MapBuffer {
  private:
   // Buffer and its size
-  const uint8_t *data_;
+  const uint8_t *data_ = nullptr;
 
   // amount of bytes in the MapBuffer
-  uint16_t dataSize_;
+  int32_t dataSize_ = 0;
 
   // amount of items in the MapBuffer
-  uint16_t count_;
+  uint16_t count_ = 0;
 
   // returns the relative offset of the first byte of dynamic data
-  int getDynamicDataOffset() const;
+  int32_t getDynamicDataOffset() const;
 
  public:
-  MapBuffer(uint8_t *const data, uint16_t dataSize);
+  MapBuffer(uint8_t *const data, int32_t dataSize);
 
   ~MapBuffer();
 
-  int getInt(Key key) const;
+  int32_t getInt(Key key) const;
 
   bool getBool(Key key) const;
 
@@ -57,12 +58,12 @@ class MapBuffer {
 
   std::string getString(Key key) const;
 
-  // TODO: review this declaration
+  // TODO T83483191: review this declaration
   MapBuffer getMapBuffer(Key key) const;
 
-  uint16_t getBufferSize() const;
+  int32_t getBufferSize() const;
 
-  // TODO: review parameters of copy method
+  // TODO T83483191: review parameters of copy method
   void copy(uint8_t *output) const;
 
   bool isNull(Key key) const;

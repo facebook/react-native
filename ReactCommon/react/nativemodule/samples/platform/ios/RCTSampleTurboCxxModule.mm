@@ -28,6 +28,12 @@ RCT_EXPORT_MODULE();
   return nullptr;
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
+}
+
 @end
 
 @implementation RCTSampleTurboCxxModule_v2
@@ -37,6 +43,12 @@ RCT_EXPORT_MODULE();
 - (std::unique_ptr<xplat::module::CxxModule>)createModule
 {
   return std::make_unique<react::SampleTurboCxxModuleLegacyImpl>();
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
 }
 
 @end

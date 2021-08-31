@@ -19,6 +19,7 @@ const Header = (): Node => {
   return (
     <ImageBackground
       accessibilityRole="image"
+      testID="new-app-screen-header"
       source={require('./logo.png')}
       style={[
         styles.background,

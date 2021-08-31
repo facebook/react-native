@@ -8,14 +8,14 @@
  * @format
  */
 
-const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');
-const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('../StyleSheet/StyleSheet');
+import DeprecatedImagePropType from '../DeprecatedPropTypes/DeprecatedImagePropType';
+import * as React from 'react';
+import StyleSheet from '../StyleSheet/StyleSheet';
 
-const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const resolveAssetSource = require('./resolveAssetSource');
+import ImageInjection from './ImageInjection';
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import resolveAssetSource from './resolveAssetSource';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
@@ -23,6 +23,7 @@ import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
 import ImageViewNativeComponent from './ImageViewNativeComponent';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 function getSize(
   uri: string,
@@ -60,13 +61,15 @@ function getSizeWithHeaders(
 function prefetchWithMetadata(
   url: string,
   queryRootName: string,
-  rootTag?: ?number,
+  rootTag?: ?RootTag,
 ): any {
   if (NativeImageLoaderIOS.prefetchImageWithMetadata) {
     // number params like rootTag cannot be nullable before TurboModules is available
     return NativeImageLoaderIOS.prefetchImageWithMetadata(
       url,
       queryRootName,
+      // NOTE: RootTag type
+      // $FlowFixMe[incompatible-call] RootTag: number is incompatible with RootTag
       rootTag ? rootTag : 0,
     );
   } else {
@@ -111,12 +114,10 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   let sources;
   let style: ImageStyleProp;
   if (Array.isArray(source)) {
-    // $FlowFixMe flattenStyle is not strong enough
     style = flattenStyle([styles.base, props.style]) || {};
     sources = source;
   } else {
     const {width, height, uri} = source;
-    // $FlowFixMe flattenStyle is not strong enough
     style = flattenStyle([{width, height}, styles.base, props.style]) || {};
     sources = [source];
 
@@ -168,6 +169,11 @@ Image = React.forwardRef<
   ImagePropsType,
   React.ElementRef<typeof ImageViewNativeComponent>,
 >(Image);
+
+if (ImageInjection.unstable_createImageComponent != null) {
+  Image = ImageInjection.unstable_createImageComponent(Image);
+}
+
 Image.displayName = 'Image';
 
 /**
@@ -175,9 +181,9 @@ Image.displayName = 'Image';
  *
  * See https://reactnative.dev/docs/image.html#getsize
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
+ * suppresses an error found when Flow v0.89 was deployed. To see the error,
+ * delete this comment and run Flow. */
 Image.getSize = getSize;
 
 /**
@@ -186,9 +192,9 @@ Image.getSize = getSize;
  *
  * See https://reactnative.dev/docs/image.html#getsizewithheaders
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
+ * suppresses an error found when Flow v0.89 was deployed. To see the error,
+ * delete this comment and run Flow. */
 Image.getSizeWithHeaders = getSizeWithHeaders;
 
 /**
@@ -197,9 +203,9 @@ Image.getSizeWithHeaders = getSizeWithHeaders;
  *
  * See https://reactnative.dev/docs/image.html#prefetch
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
+ * suppresses an error found when Flow v0.89 was deployed. To see the error,
+ * delete this comment and run Flow. */
 Image.prefetch = prefetch;
 
 /**
@@ -208,9 +214,9 @@ Image.prefetch = prefetch;
  *
  * See https://reactnative.dev/docs/image.html#prefetch
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
+ * suppresses an error found when Flow v0.89 was deployed. To see the error,
+ * delete this comment and run Flow. */
 Image.prefetchWithMetadata = prefetchWithMetadata;
 
 /**
@@ -218,9 +224,9 @@ Image.prefetchWithMetadata = prefetchWithMetadata;
  *
  *  See https://reactnative.dev/docs/image.html#querycache
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
+ * suppresses an error found when Flow v0.89 was deployed. To see the error,
+ * delete this comment and run Flow. */
 Image.queryCache = queryCache;
 
 /**
@@ -228,14 +234,11 @@ Image.queryCache = queryCache;
  *
  * See https://reactnative.dev/docs/image.html#resolveassetsource
  */
-/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
+/* $FlowFixMe[prop-missing] (>=0.89.0 site=react_native_ios_fb) This comment
+ * suppresses an error found when Flow v0.89 was deployed. To see the error,
+ * delete this comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
 
-/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
 Image.propTypes = DeprecatedImagePropType;
 
 const styles = StyleSheet.create({

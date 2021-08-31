@@ -28,12 +28,12 @@ extern char const ParagraphComponentName[];
  * containing and displaying text. Text content is represented as nested <Text>
  * and <RawText> components.
  */
-class ParagraphShadowNode : public ConcreteViewShadowNode<
-                                ParagraphComponentName,
-                                ParagraphProps,
-                                ParagraphEventEmitter,
-                                ParagraphState>,
-                            public BaseTextShadowNode {
+class ParagraphShadowNode final : public ConcreteViewShadowNode<
+                                      ParagraphComponentName,
+                                      ParagraphProps,
+                                      ParagraphEventEmitter,
+                                      ParagraphState>,
+                                  public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 

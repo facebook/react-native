@@ -4,7 +4,9 @@
 # LICENSE file in the root directory of this source tree.
 
 require "json"
-require_relative "../../scripts/react_native_pods.rb"
+
+react_native_path = "../.."
+require_relative "#{react_native_path}/scripts/react_native_pods.rb"
 
 package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
 version = package['version']
@@ -12,13 +14,13 @@ version = package['version']
 source = { :git => 'https://github.com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
-  source[:commit] = `git rev-parse HEAD`.strip
+  source[:commit] = `git rev-parse HEAD`.strip if system("git rev-parse --git-dir > /dev/null 2>&1")
 else
   source[:tag] = "v#{version}"
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2020.01.13.00'
+folly_version = '2021.06.28.00'
 
 Pod::Spec.new do |s|
   s.name                   = "FBReactNativeSpec"
@@ -46,5 +48,13 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi", version
   s.dependency "ReactCommon/turbomodule/core", version
 
-  use_react_native_codegen! (s)
+  use_react_native_codegen!(s, {
+    :react_native_path => react_native_path,
+    :js_srcs_dir => "#{react_native_path}/Libraries",
+    :library_name => "FBReactNativeSpec",
+    :output_dir => "#{react_native_path}/React/FBReactNativeSpec",
+    :component_library_name => "rncore",
+    # TODO: component_output_dir should be programmatically specified, and may change with use_frameworks! support.
+    :component_output_dir => "#{react_native_path}/ReactCommon/react/renderer/components/"
+  })
 end

@@ -10,14 +10,12 @@
  */
 
 'use strict';
-
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
+import * as React from 'react';
+import Platform from '../../Utilities/Platform';
+import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 const PlatformActivityIndicator =
   Platform.OS === 'android'
@@ -111,10 +109,10 @@ const ActivityIndicator = (
       onLayout={onLayout}
       style={StyleSheet.compose(styles.container, style)}>
       {Platform.OS === 'android' ? (
-        // $FlowFixMe Flow doesn't know when this is the android component
+        // $FlowFixMe[prop-missing] Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
       ) : (
-        /* $FlowFixMe(>=0.106.0 site=react_native_android_fb) This comment
+        /* $FlowFixMe[prop-missing] (>=0.106.0 site=react_native_android_fb) This comment
          * suppresses an error found when Flow v0.106 was deployed. To see the
          * error, delete this comment and run Flow. */
         <PlatformActivityIndicator {...nativeProps} />

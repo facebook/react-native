@@ -35,6 +35,8 @@ NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(
 facebook::react::AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(
     NSAttributedString *nsAttributedString);
 
+NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, facebook::react::TextTransform textTransform);
+
 @interface RCTWeakEventEmitterWrapper : NSObject
 @property (nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;
 @end

@@ -15,6 +15,7 @@ const UIManagerProperties = require('./UIManagerProperties');
 const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
 
 import NativeUIManager from './NativeUIManager';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 const viewManagerConfigs = {};
 
@@ -33,6 +34,7 @@ function getConstants(): Object {
 function getViewManagerConfig(viewManagerName: string): any {
   if (
     viewManagerConfigs[viewManagerName] === undefined &&
+    global.nativeCallSyncHook && // If we're in the Chrome Debugger, let's not even try calling the sync method
     NativeUIManager.getConstantsForViewManager
   ) {
     try {
@@ -76,15 +78,15 @@ function getViewManagerConfig(viewManagerName: string): any {
   return viewManagerConfigs[viewManagerName];
 }
 
-/* $FlowFixMe(>=0.123.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.123.0 was deployed. To see the error, delete this comment
- * and run Flow. */
+/* $FlowFixMe[cannot-spread-interface] (>=0.123.0 site=react_native_fb) This
+ * comment suppresses an error found when Flow v0.123.0 was deployed. To see
+ * the error, delete this comment and run Flow. */
 const UIManagerJS = {
   ...NativeUIManager,
   createView(
     reactTag: ?number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: Object,
   ): void {
     if (Platform.OS === 'ios' && viewManagerConfigs[viewName] === undefined) {
@@ -110,7 +112,7 @@ const UIManagerJS = {
 // 3rd party libs may be calling `NativeModules.UIManager.getViewManagerConfig()`
 // instead of `UIManager.getViewManagerConfig()` off UIManager.js.
 // This is a workaround for now.
-// $FlowFixMe
+// $FlowFixMe[prop-missing]
 NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
 
 function lazifyViewManagerConfig(viewName) {

@@ -11,7 +11,7 @@ version = package['version']
 source = { :git => 'https://github.com/facebook/react-native.git' }
 if version == '1000.0.0'
   # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
-  source[:commit] = `git rev-parse HEAD`.strip
+  source[:commit] = `git rev-parse HEAD`.strip if system("git rev-parse --git-dir > /dev/null 2>&1")
 else
   source[:tag] = "v#{version}"
 end
@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "11.0" }
   s.source                 = source
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
-  s.cocoapods_version      = ">= 1.2.0"
+  s.cocoapods_version      = ">= 1.10.1"
 
   s.dependency "React-Core", version
   s.dependency "React-Core/DevSupport", version

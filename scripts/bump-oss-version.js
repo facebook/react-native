@@ -127,8 +127,12 @@ fs.writeFileSync(
 );
 
 let packageJson = JSON.parse(cat('package.json'));
+
 packageJson.version = version;
-delete packageJson.workspaces;
+
+// Only keep 'repo-config` workspace
+packageJson.workspaces = packageJson.workspaces.filter(w => w === 'repo-config');
+
 delete packageJson.private;
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 

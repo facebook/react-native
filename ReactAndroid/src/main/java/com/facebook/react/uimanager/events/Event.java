@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.common.UIManagerType;
 
 /**
  * A UI event that can be dispatched to JS.
@@ -33,6 +34,7 @@ public abstract class Event<T extends Event> {
   private static int sUniqueID = 0;
 
   private boolean mInitialized;
+  private @UIManagerType int mUIManagerType;
   private int mSurfaceId;
   private int mViewTag;
   private long mTimestampMs;
@@ -67,10 +69,23 @@ public abstract class Event<T extends Event> {
   protected void init(int surfaceId, int viewTag) {
     mSurfaceId = surfaceId;
     mViewTag = viewTag;
-    mInitialized = true;
+
+    // We infer UIManagerType. Even though it's not passed in explicitly, we have a
+    // contract that Fabric events *always* have a SurfaceId passed in, and non-Fabric events
+    // NEVER have a SurfaceId passed in (the default/placeholder of -1 is passed in instead).
+    // Why does this matter?
+    // Events can be sent to Views that are part of the View hierarchy *but not directly managed
+    // by React Native*. For example, embedded custom hierachies, Litho hierachies, etc.
+    // In those cases it's important to konw that the Event should be sent to the Fabric or
+    // non-Fabric UIManager, and we cannot use the ViewTag for inference since it's not controlled
+    // by RN and is essentially a random number.
+    // At some point it would be great to pass the SurfaceContext here instead.
+    mUIManagerType = (surfaceId == -1 ? UIManagerType.DEFAULT : UIManagerType.FABRIC);
 
     // This is a *relative* time. See `getUnixTimestampMs`.
     mTimestampMs = SystemClock.uptimeMillis();
+
+    mInitialized = true;
   }
 
   /** @return the view id for the view that generated this event */
@@ -142,6 +157,10 @@ public abstract class Event<T extends Event> {
     onDispose();
   }
 
+  public final @UIManagerType int getUIManagerType() {
+    return mUIManagerType;
+  }
+
   /** @return the name of this event as registered in JS */
   public abstract String getEventName();
 
@@ -183,6 +202,29 @@ public abstract class Event<T extends Event> {
       WritableMap eventData = getEventData();
       if (eventData != null) {
         rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), getEventData());
+        return;
+      }
+    }
+    dispatch(rctEventEmitter);
+  }
+
+  /**
+   * Dispatch this event to JS using a V2 version of dispatchModern. See all comments from
+   * `dispatchModern` - all still apply. This method additionally allows C++ to coalesce events
+   * (Fabric only). This will ONLY be called in an experimental path, and in Fabric only.
+   */
+  @Deprecated
+  public void dispatchModernV2(RCTModernEventEmitter rctEventEmitter) {
+    if (getSurfaceId() != -1) {
+      WritableMap eventData = getEventData();
+      if (eventData != null) {
+        rctEventEmitter.receiveEvent(
+            getSurfaceId(),
+            getViewTag(),
+            getEventName(),
+            canCoalesce(),
+            getCoalescingKey(),
+            getEventData());
         return;
       }
     }

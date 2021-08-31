@@ -15,8 +15,10 @@
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
+#include <react/renderer/scheduler/InspectorData.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
@@ -48,6 +50,9 @@ class Scheduler final : public UIManagerDelegate {
    */
   void registerSurface(SurfaceHandler const &surfaceHandler) const noexcept;
   void unregisterSurface(SurfaceHandler const &surfaceHandler) const noexcept;
+
+  InspectorData getInspectorDataForInstance(
+      SharedEventEmitter eventEmitter) const noexcept;
 
   void renderTemplateToSurface(
       SurfaceId surfaceId,
@@ -83,8 +88,10 @@ class Scheduler final : public UIManagerDelegate {
 
   void uiManagerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
-  void uiManagerDidCreateShadowNode(
-      const ShadowNode::Shared &shadowNode) override;
+  void uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) override;
+  void uiManagerDidCloneShadowNode(
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) override;
   void uiManagerDidDispatchCommand(
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
@@ -96,6 +103,9 @@ class Scheduler final : public UIManagerDelegate {
       ShadowNode::Shared const &shadowView,
       bool isJSResponder,
       bool blockNativeResponder) override;
+
+#pragma mark - ContextContainer
+  ContextContainer::Shared getContextContainer() const;
 
  private:
   friend class SurfaceHandler;
@@ -116,6 +126,12 @@ class Scheduler final : public UIManagerDelegate {
    * fill the optional.
    */
   std::shared_ptr<better::optional<EventDispatcher const>> eventDispatcher_;
+
+  /**
+   * Hold onto ContextContainer. See SchedulerToolbox.
+   * Must not be nullptr.
+   */
+  ContextContainer::Shared contextContainer_;
 
   /*
    * Temporary flags.
