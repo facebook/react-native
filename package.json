@@ -90,9 +90,10 @@
     "react": "0.0.0-experimental-aae83a4b9"
   },
   "dependencies": {
-    "@react-native-community/cli": "^4.10.0",
     "@react-native-community/cli-platform-android": "^4.10.0",
     "@react-native-community/cli-platform-ios": "^4.10.0",
+    "@react-native-community/cli": "^4.10.0",
+    "@react-native/polyfills": "1.0.0",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
