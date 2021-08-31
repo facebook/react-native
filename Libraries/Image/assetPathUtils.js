@@ -51,7 +51,7 @@ function getAndroidResourceFolderName(
   if (!drawableFileTypes.has(asset.type)) {
     return 'raw';
   }
-  var suffix = getAndroidAssetSuffix(scale);
+  const suffix = getAndroidAssetSuffix(scale);
   if (!suffix) {
     throw new Error(
       "Don't know which android drawable suffix to use for scale: " +
@@ -62,13 +62,11 @@ function getAndroidResourceFolderName(
         JSON.stringify(androidScaleSuffix, null, '\t'),
     );
   }
-  const androidFolder = 'drawable-' + suffix;
-  return androidFolder;
+  return 'drawable-' + suffix;
 }
 
 function getAndroidResourceIdentifier(asset: PackagerAsset): string {
-  var folderPath = getBasePath(asset);
-  return (folderPath + '/' + asset.name)
+  return (getBasePath(asset) + '/' + asset.name)
     .toLowerCase()
     .replace(/\//g, '_') // Encode folder structure in file name
     .replace(/([^a-z0-9_])/g, '') // Remove illegal chars
@@ -76,16 +74,13 @@ function getAndroidResourceIdentifier(asset: PackagerAsset): string {
 }
 
 function getBasePath(asset: PackagerAsset): string {
-  var basePath = asset.httpServerLocation;
-  if (basePath[0] === '/') {
-    basePath = basePath.substr(1);
-  }
-  return basePath;
+  const basePath = asset.httpServerLocation;
+  return basePath.startsWith('/') ? basePath.substr(1) : basePath;
 }
 
 module.exports = {
-  getAndroidAssetSuffix: getAndroidAssetSuffix,
-  getAndroidResourceFolderName: getAndroidResourceFolderName,
-  getAndroidResourceIdentifier: getAndroidResourceIdentifier,
-  getBasePath: getBasePath,
+  getAndroidAssetSuffix,
+  getAndroidResourceFolderName,
+  getAndroidResourceIdentifier,
+  getBasePath,
 };
