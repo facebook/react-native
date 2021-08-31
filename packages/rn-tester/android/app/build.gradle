@@ -288,6 +288,7 @@ if (enableCodegen) {
     def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
         dependsOn(":ReactAndroid:packageReactNdkLibs")
+        dependsOn("generateCodegenSchemaFromJavaScript")
         from("$reactAndroidBuildDir/react-ndk/exported")
         into("$buildDir/react-ndk/exported")
     }

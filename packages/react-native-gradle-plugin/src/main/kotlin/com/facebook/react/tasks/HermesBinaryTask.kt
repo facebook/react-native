@@ -11,18 +11,20 @@ import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 open class HermesBinaryTask : DefaultTask() {
-  internal lateinit var reactRoot: File
+
+  @get:Internal internal lateinit var reactRoot: File
 
   @get:Input internal lateinit var hermesCommand: String
   @get:Input internal var hermesFlags: List<String> = emptyList()
   @get:InputFile internal lateinit var jsBundleFile: File
 
   @get:Input internal lateinit var composeSourceMapsCommand: List<String>
-  @get:Input internal lateinit var jsPackagerSourceMapFile: File
+  @get:InputFile internal lateinit var jsPackagerSourceMapFile: File
 
   @get:OutputFile internal lateinit var jsCompilerSourceMapFile: File
   @get:OutputFile internal lateinit var jsOutputSourceMapFile: File
