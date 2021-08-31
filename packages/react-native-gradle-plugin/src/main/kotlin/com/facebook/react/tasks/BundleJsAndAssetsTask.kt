@@ -11,13 +11,16 @@ import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 open class BundleJsAndAssetsTask : DefaultTask() {
-  internal lateinit var reactRoot: File
+
+  @get:Internal internal lateinit var reactRoot: File
 
   @get:InputFiles
   @Suppress("UNUSED") // used to invalidate caches
@@ -25,7 +28,7 @@ open class BundleJsAndAssetsTask : DefaultTask() {
   @get:Input internal lateinit var execCommand: List<String>
   @get:Input internal lateinit var bundleCommand: String
   @get:Input internal var devEnabled: Boolean = true
-  @get:Input internal lateinit var entryFile: File
+  @get:InputFile internal lateinit var entryFile: File
   @get:Input internal var extraArgs: List<String> = emptyList()
 
   @get:OutputDirectory internal lateinit var jsBundleDir: File
