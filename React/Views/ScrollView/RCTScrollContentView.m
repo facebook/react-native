@@ -14,13 +14,20 @@
 
 @implementation RCTScrollContentView
 
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+  RCTScrollView *scrollView = (RCTScrollView *)self.superview.superview;
+  [scrollView updateContentSizeIfNeeded];
+}
+
 - (void)reactSetFrame:(CGRect)frame
 {
   [super reactSetFrame:frame];
 
   RCTScrollView *scrollView = (RCTScrollView *)self.superview.superview;
 
-  if (!scrollView) {
+  if (!scrollView || !self.window) {
     return;
   }
 
