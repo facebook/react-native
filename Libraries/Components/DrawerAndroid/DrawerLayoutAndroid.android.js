@@ -161,11 +161,6 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
 
     return {Left: 'left', Right: 'right'};
   }
-  static defaultProps: {|
-    drawerBackgroundColor: 'white',
-  |} = {
-    drawerBackgroundColor: 'white',
-  };
 
   _nativeRef = React.createRef<
     React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
@@ -189,7 +184,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
           styles.drawerSubview,
           {
             width: this.props.drawerWidth,
-            backgroundColor: this.props.drawerBackgroundColor,
+            backgroundColor: this.props.drawerBackgroundColor || 'white',
           },
         ]}
         collapsable={false}>
