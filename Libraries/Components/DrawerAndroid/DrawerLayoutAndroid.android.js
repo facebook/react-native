@@ -56,8 +56,6 @@ type Props = $ReadOnly<{|
    * );
    * ```
    */
-  drawerBackgroundColor: ColorValue,
-
   /**
    * Specifies the side of the screen from which the drawer will slide in.
    */
