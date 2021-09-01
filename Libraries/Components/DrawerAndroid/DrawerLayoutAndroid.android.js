@@ -170,7 +170,6 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
 
   render(): React.Node {
     const {
-      drawerBackgroundColor = 'white',
       onDrawerStateChanged,
       renderNavigationView,
       onDrawerOpen,
