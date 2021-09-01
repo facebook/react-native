@@ -127,13 +127,13 @@ fs.writeFileSync(
 );
 
 let packageJson = JSON.parse(cat('package.json'));
-
 packageJson.version = version;
-
-// Only keep 'repo-config` workspace
-packageJson.workspaces = packageJson.workspaces.filter(w => w === 'repo-config');
-
+delete packageJson.workspaces;
 delete packageJson.private;
+
+// Copy dependencies over from repo-config/package.json
+const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
+packageJson.devDependencies = {...packageJson.devDependencies, ...repoConfigJson.dependencies};
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // Change ReactAndroid/gradle.properties
