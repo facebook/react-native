@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -27,7 +27,9 @@
  * Freezing the object and adding the throw mechanism is expensive and will
  * only be used in DEV.
  */
-function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
+function deepFreezeAndThrowOnMutationInDev<T: {...} | Array<mixed>>(
+  object: T,
+): T {
   if (__DEV__) {
     if (
       typeof object !== 'object' ||
@@ -38,7 +40,8 @@ function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
       return object;
     }
 
-    const keys = Object.keys(object);
+    // $FlowFixMe[not-an-object] `object` can be an array, but Object.keys works with arrays too
+    const keys = Object.keys((object: {...} | Array<mixed>));
     const hasOwnProperty = Object.prototype.hasOwnProperty;
 
     for (let i = 0; i < keys.length; i++) {

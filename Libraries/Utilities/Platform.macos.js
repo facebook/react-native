@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 // TODO(macOS GH#774) Copied from Platform.ios.js
@@ -24,9 +24,11 @@ export type PlatformSelectSpec<D, N, I> = {
 const Platform = {
   __constants: null,
   OS: 'macos',
+  // $FlowFixMe[unsafe-getters-setters]
   get Version(): string {
     return this.constants.osVersion;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get constants(): {|
     isTesting: boolean,
     osVersion: string,
@@ -43,9 +45,11 @@ const Platform = {
     }
     return this.__constants;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {
     return false;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get isTesting(): boolean {
     if (__DEV__) {
       return this.constants.isTesting;

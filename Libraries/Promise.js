@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -18,25 +18,29 @@ require('promise/setimmediate/finally');
 if (__DEV__) {
   require('promise/setimmediate/rejection-tracking').enable({
     allRejections: true,
-    onUnhandled: (id, error = {}) => {
+    onUnhandled: (id, rejection = {}) => {
       let message: string;
       let stack: ?string;
 
-      const stringValue = Object.prototype.toString.call(error);
+      const stringValue = Object.prototype.toString.call(rejection);
       if (stringValue === '[object Error]') {
-        message = Error.prototype.toString.call(error);
+        message = Error.prototype.toString.call(rejection);
+        const error: Error = (rejection: $FlowFixMe);
         stack = error.stack;
       } else {
         try {
-          message = require('pretty-format')(error);
+          message = require('pretty-format')(rejection);
         } catch {
-          message = typeof error === 'string' ? error : JSON.stringify(error);
+          message =
+            typeof rejection === 'string'
+              ? rejection
+              : JSON.stringify((rejection: $FlowFixMe));
         }
       }
 
       const warning =
         `Possible Unhandled Promise Rejection (id: ${id}):\n` +
-        `${message}\n` +
+        `${message ?? ''}\n` +
         (stack == null ? '' : stack);
       console.warn(warning);
     },

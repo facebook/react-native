@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -138,11 +138,18 @@ const Systrace = {
   /**
    * beginEvent/endEvent for starting and then ending a profile within the same call stack frame
    **/
-  beginEvent(profileName?: any, args?: any) {
+  beginEvent(
+    profileName?: string | (() => string),
+    args?: {[string]: string, ...},
+  ) {
     if (_enabled) {
-      profileName =
+      const profileNameString =
         typeof profileName === 'function' ? profileName() : profileName;
-      global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, profileName, args);
+      global.nativeTraceBeginSection(
+        TRACE_TAG_REACT_APPS,
+        profileNameString,
+        args,
+      );
     }
   },
 
@@ -157,28 +164,28 @@ const Systrace = {
    * occur on another thread or out of the current stack frame, eg await
    * the returned cookie variable should be used as input into the endAsyncEvent call to end the profile
    **/
-  beginAsyncEvent(profileName?: any): any {
+  beginAsyncEvent(profileName?: string | (() => string)): number {
     const cookie = _asyncCookie;
     if (_enabled) {
       _asyncCookie++;
-      profileName =
+      const profileNameString =
         typeof profileName === 'function' ? profileName() : profileName;
       global.nativeTraceBeginAsyncSection(
         TRACE_TAG_REACT_APPS,
-        profileName,
+        profileNameString,
         cookie,
       );
     }
     return cookie;
   },
 
-  endAsyncEvent(profileName?: any, cookie?: any) {
+  endAsyncEvent(profileName?: string | (() => string), cookie?: number) {
     if (_enabled) {
-      profileName =
+      const profileNameString =
         typeof profileName === 'function' ? profileName() : profileName;
       global.nativeTraceEndAsyncSection(
         TRACE_TAG_REACT_APPS,
-        profileName,
+        profileNameString,
         cookie,
       );
     }
@@ -187,12 +194,16 @@ const Systrace = {
   /**
    * counterEvent registers the value to the profileName on the systrace timeline
    **/
-  counterEvent(profileName?: any, value?: any) {
+  counterEvent(profileName?: string | (() => string), value?: number) {
     if (_enabled) {
-      profileName =
+      const profileNameString =
         typeof profileName === 'function' ? profileName() : profileName;
       global.nativeTraceCounter &&
-        global.nativeTraceCounter(TRACE_TAG_REACT_APPS, profileName, value);
+        global.nativeTraceCounter(
+          TRACE_TAG_REACT_APPS,
+          profileNameString,
+          value,
+        );
     }
   },
 };
@@ -202,7 +213,7 @@ if (__DEV__) {
   // other files. Therefore, calls to `require('moduleId')` are not replaced
   // with numeric IDs
   // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
-  (require: any).Systrace = Systrace;
+  (require: $FlowFixMe).Systrace = Systrace;
 }
 
 module.exports = Systrace;

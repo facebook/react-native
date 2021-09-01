@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -113,12 +113,15 @@ if (Platform.isTV) {
 } else {
   BackHandler = {
     exitApp: emptyFunction,
-    addEventListener(_eventName: BackPressEventName, _handler: Function) {
+    addEventListener(_eventName: BackPressEventName, _handler: () => ?boolean) {
       return {
         remove: emptyFunction,
       };
     },
-    removeEventListener(_eventName: BackPressEventName, _handler: Function) {},
+    removeEventListener(
+      _eventName: BackPressEventName,
+      _handler: () => ?boolean,
+    ) {},
   };
 }
 

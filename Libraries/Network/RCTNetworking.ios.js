@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -25,7 +25,7 @@ class RCTNetworking extends NativeEventEmitter {
     method: string,
     trackingName: string,
     url: string,
-    headers: Object,
+    headers: {...},
     data: RequestBody,
     responseType: NativeResponseType,
     incrementalUpdates: boolean,
