@@ -212,3 +212,38 @@ bash -l -c '#{env_vars} $\{PODS_TARGET_SRCROOT\}/#{prefix}/scripts/generate-spec
     :show_env_vars_in_log => true
   }
 end
+
+# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.
+# Call this in the app's main Podfile's post_install hook.
+# See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
+# Actual fix was authored by https://github.com/mikehardy.
+# New app template will call this for now until the underlying issue is resolved.
+def __apply_Xcode_12_5_M1_post_install_workaround(installer)
+  # Apple Silicon builds require a library path tweak for Swift library discovery to resolve Swift-related "symbol not found".
+  # Note: this was fixed via https://github.com/facebook/react-native/commit/eb938863063f5535735af2be4e706f70647e5b90
+  # Keeping this logic here but commented out for future reference.
+  #
+  # installer.aggregate_targets.each do |aggregate_target|
+  #   aggregate_target.user_project.native_targets.each do |target|
+  #     target.build_configurations.each do |config|
+  #       config.build_settings['LIBRARY_SEARCH_PATHS'] = ['$(SDKROOT)/usr/lib/swift', '$(inherited)']
+  #     end
+  #   end
+  #   aggregate_target.user_project.save
+  # end
+
+  # Flipper podspecs are still targeting an older iOS deployment target, and may cause an error like:
+  #   "error: thread-local storage is not supported for the current target"
+  # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+      end
+  end
+
+  # But... doing so caused another issue in Flipper:
+  #   "Time.h:52:17: error: typedef redefinition with different types"
+  # We need to make a patch to RCT-Folly - set `__IPHONE_10_0` to our iOS target + 1.
+  # See https://github.com/facebook/flipper/issues/834 for more details.
+  `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_12_0/' Pods/RCT-Folly/folly/portability/Time.h`
+end
