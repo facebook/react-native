@@ -127,10 +127,12 @@ fs.writeFileSync(
 );
 
 let packageJson = JSON.parse(cat('package.json'));
-const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
 packageJson.version = version;
 delete packageJson.workspaces;
 delete packageJson.private;
+
+// Copy dependencies over from repo-config/package.json
+const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
 packageJson.devDependencies = {...packageJson.devDependencies, ...repoConfigJson.dependencies};
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
