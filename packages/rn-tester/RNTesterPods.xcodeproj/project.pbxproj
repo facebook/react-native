@@ -321,7 +321,6 @@
 				C38CB0C2095A8FFDE13321E5 /* Pods-RNTesterUnitTests.debug.xcconfig */,
 				8735BC063632C9712E25C7D9 /* Pods-RNTesterUnitTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -610,7 +609,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nexport NODE_BINARY=node\nexport PROJECT_ROOT=\"$SRCROOT/../../\"\nexport SOURCEMAP_FILE=../sourcemap.ios.map\n# export FORCE_BUNDLING=true\n\"$SRCROOT/../../scripts/react-native-xcode.sh\" $SRCROOT/../../packages/rn-tester/js/RNTesterApp.ios.js\n";
+			shellScript = "set -e\n\nexport NODE_BINARY=node\nexport PROJECT_ROOT=\"$SRCROOT/../../\"\nexport ENTRY_FILE=\"$SRCROOT/js/RNTesterApp.ios.js\"\nexport SOURCEMAP_FILE=../sourcemap.ios.map\n# export FORCE_BUNDLING=true\n\"$SRCROOT/../../scripts/react-native-xcode.sh\"\n";
 		};
 		A2FBDDDD0C26B4EFA3726B6C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
