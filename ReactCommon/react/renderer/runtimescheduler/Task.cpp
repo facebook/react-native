@@ -7,7 +7,8 @@
 
 #include "RuntimeScheduler.h"
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 Task::Task(
     SchedulerPriority priority,
@@ -32,4 +33,5 @@ jsi::Value Task::execute(jsi::Runtime &runtime) {
   return result;
 }
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook
