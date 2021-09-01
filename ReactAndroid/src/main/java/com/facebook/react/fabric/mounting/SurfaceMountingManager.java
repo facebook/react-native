@@ -963,6 +963,25 @@ public class SurfaceMountingManager {
     return (ViewGroupManager<ViewGroup>) viewState.mViewManager;
   }
 
+  public void printSurfaceState() {
+    FLog.e(TAG, "Views created for surface {%d}:", getSurfaceId());
+    for (ViewState viewState : mTagToViewState.values()) {
+      String viewManagerName =
+          viewState.mViewManager != null ? viewState.mViewManager.getName() : null;
+      @Nullable View view = viewState.mView;
+      @Nullable View parent = view != null ? (View) view.getParent() : null;
+      @Nullable Integer parentTag = parent != null ? parent.getId() : null;
+
+      FLog.e(
+          TAG,
+          "<%s id=%d parentTag=%s isRoot=%b />",
+          viewManagerName,
+          viewState.mReactTag,
+          parentTag,
+          viewState.mIsRoot);
+    }
+  }
+
   /**
    * This class holds view state for react tags. Objects of this class are stored into the {@link
    * #mTagToViewState}, and they should be updated in the same thread.
