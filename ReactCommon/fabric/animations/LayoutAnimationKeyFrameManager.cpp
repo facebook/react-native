@@ -600,7 +600,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             mutation.type == ShadowViewMutation::Type::Insert) {
           // Indices for immediate INSERT mutations must be adjusted to insert
           // at higher indices if previous animations have deferred removals
-          // before the insertion indect
+          // before the insertion index
           // TODO: refactor to reduce code duplication
           if (mutation.type == ShadowViewMutation::Type::Insert) {
             int adjustedIndex = mutation.index;
@@ -766,12 +766,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             // tree hierarchy).
             {
               int adjustedIndex = mutation.index;
+              int adjustment = 0;
               for (auto &otherMutation : mutations) {
                 if (otherMutation.type == ShadowViewMutation::Type::Insert &&
-                    otherMutation.parentShadowView.tag == parentTag) {
-                  if (otherMutation.index <= adjustedIndex &&
-                      !mutatedViewIsVirtual(otherMutation)) {
+                    otherMutation.parentShadowView.tag == parentTag &&
+                    !mutatedViewIsVirtual(otherMutation)) {
+                  if (otherMutation.index <= adjustedIndex) {
                     adjustedIndex++;
+                    adjustment++;
                   } else {
                     // If we are delaying this remove instruction, conversely,
                     // we must adjust upward the insertion index of any INSERT
@@ -802,9 +804,16 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   }
                   const auto &delayedFinalMutation =
                       *animatedKeyFrame.finalMutationForKeyFrame;
+
+                  // Note: we add the "adjustment" we've accumulated to the
+                  // `delayedFinalMutation.index` before comparing. Since
+                  // "adjustment" is caused by Insert MountItems that we are
+                  // about to execute, but haven't yet, the delayed mutation's
+                  // index *will* be adjusted right after this.
                   if (delayedFinalMutation.type ==
                           ShadowViewMutation::Type::Remove &&
-                      delayedFinalMutation.index <= adjustedIndex) {
+                      (delayedFinalMutation.index + adjustment) <=
+                          adjustedIndex) {
                     adjustedIndex++;
                   }
                 }

@@ -407,20 +407,52 @@ jsi::Value UIManagerBinding::get(
   }
 
   if (methodName == "completeRoot") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        2,
-        [uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
-          uiManager->completeSurface(
-              surfaceIdFromValue(runtime, arguments[0]),
-              shadowNodeListFromValue(runtime, arguments[1]));
-          return jsi::Value::undefined();
-        });
+    if (uiManager->backgroundExecutor_) {
+      // Enhanced version of the method that uses `backgroundExecutor` and
+      // captures a shared pointer to `UIManager`.
+      return jsi::Function::createFromHostFunction(
+          runtime,
+          name,
+          2,
+          [uiManager, sharedUIManager = uiManager_](
+              jsi::Runtime &runtime,
+              jsi::Value const &thisValue,
+              jsi::Value const *arguments,
+              size_t count) -> jsi::Value {
+            auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
+            auto shadowNodeList =
+                shadowNodeListFromValue(runtime, arguments[1]);
+
+            if (sharedUIManager->backgroundExecutor_) {
+              sharedUIManager->backgroundExecutor_(
+                  [sharedUIManager, surfaceId, shadowNodeList] {
+                    sharedUIManager->completeSurface(surfaceId, shadowNodeList);
+                  });
+            } else {
+              uiManager->completeSurface(surfaceId, shadowNodeList);
+            }
+
+            return jsi::Value::undefined();
+          });
+    } else {
+      // Basic version of the method that does *not* use `backgroundExecutor`
+      // and does *not* capture a shared pointer to `UIManager`.
+      return jsi::Function::createFromHostFunction(
+          runtime,
+          name,
+          2,
+          [uiManager](
+              jsi::Runtime &runtime,
+              jsi::Value const &thisValue,
+              jsi::Value const *arguments,
+              size_t count) -> jsi::Value {
+            uiManager->completeSurface(
+                surfaceIdFromValue(runtime, arguments[0]),
+                shadowNodeListFromValue(runtime, arguments[1]));
+
+            return jsi::Value::undefined();
+          });
+    }
   }
 
   if (methodName == "registerEventHandler") {

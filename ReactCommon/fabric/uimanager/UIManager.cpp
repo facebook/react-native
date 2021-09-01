@@ -290,6 +290,11 @@ UIManagerDelegate *UIManager::getDelegate() {
   return delegate_;
 }
 
+void UIManager::setBackgroundExecutor(
+    BackgroundExecutor const &backgroundExecutor) {
+  backgroundExecutor_ = backgroundExecutor;
+}
+
 void UIManager::visitBinding(
     std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
     const {

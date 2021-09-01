@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {PackagerAsset} from './AssetRegistry';
+import type {PackagerAsset} from './registry.js';
 
 const androidScaleSuffix = {
   '0.75': 'ldpi',
@@ -79,7 +79,6 @@ function getBasePath(asset: PackagerAsset): string {
 }
 
 module.exports = {
-  getAndroidAssetSuffix,
   getAndroidResourceFolderName,
   getAndroidResourceIdentifier,
   getBasePath,

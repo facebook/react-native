@@ -184,7 +184,8 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
   return AccessibilityProps::getDebugProps() +
       YogaStylableProps::getDebugProps() +
       SharedDebugStringConvertibleList{
-          debugStringConvertibleItem("zIndex", zIndex, defaultViewProps.zIndex),
+          debugStringConvertibleItem(
+              "zIndex", zIndex, defaultViewProps.zIndex.value_or(0)),
           debugStringConvertibleItem(
               "opacity", opacity, defaultViewProps.opacity),
           debugStringConvertibleItem(

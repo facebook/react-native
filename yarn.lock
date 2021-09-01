@@ -1245,6 +1245,16 @@
 "@react-native-community/eslint-plugin@file:packages/eslint-plugin-react-native-community":
   version "1.1.0"
 
+"@react-native/assets@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native/assets/-/assets-1.0.0.tgz#c6f9bf63d274bafc8e970628de24986b30a55c8e"
+  integrity sha512-KrwSpS1tKI70wuKl68DwJZYEvXktDHdZMG0k2AXD/rJVSlB23/X2CB2cutVR0HwNMJIal9HOUOBB2rVfa6UGtQ==
+
+"@react-native/normalize-color@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native/normalize-color/-/normalize-color-1.0.0.tgz#c52a99d4fe01049102d47dc45d40cbde4f720ab6"
+  integrity sha512-xUNRvNmCl3UGCPbbHvfyFMnpvLPoOjDCcp5bT9m2k+TF/ZBklEQwhPZlkrxRx2NhgFh1X3a5uL7mJ7ZR+8G7Qg==
+
 "@react-native/polyfills@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@react-native/polyfills/-/polyfills-1.0.0.tgz#05bb0031533598f9458cf65a502b8df0eecae780"
@@ -3512,10 +3522,10 @@ flatted@^2.0.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
   integrity sha512-r5wGx7YeOwNWNlCA0wQ86zKyDLMQr+/RB8xy74M4hTphfmjlijTSSXGuH8rnvKZnfT9i+75zmd8jcKdMR4O6jA==
 
-flow-bin@^0.129.0:
-  version "0.129.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.129.0.tgz#50294d6e335dd97d095c27b096ea0b94c2415d55"
-  integrity sha512-WLXOj09oCK6nODVKM5uxvAzBpxXeI304E60tELMeQd/TJsyfbykNCZ+e4xml9eUOyoac9nDL3YrJpPZMzq0tMA==
+flow-bin@^0.130.0:
+  version "0.130.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.130.0.tgz#e25eaf891af96da371ff6a9fa99d709f24ce9252"
+  integrity sha512-1TSLwCPXvKPwiae7Fh+dpipCzwlHQ1UcBHfCpQImz+hsxYIUWkLWJWEm34bY6I7dSM4ekSiVeP02BhzVJGwtpw==
 
 flow-parser@0.*:
   version "0.89.0"

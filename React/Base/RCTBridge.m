@@ -24,7 +24,6 @@
 #import "RCTReloadCommand.h"
 #import "RCTUtils.h"
 
-NSString *const RCTAdditionalJavaScriptDidLoadNotification = @"RCTAdditionalJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";

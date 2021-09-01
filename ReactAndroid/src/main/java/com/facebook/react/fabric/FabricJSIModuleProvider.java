@@ -10,7 +10,6 @@ package com.facebook.react.fabric;
 import androidx.annotation.NonNull;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSIModuleProvider;
-import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.queue.MessageQueueThread;
@@ -42,18 +41,15 @@ import com.facebook.systrace.Systrace;
 
 public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
 
-  @NonNull private final JavaScriptContextHolder mJSContext;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final ComponentFactoryDelegate mComponentFactoryDelegate;
   @NonNull private final ReactNativeConfig mConfig;
 
   public FabricJSIModuleProvider(
       @NonNull ReactApplicationContext reactApplicationContext,
-      @NonNull JavaScriptContextHolder jsContext,
       @NonNull ComponentFactoryDelegate componentFactoryDelegate,
       @NonNull ReactNativeConfig config) {
     mReactApplicationContext = reactApplicationContext;
-    mJSContext = jsContext;
     mComponentFactoryDelegate = componentFactoryDelegate;
     mConfig = config;
   }
@@ -74,7 +70,6 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
             .getJSQueueThread();
 
     binding.register(
-        mJSContext,
         mReactApplicationContext.getCatalystInstance().getRuntimeExecutor(),
         uiManager,
         eventBeatManager,

@@ -206,7 +206,6 @@ void Binding::setConstraints(
 }
 
 void Binding::installFabricUIManager(
-    jlong jsContextNativePointer,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
@@ -240,24 +239,7 @@ void Binding::installFabricUIManager(
 
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
-
-  bool useRuntimeExecutor =
-      config->getBool("react_fabric:use_shared_runtime_executor_android");
-
-  RuntimeExecutor runtimeExecutor;
-  if (useRuntimeExecutor) {
-    runtimeExecutor = runtimeExecutorHolder->cthis()->get();
-  } else {
-    Runtime *runtime = (Runtime *)jsContextNativePointer;
-    runtimeExecutor =
-        [runtime, sharedJSMessageQueueThread](
-            std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
-          sharedJSMessageQueueThread->runOnQueue(
-              [runtime, callback = std::move(callback)]() {
-                callback(*runtime);
-              });
-        };
-  }
+  auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
