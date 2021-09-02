@@ -170,6 +170,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
 
   render(): React.Node {
     const {
+      drawerBackgroundColor = 'white',
       onDrawerStateChanged,
       renderNavigationView,
       onDrawerOpen,
@@ -184,7 +185,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
           styles.drawerSubview,
           {
             width: this.props.drawerWidth,
-            backgroundColor: this.props.drawerBackgroundColor || 'white',
+            backgroundColor: drawerBackgroundColor,
           },
         ]}
         collapsable={false}>
