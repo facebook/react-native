@@ -14,9 +14,19 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 public class HermesExecutorFactory implements JavaScriptExecutorFactory {
   private static final String TAG = "Hermes";
 
+  private final RuntimeConfig mConfig;
+
+  public HermesExecutorFactory() {
+    this(new RuntimeConfig(1024));
+  }
+
+  public HermesExecutorFactory(RuntimeConfig config) {
+    mConfig = config;
+  }
+
   @Override
   public JavaScriptExecutor create() {
-    return new HermesExecutor();
+    return new HermesExecutor(mConfig);
   }
 
   @Override

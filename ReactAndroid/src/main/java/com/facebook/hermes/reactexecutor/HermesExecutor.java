@@ -10,6 +10,7 @@ package com.facebook.hermes.reactexecutor;
 import com.facebook.jni.HybridData;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.soloader.SoLoader;
+import javax.annotation.Nullable;
 
 public class HermesExecutor extends JavaScriptExecutor {
   private static String mode_;
@@ -26,8 +27,8 @@ public class HermesExecutor extends JavaScriptExecutor {
     }
   }
 
-  HermesExecutor() {
-    super(initHybrid());
+  HermesExecutor(@Nullable RuntimeConfig config) {
+    super(config == null ? initHybridDefaultConfig() : initHybrid(config.heapSizeMB));
   }
 
   @Override
@@ -44,5 +45,7 @@ public class HermesExecutor extends JavaScriptExecutor {
    */
   public static native boolean canLoadFile(String path);
 
-  private static native HybridData initHybrid();
+  private static native HybridData initHybridDefaultConfig();
+
+  private static native HybridData initHybrid(long heapSizeMB);
 }
