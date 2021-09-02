@@ -2,7 +2,6 @@
 
 exports[`<DrawerLayoutAndroid /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <AndroidDrawerLayout
-  drawerBackgroundColor="white"
   drawerPosition="left"
   drawerWidth={300}
   onDrawerClose={[Function]}
@@ -54,7 +53,6 @@ exports[`<DrawerLayoutAndroid /> should render as expected: should deep render w
 
 exports[`<DrawerLayoutAndroid /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <AndroidDrawerLayout
-  drawerBackgroundColor="white"
   drawerPosition="left"
   drawerWidth={300}
   onDrawerClose={[Function]}
@@ -106,7 +104,6 @@ exports[`<DrawerLayoutAndroid /> should render as expected: should deep render w
 
 exports[`<DrawerLayoutAndroid /> should render as expected: should shallow render as <DrawerLayoutAndroid /> when mocked 1`] = `
 <DrawerLayoutAndroid
-  drawerBackgroundColor="white"
   drawerPosition="left"
   drawerWidth={300}
   renderNavigationView={[Function]}
@@ -115,7 +112,6 @@ exports[`<DrawerLayoutAndroid /> should render as expected: should shallow rende
 
 exports[`<DrawerLayoutAndroid /> should render as expected: should shallow render as <DrawerLayoutAndroid /> when not mocked 1`] = `
 <DrawerLayoutAndroid
-  drawerBackgroundColor="white"
   drawerPosition="left"
   drawerWidth={300}
   renderNavigationView={[Function]}
