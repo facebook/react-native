@@ -45,7 +45,6 @@ type Props = $ReadOnly<{|
    */
   keyboardDismissMode?: ?('none' | 'on-drag'),
 
-  
   /**
    * Specifies the side of the screen from which the drawer will slide in.
    */
