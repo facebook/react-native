@@ -117,10 +117,6 @@ type Props = $ReadOnly<{|
  * source of truth.
  */
 class DatePickerIOS extends React.Component<Props> {
-  static DefaultProps: {|mode: $TEMPORARY$string<'datetime'>|} = {
-    mode: 'datetime',
-  };
-
   _picker: ?React.ElementRef<typeof RCTDatePickerNativeComponent> = null;
 
   componentDidUpdate() {
@@ -142,6 +138,7 @@ class DatePickerIOS extends React.Component<Props> {
 
   render(): React.Node {
     const props = this.props;
+    const mode = props.mode ?? 'datetime';
     invariant(
       props.date || props.initialDate,
       'A selected date or initial date should be specified.',
@@ -153,7 +150,7 @@ class DatePickerIOS extends React.Component<Props> {
           ref={picker => {
             this._picker = picker;
           }}
-          style={getHeight(props.pickerStyle, props.mode)}
+          style={getHeight(props.pickerStyle, mode)}
           date={
             props.date
               ? props.date.getTime()
@@ -172,7 +169,7 @@ class DatePickerIOS extends React.Component<Props> {
           minimumDate={
             props.minimumDate ? props.minimumDate.getTime() : undefined
           }
-          mode={props.mode}
+          mode={mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}

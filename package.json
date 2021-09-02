@@ -94,8 +94,8 @@
     "@react-native-community/cli-platform-android": "^6.0.0",
     "@react-native-community/cli-platform-ios": "^6.0.0",
     "@react-native/assets": "1.0.0",
-    "@react-native/normalize-color": "1.0.0",
-    "@react-native/polyfills": "1.0.0",
+    "@react-native/normalize-color": "2.0.0",
+    "@react-native/polyfills": "2.0.0",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
@@ -121,7 +121,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.157.0",
+    "flow-bin": "^0.158.0",
     "react": "17.0.2"
   },
   "detox": {

@@ -48,6 +48,7 @@ export type HMRClientNativeInterface = {|
     host: string,
     port: number | string,
     isEnabled: boolean,
+    scheme?: string,
   ): void,
 |};
 
@@ -118,7 +119,7 @@ const HMRClient: HMRClientNativeInterface = {
         JSON.stringify({
           type: 'log',
           level,
-          mode: global.RN$Bridgeless ? 'NOBRIDGE' : 'BRIDGE',
+          mode: global.RN$Bridgeless === true ? 'NOBRIDGE' : 'BRIDGE',
           data: data.map(item =>
             typeof item === 'string'
               ? item
@@ -146,6 +147,7 @@ const HMRClient: HMRClientNativeInterface = {
     host: string,
     port: number | string,
     isEnabled: boolean,
+    scheme?: string = 'http',
   ) {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required parameter `bundleEntry`');
@@ -155,8 +157,12 @@ const HMRClient: HMRClientNativeInterface = {
     // Moving to top gives errors due to NativeModules not being initialized
     const LoadingView = require('./LoadingView');
 
-    const wsHost = port !== null && port !== '' ? `${host}:${port}` : host;
-    const client = new MetroHMRClient(`ws://${wsHost}/hot`);
+    const serverHost = port !== null && port !== '' ? `${host}:${port}` : host;
+
+    const serverScheme = scheme;
+
+    const client = new MetroHMRClient(`${serverScheme}://${serverHost}/hot`);
+
     hmrClient = client;
 
     const {fullBundleUrl} = getDevServer();
@@ -165,9 +171,7 @@ const HMRClient: HMRClientNativeInterface = {
       // there are any important URL parameters we can't reconstruct from
       // `setup()`'s arguments.
       fullBundleUrl ??
-        // The ws://.../hot?bundleEntry= format is an alternative to specifying
-        // a regular HTTP bundle URL.
-        `ws://${wsHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
+        `${serverScheme}://${serverHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
     );
 
     client.on('connection-error', e => {

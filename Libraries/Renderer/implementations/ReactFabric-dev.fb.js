@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<903768081f51a5abfed30db7d6f33dd7>>
+ * @generated SignedSource<<0105b67942f03415395650d296aa846a>>
  */
 
 'use strict';
@@ -2939,7 +2939,7 @@ var MountPassiveDev =
   4194304; // Groups of flags that are used in the commit phase to skip over trees that
 // don't contain effects, by checking subtreeFlags.
 
-var BeforeMutationMask = // TODO: Remove Update flag from before mutation phase by re-landing Visiblity
+var BeforeMutationMask = // TODO: Remove Update flag from before mutation phase by re-landing Visibility
   // flag logic (see #20043)
   Update | Snapshot | 0;
 var MutationMask =
@@ -2953,7 +2953,7 @@ var MutationMask =
 var LayoutMask = Update | Callback | Ref | Visibility; // TODO: Split into PassiveMountMask and PassiveUnmountMask
 
 var PassiveMask = Passive | ChildDeletion; // Union of tags that don't get reset on clones.
-// This allows certain concepts to persist without recalculting them,
+// This allows certain concepts to persist without recalculating them,
 // e.g. whether a subtree contains passive effects or portals.
 
 var StaticMask = LayoutStatic | PassiveStatic | RefStatic;
@@ -4988,8 +4988,10 @@ function createTextInstance(
   hostContext,
   internalInstanceHandle
 ) {
-  if (!hostContext.isInAParentText) {
-    throw Error("Text strings must be rendered within a <Text> component.");
+  {
+    if (!hostContext.isInAParentText) {
+      error("Text strings must be rendered within a <Text> component.");
+    }
   }
 
   var tag = nextReactTag;
@@ -5859,7 +5861,7 @@ function flushSyncCallbacksOnlyInLegacyMode() {
 }
 function flushSyncCallbacks() {
   if (!isFlushingSyncQueue && syncQueue !== null) {
-    // Prevent re-entrancy.
+    // Prevent re-entrance.
     isFlushingSyncQueue = true;
     var i = 0;
     var previousUpdatePriority = getCurrentUpdatePriority();
@@ -5898,22 +5900,7 @@ function flushSyncCallbacks() {
   return null;
 }
 
-var NoFlags$1 =
-  /*  */
-  0; // Represents whether effect should fire.
-
-var HasEffect =
-  /* */
-  1; // Represents the phase in which the effect (not the clean-up) fires.
-
-var Layout =
-  /*    */
-  2;
-var Passive$1 =
-  /*   */
-  4;
-
-var ReactVersion = "18.0.0-424fe5870-20210816";
+var ReactVersion = "18.0.0-bd5bf555e-20210823";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -6710,7 +6697,7 @@ function readContext(context) {
 
 // An array of all update queues that received updates during the current
 // render. When this render exits, either because it finishes or because it is
-// interrupted, the interleaved updates will be transfered onto the main part
+// interrupted, the interleaved updates will be transferred onto the main part
 // of the queue.
 var interleavedQueues = null;
 function pushInterleavedQueue(queue) {
@@ -6823,7 +6810,7 @@ function enqueueUpdate(fiber, update, lane) {
     if (interleaved === null) {
       // This is the first update. Create a circular list.
       update.next = update; // At the end of the current render, this queue's interleaved updates will
-      // be transfered to the pending queue.
+      // be transferred to the pending queue.
 
       pushInterleavedQueue(sharedQueue);
     } else {
@@ -9866,6 +9853,21 @@ function findFirstSuspended(row) {
   return null;
 }
 
+var NoFlags$1 =
+  /*  */
+  0; // Represents whether effect should fire.
+
+var HasEffect =
+  /* */
+  1; // Represents the phase in which the effect (not the clean-up) fires.
+
+var Layout =
+  /*    */
+  2;
+var Passive$1 =
+  /*   */
+  4;
+
 var isHydrating = false;
 
 function enterHydrationState(fiber) {
@@ -10234,7 +10236,7 @@ function renderWithHooks(
       children = Component(props, secondArg);
     } while (didScheduleRenderPhaseUpdateDuringThisPass);
   } // We can assume the previous dispatcher is always this one, since we set it
-  // at the beginning of the render phase and there's no re-entrancy.
+  // at the beginning of the render phase and there's no re-entrance.
 
   ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
 
@@ -10302,7 +10304,7 @@ function bailoutHooks(current, workInProgress, lanes) {
 }
 function resetHooksAfterThrow() {
   // We can assume the previous dispatcher is always this one, since we set it
-  // at the beginning of the render phase and there's no re-entrancy.
+  // at the beginning of the render phase and there's no re-entrance.
   ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
 
   if (didScheduleRenderPhaseUpdate) {
@@ -10667,7 +10669,7 @@ function rerenderReducer(reducer, initialArg, init) {
   return [newState, dispatch];
 }
 
-function readFromUnsubcribedMutableSource(root, source, getSnapshot) {
+function readFromUnsubscribedMutableSource(root, source, getSnapshot) {
   {
     warnAboutMultipleRenderersDEV(source);
   }
@@ -10799,7 +10801,7 @@ function useMutableSource(hook, source, getSnapshot, subscribe) {
   var dispatcher = ReactCurrentDispatcher$1.current; // eslint-disable-next-line prefer-const
 
   var _dispatcher$useState = dispatcher.useState(function() {
-      return readFromUnsubcribedMutableSource(root, source, getSnapshot);
+      return readFromUnsubscribedMutableSource(root, source, getSnapshot);
     }),
     currentSnapshot = _dispatcher$useState[0],
     setSnapshot = _dispatcher$useState[1];
@@ -10928,7 +10930,7 @@ function useMutableSource(hook, source, getSnapshot, subscribe) {
     );
     stateHook.queue = newQueue;
     stateHook.baseQueue = null;
-    snapshot = readFromUnsubcribedMutableSource(root, source, getSnapshot);
+    snapshot = readFromUnsubscribedMutableSource(root, source, getSnapshot);
     stateHook.memoizedState = stateHook.baseState = snapshot;
   }
 
@@ -11454,7 +11456,7 @@ function dispatchAction(fiber, queue, action) {
       if (interleaved === null) {
         // This is the first update. Create a circular list.
         update.next = update; // At the end of the current render, this queue's interleaved updates will
-        // be transfered to the pending queue.
+        // be transferred to the pending queue.
 
         pushInterleavedQueue(queue);
       } else {
@@ -13835,7 +13837,7 @@ function completeWork(current, workInProgress, renderLanes) {
                 workInProgress.flags |= DidCapture;
                 cutOffTailIfNeeded(renderState, false); // If this is a newly suspended tree, it might not get committed as
                 // part of the second pass. In that case nothing will subscribe to
-                // its thennables. Instead, we'll transfer its thennables to the
+                // its thenables. Instead, we'll transfer its thenables to the
                 // SuspenseList so that it can retry if they resolve.
                 // There might be multiple of these in the list but since we're
                 // going to wait for all of them anyway, it doesn't really matter
@@ -13846,10 +13848,10 @@ function completeWork(current, workInProgress, renderLanes) {
                 // doesn't matter since that means that the other boundaries that
                 // we did find already has their listeners attached.
 
-                var newThennables = suspended.updateQueue;
+                var newThenables = suspended.updateQueue;
 
-                if (newThennables !== null) {
-                  workInProgress.updateQueue = newThennables;
+                if (newThenables !== null) {
+                  workInProgress.updateQueue = newThenables;
                   workInProgress.flags |= Update;
                 } // Rerender the whole list, but this time, we'll force fallbacks
                 // to stay in place.
@@ -13905,10 +13907,10 @@ function completeWork(current, workInProgress, renderLanes) {
             didSuspendAlready = true; // Ensure we transfer the update queue to the parent so that it doesn't
             // get lost if this row ends up dropped during a second pass.
 
-            var _newThennables = _suspended.updateQueue;
+            var _newThenables = _suspended.updateQueue;
 
-            if (_newThennables !== null) {
-              workInProgress.updateQueue = _newThennables;
+            if (_newThenables !== null) {
+              workInProgress.updateQueue = _newThenables;
               workInProgress.flags |= Update;
             }
 
@@ -15455,7 +15457,7 @@ function shouldRemainOnFallback(
     var suspenseState = current.memoizedState;
 
     if (suspenseState === null) {
-      // Currently showing content. Don't hide it, even if ForceSuspenseFallack
+      // Currently showing content. Don't hide it, even if ForceSuspenseFallback
       // is true. More precise name might be "ForceRemainSuspenseFallback".
       // Note: This is a factoring smell. Can't remain on a fallback if there's
       // no fallback to remain on.
@@ -15507,7 +15509,7 @@ function updateSuspenseComponent(current, workInProgress, renderLanes) {
 
   suspenseContext = setDefaultShallowSuspenseContext(suspenseContext);
   pushSuspenseContext(workInProgress, suspenseContext); // OK, the next part is confusing. We're about to reconcile the Suspense
-  // boundary's children. This involves some custom reconcilation logic. Two
+  // boundary's children. This involves some custom reconciliation logic. Two
   // main reasons this is so complicated.
   //
   // First, Legacy Mode has different semantics for backwards compatibility. The
@@ -18356,7 +18358,7 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
   // TODO: The factoring of this phase could probably be improved. Consider
   // switching on the type of work before checking the flags. That's what
   // we do in all the other phases. I think this one is only different
-  // because of the shared reconcilation logic below.
+  // because of the shared reconciliation logic below.
   var flags = finishedWork.flags;
 
   if (flags & Ref) {
@@ -19003,10 +19005,7 @@ var nestedPassiveUpdateCount = 0; // If two updates are scheduled within the sam
 // between the first and second call.
 
 var currentEventTime = NoTimestamp;
-var currentEventTransitionLane = NoLanes; // Dev only flag that tracks if passive effects are currently being flushed.
-// We warn about state updates for unmounted components differently in this case.
-
-var isFlushingPassiveEffects = false;
+var currentEventTransitionLane = NoLanes;
 function getWorkInProgressRoot() {
   return workInProgressRoot;
 }
@@ -19104,7 +19103,6 @@ function scheduleUpdateOnFiber(fiber, lane, eventTime) {
   var root = markUpdateLaneFromFiberToRoot(fiber, lane);
 
   if (root === null) {
-    warnAboutUpdateOnUnmountedFiberInDEV(fiber);
     return null;
   }
 
@@ -20429,10 +20427,6 @@ function flushPassiveEffectsImpl() {
     throw Error("Cannot flush passive effects while already rendering.");
   }
 
-  {
-    isFlushingPassiveEffects = true;
-  }
-
   var prevExecutionContext = executionContext;
   executionContext |= CommitContext;
   commitPassiveUnmountEffects(root.current);
@@ -20446,10 +20440,6 @@ function flushPassiveEffectsImpl() {
       var _fiber = profilerEffects[i];
       commitPassiveEffectDurations(root, _fiber);
     }
-  }
-
-  {
-    isFlushingPassiveEffects = false;
   }
 
   {
@@ -20826,86 +20816,6 @@ function warnAboutUpdateOnNotYetMountedFiberInDEV(fiber) {
         setCurrentFiber(fiber);
       } else {
         resetCurrentFiber();
-      }
-    }
-  }
-}
-
-var didWarnStateUpdateForUnmountedComponent = null;
-
-function warnAboutUpdateOnUnmountedFiberInDEV(fiber) {
-  {
-    var tag = fiber.tag;
-
-    if (
-      tag !== HostRoot &&
-      tag !== ClassComponent &&
-      tag !== FunctionComponent &&
-      tag !== ForwardRef &&
-      tag !== MemoComponent &&
-      tag !== SimpleMemoComponent
-    ) {
-      // Only warn for user-defined components, not internal ones like Suspense.
-      return;
-    }
-
-    if ((fiber.flags & PassiveStatic) !== NoFlags) {
-      var updateQueue = fiber.updateQueue;
-
-      if (updateQueue !== null) {
-        var lastEffect = updateQueue.lastEffect;
-
-        if (lastEffect !== null) {
-          var firstEffect = lastEffect.next;
-          var effect = firstEffect;
-
-          do {
-            if (effect.destroy !== undefined) {
-              if ((effect.tag & Passive$1) !== NoFlags$1) {
-                return;
-              }
-            }
-
-            effect = effect.next;
-          } while (effect !== firstEffect);
-        }
-      }
-    } // We show the whole stack but dedupe on the top component's name because
-    // the problematic code almost always lies inside that component.
-
-    var componentName = getComponentNameFromFiber(fiber) || "ReactComponent";
-
-    if (didWarnStateUpdateForUnmountedComponent !== null) {
-      if (didWarnStateUpdateForUnmountedComponent.has(componentName)) {
-        return;
-      }
-
-      didWarnStateUpdateForUnmountedComponent.add(componentName);
-    } else {
-      didWarnStateUpdateForUnmountedComponent = new Set([componentName]);
-    }
-
-    if (isFlushingPassiveEffects);
-    else {
-      var previousFiber = current;
-
-      try {
-        setCurrentFiber(fiber);
-
-        error(
-          "Can't perform a React state update on an unmounted component. This " +
-            "is a no-op, but it indicates a memory leak in your application. To " +
-            "fix, cancel all subscriptions and asynchronous tasks in %s.",
-          tag === ClassComponent
-            ? "the componentWillUnmount method"
-            : "a useEffect cleanup function"
-        );
-      } finally {
-        if (previousFiber) {
-          setCurrentFiber(fiber);
-        } else {
-          resetCurrentFiber();
-        }
       }
     }
   }

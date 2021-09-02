@@ -132,6 +132,6 @@ export default ({
   title: "Modal's onShow/onDismiss",
   name: 'onShow',
   description:
-    'onShow and onDismiss (iOS only) callbacks are called when modals is shown/dissmissed',
+    'onShow and onDismiss (iOS only) callbacks are called when a modal is shown/dismissed',
   render: (): React.Node => <ModalOnShowOnDismiss />,
 }: RNTesterModuleExample);
