@@ -121,6 +121,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   return _bridge != nil;
 }
 
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return _bridge.moduleRegistry;
+}
+
 #pragma mark - passThroughTouches
 
 - (BOOL)passThroughTouches

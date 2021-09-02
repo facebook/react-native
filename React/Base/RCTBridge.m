@@ -257,6 +257,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   });
 }
 
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return self.batchedBridge.moduleRegistry;
+}
+
 - (NSArray<Class> *)moduleClasses
 {
   return self.batchedBridge.moduleClasses;

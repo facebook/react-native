@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 
 #import "RCTAssert.h"
+#import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"
@@ -96,6 +97,11 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
 - (BOOL)hasBridge
 {
   return _bridge != nil;
+}
+
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return _bridge.moduleRegistry;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
