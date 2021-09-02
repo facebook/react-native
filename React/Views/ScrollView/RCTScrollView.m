@@ -318,9 +318,9 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   UIEdgeInsets newEdgeInsets = _scrollView.contentInset;
   CGFloat inset = MAX(scrollViewLowerY - endFrame.origin.y, 0);
   if (self.inverted) {
-    newEdgeInsets.top = inset;
+    newEdgeInsets.top = MAX(inset, _contentInset.top);
   } else {
-    newEdgeInsets.bottom = inset;
+    newEdgeInsets.bottom = MAX(inset, _contentInset.bottom);
   }
 
   CGPoint newContentOffset = _scrollView.contentOffset;
