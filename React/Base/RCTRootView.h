@@ -88,6 +88,8 @@ extern
  */
 @property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
 
+@property (nonatomic, strong, readonly) id<RCTEventDispatcherProtocol> eventDispatcher;
+
 /**
  * The name of the JavaScript module to execute within the
  * specified scriptURL (required). Setting this will not have

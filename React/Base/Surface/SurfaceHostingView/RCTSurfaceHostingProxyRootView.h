@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) RCTBridge *bridge;
 @property (nonatomic, readonly) BOOL hasBridge;
 @property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
+@property (nonatomic, strong, readonly) id<RCTEventDispatcherProtocol> eventDispatcher;
 @property (nonatomic, copy, readwrite) NSDictionary *appProperties;
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 @property (nonatomic, weak) id<RCTRootViewDelegate> delegate;

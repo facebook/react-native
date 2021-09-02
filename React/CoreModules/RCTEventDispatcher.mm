@@ -56,6 +56,11 @@ RCT_EXPORT_MODULE()
   _observersLock = [NSLock new];
 }
 
+- (void)sendViewEventWithName:(NSString *)name reactTag:(NSNumber *)reactTag
+{
+  [_callableJSModules invokeModule:@"RCTViewEventEmitter" method:@"emit" withArgs:@[ name, RCTNullIfNil(reactTag) ]];
+}
+
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {
   [_callableJSModules invokeModule:@"RCTNativeAppEventEmitter"

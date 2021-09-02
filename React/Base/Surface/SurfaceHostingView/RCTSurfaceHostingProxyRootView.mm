@@ -104,6 +104,11 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   return _bridge.moduleRegistry;
 }
 
+- (id<RCTEventDispatcherProtocol>)eventDispatcher
+{
+  return [self.moduleRegistry moduleForName:"EventDispatcher"];
+}
+
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
