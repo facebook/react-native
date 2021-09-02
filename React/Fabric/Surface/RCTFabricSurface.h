@@ -7,7 +7,7 @@
 
 #import <React/RCTPrimitives.h>
 #import <React/RCTSurfaceStage.h>
-#import <react/mounting/MountingCoordinator.h>
+#import <react/renderer/mounting/MountingCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

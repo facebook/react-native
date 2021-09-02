@@ -9,12 +9,12 @@
 #import <memory>
 
 #import <React/RCTPrimitives.h>
-#import <react/componentregistry/ComponentDescriptorFactory.h>
-#import <react/core/ComponentDescriptor.h>
-#import <react/core/LayoutConstraints.h>
-#import <react/core/LayoutContext.h>
-#import <react/mounting/MountingCoordinator.h>
-#import <react/scheduler/SchedulerToolbox.h>
+#import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#import <react/renderer/core/ComponentDescriptor.h>
+#import <react/renderer/core/LayoutConstraints.h>
+#import <react/renderer/core/LayoutContext.h>
+#import <react/renderer/mounting/MountingCoordinator.h>
+#import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN

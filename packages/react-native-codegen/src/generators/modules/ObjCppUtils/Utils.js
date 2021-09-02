@@ -14,6 +14,7 @@ import type {
   ObjectParamTypeAnnotation,
   ObjectTypeAliasTypeShape,
 } from '../../../CodegenSchema';
+const {getTypeAliasTypeAnnotation} = require('../Utils');
 
 function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -104,35 +105,8 @@ function getSafePropertyName(property: ObjectParamTypeAnnotation): string {
   return property.name;
 }
 
-function getTypeAliasTypeAnnotation(
-  name: string,
-  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
-): $ReadOnly<ObjectTypeAliasTypeShape> {
-  const typeAnnotation = aliases[name];
-  if (!typeAnnotation) {
-    throw Error(`No type annotation found for "${name}" in schema`);
-  }
-  if (typeAnnotation.type === 'ObjectTypeAnnotation') {
-    if (typeAnnotation.properties) {
-      return typeAnnotation;
-    }
-
-    throw new Error(
-      `Unsupported type for "${name}". Please provide properties.`,
-    );
-  }
-  if (typeAnnotation.type === 'TypeAliasTypeAnnotation') {
-    return getTypeAliasTypeAnnotation(typeAnnotation.name, aliases);
-  }
-
-  throw Error(
-    `Unsupported type annotation in alias "${name}", found: ${typeAnnotation.type}`,
-  );
-}
-
 module.exports = {
   flatObjects,
   capitalizeFirstLetter,
   getSafePropertyName,
-  getTypeAliasTypeAnnotation,
 };

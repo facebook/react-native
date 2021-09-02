@@ -61,7 +61,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             jsContext.get(),
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
-            delegate);
+            delegate,
+            false);
     installJSIBindings();
 
     mEagerInitModuleNames =
@@ -155,7 +156,16 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       moduleHolder = mTurboModuleHolders.get(moduleName);
     }
 
-    return getModule(moduleName, moduleHolder);
+    TurboModulePerfLogger.moduleCreateStart(moduleName, moduleHolder.getModuleId());
+    TurboModule module = getModule(moduleName, moduleHolder, true);
+
+    if (module != null) {
+      TurboModulePerfLogger.moduleCreateEnd(moduleName, moduleHolder.getModuleId());
+    } else {
+      TurboModulePerfLogger.moduleCreateFail(moduleName, moduleHolder.getModuleId());
+    }
+
+    return module;
   }
 
   /**
@@ -166,11 +176,16 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
    * initialized.
    */
   @Nullable
-  private TurboModule getModule(String moduleName, @NonNull TurboModuleHolder moduleHolder) {
+  private TurboModule getModule(
+      String moduleName, @NonNull TurboModuleHolder moduleHolder, boolean shouldPerfLog) {
     boolean shouldCreateModule = false;
 
     synchronized (moduleHolder) {
       if (moduleHolder.isDoneCreatingModule()) {
+        if (shouldPerfLog) {
+          TurboModulePerfLogger.moduleCreateCacheHit(moduleName, moduleHolder.getModuleId());
+        }
+
         return moduleHolder.getModule();
       }
 
@@ -182,11 +197,15 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     }
 
     if (shouldCreateModule) {
+      TurboModulePerfLogger.moduleCreateConstructStart(moduleName, moduleHolder.getModuleId());
       TurboModule turboModule = mJavaModuleProvider.getModule(moduleName);
 
       if (turboModule == null) {
         turboModule = mCxxModuleProvider.getModule(moduleName);
       }
+
+      TurboModulePerfLogger.moduleCreateConstructEnd(moduleName, moduleHolder.getModuleId());
+      TurboModulePerfLogger.moduleCreateSetUpStart(moduleName, moduleHolder.getModuleId());
 
       if (turboModule != null) {
         synchronized (moduleHolder) {
@@ -205,6 +224,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             "TurboModuleManager.getModule: TurboModule " + moduleName + " not found in delegate");
       }
 
+      TurboModulePerfLogger.moduleCreateSetUpEnd(moduleName, moduleHolder.getModuleId());
       synchronized (moduleHolder) {
         moduleHolder.endCreatingModule();
         moduleHolder.notifyAll();
@@ -278,7 +298,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       long jsContext,
       CallInvokerHolderImpl jsCallInvokerHolder,
       CallInvokerHolderImpl nativeCallInvokerHolder,
-      TurboModuleManagerDelegate tmmDelegate);
+      TurboModuleManagerDelegate tmmDelegate,
+      boolean enablePromiseAsyncDispatch);
 
   private native void installJSIBindings();
 
@@ -310,7 +331,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
        * initialized. In this case, we should wait for initialization to complete, before destroying
        * the TurboModule.
        */
-      final TurboModule turboModule = getModule(moduleName, moduleHolder);
+      final TurboModule turboModule = getModule(moduleName, moduleHolder, false);
 
       if (turboModule != null) {
         // TODO(T48014458): Rename this to invalidate()
@@ -336,6 +357,17 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     private volatile TurboModule mModule = null;
     private volatile boolean mIsTryingToCreate = false;
     private volatile boolean mIsDoneCreatingModule = false;
+    private static volatile int sHolderCount = 0;
+    private volatile int mModuleId;
+
+    public TurboModuleHolder() {
+      mModuleId = sHolderCount;
+      sHolderCount += 1;
+    }
+
+    int getModuleId() {
+      return mModuleId;
+    }
 
     void setModule(@NonNull TurboModule module) {
       mModule = module;

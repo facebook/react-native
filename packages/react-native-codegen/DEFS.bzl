@@ -201,7 +201,7 @@ def rn_codegen_components(
                 ":{}".format(generate_props_h_name),
                 ":{}".format(generate_shadow_node_h_name),
             ],
-            header_namespace = "react/components/{}".format(name),
+            header_namespace = "react/renderer/components/{}".format(name),
             exported_headers = {
                 "ComponentDescriptors.h": ":{}".format(generate_component_descriptor_h_name),
                 "EventEmitters.h": ":{}".format(generate_event_emitter_h_name),
@@ -238,12 +238,12 @@ def rn_codegen_components(
                 "//xplat/folly:memory",
                 "//xplat/folly:molly",
                 YOGA_CXX_TARGET,
-                react_native_xplat_target("fabric/debug:debug"),
-                react_native_xplat_target("fabric/core:core"),
-                react_native_xplat_target("fabric/graphics:graphics"),
-                react_native_xplat_target("fabric/components/image:image"),
-                react_native_xplat_target("fabric/imagemanager:imagemanager"),
-                react_native_xplat_target("fabric/components/view:view"),
+                react_native_xplat_target("react/renderer/debug:debug"),
+                react_native_xplat_target("react/renderer/core:core"),
+                react_native_xplat_target("react/renderer/graphics:graphics"),
+                react_native_xplat_target("react/renderer/components/image:image"),
+                react_native_xplat_target("react/renderer/imagemanager:imagemanager"),
+                react_native_xplat_target("react/renderer/components/view:view"),
             ],
         )
 
@@ -260,6 +260,8 @@ def rn_codegen_components(
             deps = [
                 react_native_dep("third-party/android/androidx:annotation"),
                 react_native_target("java/com/facebook/react/bridge:bridge"),
+                react_native_target("java/com/facebook/react/common:common"),
+                react_native_target("java/com/facebook/react/turbomodule/core:core"),
                 react_native_target("java/com/facebook/react/uimanager:uimanager"),
             ],
         )

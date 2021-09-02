@@ -324,6 +324,91 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+
+namespace JS {
+  namespace NativeAnimatedTurboModule {
+    struct EndResult {
+      bool finished() const;
+
+      EndResult(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAnimatedTurboModule_EndResult)
++ (RCTManagedPointer *)JS_NativeAnimatedTurboModule_EndResult:(id)json;
+@end
+
+namespace JS {
+  namespace NativeAnimatedTurboModule {
+    struct EventMapping {
+      facebook::react::LazyVector<NSString *> nativeEventPath() const;
+      folly::Optional<double> animatedValueTag() const;
+
+      EventMapping(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAnimatedTurboModule_EventMapping)
++ (RCTManagedPointer *)JS_NativeAnimatedTurboModule_EventMapping:(id)json;
+@end
+@protocol NativeAnimatedTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)createAnimatedNode:(double)tag
+                    config:(NSDictionary *)config;
+- (void)getValue:(double)tag
+saveValueCallback:(RCTResponseSenderBlock)saveValueCallback;
+- (void)startListeningToAnimatedNodeValue:(double)tag;
+- (void)stopListeningToAnimatedNodeValue:(double)tag;
+- (void)connectAnimatedNodes:(double)parentTag
+                    childTag:(double)childTag;
+- (void)disconnectAnimatedNodes:(double)parentTag
+                       childTag:(double)childTag;
+- (void)startAnimatingNode:(double)animationId
+                   nodeTag:(double)nodeTag
+                    config:(NSDictionary *)config
+               endCallback:(RCTResponseSenderBlock)endCallback;
+- (void)stopAnimation:(double)animationId;
+- (void)setAnimatedNodeValue:(double)nodeTag
+                       value:(double)value;
+- (void)setAnimatedNodeOffset:(double)nodeTag
+                       offset:(double)offset;
+- (void)flattenAnimatedNodeOffset:(double)nodeTag;
+- (void)extractAnimatedNodeOffset:(double)nodeTag;
+- (void)connectAnimatedNodeToView:(double)nodeTag
+                          viewTag:(double)viewTag;
+- (void)disconnectAnimatedNodeFromView:(double)nodeTag
+                               viewTag:(double)viewTag;
+- (void)restoreDefaultValues:(double)nodeTag;
+- (void)dropAnimatedNode:(double)tag;
+- (void)addAnimatedEventToView:(double)viewTag
+                     eventName:(NSString *)eventName
+                  eventMapping:(JS::NativeAnimatedTurboModule::EventMapping &)eventMapping;
+- (void)removeAnimatedEventFromView:(double)viewTag
+                          eventName:(NSString *)eventName
+                    animatedNodeTag:(double)animatedNodeTag;
+- (void)addListener:(NSString *)eventName;
+- (void)removeListeners:(double)count;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'AnimatedTurboModule'
+     */
+
+    class JSI_EXPORT NativeAnimatedTurboModuleSpecJSI : public ObjCTurboModule {
+    public:
+      NativeAnimatedTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeAnimationsDebugModuleSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)startRecordingFps;
@@ -2874,6 +2959,21 @@ inline facebook::react::LazyVector<NSString *> JS::NativeAnimatedModule::EventMa
   return RCTBridgingToVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
 }
 inline folly::Optional<double> JS::NativeAnimatedModule::EventMapping::animatedValueTag() const
+{
+  id const p = _v[@"animatedValueTag"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline bool JS::NativeAnimatedTurboModule::EndResult::finished() const
+{
+  id const p = _v[@"finished"];
+  return RCTBridgingToBool(p);
+}
+inline facebook::react::LazyVector<NSString *> JS::NativeAnimatedTurboModule::EventMapping::nativeEventPath() const
+{
+  id const p = _v[@"nativeEventPath"];
+  return RCTBridgingToVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
+}
+inline folly::Optional<double> JS::NativeAnimatedTurboModule::EventMapping::animatedValueTag() const
 {
   id const p = _v[@"animatedValueTag"];
   return RCTBridgingToOptionalDouble(p);

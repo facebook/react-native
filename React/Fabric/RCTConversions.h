@@ -7,12 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import <react/components/view/AccessibilityPrimitives.h>
-#import <react/components/view/primitives.h>
-#import <react/core/LayoutPrimitives.h>
-#import <react/graphics/Color.h>
-#import <react/graphics/Geometry.h>
-#import <react/graphics/Transform.h>
+#import <react/renderer/components/view/AccessibilityPrimitives.h>
+#import <react/renderer/components/view/primitives.h>
+#import <react/renderer/core/LayoutPrimitives.h>
+#import <react/renderer/graphics/Color.h>
+#import <react/renderer/graphics/Geometry.h>
+#import <react/renderer/graphics/Transform.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

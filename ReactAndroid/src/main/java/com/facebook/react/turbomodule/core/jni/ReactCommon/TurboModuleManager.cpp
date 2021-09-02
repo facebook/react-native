@@ -39,9 +39,12 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jlong jsContext,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
     jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
+    bool enablePromiseAsyncDispatch) {
   auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
   auto nativeCallInvoker = nativeCallInvokerHolder->cthis()->getCallInvoker();
+
+  JavaTurboModule::enablePromiseAsyncDispatch(enablePromiseAsyncDispatch);
 
   return makeCxxInstance(
       jThis,
@@ -70,7 +73,8 @@ void TurboModuleManager::installJSIBindings() {
        nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
        delegate_ = jni::make_weak(delegate_),
        javaPart_ = jni::make_weak(javaPart_)](
-          const std::string &name) -> std::shared_ptr<TurboModule> {
+          const std::string &name,
+          const jsi::Value *schema) -> std::shared_ptr<TurboModule> {
     auto turboModuleCache = turboModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
     auto nativeCallInvoker = nativeCallInvoker_.lock();

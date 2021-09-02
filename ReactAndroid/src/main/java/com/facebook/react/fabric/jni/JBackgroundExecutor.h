@@ -8,7 +8,7 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/uimanager/primitives.h>
+#include <react/renderer/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {

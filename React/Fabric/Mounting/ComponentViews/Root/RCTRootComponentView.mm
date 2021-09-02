@@ -7,8 +7,8 @@
 
 #import "RCTRootComponentView.h"
 
-#import <react/components/root/RootComponentDescriptor.h>
-#import <react/components/root/RootProps.h>
+#import <react/renderer/components/root/RootComponentDescriptor.h>
+#import <react/renderer/components/root/RootProps.h>
 
 using namespace facebook::react;
 

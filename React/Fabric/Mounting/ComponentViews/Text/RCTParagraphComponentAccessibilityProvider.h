@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import <react/attributedstring/AttributedString.h>
-#import <react/attributedstring/ParagraphAttributes.h>
-#import <react/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/renderer/attributedstring/AttributedString.h>
+#import <react/renderer/attributedstring/ParagraphAttributes.h>
+#import <react/renderer/textlayoutmanager/RCTTextLayoutManager.h>
 
 #import "RCTParagraphComponentView.h"
 

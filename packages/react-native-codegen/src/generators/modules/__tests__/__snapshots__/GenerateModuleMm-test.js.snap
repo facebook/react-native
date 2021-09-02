@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GenerateModuleHObjCpp can generate fixture COMPLEX_OBJECTS 1`] = `
+exports[`GenerateModuleMm can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
   "SampleSpec-generated.mm" => "
 /**
@@ -102,7 +102,7 @@ namespace facebook {
 }
 `;
 
-exports[`GenerateModuleHObjCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
+exports[`GenerateModuleMm can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
   "SampleSpec-generated.mm" => "
 /**
@@ -132,7 +132,7 @@ namespace facebook {
 }
 `;
 
-exports[`GenerateModuleHObjCpp can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
+exports[`GenerateModuleMm can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
   "SampleSpec-generated.mm" => "
 /**
@@ -200,7 +200,7 @@ namespace facebook {
 }
 `;
 
-exports[`GenerateModuleHObjCpp can generate fixture REAL_MODULE_EXAMPLE 1`] = `
+exports[`GenerateModuleMm can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
   "SampleSpec-generated.mm" => "
 /**
@@ -374,7 +374,7 @@ namespace facebook {
 }
 `;
 
-exports[`GenerateModuleHObjCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
+exports[`GenerateModuleMm can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
   "SampleSpec-generated.mm" => "
 /**
@@ -468,7 +468,7 @@ namespace facebook {
 }
 `;
 
-exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
+exports[`GenerateModuleMm can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
   "SampleSpec-generated.mm" => "
 /**
@@ -515,7 +515,7 @@ namespace facebook {
 }
 `;
 
-exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_SAME_FILE 1`] = `
+exports[`GenerateModuleMm can generate fixture TWO_MODULES_SAME_FILE 1`] = `
 Map {
   "SampleSpec-generated.mm" => "
 /**

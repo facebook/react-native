@@ -24,7 +24,7 @@ const {
   getNamespacedStructName,
 } = require('./ObjCppUtils/GenerateStructs');
 
-const {getTypeAliasTypeAnnotation} = require('./ObjCppUtils/Utils');
+const {getTypeAliasTypeAnnotation} = require('./Utils');
 
 type FilesOutput = Map<string, string>;
 

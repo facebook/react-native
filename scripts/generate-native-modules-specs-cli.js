@@ -15,7 +15,7 @@ const mkdirp = require('mkdirp');
 const os = require('os');
 const path = require('path');
 
-function generateSpec(schemaPath, outputDirectory) {
+function generateSpec(platform, schemaPath, outputDirectory) {
   const libraryName = 'FBReactNativeSpec';
   const moduleSpecName = 'FBReactNativeSpec';
   const schemaText = fs.readFileSync(schemaPath, 'utf-8');
@@ -38,14 +38,7 @@ function generateSpec(schemaPath, outputDirectory) {
   RNCodegen.generate(
     {libraryName, schema, outputDirectory: tempOutputDirectory, moduleSpecName},
     {
-      generators: [
-        'descriptors',
-        'events',
-        'props',
-        'tests',
-        'shadow-nodes',
-        'modules',
-      ],
+      generators: ['modules'],
     },
   );
 
@@ -60,19 +53,35 @@ function generateSpec(schemaPath, outputDirectory) {
   }
   mkdirp.sync(outputDirectory);
 
-  const fileNames = [`${moduleSpecName}.h`, `${moduleSpecName}-generated.mm`];
-  fileNames.forEach(fileName => {
-    const newOutput = `${tempOutputDirectory}/${fileName}`;
-    const prevOutput = `${outputDirectory}/${fileName}`;
-    fs.copyFileSync(newOutput, prevOutput);
-  });
+  if (platform === 'ios') {
+    const fileNames = [`${moduleSpecName}.h`, `${moduleSpecName}-generated.mm`];
+    fileNames.forEach(fileName => {
+      const newOutput = `${tempOutputDirectory}/${fileName}`;
+      const prevOutput = `${outputDirectory}/${fileName}`;
+      fs.copyFileSync(newOutput, prevOutput);
+    });
+  } else if (platform === 'android') {
+    // Copy all .java files for now.
+    // TODO: Build sufficient support for producing Java package directories based
+    // on preferred package name.
+    const files = fs.readdirSync(tempOutputDirectory);
+    files
+      .filter(f => f.endsWith('.java'))
+      .forEach(f => {
+        fs.copyFileSync(
+          `${tempOutputDirectory}/${f}`,
+          `${outputDirectory}/${f}`,
+        );
+      });
+  }
 }
 
 function main() {
   const args = process.argv.slice(2);
-  const schemaPath = args[0];
-  const outputDir = args[1];
-  generateSpec(schemaPath, outputDir);
+  const platform = args[0];
+  const schemaPath = args[1];
+  const outputDir = args[2];
+  generateSpec(platform, schemaPath, outputDir);
 }
 
 main();

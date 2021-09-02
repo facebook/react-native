@@ -47,8 +47,8 @@ step_gen_schema () {
 }
 
 step_gen_specs () {
-  describe "Generating native code from schema"
-  "$YARN_BINARY" --silent node scripts/generate-native-modules-specs-cli.js "$SCHEMA_FILE" "$OUTPUT_DIR"
+  describe "Generating native code from schema (iOS)"
+  "$YARN_BINARY" --silent node scripts/generate-native-modules-specs-cli.js ios "$SCHEMA_FILE" "$OUTPUT_DIR"
 }
 
 step_build_codegen
