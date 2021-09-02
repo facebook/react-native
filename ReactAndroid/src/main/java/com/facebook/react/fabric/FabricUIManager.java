@@ -587,12 +587,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     boolean isBatchMountItem = mountItem instanceof BatchMountItem;
     boolean shouldSchedule = !(isBatchMountItem && ((BatchMountItem) mountItem).getSize() == 0);
 
-    // In case of sync rendering, this could be called on the UI thread. Otherwise,
-    // it should ~always be called on the JS thread.
-    for (UIManagerListener listener : mListeners) {
-      listener.didScheduleMountItems(this);
-    }
-
     if (isBatchMountItem) {
       mCommitStartTime = commitStartTime;
       mLayoutTime = layoutEndTime - layoutStartTime;

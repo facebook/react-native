@@ -254,6 +254,12 @@ std::pair<NextStatePtr, CommandPtr> InspectorState::Running::didPause(
     pendingEvalPromise_->setValue(
         inspector_.debugger_.getProgramState().getEvalResult());
     pendingEvalPromise_.reset();
+  } else if (
+      reason == debugger::PauseReason::Breakpoint &&
+      !inspector_.breakpointsActive_) {
+    // We hit a user defined breakpoint, but breakpoints have been deactivated.
+    return std::make_pair<NextStatePtr, CommandPtr>(
+        nullptr, makeContinueCommand());
   } else /* other cases imply a transition to Pause */ {
     return std::make_pair<NextStatePtr, CommandPtr>(
         InspectorState::Paused::make(inspector_), nullptr);
