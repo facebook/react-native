@@ -116,6 +116,11 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
+- (BOOL)hasBridge
+{
+  return _bridge != nil;
+}
+
 #pragma mark - passThroughTouches
 
 - (BOOL)passThroughTouches

@@ -76,6 +76,11 @@ extern
                     launchOptions:(nullable NSDictionary *)launchOptions;
 
 /**
+ * This API allows RCTRootView users to know if the root view is backed by the bridge.
+ */
+@property (nonatomic, readonly) BOOL hasBridge;
+
+/**
  * The name of the JavaScript module to execute within the
  * specified scriptURL (required). Setting this will not have
  * any immediate effect, but it must be done prior to loading

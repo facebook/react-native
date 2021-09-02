@@ -93,6 +93,11 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
+- (BOOL)hasBridge
+{
+  return _bridge != nil;
+}
+
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
