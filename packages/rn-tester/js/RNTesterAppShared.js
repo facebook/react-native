@@ -19,7 +19,7 @@ import * as React from 'react';
 
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
-import RNTesterNavBar from './components/RNTesterNavbar';
+import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
 import RNTesterList from './utils/RNTesterList';
 import {
   Screens,
@@ -176,22 +176,24 @@ const RNTesterApp = (): React.Node => {
         onBack={activeModule ? handleBackPress : null}
         documentationURL={activeModule?.documentationURL}
       />
-      {activeModule != null ? (
-        <RNTesterModuleContainer
-          module={activeModule}
-          example={activeModuleExample}
-          onExampleCardPress={handleModuleExampleCardPress}
-        />
-      ) : screen === Screens.BOOKMARKS &&
-        examplesList.bookmarks.length === 0 ? (
-        <RNTesterEmptyBookmarksState />
-      ) : (
-        <RNTesterModuleList
-          sections={activeExampleList}
-          toggleBookmark={toggleBookmark}
-          handleModuleCardPress={handleModuleCardPress}
-        />
-      )}
+      <View style={styles.container}>
+        {activeModule != null ? (
+          <RNTesterModuleContainer
+            module={activeModule}
+            example={activeModuleExample}
+            onExampleCardPress={handleModuleExampleCardPress}
+          />
+        ) : screen === Screens.BOOKMARKS &&
+          examplesList.bookmarks.length === 0 ? (
+          <RNTesterEmptyBookmarksState />
+        ) : (
+          <RNTesterModuleList
+            sections={activeExampleList}
+            toggleBookmark={toggleBookmark}
+            handleModuleCardPress={handleModuleCardPress}
+          />
+        )}
+      </View>
       <View style={styles.bottomNavbar}>
         <RNTesterNavBar
           screen={screen || Screens.COMPONENTS}
@@ -210,11 +212,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomNavbar: {
-    bottom: 0,
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'absolute',
+    height: navBarHeight,
   },
   hidden: {
     display: 'none',

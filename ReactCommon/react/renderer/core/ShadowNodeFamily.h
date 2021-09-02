@@ -10,6 +10,7 @@
 #include <memory>
 
 #include <better/mutex.h>
+#include <better/small_vector.h>
 
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/ReactPrimitives.h>

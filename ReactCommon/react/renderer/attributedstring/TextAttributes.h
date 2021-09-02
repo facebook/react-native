@@ -10,8 +10,8 @@
 #include <functional>
 #include <limits>
 
+#include <better/optional.h>
 #include <folly/Hash.h>
-#include <folly/Optional.h>
 #include <react/renderer/attributedstring/primitives.h>
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/core/ReactPrimitives.h>
@@ -51,6 +51,7 @@ class TextAttributes : public DebugStringConvertible {
   better::optional<FontVariant> fontVariant{};
   better::optional<bool> allowFontScaling{};
   Float letterSpacing{std::numeric_limits<Float>::quiet_NaN()};
+  better::optional<TextTransform> textTransform{};
 
   // Paragraph Styles
   Float lineHeight{std::numeric_limits<Float>::quiet_NaN()};
@@ -117,6 +118,7 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.fontVariant,
         textAttributes.allowFontScaling,
         textAttributes.letterSpacing,
+        textAttributes.textTransform,
         textAttributes.lineHeight,
         textAttributes.alignment,
         textAttributes.baseWritingDirection,

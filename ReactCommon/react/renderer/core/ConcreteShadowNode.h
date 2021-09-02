@@ -10,6 +10,8 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ConcreteState.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
 
@@ -68,9 +70,11 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   }
 
   static SharedConcreteProps Props(
+      const PropsParserContext &context,
       RawProps const &rawProps,
       SharedProps const &baseProps = nullptr) {
     return std::make_shared<PropsT const>(
+        context,
         baseProps ? static_cast<PropsT const &>(*baseProps) : PropsT(),
         rawProps);
   }

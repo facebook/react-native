@@ -26,6 +26,9 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   // Operations called before views have been updated.
   NSMutableArray<AnimatedOperation> *_preOperations;
   NSMutableDictionary<NSNumber *, NSNumber *> *_animIdIsManagedByFabric;
+  // A set of nodeIDs managed by Fabric.
+  NSMutableSet<NSNumber *> *_nodeIDsManagedByFabric;
+
 }
 
 RCT_EXPORT_MODULE();
@@ -41,6 +44,7 @@ RCT_EXPORT_MODULE();
     _operations = [NSMutableArray new];
     _preOperations = [NSMutableArray new];
     _animIdIsManagedByFabric = [NSMutableDictionary new];
+    _nodeIDsManagedByFabric = [NSMutableSet new];
   }
   return self;
 }
@@ -109,6 +113,9 @@ RCT_EXPORT_METHOD(createAnimatedNode:(double)tag
 RCT_EXPORT_METHOD(connectAnimatedNodes:(double)parentTag
                   childTag:(double)childTag)
 {
+  if ([_nodeIDsManagedByFabric containsObject:@(childTag)]) {
+    [_nodeIDsManagedByFabric addObject:@(parentTag)];
+  }
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager connectAnimatedNodes:[NSNumber numberWithDouble:parentTag] childTag:[NSNumber numberWithDouble:childTag]];
   }];
@@ -131,16 +138,11 @@ RCT_EXPORT_METHOD(startAnimatingNode:(double)animationId
     [nodesManager startAnimatingNode:[NSNumber numberWithDouble:animationId] nodeTag:[NSNumber numberWithDouble:nodeTag] config:config endCallback:callBack];
   }];
 
- RCTExecuteOnMainQueue(^{
-   if (![self->_nodesManager isNodeManagedByFabric:[NSNumber numberWithDouble:nodeTag]]) {
-     return;
-   }
-
-   RCTExecuteOnUIManagerQueue(^{
-     self->_animIdIsManagedByFabric[[NSNumber numberWithDouble:animationId]] = @YES;
-     [self flushOperationQueues];
-   });
- });
+  BOOL isNodeManagedByFabric = [_nodeIDsManagedByFabric containsObject:@(nodeTag)];
+  if (isNodeManagedByFabric) {
+    self->_animIdIsManagedByFabric[[NSNumber numberWithDouble:animationId]] = @YES;
+    [self flushOperationQueues];
+  }
 }
 
 RCT_EXPORT_METHOD(stopAnimation:(double)animationId)
@@ -186,6 +188,9 @@ RCT_EXPORT_METHOD(extractAnimatedNodeOffset:(double)nodeTag)
 RCT_EXPORT_METHOD(connectAnimatedNodeToView:(double)nodeTag
                   viewTag:(double)viewTag)
 {
+  if (RCTUIManagerTypeForTagIsFabric(@(viewTag))) {
+    [_nodeIDsManagedByFabric addObject:@(nodeTag)];
+  }
   NSString *viewName = [self.bridge.uiManager viewNameForReactTag:[NSNumber numberWithDouble:viewTag]];
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag] viewTag:[NSNumber numberWithDouble:viewTag] viewName:viewName];

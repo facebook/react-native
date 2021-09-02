@@ -35,6 +35,7 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
+import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -42,7 +43,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -158,6 +159,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   // TODO T83943316: Deprecate and delete this constructor once StaticViewConfigs are enabled by
   // default
+  @Deprecated
   public FabricUIManager(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagerRegistry,
@@ -199,7 +201,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Deprecated
   public <T extends View> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
-    ReactSoftException.logSoftException(
+    ReactSoftExceptionLogger.logSoftException(
         TAG,
         new IllegalViewOperationException(
             "Do not call addRootView in Fabric; it is unsupported. Call startSurface instead."));
@@ -220,6 +222,29 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
     }
     return rootTag;
+  }
+
+  /**
+   * This API returns metadata associated to the React Component that rendered the Android View
+   * received as a parameter.
+   *
+   * @param surfaceId {@link int} that represents the surfaceId for the View received as a
+   *     parameter. In practice surfaceId can be retrieved calling the {@link View#getId()} method
+   *     on the {@link ReactRoot} that holds the View received as a second parameter.
+   * @param view {@link View} view that will be used to retrieve the React view hierarchy metadata.
+   * @return a {@link ReadableMap} that contains metadata associated to the React Component that
+   *     rendered the Android View received as a parameter. For more details about the keys stored
+   *     in the {@link ReadableMap} refer to the "getInspectorDataForInstance" method from
+   *     com/facebook/react/fabric/jni/Binding.cpp file.
+   */
+  @UiThread
+  @ThreadConfined(UI)
+  public ReadableMap getInspectorDataForInstance(final int surfaceId, final View view) {
+    UiThreadUtil.assertOnUiThread();
+    int reactTag = view.getId();
+
+    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
+    return mBinding.getInspectorDataForInstance(eventEmitter);
   }
 
   @Override
@@ -269,14 +294,28 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
-  public void startSurface(final SurfaceHandler surfaceHandler) {
-    int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
-    mMountingManager.startSurface(rootTag);
+  public void startSurface(final SurfaceHandler surfaceHandler, final @Nullable View rootView) {
+    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
 
-    startSurfaceWithId(surfaceHandler, rootTag, false);
+    if (rootView == null) {
+      mMountingManager.startSurface(rootTag);
+    } else {
+      Context context = rootView.getContext();
+      ThemedReactContext reactContext =
+          new ThemedReactContext(
+              mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
+      mMountingManager.startSurface(rootTag, rootView, reactContext);
+    }
+
+    surfaceHandler.setSurfaceId(rootTag);
+    if (surfaceHandler instanceof SurfaceHandlerBinding) {
+      mBinding.registerSurface((SurfaceHandlerBinding) surfaceHandler);
+    }
+    surfaceHandler.setMountable(rootView != null);
+    surfaceHandler.start();
   }
 
-  public void attachRootView(final View rootView, final SurfaceHandler surfaceHandler) {
+  public void attachRootView(final SurfaceHandler surfaceHandler, final View rootView) {
     ThemedReactContext reactContext =
         new ThemedReactContext(
             mReactApplicationContext,
@@ -288,30 +327,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     surfaceHandler.setMountable(true);
   }
 
-  public void startSurfaceWithView(final View rootView, final SurfaceHandler surfaceHandler) {
-    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
-
-    Context context = rootView.getContext();
-    ThemedReactContext reactContext =
-        new ThemedReactContext(
-            mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
-    mMountingManager.startSurface(rootTag, rootView, reactContext);
-
-    startSurfaceWithId(surfaceHandler, rootTag, true);
-  }
-
-  private void startSurfaceWithId(SurfaceHandler surfaceHandler, int rootTag, boolean isMountable) {
-    surfaceHandler.setSurfaceId(rootTag);
-    if (surfaceHandler instanceof SurfaceHandlerBinding) {
-      mBinding.registerSurface((SurfaceHandlerBinding) surfaceHandler);
-    }
-    surfaceHandler.setMountable(isMountable);
-    surfaceHandler.start();
-  }
-
   public void stopSurface(final SurfaceHandler surfaceHandler) {
     if (!surfaceHandler.isRunning()) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           FabricUIManager.TAG,
           new IllegalStateException("Trying to stop surface that hasn't started yet"));
       return;
@@ -359,7 +377,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
 
     if (mDestroyed) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           FabricUIManager.TAG, new IllegalStateException("Cannot double-destroy FabricUIManager"));
       return;
     }
@@ -445,6 +463,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         minHeight,
         maxHeight,
         null);
+  }
+
+  @SuppressWarnings("unused")
+  public int getColor(int surfaceId, ReadableMap platformColor) {
+    ThemedReactContext context =
+        mMountingManager.getSurfaceManagerEnforced(surfaceId, "getColor").getContext();
+    Integer color = ColorPropConverter.getColor(platformColor, context);
+    return color != null ? color : 0;
   }
 
   @SuppressWarnings("unused")
@@ -757,7 +783,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     // TODO T83615646: make this a hard-crash in the future.
     if (surfaceMountingManager == null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalViewOperationException(
               "Cannot updateRootLayoutSpecs on surfaceId that does not exist: " + surfaceId));
@@ -782,6 +808,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         offsetY,
         isRTL,
         doLeftAndRightSwapInRTL);
+  }
+
+  @Override
+  public View resolveView(int reactTag) {
+    UiThreadUtil.assertOnUiThread();
+
+    SurfaceMountingManager surfaceManager = mMountingManager.getSurfaceManagerForView(reactTag);
+    return surfaceManager == null ? null : surfaceManager.getView(reactTag);
   }
 
   @Override

@@ -13,7 +13,8 @@
 #include <chrono>
 #include <memory>
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 std::shared_ptr<RuntimeSchedulerBinding>
 RuntimeSchedulerBinding::createAndInstallIfNeeded(
@@ -166,4 +167,5 @@ jsi::Value RuntimeSchedulerBinding::get(
   return jsi::Value::undefined();
 }
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

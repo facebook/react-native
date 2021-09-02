@@ -14,7 +14,8 @@
 #include <memory>
 #include <queue>
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 class RuntimeScheduler final {
  public:
@@ -93,6 +94,12 @@ class RuntimeScheduler final {
    * Default value is false
    */
   bool enableYielding_{false};
+
+  /*
+   * This flag is set while performing work, to prevent re-entrancy.
+   */
+  mutable bool isPerformingWork_{false};
 };
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

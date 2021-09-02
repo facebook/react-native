@@ -430,7 +430,7 @@ RCT_EXTERN_C_END
 @end
 
 typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
-typedef NSURL * (^RCTBridgelessBundleURLGetter)();
+typedef NSURL * (^RCTBridgelessBundleURLGetter)(void);
 
 /**
  * A class that allows NativeModules/TurboModules to read/write the bundleURL, with or without the bridge.

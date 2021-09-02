@@ -145,7 +145,10 @@ type RTLSwitcherComponentState = {|
 |};
 
 function withRTLState(Component) {
-  return class extends React.Component<*, RTLSwitcherComponentState> {
+  return class extends React.Component<
+    {style?: any},
+    RTLSwitcherComponentState,
+  > {
     constructor(...args) {
       super(...args);
       this.state = {
@@ -668,6 +671,7 @@ exports.examples = [
     description: ('In iOS, it depends on active language. ' +
       'In Android, it depends on the text content.': string),
     render: function(): React.Element<any> {
+      // $FlowFixMe[speculation-ambiguous]
       return <TextAlignmentExample style={styles.fontSizeSmall} />;
     },
   },
@@ -677,6 +681,7 @@ exports.examples = [
       'languages or text content.': string),
     render: function(): React.Element<any> {
       return (
+        // $FlowFixMe[speculation-ambiguous]
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignLeft]}
         />
@@ -689,6 +694,7 @@ exports.examples = [
       'languages or text content.': string),
     render: function(): React.Element<any> {
       return (
+        // $FlowFixMe[speculation-ambiguous]
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignRight]}
         />
@@ -699,6 +705,7 @@ exports.examples = [
     title: "Using textAlign: 'right' for TextInput",
     description: ('Flip TextInput direction to RTL': string),
     render: function(): React.Element<any> {
+      // $FlowFixMe[speculation-ambiguous]
       return <TextInputExample style={[styles.textAlignRight]} />;
     },
   },

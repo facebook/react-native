@@ -49,8 +49,6 @@ class UIManagerBinding : public jsi::HostObject {
    */
   void attach(std::shared_ptr<UIManager> const &uiManager);
 
-  void setEnableAsyncMeasure(bool enable);
-
   /*
    * Starts React Native Surface with given id, moduleName, and props.
    * Thread synchronization must be enforced externally.
@@ -73,6 +71,10 @@ class UIManagerBinding : public jsi::HostObject {
       std::string const &moduleName,
       folly::dynamic const &props,
       DisplayMode displayMode) const;
+
+  jsi::Value getInspectorDataForInstance(
+      jsi::Runtime &runtime,
+      SharedEventEmitter eventEmitter) const;
 
   /*
    * Stops React Native Surface with given id.
@@ -106,15 +108,10 @@ class UIManagerBinding : public jsi::HostObject {
   jsi::Value get(jsi::Runtime &runtime, jsi::PropNameID const &name) override;
 
  private:
-  void executeMeasure(
-      jsi::Runtime &runtime,
-      std::function<void(jsi::Runtime &)> &&callback) const noexcept;
-
   std::shared_ptr<UIManager> uiManager_;
   std::unique_ptr<EventHandler const> eventHandler_;
   mutable ReactEventPriority currentEventPriority_;
 
-  bool enableAsyncMeasure_;
   RuntimeExecutor runtimeExecutor_;
 };
 

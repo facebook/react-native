@@ -42,7 +42,8 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.getClipsContentToBounds() ||
       isColorMeaningful(viewProps.shadowColor) ||
       viewProps.accessibilityElementsHidden ||
-      viewProps.importantForAccessibility != ImportantForAccessibility::Auto;
+      viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
+      viewProps.removeClippedSubviews;
 
   bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||

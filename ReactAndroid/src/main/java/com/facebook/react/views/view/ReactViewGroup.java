@@ -29,7 +29,8 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -42,6 +43,7 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactOverflowView;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
@@ -62,7 +64,8 @@ public class ReactViewGroup extends ViewGroup
         ReactClippingViewGroup,
         ReactPointerEventsView,
         ReactHitSlopView,
-        ReactZIndexedViewGroup {
+        ReactZIndexedViewGroup,
+        ReactOverflowView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -573,9 +576,9 @@ public class ReactViewGroup extends ViewGroup
             @Override
             public void run() {
               if (!child.isShown()) {
-                ReactSoftException.logSoftException(
+                ReactSoftExceptionLogger.logSoftException(
                     TAG,
-                    new IllegalViewOperationException(
+                    new ReactNoCrashSoftException(
                         "Child view has been added to Parent view in which it is clipped and not visible."
                             + " This is not legal for this particular child view. Child: ["
                             + child.getId()
@@ -717,6 +720,7 @@ public class ReactViewGroup extends ViewGroup
     invalidate();
   }
 
+  @Override
   public @Nullable String getOverflow() {
     return mOverflow;
   }

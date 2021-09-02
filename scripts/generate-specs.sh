@@ -4,20 +4,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# This script collects the JavaScript spec definitions for core
+# This script collects the JavaScript spec definitions for
 # native modules and components, then uses react-native-codegen
 # to generate native code.
 #
-# Optionally, set these envvars to override defaults:
-# - SRCS_DIR: Path to JavaScript sources
-# - MODULES_LIBRARY_NAME: Defaults to FBReactNativeSpec
-# - MODULES_OUTPUT_DIR: Defaults to React/$MODULES_LIBRARY_NAME/$MODULES_LIBRARY_NAME
-# - COMPONENTS_LIBRARY_NAME: Defaults to rncore
-# - COMPONENTS_OUTPUT_DIR: Defaults to ReactCommon/react/renderer/components/$COMPONENTS_LIBRARY_NAME
-#
 # Usage:
 #   ./scripts/generate-specs.sh
-#   SRCS_DIR=myapp/js MODULES_LIBRARY_NAME=MySpecs MODULES_OUTPUT_DIR=myapp/MySpecs ./scripts/generate-specs.sh
 #
 
 # shellcheck disable=SC2038
@@ -27,12 +19,12 @@ set -e
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 TEMP_DIR=$(mktemp -d /tmp/react-native-codegen-XXXXXXXX)
 RN_DIR=$(cd "$THIS_DIR/.." && pwd)
-NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
-USE_FABRIC="${USE_FABRIC:-0}"
 
 # Find path to Node
 # shellcheck source=/dev/null
 source "$RN_DIR/scripts/find-node.sh"
+
+NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
 
 cleanup () {
   set +e
@@ -41,29 +33,47 @@ cleanup () {
 }
 
 describe () {
-  printf "\\n\\n>>>>> %s\\n\\n\\n" "$1"
+  printf "\\n\\n>>>>> %s\\n\\n\\n" "$1" >&2
+}
+
+print_usage () {
+  printf "\\nNAME\\n\\t%s -- generate specs\\n" "$1" >&2
+  printf "\\nSYNOPSIS\\n" >&2
+  printf "\\t%s javascript_sources_directory specs_library_name output_directory\\n" "$1" >&2
+  printf "\\t%s javascript_sources_directory specs_library_name output_directory component_library_name [component_output_directory]\\n" "$1" >&2
+  printf "\\n\\nDESCRIPTION\\n\\tIn the first synopsis form, this script collects native module and native component JavaScript spec definitions in javascript_sources_directory, then uses react-native-codegen to generate the native interface code into a library named specs_library_name, which is copied to the destination output_directory.\\n" >&2
+  printf "\\n\\tIn the second synopsis form, the component_library_name will be used as the name of the component native interface code library. If provided, the component output will be copied to the component_output_directory, otherwise it will be copied to the output_directory.\\n" >&2
 }
 
 main() {
-  SRCS_DIR=${SRCS_DIR:-$(cd "$RN_DIR/Libraries" && pwd)}
-  MODULES_LIBRARY_NAME=${MODULES_LIBRARY_NAME:-FBReactNativeSpec}
-
-  COMPONENTS_LIBRARY_NAME=${COMPONENTS_LIBRARY_NAME:-rncore}
-  MODULES_OUTPUT_DIR=${MODULES_OUTPUT_DIR:-"$RN_DIR/React/$MODULES_LIBRARY_NAME/$MODULES_LIBRARY_NAME"}
-  # TODO: $COMPONENTS_PATH should be programmatically specified, and may change with use_frameworks! support.
-  COMPONENTS_PATH="ReactCommon/react/renderer/components"
-  COMPONENTS_OUTPUT_DIR=${COMPONENTS_OUTPUT_DIR:-"$RN_DIR/$COMPONENTS_PATH/$COMPONENTS_LIBRARY_NAME"}
-
-  TEMP_OUTPUT_DIR="$TEMP_DIR/out"
-  SCHEMA_FILE="$TEMP_DIR/schema.json"
-
-  CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
-  CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
+  MIN_ARG_NUM=3
+  if [ "$#" -eq 0 ]; then
+    print_usage "$0"
+    exit 1
+  fi
 
   if [ -z "$NODE_BINARY" ]; then
     echo "Error: Could not find node. Make sure it is in bash PATH or set the NODE_BINARY environment variable." 1>&2
     exit 1
   fi
+
+  if [ "$#" -lt "$MIN_ARG_NUM" ]; then
+    echo "Error: Expected $MIN_ARG_NUM arguments, got $# instead. Run $0 with no arguments to learn more." 1>&2
+    exit 1
+  fi
+
+  SRCS_DIR=$1
+  LIBRARY_NAME=$2
+  OUTPUT_DIR=$3
+  COMPONENT_LIBRARY_NAME_OVERRIDE=$4
+  COMPONENT_OUTPUT_DIR_OVERRIDE=$5
+
+  PLATFORM="ios"
+  TEMP_OUTPUT_DIR="$TEMP_DIR/out"
+  SCHEMA_FILE="$TEMP_DIR/schema.json"
+
+  CODEGEN_REPO_PATH="$RN_DIR/packages/react-native-codegen"
+  CODEGEN_NPM_PATH="$RN_DIR/../react-native-codegen"
 
   if [ -d "$CODEGEN_REPO_PATH" ]; then
     CODEGEN_PATH=$(cd "$CODEGEN_REPO_PATH" && pwd)
@@ -79,19 +89,41 @@ main() {
     bash "$CODEGEN_PATH/scripts/oss/build.sh"
   fi
 
-  describe "Generating schema from flow types"
+  describe "Generating schema from Flow types"
   "$NODE_BINARY" "$CODEGEN_PATH/lib/cli/combine/combine-js-to-schema-cli.js" "$SCHEMA_FILE" "$SRCS_DIR"
 
-  describe "Generating native code from schema (iOS)"
-  pushd "$RN_DIR" >/dev/null || exit 1
-    "$NODE_BINARY" scripts/generate-specs-cli.js ios "$SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$MODULES_LIBRARY_NAME"
-  popd >/dev/null || exit 1
+  describe "Generating native code from schema ($PLATFORM)"
+  pushd "$RN_DIR" >/dev/null
+    "$NODE_BINARY" scripts/generate-specs-cli.js "$PLATFORM" "$SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$LIBRARY_NAME"
+  popd >/dev/null
 
-  describe "Copying output to final directory"
-  mkdir -p "$COMPONENTS_OUTPUT_DIR" "$MODULES_OUTPUT_DIR"
-  cp -R "$TEMP_OUTPUT_DIR/$MODULES_LIBRARY_NAME.h" "$TEMP_OUTPUT_DIR/$MODULES_LIBRARY_NAME-generated.mm" "$MODULES_OUTPUT_DIR" || exit 1
-  find "$TEMP_OUTPUT_DIR" -type f | xargs sed -i.bak "s/$MODULES_LIBRARY_NAME/$COMPONENTS_LIBRARY_NAME/g" || exit 1
-  find "$TEMP_OUTPUT_DIR" -type f -not -iname "$MODULES_LIBRARY_NAME*" -exec cp '{}' "$COMPONENTS_OUTPUT_DIR/" ';' || exit 1
+
+  mkdir -p "$OUTPUT_DIR"
+
+  if [ -z "$COMPONENT_LIBRARY_NAME_OVERRIDE" ]; then
+    # Copy all output to output_dir
+    cp -R "$TEMP_OUTPUT_DIR/" "$OUTPUT_DIR"
+    echo >&2 "$LIBRARY_NAME output has been written to $OUTPUT_DIR:"
+    ls -1 "$OUTPUT_DIR" 2>&1
+  else
+    # Copy modules output to output_dir
+    cp "$TEMP_OUTPUT_DIR/$LIBRARY_NAME.h" "$TEMP_OUTPUT_DIR/$LIBRARY_NAME-generated.mm" "$OUTPUT_DIR"
+    echo >&2 "$LIBRARY_NAME output has been written to $OUTPUT_DIR:"
+    ls -1 "$OUTPUT_DIR" 2>&1
+
+    # Rename library name used in components output files
+    find "$TEMP_OUTPUT_DIR" -type f | xargs sed -i.bak "s/$LIBRARY_NAME/$COMPONENT_LIBRARY_NAME_OVERRIDE/g"
+
+    if [ -n "$COMPONENT_OUTPUT_DIR_OVERRIDE" ]; then
+      # Components codegen output to be moved to separate directory
+      mkdir -p "$COMPONENT_OUTPUT_DIR_OVERRIDE"
+      OUTPUT_DIR="$COMPONENT_OUTPUT_DIR_OVERRIDE"
+    fi
+
+    find "$TEMP_OUTPUT_DIR" -type f -not -iname "$LIBRARY_NAME.h" -not -iname "$LIBRARY_NAME-generated.mm" -not -iname "*.bak" -exec cp '{}' "$OUTPUT_DIR/" ';'
+    echo >&2 "$COMPONENT_LIBRARY_NAME_OVERRIDE output has been written to $OUTPUT_DIR:"
+    ls -1 "$OUTPUT_DIR" 2>&1
+  fi
 
   echo >&2 'Done.'
 }

@@ -47,7 +47,7 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public void invoke(@NonNull String eventName, @Nullable WritableMap params) {
+  public synchronized void invoke(@NonNull String eventName, @Nullable WritableMap params) {
     if (!isValid()) {
       return;
     }
@@ -62,7 +62,7 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public void invokeUnique(
+  public synchronized void invokeUnique(
       @NonNull String eventName, @Nullable WritableMap params, int customCoalesceKey) {
     if (!isValid()) {
       return;
@@ -71,7 +71,7 @@ public class EventEmitterWrapper {
     invokeUniqueEvent(eventName, payload, customCoalesceKey);
   }
 
-  public void destroy() {
+  public synchronized void destroy() {
     if (mHybridData != null) {
       mHybridData.resetNative();
     }

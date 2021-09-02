@@ -35,7 +35,8 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
@@ -340,9 +341,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
             @Override
             public void run() {
               if (!child.isShown()) {
-                ReactSoftException.logSoftException(
+                ReactSoftExceptionLogger.logSoftException(
                     TAG,
-                    new IllegalViewOperationException(
+                    new ReactNoCrashSoftException(
                         "A view was illegally added as a child of a ReactRootView. "
                             + "This View should not be a direct child of a ReactRootView, because it is not visible and will never be reachable. Child: "
                             + child.getClass().getCanonicalName().toString()
@@ -528,7 +529,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           removeAllViews();
 
           if (surfaceId == NO_ID) {
-            ReactSoftException.logSoftException(
+            ReactSoftExceptionLogger.logSoftException(
                 TAG,
                 new RuntimeException(
                     "unmountReactApplication called on ReactRootView with invalid id"));

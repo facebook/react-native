@@ -139,6 +139,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initializeCxxBridge");
+
+    if (ReactFeatureFlags.warnOnLegacyNativeModuleSystemUse) {
+      warnOnLegacyNativeModuleSystemUse();
+    }
+
     initializeBridge(
         new BridgeCallback(this),
         jsExecutor,
@@ -205,6 +210,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private native void jniExtendNativeModules(
       Collection<JavaModuleWrapper> javaModules, Collection<ModuleHolder> cxxModules);
+
+  private native void warnOnLegacyNativeModuleSystemUse();
 
   private native void initializeBridge(
       ReactCallback callback,

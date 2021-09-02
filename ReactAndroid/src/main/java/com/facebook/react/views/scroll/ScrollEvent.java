@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.events.Event;
@@ -97,7 +97,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
     } catch (IllegalStateException e) {
       // This exception can be thrown when an event is double-released.
       // This is a problem but won't cause user-visible impact, so it's okay to fail silently.
-      ReactSoftException.logSoftException(TAG, e);
+      ReactSoftExceptionLogger.logSoftException(TAG, e);
     }
   }
 

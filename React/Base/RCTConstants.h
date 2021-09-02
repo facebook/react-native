@@ -11,14 +11,19 @@ RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotification;
 RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey;
 
 /*
- * Allows to enable or disable on-demand view mounting feature of ScrollView.
- * It's an experimental feature that improves performance and memory footprint of huge lists inside ScrollView.
- */
-RCT_EXTERN BOOL RCTExperimentGetOnDemandViewMounting(void);
-RCT_EXTERN void RCTExperimentSetOnDemandViewMounting(BOOL value);
-
-/*
  * Preemptive View Allocation
  */
 RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);
 RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);
+
+/*
+ * Initial maximum surface size
+ */
+RCT_EXTERN BOOL RCTGetInitialMaxSizeEnabled(void);
+RCT_EXTERN void RCTSetInitialMaxSizeEnabled(BOOL value);
+
+/*
+ * Remove clipped subviews
+ */
+RCT_EXTERN BOOL RCTGetRemoveClippedSubviewsEnabled(void);
+RCT_EXTERN void RCTSetRemoveClippedSubviewsEnabled(BOOL value);

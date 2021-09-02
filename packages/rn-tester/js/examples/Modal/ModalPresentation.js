@@ -139,22 +139,6 @@ function ModalPresentation() {
       ) : null}
       {Platform.isTV !== true ? (
         <>
-          <View>
-            {Platform.OS === 'ios' && presentationStyle !== 'overFullScreen' ? (
-              <Text style={styles.warning}>
-                Modal can only be transparent with overFullScreen
-                presentationStyle
-              </Text>
-            ) : null}
-            <View style={styles.inlineBlock}>
-              <Text style={styles.title}>Transparent</Text>
-              <Switch
-                value={transparent}
-                disabled={presentationStyle !== 'overFullScreen'}
-                onValueChange={() => setTransparent(!transparent)}
-              />
-            </View>
-          </View>
           {Platform.OS === 'ios' ? (
             <View style={styles.block}>
               <Text style={styles.title}>Presentation Style</Text>
@@ -176,6 +160,22 @@ function ModalPresentation() {
               </View>
             </View>
           ) : null}
+          <View style={styles.block}>
+            <View style={styles.rowWithSpaceBetween}>
+              <Text style={styles.title}>Transparent</Text>
+              <Switch
+                value={transparent}
+                disabled={presentationStyle !== 'overFullScreen'}
+                onValueChange={() => setTransparent(!transparent)}
+              />
+            </View>
+            {Platform.OS === 'ios' && presentationStyle !== 'overFullScreen' ? (
+              <Text style={styles.warning}>
+                iOS Modal can only be transparent with 'overFullScreen'
+                Presentation Style
+              </Text>
+            ) : null}
+          </View>
           <View style={styles.block}>
             <Text style={styles.title}>Supported Orientation</Text>
             <View style={styles.row}>
@@ -212,9 +212,12 @@ function ModalPresentation() {
 
 const styles = StyleSheet.create({
   row: {
-    flex: 1,
     flexWrap: 'wrap',
     flexDirection: 'row',
+  },
+  rowWithSpaceBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   block: {
     borderColor: 'rgba(0,0,0, 0.1)',
@@ -247,9 +250,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   warning: {
+    margin: 3,
     fontSize: 12,
     color: 'red',
-    alignSelf: 'center',
   },
 });
 

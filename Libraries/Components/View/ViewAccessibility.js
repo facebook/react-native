@@ -39,6 +39,7 @@ export type AccessibilityRole =
   | 'spinbutton'
   | 'switch'
   | 'tab'
+  | 'tabbar'
   | 'tablist'
   | 'timer'
   | 'list'

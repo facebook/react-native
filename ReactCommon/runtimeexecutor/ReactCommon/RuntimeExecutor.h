@@ -113,5 +113,17 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
   mutex3.lock();
 }
 
+template <typename DataT>
+inline static DataT executeSynchronouslyOnSameThread_CAN_DEADLOCK(
+    RuntimeExecutor const &runtimeExecutor,
+    std::function<DataT(jsi::Runtime &runtime)> &&callback) noexcept {
+  DataT data;
+
+  executeSynchronouslyOnSameThread_CAN_DEADLOCK(
+      runtimeExecutor,
+      [&](jsi::Runtime &runtime) { data = callback(runtime); });
+
+  return data;
+}
 } // namespace react
 } // namespace facebook

@@ -68,6 +68,7 @@ public abstract class ReactNativeHost {
             .setApplication(mApplication)
             .setJSMainModulePath(getJSMainModuleName())
             .setUseDeveloperSupport(getUseDeveloperSupport())
+            .setRequireActivity(getShouldRequireActivity())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
             .setUIImplementationProvider(getUIImplementationProvider())
@@ -122,6 +123,11 @@ public abstract class ReactNativeHost {
 
   protected @Nullable JSIModulePackage getJSIModulePackage() {
     return null;
+  }
+
+  /** Returns whether or not to treat it as normal if Activity is null. */
+  public boolean getShouldRequireActivity() {
+    return true;
   }
 
   /**

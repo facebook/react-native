@@ -26,7 +26,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -319,7 +319,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
                   });
         }
       } else {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG, new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
       }
 

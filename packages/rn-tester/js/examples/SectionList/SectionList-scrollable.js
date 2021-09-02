@@ -199,7 +199,7 @@ export function SectionList_scrollable(Props: {
     changed: Array<{
       key: string,
       isViewable: boolean,
-      item: {columns: Array<*>, ...},
+      item: {columns: Array<any>, ...},
       index: ?number,
       section?: any,
       ...

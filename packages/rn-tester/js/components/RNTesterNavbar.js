@@ -135,6 +135,8 @@ const RNTesterNavbar = ({
   );
 };
 
+export const navBarHeight = 65;
+
 const styles = StyleSheet.create({
   floatContainer: {
     flex: 1,
@@ -193,11 +195,11 @@ const styles = StyleSheet.create({
   },
   centerBox: {
     flex: 1,
-    height: 65,
+    height: navBarHeight,
   },
   navButton: {
     flex: 1,
-    height: 65,
+    height: navBarHeight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -209,4 +211,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = RNTesterNavbar;
+export default RNTesterNavbar;
