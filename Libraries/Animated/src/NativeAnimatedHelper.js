@@ -10,9 +10,11 @@
 
 'use strict';
 
+import NativeAnimatedNonTurboModule from './NativeAnimatedModule';
+import NativeAnimatedTurboModule from './NativeAnimatedTurboModule';
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
+import Platform from '../../Utilities/Platform';
 import type {EventConfig} from './AnimatedEvent';
-import NativeAnimatedModule from './NativeAnimatedModule';
 import type {
   EventMapping,
   AnimatedNodeConfig,
@@ -21,6 +23,12 @@ import type {
 import type {AnimationConfig, EndCallback} from './animations/Animation';
 import type {InterpolationConfigType} from './nodes/AnimatedInterpolation';
 import invariant from 'invariant';
+
+// TODO T69437152 @petetheheat - Delete this fork when Fabric ships to 100%.
+const NativeAnimatedModule =
+  Platform.OS === 'ios' && global.RN$Bridgeless
+    ? NativeAnimatedTurboModule
+    : NativeAnimatedNonTurboModule;
 
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
 let __nativeAnimationIdCount = 1; /* used for started animations */

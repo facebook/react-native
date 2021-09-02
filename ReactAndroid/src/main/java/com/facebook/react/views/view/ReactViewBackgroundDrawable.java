@@ -7,6 +7,9 @@
 
 package com.facebook.react.views.view;
 
+import static android.os.Build.VERSION_CODES.KITKAT;
+
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -1236,6 +1239,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     return ReactViewBackgroundDrawable.colorFromAlphaAndRGBComponents(alpha, rgb);
   }
 
+  @TargetApi(KITKAT)
   public RectF getDirectionAwareBorderInsets() {
     final float borderWidth = getBorderWidthOrDefaultTo(0, Spacing.ALL);
     final float borderTopWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);

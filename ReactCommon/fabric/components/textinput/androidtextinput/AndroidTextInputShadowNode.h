@@ -81,7 +81,7 @@ class AndroidTextInputShadowNode : public ConcreteViewShadowNode<
    * Cached attributed string that represents the content of the subtree started
    * from the node.
    */
-  mutable folly::Optional<AttributedString> cachedAttributedString_{};
+  mutable better::optional<AttributedString> cachedAttributedString_{};
 };
 
 } // namespace react

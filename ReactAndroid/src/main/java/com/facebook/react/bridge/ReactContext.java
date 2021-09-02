@@ -462,4 +462,15 @@ public class ReactContext extends ContextWrapper {
   public @Nullable String getSourceURL() {
     return mCatalystInstance.getSourceURL();
   }
+
+  /**
+   * Register a JS segment after loading it from cache or server, make sure mCatalystInstance is
+   * properly initialised and not null before calling.
+   *
+   * @param segmentId
+   * @param path
+   */
+  public void registerSegment(int segmentId, String path) {
+    Assertions.assertNotNull(mCatalystInstance).registerSegment(segmentId, path);
+  }
 }

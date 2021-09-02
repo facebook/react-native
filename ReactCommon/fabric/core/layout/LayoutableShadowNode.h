@@ -116,6 +116,13 @@ class LayoutableShadowNode : public ShadowNode {
   virtual Transform getTransform() const;
 
   /*
+   * Returns offset which is applied to children's origin in
+   * `LayoutableShadowNode::getRelativeLayoutMetrics` and
+   * `LayoutableShadowNode::findNodeAtPoint`.
+   */
+  virtual Point getContentOriginOffset() const;
+
+  /*
    * Returns layout metrics relatively to the given ancestor node.
    * Uses `computeRelativeLayoutMetrics()` under the hood.
    */
