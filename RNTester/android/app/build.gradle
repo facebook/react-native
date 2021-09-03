@@ -130,6 +130,10 @@ android {
         jsc {
             dimension "vm"
         }
+        fabric {
+            // TODO T71370706 - Create a different dimension to build fabric
+            dimension "vm"
+        }
     }
 
     defaultConfig {
@@ -174,6 +178,8 @@ android {
 configurations {
   hermesDebugImplementation {}
   hermesReleaseImplementation {}
+  fabricDebugImplementation {}
+  fabricReleaseImplementation {}
 }
 
 dependencies {
@@ -186,7 +192,9 @@ dependencies {
 
     def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
     hermesDebugImplementation files(hermesPath + "hermes-debug.aar")
+    fabricDebugImplementation files(hermesPath + "hermes-debug.aar")
     hermesReleaseImplementation files(hermesPath + "hermes-release.aar")
+    fabricReleaseImplementation files(hermesPath + "hermes-release.aar")
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

@@ -10,9 +10,7 @@
 #include <folly/Likely.h>
 #include <react/renderer/core/RawProps.h>
 
-#ifndef NDEBUG
 #include <glog/logging.h>
-#endif
 
 namespace facebook {
 namespace react {
@@ -105,6 +103,10 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
 
     case RawProps::Mode::JSI: {
       auto &runtime = *rawProps.runtime_;
+      if (!rawProps.value_.isObject()) {
+        LOG(ERROR) << "Preparse props: rawProps value is not object";
+      }
+      assert(rawProps.value_.isObject());
       auto object = rawProps.value_.asObject(runtime);
 
       auto names = object.getPropertyNames(runtime);

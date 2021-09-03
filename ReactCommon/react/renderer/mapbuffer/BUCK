@@ -44,7 +44,7 @@ rn_xplat_cxx_library(
         "//xplat/fbsystrace:fbsystrace",
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",
-        react_native_xplat_target("utils:utils"),
+        react_native_xplat_target("react/utils:utils"),
     ],
 )
 

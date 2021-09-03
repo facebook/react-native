@@ -30,6 +30,7 @@ enum class AccessibilityTraits : uint32_t {
   AllowsDirectInteraction = (1 << 13),
   CausesPageTurn = (1 << 14),
   Header = (1 << 15),
+  Switch = (1 << 16),
 };
 
 constexpr enum AccessibilityTraits operator|(
@@ -47,7 +48,7 @@ constexpr enum AccessibilityTraits operator&(
 struct AccessibilityState {
   bool disabled{false};
   bool selected{false};
-  enum { Unchecked, Checked, Mixed } checked{Unchecked};
+  enum { Unchecked, Checked, Mixed, None } checked{None};
   bool busy{false};
   bool expanded{false};
 };

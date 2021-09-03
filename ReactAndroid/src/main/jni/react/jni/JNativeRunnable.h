@@ -16,7 +16,7 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-class Runnable : public JavaClass<Runnable> {
+struct Runnable : public JavaClass<Runnable> {
  public:
   static constexpr auto kJavaDescriptor = "Ljava/lang/Runnable;";
 };

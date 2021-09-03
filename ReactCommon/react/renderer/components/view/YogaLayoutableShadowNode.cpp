@@ -285,12 +285,23 @@ void YogaLayoutableShadowNode::setPadding(RectangleEdges<Float> padding) const {
   ensureUnsealed();
 
   auto style = yogaNode_.getStyle();
-  style.padding()[YGEdgeTop] = yogaStyleValueFromFloat(padding.top);
-  style.padding()[YGEdgeLeft] = yogaStyleValueFromFloat(padding.left);
-  style.padding()[YGEdgeRight] = yogaStyleValueFromFloat(padding.right);
-  style.padding()[YGEdgeBottom] = yogaStyleValueFromFloat(padding.bottom);
-  yogaNode_.setStyle(style);
-  yogaNode_.setDirty(true);
+
+  auto leftPadding = yogaStyleValueFromFloat(padding.left);
+  auto topPadding = yogaStyleValueFromFloat(padding.top);
+  auto rightPadding = yogaStyleValueFromFloat(padding.right);
+  auto bottomPadding = yogaStyleValueFromFloat(padding.bottom);
+
+  if (leftPadding != style.padding()[YGEdgeLeft] ||
+      topPadding != style.padding()[YGEdgeTop] ||
+      rightPadding != style.padding()[YGEdgeRight] ||
+      bottomPadding != style.padding()[YGEdgeBottom]) {
+    style.padding()[YGEdgeTop] = yogaStyleValueFromFloat(padding.top);
+    style.padding()[YGEdgeLeft] = yogaStyleValueFromFloat(padding.left);
+    style.padding()[YGEdgeRight] = yogaStyleValueFromFloat(padding.right);
+    style.padding()[YGEdgeBottom] = yogaStyleValueFromFloat(padding.bottom);
+    yogaNode_.setStyle(style);
+    yogaNode_.setDirty(true);
+  }
 }
 
 void YogaLayoutableShadowNode::setPositionType(
@@ -387,9 +398,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       auto newLayoutMetrics = layoutMetricsFromYogaNode(*childYogaNode);
       newLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
 
-      // Adding the node to `affectedNodes` if the node's `frame` was changed.
-      if (layoutContext.affectedNodes &&
-          newLayoutMetrics.frame != childNode.getLayoutMetrics().frame) {
+      if (layoutContext.affectedNodes) {
         layoutContext.affectedNodes->push_back(&childNode);
       }
 

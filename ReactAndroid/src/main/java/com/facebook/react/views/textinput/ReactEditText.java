@@ -39,7 +39,7 @@ import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.uimanager.StateWrapper;
+import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -61,7 +61,8 @@ import java.util.ArrayList;
  * called this explicitly. This is the default behavior on other platforms as well.
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
-public class ReactEditText extends AppCompatEditText {
+public class ReactEditText extends AppCompatEditText
+    implements FabricViewStateManager.HasFabricViewStateManager {
 
   private final InputMethodManager mInputMethodManager;
   // This flag is set to true when we set the text of the EditText explicitly. In that case, no
@@ -100,7 +101,7 @@ public class ReactEditText extends AppCompatEditText {
   private ReactViewBackgroundManager mReactBackgroundManager;
 
   protected @Nullable JavaOnlyMap mAttributedString = null;
-  protected @Nullable StateWrapper mStateWrapper = null;
+  private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
   protected boolean mDisableTextDiffing = false;
 
   protected boolean mIsSettingTextFromState = false;
@@ -619,7 +620,7 @@ public class ReactEditText extends AppCompatEditText {
     // wrapper 100% of the time.
     // Since the LocalData object is constructed by getting values from the underlying EditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
-    if (mStateWrapper == null) {
+    if (!mFabricViewStateManager.hasStateWrapper()) {
       ReactContext reactContext = getReactContext(this);
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
@@ -832,6 +833,11 @@ public class ReactEditText extends AppCompatEditText {
         setLetterSpacing(effectiveLetterSpacing);
       }
     }
+  }
+
+  @Override
+  public FabricViewStateManager getFabricViewStateManager() {
+    return mFabricViewStateManager;
   }
 
   /**

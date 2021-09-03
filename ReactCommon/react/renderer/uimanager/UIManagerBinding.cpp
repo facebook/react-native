@@ -22,13 +22,15 @@ static jsi::Object getModule(
       runtime.global().getPropertyAsObject(runtime, "__fbBatchedBridge");
   auto getCallableModule =
       batchedBridge.getPropertyAsFunction(runtime, "getCallableModule");
-  auto module = getCallableModule
-                    .callWithThis(
-                        runtime,
-                        batchedBridge,
-                        {jsi::String::createFromUtf8(runtime, moduleName)})
-                    .asObject(runtime);
-  return module;
+  auto moduleAsValue = getCallableModule.callWithThis(
+      runtime,
+      batchedBridge,
+      {jsi::String::createFromUtf8(runtime, moduleName)});
+  if (!moduleAsValue.isObject()) {
+    LOG(ERROR) << "getModule of " << moduleName << " is not an object";
+  }
+  assert(moduleAsValue.isObject());
+  return moduleAsValue.asObject(runtime);
 }
 
 std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
@@ -140,6 +142,9 @@ void UIManagerBinding::dispatchEvent(
       }
 
       // Mixing `target` into `payload`.
+      if (!payload.isObject()) {
+        LOG(ERROR) << "payload for dispatchEvent is not an object: " << eventTarget->getTag();
+      }
       assert(payload.isObject());
       payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
       return instanceHandle;
@@ -601,7 +606,8 @@ jsi::Value UIManagerBinding::get(
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,
-              {/* .includeTransform = */ true});
+              {/* .includeTransform = */ true,
+               /* includeViewportOffset = */ true});
 
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);

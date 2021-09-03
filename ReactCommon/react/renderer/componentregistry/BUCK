@@ -57,6 +57,6 @@ rn_xplat_cxx_library(
         "//xplat/jsi:jsi",
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/debug:debug"),
-        react_native_xplat_target("utils:utils"),
+        react_native_xplat_target("react/utils:utils"),
     ],
 )

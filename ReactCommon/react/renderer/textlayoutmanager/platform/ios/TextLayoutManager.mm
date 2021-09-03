@@ -6,7 +6,6 @@
  */
 
 #include "TextLayoutManager.h"
-
 #include <react/utils/ManagedObjectWrapper.h>
 
 #import "RCTTextLayoutManager.h"
@@ -61,6 +60,17 @@ TextMeasurement TextLayoutManager::measure(
   measurement.size = layoutConstraints.clamp(measurement.size);
 
   return measurement;
+}
+
+LinesMeasurements TextLayoutManager::measureLines(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    Size size) const
+{
+  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
+  return [textLayoutManager getLinesForAttributedString:attributedString
+                                    paragraphAttributes:paragraphAttributes
+                                                   size:{size.width, size.height}];
 }
 
 } // namespace react

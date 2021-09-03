@@ -42,15 +42,15 @@ import com.facebook.systrace.Systrace;
 public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
 
   @NonNull private final ReactApplicationContext mReactApplicationContext;
-  @NonNull private final ComponentFactoryDelegate mComponentFactoryDelegate;
+  @NonNull private final ComponentFactory mComponentFactory;
   @NonNull private final ReactNativeConfig mConfig;
 
   public FabricJSIModuleProvider(
       @NonNull ReactApplicationContext reactApplicationContext,
-      @NonNull ComponentFactoryDelegate componentFactoryDelegate,
+      @NonNull ComponentFactory componentFactory,
       @NonNull ReactNativeConfig config) {
     mReactApplicationContext = reactApplicationContext;
-    mComponentFactoryDelegate = componentFactoryDelegate;
+    mComponentFactory = componentFactory;
     mConfig = config;
   }
 
@@ -74,7 +74,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
         uiManager,
         eventBeatManager,
         jsMessageQueueThread,
-        mComponentFactoryDelegate,
+        mComponentFactory,
         mConfig);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return uiManager;
@@ -121,7 +121,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     LayoutMetricsConversions.class.getClass();
     MountingManager.class.getClass();
     Binding.class.getClass();
-    ComponentFactoryDelegate.class.getClass();
+    ComponentFactory.class.getClass();
     FabricComponents.class.getClass();
     FabricSoLoader.class.getClass();
     FabricUIManager.class.getClass();

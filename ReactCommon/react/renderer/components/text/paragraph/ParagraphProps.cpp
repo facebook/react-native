@@ -24,10 +24,12 @@ ParagraphProps::ParagraphProps(
       BaseTextProps(sourceProps, rawProps),
       paragraphAttributes(
           convertRawProp(rawProps, sourceProps.paragraphAttributes, {})),
-      isSelectable(convertRawProp(
+      isSelectable(
+          convertRawProp(rawProps, "selectable", sourceProps.isSelectable, {})),
+      onTextLayout(convertRawProp(
           rawProps,
-          "selectable",
-          sourceProps.isSelectable,
+          "onTextLayout",
+          sourceProps.onTextLayout,
           {})) {
   /*
    * These props are applied to `View`, therefore they must not be a part of

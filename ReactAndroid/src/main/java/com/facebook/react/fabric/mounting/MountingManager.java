@@ -69,7 +69,9 @@ public class MountingManager {
     for (int i = 0; i < parent.getChildCount(); i++) {
       FLog.e(
           TAG,
-          "     <View tag="
+          "     <View idx="
+              + i
+              + " tag="
               + parent.getChildAt(i).getId()
               + " toString="
               + parent.getChildAt(i).toString()
@@ -128,7 +130,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void addViewAt(int parentTag, int tag, int index) {
+  public void addViewAt(final int parentTag, final int tag, final int index) {
     UiThreadUtil.assertOnUiThread();
     ViewState parentViewState = getViewState(parentTag);
     if (!(parentViewState.mView instanceof ViewGroup)) {
@@ -172,8 +174,15 @@ public class MountingManager {
 
     // Display children after inserting
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {
-      FLog.e(TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " AFTER");
-      logViewHierarchy(parentView);
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              FLog.e(
+                  TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " AFTER");
+              logViewHierarchy(parentView);
+            }
+          });
     }
   }
 
@@ -266,7 +275,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void removeViewAt(int tag, int parentTag, int index) {
+  public void removeViewAt(final int tag, final int parentTag, final int index) {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getNullableViewState(parentTag);
 
@@ -339,8 +348,14 @@ public class MountingManager {
 
     // Display children after deleting any
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {
-      FLog.e(TAG, "removeViewAt: [" + parentTag + "] idx: " + index + " AFTER");
-      logViewHierarchy(parentView);
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              FLog.e(TAG, "removeViewAt: [" + parentTag + "] idx: " + index + " AFTER");
+              logViewHierarchy(parentView);
+            }
+          });
     }
   }
 

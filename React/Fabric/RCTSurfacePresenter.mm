@@ -52,12 +52,13 @@ static inline LayoutConstraints RCTGetLayoutConstraintsForSize(CGSize minimumSiz
   };
 }
 
-static inline LayoutContext RCTGetLayoutContext()
+static inline LayoutContext RCTGetLayoutContext(CGPoint viewportOffset)
 {
   return {.pointScaleFactor = RCTScreenScale(),
           .swapLeftAndRightInRTL =
               [[RCTI18nUtil sharedInstance] isRTL] && [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL],
-          .fontSizeMultiplier = RCTFontSizeMultiplier()};
+          .fontSizeMultiplier = RCTFontSizeMultiplier(),
+          .viewportOffset = RCTPointFromCGPoint(viewportOffset)};
 }
 
 static dispatch_queue_t RCTGetBackgroundQueue()
@@ -204,7 +205,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   if (!scheduler) {
     return minimumSize;
   }
-  LayoutContext layoutContext = RCTGetLayoutContext();
+  LayoutContext layoutContext = RCTGetLayoutContext(surface.viewportOffset);
   LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(minimumSize, maximumSize);
   return [scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
                                           layoutContext:layoutContext
@@ -218,7 +219,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     return;
   }
 
-  LayoutContext layoutContext = RCTGetLayoutContext();
+  LayoutContext layoutContext = RCTGetLayoutContext(surface.viewportOffset);
   LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(minimumSize, maximumSize);
   [scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
                                             layoutContext:layoutContext
@@ -386,7 +387,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
                                                                                tag:surface.rootTag];
   });
 
-  LayoutContext layoutContext = RCTGetLayoutContext();
+  LayoutContext layoutContext = RCTGetLayoutContext(surface.viewportOffset);
 
   LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(surface.minimumSize, surface.maximumSize);
 
@@ -438,7 +439,7 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
   [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
     for (RCTFabricSurface *surface in enumerator) {
-      LayoutContext layoutContext = RCTGetLayoutContext();
+      LayoutContext layoutContext = RCTGetLayoutContext(surface.viewportOffset);
 
       LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(surface.minimumSize, surface.maximumSize);
 

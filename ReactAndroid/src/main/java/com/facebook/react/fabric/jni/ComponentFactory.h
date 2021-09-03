@@ -22,11 +22,10 @@ namespace react {
 
 class Instance;
 
-class ComponentFactoryDelegate
-    : public jni::HybridClass<ComponentFactoryDelegate> {
+class ComponentFactory : public jni::HybridClass<ComponentFactory> {
  public:
   constexpr static const char *const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/ComponentFactoryDelegate;";
+      "Lcom/facebook/react/fabric/ComponentFactory;";
 
   static void registerNatives();
 

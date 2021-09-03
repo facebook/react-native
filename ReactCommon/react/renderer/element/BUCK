@@ -51,6 +51,7 @@ rn_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/fbsystrace:fbsystrace",
+        react_native_xplat_target("react/renderer/components/modal:modal"),
         react_native_xplat_target("react/renderer/components/view:view"),
         react_native_xplat_target("react/renderer/components/root:root"),
         react_native_xplat_target("react/renderer/components/view:view"),
@@ -60,7 +61,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/debug:debug"),
-        react_native_xplat_target("utils:utils"),
+        react_native_xplat_target("react/utils:utils"),
     ],
 )
 

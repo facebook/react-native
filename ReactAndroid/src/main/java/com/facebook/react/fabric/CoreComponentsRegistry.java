@@ -7,23 +7,26 @@
 
 package com.facebook.react.fabric;
 
-import androidx.annotation.NonNull;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public class ComponentFactoryDelegate {
+public class CoreComponentsRegistry extends ComponentRegistry {
 
   static {
     FabricSoLoader.staticInit();
   }
 
-  @NonNull @DoNotStrip private final HybridData mHybridData;
-
   @DoNotStrip
   private static native HybridData initHybrid();
 
-  public ComponentFactoryDelegate() {
-    mHybridData = initHybrid();
+  @DoNotStrip
+  private CoreComponentsRegistry(ComponentFactory componentFactory) {
+    super(componentFactory);
+  }
+
+  @DoNotStrip
+  public static CoreComponentsRegistry register(ComponentFactory componentFactory) {
+    return new CoreComponentsRegistry(componentFactory);
   }
 }

@@ -98,7 +98,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
       currentFrame.origin = {0, 0};
     }
 
-    if (policy.includeTransform) {
+    auto isRootNode = currentShadowNode->getTraits().check(
+        ShadowNodeTraits::Trait::RootNodeKind);
+    auto shouldApplyTransformation = (policy.includeTransform && !isRootNode) ||
+        (policy.includeViewportOffset && isRootNode);
+
+    if (shouldApplyTransformation) {
       resultFrame.size = resultFrame.size * currentShadowNode->getTransform();
       currentFrame = currentFrame * currentShadowNode->getTransform();
     }
@@ -136,15 +141,14 @@ LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
   return layoutMetrics_;
 }
 
-bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
+void LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
   ensureUnsealed();
 
   if (layoutMetrics_ == layoutMetrics) {
-    return false;
+    return;
   }
 
   layoutMetrics_ = layoutMetrics;
-  return true;
 }
 
 Transform LayoutableShadowNode::getTransform() const {

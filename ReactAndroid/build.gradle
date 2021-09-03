@@ -390,10 +390,6 @@ android {
 
         consumerProguardFiles("proguard-rules.pro")
 
-        ndk {
-            moduleName("reactnativejni")
-        }
-
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
 

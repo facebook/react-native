@@ -112,7 +112,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     };
 
     _waitForUpdate = (): void => {
-      // If this works well on iOS, we should remove this check
       if (this._isFabric()) {
         if (this._animatedComponentId === -1) {
           this._animatedComponentId = animatedComponentNextId++;
@@ -124,7 +123,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     };
 
     _markUpdateComplete = (): void => {
-      // If this works well on iOS, we should remove this check
       if (this._isFabric()) {
         NativeAnimatedHelper.API.unsetWaitingForIdentifier(
           this._animatedComponentId,
@@ -225,6 +223,9 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
           {...passthruProps}
           style={mergedStyle}
           ref={this._setComponentRef}
+          nativeID={
+            this._isFabric() ? 'animatedComponent' : undefined
+          } /* TODO: T68258846. */
           // The native driver updates views directly through the UI thread so we
           // have to make sure the view doesn't get optimized away because it cannot
           // go through the NativeViewHierarchyManager since it operates on the shadow

@@ -33,6 +33,11 @@ bool RootShadowNode::layoutIfNeeded(
   return true;
 }
 
+Transform RootShadowNode::getTransform() const {
+  auto viewportOffset = getConcreteProps().layoutContext.viewportOffset;
+  return Transform::Translate(viewportOffset.x, viewportOffset.y, 0);
+}
+
 RootShadowNode::Unshared RootShadowNode::clone(
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext) const {

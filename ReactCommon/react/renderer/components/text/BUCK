@@ -61,7 +61,7 @@ rn_xplat_cxx_library(
         "//xplat/folly:memory",
         "//xplat/folly:molly",
         YOGA_CXX_TARGET,
-        react_native_xplat_target("utils:utils"),
+        react_native_xplat_target("react/utils:utils"),
         react_native_xplat_target("react/renderer/attributedstring:attributedstring"),
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/debug:debug"),

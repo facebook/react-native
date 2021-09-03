@@ -1630,7 +1630,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const distanceFromEnd = contentLength - visibleLength - offset;
     const threshold = onEndReachedThreshold
       ? onEndReachedThreshold * visibleLength
-      : 0;
+      : 2;
     if (
       onEndReached &&
       this.state.last === getItemCount(data) - 1 &&

@@ -65,19 +65,19 @@ rn_xplat_cxx_library(
     ],
     fbandroid_exported_headers = subdir_glob(
         [
-            ("platform/android", "*.h"),
+            ("platform/android/react/renderer/textlayoutmanager", "**/*.h"),
         ],
         prefix = "react/renderer/textlayoutmanager",
     ),
     fbandroid_headers = subdir_glob(
         [
-            ("platform/android", "**/*.h"),
+            ("platform/android/react/renderer/textlayoutmanager", "**/*.h"),
         ],
         prefix = "",
     ),
     fbandroid_srcs = glob(
         [
-            "platform/android/**/*.cpp",
+            "platform/android/react/renderer/textlayoutmanager/**/*.cpp",
         ],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
@@ -125,7 +125,7 @@ rn_xplat_cxx_library(
         YOGA_CXX_TARGET,
         react_native_xplat_target("react/renderer/attributedstring:attributedstring"),
         react_native_xplat_target("react/renderer/core:core"),
-        react_native_xplat_target("utils:utils"),
+        react_native_xplat_target("react/utils:utils"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("react/renderer/graphics:graphics"),
         react_native_xplat_target("react/renderer/uimanager:uimanager"),

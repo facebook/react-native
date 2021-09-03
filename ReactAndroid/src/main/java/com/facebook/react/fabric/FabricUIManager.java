@@ -38,6 +38,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactIgnorableMountingException;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -587,6 +588,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     boolean isBatchMountItem = mountItem instanceof BatchMountItem;
     boolean shouldSchedule = !(isBatchMountItem && ((BatchMountItem) mountItem).getSize() == 0);
 
+    // In case of sync rendering, this could be called on the UI thread. Otherwise,
+    // it should ~always be called on the JS thread.
+    for (UIManagerListener listener : mListeners) {
+      listener.didScheduleMountItems(this);
+    }
+
     if (isBatchMountItem) {
       mCommitStartTime = commitStartTime;
       mLayoutTime = layoutEndTime - layoutStartTime;
@@ -857,12 +864,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
       long batchedExecutionStartTime = SystemClock.uptimeMillis();
 
-      try {
-        for (MountItem mountItem : mountItemsToDispatch) {
-          if (ENABLE_FABRIC_LOGS) {
-            printMountItem(mountItem, "dispatchMountItems: Executing mountItem");
-          }
+      for (MountItem mountItem : mountItemsToDispatch) {
+        if (ENABLE_FABRIC_LOGS) {
+          printMountItem(mountItem, "dispatchMountItems: Executing mountItem");
+        }
 
+        try {
           // Make sure surface associated with this MountItem has been started, and not stopped.
           // TODO T68118357: clean up this logic and simplify this method overall
           if (mountItem instanceof BatchMountItem) {
@@ -875,19 +882,21 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           }
 
           mountItem.execute(mMountingManager);
-        }
-        mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
-      } catch (Throwable e) {
-        // If there's an exception, we want to log diagnostics in prod and rethrow
-        // If a MountItem description is split across multiple lines, it's because it's a compound
-        // MountItem. Log each line separately.
-        FLog.e(TAG, "dispatchMountItems: caught exception, displaying all MountItems");
-        for (MountItem mountItem : mountItemsToDispatch) {
-          printMountItem(mountItem, "dispatchMountItems: mountItem");
-        }
+        } catch (Throwable e) {
+          // If there's an exception, we want to log diagnostics in prod and rethrow.
+          FLog.e(TAG, "dispatchMountItems: caught exception, displaying all MountItems", e);
+          for (MountItem m : mountItemsToDispatch) {
+            printMountItem(m, "dispatchMountItems: mountItem");
+          }
 
-        throw e;
+          if (ReactIgnorableMountingException.isIgnorable(e)) {
+            ReactSoftException.logSoftException(TAG, e);
+          } else {
+            throw e;
+          }
+        }
       }
+      mBatchedExecutionTime += SystemClock.uptimeMillis() - batchedExecutionStartTime;
     }
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 

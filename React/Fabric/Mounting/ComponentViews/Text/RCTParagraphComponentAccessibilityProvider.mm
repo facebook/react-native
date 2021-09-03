@@ -15,6 +15,7 @@
 
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"
+#import "RCTLocalizationProvider.h"
 
 using namespace facebook::react;
 
@@ -64,7 +65,7 @@ using namespace facebook::react;
   firstElement.isAccessibilityElement = YES;
   firstElement.accessibilityTraits = UIAccessibilityTraitStaticText;
   firstElement.accessibilityLabel = accessibilityLabel;
-  firstElement.accessibilityFrameInContainerSpace = _view.bounds;
+  firstElement.accessibilityFrame = UIAccessibilityConvertFrameToScreenCoordinates(_view.bounds, _view);
   [firstElement setAccessibilityActivationPoint:CGPointMake(
                                                     firstElement.accessibilityFrame.origin.x + 1.0,
                                                     firstElement.accessibilityFrame.origin.y + 1.0)];
@@ -97,7 +98,8 @@ using namespace facebook::react;
                                        numberOfButtons++;
                                      }
                                      element.accessibilityLabel = fragmentText;
-                                     element.accessibilityFrameInContainerSpace = fragmentRect;
+                                     element.accessibilityFrame =
+                                         UIAccessibilityConvertFrameToScreenCoordinates(fragmentRect, self->_view);
                                      [elements addObject:element];
                                    }];
 
@@ -109,35 +111,55 @@ using namespace facebook::react;
         return;
       }
       if (element.accessibilityTraits & UIAccessibilityTraitLink) {
-        element.accessibilityHint =
-            [NSString stringWithFormat:@"Link %ld of %ld.", (long)indexOfLink++, (long)numberOfLinks];
+        NSString *test = [RCTLocalizationProvider RCTLocalizedString:@"Link %ld of %ld."
+                                                     withDescription:@"index of the link"];
+        element.accessibilityHint = [NSString stringWithFormat:test, (long)indexOfLink++, (long)numberOfLinks];
       } else {
         element.accessibilityHint =
-            [NSString stringWithFormat:@"Button %ld of %ld.", (long)indexOfButton++, (long)numberOfButtons];
+            [NSString stringWithFormat:[RCTLocalizationProvider RCTLocalizedString:@"Button %ld of %ld."
+                                                                   withDescription:@"index of the button"],
+                                       (long)indexOfButton++,
+                                       (long)numberOfButtons];
       }
     }];
   }
 
   if (numberOfLinks > 0 && numberOfButtons > 0) {
-    firstElement.accessibilityHint = @"Links and buttons are found, swipe to move to them.";
+    firstElement.accessibilityHint =
+        [RCTLocalizationProvider RCTLocalizedString:@"Links and buttons are found, swipe to move to them."
+                                    withDescription:@"accessibility hint for links and buttons inside text"];
 
   } else if (numberOfLinks > 0) {
     NSString *firstElementHint = (numberOfLinks == 1)
-        ? @"One link found, swipe to move to the link."
-        : [NSString stringWithFormat:@"%ld links found, swipe to move to the first link.", (long)numberOfLinks];
+        ? [RCTLocalizationProvider RCTLocalizedString:@"One link found, swipe to move to the link."
+                                      withDescription:@"accessibility hint for one link inside text"]
+        : [NSString stringWithFormat:[RCTLocalizationProvider
+                                         RCTLocalizedString:@"%ld links found, swipe to move to the first link."
+                                            withDescription:@"accessibility hint for multiple links inside text"],
+                                     (long)numberOfLinks];
     firstElement.accessibilityHint = firstElementHint;
 
   } else if (numberOfButtons > 0) {
     NSString *firstElementHint = (numberOfButtons == 1)
-        ? @"One button found, swipe to move to the button."
-        : [NSString stringWithFormat:@"%ld buttons found, swipe to move to the first button.", (long)numberOfButtons];
+        ? [RCTLocalizationProvider RCTLocalizedString:@"One button found, swipe to move to the button."
+                                      withDescription:@"accessibility hint for one button inside text"]
+        : [NSString stringWithFormat:[RCTLocalizationProvider
+                                         RCTLocalizedString:@"%ld buttons found, swipe to move to the first button."
+                                            withDescription:@"accessibility hint for multiple buttons inside text"],
+                                     (long)numberOfButtons];
     firstElement.accessibilityHint = firstElementHint;
   }
 
   if (truncatedText && truncatedText.length > 0) {
     firstElement.accessibilityHint = (numberOfLinks > 0 || numberOfButtons > 0)
-        ? [NSString stringWithFormat:@"%@ Double tap to %@.", firstElement.accessibilityHint, truncatedText]
-        : firstElement.accessibilityHint = [NSString stringWithFormat:@"Double tap to %@.", truncatedText];
+        ? [NSString
+              stringWithFormat:@"%@ %@",
+                               firstElement.accessibilityHint,
+                               [RCTLocalizationProvider
+                                   RCTLocalizedString:[NSString stringWithFormat:@"Double tap to %@.", truncatedText]
+                                      withDescription:@"accessibility hint for truncated text with links or buttons"]]
+        : [RCTLocalizationProvider RCTLocalizedString:[NSString stringWithFormat:@"Double tap to %@.", truncatedText]
+                                      withDescription:@"accessibility hint for truncated text"];
   }
 
   // add accessible element for truncation attributed string for automation purposes only

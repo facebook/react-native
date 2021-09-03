@@ -100,6 +100,19 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   }
 
   /*
+   * Returns a concrete event emitter object associated with the node.
+   * Thread-safe after the node is sealed.
+   */
+  ConcreteEventEmitter const &getConcreteEventEmitter() const {
+    assert(
+        std::dynamic_pointer_cast<ConcreteEventEmitter const>(
+            BaseShadowNodeT::getEventEmitter()) &&
+        "EventEmitter must be an instance of ConcreteEventEmitter class.");
+    return static_cast<ConcreteEventEmitter const &>(
+        *BaseShadowNodeT::getEventEmitter());
+  }
+
+  /*
    * Returns a concrete state data associated with the node.
    * Thread-safe after the node is sealed.
    */

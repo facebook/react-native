@@ -58,7 +58,7 @@ rn_xplat_cxx_library(
         "//xplat/folly:molly",
         "//xplat/jsi:JSIDynamic",
         "//xplat/jsi:jsi",
-        react_native_xplat_target("utils:utils"),
+        react_native_xplat_target("react/utils:utils"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("react/renderer/graphics:graphics"),
     ],
@@ -105,7 +105,7 @@ fb_xplat_cxx_binary(
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/third-party/benchmark:benchmark",
-        react_native_xplat_target("utils:utils"),
+        react_native_xplat_target("react/utils:utils"),
         react_native_xplat_target("react/renderer/components/view:view"),
         ":core",
     ],

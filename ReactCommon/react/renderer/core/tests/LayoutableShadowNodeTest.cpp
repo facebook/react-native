@@ -6,120 +6,53 @@
  */
 
 #include <gtest/gtest.h>
+#include <react/renderer/element/Element.h>
+#include <react/renderer/element/testUtils.h>
+
 #include "TestComponent.h"
 
 using namespace facebook::react;
 
-class LayoutableShadowNodeTest : public ::testing::Test {
- protected:
-  LayoutableShadowNodeTest()
-      : eventDispatcher_(std::shared_ptr<EventDispatcher const>()),
-        componentDescriptor_(TestComponentDescriptor({eventDispatcher_})) {
-    auto traits = TestShadowNode::BaseTraits();
-
-    auto familyA = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 9,
-            /* .surfaceId = */ 1,
-            /* .eventEmitter = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
-
-    nodeA_ = std::make_shared<TestShadowNode>(
-        ShadowNodeFragment{
-            /* .props = */ std::make_shared<const TestProps>(),
-            /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-        },
-        familyA,
-        traits);
-
-    auto familyAA = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 10,
-            /* .surfaceId = */ 1,
-            /* .eventEmitter = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
-
-    auto rootTraits = traits;
-    rootTraits.set(ShadowNodeTraits::Trait::RootNodeKind);
-
-    nodeAA_ = std::make_shared<TestShadowNode>(
-        ShadowNodeFragment{
-            /* .props = */ std::make_shared<const TestProps>(),
-            /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-        },
-        familyAA,
-        rootTraits);
-
-    auto familyAAA = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 11,
-            /* .surfaceId = */ 1,
-            /* .eventEmitter = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
-
-    nodeAAA_ = std::make_shared<TestShadowNode>(
-        ShadowNodeFragment{
-            /* .props = */ std::make_shared<const TestProps>(),
-            /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-        },
-        familyAAA,
-        traits);
-
-    auto familyAAAA = std::make_shared<ShadowNodeFamily>(
-        ShadowNodeFamilyFragment{
-            /* .tag = */ 11,
-            /* .surfaceId = */ 1,
-            /* .eventEmitter = */ nullptr,
-        },
-        eventDispatcher_,
-        componentDescriptor_);
-
-    nodeAAAA_ = std::make_shared<TestShadowNode>(
-        ShadowNodeFragment{
-            /* .props = */ std::make_shared<const TestProps>(),
-            /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-        },
-        familyAAAA,
-        traits);
-
-    nodeA_->appendChild(nodeAA_);
-    nodeAA_->appendChild(nodeAAA_);
-    nodeAAA_->appendChild(nodeAAAA_);
-  }
-
-  std::shared_ptr<EventDispatcher const> eventDispatcher_;
-  std::shared_ptr<TestShadowNode> nodeA_;
-  std::shared_ptr<TestShadowNode> nodeAA_;
-  std::shared_ptr<TestShadowNode> nodeAAA_;
-  std::shared_ptr<TestShadowNode> nodeAAAA_;
-  TestComponentDescriptor componentDescriptor_;
-};
-
 /*
  * ┌────────┐
- * │nodeA_  │
+ * │<View>  │
  * │        │
  * │   ┌────┴───┐
- * │   │nodeAA_ │
+ * │   │<View>  │
  * └───┤        │
  *     │        │
  *     │        │
  *     └────────┘
  */
-TEST_F(LayoutableShadowNodeTest, relativeLayoutMetrics) {
-  auto layoutMetrics = EmptyLayoutMetrics;
-  layoutMetrics.frame.origin = {10, 20};
-  layoutMetrics.frame.size = {100, 200};
-  nodeA_->setLayoutMetrics(layoutMetrics);
-  nodeAA_->setLayoutMetrics(layoutMetrics);
+TEST(LayoutableShadowNodeTest, relativeLayoutMetrics) {
+  auto builder = simpleComponentBuilder();
 
-  auto relativeLayoutMetrics = nodeAA_->getRelativeLayoutMetrics(*nodeA_, {});
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.origin = {10, 20};
+        layoutMetrics.frame.size = {100, 200};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {10, 20};
+          layoutMetrics.frame.size = {100, 200};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .reference(childShadowNode)
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  auto relativeLayoutMetrics =
+      childShadowNode->getRelativeLayoutMetrics(*parentShadowNode, {});
 
   // A is a parent to B, A has origin {10, 10}, B has origin {10, 10}.
   // B's relative origin to A should be {10, 10}.
@@ -131,29 +64,53 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetrics) {
 }
 
 /*
- * ┌────────┐
- * │nodeA_  │
- * │  ┌─────┴───┐
- * │  │nodeAA_  │
- * │  │         │
- * └──┤         │
- *    │         │
- *    └─────────┘
+ * ┌──────────────┐
+ * │<ScrollView>  │
+ * │        ┌─────┴───┐
+ * │        │<View>   │
+ * │        │         │
+ * └────────┤         │
+ *          │         │
+ *          └─────────┘
  */
-TEST_F(LayoutableShadowNodeTest, contentOriginOffset) {
-  auto layoutMetrics = EmptyLayoutMetrics;
-  layoutMetrics.frame.origin = {10, 20};
-  layoutMetrics.frame.size = {100, 200};
-  nodeA_->_contentOriginOffset = {10, 10};
-  nodeA_->setLayoutMetrics(layoutMetrics);
-  nodeAA_->setLayoutMetrics(layoutMetrics);
+TEST(LayoutableShadowNodeTest, contentOriginOffset) {
+  auto builder = simpleComponentBuilder();
 
-  auto relativeLayoutMetrics = nodeAA_->getRelativeLayoutMetrics(*nodeA_, {});
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<ScrollViewShadowNode>()
+      .finalize([](ScrollViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.origin = {10, 20};
+        layoutMetrics.frame.size = {100, 200};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .stateData([](ScrollViewState &data) {
+        data.contentOffset = {10, 10};
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {10, 20};
+          layoutMetrics.frame.size = {100, 200};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .reference(childShadowNode)
+    });
+  // clang-format on
 
-  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 20);
-  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 30);
+  auto parentShadowNode = builder.build(element);
 
-  relativeLayoutMetrics = nodeAA_->getRelativeLayoutMetrics(*nodeA_, {false});
+  auto relativeLayoutMetrics =
+      childShadowNode->getRelativeLayoutMetrics(*parentShadowNode, {});
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 0);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 10);
+
+  relativeLayoutMetrics =
+      childShadowNode->getRelativeLayoutMetrics(*parentShadowNode, {false});
 
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 20);
@@ -161,28 +118,46 @@ TEST_F(LayoutableShadowNodeTest, contentOriginOffset) {
 
 /*
  * ┌────────────────────────┐
- * │nodeA_                  │
+ * │<View>                  │
  * │      ┌────────────────┐│
- * │      │nodeAA_         ││
+ * │      │<View>          ││
  * │      │                ││
  * │      └────────────────┘│
  * └────────────────────────┘
  */
-TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedNode) {
-  auto layoutMetrics = EmptyLayoutMetrics;
-  layoutMetrics.frame.size = {1000, 1000};
-  nodeA_->setLayoutMetrics(layoutMetrics);
+TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedNode) {
+  auto builder = simpleComponentBuilder();
 
-  layoutMetrics.frame.origin = {10, 20};
-  layoutMetrics.frame.size = {100, 200};
-  nodeAA_->_transform = Transform::Scale(0.5, 0.5, 1);
-  nodeAA_->setLayoutMetrics(layoutMetrics);
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {1000, 1000};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {10, 20};
+          layoutMetrics.frame.size = {100, 200};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .props([] {
+          auto sharedProps = std::make_shared<ViewProps>();
+          sharedProps->transform = Transform::Scale(0.5, 0.5, 1);
+          return sharedProps;
+        })
+        .reference(childShadowNode)
+    });
+  // clang-format on
 
-  layoutMetrics.frame.origin = {10, 20};
-  layoutMetrics.frame.size = {50, 100};
-  nodeAAA_->setLayoutMetrics(layoutMetrics);
+  auto parentShadowNode = builder.build(element);
 
-  auto relativeLayoutMetrics = nodeAA_->getRelativeLayoutMetrics(*nodeA_, {});
+  auto relativeLayoutMetrics =
+      childShadowNode->getRelativeLayoutMetrics(*parentShadowNode, {});
 
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 35);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 70);
@@ -192,13 +167,13 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedNode) {
 
 /*
  * ┌────────────────────────┐
- * │nodeA_                  │
+ * │<Root>                  │
  * │ ┌─────────────────────┐│
- * │ │ nodeAA_             ││
+ * │ │ <View>              ││
  * │ │     ┌──────────────┐││
- * │ │     │nodeAAA_      │││
+ * │ │     │<View>        │││
  * │ │     │  ┌──────────┐│││
- * │ │     │  │nodeAAAA_ ││││
+ * │ │     │  │<View>    ││││
  * │ │     │  │          ││││
  * │ │     │  │          ││││
  * │ │     │  └──────────┘│││
@@ -206,24 +181,48 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedNode) {
  * │ └─────────────────────┘│
  * └────────────────────────┘
  */
-TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedParent) {
-  auto layoutMetrics = EmptyLayoutMetrics;
-  layoutMetrics.frame.size = {1000, 1000};
-  nodeA_->setLayoutMetrics(layoutMetrics);
-  layoutMetrics.frame.size = {900, 900};
-  nodeAA_->setLayoutMetrics(layoutMetrics);
+TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedParent) {
+  auto builder = simpleComponentBuilder();
 
-  layoutMetrics.frame.origin = {10, 10};
-  layoutMetrics.frame.size = {100, 100};
-  nodeAAA_->_transform = Transform::Scale(0.5, 0.5, 1);
-  nodeAAA_->setLayoutMetrics(layoutMetrics);
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<RootShadowNode>()
+      .finalize([](RootShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {900, 900};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .props([] {
+          auto sharedProps = std::make_shared<ViewProps>();
+          sharedProps->transform = Transform::Scale(0.5, 0.5, 1);
+          return sharedProps;
+        })
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {10, 10};
+          layoutMetrics.frame.size = {100, 100};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .children({
+          Element<ViewShadowNode>()
+          .reference(childShadowNode)
+          .finalize([](ViewShadowNode &shadowNode){
+            auto layoutMetrics = EmptyLayoutMetrics;
+            layoutMetrics.frame.origin = {10, 10};
+            layoutMetrics.frame.size = {50, 50};
+            shadowNode.setLayoutMetrics(layoutMetrics);
+          })
+        })
+    });
+  // clang-format on
 
-  layoutMetrics.frame.origin = {10, 10};
-  layoutMetrics.frame.size = {50, 50};
-  nodeAAAA_->setLayoutMetrics(layoutMetrics);
+  auto parentShadowNode = builder.build(element);
 
   auto relativeLayoutMetrics =
-      nodeAAAA_->getRelativeLayoutMetrics(*nodeAA_, {});
+      childShadowNode->getRelativeLayoutMetrics(*parentShadowNode, {});
 
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 45);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 45);
@@ -232,13 +231,30 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedParent) {
   EXPECT_EQ(relativeLayoutMetrics.frame.size.height, 25);
 }
 
-TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameNode) {
-  auto layoutMetrics = EmptyLayoutMetrics;
-  layoutMetrics.frame.origin = {10, 20};
-  layoutMetrics.frame.size = {100, 200};
-  nodeA_->setLayoutMetrics(layoutMetrics);
+/*
+ * ┌────────────────┐
+ * │<View>          │
+ * │                │
+ * └────────────────┘
+ */
+TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameNode) {
+  auto builder = simpleComponentBuilder();
 
-  auto relativeLayoutMetrics = nodeA_->getRelativeLayoutMetrics(*nodeA_, {});
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {100, 200};
+        layoutMetrics.frame.origin = {10, 20};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+    });
+  // clang-format on
+
+  auto shadowNode = builder.build(element);
+
+  auto relativeLayoutMetrics =
+      shadowNode->getRelativeLayoutMetrics(*shadowNode, {});
 
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 0);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 0);
@@ -248,18 +264,33 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameNode) {
 
 /*
  * ┌────────────────┐
- * │nodeA_          │
+ * │<View>          │
  * │                │
  * └────────────────┘
  */
-TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameTransformedNode) {
-  auto layoutMetrics = EmptyLayoutMetrics;
-  layoutMetrics.frame.origin = {10, 20};
-  layoutMetrics.frame.size = {100, 200};
-  nodeA_->setLayoutMetrics(layoutMetrics);
-  nodeA_->_transform = Transform::Scale(2, 2, 1);
+TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameTransformedNode) {
+  auto builder = simpleComponentBuilder();
 
-  auto relativeLayoutMetrics = nodeA_->getRelativeLayoutMetrics(*nodeA_, {});
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .props([] {
+        auto sharedProps = std::make_shared<ViewProps>();
+        sharedProps->transform = Transform::Scale(2, 2, 1);
+        return sharedProps;
+      })
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {100, 200};
+        layoutMetrics.frame.origin = {10, 20};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+    });
+  // clang-format on
+
+  auto shadowNode = builder.build(element);
+
+  auto relativeLayoutMetrics =
+      shadowNode->getRelativeLayoutMetrics(*shadowNode, {});
 
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 0);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 0);
@@ -268,55 +299,126 @@ TEST_F(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameTransformedNode) {
 }
 
 /*
- * ┌────────────────┐
- * │nodeA_          │
- * │                │
- * └────────────────┘
+ * ┌────────────────────────┐
+ * │<View>                  │
+ * │      ┌────────────────┐│
+ * │      │<View>          ││
+ * │      │                ││
+ * │      └────────────────┘│
+ * └────────────────────────┘
  */
-TEST_F(LayoutableShadowNodeTest, relativeLayourMetricsOnClonedNode) {
-  // B is cloned and mutated.
-  auto nodeBRevision2 = std::static_pointer_cast<TestShadowNode>(
-      componentDescriptor_.cloneShadowNode(*nodeAA_, ShadowNodeFragment{}));
-  auto layoutMetrics = EmptyLayoutMetrics;
-  layoutMetrics.frame.size = {500, 600};
-  nodeBRevision2->setLayoutMetrics(layoutMetrics);
-  nodeA_->replaceChild(*nodeAA_, nodeBRevision2);
+TEST(LayoutableShadowNodeTest, relativeLayourMetricsOnClonedNode) {
+  auto builder = simpleComponentBuilder();
 
-  // Even if we ask old ShadowNode for its relative layoutMetrics, it needs to
-  // return correct, new layoutMetrics. D19433873 has more about the issue.
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .children({
+        Element<ViewShadowNode>()
+          .reference(childShadowNode)
+      });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  auto clonedChildShadowNode =
+      std::static_pointer_cast<ViewShadowNode>(childShadowNode->clone({}));
+  auto layoutMetrics = EmptyLayoutMetrics;
+  layoutMetrics.frame.size = {50, 60};
+  clonedChildShadowNode->setLayoutMetrics(layoutMetrics);
+
+  parentShadowNode->replaceChild(*childShadowNode, clonedChildShadowNode);
+
   auto newRelativeLayoutMetrics =
-      nodeAA_->getRelativeLayoutMetrics(*nodeA_, {});
-  EXPECT_EQ(newRelativeLayoutMetrics.frame.size.width, 500);
-  EXPECT_EQ(newRelativeLayoutMetrics.frame.size.height, 600);
+      childShadowNode->getRelativeLayoutMetrics(*parentShadowNode, {});
+  EXPECT_EQ(newRelativeLayoutMetrics.frame.size.width, 50);
+  EXPECT_EQ(newRelativeLayoutMetrics.frame.size.height, 60);
 }
 
 /*
  * ┌─────────────────────────┐
- * │nodeA_                   │
+ * │<View>                   │
  * │ ┌──────────────────────┐│
- * │ │nodeAA_: rootKindNode ││
+ * │ │<Modal>               ││
  * │ │     ┌───────────┐    ││
- * │ │     │nodeAAA_   │    ││
+ * │ │     │<View>     │    ││
  * │ │     │           │    ││
  * │ │     └───────────┘    ││
  * │ └──────────────────────┘│
  * └─────────────────────────┘
  */
-TEST_F(
+TEST(
     LayoutableShadowNodeTest,
     relativeLayoutMetricsOnNodesCrossingRootKindNode) {
-  auto layoutMetrics = EmptyLayoutMetrics;
-  nodeA_->setLayoutMetrics(layoutMetrics);
-  layoutMetrics.frame.origin = {10, 10};
-  // nodeAA_ is a RootKindNode. Please check
-  // ShadowNodeTraits::Traits::RootNodeKind for details.
-  nodeAA_->setLayoutMetrics(layoutMetrics);
-  nodeAAA_->setLayoutMetrics(layoutMetrics);
+  auto builder = simpleComponentBuilder();
 
-  auto relativeLayoutMetrics = nodeAAA_->getRelativeLayoutMetrics(*nodeA_, {});
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .children({
+        Element<ModalHostViewShadowNode>()
+          .finalize([](ModalHostViewShadowNode &shadowNode){
+            auto layoutMetrics = EmptyLayoutMetrics;
+            layoutMetrics.frame.origin = {10, 10};
+            shadowNode.setLayoutMetrics(layoutMetrics);
+          })
+          .children({
+            Element<ViewShadowNode>()
+            .reference(childShadowNode)
+            .finalize([](ViewShadowNode &shadowNode){
+              auto layoutMetrics = EmptyLayoutMetrics;
+              layoutMetrics.frame.origin = {10, 10};
+              shadowNode.setLayoutMetrics(layoutMetrics);
+            })
+          })
+      });
+
+  auto parentShadowNode = builder.build(element);
+
+  auto relativeLayoutMetrics = childShadowNode->getRelativeLayoutMetrics(*parentShadowNode, {});
 
   // relativeLayoutMetrics do not include offsset of nodeAA_ because it is a
   // RootKindNode.
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 10);
+}
+
+TEST(LayoutableShadowNodeTest, includeViewportOffset) {
+  auto builder = simpleComponentBuilder();
+
+  auto viewShadowNode = std::shared_ptr<ViewShadowNode>{};
+
+  // clang-format off
+  auto element =
+      Element<RootShadowNode>()
+        .props([] {
+          auto sharedProps = std::make_shared<RootProps>();
+          sharedProps->layoutContext.viewportOffset = {10, 20};
+          return sharedProps;
+        })
+        .children({
+          Element<ViewShadowNode>()
+          .reference(viewShadowNode)
+        });
+  // clang-format on
+
+  auto rootShadowNode = builder.build(element);
+
+  // `includeViewportOffset` has to work with `includeTransform` enabled and
+  // disabled.
+  auto layoutMetrics = viewShadowNode->getRelativeLayoutMetrics(
+      *rootShadowNode,
+      {/* includeTransform = */ false, /* includeViewportOffset = */ true});
+  EXPECT_EQ(layoutMetrics.frame.origin.x, 10);
+  EXPECT_EQ(layoutMetrics.frame.origin.y, 20);
+
+  layoutMetrics = viewShadowNode->getRelativeLayoutMetrics(
+      *rootShadowNode,
+      {/* includeTransform = */ true, /* includeViewportOffset = */ true});
+  EXPECT_EQ(layoutMetrics.frame.origin.x, 10);
+  EXPECT_EQ(layoutMetrics.frame.origin.y, 20);
 }
