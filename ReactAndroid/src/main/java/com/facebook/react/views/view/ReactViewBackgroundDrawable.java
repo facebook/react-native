@@ -86,8 +86,6 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private @Nullable Spacing mBorderAlpha;
   private @Nullable BorderStyle mBorderStyle;
 
-  /* Used for rounded border and rounded background */
-  private @Nullable PathEffect mPathEffectForBorderStyle;
   private @Nullable Path mInnerClipPathForBorderRadius;
   private @Nullable Path mOuterClipPathForBorderRadius;
   private @Nullable Path mPathForBorderRadiusOutline;
@@ -962,7 +960,8 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   /** Set type of border */
   private void updatePathEffect() {
-    mPathEffectForBorderStyle =
+    // Used for rounded border and rounded background
+    PathEffect mPathEffectForBorderStyle =
         mBorderStyle != null ? BorderStyle.getPathEffect(mBorderStyle, getFullBorderWidth()) : null;
 
     mPaint.setPathEffect(mPathEffectForBorderStyle);

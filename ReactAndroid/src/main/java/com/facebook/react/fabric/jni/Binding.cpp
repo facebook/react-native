@@ -285,7 +285,8 @@ void Binding::installFabricUIManager(
   }
 
   if (enableLayoutAnimations) {
-    animationDriver_ = std::make_shared<LayoutAnimationDriver>(this);
+    animationDriver_ =
+        std::make_shared<LayoutAnimationDriver>(runtimeExecutor, this);
   }
   scheduler_ = std::make_shared<Scheduler>(
       toolbox, (animationDriver_ ? animationDriver_.get() : nullptr), this);

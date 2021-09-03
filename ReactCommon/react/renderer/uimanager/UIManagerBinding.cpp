@@ -651,10 +651,11 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
           uiManager->configureNextLayoutAnimation(
+              runtime,
               // TODO: pass in JSI value instead of folly::dynamic to RawValue
               RawValue(commandArgsFromValue(runtime, arguments[0])),
-              eventTargetFromValue(runtime, arguments[1], -1),
-              eventTargetFromValue(runtime, arguments[2], -1));
+              arguments[1],
+              arguments[2]);
           return jsi::Value::undefined();
         });
   }

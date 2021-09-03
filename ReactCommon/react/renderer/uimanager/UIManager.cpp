@@ -268,12 +268,16 @@ void UIManager::dispatchCommand(
 }
 
 void UIManager::configureNextLayoutAnimation(
+    jsi::Runtime &runtime,
     RawValue const &config,
-    SharedEventTarget successCallback,
-    SharedEventTarget errorCallback) const {
+    const jsi::Value &successCallback,
+    const jsi::Value &failureCallback) const {
   if (animationDelegate_) {
     animationDelegate_->uiManagerDidConfigureNextLayoutAnimation(
-        config, successCallback, errorCallback);
+        runtime,
+        config,
+        std::move(successCallback),
+        std::move(failureCallback));
   }
 }
 

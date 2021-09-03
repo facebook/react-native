@@ -7,6 +7,8 @@
 
 #include "SurfaceTelemetry.h"
 
+#include <algorithm>
+
 namespace facebook {
 namespace react {
 
@@ -20,6 +22,13 @@ void SurfaceTelemetry::incorporate(
 
   numberOfTransactions_++;
   numberOfMutations_ += numberOfMutations;
+
+  while (recentCommitTelemetries_.size() >=
+         kMaxNumberOfRecordedCommitTelemetries) {
+    recentCommitTelemetries_.erase(recentCommitTelemetries_.begin());
+  }
+
+  recentCommitTelemetries_.push_back(telemetry);
 }
 
 TelemetryDuration SurfaceTelemetry::getLayoutTime() const {
@@ -44,6 +53,17 @@ int SurfaceTelemetry::getNumberOfTransactions() const {
 
 int SurfaceTelemetry::getNumberOfMutations() const {
   return numberOfMutations_;
+}
+
+std::vector<MountingTelemetry> SurfaceTelemetry::getRecentCommitTelemetries()
+    const {
+  auto result = std::vector<MountingTelemetry>{};
+  result.reserve(recentCommitTelemetries_.size());
+  std::copy(
+      recentCommitTelemetries_.begin(),
+      recentCommitTelemetries_.end(),
+      std::back_inserter(result));
+  return result;
 }
 
 } // namespace react
