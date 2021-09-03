@@ -65,7 +65,7 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine'
+    pod 'hermes-engine', '~> 0.9.0'
     pod 'libevent', '~> 2.1.12'
   end
 end

@@ -735,6 +735,7 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.99.0)
   - FlipperKit/SKIOSNetworkPlugin (= 0.99.0)
   - glog (from `../../third-party-podspecs/glog.podspec`)
+  - OpenSSL-Universal (= 1.1.180)
   - RCT-Folly (from `../../third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../../Libraries/RCTRequired`)
@@ -911,6 +912,6 @@ SPEC CHECKSUMS:
   Yoga: c0d06f5380d34e939f55420669a60fe08b79bd75
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 6e910a576b7db9347c60dfc58f7852f692200116
+PODFILE CHECKSUM: 5cc47caddf8a8bf3fe9ea873886352846aee027a
 
 COCOAPODS: 1.10.1
