@@ -21,6 +21,40 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+class SerialExecutor implements Executor {
+    final Queue<Runnable> tasks = new ArrayDeque<>();
+    final Executor executor;
+    Runnable active;
+
+    SerialExecutor(Executor executor) {
+        this.executor = executor;
+    }
+
+    public synchronized void execute(final Runnable r) {
+        tasks.add(new Runnable() {
+            public void run() {
+                try {
+                    r.run();
+                } finally {
+                    scheduleNext();
+                }
+            }
+        });
+        if (active == null) {
+            scheduleNext();
+        }
+    }
+
+    protected synchronized void scheduleNext() {
+        if ((active = tasks.poll()) != null) {
+            executor.execute(active);
+        }
+    }
+}
 
 /**
  * This class is the native implementation for JS timer execution on Android. It schedules JS timers
