@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cxxreact/JSExecutor.h>
+#include <cxxreact/RAMBundleRegistry.h>
 #include <fbjni/fbjni.h>
 #include <jni.h>
 #include "OnLoad.h"
@@ -37,7 +38,8 @@ class ProxyExecutor : public JSExecutor {
       jni::global_ref<jobject> &&executorInstance,
       std::shared_ptr<ExecutorDelegate> delegate);
   virtual ~ProxyExecutor() override;
-  virtual void loadApplicationScript(
+  virtual void initializeRuntime() override;
+  virtual void loadBundle(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override;
   virtual void setBundleRegistry(

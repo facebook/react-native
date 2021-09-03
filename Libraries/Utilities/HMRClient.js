@@ -5,20 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
-
-'use strict';
 
 const DevSettings = require('./DevSettings');
 const invariant = require('invariant');
-const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
+const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const Platform = require('./Platform');
 const prettyFormat = require('pretty-format');
 
+import getDevServer from '../Core/Devtools/getDevServer';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
-import * as LogBoxData from '../LogBox/Data/LogBoxData';
-import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
+import LogBox from '../LogBox/LogBox';
+import type {ExtendedError} from '../Core/ExtendedError';
 
 const pendingEntryPoints = [];
 let hmrClient = null;
@@ -49,6 +48,7 @@ export type HMRClientNativeInterface = {|
     host: string,
     port: number | string,
     isEnabled: boolean,
+    scheme?: string,
   ): void,
 |};
 
@@ -119,6 +119,7 @@ const HMRClient: HMRClientNativeInterface = {
         JSON.stringify({
           type: 'log',
           level,
+          mode: global.RN$Bridgeless === true ? 'NOBRIDGE' : 'BRIDGE',
           data: data.map(item =>
             typeof item === 'string'
               ? item
@@ -146,6 +147,7 @@ const HMRClient: HMRClientNativeInterface = {
     host: string,
     port: number | string,
     isEnabled: boolean,
+    scheme?: string = 'http',
   ) {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required parameter `bundleEntry`');
@@ -155,23 +157,32 @@ const HMRClient: HMRClientNativeInterface = {
     // Moving to top gives errors due to NativeModules not being initialized
     const LoadingView = require('./LoadingView');
 
-    const wsHost = port !== null && port !== '' ? `${host}:${port}` : host;
-    const client = new MetroHMRClient(`ws://${wsHost}/hot`);
+    const serverHost = port !== null && port !== '' ? `${host}:${port}` : host;
+
+    const serverScheme = scheme;
+
+    const client = new MetroHMRClient(`${serverScheme}://${serverHost}/hot`);
+
     hmrClient = client;
 
+    const {fullBundleUrl} = getDevServer();
     pendingEntryPoints.push(
-      `ws://${wsHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
+      // HMRServer understands regular bundle URLs, so prefer that in case
+      // there are any important URL parameters we can't reconstruct from
+      // `setup()`'s arguments.
+      fullBundleUrl ??
+        `${serverScheme}://${serverHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
     );
 
     client.on('connection-error', e => {
-      let error = `Cannot connect to the Metro server.
+      let error = `Cannot connect to Metro.
 
 Try the following to fix the issue:
-- Ensure that the Metro server is running and available on the same network`;
+- Ensure that Metro is running and available on the same network`;
 
       if (Platform.OS === 'ios') {
         error += `
-- Ensure that the Metro server URL is correctly set in AppDelegate`;
+- Ensure that the Metro URL is correctly set in AppDelegate`;
       } else {
         error += `
 - Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices
@@ -200,7 +211,7 @@ Error: ${e.message}`;
     client.on('update', ({isInitialUpdate}) => {
       if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
-        LogBoxData.clear();
+        LogBox.clearAllLogs();
       }
     });
 
@@ -214,12 +225,12 @@ Error: ${e.message}`;
       if (data.type === 'GraphNotFoundError') {
         client.close();
         setHMRUnavailableReason(
-          'The Metro server has restarted since the last edit. Reload to reconnect.',
+          'Metro has restarted since the last edit. Reload to reconnect.',
         );
       } else if (data.type === 'RevisionNotFoundError') {
         client.close();
         setHMRUnavailableReason(
-          'The Metro server and the client are out of sync. Reload to reconnect.',
+          'Metro and the client are out of sync. Reload to reconnect.',
         );
       } else {
         currentCompileErrorMessage = `${data.type} ${data.message}`;
@@ -231,7 +242,7 @@ Error: ${e.message}`;
 
     client.on('close', data => {
       LoadingView.hide();
-      setHMRUnavailableReason('Disconnected from the Metro server.');
+      setHMRUnavailableReason('Disconnected from Metro.');
     });
 
     if (isEnabled) {
@@ -263,7 +274,7 @@ function setHMRUnavailableReason(reason) {
 }
 
 function registerBundleEntryPoints(client) {
-  if (hmrUnavailableReason) {
+  if (hmrUnavailableReason != null) {
     DevSettings.reload('Bundle Splitting – Metro disconnected');
     return;
   }
@@ -317,6 +328,8 @@ function showCompileError() {
   const message = currentCompileErrorMessage;
   currentCompileErrorMessage = null;
 
+  /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+   * parameters */
   const error: ExtendedError = new Error(message);
   // Symbolicating compile errors is wasted effort
   // because the stack trace is meaningless:

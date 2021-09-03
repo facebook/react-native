@@ -9,8 +9,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import * as HoverState from '../HoverState';
 import Pressability from '../Pressability';
@@ -232,6 +230,7 @@ const createMockPressEvent = (
 describe('Pressability', () => {
   beforeEach(() => {
     jest.resetModules();
+    jest.spyOn(Date, 'now');
     jest.spyOn(HoverState, 'isHoverEnabled');
   });
 
@@ -257,7 +256,7 @@ describe('Pressability', () => {
     beforeEach(() => {
       originalPlatform = Platform.OS;
       Platform.OS = 'web';
-      // $FlowExpectedError
+      // $FlowExpectedError[prop-missing]
       HoverState.isHoverEnabled.mockReturnValue(true);
     });
 
@@ -277,7 +276,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });
@@ -290,7 +289,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });
@@ -303,7 +302,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });
@@ -316,7 +315,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       jest.advanceTimersByTime(499);
       expect(config.onHoverIn).not.toBeCalled();
@@ -332,7 +331,7 @@ describe('Pressability', () => {
         typeof handlers.onMouseEnter === 'function',
         'Expected to find "onMouseEnter" function',
       );
-      // $FlowExpectedError
+      // $FlowExpectedError[not-a-function]
       handlers.onMouseEnter(createMockMouseEvent('onMouseEnter'));
       expect(config.onHoverIn).toBeCalled();
     });
@@ -354,7 +353,7 @@ describe('Pressability', () => {
       expect(config.onLongPress).toBeCalled();
     });
 
-    it('is called if pressed for 370ms after the press delay', () => {
+    it('is called if pressed for 500ms after press started', () => {
       const {config, handlers} = createMockPressability({
         delayPressIn: 100,
       });
@@ -363,7 +362,7 @@ describe('Pressability', () => {
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
 
-      jest.advanceTimersByTime(469);
+      jest.advanceTimersByTime(499);
       expect(config.onLongPress).not.toBeCalled();
       jest.advanceTimersByTime(1);
       expect(config.onLongPress).toBeCalled();
@@ -392,7 +391,7 @@ describe('Pressability', () => {
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
 
-      jest.advanceTimersByTime(139);
+      jest.advanceTimersByTime(9);
       expect(config.onLongPress).not.toBeCalled();
       jest.advanceTimersByTime(1);
       expect(config.onLongPress).toBeCalled();
@@ -459,7 +458,13 @@ describe('Pressability', () => {
       const {config, handlers} = createMockPressability();
 
       handlers.onStartShouldSetResponder();
-      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderGrant(
+        createMockPressEvent({
+          registrationName: 'onResponderGrant',
+          pageX: 0,
+          pageY: 0,
+        }),
+      );
       handlers.onResponderMove(
         createMockPressEvent({
           registrationName: 'onResponderMove',
@@ -474,7 +479,13 @@ describe('Pressability', () => {
 
       // Subsequent long touch gesture should not carry over previous state.
       handlers.onStartShouldSetResponder();
-      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderGrant(
+        createMockPressEvent({
+          registrationName: 'onResponderGrant',
+          pageX: 7,
+          pageY: 8,
+        }),
+      );
       handlers.onResponderMove(
         // NOTE: Delta from (0, 0) is ~10.6 > 10, but should not matter.
         createMockPressEvent({
@@ -505,6 +516,7 @@ describe('Pressability', () => {
       handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
 
       expect(config.onPress).toBeCalled();
+      jest.runOnlyPendingTimers();
       expect(config.onPressOut).toBeCalled();
     });
   });
@@ -520,7 +532,7 @@ describe('Pressability', () => {
       expect(config.onPressIn).toBeCalled();
     });
 
-    it('is called after the default delay by default', () => {
+    it('is called immediately by default', () => {
       const {config, handlers} = createMockPressability({
         delayPressIn: null,
       });
@@ -529,24 +541,6 @@ describe('Pressability', () => {
       handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
       handlers.onResponderMove(createMockPressEvent('onResponderMove'));
 
-      jest.advanceTimersByTime(129);
-      expect(config.onPressIn).not.toBeCalled();
-      jest.advanceTimersByTime(1);
-      expect(config.onPressIn).toBeCalled();
-    });
-
-    it('falls back to the default delay if `delayPressIn` is omitted', () => {
-      const {config, handlers} = createMockPressability({
-        delayPressIn: null,
-      });
-
-      handlers.onStartShouldSetResponder();
-      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
-      handlers.onResponderMove(createMockPressEvent('onResponderMove'));
-
-      jest.advanceTimersByTime(129);
-      expect(config.onPressIn).not.toBeCalled();
-      jest.advanceTimersByTime(1);
       expect(config.onPressIn).toBeCalled();
     });
 
@@ -578,7 +572,124 @@ describe('Pressability', () => {
     });
   });
 
-  // TODO: onPressOut tests
+  describe('onPressOut', () => {
+    it('is called after `onResponderRelease` before `delayPressIn`', () => {
+      const {config, handlers} = createMockPressability({
+        delayPressIn: Number.EPSILON,
+      });
+
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(createMockPressEvent('onResponderMove'));
+      expect(config.onPressIn).not.toBeCalled();
+      handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
+
+      expect(config.onPressOut).not.toBeCalled();
+      jest.runOnlyPendingTimers();
+      expect(config.onPressOut).toBeCalled();
+    });
+
+    it('is called after `onResponderRelease` after `delayPressIn`', () => {
+      const {config, handlers} = createMockPressability({
+        delayPressIn: Number.EPSILON,
+      });
+
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(createMockPressEvent('onResponderMove'));
+      jest.runOnlyPendingTimers();
+      expect(config.onPressIn).toBeCalled();
+      handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
+
+      expect(config.onPressOut).not.toBeCalled();
+      jest.runOnlyPendingTimers();
+      expect(config.onPressOut).toBeCalled();
+    });
+
+    it('is not called after `onResponderTerminate` before `delayPressIn`', () => {
+      const {config, handlers} = createMockPressability({
+        delayPressIn: Number.EPSILON,
+      });
+
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(createMockPressEvent('onResponderMove'));
+      handlers.onResponderTerminate(
+        createMockPressEvent('onResponderTerminate'),
+      );
+
+      expect(config.onPressOut).not.toBeCalled();
+      jest.runOnlyPendingTimers();
+      expect(config.onPressOut).not.toBeCalled();
+    });
+
+    it('is not called after `onResponderTerminate` after `delayPressIn`', () => {
+      const {config, handlers} = createMockPressability();
+
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(createMockPressEvent('onResponderMove'));
+      jest.runOnlyPendingTimers();
+      expect(config.onPressIn).toBeCalled();
+      handlers.onResponderTerminate(
+        createMockPressEvent('onResponderTerminate'),
+      );
+
+      expect(config.onPressOut).not.toBeCalled();
+      jest.runOnlyPendingTimers();
+      expect(config.onPressOut).toBeCalled();
+    });
+
+    it('is called after the minimum press duration by default', () => {
+      const {config, handlers} = createMockPressability();
+
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(createMockPressEvent('onResponderMove'));
+      jest.runOnlyPendingTimers();
+      expect(config.onPressIn).toBeCalled();
+      handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
+
+      jest.advanceTimersByTime(120);
+      expect(config.onPressOut).not.toBeCalled();
+      jest.advanceTimersByTime(10);
+      expect(config.onPressOut).toBeCalled();
+    });
+
+    it('is called after only after the remaining minimum press duration', () => {
+      const {config, handlers} = createMockPressability();
+
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(createMockPressEvent('onResponderMove'));
+      jest.runOnlyPendingTimers();
+      expect(config.onPressIn).toBeCalled();
+      // WORKAROUND: Jest does not advance `Date.now()`.
+      const touchActivateTime = Date.now();
+      jest.advanceTimersByTime(120);
+      Date.now.mockReturnValue(touchActivateTime + 120);
+      handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
+
+      expect(config.onPressOut).not.toBeCalled();
+      jest.advanceTimersByTime(10);
+      expect(config.onPressOut).toBeCalled();
+    });
+
+    it('is called synchronously if minimum press duration is 0ms', () => {
+      const {config, handlers} = createMockPressability({
+        minPressDuration: 0,
+      });
+
+      handlers.onStartShouldSetResponder();
+      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+      handlers.onResponderMove(createMockPressEvent('onResponderMove'));
+      jest.runOnlyPendingTimers();
+      expect(config.onPressIn).toBeCalled();
+      handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
+
+      expect(config.onPressOut).toBeCalled();
+    });
+  });
 
   describe('`onPress*` with movement', () => {
     describe('within bounds of hit rect', () => {
@@ -603,7 +714,9 @@ describe('Pressability', () => {
         handlers.onResponderMove(
           createMockPressEvent({
             registrationName: 'onResponderMove',
+            // $FlowFixMe[unsafe-addition]
             pageX: mockRegion.width + mockSlop.right / 2,
+            // $FlowFixMe[unsafe-addition]
             pageY: mockRegion.height + mockSlop.bottom / 2,
           }),
         );
@@ -611,6 +724,7 @@ describe('Pressability', () => {
 
         expect(config.onPressIn).toBeCalled();
         expect(config.onPress).toBeCalled();
+        jest.runOnlyPendingTimers();
         expect(config.onPressOut).toBeCalled();
       });
 
@@ -636,7 +750,9 @@ describe('Pressability', () => {
         handlers.onResponderMove(
           createMockPressEvent({
             registrationName: 'onResponderMove',
+            // $FlowFixMe[unsafe-addition]
             pageX: mockRegion.width + mockSlop.right / 2,
+            // $FlowFixMe[unsafe-addition]
             pageY: mockRegion.height + mockSlop.bottom / 2,
           }),
         );
@@ -648,6 +764,7 @@ describe('Pressability', () => {
         handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
 
         expect(config.onPress).toBeCalled();
+        jest.runOnlyPendingTimers();
         expect(config.onPressOut).toBeCalled();
       });
     });
@@ -676,6 +793,7 @@ describe('Pressability', () => {
 
         handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
         expect(config.onPress).not.toBeCalled();
+        jest.runOnlyPendingTimers();
         expect(config.onPressOut).toBeCalled();
       });
 
@@ -733,6 +851,7 @@ describe('Pressability', () => {
         handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
 
         expect(config.onPress).toBeCalled();
+        jest.runOnlyPendingTimers();
         expect(config.onPressOut).toBeCalled();
       });
     });
@@ -753,9 +872,11 @@ describe('Pressability', () => {
         config.onStartShouldSetResponder_DEPRECATED,
       );
 
+      // $FlowFixMe[prop-missing]
       onStartShouldSetResponder_DEPRECATED.mockReturnValue(false);
       expect(handlers.onStartShouldSetResponder()).toBe(false);
 
+      // $FlowFixMe[prop-missing]
       onStartShouldSetResponder_DEPRECATED.mockReturnValue(true);
       expect(handlers.onStartShouldSetResponder()).toBe(true);
     });

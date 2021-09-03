@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RNTester App</string>
+    <string name="blob_provider_authority">com.facebook.react.uiapp.blobs</string>
+</resources>

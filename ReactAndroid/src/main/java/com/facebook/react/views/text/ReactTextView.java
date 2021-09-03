@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TintContextWrapper;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
@@ -36,7 +37,6 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,6 +56,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mAdjustsFontSizeToFit = false;
   private int mLinkifyMaskType = 0;
   private boolean mNotifyOnInlineViewLayout;
+  private boolean mTextIsSelectable = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -99,8 +100,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   protected void onLayout(
       boolean changed, int textViewLeft, int textViewTop, int textViewRight, int textViewBottom) {
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
+    int reactTag = getId();
     if (!(getText() instanceof Spanned)
-        || ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC) {
+        || ViewUtil.getUIManagerType(reactTag) == UIManagerType.FABRIC) {
       /**
        * In general, {@link #setText} is called via {@link ReactTextViewManager#updateExtraData}
        * before we are laid out. This ordering is a requirement because we utilize the data from
@@ -118,10 +120,22 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     ReactContext reactContext = getReactContext();
-    UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
+    UIManagerModule uiManager =
+        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
+    if (layout == null) {
+      // Text layout is calculated during pre-draw phase, so in some cases it can be empty during
+      // layout phase, which usually happens before drawing.
+      // The text layout is created by private {@link assumeLayout} method, which we can try to
+      // invoke directly through reflection or indirectly through some methods that compute it
+      // (e.g. {@link getExtendedPaddingTop}).
+      // It is safer, however, to just early return here, as next measure/layout passes are way more
+      // likely to have the text layout computed.
+      return;
+    }
+
     TextInlineViewPlaceholderSpan[] placeholders =
         text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
     ArrayList inlineViewInfoArray =
@@ -255,9 +269,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
       WritableMap event = Arguments.createMap();
       event.putArray("inlineViews", inlineViewInfoArray2);
-      reactContext
-          .getJSModule(RCTEventEmitter.class)
-          .receiveEvent(getId(), "topInlineViewLayout", event);
+      if (uiManager != null) {
+        uiManager.receiveEvent(reactTag, "topInlineViewLayout", event);
+      }
     }
   }
 
@@ -421,8 +435,15 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   }
 
   @Override
+  public void setTextIsSelectable(boolean selectable) {
+    mTextIsSelectable = selectable;
+    super.setTextIsSelectable(selectable);
+  }
+
+  @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
+    setTextIsSelectable(mTextIsSelectable);
     if (mContainsImages && getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);

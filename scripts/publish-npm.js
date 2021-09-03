@@ -137,7 +137,7 @@ exec('git checkout ReactAndroid/gradle.properties');
 
 echo('Generated artifacts for Maven');
 
-let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map(suffix => {
+let artifacts = ['.aar', '.pom'].map(suffix => {
   return `react-native-${releaseVersion}${suffix}`;
 });
 

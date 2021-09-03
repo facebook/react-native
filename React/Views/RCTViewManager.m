@@ -7,11 +7,11 @@
 
 #import "RCTViewManager.h"
 
+#import "RCTAssert.h"
 #import "RCTBorderStyle.h"
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
 #import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTUIManager.h"
@@ -20,10 +20,6 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-#if TARGET_OS_TV
-#import "RCTTVView.h"
-#endif
-
 @implementation RCTConvert (UIAccessibilityTraits)
 
 RCT_MULTI_ENUM_CONVERTER(
@@ -31,6 +27,7 @@ RCT_MULTI_ENUM_CONVERTER(
     (@{
       @"none" : @(UIAccessibilityTraitNone),
       @"button" : @(UIAccessibilityTraitButton),
+      @"togglebutton" : @(UIAccessibilityTraitButton),
       @"link" : @(UIAccessibilityTraitLink),
       @"header" : @(UIAccessibilityTraitHeader),
       @"search" : @(UIAccessibilityTraitSearchField),
@@ -54,16 +51,18 @@ RCT_MULTI_ENUM_CONVERTER(
       @"menu" : @(UIAccessibilityTraitNone),
       @"menubar" : @(UIAccessibilityTraitNone),
       @"menuitem" : @(UIAccessibilityTraitNone),
-      @"progressbar" : @(UIAccessibilityTraitNone),
+      @"progressbar" : @(UIAccessibilityTraitUpdatesFrequently),
       @"radio" : @(UIAccessibilityTraitNone),
       @"radiogroup" : @(UIAccessibilityTraitNone),
       @"scrollbar" : @(UIAccessibilityTraitNone),
       @"spinbutton" : @(UIAccessibilityTraitNone),
       @"switch" : @(SwitchAccessibilityTrait),
       @"tab" : @(UIAccessibilityTraitNone),
+      @"tabbar" : @(UIAccessibilityTraitTabBar),
       @"tablist" : @(UIAccessibilityTraitNone),
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),
+      @"list" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
@@ -81,13 +80,15 @@ RCT_EXPORT_MODULE()
   return RCTGetUIManagerQueue();
 }
 
+- (void)setBridge:(RCTBridge *)bridge
+{
+  RCTWarnNotAllowedForNewArchitecture(self, @"RCTViewManager must not be initialized for the new architecture");
+  _bridge = bridge;
+}
+
 - (UIView *)view
 {
-#if TARGET_OS_TV
-  return [RCTTVView new];
-#else
   return [RCTView new];
-#endif
 }
 
 - (RCTShadowView *)shadowView
@@ -117,13 +118,6 @@ RCT_EXPORT_MODULE()
 }
 
 #pragma mark - View properties
-
-#if TARGET_OS_TV
-// TODO: Delete props for Apple TV.
-RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
-#endif
 
 // Accessibility related properties
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
@@ -178,7 +172,8 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
   const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton |
       UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage |
       UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable |
-      UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | SwitchAccessibilityTrait;
+      UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | UIAccessibilityTraitTabBar |
+      UIAccessibilityTraitUpdatesFrequently | SwitchAccessibilityTrait;
   view.reactAccessibilityElement.accessibilityTraits =
       view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask;
   UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
@@ -277,7 +272,7 @@ RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
 RCT_CUSTOM_VIEW_PROPERTY(borderColor, CGColor, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderColor:)]) {
-    view.borderColor = json ? [RCTConvert CGColor:json] : defaultView.borderColor;
+    view.borderColor = json ? [RCTConvert UIColor:json] : defaultView.borderColor;
   } else {
     view.layer.borderColor = json ? [RCTConvert CGColor:json] : defaultView.layer.borderColor;
   }
@@ -309,6 +304,13 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
   }
 }
 
+RCT_CUSTOM_VIEW_PROPERTY(collapsable, BOOL, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                                               \
   RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, float, RCTView)                                      \
   {                                                                                                  \
@@ -319,7 +321,7 @@ RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
   RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Color, UIColor, RCTView)                                    \
   {                                                                                                  \
     if ([view respondsToSelector:@selector(setBorder##SIDE##Color:)]) {                              \
-      view.border##SIDE##Color = json ? [RCTConvert CGColor:json] : defaultView.border##SIDE##Color; \
+      view.border##SIDE##Color = json ? [RCTConvert UIColor:json] : defaultView.border##SIDE##Color; \
     }                                                                                                \
   }
 

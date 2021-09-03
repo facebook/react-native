@@ -25,8 +25,10 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     {"Slider", RCTSliderCls},
     {"Switch", RCTSwitchCls},
     {"UnimplementedNativeView", RCTUnimplementedNativeViewCls},
-    {"ModalHostView", RCTModalHostViewCls},
-    {"ARTSurfaceView", RCTARTSurfaceViewCls},
+    {"Paragraph", RCTParagraphCls},
+    {"TextInput", RCTTextInputCls},
+    {"InputAccessoryView", RCTInputAccessoryCls},
+    {"View", RCTViewCls},
     {"Image", RCTImageCls},
   };
 

@@ -54,10 +54,9 @@ RCT_EXPORT_METHOD(swapLeftAndRightInRTL : (BOOL)value)
   };
 }
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<NativeI18nManagerSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<NativeI18nManagerSpecJSI>(params);
 }
 
 @end

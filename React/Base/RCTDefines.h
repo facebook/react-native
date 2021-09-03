@@ -144,6 +144,11 @@
   _Pragma("clang diagnostic pop")
 
 /**
- * Check if WebKit iOS 10.0 APIs are available.
+ * Controls for activating the new architecture without the legacy system.
+ * Note: this is work in progress.
  */
-#define WEBKIT_IOS_10_APIS_AVAILABLE __has_include(<WebKit/WKAudiovisualMediaTypes.h>)
+#ifdef REACT_NATIVE_FORCE_NEW_ARCHITECTURE
+#define RCT_NEW_ARCHITECTURE 1
+#else
+#define RCT_NEW_ARCHITECTURE 0
+#endif

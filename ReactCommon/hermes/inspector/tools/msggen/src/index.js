@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import fs from 'fs';
 
 import yargs from 'yargs';
@@ -23,14 +21,22 @@ import {PropsType, Type} from './Type';
 import {HeaderWriter} from './HeaderWriter';
 import {ImplementationWriter} from './ImplementationWriter';
 
-// $FlowFixMe: this isn't a module, just a JSON file.
-const proto = require('devtools-protocol/json/js_protocol.json');
+// $FlowFixMe[cannot-resolve-module] : this isn't a module, just a JSON file.
+const standard = require('devtools-protocol/json/js_protocol.json');
+
+const custom = require('../src/custom.json');
 
 type Descriptor = {|
   types: Array<Type>,
   commands: Array<Command>,
   events: Array<Event>,
 |};
+
+function mergeDomains(original, extra) {
+  return {...original, domains: original.domains.concat(extra.domains)};
+}
+
+const proto = mergeDomains(standard, custom);
 
 function parseDomains(
   domainObjs: Array<any>,

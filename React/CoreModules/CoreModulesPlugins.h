@@ -49,10 +49,11 @@ Class RCTDevMenuCls(void) __attribute__((used));
 Class RCTDevSettingsCls(void) __attribute__((used));
 Class RCTRedBoxCls(void) __attribute__((used));
 Class RCTLogBoxCls(void) __attribute__((used));
-Class RCTTVNavigationEventEmitterCls(void) __attribute__((used));
 Class RCTWebSocketExecutorCls(void) __attribute__((used));
 Class RCTWebSocketModuleCls(void) __attribute__((used));
 Class RCTDevLoadingViewCls(void) __attribute__((used));
+Class RCTDevSplitBundleLoaderCls(void) __attribute__((used));
+Class RCTEventDispatcherCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

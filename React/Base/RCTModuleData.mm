@@ -8,14 +8,39 @@
 #import "RCTModuleData.h"
 
 #import <objc/runtime.h>
-#include <mutex>
+#import <atomic>
+#import <mutex>
+
+#import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
+#import "RCTInitializing.h"
 #import "RCTLog.h"
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
+
+using namespace facebook::react;
+
+namespace {
+int32_t getUniqueId()
+{
+  static std::atomic<int32_t> counter{0};
+  return counter++;
+}
+}
+static BOOL isMainQueueExecutionOfConstantToExportDisabled = NO;
+
+void RCTSetIsMainQueueExecutionOfConstantsToExportDisabled(BOOL val)
+{
+  isMainQueueExecutionOfConstantToExportDisabled = val;
+}
+
+BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled()
+{
+  return isMainQueueExecutionOfConstantToExportDisabled;
+}
 
 @implementation RCTModuleData {
   NSDictionary<NSString *, id> *_constantsToExport;
@@ -24,6 +49,11 @@
   RCTBridgeModuleProvider _moduleProvider;
   std::mutex _instanceLock;
   BOOL _setupComplete;
+  RCTModuleRegistry *_moduleRegistry;
+  RCTViewRegistry *_viewRegistry_DEPRECATED;
+  RCTBundleManager *_bundleManager;
+  RCTCallableJSModules *_callableJSModules;
+  BOOL _isInitialized;
 }
 
 @synthesize methods = _methods;
@@ -73,34 +103,60 @@
   }
 }
 
-- (instancetype)initWithModuleClass:(Class)moduleClass bridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   return [self initWithModuleClass:moduleClass
                     moduleProvider:^id<RCTBridgeModule> {
                       return [moduleClass new];
                     }
-                            bridge:bridge];
+                            bridge:bridge
+                    moduleRegistry:moduleRegistry
+           viewRegistry_DEPRECATED:viewRegistry_DEPRECATED
+                     bundleManager:bundleManager
+                 callableJSModules:callableJSModules];
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
                      moduleProvider:(RCTBridgeModuleProvider)moduleProvider
                              bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
     _bridge = bridge;
     _moduleClass = moduleClass;
     _moduleProvider = [moduleProvider copy];
+    _moduleRegistry = moduleRegistry;
+    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
     [self setUp];
   }
   return self;
 }
 
-- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance bridge:(RCTBridge *)bridge
+- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
+                                bridge:(RCTBridge *)bridge
+                        moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+               viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                         bundleManager:(RCTBundleManager *)bundleManager
+                     callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
     _bridge = bridge;
     _instance = instance;
     _moduleClass = [instance class];
+    _moduleRegistry = moduleRegistry;
+    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
     [self setUp];
   }
   return self;
@@ -110,22 +166,29 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 #pragma mark - private setup methods
 
-- (void)setUpInstanceAndBridge
+- (void)setUpInstanceAndBridge:(int32_t)requestId
 {
+  NSString *moduleName = [self name];
+
   RCT_PROFILE_BEGIN_EVENT(
       RCTProfileTagAlways,
       @"[RCTModuleData setUpInstanceAndBridge]",
       @{@"moduleClass" : NSStringFromClass(_moduleClass)});
   {
     std::unique_lock<std::mutex> lock(_instanceLock);
+    BOOL shouldSetup = !_setupComplete && _bridge.valid;
 
-    if (!_setupComplete && _bridge.valid) {
+    if (shouldSetup) {
       if (!_instance) {
         if (RCT_DEBUG && _requiresMainQueueSetup) {
           RCTAssertMainQueue();
         }
         RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] Create module", nil);
+
+        BridgeNativeModulePerfLogger::moduleCreateConstructStart([moduleName UTF8String], requestId);
         _instance = _moduleProvider ? _moduleProvider() : nil;
+        BridgeNativeModulePerfLogger::moduleCreateConstructEnd([moduleName UTF8String], requestId);
+
         RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
         if (!_instance) {
           // Module init returned nil, probably because automatic instantiation
@@ -143,14 +206,28 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       if (_instance && RCTProfileIsProfiling()) {
         RCTProfileHookInstance(_instance);
       }
+    }
 
+    if (_instance) {
+      BridgeNativeModulePerfLogger::moduleCreateSetUpStart([moduleName UTF8String], requestId);
+    }
+
+    if (shouldSetup) {
       // Bridge must be set before methodQueue is set up, as methodQueue
       // initialization requires it (View Managers get their queue by calling
       // self.bridge.uiManager.methodQueue)
       [self setBridgeForInstance];
+      [self setModuleRegistryForInstance];
+      [self setViewRegistryForInstance];
+      [self setBundleManagerForInstance];
+      [self setCallableJSModulesForInstance];
     }
 
     [self setUpMethodQueue];
+
+    if (shouldSetup) {
+      [self _initializeModule];
+    }
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
@@ -171,6 +248,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
     // thread.
     _requiresMainQueueSetup = NO;
   }
+
+  if (_instance) {
+    BridgeNativeModulePerfLogger::moduleCreateSetUpEnd([moduleName UTF8String], requestId);
+  }
 }
 
 - (void)setBridgeForInstance
@@ -187,6 +268,84 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
           self.name);
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setModuleRegistryForInstance
+{
+  if ([_instance respondsToSelector:@selector(moduleRegistry)] && _instance.moduleRegistry != _moduleRegistry) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setModuleRegistryForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_moduleRegistry forKey:@"moduleRegistry"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the moduleRegistry property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setViewRegistryForInstance
+{
+  if ([_instance respondsToSelector:@selector(viewRegistry_DEPRECATED)] &&
+      _instance.viewRegistry_DEPRECATED != _viewRegistry_DEPRECATED) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setViewRegistryForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_viewRegistry_DEPRECATED forKey:@"viewRegistry_DEPRECATED"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the viewRegistry_DEPRECATED property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setBundleManagerForInstance
+{
+  if ([_instance respondsToSelector:@selector(bundleManager)] && _instance.bundleManager != _bundleManager) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setBundleManagerForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_bundleManager forKey:@"bundleManager"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the bundleManager property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)setCallableJSModulesForInstance
+{
+  if ([_instance respondsToSelector:@selector(callableJSModules)] &&
+      _instance.callableJSModules != _callableJSModules) {
+    RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setCallableJSModulesForInstance]", nil);
+    @try {
+      [(id)_instance setValue:_callableJSModules forKey:@"callableJSModules"];
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its module registry, which is not "
+           "permitted. You must either @synthesize the callableJSModules property, "
+           "or provide your own setter method.",
+          self.name);
+    }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+}
+
+- (void)_initializeModule
+{
+  if (!_isInitialized && [_instance respondsToSelector:@selector(initialize)]) {
+    _isInitialized = YES;
+    [(id<RCTInitializing>)_instance initialize];
   }
 }
 
@@ -286,6 +445,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 - (id<RCTBridgeModule>)instance
 {
+  NSString *moduleName = [self name];
+  int32_t requestId = getUniqueId();
+  BridgeNativeModulePerfLogger::moduleCreateStart([moduleName UTF8String], requestId);
+
   if (!_setupComplete) {
     RCT_PROFILE_BEGIN_EVENT(
         RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass]), nil);
@@ -301,13 +464,21 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
       }
 
       RCTUnsafeExecuteOnMainQueueSync(^{
-        [self setUpInstanceAndBridge];
+        [self setUpInstanceAndBridge:requestId];
       });
       RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
     } else {
-      [self setUpInstanceAndBridge];
+      [self setUpInstanceAndBridge:requestId];
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  } else {
+    BridgeNativeModulePerfLogger::moduleCreateCacheHit([moduleName UTF8String], requestId);
+  }
+
+  if (_instance) {
+    BridgeNativeModulePerfLogger::moduleCreateEnd([moduleName UTF8String], requestId);
+  } else {
+    BridgeNativeModulePerfLogger::moduleCreateFail([moduleName UTF8String], requestId);
   }
   return _instance;
 }
@@ -331,11 +502,31 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 
 - (void)gatherConstants
 {
+  return [self gatherConstantsAndSignalJSRequireEnding:NO];
+}
+
+- (void)gatherConstantsAndSignalJSRequireEnding:(BOOL)startMarkers
+{
+  NSString *moduleName = [self name];
+
   if (_hasConstantsToExport && !_constantsToExport) {
     RCT_PROFILE_BEGIN_EVENT(
         RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
-    if (_requiresMainQueueSetup) {
+
+    if (startMarkers) {
+      /**
+       * Why do we instrument moduleJSRequireEndingStart here?
+       *  - NativeModule requires from JS go through ModuleRegistry::getConfig().
+       *  - ModuleRegistry::getConfig() calls NativeModule::getConstants() first.
+       *  - This delegates to RCTNativeModule::getConstants(), which calls RCTModuleData gatherConstants().
+       *  - Therefore, this is the first statement that executes after the NativeModule is created/initialized in a JS
+       *    require.
+       */
+      BridgeNativeModulePerfLogger::moduleJSRequireEndingStart([moduleName UTF8String]);
+    }
+
+    if (!RCTIsMainQueueExecutionOfConstantsToExportDisabled() && _requiresMainQueueSetup) {
       if (!RCTIsMainQueue()) {
         RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
       }
@@ -346,13 +537,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
     } else {
       _constantsToExport = [_instance constantsToExport] ?: @{};
     }
+
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  } else if (startMarkers) {
+    /**
+     * If a NativeModule doesn't have constants, it isn't eagerly loaded until its methods are first invoked.
+     * Therefore, we should immediately start JSRequireEnding
+     */
+    BridgeNativeModulePerfLogger::moduleJSRequireEndingStart([moduleName UTF8String]);
   }
 }
 
 - (NSDictionary<NSString *, id> *)exportedConstants
 {
-  [self gatherConstants];
+  [self gatherConstantsAndSignalJSRequireEnding:YES];
   NSDictionary<NSString *, id> *constants = _constantsToExport;
   _constantsToExport = nil; // Not needed anymore
   return constants;

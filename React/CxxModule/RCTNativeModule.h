@@ -16,6 +16,7 @@ class RCTNativeModule : public NativeModule {
   RCTNativeModule(RCTBridge *bridge, RCTModuleData *moduleData);
 
   std::string getName() override;
+  std::string getSyncMethodName(unsigned int methodId) override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
   void invoke(unsigned int methodId, folly::dynamic &&params, int callId)

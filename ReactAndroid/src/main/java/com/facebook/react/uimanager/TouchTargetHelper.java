@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.ReactHitSlopView;
+import java.util.EnumSet;
 
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}. It
@@ -80,7 +81,7 @@ public class TouchTargetHelper {
     // Store eventCoords in array so that they are modified to be relative to the targetView found.
     viewCoords[0] = eventX;
     viewCoords[1] = eventY;
-    View nativeTargetView = findTouchTargetView(viewCoords, viewGroup);
+    View nativeTargetView = findTouchTargetViewWithPointerEvents(viewCoords, viewGroup);
     if (nativeTargetView != null) {
       View reactTargetView = findClosestReactAncestor(nativeTargetView);
       if (reactTargetView != null) {
@@ -100,6 +101,14 @@ public class TouchTargetHelper {
     return view;
   }
 
+  /** Types of allowed return values from {@link #findTouchTargetView}. */
+  private enum TouchTargetReturnType {
+    /** Allow returning the view passed in through the parameters. */
+    SELF,
+    /** Allow returning children of the view passed in through parameters. */
+    CHILD,
+  }
+
   /**
    * Returns the touch target View that is either viewGroup or one if its descendants. This is a
    * recursive DFS since view the entire tree must be parsed until the target is found. If the
@@ -111,20 +120,23 @@ public class TouchTargetHelper {
    * be relative to the current viewGroup. When the method returns, it will contain the eventCoords
    * relative to the targetView found.
    */
-  private static View findTouchTargetView(float[] eventCoords, ViewGroup viewGroup) {
-    int childrenCount = viewGroup.getChildCount();
-    // Consider z-index when determining the touch target.
-    ReactZIndexedViewGroup zIndexedViewGroup =
-        viewGroup instanceof ReactZIndexedViewGroup ? (ReactZIndexedViewGroup) viewGroup : null;
-    for (int i = childrenCount - 1; i >= 0; i--) {
-      int childIndex =
-          zIndexedViewGroup != null ? zIndexedViewGroup.getZIndexMappedChildIndex(i) : i;
-      View child = viewGroup.getChildAt(childIndex);
-      PointF childPoint = mTempPoint;
-      if (isTransformedTouchPointInView(
-          eventCoords[0], eventCoords[1], viewGroup, child, childPoint)) {
-        // If it is contained within the child View, the childPoint value will contain the view
-        // coordinates relative to the child
+  private static View findTouchTargetView(
+      float[] eventCoords, View view, EnumSet<TouchTargetReturnType> allowReturnTouchTargetTypes) {
+    // We prefer returning a child, so we check for a child that can handle the touch first
+    if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.CHILD)
+        && view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup) view;
+      int childrenCount = viewGroup.getChildCount();
+      // Consider z-index when determining the touch target.
+      ReactZIndexedViewGroup zIndexedViewGroup =
+          viewGroup instanceof ReactZIndexedViewGroup ? (ReactZIndexedViewGroup) viewGroup : null;
+      for (int i = childrenCount - 1; i >= 0; i--) {
+        int childIndex =
+            zIndexedViewGroup != null ? zIndexedViewGroup.getZIndexMappedChildIndex(i) : i;
+        View child = viewGroup.getChildAt(childIndex);
+        PointF childPoint = mTempPoint;
+        getChildPoint(eventCoords[0], eventCoords[1], viewGroup, child, childPoint);
+        // The childPoint value will contain the view coordinates relative to the child.
         // We need to store the existing X,Y for the viewGroup away as it is possible this child
         // will not actually be the target and so we restore them if not
         float restoreX = eventCoords[0];
@@ -132,22 +144,64 @@ public class TouchTargetHelper {
         eventCoords[0] = childPoint.x;
         eventCoords[1] = childPoint.y;
         View targetView = findTouchTargetViewWithPointerEvents(eventCoords, child);
+
         if (targetView != null) {
-          return targetView;
+          // We don't allow touches on views that are outside the bounds of an `overflow: hidden`
+          // View
+          boolean inOverflowBounds = true;
+          if (viewGroup instanceof ReactOverflowView) {
+            @Nullable String overflow = ((ReactOverflowView) viewGroup).getOverflow();
+            if ((ViewProps.HIDDEN.equals(overflow) || ViewProps.SCROLL.equals(overflow))
+                && !isTouchPointInView(restoreX, restoreY, view)) {
+              inOverflowBounds = false;
+            }
+          }
+          if (inOverflowBounds) {
+            return targetView;
+          }
         }
         eventCoords[0] = restoreX;
         eventCoords[1] = restoreY;
       }
     }
-    return viewGroup;
+
+    // Check if parent can handle the touch after the children
+    if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.SELF)
+        && isTouchPointInView(eventCoords[0], eventCoords[1], view)) {
+      return view;
+    }
+
+    return null;
   }
 
   /**
-   * Returns whether the touch point is within the child View It is transform aware and will invert
-   * the transform Matrix to find the true local points This code is taken from {@link
+   * Checks whether a touch at {@code x} and {@code y} are within the bounds of the View. Both
+   * {@code x} and {@code y} must be relative to the top-left corner of the view.
+   */
+  private static boolean isTouchPointInView(float x, float y, View view) {
+    if (view instanceof ReactHitSlopView && ((ReactHitSlopView) view).getHitSlopRect() != null) {
+      Rect hitSlopRect = ((ReactHitSlopView) view).getHitSlopRect();
+      if ((x >= -hitSlopRect.left && x < (view.getWidth()) + hitSlopRect.right)
+          && (y >= -hitSlopRect.top && y < (view.getHeight()) + hitSlopRect.bottom)) {
+        return true;
+      }
+
+      return false;
+    } else {
+      if ((x >= 0 && x < (view.getWidth())) && (y >= 0 && y < (view.getHeight()))) {
+        return true;
+      }
+
+      return false;
+    }
+  }
+
+  /**
+   * Returns the coordinates of a touch in the child View. It is transform aware and will invert the
+   * transform Matrix to find the true local points This code is taken from {@link
    * ViewGroup#isTransformedTouchPointInView()}
    */
-  private static boolean isTransformedTouchPointInView(
+  private static void getChildPoint(
       float x, float y, ViewGroup parent, View child, PointF outLocalPoint) {
     float localX = x + parent.getScrollX() - child.getLeft();
     float localY = y + parent.getScrollY() - child.getTop();
@@ -162,26 +216,7 @@ public class TouchTargetHelper {
       localX = localXY[0];
       localY = localXY[1];
     }
-    if (child instanceof ReactHitSlopView && ((ReactHitSlopView) child).getHitSlopRect() != null) {
-      Rect hitSlopRect = ((ReactHitSlopView) child).getHitSlopRect();
-      if ((localX >= -hitSlopRect.left
-              && localX < (child.getRight() - child.getLeft()) + hitSlopRect.right)
-          && (localY >= -hitSlopRect.top
-              && localY < (child.getBottom() - child.getTop()) + hitSlopRect.bottom)) {
-        outLocalPoint.set(localX, localY);
-        return true;
-      }
-
-      return false;
-    } else {
-      if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
-          && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
-        outLocalPoint.set(localX, localY);
-        return true;
-      }
-
-      return false;
-    }
+    outLocalPoint.set(localX, localY);
   }
 
   /**
@@ -211,45 +246,43 @@ public class TouchTargetHelper {
       return null;
 
     } else if (pointerEvents == PointerEvents.BOX_ONLY) {
-      // This view is the target, its children don't matter
-      return view;
+      // This view may be the target, its children don't matter
+      return findTouchTargetView(eventCoords, view, EnumSet.of(TouchTargetReturnType.SELF));
 
     } else if (pointerEvents == PointerEvents.BOX_NONE) {
       // This view can't be the target, but its children might.
-      if (view instanceof ViewGroup) {
-        View targetView = findTouchTargetView(eventCoords, (ViewGroup) view);
-        if (targetView != view) {
-          return targetView;
-        }
+      View targetView =
+          findTouchTargetView(eventCoords, view, EnumSet.of(TouchTargetReturnType.CHILD));
+      if (targetView != null) {
+        return targetView;
+      }
 
-        // PointerEvents.BOX_NONE means that this react element cannot receive pointer events.
-        // However, there might be virtual children that can receive pointer events, in which case
-        // we still want to return this View and dispatch a pointer event to the virtual element.
-        // Note that this currently only applies to Nodes/FlatViewGroup as it's the only class that
-        // is both a ViewGroup and ReactCompoundView (ReactTextView is a ReactCompoundView but not a
-        // ViewGroup).
-        if (view instanceof ReactCompoundView) {
-          int reactTag =
-              ((ReactCompoundView) view).reactTagForTouch(eventCoords[0], eventCoords[1]);
-          if (reactTag != view.getId()) {
-            // make sure we exclude the View itself because of the PointerEvents.BOX_NONE
-            return view;
-          }
+      // PointerEvents.BOX_NONE means that this react element cannot receive pointer events.
+      // However, there might be virtual children that can receive pointer events, in which case
+      // we still want to return this View and dispatch a pointer event to the virtual element.
+      // Note that this currently only applies to Nodes/FlatViewGroup as it's the only class that
+      // is both a ViewGroup and ReactCompoundView (ReactTextView is a ReactCompoundView but not a
+      // ViewGroup).
+      if (view instanceof ReactCompoundView
+          && isTouchPointInView(eventCoords[0], eventCoords[1], view)) {
+        int reactTag = ((ReactCompoundView) view).reactTagForTouch(eventCoords[0], eventCoords[1]);
+        if (reactTag != view.getId()) {
+          // make sure we exclude the View itself because of the PointerEvents.BOX_NONE
+          return view;
         }
       }
+
       return null;
 
     } else if (pointerEvents == PointerEvents.AUTO) {
       // Either this view or one of its children is the target
-      if (view instanceof ReactCompoundViewGroup) {
-        if (((ReactCompoundViewGroup) view).interceptsTouchEvent(eventCoords[0], eventCoords[1])) {
-          return view;
-        }
+      if (view instanceof ReactCompoundViewGroup
+          && isTouchPointInView(eventCoords[0], eventCoords[1], view)
+          && ((ReactCompoundViewGroup) view).interceptsTouchEvent(eventCoords[0], eventCoords[1])) {
+        return view;
       }
-      if (view instanceof ViewGroup) {
-        return findTouchTargetView(eventCoords, (ViewGroup) view);
-      }
-      return view;
+      return findTouchTargetView(
+          eventCoords, view, EnumSet.of(TouchTargetReturnType.SELF, TouchTargetReturnType.CHILD));
 
     } else {
       throw new JSApplicationIllegalArgumentException(

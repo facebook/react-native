@@ -12,6 +12,8 @@
 #include <map>
 #include <vector>
 
+#include <ReactCommon/CallInvoker.h>
+#include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/JSExecutor.h>
 
 namespace folly {
@@ -31,7 +33,7 @@ class RAMBundleRegistry;
 // executors and their threads.  All functions here can be called from
 // any thread.
 //
-// Except for loadApplicationScriptSync(), all void methods will queue
+// Except for loadBundleSync(), all void methods will queue
 // work to run on the jsQueue passed to the ctor, and return
 // immediately.
 class NativeToJsBridge {
@@ -63,15 +65,20 @@ class NativeToJsBridge {
   void invokeCallback(double callbackId, folly::dynamic &&args);
 
   /**
+   * Sets global variables in the JS Context.
+   */
+  void initializeRuntime();
+
+  /**
    * Starts the JS application.  If bundleRegistry is non-null, then it is
    * used to fetch JavaScript modules as individual scripts.
    * Otherwise, the script is assumed to include all the modules.
    */
-  void loadApplication(
+  void loadBundle(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry,
       std::unique_ptr<const JSBigString> startupCode,
       std::string sourceURL);
-  void loadApplicationSync(
+  void loadBundleSync(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry,
       std::unique_ptr<const JSBigString> startupCode,
       std::string sourceURL);
@@ -92,6 +99,13 @@ class NativeToJsBridge {
   void destroy();
 
   void runOnExecutorQueue(std::function<void(JSExecutor *)> task);
+
+  /**
+   * Native CallInvoker is used by TurboModules to schedule work on the
+   * NativeModule thread(s).
+   */
+  std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
+      std::shared_ptr<CallInvoker> nativeInvoker);
 
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued

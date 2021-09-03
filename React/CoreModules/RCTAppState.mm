@@ -10,7 +10,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
@@ -56,9 +56,14 @@ RCT_EXPORT_MODULE()
 
 - (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)getConstants
 {
-  return facebook::react::typedConstants<JS::NativeAppState::Constants>({
-      .initialAppState = RCTCurrentAppState(),
+  __block facebook::react::ModuleConstants<JS::NativeAppState::Constants> constants;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    constants = facebook::react::typedConstants<JS::NativeAppState::Constants>({
+        .initialAppState = RCTCurrentAppState(),
+    });
   });
+
+  return constants;
 }
 
 #pragma mark - Lifecycle
@@ -92,11 +97,6 @@ RCT_EXPORT_MODULE()
 - (void)stopObserving
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)invalidate
-{
-  [self stopObserving];
 }
 
 #pragma mark - App Notification Methods
@@ -138,11 +138,10 @@ RCT_EXPORT_METHOD(getCurrentAppState : (RCTResponseSenderBlock)callback error : 
   callback(@[ @{@"app_state" : RCTCurrentAppState()} ]);
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeAppStateSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeAppStateSpecJSI>(params);
 }
 
 @end

@@ -38,7 +38,7 @@ public interface JavaJSExecutor {
    * @param sourceURL url or file location from which script content was loaded
    */
   @DoNotStrip
-  void loadApplicationScript(String sourceURL) throws ProxyExecutorException;
+  void loadBundle(String sourceURL) throws ProxyExecutorException;
 
   /**
    * Execute javascript method within js context

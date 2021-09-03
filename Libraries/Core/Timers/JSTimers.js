@@ -8,23 +8,12 @@
  * @flow
  */
 
-'use strict';
-
 const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
-const Platform = require('../../Utilities/Platform');
 const Systrace = require('../../Performance/Systrace');
 
 const invariant = require('invariant');
 
 import NativeTiming from './NativeTiming';
-
-let _performanceNow = null;
-function performanceNow() {
-  if (!_performanceNow) {
-    _performanceNow = require('fbjs/lib/performanceNow');
-  }
-  return _performanceNow();
-}
 
 /**
  * JS implementation of timer functions. Must be completely driven by an
@@ -36,7 +25,7 @@ export type JSTimerType =
   | 'setTimeout'
   | 'setInterval'
   | 'requestAnimationFrame'
-  | 'setImmediate'
+  | 'queueReactNativeMicrotask'
   | 'requestIdleCallback';
 
 // These timing constants should be kept in sync with the ones in native ios and
@@ -44,19 +33,11 @@ export type JSTimerType =
 const FRAME_DURATION = 1000 / 60;
 const IDLE_CALLBACK_FRAME_DEADLINE = 1;
 
-const MAX_TIMER_DURATION_MS = 60 * 1000;
-const IS_ANDROID = Platform.OS === 'android';
-const ANDROID_LONG_TIMER_MESSAGE =
-  'Setting a timer for a long period of time, i.e. multiple minutes, is a ' +
-  'performance and correctness issue on Android as it keeps the timer ' +
-  'module awake, and timers can only be called when the app is in the foreground. ' +
-  'See https://github.com/facebook/react-native/issues/12981 for more info.';
-
 // Parallel arrays
 const callbacks: Array<?Function> = [];
 const types: Array<?JSTimerType> = [];
 const timerIDs: Array<?number> = [];
-let immediates: Array<number> = [];
+let reactNativeMicrotasks: Array<number> = [];
 let requestIdleCallbacks: Array<number> = [];
 const requestIdleCallbackTimeouts: {[number]: number, ...} = {};
 
@@ -89,11 +70,12 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
  * recurring (setInterval).
  */
 function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
-  require('fbjs/lib/warning')(
-    timerID <= GUID,
-    'Tried to call timer with ID %s but no such timer exists.',
-    timerID,
-  );
+  if (timerID > GUID) {
+    console.warn(
+      'Tried to call timer with ID %s but no such timer exists.',
+      timerID,
+    );
+  }
 
   // timerIndex of -1 means that no timer with that ID exists. There are
   // two situations when this happens, when a garbage timer ID was given
@@ -125,18 +107,21 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
     if (
       type === 'setTimeout' ||
       type === 'setInterval' ||
-      type === 'setImmediate'
+      type === 'queueReactNativeMicrotask'
     ) {
       callback();
     } else if (type === 'requestAnimationFrame') {
-      callback(performanceNow());
+      callback(global.performance.now());
     } else if (type === 'requestIdleCallback') {
       callback({
         timeRemaining: function() {
           // TODO: Optimisation: allow running for longer than one frame if
           // there are no pending JS calls on the bridge from native. This
           // would require a way to check the bridge queue synchronously.
-          return Math.max(0, FRAME_DURATION - (performanceNow() - frameTime));
+          return Math.max(
+            0,
+            FRAME_DURATION - (global.performance.now() - frameTime),
+          );
         },
         didTimeout: !!didTimeout,
       });
@@ -158,33 +143,33 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
 }
 
 /**
- * Performs a single pass over the enqueued immediates. Returns whether
- * more immediates are queued up (can be used as a condition a while loop).
+ * Performs a single pass over the enqueued reactNativeMicrotasks. Returns whether
+ * more reactNativeMicrotasks are queued up (can be used as a condition a while loop).
  */
-function _callImmediatesPass() {
-  if (immediates.length === 0) {
+function _callReactNativeMicrotasksPass() {
+  if (reactNativeMicrotasks.length === 0) {
     return false;
   }
 
   if (__DEV__) {
-    Systrace.beginEvent('callImmediatesPass()');
+    Systrace.beginEvent('callReactNativeMicrotasksPass()');
   }
 
   // The main reason to extract a single pass is so that we can track
   // in the system trace
-  const passImmediates = immediates;
-  immediates = [];
+  const passReactNativeMicrotasks = reactNativeMicrotasks;
+  reactNativeMicrotasks = [];
 
   // Use for loop rather than forEach as per @vjeux's advice
   // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
-  for (let i = 0; i < passImmediates.length; ++i) {
-    _callTimer(passImmediates[i], 0);
+  for (let i = 0; i < passReactNativeMicrotasks.length; ++i) {
+    _callTimer(passReactNativeMicrotasks[i], 0);
   }
 
   if (__DEV__) {
     Systrace.endEvent();
   }
-  return immediates.length > 0;
+  return reactNativeMicrotasks.length > 0;
 }
 
 function _clearIndex(i: number) {
@@ -205,7 +190,10 @@ function _freeCallback(timerID: number) {
   if (index !== -1) {
     const type = types[index];
     _clearIndex(index);
-    if (type !== 'setImmediate' && type !== 'requestIdleCallback') {
+    if (
+      type !== 'queueReactNativeMicrotask' &&
+      type !== 'requestIdleCallback'
+    ) {
       deleteTimer(timerID);
     }
   }
@@ -222,15 +210,6 @@ const JSTimers = {
    * @param {number} duration Number of milliseconds.
    */
   setTimeout: function(func: Function, duration: number, ...args: any): number {
-    if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
-      console.warn(
-        ANDROID_LONG_TIMER_MESSAGE +
-          '\n' +
-          '(Saw setTimeout with duration ' +
-          duration +
-          'ms)',
-      );
-    }
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setTimeout',
@@ -248,15 +227,6 @@ const JSTimers = {
     duration: number,
     ...args: any
   ): number {
-    if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
-      console.warn(
-        ANDROID_LONG_TIMER_MESSAGE +
-          '\n' +
-          '(Saw setInterval with duration ' +
-          duration +
-          'ms)',
-      );
-    }
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setInterval',
@@ -266,15 +236,19 @@ const JSTimers = {
   },
 
   /**
+   * The React Native microtask mechanism is used to back public APIs e.g.
+   * `queueMicrotask`, `clearImmediate`, and `setImmediate` (which is used by
+   * the Promise polyfill) when the JSVM microtask mechanism is not used.
+   *
    * @param {function} func Callback to be invoked before the end of the
    * current JavaScript execution loop.
    */
-  setImmediate: function(func: Function, ...args: any) {
+  queueReactNativeMicrotask: function(func: Function, ...args: any) {
     const id = _allocateCallback(
       () => func.apply(undefined, args),
-      'setImmediate',
+      'queueReactNativeMicrotask',
     );
-    immediates.push(id);
+    reactNativeMicrotasks.push(id);
     return id;
   },
 
@@ -318,7 +292,7 @@ const JSTimers = {
         const index = requestIdleCallbacks.indexOf(id);
         if (index > -1) {
           requestIdleCallbacks.splice(index, 1);
-          _callTimer(id, performanceNow(), true);
+          _callTimer(id, global.performance.now(), true);
         }
         delete requestIdleCallbackTimeouts[id];
         if (requestIdleCallbacks.length === 0) {
@@ -356,11 +330,11 @@ const JSTimers = {
     _freeCallback(timerID);
   },
 
-  clearImmediate: function(timerID: number) {
+  clearReactNativeMicrotask: function(timerID: number) {
     _freeCallback(timerID);
-    const index = immediates.indexOf(timerID);
+    const index = reactNativeMicrotasks.indexOf(timerID);
     if (index !== -1) {
-      immediates.splice(index, 1);
+      reactNativeMicrotasks.splice(index, 1);
     }
   },
 
@@ -384,6 +358,7 @@ const JSTimers = {
     }
 
     if (errors) {
+      // $FlowFixMe[incompatible-use]
       const errorCount = errors.length;
       if (errorCount > 1) {
         // Throw all the other errors in a setTimeout, which will throw each
@@ -392,18 +367,20 @@ const JSTimers = {
           JSTimers.setTimeout(
             (error => {
               throw error;
+              // $FlowFixMe[incompatible-use]
             }).bind(null, errors[ii]),
             0,
           );
         }
       }
+      // $FlowFixMe[incompatible-use]
       throw errors[0];
     }
   },
 
   callIdleCallbacks: function(frameTime: number) {
     if (
-      FRAME_DURATION - (performanceNow() - frameTime) <
+      FRAME_DURATION - (global.performance.now() - frameTime) <
       IDLE_CALLBACK_FRAME_DEADLINE
     ) {
       return;
@@ -436,9 +413,9 @@ const JSTimers = {
    * This is called after we execute any command we receive from native but
    * before we hand control back to native.
    */
-  callImmediates() {
+  callReactNativeMicrotasks() {
     errors = (null: ?Array<Error>);
-    while (_callImmediatesPass()) {}
+    while (_callReactNativeMicrotasksPass()) {}
     if (errors) {
       errors.forEach(error =>
         JSTimers.setTimeout(() => {
@@ -482,32 +459,34 @@ function setSendIdleEvents(sendIdleEvents: boolean): void {
 
 let ExportedJSTimers: {|
   callIdleCallbacks: (frameTime: number) => any | void,
-  callImmediates: () => void,
+  callReactNativeMicrotasks: () => void,
   callTimers: (timersToCall: Array<number>) => any | void,
   cancelAnimationFrame: (timerID: number) => void,
   cancelIdleCallback: (timerID: number) => void,
-  clearImmediate: (timerID: number) => void,
+  clearReactNativeMicrotask: (timerID: number) => void,
   clearInterval: (timerID: number) => void,
   clearTimeout: (timerID: number) => void,
   emitTimeDriftWarning: (warningMessage: string) => any | void,
   requestAnimationFrame: (func: any) => any | number,
   requestIdleCallback: (func: any, options: ?any) => any | number,
-  setImmediate: (func: any, ...args: any) => number,
+  queueReactNativeMicrotask: (func: any, ...args: any) => number,
   setInterval: (func: any, duration: number, ...args: any) => number,
   setTimeout: (func: any, duration: number, ...args: any) => number,
 |};
 
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
-  // $FlowFixMe: we can assume timers are generally available
+  // $FlowFixMe[prop-missing] : we can assume timers are generally available
   ExportedJSTimers = ({
-    callImmediates: JSTimers.callImmediates,
-    setImmediate: JSTimers.setImmediate,
+    callReactNativeMicrotasks: JSTimers.callReactNativeMicrotasks,
+    queueReactNativeMicrotask: JSTimers.queueReactNativeMicrotask,
   }: typeof JSTimers);
 } else {
   ExportedJSTimers = JSTimers;
 }
 
-BatchedBridge.setImmediatesCallback(JSTimers.callImmediates);
+BatchedBridge.setReactNativeMicrotasksCallback(
+  JSTimers.callReactNativeMicrotasks,
+);
 
 module.exports = ExportedJSTimers;

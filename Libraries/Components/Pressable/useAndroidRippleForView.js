@@ -8,11 +8,9 @@
  * @format
  */
 
-'use strict';
-
 import invariant from 'invariant';
 import {Commands} from '../View/ViewNativeComponent';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import {Platform, View, processColor} from 'react-native';
 import * as React from 'react';
@@ -22,53 +20,66 @@ type NativeBackgroundProp = $ReadOnly<{|
   type: 'RippleAndroid',
   color: ?number,
   borderless: boolean,
+  rippleRadius: ?number,
 |}>;
+
+export type RippleConfig = {|
+  color?: ColorValue,
+  borderless?: boolean,
+  radius?: number,
+  foreground?: boolean,
+|};
 
 /**
  * Provides the event handlers and props for configuring the ripple effect on
  * supported versions of Android.
  */
 export default function useAndroidRippleForView(
-  rippleColor: ?ColorValue,
+  rippleConfig: ?RippleConfig,
   viewRef: {|current: null | React.ElementRef<typeof View>|},
 ): ?$ReadOnly<{|
   onPressIn: (event: PressEvent) => void,
   onPressMove: (event: PressEvent) => void,
   onPressOut: (event: PressEvent) => void,
-  viewProps: $ReadOnly<{|
-    nativeBackgroundAndroid: NativeBackgroundProp,
-  |}>,
+  viewProps:
+    | $ReadOnly<{|nativeBackgroundAndroid: NativeBackgroundProp|}>
+    | $ReadOnly<{|nativeForegroundAndroid: NativeBackgroundProp|}>,
 |}> {
+  const {color, borderless, radius, foreground} = rippleConfig ?? {};
+
   return useMemo(() => {
     if (
       Platform.OS === 'android' &&
       Platform.Version >= 21 &&
-      rippleColor != null
+      (color != null || borderless != null || radius != null)
     ) {
-      const processedColor = processColor(rippleColor);
+      const processedColor = processColor(color);
       invariant(
         processedColor == null || typeof processedColor === 'number',
         'Unexpected color given for Ripple color',
       );
 
+      const nativeRippleValue = {
+        type: 'RippleAndroid',
+        color: processedColor,
+        borderless: borderless === true,
+        rippleRadius: radius,
+      };
+
       return {
-        viewProps: {
-          // Consider supporting `nativeForegroundAndroid` and `borderless`.
-          nativeBackgroundAndroid: {
-            type: 'RippleAndroid',
-            color: processedColor,
-            borderless: false,
-          },
-        },
+        viewProps:
+          foreground === true
+            ? {nativeForegroundAndroid: nativeRippleValue}
+            : {nativeBackgroundAndroid: nativeRippleValue},
         onPressIn(event: PressEvent): void {
           const view = viewRef.current;
           if (view != null) {
-            Commands.setPressed(view, true);
             Commands.hotspotUpdate(
               view,
               event.nativeEvent.locationX ?? 0,
               event.nativeEvent.locationY ?? 0,
             );
+            Commands.setPressed(view, true);
           }
         },
         onPressMove(event: PressEvent): void {
@@ -90,5 +101,5 @@ export default function useAndroidRippleForView(
       };
     }
     return null;
-  }, [rippleColor, viewRef]);
+  }, [borderless, color, foreground, radius, viewRef]);
 }

@@ -23,13 +23,11 @@ class TurboModuleManagerDelegate
       "Lcom/facebook/react/turbomodule/core/TurboModuleManagerDelegate;";
 
   virtual std::shared_ptr<TurboModule> getTurboModule(
-      std::string name,
-      jni::alias_ref<JTurboModule> turboModule,
-      std::shared_ptr<CallInvoker> jsInvoker,
-      std::shared_ptr<CallInvoker> nativeInvoker) = 0;
+      const std::string name,
+      const JavaTurboModule::InitParams &params) = 0;
   virtual std::shared_ptr<TurboModule> getTurboModule(
-      std::string name,
-      std::shared_ptr<CallInvoker> jsInvoker) = 0;
+      const std::string name,
+      const std::shared_ptr<CallInvoker> jsInvoker) = 0;
 
  private:
   friend HybridBase;

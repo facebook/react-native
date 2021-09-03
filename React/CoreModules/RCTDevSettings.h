@@ -8,6 +8,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTDefines.h>
 #import <React/RCTEventEmitter.h>
+#import <React/RCTInitializing.h>
 
 @protocol RCTPackagerClientMethod;
 
@@ -30,14 +31,23 @@
 
 @end
 
-@interface RCTDevSettings : RCTEventEmitter
+@protocol RCTDevSettingsInspectable <NSObject>
+
+/**
+ * Whether current jsi::Runtime is inspectable.
+ * Only set when using as a bridgeless turbo module.
+ */
+@property (nonatomic, assign, readwrite) BOOL isInspectable;
+
+@end
+
+@interface RCTDevSettings : RCTEventEmitter <RCTInitializing>
 
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource;
 
 @property (nonatomic, readonly) BOOL isHotLoadingAvailable;
-@property (nonatomic, readonly) BOOL isLiveReloadAvailable;
 @property (nonatomic, readonly) BOOL isRemoteDebuggingAvailable;
-@property (nonatomic, readonly) BOOL isNuclideDebuggingAvailable;
+@property (nonatomic, readonly) BOOL isDeviceDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isJSCSamplingProfilerAvailable;
 
 /**
@@ -82,9 +92,14 @@
 - (void)toggleElementInspector;
 
 /**
- * If loading bundle from metro, sets up HMRClient.
+ * Set up the HMRClient if loading the bundle from Metro.
  */
-- (void)setupHotModuleReloadClientIfApplicableForURL:(NSURL *)bundleURL;
+- (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL;
+
+/**
+ * Register additional bundles with the HMRClient.
+ */
+- (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL;
 
 #if RCT_DEV_MENU
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler

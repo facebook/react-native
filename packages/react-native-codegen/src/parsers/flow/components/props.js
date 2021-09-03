@@ -12,10 +12,13 @@
 
 const {getValueFromTypes} = require('../utils.js');
 
-import type {PropTypeShape} from '../../../CodegenSchema.js';
-import type {TypeMap} from '../utils.js';
+import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
+import type {TypeDeclarationMap} from '../utils.js';
 
-function getPropProperties(propsTypeName: string, types: TypeMap): $FlowFixMe {
+function getPropProperties(
+  propsTypeName: string,
+  types: TypeDeclarationMap,
+): $FlowFixMe {
   const typeAlias = types[propsTypeName];
   try {
     return typeAlias.right.typeParameters.params[0].properties;
@@ -90,23 +93,23 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
   switch (type) {
     case 'ImageSource':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
     case 'ProcessedColorValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ColorPrimitive',
       };
     case 'PointValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'PointPrimitive',
       };
     case 'EdgeInsetsValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
     case 'Stringish':
@@ -150,7 +153,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         return {
           type: 'StringEnumTypeAnnotation',
           default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => ({name: option.value})),
+          options: typeAnnotation.types.map(option => option.value),
         };
       } else if (unionType === 'NumberLiteralTypeAnnotation') {
         throw new Error(
@@ -214,31 +217,31 @@ function getTypeAnnotation(
   switch (type) {
     case 'ImageSource':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ImageSourcePrimitive',
       };
     case 'ColorValue':
     case 'ProcessedColorValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'ColorPrimitive',
       };
     case 'ColorArrayValue':
       return {
         type: 'ArrayTypeAnnotation',
         elementType: {
-          type: 'NativePrimitiveTypeAnnotation',
+          type: 'ReservedPropTypeAnnotation',
           name: 'ColorPrimitive',
         },
       };
     case 'PointValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'PointPrimitive',
       };
     case 'EdgeInsetsValue':
       return {
-        type: 'NativePrimitiveTypeAnnotation',
+        type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
     case 'Int32':
@@ -298,13 +301,13 @@ function getTypeAnnotation(
         return {
           type: 'StringEnumTypeAnnotation',
           default: (defaultValue: string),
-          options: typeAnnotation.types.map(option => ({name: option.value})),
+          options: typeAnnotation.types.map(option => option.value),
         };
       } else if (unionType === 'NumberLiteralTypeAnnotation') {
         return {
           type: 'Int32EnumTypeAnnotation',
           default: (defaultValue: number),
-          options: typeAnnotation.types.map(option => ({value: option.value})),
+          options: typeAnnotation.types.map(option => option.value),
         };
       } else {
         throw new Error(
@@ -321,7 +324,10 @@ function getTypeAnnotation(
   }
 }
 
-function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
+function buildPropSchema(
+  property,
+  types: TypeDeclarationMap,
+): ?NamedShape<PropTypeAnnotation> {
   const name = property.key.name;
 
   const value = getValueFromTypes(property.value, types);
@@ -345,8 +351,8 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   }
   if (
     value.type === 'NullableTypeAnnotation' &&
-    (typeAnnotation.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.id.name === 'WithDefault')
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'WithDefault'
   ) {
     throw new Error(
       'WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it.',
@@ -410,7 +416,7 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   };
 }
 
-// $FlowFixMe there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type PropAST = Object;
 
 function verifyPropNotAlreadyDefined(
@@ -426,7 +432,7 @@ function verifyPropNotAlreadyDefined(
 
 function flattenProperties(
   typeDefinition: $ReadOnlyArray<PropAST>,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ) {
   return typeDefinition
     .map(property => {
@@ -456,8 +462,8 @@ function flattenProperties(
 
 function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
-  types: TypeMap,
-): $ReadOnlyArray<PropTypeShape> {
+  types: TypeDeclarationMap,
+): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
   return flattenProperties(typeDefinition, types)
     .map(property => buildPropSchema(property, types))
     .filter(Boolean);

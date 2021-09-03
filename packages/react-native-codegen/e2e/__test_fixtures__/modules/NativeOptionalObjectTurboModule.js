@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
@@ -17,7 +15,6 @@ export interface Spec extends TurboModule {
   +getConstants: () => {|
     D?: ?boolean,
     A?: Array<any>,
-    G?: any,
     E?: ?{|
       D?: ?boolean,
       E?: ?{|

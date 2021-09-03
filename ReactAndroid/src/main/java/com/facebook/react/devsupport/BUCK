@@ -1,9 +1,11 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_root_target", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "devsupport",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     manifest = "AndroidManifest.xml",
     provided_deps = [
         react_native_dep("third-party/android/androidx:core"),
@@ -26,6 +28,7 @@ rn_android_library(
         react_native_target("java/com/facebook/debug/tags:tags"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/util:util"),
         react_native_target("java/com/facebook/react/common/network:network"),
         react_native_target("java/com/facebook/react/devsupport:interfaces"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
@@ -37,14 +40,16 @@ rn_android_library(
         react_native_target("res:devsupport"),
     ],
     exported_deps = [
-        react_native_target("java/com/facebook/fbreact/specs:FBReactNativeSpec"),
+        react_native_root_target(":FBReactNativeSpec"),
     ],
 )
 
 rn_android_library(
     name = "interfaces",
     srcs = glob(["interfaces/*.java"]),
+    autoglob = False,
     is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
     visibility = [
         "PUBLIC",
     ],

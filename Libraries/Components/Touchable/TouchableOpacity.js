@@ -8,16 +8,13 @@
  * @format
  */
 
-'use strict';
-
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
-import TVTouchable from './TVTouchable';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
-import Animated from 'react-native/Libraries/Animated/src/Animated';
-import Easing from 'react-native/Libraries/Animated/src/Easing';
+import Animated from 'react-native/Libraries/Animated/Animated';
+import Easing from 'react-native/Libraries/Animated/Easing';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import flattenStyle from 'react-native/Libraries/StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
@@ -39,7 +36,7 @@ type Props = $ReadOnly<{|
   activeOpacity?: ?number,
   style?: ?ViewStyleProp,
 
-  hostRef: React.Ref<typeof Animated.View>,
+  hostRef?: ?React.Ref<typeof Animated.View>,
 |}>;
 
 type State = $ReadOnly<{|
@@ -132,8 +129,6 @@ type State = $ReadOnly<{|
  *
  */
 class TouchableOpacity extends React.Component<Props, State> {
-  _tvTouchable: ?TVTouchable;
-
   state: State = {
     anim: new Animated.Value(this._getChildStyleOpacityWithDefault()),
     pressability: new Pressability(this._createPressabilityConfig()),
@@ -142,11 +137,12 @@ class TouchableOpacity extends React.Component<Props, State> {
   _createPressabilityConfig(): PressabilityConfig {
     return {
       cancelable: !this.props.rejectResponderTermination,
-      disabled: this.props.disabled,
+      disabled: this.props.disabled ?? this.props.accessibilityState?.disabled,
       hitSlop: this.props.hitSlop,
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
       delayPressOut: this.props.delayPressOut,
+      minPressDuration: 0,
       pressRectOffset: this.props.pressRetentionOffset,
       onBlur: event => {
         if (Platform.isTV) {
@@ -192,6 +188,7 @@ class TouchableOpacity extends React.Component<Props, State> {
     Animated.timing(this.state.anim, {
       toValue,
       duration,
+      // $FlowFixMe[method-unbinding]
       easing: Easing.inOut(Easing.quad),
       useNativeDriver: true,
     }).start();
@@ -219,13 +216,21 @@ class TouchableOpacity extends React.Component<Props, State> {
       ...eventHandlersWithoutBlurAndFocus
     } = this.state.pressability.getEventHandlers();
 
+    const accessibilityState =
+      this.props.disabled != null
+        ? {
+            ...this.props.accessibilityState,
+            disabled: this.props.disabled,
+          }
+        : this.props.accessibilityState;
+
     return (
       <Animated.View
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
-        accessibilityState={this.props.accessibilityState}
+        accessibilityState={accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
         accessibilityValue={this.props.accessibilityValue}
@@ -257,29 +262,6 @@ class TouchableOpacity extends React.Component<Props, State> {
     );
   }
 
-  componentDidMount(): void {
-    if (Platform.isTV) {
-      this._tvTouchable = new TVTouchable(this, {
-        getDisabled: () => this.props.disabled === true,
-        onBlur: event => {
-          if (this.props.onBlur != null) {
-            this.props.onBlur(event);
-          }
-        },
-        onFocus: event => {
-          if (this.props.onFocus != null) {
-            this.props.onFocus(event);
-          }
-        },
-        onPress: event => {
-          if (this.props.onPress != null) {
-            this.props.onPress(event);
-          }
-        },
-      });
-    }
-  }
-
   componentDidUpdate(prevProps: Props, prevState: State) {
     this.state.pressability.configure(this._createPressabilityConfig());
     if (this.props.disabled !== prevProps.disabled) {
@@ -288,15 +270,14 @@ class TouchableOpacity extends React.Component<Props, State> {
   }
 
   componentWillUnmount(): void {
-    if (Platform.isTV) {
-      if (this._tvTouchable != null) {
-        this._tvTouchable.destroy();
-      }
-    }
     this.state.pressability.reset();
   }
 }
 
-module.exports = (React.forwardRef((props, hostRef) => (
-  <TouchableOpacity {...props} hostRef={hostRef} />
-)): React.ComponentType<$ReadOnly<$Diff<Props, {|hostRef: mixed|}>>>);
+const Touchable = (React.forwardRef((props, ref) => (
+  <TouchableOpacity {...props} hostRef={ref} />
+)): React.AbstractComponent<Props, React.ElementRef<typeof Animated.View>>);
+
+Touchable.displayName = 'TouchableOpacity';
+
+module.exports = Touchable;

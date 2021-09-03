@@ -19,7 +19,7 @@ describe('resolveAssetSource', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    AssetRegistry = require('../AssetRegistry');
+    AssetRegistry = require('@react-native/assets/registry');
     resolveAssetSource = require('../resolveAssetSource');
     NativeSourceCode = require('../../NativeModules/specs/NativeSourceCode')
       .default;

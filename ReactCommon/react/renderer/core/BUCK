@@ -1,0 +1,115 @@
+load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
+    "APPLE",
+    "CXX",
+    "fb_xplat_cxx_test",
+    "get_apple_compiler_flags",
+    "get_apple_inspector_flags",
+    "get_preprocessor_flags_for_build_mode",
+    "react_native_xplat_target",
+    "rn_xplat_cxx_library",
+    "subdir_glob",
+)
+
+APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
+
+rn_xplat_cxx_library(
+    name = "core",
+    srcs = glob(
+        ["**/*.cpp"],
+        exclude = glob(["tests/**/*.cpp"]),
+    ),
+    headers = glob(
+        ["**/*.h"],
+        exclude = glob(["tests/**/*.h"]),
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "react/renderer/core",
+    ),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+    ],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+    force_static = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    macosx_tests_override = [],
+    platforms = (ANDROID, APPLE, CXX),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    tests = [":tests"],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:headers_only",
+        "//xplat/folly:memory",
+        "//xplat/folly:molly",
+        "//xplat/jsi:JSIDynamic",
+        "//xplat/jsi:jsi",
+        react_native_xplat_target("react/debug:debug"),
+        react_native_xplat_target("react/utils:utils"),
+        react_native_xplat_target("react/renderer/debug:debug"),
+        react_native_xplat_target("react/renderer/graphics:graphics"),
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "tests",
+    srcs = glob(["tests/*.cpp"]),
+    headers = glob(["tests/*.h"]),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    platforms = (ANDROID, APPLE, CXX),
+    deps = [
+        "//xplat/folly:molly",
+        "//xplat/js/react-native-github/ReactCommon/react/renderer/element:element",
+        react_native_xplat_target("react/debug:debug"),
+        react_native_xplat_target("react/renderer/components/view:view"),
+        react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
+        react_native_xplat_target("react/renderer/components/text:text"),
+        "//xplat/third-party/gmock:gtest",
+        react_native_xplat_target("react/renderer/components/view:view"),
+        ":core",
+        "//xplat/hermes/API:HermesAPI",
+    ],
+)
+
+fb_xplat_cxx_binary(
+    name = "benchmarks",
+    srcs = glob(["tests/benchmarks/*.cpp"]),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+        "-Wno-unused-variable",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+    platforms = (ANDROID, APPLE, CXX),
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/third-party/benchmark:benchmark",
+        react_native_xplat_target("react/utils:utils"),
+        react_native_xplat_target("react/renderer/components/view:view"),
+        ":core",
+    ],
+)

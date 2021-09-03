@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
@@ -51,6 +52,25 @@ public class JSTouchDispatcher {
   }
 
   /**
+   * See Event.java. By contract, this surfaceId should be a valid SurfaceId in Fabric, and should
+   * ALWAYS return -1 in non-Fabric.
+   *
+   * @return
+   */
+  private int getSurfaceId() {
+    if (mRootViewGroup != null
+        && mRootViewGroup instanceof ReactRoot
+        && ((ReactRoot) mRootViewGroup).getUIManagerType() == UIManagerType.FABRIC) {
+      if (mRootViewGroup.getContext() instanceof ThemedReactContext) {
+        ThemedReactContext context = (ThemedReactContext) mRootViewGroup.getContext();
+        return context.getSurfaceId();
+      }
+      return ((ReactRoot) mRootViewGroup).getRootViewTag();
+    }
+    return -1;
+  }
+
+  /**
    * Main catalyst view is responsible for collecting and sending touch events to JS. This method
    * reacts for an incoming android native touch events ({@link MotionEvent}) and calls into {@link
    * com.facebook.react.uimanager.events.EventDispatcher} when appropriate. It uses {@link
@@ -70,9 +90,11 @@ public class JSTouchDispatcher {
       // this gesture
       mChildIsHandlingNativeGesture = false;
       mGestureStartTime = ev.getEventTime();
+
       mTargetTag = findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              getSurfaceId(),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -97,6 +119,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              getSurfaceId(),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -111,6 +134,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              getSurfaceId(),
               mTargetTag,
               TouchEventType.MOVE,
               ev,
@@ -122,6 +146,7 @@ public class JSTouchDispatcher {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              getSurfaceId(),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -133,6 +158,7 @@ public class JSTouchDispatcher {
       // Exactly onw of the pointers goes up
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              getSurfaceId(),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -181,6 +207,7 @@ public class JSTouchDispatcher {
     Assertions.assertNotNull(eventDispatcher)
         .dispatchEvent(
             TouchEvent.obtain(
+                getSurfaceId(),
                 mTargetTag,
                 TouchEventType.CANCEL,
                 androidEvent,

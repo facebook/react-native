@@ -19,7 +19,7 @@ jest.mock('../LogBoxSymbolication', () => {
 });
 
 function getLogBoxLog() {
-  return new (require('../LogBoxLog')).default({
+  return new (require('../LogBoxLog').default)({
     level: 'warn',
     isComponentError: false,
     message: {content: '...', substitutions: []},

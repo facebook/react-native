@@ -99,12 +99,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   BOOL valid = YES;
   if (_requestToken == nil) {
-    if (requestToken == nil) {
-      if (RCT_DEBUG) {
-        RCTLogError(@"Missing request token for request: %@", _request);
-      }
-      valid = NO;
-    }
     _requestToken = requestToken;
   } else if (![requestToken isEqual:_requestToken]) {
     if (RCT_DEBUG) {

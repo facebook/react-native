@@ -7,6 +7,8 @@
 
 package com.facebook.react.config;
 
+import com.facebook.proguard.annotations.DoNotStripAny;
+
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of RN. It
  * contains mainly flags for features that are either under active development and not ready for
@@ -14,17 +16,8 @@ package com.facebook.react.config;
  *
  * <p>These values are safe defaults and should not require manual changes.
  */
+@DoNotStripAny
 public class ReactFeatureFlags {
-
-  /** Whether we should load a specific view manager immediately or when it is accessed by JS */
-  public static boolean lazilyLoadViewManagers = false;
-
-  /** Reduce the number of Java-JS interops while accessing native arrays */
-  public static boolean useArrayNativeAccessor = false;
-
-  /** Reduce the number of Java-JS interops while accessing native maps */
-  public static boolean useMapNativeAccessor = false;
-
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
@@ -33,67 +26,73 @@ public class ReactFeatureFlags {
   public static volatile boolean useTurboModules = false;
 
   /**
-   * Log tags of when a view deleted on the native side {@link
-   * com.facebook.react.uimanager.NativeViewHierarchyManager dropView}
+   * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
+   * use Fabric instead of the legacy renderer.
    */
-  public static boolean logDroppedViews = false;
+  public static volatile boolean enableFabricRenderer = false;
 
-  /*
-   * This feature flag enables extra logging on ReactWebViews.
-   * Default value is false.
+  /**
+   * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
+   * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
+   * is used.
    */
-  public static boolean enableExtraWebViewLogs = false;
+  public static volatile boolean warnOnLegacyNativeModuleSystemUse = false;
 
-  /*
-   * This feature flag enables logs for Fabric
+  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
+  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
+
+  /**
+   * Experiment:
+   *
+   * <p>Bridge and Bridgeless mode can run concurrently. This means that there can be two
+   * TurboModule systems alive at the same time.
+   *
+   * <p>The TurboModule system stores all JS callbacks in a global LongLivedObjectCollection. This
+   * collection is cleared when the JS VM is torn down. Implication: Tearing down the bridge JSVM
+   * invalidates the bridgeless JSVM's callbacks, and vice versa.
+   *
+   * <p>useGlobalCallbackCleanupScopeUsingRetainJSCallback => Use a retainJSCallbacks lambda to
+   * store jsi::Functions into the global LongLivedObjectCollection
+   *
+   * <p>useTurboModuleManagerCallbackCleanupScope => Use a retainJSCallbacks labmda to store
+   * jsi::Functions into a LongLivedObjectCollection owned by the TurboModuleManager
    */
+  public static boolean useGlobalCallbackCleanupScopeUsingRetainJSCallback = false;
+
+  public static boolean useTurboModuleManagerCallbackCleanupScope = false;
+
+  /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
-  /**
-   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
-   * provided) to update the view properties. If {@code false}, then the generated {@code
-   * ...$$PropsSetter} class will be used instead.
-   */
-  public static boolean useViewManagerDelegates = false;
+  /** Feature flag to configure eager initialization of Fabric */
+  public static boolean eagerInitializeFabric = false;
 
-  /**
-   * Should this application use Catalyst Teardown V2? This is an experiment to use a V2 of the
-   * CatalystInstanceImpl `destroy` method.
-   */
-  public static boolean useCatalystTeardownV2 = false;
+  /** Enables Static ViewConfig in RN Android native code. */
+  public static boolean enableExperimentalStaticViewConfigs = false;
 
-  /**
-   * When the ReactContext is destroyed, should the CatalystInstance immediately be nullified? This
-   * is the safest thing to do since the CatalystInstance shouldn't be used, and should be
-   * garbage-collected after it's destroyed, but this is a breaking change in that many native
-   * modules assume that a ReactContext will always have a CatalystInstance. This will be deleted
-   * and the CatalystInstance will always be destroyed in some future release.
-   */
-  public static boolean nullifyCatalystInstanceOnDestroy = false;
+  public static boolean enableRuntimeScheduler = false;
 
-  /**
-   * Temporary flag that should be removed soon. See FabricUIManager: if this flag is disabled,
-   * mountItems scheduled on the UI thread will *always* be executed synchronously. If this flag is
-   * enabled, users of FabricUIManager may disable immediate execution of scheduled mount items.
-   * TODO T54997838: remove as followup
-   */
-  public static boolean allowDisablingImmediateExecutionOfScheduleMountItems = false;
+  /** Enables a more aggressive cleanup during destruction of ReactContext */
+  public static boolean enableReactContextCleanupFix = false;
 
-  /**
-   * Temporary flag. See UIImplementation: if this flag is enabled, ViewCommands will be queued and
-   * executed before any other types of UI operations.
-   */
-  public static boolean allowEarlyViewCommandExecution = false;
+  /** Feature flag to configure eager initialization of MapBuffer So file */
+  public static boolean enableEagerInitializeMapBufferSoFile = false;
 
-  /**
-   * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
-   * ReactViewGroup, ReactHorizontalScrollView and ReactScrollView.
-   *
-   * <p>This new algorithm clip child rects if overflow is set to ViewProps.HIDDEN. More details in
-   * https://github.com/facebook/react-native/issues/23870 and
-   * https://github.com/facebook/react-native/pull/26334
-   *
-   * <p>The react flag is disabled by default because this is increasing ANRs (T57363204)
-   */
-  public static boolean clipChildRectsIfOverflowIsHidden = false;
+  private static boolean mapBufferSerializationEnabled = false;
+
+  /** Enables or disables MapBuffer Serialization */
+  public static void setMapBufferSerializationEnabled(boolean enabled) {
+    mapBufferSerializationEnabled = enabled;
+  }
+
+  public static boolean isMapBufferSerializationEnabled() {
+    return mapBufferSerializationEnabled;
+  }
+
+  /** Enables Fabric for LogBox */
+  public static boolean enableFabricInLogBox = false;
+
+  public static boolean enableLockFreeEventDispatcher = false;
+
+  public static boolean enableAggressiveEventEmitterCleanup = false;
 }

@@ -92,9 +92,9 @@ class PixelRatio {
    *
    * If a font scale is not set, this returns the device pixel ratio.
    *
-   * Currently this is only implemented on Android and reflects the user preference set in
-   * Settings > Display > Font size, on iOS it will always return the default pixel ratio.
-   * @platform android
+   * This reflects the user preference set in:
+   *  - Settings > Display > Font size on Android,
+   *  - Settings > Display & Brightness > Text Size on iOS.
    */
   static getFontScale(): number {
     return Dimensions.get('window').fontScale || PixelRatio.get();

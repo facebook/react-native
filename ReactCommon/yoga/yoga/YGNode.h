@@ -6,6 +6,9 @@
  */
 
 #pragma once
+
+#ifdef __cplusplus
+
 #include <cstdint>
 #include <stdio.h>
 #include "BitUtils.h"
@@ -190,6 +193,17 @@ public:
     return resolvedDimensions_[index];
   }
 
+  static CompactValue computeEdgeValueForColumn(
+      const YGStyle::Edges& edges,
+      YGEdge edge,
+      CompactValue defaultValue);
+
+  static CompactValue computeEdgeValueForRow(
+      const YGStyle::Edges& edges,
+      YGEdge rowEdge,
+      YGEdge edge,
+      CompactValue defaultValue);
+
   // Methods related to positions, margin, padding and border
   YGFloatOptional getLeadingPosition(
       const YGFlexDirection axis,
@@ -330,3 +344,5 @@ public:
   bool isLayoutTreeEqualToNode(const YGNode& node) const;
   void reset();
 };
+
+#endif

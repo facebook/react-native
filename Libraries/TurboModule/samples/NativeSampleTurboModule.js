@@ -8,9 +8,8 @@
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
+import type {UnsafeObject} from '../../Types/CodegenTypes';
+import type {RootTag, TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
@@ -26,6 +25,8 @@ export interface Spec extends TurboModule {
   +getString: (arg: string) => string;
   +getArray: (arg: Array<any>) => Array<any>;
   +getObject: (arg: Object) => Object;
+  +getUnsafeObject: (arg: UnsafeObject) => UnsafeObject;
+  +getRootTag: (arg: RootTag) => RootTag;
   +getValue: (x: number, y: string, z: Object) => Object;
   +getValueWithCallback: (callback: (value: string) => void) => void;
   +getValueWithPromise: (error: boolean) => Promise<string>;

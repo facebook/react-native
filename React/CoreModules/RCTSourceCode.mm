@@ -23,6 +23,7 @@ using namespace facebook::react;
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
+@synthesize bundleManager = _bundleManager;
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -37,14 +38,13 @@ RCT_EXPORT_MODULE()
 - (NSDictionary<NSString *, id> *)getConstants
 {
   return @{
-    @"scriptURL" : self.bridge.bundleURL.absoluteString ?: @"",
+    @"scriptURL" : self.bundleManager.bundleURL.absoluteString ?: @"",
   };
 }
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
-                                                 perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<NativeSourceCodeSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<NativeSourceCodeSpecJSI>(params);
 }
 
 @end

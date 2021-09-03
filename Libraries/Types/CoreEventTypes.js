@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
-
-'use strict';
 
 import * as React from 'react';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
@@ -88,7 +86,7 @@ export type TextLayoutEvent = SyntheticEvent<
 export type PressEvent = ResponderSyntheticEvent<
   $ReadOnly<{|
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
-    force: number,
+    force?: number,
     identifier: number,
     locationX: number,
     locationY: number,

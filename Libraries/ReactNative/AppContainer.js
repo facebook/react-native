@@ -8,22 +8,20 @@
  * @flow
  */
 
-'use strict';
-
-const EmitterSubscription = require('../vendor/emitter/EmitterSubscription');
-const PropTypes = require('prop-types');
-const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
-const React = require('react');
-const RootTagContext = require('./RootTagContext');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const View = require('../Components/View/View');
-
-type Context = {rootTag: number, ...};
+import View from '../Components/View/View';
+import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
+import StyleSheet from '../StyleSheet/StyleSheet';
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import {RootTagContext, createRootTag} from './RootTag';
+import type {RootTag} from './RootTag';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   children?: React.Node,
   fabric?: boolean,
-  rootTag: number,
+  useConcurrentRoot?: boolean,
+  rootTag: number | RootTag,
+  initialProps?: {...},
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
   internal_excludeLogBox?: ?boolean,
@@ -42,21 +40,9 @@ class AppContainer extends React.Component<Props, State> {
     hasError: false,
   };
   _mainRef: ?React.ElementRef<typeof View>;
-  _subscription: ?EmitterSubscription = null;
+  _subscription: ?EventSubscription = null;
 
   static getDerivedStateFromError: any = undefined;
-
-  static childContextTypes:
-    | any
-    | {|rootTag: React$PropType$Primitive<number>|} = {
-    rootTag: PropTypes.number,
-  };
-
-  getChildContext(): Context {
-    return {
-      rootTag: this.props.rootTag,
-    };
-  }
 
   componentDidMount(): void {
     if (__DEV__) {
@@ -67,7 +53,6 @@ class AppContainer extends React.Component<Props, State> {
             const Inspector = require('../Inspector/Inspector');
             const inspector = this.state.inspector ? null : (
               <Inspector
-                isFabric={this.props.fabric === true}
                 inspectedView={this._mainRef}
                 onRequestRerenderApp={updateInspectedView => {
                   this.setState(
@@ -120,6 +105,7 @@ class AppContainer extends React.Component<Props, State> {
     if (Wrapper != null) {
       innerView = (
         <Wrapper
+          initialProps={this.props.initialProps}
           fabric={this.props.fabric === true}
           showArchitectureIndicator={
             this.props.showArchitectureIndicator === true
@@ -129,7 +115,7 @@ class AppContainer extends React.Component<Props, State> {
       );
     }
     return (
-      <RootTagContext.Provider value={this.props.rootTag}>
+      <RootTagContext.Provider value={createRootTag(this.props.rootTag)}>
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
           {this.state.inspector}
@@ -145,12 +131,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-if (__DEV__) {
-  if (!global.__RCTProfileIsProfiling) {
-    const LogBox = require('../LogBox/LogBox');
-    LogBox.install();
-  }
-}
 
 module.exports = AppContainer;

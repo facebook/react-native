@@ -13,6 +13,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -101,6 +102,11 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   @ReactProp(name = "snapToOffsets")
   public void setSnapToOffsets(ReactScrollView view, @Nullable ReadableArray snapToOffsets) {
+    if (snapToOffsets == null) {
+      view.setSnapOffsets(null);
+      return;
+    }
+
     DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     List<Integer> offsets = new ArrayList<Integer>();
     for (int i = 0; i < snapToOffsets.size(); i++) {
@@ -205,7 +211,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
-      scrollView.reactScrollTo(data.mDestX, data.mDestY);
+      scrollView.scrollTo(data.mDestX, data.mDestY);
     }
   }
 
@@ -284,7 +290,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(scrollView.getScrollX(), bottom);
     } else {
-      scrollView.reactScrollTo(scrollView.getScrollX(), bottom);
+      scrollView.scrollTo(scrollView.getScrollX(), bottom);
     }
   }
 
@@ -304,10 +310,21 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     }
   }
 
+  @ReactProp(name = "contentOffset", customType = "Point")
+  public void setContentOffset(ReactScrollView view, ReadableMap value) {
+    if (value != null) {
+      double x = value.hasKey("x") ? value.getDouble("x") : 0;
+      double y = value.hasKey("y") ? value.getDouble("y") : 0;
+      view.scrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+    } else {
+      view.scrollTo(0, 0);
+    }
+  }
+
   @Override
   public Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    view.updateState(stateWrapper);
+    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     return null;
   }
 

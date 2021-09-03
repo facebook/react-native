@@ -8,13 +8,11 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {
   PointValue,
-  ColorValue,
   EdgeInsetsValue,
 } from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../../../../Libraries/StyleSheet/StyleSheet';
 import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {
   Int32,

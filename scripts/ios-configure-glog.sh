@@ -16,7 +16,7 @@ if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     if [[ "$PLATFORM_NAME" == *"simulator"* ]]; then
         CURRENT_ARCH="x86_64"
     else
-        CURRENT_ARCH="armv7"
+        CURRENT_ARCH="arm64"
     fi
 fi
 
@@ -34,20 +34,11 @@ sed -i '' 's/HAVE_LIB_GFLAGS/HAVE_LIB_GFLAGS_DISABLED/' src/config.h.in
 
 ./configure --host arm-apple-darwin
 
-# Fix build for tvOS
 cat << EOF >> src/config.h
-
 /* Add in so we have Apple Target Conditionals */
 #ifdef __APPLE__
 #include <TargetConditionals.h>
 #include <Availability.h>
-#endif
-
-/* Special configuration for AppleTVOS */
-#if TARGET_OS_TV
-#undef HAVE_SYSCALL_H
-#undef HAVE_SYS_SYSCALL_H
-#undef OS_MACOSX
 #endif
 
 /* Special configuration for ucontext */

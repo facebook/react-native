@@ -98,17 +98,17 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   }
 
   @Override
-  public @Nullable String getString(int index) {
+  public @NonNull String getString(int index) {
     return (String) getLocalArray()[index];
   }
 
   @Override
-  public @Nullable ReadableNativeArray getArray(int index) {
+  public @NonNull ReadableNativeArray getArray(int index) {
     return (ReadableNativeArray) getLocalArray()[index];
   }
 
   @Override
-  public @Nullable ReadableNativeMap getMap(int index) {
+  public @NonNull ReadableNativeMap getMap(int index) {
     return (ReadableNativeMap) getLocalArray()[index];
   }
 

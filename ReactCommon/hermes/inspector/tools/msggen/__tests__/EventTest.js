@@ -5,9 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-'use strict';
-
-import { Event } from '../src/Event.js';
+import {Event} from '../src/Event.js';
 
 test('parses simple event', () => {
   let obj = {

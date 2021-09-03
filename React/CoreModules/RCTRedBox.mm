@@ -12,7 +12,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTErrorInfo.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTJSStackFrame.h>
 #import <React/RCTRedBoxExtraDataViewController.h>
 #import <React/RCTRedBoxSetEnabled.h>
@@ -104,10 +104,8 @@
     _stackTraceTableView.delegate = self;
     _stackTraceTableView.dataSource = self;
     _stackTraceTableView.backgroundColor = [UIColor clearColor];
-#if !TARGET_OS_TV
     _stackTraceTableView.separatorColor = [UIColor colorWithWhite:1 alpha:0.3];
     _stackTraceTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-#endif
     _stackTraceTableView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
     [rootView addSubview:_stackTraceTableView];
 
@@ -212,12 +210,6 @@
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
-- (void)dealloc
-{
-  _stackTraceTableView.dataSource = nil;
-  _stackTraceTableView.delegate = nil;
-}
-
 - (NSString *)stripAnsi:(NSString *)text
 {
   NSError *error = nil;
@@ -235,10 +227,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   // Remove ANSI color codes from the message
   NSString *messageWithoutAnsi = [self stripAnsi:message];
 
+  BOOL isRootViewControllerPresented = self.rootViewController.presentingViewController != nil;
   // Show if this is a new message, or if we're updating the previous message
-  BOOL isNew = !self.rootViewController.isBeingPresented && !isUpdate;
+  BOOL isNew = !isRootViewControllerPresented && !isUpdate;
   BOOL isUpdateForSameMessage = !isNew &&
-      (self.rootViewController.isBeingPresented && isUpdate &&
+      (isRootViewControllerPresented && isUpdate &&
        ((errorCookie == -1 && [_lastErrorMessage isEqualToString:messageWithoutAnsi]) ||
         (errorCookie == _lastErrorCookie)));
   if (isNew || isUpdateForSameMessage) {
@@ -250,7 +243,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
     [_stackTraceTableView reloadData];
 
-    if (!self.rootViewController.isBeingPresented) {
+    if (!isRootViewControllerPresented) {
       [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                   atScrollPosition:UITableViewScrollPositionTop
                                           animated:NO];
@@ -291,10 +284,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
       [fullStackTrace appendFormat:@"    %@\n", [self formatFrameSource:stackFrame]];
     }
   }
-#if !TARGET_OS_TV
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   [pb setString:fullStackTrace];
-#endif
 }
 
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
@@ -458,6 +449,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -593,7 +586,8 @@ RCT_EXPORT_MODULE()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [self->_bridge.eventDispatcher sendDeviceEventWithName:@"collectRedBoxExtraData" body:nil];
+    [[self->_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"collectRedBoxExtraData"
+                                                                                body:nil];
 #pragma clang diagnostic pop
 
     if (!self->_window) {
@@ -643,7 +637,7 @@ RCT_EXPORT_METHOD(dismiss)
 
 - (void)redBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
 {
-  NSURL *const bundleURL = _overrideBundleURL ?: _bridge.bundleURL;
+  NSURL *const bundleURL = _overrideBundleURL ?: _bundleManager.bundleURL;
   if (![bundleURL.scheme hasPrefix:@"http"]) {
     RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");
     return;
@@ -688,11 +682,10 @@ RCT_EXPORT_METHOD(dismiss)
   [_customButtonHandlers addObject:handler];
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
 }
 
 @end
@@ -774,11 +767,10 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)addCustomButton:(NSString *)title onPressHandler:(RCTRedBoxButtonPressHandler)handler
 {
 }
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(params);
 }
 
 @end

@@ -8,8 +8,7 @@
  * @format
  */
 
-'use strict';
-
+import type {RootTag} from '../TurboModule/RCTExport';
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
@@ -17,12 +16,11 @@ export interface Spec extends TurboModule {
   +getConstants: () => Object;
   +getConstantsForViewManager: (viewManagerName: string) => Object;
   +getDefaultEventTypes: () => Array<string>;
-  +playTouchSound: () => void;
   +lazilyLoadView: (name: string) => Object; // revisit return
   +createView: (
     reactTag: ?number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: Object,
   ) => void;
   +updateView: (reactTag: number, viewName: string, props: Object) => void;

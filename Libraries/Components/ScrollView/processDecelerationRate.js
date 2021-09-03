@@ -8,9 +8,7 @@
  * @flow strict-local
  */
 
-'use strict';
-
-const Platform = require('../../Utilities/Platform');
+import Platform from '../../Utilities/Platform';
 
 function processDecelerationRate(
   decelerationRate: number | 'normal' | 'fast',

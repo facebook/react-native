@@ -8,12 +8,13 @@
 #include <memory>
 #include <string>
 
-#include <ReactCommon/BridgeJSCallInvoker.h>
 #include <ReactCommon/CallInvokerHolder.h>
+#include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
 
 #include "CxxModuleWrapper.h"
 #include "JMessageQueueThread.h"
+#include "JRuntimeExecutor.h"
 #include "JSLoader.h"
 #include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
@@ -36,7 +37,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
-  ~CatalystInstanceImpl() override;
 
   static void registerNatives();
 
@@ -60,6 +60,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
           javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
           cxxModules);
+
+  // When called from CatalystInstanceImpl.java, warnings will be logged when
+  // CxxNativeModules are used. Java NativeModule usages log error in Java.
+  void warnOnLegacyNativeModuleSystemUse();
 
   void extendNativeModules(
       jni::alias_ref<jni::JCollection<
@@ -93,6 +97,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   void jniCallJSCallback(jint callbackId, NativeArray *arguments);
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
   jni::alias_ref<CallInvokerHolder::javaobject> getNativeCallInvokerHolder();
+  jni::alias_ref<JRuntimeExecutor::javaobject> getRuntimeExecutor();
   void setGlobalVariable(std::string propName, std::string &&jsonValue);
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
@@ -104,6 +109,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
   jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
   jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
+  jni::global_ref<JRuntimeExecutor::javaobject> runtimeExecutor_;
 };
 
 } // namespace react

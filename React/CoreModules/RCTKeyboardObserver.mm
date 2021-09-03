@@ -8,7 +8,7 @@
 #import "RCTKeyboardObserver.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -23,8 +23,6 @@ RCT_EXPORT_MODULE()
 
 - (void)startObserving
 {
-#if !TARGET_OS_TV
-
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 #define ADD_KEYBOARD_HANDLER(NAME, SELECTOR) [nc addObserver:self selector:@selector(SELECTOR:) name:NAME object:nil]
@@ -37,8 +35,6 @@ RCT_EXPORT_MODULE()
   ADD_KEYBOARD_HANDLER(UIKeyboardDidChangeFrameNotification, keyboardDidChangeFrame);
 
 #undef ADD_KEYBOARD_HANDLER
-
-#endif
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -64,7 +60,7 @@ RCT_EXPORT_MODULE()
 #define IMPLEMENT_KEYBOARD_HANDLER(EVENT)                                              \
   -(void)EVENT : (NSNotification *)notification                                        \
   {                                                                                    \
-    if (!self.bridge) {                                                                \
+    if (!self.callableJSModules) {                                                     \
       return;                                                                          \
     }                                                                                  \
     [self sendEventWithName:@ #EVENT body:RCTParseKeyboardNotification(notification)]; \
@@ -77,11 +73,10 @@ IMPLEMENT_KEYBOARD_HANDLER(keyboardDidHide)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardWillChangeFrame)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardDidChangeFrame)
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeKeyboardObserverSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeKeyboardObserverSpecJSI>(params);
 }
 
 @end
@@ -114,9 +109,6 @@ static NSString *RCTAnimationNameForCurve(UIViewAnimationCurve curve)
 
 static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
 {
-#if TARGET_OS_TV
-  return @{};
-#else
   NSDictionary *userInfo = notification.userInfo;
   CGRect beginFrame = [userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
   CGRect endFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
@@ -132,7 +124,6 @@ static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
     @"easing" : RCTAnimationNameForCurve(curve),
     @"isEventFromThisApp" : isLocalUserInfoKey == 1 ? @YES : @NO,
   };
-#endif
 }
 
 Class RCTKeyboardObserverCls(void)

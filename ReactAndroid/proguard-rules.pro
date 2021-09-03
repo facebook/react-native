@@ -50,14 +50,11 @@
 
 -dontwarn com.facebook.react.**
 -keep,includedescriptorclasses class com.facebook.react.bridge.** { *; }
+-keep,includedescriptorclasses class com.facebook.react.turbomodule.core.** { *; }
 
-# okhttp
+# hermes
+-keep class com.facebook.jni.** { *; }
 
--keepattributes Signature
--keepattributes *Annotation*
--keep class okhttp3.** { *; }
--keep interface okhttp3.** { *; }
--dontwarn okhttp3.**
 
 # okio
 

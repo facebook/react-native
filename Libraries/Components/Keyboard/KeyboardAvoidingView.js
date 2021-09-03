@@ -5,20 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
-'use strict';
-
-const Keyboard = require('./Keyboard');
-const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
+import Keyboard from './Keyboard';
+import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
 
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
+import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {
   ViewProps,
   ViewLayout,
@@ -43,13 +41,13 @@ type Props = $ReadOnly<{|
    * Controls whether this `KeyboardAvoidingView` instance should take effect.
    * This is useful when more than one is on the screen. Defaults to true.
    */
-  enabled: ?boolean,
+  enabled?: ?boolean,
 
   /**
    * Distance between the top of the user screen and the React Native view. This
    * may be non-zero in some cases. Defaults to 0.
    */
-  keyboardVerticalOffset: number,
+  keyboardVerticalOffset?: number,
 |}>;
 
 type State = {|
@@ -61,14 +59,10 @@ type State = {|
  * adjusting its height, position, or bottom padding.
  */
 class KeyboardAvoidingView extends React.Component<Props, State> {
-  static defaultProps: {|enabled: boolean, keyboardVerticalOffset: number|} = {
-    enabled: true,
-    keyboardVerticalOffset: 0,
-  };
-
   _frame: ?ViewLayout = null;
-  _subscriptions: Array<EmitterSubscription> = [];
-  viewRef: {current: React.ElementRef<any> | null, ...};
+  _keyboardEvent: ?KeyboardEvent = null;
+  _subscriptions: Array<EventSubscription> = [];
+  viewRef: {current: React.ElementRef<typeof View> | null, ...};
   _initialFrameHeight: number = 0;
 
   constructor(props: Props) {
@@ -83,7 +77,8 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       return 0;
     }
 
-    const keyboardY = keyboardFrame.screenY - this.props.keyboardVerticalOffset;
+    const keyboardY =
+      keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
 
     // Calculate the displacement needed for the view such that it
     // no longer overlaps with the keyboard
@@ -91,12 +86,30 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   }
 
   _onKeyboardChange = (event: ?KeyboardEvent) => {
-    if (event == null) {
+    this._keyboardEvent = event;
+    this._updateBottomIfNecesarry();
+  };
+
+  _onLayout = (event: ViewLayoutEvent) => {
+    const wasFrameNull = this._frame == null;
+    this._frame = event.nativeEvent.layout;
+    if (!this._initialFrameHeight) {
+      // save the initial frame height, before the keyboard is visible
+      this._initialFrameHeight = this._frame.height;
+    }
+
+    if (wasFrameNull) {
+      this._updateBottomIfNecesarry();
+    }
+  };
+
+  _updateBottomIfNecesarry = () => {
+    if (this._keyboardEvent == null) {
       this.setState({bottom: 0});
       return;
     }
 
-    const {duration, easing, endCoordinates} = event;
+    const {duration, easing, endCoordinates} = this._keyboardEvent;
     const height = this._relativeKeyboardHeight(endCoordinates);
 
     if (this.state.bottom === height) {
@@ -114,14 +127,6 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       });
     }
     this.setState({bottom: height});
-  };
-
-  _onLayout = (event: ViewLayoutEvent) => {
-    this._frame = event.nativeEvent.layout;
-    if (!this._initialFrameHeight) {
-      // save the initial frame height, before the keyboard is visible
-      this._initialFrameHeight = this._frame.height;
-    }
   };
 
   componentDidMount(): void {
@@ -148,12 +153,13 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       behavior,
       children,
       contentContainerStyle,
-      enabled,
-      keyboardVerticalOffset,
+      enabled = true,
+      // eslint-disable-next-line no-unused-vars
+      keyboardVerticalOffset = 0,
       style,
       ...props
     } = this.props;
-    const bottomHeight = enabled ? this.state.bottom : 0;
+    const bottomHeight = enabled === true ? this.state.bottom : 0;
     switch (behavior) {
       case 'height':
         let heightStyle;
@@ -170,10 +176,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         return (
           <View
             ref={this.viewRef}
-            style={StyleSheet.compose(
-              style,
-              heightStyle,
-            )}
+            style={StyleSheet.compose(style, heightStyle)}
             onLayout={this._onLayout}
             {...props}>
             {children}
@@ -188,12 +191,9 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
             onLayout={this._onLayout}
             {...props}>
             <View
-              style={StyleSheet.compose(
-                contentContainerStyle,
-                {
-                  bottom: bottomHeight,
-                },
-              )}>
+              style={StyleSheet.compose(contentContainerStyle, {
+                bottom: bottomHeight,
+              })}>
               {children}
             </View>
           </View>
@@ -203,10 +203,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         return (
           <View
             ref={this.viewRef}
-            style={StyleSheet.compose(
-              style,
-              {paddingBottom: bottomHeight},
-            )}
+            style={StyleSheet.compose(style, {paddingBottom: bottomHeight})}
             onLayout={this._onLayout}
             {...props}>
             {children}
@@ -227,4 +224,4 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   }
 }
 
-module.exports = KeyboardAvoidingView;
+export default KeyboardAvoidingView;

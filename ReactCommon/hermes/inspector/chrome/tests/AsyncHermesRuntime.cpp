@@ -20,11 +20,16 @@ namespace chrome {
 
 namespace detail = facebook::hermes::inspector::detail;
 
-AsyncHermesRuntime::AsyncHermesRuntime()
-    : runtime_(facebook::hermes::makeHermesRuntime()),
-      executor_(
+AsyncHermesRuntime::AsyncHermesRuntime(bool veryLazy)
+    : executor_(
           std::make_unique<detail::SerialExecutor>("async-hermes-runtime")) {
   using namespace std::placeholders;
+
+  auto builder = ::hermes::vm::RuntimeConfig::Builder();
+  if (veryLazy) {
+    builder.withCompilationMode(::hermes::vm::ForceLazyCompilation);
+  }
+  runtime_ = facebook::hermes::makeHermesRuntime(builder.build());
 
   runtime_->global().setProperty(
       *runtime_,
@@ -85,6 +90,10 @@ void AsyncHermesRuntime::stop() {
 
 folly::Future<jsi::Value> AsyncHermesRuntime::getStoredValue() {
   return storedValue_.getFuture();
+}
+
+bool AsyncHermesRuntime::hasStoredValue() {
+  return storedValue_.isFulfilled();
 }
 
 jsi::Value AsyncHermesRuntime::awaitStoredValue(

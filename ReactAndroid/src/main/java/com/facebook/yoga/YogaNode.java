@@ -9,7 +9,15 @@ package com.facebook.yoga;
 
 import javax.annotation.Nullable;
 
-public abstract class YogaNode {
+public abstract class YogaNode implements YogaProps {
+
+  /** The interface the {@link #getData()} object can optionally implement. */
+  public interface Inputs {
+
+    /** Requests the data object to disable mutations of its inputs. */
+    void freeze(final YogaNode node, final @Nullable YogaNode parent);
+  }
+
   public abstract void reset();
 
   public abstract int getChildCount();
@@ -25,12 +33,10 @@ public abstract class YogaNode {
   public abstract YogaNode removeChildAt(int i);
 
   /**
-   * @returns the {@link YogaNode} that owns this {@link YogaNode}.
-   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs
-   * to.
-   * This method will return the parent of the {@link YogaNode} when the
-   * {@link YogaNode} only belongs to one YogaTree or null when the
-   * {@link YogaNode} is shared between two or more YogaTrees.
+   * @returns the {@link YogaNode} that owns this {@link YogaNode}. The owner is used to identify
+   *     the YogaTree that a {@link YogaNode} belongs to. This method will return the parent of the
+   *     {@link YogaNode} when the {@link YogaNode} only belongs to one YogaTree or null when the
+   *     {@link YogaNode} is shared between two or more YogaTrees.
    */
   @Nullable
   public abstract YogaNode getOwner();

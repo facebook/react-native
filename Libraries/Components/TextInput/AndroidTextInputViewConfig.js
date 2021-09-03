@@ -8,14 +8,42 @@
  * @format
  */
 
-'use strict';
-
 import ReactNativeViewViewConfig from '../../Components/View/ReactNativeViewViewConfig';
-import type {ReactNativeBaseComponentViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+import type {PartialViewConfig} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 const AndroidTextInputViewConfig = {
   uiViewClassName: 'AndroidTextInput',
   bubblingEventTypes: {
+    topBlur: {
+      phasedRegistrationNames: {
+        bubbled: 'onBlur',
+        captured: 'onBlurCapture',
+      },
+    },
+    topEndEditing: {
+      phasedRegistrationNames: {
+        bubbled: 'onEndEditing',
+        captured: 'onEndEditingCapture',
+      },
+    },
+    topFocus: {
+      phasedRegistrationNames: {
+        bubbled: 'onFocus',
+        captured: 'onFocusCapture',
+      },
+    },
+    topKeyPress: {
+      phasedRegistrationNames: {
+        bubbled: 'onKeyPress',
+        captured: 'onKeyPressCapture',
+      },
+    },
+    topSubmitEditing: {
+      phasedRegistrationNames: {
+        bubbled: 'onSubmitEditing',
+        captured: 'onSubmitEditingCapture',
+      },
+    },
     topTextInput: {
       phasedRegistrationNames: {
         bubbled: 'onTextInput',
@@ -28,6 +56,9 @@ const AndroidTextInputViewConfig = {
     ...ReactNativeViewViewConfig.validAttributes,
 
     maxFontSizeMultiplier: true,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: true,
+    autoFocus: true,
     placeholder: true,
     inlineImagePadding: true,
     contextMenuHidden: true,
@@ -50,8 +81,9 @@ const AndroidTextInputViewConfig = {
     returnKeyType: true,
     keyboardType: true,
     multiline: true,
-    color: true,
+    color: {process: require('../../StyleSheet/processColor')},
     autoCompleteType: true,
+    autoComplete: true,
     numberOfLines: true,
     letterSpacing: true,
     returnKeyLabel: true,
@@ -81,4 +113,4 @@ const AndroidTextInputViewConfig = {
   },
 };
 
-module.exports = (AndroidTextInputViewConfig: ReactNativeBaseComponentViewConfig<>);
+module.exports = (AndroidTextInputViewConfig: PartialViewConfig);

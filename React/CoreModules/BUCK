@@ -1,4 +1,4 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_fbobjc_enable_exception_lang_compiler_flags_DEPRECATED", "get_preprocessor_flags_for_build_mode")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode")
 load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_apple_library", "rn_extra_build_flags")
 load(
     "@fbsource//xplat/configurations/buck/apple/plugins/sad_xplat_hosted_configurations:react_module_registration.bzl",
@@ -14,11 +14,14 @@ rn_apple_library(
         ],
     ),
     exported_headers = glob(["**/*.h"]),
+    autoglob = False,
     compiler_flags = [
         "-Wno-error=unguarded-availability-new",
         "-Wno-unknown-warning-option",
+        "-Wno-unused-property-ivar",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
+    enable_exceptions = True,
     exported_linker_flags = [
         "-weak_framework",
         "UserNotifications",
@@ -32,8 +35,11 @@ rn_apple_library(
         "UIKit",
     ],
     header_path_prefix = "React",
-    labels = ["supermodule:ios/default/public.react_native.infra"],
-    lang_compiler_flags = get_fbobjc_enable_exception_lang_compiler_flags_DEPRECATED(),
+    labels = [
+        "depslint_never_remove",  # Some old NativeModule still relies on +load unfortunately.
+        "disable_plugins_only_validation",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     link_whole = True,
     platform_preprocessor_flags = [(
         "linux",
@@ -101,9 +107,6 @@ rn_apple_library(
             name = "LogBox",
             native_class_func = "RCTLogBoxCls",
         ) + react_module_plugin_providers(
-            name = "TVNavigationEventEmitter",
-            native_class_func = "RCTTVNavigationEventEmitterCls",
-        ) + react_module_plugin_providers(
             name = "WebSocketExecutor",
             native_class_func = "RCTWebSocketExecutorCls",
         ) + react_module_plugin_providers(
@@ -112,17 +115,23 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "DevLoadingView",
             native_class_func = "RCTDevLoadingViewCls",
+        ) + react_module_plugin_providers(
+            name = "DevSplitBundleLoader",
+            native_class_func = "RCTDevSplitBundleLoaderCls",
+        ) + react_module_plugin_providers(
+            name = "EventDispatcher",
+            native_class_func = "RCTEventDispatcherCls",
         ),
     plugins_header = "FBCoreModulesPlugins.h",
-    preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
         "-DRN_DISABLE_OSS_PLUGIN_HEADER",
     ],
     reexport_all_header_dependencies = True,
     visibility = ["PUBLIC"],
     exported_deps = [
-        "//xplat/js:RCTLinkingApple",
-        "//xplat/js:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
         "//xplat/js/react-native-github:ReactInternalApple",
-        "//xplat/js/react-native-github/Libraries/FBReactNativeSpec:FBReactNativeSpecApple",
     ],
 )

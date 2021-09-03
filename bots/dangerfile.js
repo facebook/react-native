@@ -51,12 +51,16 @@ if (!includesTestPlan) {
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS|JS|JAVASCRIPT|INTERNAL)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-?\s*?(.*)/gi;
+const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS|JS|JAVASCRIPT|INTERNAL)\s?\]\s?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?-?\s*?(.*)/gi;
+const internalChangelogRegex = /\[\s?(INTERNAL)\s?\].*/gi;
 const includesChangelog =
   danger.github.pr.body &&
   (danger.github.pr.body.toLowerCase().includes('## changelog') ||
     danger.github.pr.body.toLowerCase().includes('release notes'));
 const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
+const containsInternalChangelog = internalChangelogRegex.test(
+  danger.github.pr.body,
+);
 
 // Provides advice if a changelog is missing
 const changelogInstructions =
@@ -68,24 +72,24 @@ if (!includesChangelog) {
     'To do so, add a "## Changelog" section to your PR description. ' +
     changelogInstructions;
   message(`${title} - <i>${idea}</i>`);
-} else if (!correctlyFormattedChangelog) {
+} else if (!correctlyFormattedChangelog && !containsInternalChangelog) {
   const title = ':clipboard: Verify Changelog Format';
   const idea = changelogInstructions;
   message(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.
-// Fails if the PR is opened against anything other than `master` or `-stable`.
-const isMergeRefMaster = danger.github.pr.base.ref === 'master';
+// Fails if the PR is opened against anything other than `main` or `-stable`.
+const isMergeRefMaster = danger.github.pr.base.ref === 'main';
 const isMergeRefStable = danger.github.pr.base.ref.indexOf('-stable') !== -1;
 if (!isMergeRefMaster && isMergeRefStable) {
   const title = ':grey_question: Base Branch';
   const idea =
-    'The base branch for this PR is something other than `master`. Are you sure you want to merge these changes into a stable release? If you are interested in backporting updates to an older release, the suggested approach is to land those changes on `master` first and then cherry-pick the commits into the branch for that release. The [Releases Guide](https://github.com/facebook/react-native/blob/master/Releases.md) has more information.';
+    'The base branch for this PR is something other than `main`. Are you sure you want to merge these changes into a stable release? If you are interested in backporting updates to an older release, the suggested approach is to land those changes on `main` first and then cherry-pick the commits into the branch for that release. The [Releases Guide](https://github.com/facebook/react-native/blob/HEAD/Releases.md) has more information.';
   warn(`${title} - <i>${idea}</i>`);
 } else if (!isMergeRefMaster && !isMergeRefStable) {
   const title = ':exclamation: Base Branch';
   const idea =
-    'The base branch for this PR is something other than `master`. [Are you sure you want to target something other than the `master` branch?](https://reactnative.dev/docs/contributing.html#pull-requests)';
+    'The base branch for this PR is something other than `main`. [Are you sure you want to target something other than the `main` branch?](https://reactnative.dev/docs/contributing.html#pull-requests)';
   fail(`${title} - <i>${idea}</i>`);
 }

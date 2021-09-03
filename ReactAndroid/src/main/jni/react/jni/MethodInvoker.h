@@ -37,6 +37,7 @@ class MethodInvoker {
  public:
   MethodInvoker(
       jni::alias_ref<JReflectMethod::javaobject> method,
+      std::string methodName,
       std::string signature,
       std::string traceName,
       bool isSync);
@@ -46,12 +47,15 @@ class MethodInvoker {
       jni::alias_ref<JBaseJavaModule::javaobject> module,
       const folly::dynamic &params);
 
+  std::string getMethodName() const;
+
   bool isSyncHook() const {
     return isSync_;
   }
 
  private:
   jmethodID method_;
+  std::string methodName_;
   std::string signature_;
   std::size_t jsArgCount_;
   std::string traceName_;

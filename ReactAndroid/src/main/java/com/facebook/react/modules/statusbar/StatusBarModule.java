@@ -60,7 +60,7 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
             : 0;
     String statusBarColorString = "black";
 
-    if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    if (activity != null) {
       final int statusBarColor = activity.getWindow().getStatusBarColor();
       statusBarColorString = String.format("#%06X", (0xFFFFFF & statusBarColor));
     }
@@ -81,38 +81,33 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    UiThreadUtil.runOnUiThread(
+        new GuardedRunnable(getReactApplicationContext()) {
+          @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+          @Override
+          public void runGuarded() {
+            activity
+                .getWindow()
+                .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            if (animated) {
+              int curColor = activity.getWindow().getStatusBarColor();
+              ValueAnimator colorAnimation =
+                  ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
 
-      UiThreadUtil.runOnUiThread(
-          new GuardedRunnable(getReactApplicationContext()) {
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void runGuarded() {
-              activity
-                  .getWindow()
-                  .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-              if (animated) {
-                int curColor = activity.getWindow().getStatusBarColor();
-                ValueAnimator colorAnimation =
-                    ValueAnimator.ofObject(new ArgbEvaluator(), curColor, color);
-
-                colorAnimation.addUpdateListener(
-                    new ValueAnimator.AnimatorUpdateListener() {
-                      @Override
-                      public void onAnimationUpdate(ValueAnimator animator) {
-                        activity
-                            .getWindow()
-                            .setStatusBarColor((Integer) animator.getAnimatedValue());
-                      }
-                    });
-                colorAnimation.setDuration(300).setStartDelay(0);
-                colorAnimation.start();
-              } else {
-                activity.getWindow().setStatusBarColor(color);
-              }
+              colorAnimation.addUpdateListener(
+                  new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animator) {
+                      activity.getWindow().setStatusBarColor((Integer) animator.getAnimatedValue());
+                    }
+                  });
+              colorAnimation.setDuration(300).setStartDelay(0);
+              colorAnimation.start();
+            } else {
+              activity.getWindow().setStatusBarColor(color);
             }
-          });
-    }
+          }
+        });
   }
 
   @Override
@@ -125,36 +120,34 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
       return;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      UiThreadUtil.runOnUiThread(
-          new GuardedRunnable(getReactApplicationContext()) {
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void runGuarded() {
-              // If the status bar is translucent hook into the window insets calculations
-              // and consume all the top insets so no padding will be added under the status bar.
-              View decorView = activity.getWindow().getDecorView();
-              if (translucent) {
-                decorView.setOnApplyWindowInsetsListener(
-                    new View.OnApplyWindowInsetsListener() {
-                      @Override
-                      public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
-                        WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
-                        return defaultInsets.replaceSystemWindowInsets(
-                            defaultInsets.getSystemWindowInsetLeft(),
-                            0,
-                            defaultInsets.getSystemWindowInsetRight(),
-                            defaultInsets.getSystemWindowInsetBottom());
-                      }
-                    });
-              } else {
-                decorView.setOnApplyWindowInsetsListener(null);
-              }
-
-              ViewCompat.requestApplyInsets(decorView);
+    UiThreadUtil.runOnUiThread(
+        new GuardedRunnable(getReactApplicationContext()) {
+          @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+          @Override
+          public void runGuarded() {
+            // If the status bar is translucent hook into the window insets calculations
+            // and consume all the top insets so no padding will be added under the status bar.
+            View decorView = activity.getWindow().getDecorView();
+            if (translucent) {
+              decorView.setOnApplyWindowInsetsListener(
+                  new View.OnApplyWindowInsetsListener() {
+                    @Override
+                    public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                      WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
+                      return defaultInsets.replaceSystemWindowInsets(
+                          defaultInsets.getSystemWindowInsetLeft(),
+                          0,
+                          defaultInsets.getSystemWindowInsetRight(),
+                          defaultInsets.getSystemWindowInsetBottom());
+                    }
+                  });
+            } else {
+              decorView.setOnApplyWindowInsetsListener(null);
             }
-          });
-    }
+
+            ViewCompat.requestApplyInsets(decorView);
+          }
+        });
   }
 
   @Override

@@ -26,14 +26,22 @@ enum ReactMarkerId {
   NATIVE_MODULE_SETUP_START,
   NATIVE_MODULE_SETUP_STOP,
   REGISTER_JS_SEGMENT_START,
-  REGISTER_JS_SEGMENT_STOP
+  REGISTER_JS_SEGMENT_STOP,
+  REACT_INSTANCE_INIT_START,
+  REACT_INSTANCE_INIT_STOP
 };
 
 #ifdef __APPLE__
 using LogTaggedMarker =
     std::function<void(const ReactMarkerId, const char *tag)>;
+using LogTaggedMarkerWithInstanceKey = std::function<
+    void(const ReactMarkerId, const char *tag, const int instanceKey)>;
 #else
 typedef void (*LogTaggedMarker)(const ReactMarkerId, const char *tag);
+typedef void (*LogTaggedMarkerWithInstanceKey)(
+    const ReactMarkerId,
+    const char *tag,
+    const int instanceKey);
 #endif
 
 #ifndef RN_EXPORT
@@ -41,6 +49,7 @@ typedef void (*LogTaggedMarker)(const ReactMarkerId, const char *tag);
 #endif
 
 extern RN_EXPORT LogTaggedMarker logTaggedMarker;
+extern RN_EXPORT LogTaggedMarkerWithInstanceKey logTaggedMarkerWithInstanceKey;
 
 extern RN_EXPORT void logMarker(const ReactMarkerId markerId);
 

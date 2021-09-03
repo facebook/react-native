@@ -75,7 +75,8 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
 
   public FpsDebugFrameCallback(ReactContext reactContext) {
     mReactContext = reactContext;
-    mUIManagerModule = reactContext.getNativeModule(UIManagerModule.class);
+    mUIManagerModule =
+        Assertions.assertNotNull(reactContext.getNativeModule(UIManagerModule.class));
     mDidJSUpdateUiDuringFrameDetector = new DidJSUpdateUiDuringFrameDetector();
   }
 

@@ -31,11 +31,6 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
   public static final String REACT_CLASS = "RCTImageView";
 
-  @Override
-  public String getName() {
-    return REACT_CLASS;
-  }
-
   private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
   private final @Nullable Object mCallerContext;
@@ -107,10 +102,20 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   public ReactImageView createViewInstance(ThemedReactContext context) {
     Object callerContext =
         mCallerContextFactory != null
-            ? mCallerContextFactory.getOrCreateCallerContext(context)
+            ? mCallerContextFactory.getOrCreateCallerContext(context.getModuleName(), null)
             : getCallerContext();
     return new ReactImageView(
         context, getDraweeControllerBuilder(), mGlobalImageLoadListener, callerContext);
+  }
+
+  @Override
+  public String getName() {
+    return REACT_CLASS;
+  }
+
+  @ReactProp(name = "accessible")
+  public void setAccessible(ReactImageView view, boolean accessible) {
+    view.setFocusable(accessible);
   }
 
   // In JS this is Image.props.source
@@ -122,6 +127,15 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @ReactProp(name = "blurRadius")
   public void setBlurRadius(ReactImageView view, float blurRadius) {
     view.setBlurRadius(blurRadius);
+  }
+
+  @ReactProp(name = "internal_analyticTag")
+  public void setInternal_AnalyticsTag(ReactImageView view, @Nullable String analyticTag) {
+    if (mCallerContextFactory != null) {
+      view.updateCallerContext(
+          mCallerContextFactory.getOrCreateCallerContext(
+              ((ThemedReactContext) view.getContext()).getModuleName(), analyticTag));
+    }
   }
 
   // In JS this is Image.props.defaultSource
@@ -233,13 +247,15 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
         ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
-            MapBuilder.of("registrationName", "onLoadStart"),
+        MapBuilder.of("registrationName", "onLoadStart"),
+        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_PROGRESS),
+        MapBuilder.of("registrationName", "onProgress"),
         ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
-            MapBuilder.of("registrationName", "onLoad"),
+        MapBuilder.of("registrationName", "onLoad"),
         ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
-            MapBuilder.of("registrationName", "onError"),
+        MapBuilder.of("registrationName", "onError"),
         ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
-            MapBuilder.of("registrationName", "onLoadEnd"));
+        MapBuilder.of("registrationName", "onLoadEnd"));
   }
 
   @Override

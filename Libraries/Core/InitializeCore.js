@@ -29,6 +29,7 @@
 const start = Date.now();
 
 require('./setUpGlobals');
+require('./setUpPerformance');
 require('./setUpSystrace');
 require('./setUpErrorHandling');
 require('./polyfillPromise');
@@ -42,6 +43,7 @@ require('./setUpSegmentFetcher');
 if (__DEV__) {
   require('./checkNativeVersion');
   require('./setUpDeveloperTools');
+  require('../LogBox/LogBox').install();
 }
 
 const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');

@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 
 import type {
@@ -21,7 +19,7 @@ import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativ
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 type SwitchChangeEvent = $ReadOnly<{|

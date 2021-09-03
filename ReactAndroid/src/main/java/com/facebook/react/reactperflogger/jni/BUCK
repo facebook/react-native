@@ -1,0 +1,37 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_xplat_target", "rn_xplat_cxx_library")
+
+rn_xplat_cxx_library(
+    name = "jni",
+    srcs = [
+        "reactperflogger/OnLoad.cpp",
+    ],
+    header_namespace = "",
+    exported_headers = {
+        "reactperflogger/JNativeModulePerfLogger.h": "reactperflogger/JNativeModulePerfLogger.h",
+    },
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+    ],
+    fbandroid_allow_jni_merging = True,
+    fbandroid_labels = [
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
+    platforms = ANDROID,
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    soname = "libreactperfloggerjni.$(ext)",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        FBJNI_TARGET,
+    ],
+    exported_deps = [
+        react_native_xplat_target("reactperflogger:reactperflogger"),
+    ],
+)

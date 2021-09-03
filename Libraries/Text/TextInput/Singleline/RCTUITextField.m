@@ -68,6 +68,10 @@
 
 - (void)setDefaultTextAttributes:(NSDictionary<NSAttributedStringKey, id> *)defaultTextAttributes
 {
+  if ([_defaultTextAttributes isEqualToDictionary:defaultTextAttributes]) {
+    return;
+  }
+
   _defaultTextAttributes = defaultTextAttributes;
   [super setDefaultTextAttributes:defaultTextAttributes];
   [self _updatePlaceholder];

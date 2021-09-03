@@ -27,7 +27,7 @@ namespace react {
 enum struct ScriptTag {
   String = 0,
   RAMBundle,
-  BCBundle,
+  HBCBundle,
 };
 
 /**

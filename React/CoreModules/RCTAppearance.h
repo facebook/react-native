@@ -12,6 +12,7 @@
 
 RCT_EXTERN void RCTEnableAppearancePreference(BOOL enabled);
 RCT_EXTERN void RCTOverrideAppearancePreference(NSString *const);
+RCT_EXTERN NSString *RCTColorSchemePreference(UITraitCollection *traitCollection);
 
 @interface RCTAppearance : RCTEventEmitter <RCTBridgeModule>
 @end

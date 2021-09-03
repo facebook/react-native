@@ -31,6 +31,7 @@ RCTMessageThread::RCTMessageThread(NSRunLoop *runLoop, RCTJavaScriptCompleteBloc
 
 RCTMessageThread::~RCTMessageThread()
 {
+  RCTAssert(m_shutdown, @"RCTMessageThread: quitSynchronous() not called before destructor");
   CFRelease(m_cfRunLoop);
 }
 
@@ -76,10 +77,9 @@ void RCTMessageThread::runOnQueue(std::function<void()> &&func)
   if (m_shutdown) {
     return;
   }
-
-  runAsync([this, func = std::make_shared<std::function<void()>>(std::move(func))] {
-    if (!m_shutdown) {
-      tryFunc(*func);
+  runAsync([sharedThis = shared_from_this(), func = std::make_shared<std::function<void()>>(std::move(func))] {
+    if (!sharedThis->m_shutdown) {
+      sharedThis->tryFunc(*func);
     }
   });
 }
@@ -89,9 +89,9 @@ void RCTMessageThread::runOnQueueSync(std::function<void()> &&func)
   if (m_shutdown) {
     return;
   }
-  runSync([this, func = std::move(func)] {
-    if (!m_shutdown) {
-      tryFunc(func);
+  runSync([sharedThis = shared_from_this(), func = std::move(func)] {
+    if (!sharedThis->m_shutdown) {
+      sharedThis->tryFunc(func);
     }
   });
 }

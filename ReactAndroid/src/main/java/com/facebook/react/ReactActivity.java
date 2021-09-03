@@ -65,6 +65,7 @@ public abstract class ReactActivity extends AppCompatActivity
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
     mDelegate.onActivityResult(requestCode, resultCode, data);
   }
 

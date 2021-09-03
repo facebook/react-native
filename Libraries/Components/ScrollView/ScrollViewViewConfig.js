@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {GeneratedViewConfig} from '../../Utilities/registerGeneratedViewConfig';
+import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 
 const ScrollViewViewConfig = {
   uiViewClassName: 'RCTScrollView',
@@ -24,19 +24,27 @@ const ScrollViewViewConfig = {
     alwaysBounceHorizontal: true,
     alwaysBounceVertical: true,
     automaticallyAdjustContentInsets: true,
+    automaticallyAdjustsScrollIndicatorInsets: true,
     bounces: true,
     bouncesZoom: true,
     canCancelContentTouches: true,
     centerContent: true,
-    contentInset: {diff: require('../../Utilities/differ/pointsDiffer')},
-    contentOffset: {diff: require('../../Utilities/differ/pointsDiffer')},
+    contentInset: {
+      diff: require('../../Utilities/differ/pointsDiffer'),
+    },
+    contentOffset: {
+      diff: require('../../Utilities/differ/pointsDiffer'),
+    },
     contentInsetAdjustmentBehavior: true,
     decelerationRate: true,
     directionalLockEnabled: true,
     disableIntervalMomentum: true,
-    endFillColor: {process: require('../../StyleSheet/processColor')},
+    endFillColor: {
+      process: require('../../StyleSheet/processColor'),
+    },
     fadingEdgeLength: true,
     indicatorStyle: true,
+    inverted: true,
     keyboardDismissMode: true,
     maintainVisibleContentPosition: true,
     maximumZoomScale: true,
@@ -69,9 +77,7 @@ const ScrollViewViewConfig = {
     snapToOffsets: true,
     snapToStart: true,
     zoomScale: true,
-
-    DEPRECATED_sendUpdatedChildFrames: true,
   },
 };
 
-module.exports = (ScrollViewViewConfig: GeneratedViewConfig);
+module.exports = (ScrollViewViewConfig: PartialViewConfig);

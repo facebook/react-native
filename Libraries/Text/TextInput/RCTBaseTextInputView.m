@@ -9,7 +9,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -21,10 +21,9 @@
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
-  __weak RCTEventDispatcher *_eventDispatcher;
+  __weak id<RCTEventDispatcherProtocol> _eventDispatcher;
   BOOL _hasInputAccesoryView;
   NSString *_Nullable _predictedText;
-  NSInteger _nativeEventCount;
   BOOL _didMoveToWindow;
 }
 
@@ -68,7 +67,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)enforceTextAttributesIfNeeded
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
+
+  NSDictionary<NSAttributedStringKey,id> *textAttributes = [[_textAttributes effectiveTextAttributes] mutableCopy];
+  if ([textAttributes valueForKey:NSForegroundColorAttributeName] == nil) {
+      [textAttributes setValue:[UIColor blackColor] forKey:NSForegroundColorAttributeName];
+  }
+
+  backedTextInputView.defaultTextAttributes = textAttributes;
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
@@ -193,17 +198,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
-- (void)setText:(NSString *__nullable)text
- selectionStart:(NSInteger)start
-   selectionEnd:(NSInteger)end
+- (void)setSelectionStart:(NSInteger)start
+             selectionEnd:(NSInteger)end
 {
-  if (text) {
-    NSMutableAttributedString *mutableString =
-    [[NSMutableAttributedString alloc] initWithAttributedString:self.backedTextInputView.attributedText];
-    [mutableString replaceCharactersInRange:NSMakeRange(0, mutableString.string.length) withString:text];
-    self.backedTextInputView.attributedText = mutableString;
-  }
-
   UITextPosition *startPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
                                                                           offset:start];
   UITextPosition *endPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
@@ -248,7 +245,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                           };
 
       #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-        if (@available(iOS 11.0, tvOS 11.0, *)) {
+        if (@available(iOS 11.0, *)) {
           NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
                                                                   @"password": UITextContentTypePassword};
 
@@ -260,7 +257,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       #endif
 
       #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
-        if (@available(iOS 12.0, tvOS 12.0, *)) {
+        if (@available(iOS 12.0, *)) {
           NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
                                                                   @"oneTimeCode": UITextContentTypeOneTimeCode};
 
@@ -305,6 +302,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
+- (void)setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
+{
+  (void)_showSoftInputOnFocus;
+  if (showSoftInputOnFocus) {
+    // Resets to default keyboard.
+    self.backedTextInputView.inputView = nil;
+  } else {
+    // Hides keyboard, but keeps blinking cursor.
+    self.backedTextInputView.inputView = [[UIView alloc] init];
+  }
+}
+
 #pragma mark - RCTBackedTextInputDelegate
 
 - (BOOL)textInputShouldBeginEditing
@@ -324,7 +333,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 }
@@ -338,13 +347,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 }
@@ -358,7 +367,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // (no connection to any specific "submitting" process).
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
                                  reactTag:self.reactTag
-                                     text:self.backedTextInputView.attributedText.string
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 
@@ -388,6 +397,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
+        if (allowedLength > 0) {
+          //make sure unicode characters that are longer than 16 bits (such as emojis) are not cut off
+          NSRange cutOffCharacterRange = [text rangeOfComposedCharacterSequenceAtIndex: allowedLength - 1];
+          if (cutOffCharacterRange.location + cutOffCharacterRange.length > allowedLength) {
+            //the character at the length limit takes more than 16bits, truncation should end at the character before
+            allowedLength = cutOffCharacterRange.location;
+          }
+        }
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
         NSMutableAttributedString *newAttributedText = [backedTextInputView.attributedText mutableCopy];
@@ -413,7 +430,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
   }
 
-  NSString *previousText = backedTextInputView.attributedText.string ?: @"";
+  NSString *previousText = [backedTextInputView.attributedText.string copy] ?: @"";
 
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
@@ -459,7 +476,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   if (_onChange) {
     _onChange(@{
-       @"text": self.attributedText.string,
+       @"text": [self.attributedText.string copy],
        @"target": self.reactTag,
        @"eventCount": @(_nativeEventCount),
     });
@@ -563,7 +580,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)setCustomInputAccessoryViewWithNativeID:(NSString *)nativeID
 {
-  #if !TARGET_OS_TV
   __weak RCTBaseTextInputView *weakSelf = self;
   [_bridge.uiManager rootViewForReactTag:self.reactTag withCompletion:^(UIView *rootView) {
     RCTBaseTextInputView *strongSelf = weakSelf;
@@ -576,20 +592,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       }
     }
   }];
-  #endif /* !TARGET_OS_TV */
 }
 
 - (void)setDefaultInputAccessoryView
 {
-  #if !TARGET_OS_TV
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
   UIKeyboardType keyboardType = textInputView.keyboardType;
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,
   // so we create an `inputAccessoryView` with this button for them.
-  BOOL shouldHaveInputAccesoryView;
-  if (@available(iOS 10.0, *)) {
-      shouldHaveInputAccesoryView =
+  BOOL shouldHaveInputAccesoryView =
       (
        keyboardType == UIKeyboardTypeNumberPad ||
        keyboardType == UIKeyboardTypePhonePad ||
@@ -597,15 +609,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
        keyboardType == UIKeyboardTypeASCIICapableNumberPad
       ) &&
       textInputView.returnKeyType == UIReturnKeyDone;
-  } else {
-      shouldHaveInputAccesoryView =
-      (
-       keyboardType == UIKeyboardTypeNumberPad ||
-       keyboardType == UIKeyboardTypePhonePad ||
-       keyboardType == UIKeyboardTypeDecimalPad
-      ) &&
-      textInputView.returnKeyType == UIReturnKeyDone;
-  }
 
   if (_hasInputAccesoryView == shouldHaveInputAccesoryView) {
     return;
@@ -631,7 +634,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     textInputView.inputAccessoryView = nil;
   }
   [self reloadInputViewsIfNecessary];
-  #endif /* !TARGET_OS_TV */
 }
 
 - (void)reloadInputViewsIfNecessary

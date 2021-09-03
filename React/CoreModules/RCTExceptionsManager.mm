@@ -23,7 +23,7 @@
 
 @implementation RCTExceptionsManager
 
-@synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -41,7 +41,8 @@ RCT_EXPORT_MODULE()
     suppressRedBox:(BOOL)suppressRedBox
 {
   if (!suppressRedBox) {
-    [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
+    RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+    [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
   }
 
   if (_delegate) {
@@ -57,7 +58,8 @@ RCT_EXPORT_MODULE()
      suppressRedBox:(BOOL)suppressRedBox
 {
   if (!suppressRedBox) {
-    [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
+    RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+    [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
   }
 
   if (_delegate) {
@@ -98,7 +100,8 @@ RCT_EXPORT_METHOD(updateExceptionMessage
                   : (NSArray<NSDictionary *> *)stack exceptionId
                   : (double)exceptionId)
 {
-  [_bridge.redBox updateErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
+  RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+  [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
 
   if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
     [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
@@ -148,11 +151,10 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   }
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeExceptionsManagerSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeExceptionsManagerSpecJSI>(params);
 }
 
 @end

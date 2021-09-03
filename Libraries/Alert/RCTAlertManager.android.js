@@ -7,8 +7,6 @@
  * @format
  */
 
-'use strict';
-
 import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
 
 function emptyCallback() {}

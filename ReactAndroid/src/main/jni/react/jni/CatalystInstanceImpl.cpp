@@ -14,7 +14,6 @@
 #include <vector>
 
 #include <ReactCommon/CallInvokerHolder.h>
-#include <ReactCommon/MessageQueueThreadCallInvoker.h>
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
 #include <cxxreact/JSBigString.h>
@@ -27,9 +26,14 @@
 #include <fb/log.h>
 #include <fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
+
+#include <logger/react_native_log.h>
 
 #include "CxxModuleWrapper.h"
 #include "JNativeRunnable.h"
+#include "JReactCxxErrorHandler.h"
+#include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
@@ -93,10 +97,8 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
-CatalystInstanceImpl::~CatalystInstanceImpl() {
-  if (moduleMessageQueue_ != NULL) {
-    moduleMessageQueue_->quitSynchronous();
-  }
+void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
+  CxxNativeModule::setShouldWarnOnUse(true);
 }
 
 void CatalystInstanceImpl::registerNatives() {
@@ -132,9 +134,34 @@ void CatalystInstanceImpl::registerNatives() {
       makeNativeMethod(
           "jniHandleMemoryPressure",
           CatalystInstanceImpl::handleMemoryPressure),
+      makeNativeMethod(
+          "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
+      makeNativeMethod(
+          "warnOnLegacyNativeModuleSystemUse",
+          CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
   });
 
   JNativeRunnable::registerNatives();
+}
+
+void log(ReactNativeLogLevel level, const char *message) {
+  switch (level) {
+    case ReactNativeLogLevelInfo:
+      LOG(INFO) << message;
+      break;
+    case ReactNativeLogLevelWarning:
+      LOG(WARNING) << message;
+      JReactSoftExceptionLogger::logNoThrowSoftExceptionWithMessage(
+          "react_native_log#warning", message);
+      break;
+    case ReactNativeLogLevelError:
+      LOG(ERROR) << message;
+      JReactCxxErrorHandler::handleError(message);
+      break;
+    case ReactNativeLogLevelFatal:
+      LOG(FATAL) << message;
+      break;
+  }
 }
 
 void CatalystInstanceImpl::initializeBridge(
@@ -147,6 +174,8 @@ void CatalystInstanceImpl::initializeBridge(
         javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
         cxxModules) {
+  set_react_native_logfunc(&log);
+
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be
   // called once");
@@ -232,7 +261,30 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(
     const std::string &fileName,
     const std::string &sourceURL,
     bool loadSynchronously) {
-  if (Instance::isIndexedRAMBundle(fileName.c_str())) {
+  auto reactInstance = instance_;
+  if (reactInstance && Instance::isHBCBundle(fileName.c_str())) {
+    std::unique_ptr<const JSBigFileString> script;
+    RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+        [&fileName, &script]() {
+          script = JSBigFileString::fromPath(fileName);
+        });
+    const char *buffer = script->c_str();
+    uint32_t bufferLength = (uint32_t)script->size();
+    uint32_t offset = 8;
+    while (offset < bufferLength) {
+      uint32_t segment = offset + 4;
+      uint32_t moduleLength =
+          bufferLength < segment ? 0 : *(((uint32_t *)buffer) + offset / 4);
+
+      reactInstance->loadScriptFromString(
+          std::make_unique<const JSBigStdString>(
+              std::string(buffer + segment, buffer + moduleLength + segment)),
+          sourceURL,
+          false);
+
+      offset += ((moduleLength + 3) & ~3) + 4;
+    }
+  } else if (Instance::isIndexedRAMBundle(fileName.c_str())) {
     instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
   } else {
     std::unique_ptr<const JSBigFileString> script;
@@ -288,8 +340,8 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!jsCallInvokerHolder_) {
-    jsCallInvokerHolder_ = jni::make_global(CallInvokerHolder::newObjectCxxArgs(
-        std::make_shared<BridgeJSCallInvoker>(instance_)));
+    jsCallInvokerHolder_ = jni::make_global(
+        CallInvokerHolder::newObjectCxxArgs(instance_->getJSCallInvoker()));
   }
 
   return jsCallInvokerHolder_;
@@ -298,13 +350,42 @@ CatalystInstanceImpl::getJSCallInvokerHolder() {
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getNativeCallInvokerHolder() {
   if (!nativeCallInvokerHolder_) {
-    nativeCallInvokerHolder_ =
-        jni::make_global(CallInvokerHolder::newObjectCxxArgs(
-            std::make_shared<MessageQueueThreadCallInvoker>(
-                moduleMessageQueue_)));
+    class NativeThreadCallInvoker : public CallInvoker {
+     private:
+      std::shared_ptr<JMessageQueueThread> messageQueueThread_;
+
+     public:
+      NativeThreadCallInvoker(
+          std::shared_ptr<JMessageQueueThread> messageQueueThread)
+          : messageQueueThread_(messageQueueThread) {}
+      void invokeAsync(std::function<void()> &&work) override {
+        messageQueueThread_->runOnQueue(std::move(work));
+      }
+      void invokeSync(std::function<void()> &&work) override {
+        messageQueueThread_->runOnQueueSync(std::move(work));
+      }
+    };
+
+    std::shared_ptr<CallInvoker> nativeInvoker =
+        std::make_shared<NativeThreadCallInvoker>(moduleMessageQueue_);
+
+    std::shared_ptr<CallInvoker> decoratedNativeInvoker =
+        instance_->getDecoratedNativeCallInvoker(nativeInvoker);
+
+    nativeCallInvokerHolder_ = jni::make_global(
+        CallInvokerHolder::newObjectCxxArgs(decoratedNativeInvoker));
   }
 
   return nativeCallInvokerHolder_;
+}
+
+jni::alias_ref<JRuntimeExecutor::javaobject>
+CatalystInstanceImpl::getRuntimeExecutor() {
+  if (!runtimeExecutor_) {
+    runtimeExecutor_ = jni::make_global(
+        JRuntimeExecutor::newObjectCxxArgs(instance_->getRuntimeExecutor()));
+  }
+  return runtimeExecutor_;
 }
 
 } // namespace react

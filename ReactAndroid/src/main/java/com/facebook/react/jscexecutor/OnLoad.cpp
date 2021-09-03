@@ -11,6 +11,7 @@
 #include <react/jni/JReactMarker.h>
 #include <react/jni/JSLogging.h>
 #include <react/jni/JavaScriptExecutorHolder.h>
+#include <react/jni/NativeTime.h>
 #include <react/jni/ReadableNativeMap.h>
 
 #include <memory>
@@ -30,6 +31,10 @@ class JSCExecutorFactory : public JSExecutorFactory {
           static_cast<void (*)(const std::string &, unsigned int)>(
               &reactAndroidLoggingHook);
       react::bindNativeLogger(runtime, androidLogger);
+
+      react::PerformanceNow androidNativePerformanceNow =
+          static_cast<double (*)()>(&reactAndroidNativePerformanceNowHook);
+      react::bindNativePerformanceNow(runtime, androidNativePerformanceNow);
     };
     return std::make_unique<JSIExecutor>(
         jsc::makeJSCRuntime(),

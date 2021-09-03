@@ -15,23 +15,18 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTConstants.h"
-#import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
 #import "RCTRootContentView.h"
+#import "RCTRootShadowView.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
-
-#if TARGET_OS_TV
-#import "RCTTVNavigationEventEmitter.h"
-#import "RCTTVRemoteHandler.h"
-#endif
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
@@ -49,9 +44,10 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   CGSize _intrinsicContentSize;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
+- (instancetype)initWithFrame:(CGRect)frame
+                       bridge:(RCTBridge *)bridge
+                   moduleName:(NSString *)moduleName
+            initialProperties:(NSDictionary *)initialProperties
 {
   RCTAssertMainQueue();
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
@@ -62,7 +58,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     [bridge.performanceLogger markStartForTag:RCTPLTTI];
   }
 
-  if (self = [super initWithFrame:CGRectZero]) {
+  if (self = [super initWithFrame:frame]) {
     self.backgroundColor = [UIColor whiteColor];
 
     _bridge = bridge;
@@ -71,6 +67,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
+    _minimumSize = CGSizeZero;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidReload)
@@ -87,13 +84,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                                  name:RCTContentDidAppearNotification
                                                object:self];
 
-#if TARGET_OS_TV
-    self.tvRemoteHandler = [RCTTVRemoteHandler new];
-    for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
-      [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
-    }
-#endif
-
     [self showLoadingView];
 
     // Immediately schedule the application to be started.
@@ -104,6 +94,13 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   return self;
+}
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
+{
+  return [self initWithFrame:CGRectZero bridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
@@ -119,15 +116,20 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
-#if TARGET_OS_TV
-- (UIView *)preferredFocusedView
+- (BOOL)hasBridge
 {
-  if (self.reactPreferredFocusedView) {
-    return self.reactPreferredFocusedView;
-  }
-  return [super preferredFocusedView];
+  return _bridge != nil;
 }
-#endif
+
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return _bridge.moduleRegistry;
+}
+
+- (id<RCTEventDispatcherProtocol>)eventDispatcher
+{
+  return [self.moduleRegistry moduleForName:"EventDispatcher"];
+}
 
 #pragma mark - passThroughTouches
 
@@ -165,6 +167,23 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   [super layoutSubviews];
   _contentView.frame = self.bounds;
   _loadingView.center = (CGPoint){CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)};
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize
+{
+  if (CGSizeEqualToSize(_minimumSize, minimumSize)) {
+    return;
+  }
+  _minimumSize = minimumSize;
+  __block NSNumber *tag = self.reactTag;
+  __weak typeof(self) weakSelf = self;
+  RCTExecuteOnUIManagerQueue(^{
+    __strong typeof(self) strongSelf = weakSelf;
+    if (strongSelf && strongSelf->_bridge.isValid) {
+      RCTRootShadowView *shadowView = (RCTRootShadowView *)[strongSelf->_bridge.uiManager shadowViewForReactTag:tag];
+      shadowView.minimumSize = minimumSize;
+    }
+  });
 }
 
 - (UIViewController *)reactViewController

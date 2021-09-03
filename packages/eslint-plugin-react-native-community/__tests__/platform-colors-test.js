@@ -22,7 +22,6 @@ eslintTester.run('../platform-colors', rule, {
     "const color = PlatformColor('controlAccentColor', 'controlColor');",
     "const color = DynamicColorIOS({light: 'black', dark: 'white'});",
     "const color = DynamicColorIOS({light: PlatformColor('black'), dark: PlatformColor('white')});",
-    "const color = ColorAndroid('?attr/colorAccent')",
   ],
   invalid: [
     {
@@ -48,15 +47,6 @@ eslintTester.run('../platform-colors', rule, {
       code:
         "const white = 'white'; const color = DynamicColorIOS({light: 'black', dark: white});",
       errors: [{message: rule.meta.messages.dynamicColorIOSDark}],
-    },
-    {
-      code: 'const color = ColorAndroid();',
-      errors: [{message: rule.meta.messages.colorAndroidArg}],
-    },
-    {
-      code:
-        "const colorAccent = '?attr/colorAccent'; const color = ColorAndroid(colorAccent);",
-      errors: [{message: rule.meta.messages.colorAndroidArg}],
     },
   ],
 });

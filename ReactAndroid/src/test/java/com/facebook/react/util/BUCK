@@ -3,16 +3,14 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_tar
 rn_robolectric_test(
     name = "util",
     srcs = glob(["**/*.java"]),
+    contacts = ["oncall+test_ownership_2020@xmail.facebook.com"],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        react_native_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock"),
         react_native_dep("third-party/java/fest:fest"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),
-        react_native_dep("third-party/java/mockito:mockito"),
-        react_native_dep("third-party/java/robolectric3/robolectric:robolectric"),
         react_native_target("java/com/facebook/react/util:util"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
     ],

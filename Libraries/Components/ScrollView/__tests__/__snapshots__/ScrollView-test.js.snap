@@ -14,7 +14,6 @@ exports[`<ScrollView /> should render as expected: should deep render when mocke
 
 exports[`<ScrollView /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <RCTScrollView
-  DEPRECATED_sendUpdatedChildFrames={false}
   alwaysBounceVertical={true}
   onContentSizeChange={null}
   onLayout={[Function]}
@@ -35,21 +34,17 @@ exports[`<ScrollView /> should render as expected: should deep render when not m
   onTouchMove={[Function]}
   onTouchStart={[Function]}
   pagingEnabled={false}
-  scrollBarThumbImage={null}
   scrollViewRef={null}
   sendMomentumEvents={false}
   snapToEnd={true}
   snapToStart={true}
   style={
-    Array [
-      Object {
-        "flexDirection": "column",
-        "flexGrow": 1,
-        "flexShrink": 1,
-        "overflow": "scroll",
-      },
-      undefined,
-    ]
+    Object {
+      "flexDirection": "column",
+      "flexGrow": 1,
+      "flexShrink": 1,
+      "overflow": "scroll",
+    }
   }
 >
   <RCTScrollContentView
@@ -71,21 +66,21 @@ exports[`<ScrollView /> should render as expected: should deep render when not m
 `;
 
 exports[`<ScrollView /> should render as expected: should shallow render as <ScrollView /> when mocked 1`] = `
-<ForwardRef(ScrollView)>
+<ScrollView>
   <View>
     <Text>
       Hello World!
     </Text>
   </View>
-</ForwardRef(ScrollView)>
+</ScrollView>
 `;
 
 exports[`<ScrollView /> should render as expected: should shallow render as <ScrollView /> when not mocked 1`] = `
-<ForwardRef(ScrollView)>
+<ScrollView>
   <View>
     <Text>
       Hello World!
     </Text>
   </View>
-</ForwardRef(ScrollView)>
+</ScrollView>
 `;

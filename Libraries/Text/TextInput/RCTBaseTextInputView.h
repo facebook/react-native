@@ -13,7 +13,6 @@
 #import "RCTBackedTextInputViewProtocol.h"
 
 @class RCTBridge;
-@class RCTEventDispatcher;
 @class RCTTextAttributes;
 @class RCTTextSelection;
 
@@ -40,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll;
 
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
+@property (nonatomic, assign, readonly) NSInteger nativeEventCount;
 @property (nonatomic, assign) BOOL autoFocus;
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
@@ -50,10 +50,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy) NSString *inputAccessoryViewID;
 @property (nonatomic, assign) UIKeyboardType keyboardType;
+@property (nonatomic, assign) BOOL showSoftInputOnFocus;
 
-- (void)setText:(NSString *__nullable)text
- selectionStart:(NSInteger)start
-   selectionEnd:(NSInteger)end;
+/**
+ Sets selection intext input if both start and end are within range of the text input.
+ **/
+- (void)setSelectionStart:(NSInteger)start
+             selectionEnd:(NSInteger)end;
 
 @end
 

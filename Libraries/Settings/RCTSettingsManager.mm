@@ -10,7 +10,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUtils.h>
 
 #import "RCTSettingsPlugins.h"
@@ -24,7 +24,7 @@
   NSUserDefaults *_defaults;
 }
 
-@synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -72,7 +72,7 @@ RCT_EXPORT_MODULE()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher
+  [[_moduleRegistry moduleForName:"EventDispatcher"]
    sendDeviceEventWithName:@"settingsUpdated"
    body:RCTJSONClean([_defaults dictionaryRepresentation])];
 #pragma clang diagnostic pop
@@ -112,11 +112,9 @@ RCT_EXPORT_METHOD(deleteValues:(NSArray<NSString *> *)keys)
   _ignoringUpdates = NO;
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)
-    getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeSettingsManagerSpecJSI>(self, jsInvoker, perfLogger);
+  return std::make_shared<facebook::react::NativeSettingsManagerSpecJSI>(params);
 }
 
 @end

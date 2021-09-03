@@ -10,11 +10,93 @@
 
 'use strict';
 
-const requireNativeComponent = require('../ReactNative/requireNativeComponent');
+import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {ImageProps} from './ImageProps';
+import type {ViewProps} from '../Components/View/ViewPropTypes';
+import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
+import type {
+  ColorValue,
+  DangerouslyImpreciseStyle,
+  ImageStyleProp,
+} from '../StyleSheet/StyleSheet';
 
-const TextInlineImage: HostComponent<mixed> = requireNativeComponent<mixed>(
+type Props = $ReadOnly<{
+  ...ImageProps,
+  ...ViewProps,
+
+  style?: ImageStyleProp | DangerouslyImpreciseStyle,
+
+  // iOS native props
+  tintColor?: ColorValue,
+
+  // Android native props
+  shouldNotifyLoadEvents?: boolean,
+  src?: ?ResolvedAssetSource | $ReadOnlyArray<{uri: string, ...}>,
+  headers?: ?string,
+  defaultSrc?: ?string,
+  loadingIndicatorSrc?: ?string,
+  internal_analyticTag?: ?string,
+}>;
+
+const TextInlineImage: HostComponent<Props> = NativeComponentRegistry.get<Props>(
   'RCTTextInlineImage',
+  () => ({
+    uiViewClassName: 'RCTImageView',
+    bubblingEventTypes: {},
+    directEventTypes: {
+      topLoadStart: {
+        registrationName: 'onLoadStart',
+      },
+      topProgress: {
+        registrationName: 'onProgress',
+      },
+      topError: {
+        registrationName: 'onError',
+      },
+      topPartialLoad: {
+        registrationName: 'onPartialLoad',
+      },
+      topLoad: {
+        registrationName: 'onLoad',
+      },
+      topLoadEnd: {
+        registrationName: 'onLoadEnd',
+      },
+    },
+    validAttributes: {
+      blurRadius: true,
+      capInsets: {
+        diff: require('../Utilities/differ/insetsDiffer'),
+      },
+      defaultSource: {
+        process: require('./resolveAssetSource'),
+      },
+      defaultSrc: true,
+      fadeDuration: true,
+      headers: true,
+      internal_analyticTag: true,
+      loadingIndicatorSrc: true,
+      onError: true,
+      onLoad: true,
+      onLoadEnd: true,
+      onLoadStart: true,
+      onPartialLoad: true,
+      onProgress: true,
+      overlayColor: {
+        process: require('../StyleSheet/processColor'),
+      },
+      progressiveRenderingEnabled: true,
+      resizeMethod: true,
+      resizeMode: true,
+      shouldNotifyLoadEvents: true,
+      source: true,
+      src: true,
+      tintColor: {
+        process: require('../StyleSheet/processColor'),
+      },
+    },
+  }),
 );
 
 module.exports = TextInlineImage;

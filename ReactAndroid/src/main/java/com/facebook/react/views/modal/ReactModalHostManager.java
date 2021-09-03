@@ -17,7 +17,7 @@ import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -92,6 +92,12 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   }
 
   @Override
+  @ReactProp(name = "visible")
+  public void setVisible(ReactModalHostView view, boolean visible) {
+    // iOS only
+  }
+
+  @Override
   public void setPresentationStyle(ReactModalHostView view, @Nullable String value) {}
 
   @Override
@@ -104,23 +110,29 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   public void setIdentifier(ReactModalHostView view, int value) {}
 
   @Override
-  protected void addEventEmitters(ThemedReactContext reactContext, final ReactModalHostView view) {
+  protected void addEventEmitters(
+      final ThemedReactContext reactContext, final ReactModalHostView view) {
     final EventDispatcher dispatcher =
-        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    view.setOnRequestCloseListener(
-        new ReactModalHostView.OnRequestCloseListener() {
-          @Override
-          public void onRequestClose(DialogInterface dialog) {
-            dispatcher.dispatchEvent(new RequestCloseEvent(view.getId()));
-          }
-        });
-    view.setOnShowListener(
-        new DialogInterface.OnShowListener() {
-          @Override
-          public void onShow(DialogInterface dialog) {
-            dispatcher.dispatchEvent(new ShowEvent(view.getId()));
-          }
-        });
+        UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.getId());
+    if (dispatcher != null) {
+      view.setOnRequestCloseListener(
+          new ReactModalHostView.OnRequestCloseListener() {
+            @Override
+            public void onRequestClose(DialogInterface dialog) {
+              dispatcher.dispatchEvent(
+                  new RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
+            }
+          });
+      view.setOnShowListener(
+          new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+              dispatcher.dispatchEvent(
+                  new ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
+            }
+          });
+      view.setEventDispatcher(dispatcher);
+    }
   }
 
   @Override
@@ -140,9 +152,9 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   @Override
   public Object updateState(
       ReactModalHostView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
-    // TODO T55794595: Add support for updating state with null stateWrapper
+    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     Point modalSize = ModalHostHelper.getModalHostSize(view.getContext());
-    view.updateState(stateWrapper, modalSize.x, modalSize.y);
+    view.updateState(modalSize.x, modalSize.y);
     return null;
   }
 

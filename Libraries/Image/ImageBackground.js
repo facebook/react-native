@@ -74,8 +74,8 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
               // So, we have to proxy/reapply these styles explicitly for actual <Image> component.
               // This workaround should be removed after implementing proper support of
               // intrinsic content size of the <Image>.
-              width: style.width,
-              height: style.height,
+              width: style?.width,
+              height: style?.height,
             },
             imageStyle,
           ]}

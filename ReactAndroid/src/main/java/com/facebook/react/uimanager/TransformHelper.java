@@ -48,6 +48,17 @@ public class TransformHelper {
     double[] helperMatrix = sHelperMatrix.get();
     MatrixMathHelper.resetIdentityMatrix(result);
 
+    // If the transforms array is actually just the matrix itself,
+    // copy that directly. This is for Fabric LayoutAnimations support.
+    // All of the stuff this Java helper does is already done in C++ in Fabric, so we
+    // can just use that matrix directly.
+    if (transforms.size() == 16 && transforms.getType(0) == ReadableType.Number) {
+      for (int i = 0; i < transforms.size(); i++) {
+        result[i] = transforms.getDouble(i);
+      }
+      return;
+    }
+
     for (int transformIdx = 0, size = transforms.size(); transformIdx < size; transformIdx++) {
       ReadableMap transform = transforms.getMap(transformIdx);
       String transformType = transform.keySetIterator().nextKey();

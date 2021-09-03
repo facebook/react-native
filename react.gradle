@@ -21,7 +21,20 @@ def detectEntryFile(config) {
     return "index.js";
 }
 
-def cliPath = config.cliPath ?: "node_modules/react-native/cli.js"
+/**
+ * Detects CLI location in a similar fashion to the React Native CLI
+ */
+def detectCliPath(config) {
+    if (config.cliPath) {
+        return config.cliPath
+    }
+    if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
+        return "${projectDir}/../../node_modules/react-native/cli.js"
+    }
+    throw new Exception("Couldn't determine CLI location. " +
+             "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
+}
+
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = detectEntryFile(config)
@@ -30,7 +43,7 @@ def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
-def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermes"
+def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermesc"
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
@@ -98,20 +111,14 @@ afterEvaluate {
 
         // Additional node and packager commandline arguments
         def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
-        def extraPackagerArgs = config.extraPackagerArgs ?: []
-        def npx = Os.isFamily(Os.FAMILY_WINDOWS) ? "npx.cmd" : "npx"
+        def cliPath = detectCliPath(config)
 
         def execCommand = []
 
-        if (config.cliPath || config.nodeExecutableAndArgs) {
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, cliPath])
-            } else {
-                execCommand.addAll([*nodeExecutableAndArgs, cliPath])
-            }
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, cliPath])
         } else {
-            throw new Exception("Missing cliPath or nodeExecutableAndArgs from build config. " +
-                "Please set project.ext.react.cliPath to the path of the react-native cli.js");
+            execCommand.addAll([*nodeExecutableAndArgs, cliPath])
         }
 
         def enableHermes = enableHermesForVariant(variant)
@@ -146,12 +153,21 @@ afterEvaluate {
             def devEnabled = !(config."devDisabledIn${targetName}"
                 || targetName.toLowerCase().contains("release"))
 
-            def extraArgs = extraPackagerArgs;
+            def extraArgs = []
 
             if (bundleConfig) {
-                extraArgs = extraArgs.clone()
-                extraArgs.add("--config");
-                extraArgs.add(bundleConfig);
+                extraArgs.add("--config")
+                extraArgs.add(bundleConfig)
+            }
+
+            // Hermes doesn't require JS minification.
+            if (enableHermes && !devEnabled) {
+                extraArgs.add("--minify")
+                extraArgs.add("false")
+            }
+
+            if (config.extraPackagerArgs) {
+                extraArgs.addAll(config.extraPackagerArgs)
             }
 
             commandLine(*execCommand, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
@@ -268,18 +284,24 @@ afterEvaluate {
                 into(file(config."jsBundleDir${targetName}"))
             } else {
                 into ("$buildDir/intermediates")
-                into ("assets/${targetPath}") {
-                    from(jsBundleDir)
-                }
+                if (isAndroidLibrary) {
+                    into ("library_assets/${variant.name}/out") {
+                        from(jsBundleDir)
+                    }
+                } else {
+                    into ("assets/${targetPath}") {
+                        from(jsBundleDir)
+                    }
 
-                // Workaround for Android Gradle Plugin 3.2+ new asset directory
-                into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
-                    from(jsBundleDir)
-                }
+                    // Workaround for Android Gradle Plugin 3.2+ new asset directory
+                    into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
+                        from(jsBundleDir)
+                    }
 
-                // Workaround for Android Gradle Plugin 3.4+ new asset directory
-                into ("merged_assets/${variant.name}/out") {
-                    from(jsBundleDir)
+                    // Workaround for Android Gradle Plugin 3.4+ new asset directory
+                    into ("merged_assets/${variant.name}/out") {
+                        from(jsBundleDir)
+                    }
                 }
             }
 
@@ -287,7 +309,13 @@ afterEvaluate {
             dependsOn(variant.mergeAssetsProvider.get())
 
             enabled(currentBundleTask.enabled)
+            dependsOn(currentBundleTask)
         }
+
+        // mergeResources task runs before the bundle file is copied to the intermediate asset directory from Android plugin 4.1+.
+        // This ensures to copy the bundle file before mergeResources task starts
+        def mergeResourcesTask = tasks.findByName("merge${targetName}Resources")
+        mergeResourcesTask.dependsOn(currentAssetsCopyTask)
 
         packageTask.dependsOn(currentAssetsCopyTask)
         if (buildPreBundleTask != null) {
@@ -297,7 +325,7 @@ afterEvaluate {
         // Delete the VM related libraries that this build doesn't need.
         // The application can manage this manually by setting 'enableVmCleanup: false'
         //
-        // This should really be done by packaging all Hermes releated libs into
+        // This should really be done by packaging all Hermes related libs into
         // two separate HermesDebug and HermesRelease AARs, but until then we'll
         // kludge it by deleting the .so files out of the /transforms/ directory.
         def isRelease = targetName.toLowerCase().contains("release")
@@ -331,8 +359,7 @@ afterEvaluate {
         }
 
         if (enableVmCleanup) {
-            def task = tasks.findByName("package${targetName}")
-            task.doFirst(vmSelectionAction)
+            packageTask.doFirst(vmSelectionAction)
         }
     }
 }

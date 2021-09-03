@@ -8,10 +8,6 @@
 ; Ignore polyfills
 node_modules/react-native/Libraries/polyfills/.*
 
-; These should not be required directly
-; require from fbjs/lib instead: require('fbjs/lib/warning')
-node_modules/warning/.*
-
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
 
@@ -27,8 +23,9 @@ node_modules/react-native/flow/
 [options]
 emoji=true
 
-esproposal.optional_chaining=enable
-esproposal.nullish_coalescing=enable
+exact_by_default=true
+
+format.bracket_spacing=false
 
 module.file_ext=.js
 module.file_ext=.json
@@ -44,10 +41,6 @@ suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
-suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
-
 [lints]
 sketchy-null-number=warn
 sketchy-null-mixed=warn
@@ -58,7 +51,6 @@ deprecated-type=warn
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
 signature-verification-failure=warn
-deprecated-utility=error
 
 [strict]
 deprecated-type
@@ -70,4 +62,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.121.0
+^0.159.0

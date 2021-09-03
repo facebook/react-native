@@ -15,11 +15,21 @@ _DEBUG_PREPROCESSOR_FLAGS = []
 
 _APPLE_COMPILER_FLAGS = []
 
+def get_apple_compiler_flags():
+    return _APPLE_COMPILER_FLAGS
+
 def get_preprocessor_flags_for_build_mode():
     return _DEBUG_PREPROCESSOR_FLAGS
 
-def get_apple_compiler_flags():
+def get_static_library_ios_flags():
     return _APPLE_COMPILER_FLAGS
+
+def get_objc_arc_preprocessor_flags():
+    return [
+        "-fobjc-arc",
+        "-fno-objc-arc-exceptions",
+        "-Qunused-arguments",
+    ]
 
 IS_OSS_BUILD = True
 
@@ -27,9 +37,19 @@ GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
 
+# Platform Definitions
+CXX = "Default"
+
 ANDROID = "Android"
 
-APPLE = ""
+APPLE = "Apple"
+
+# Apple SDK Definitions
+IOS = "ios"
+
+MACOSX = "macosx"
+
+APPLETVOS = "appletvos"
 
 YOGA_TARGET = "//ReactAndroid/src/main/java/com/facebook:yoga"
 
@@ -49,6 +69,11 @@ def get_apple_inspector_flags():
 def get_android_inspector_flags():
     return []
 
+def get_react_native_preprocessor_flags():
+    # TODO: use this to define the compiler flag REACT_NATIVE_DEBUG in debug/dev mode builds only.
+    # This is a replacement for NDEBUG since NDEBUG is always defined in Buck on all Android builds.
+    return []
+
 # Building is not supported in OSS right now
 def rn_xplat_cxx_library(name, **kwargs):
     new_kwargs = {
@@ -63,6 +88,8 @@ def rn_xplat_cxx_library(name, **kwargs):
         **new_kwargs
     )
 
+rn_xplat_cxx_library2 = rn_xplat_cxx_library
+
 # Example: react_native_target('java/com/facebook/react/common:common')
 def react_native_target(path):
     return "//ReactAndroid/src/main/" + path
@@ -73,6 +100,12 @@ def react_native_xplat_target(path):
 
 def react_native_xplat_target_apple(path):
     return react_native_xplat_target(path) + "Apple"
+
+def react_native_root_target(path):
+    return "//" + path
+
+def react_native_xplat_shared_library_target(path):
+    return react_native_xplat_target(path)
 
 # Example: react_native_tests_target('java/com/facebook/react/modules:modules')
 def react_native_tests_target(path):
@@ -87,6 +120,9 @@ def react_native_integration_tests_target(path):
 def react_native_dep(path):
     return "//ReactAndroid/src/main/" + path
 
+def react_native_android_toplevel_dep(path):
+    return react_native_dep(path)
+
 # Example: react_native_xplat_dep('java/com/facebook/systrace:systrace')
 def react_native_xplat_dep(path):
     return "//ReactCommon/" + path
@@ -94,8 +130,13 @@ def react_native_xplat_dep(path):
 def rn_extra_build_flags():
     return []
 
+def _unique(li):
+    return list({x: () for x in li})
+
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
+    _ = kwargs.pop("autoglob", False)
+    _ = kwargs.pop("is_androidx", False)
     if react_native_target(
         "java/com/facebook/react/uimanager/annotations:annotations",
     ) in deps and name != "processing":
@@ -105,7 +146,7 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
             ),
         ]
 
-        plugins = list(set(plugins + react_property_plugins))
+        plugins = _unique(plugins + react_property_plugins)
 
     if react_native_target(
         "java/com/facebook/react/module/annotations:annotations",
@@ -116,32 +157,9 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
             ),
         ]
 
-        plugins = list(set(plugins + react_module_plugins))
+        plugins = _unique(plugins + react_module_plugins)
 
-    is_androidx = kwargs.pop("is_androidx", False)
-    provided_deps = kwargs.pop("provided_deps", [])
-    appcompat = react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat")
-    support_v4 = react_native_dep("third-party/android/support/v4:lib-support-v4")
-
-    if is_androidx and (appcompat in deps or appcompat in provided_deps):
-        # add androidx target to provided_deps
-        pass
-        # provided_deps.append(
-        #     react_native_dep(
-        #         ""
-        #     )
-        # )
-
-    if is_androidx and (support_v4 in deps or support_v4 in provided_deps):
-        # add androidx target to provided_deps
-        pass
-        # provided_deps.append(
-        #     react_native_dep(
-        #         ""
-        #     )
-        # )
-
-    native.android_library(name = name, deps = deps, plugins = plugins, provided_deps = provided_deps, *args, **kwargs)
+    native.android_library(name = name, deps = deps, plugins = plugins, *args, **kwargs)
 
 def rn_android_binary(*args, **kwargs):
     native.android_binary(*args, **kwargs)
@@ -158,9 +176,9 @@ def rn_android_prebuilt_aar(*args, **kwargs):
 def rn_apple_library(*args, **kwargs):
     kwargs.setdefault("link_whole", True)
     kwargs.setdefault("enable_exceptions", True)
-    kwargs.setdefault("target_sdk_version", "10.0")
-    _ = kwargs.pop("plugins_only", False)
-    native.apple_library(*args, **kwargs)
+    kwargs.setdefault("target_sdk_version", "11.0")
+
+    fb_apple_library(*args, **kwargs)
 
 def rn_java_library(*args, **kwargs):
     _ = kwargs.pop("is_androidx", False)
@@ -181,17 +199,26 @@ def rn_genrule(*args, **kwargs):
 def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     vm_args = vm_args or []
 
-    is_androidx = kwargs.pop("is_androidx", False)
+    _ = kwargs.pop("autoglob", False)
+    _ = kwargs.pop("is_androidx", False)
+
+    kwargs["deps"] = kwargs.pop("deps", []) + [
+        react_native_android_toplevel_dep("third-party/java/mockito2:mockito2"),
+        react_native_dep("third-party/java/robolectric:robolectric"),
+        react_native_tests_target("resources:robolectric"),
+        react_native_xplat_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock2"),
+    ]
 
     extra_vm_args = [
         "-XX:+UseConcMarkSweepGC",  # required by -XX:+CMSClassUnloadingEnabled
         "-XX:+CMSClassUnloadingEnabled",
         "-XX:ReservedCodeCacheSize=150M",
-        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric3/robolectric",
-        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric3/robolectric/*.jar",
+        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric",
+        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/*.jar",
         "-Drobolectric.logging.enabled=true",
         "-XX:MaxPermSize=620m",
         "-Drobolectric.offline=true",
+        "-Drobolectric.looperMode=LEGACY",
     ]
     if native.read_config("user", "use_dev_shm"):
         extra_vm_args.append("-Djava.io.tmpdir=/dev/shm")
@@ -304,6 +331,17 @@ def _single_subdir_glob(dirpath, glob_pattern, exclude = None, prefix = None):
     return results
 
 def fb_apple_library(*args, **kwargs):
+    # Unsupported kwargs
+    _ = kwargs.pop("autoglob", False)
+    _ = kwargs.pop("plugins_only", False)
+    _ = kwargs.pop("enable_exceptions", False)
+    _ = kwargs.pop("extension_api_only", False)
+    _ = kwargs.pop("sdks", [])
+    _ = kwargs.pop("inherited_buck_flags", [])
+    _ = kwargs.pop("plugins", [])
+    _ = kwargs.pop("complete_nullability", False)
+    _ = kwargs.pop("plugins_header", "")
+
     native.apple_library(*args, **kwargs)
 
 def oss_cxx_library(**kwargs):
@@ -318,6 +356,25 @@ def fb_xplat_cxx_test(**_kwargs):
     pass
 
 # iOS Plugin support.
-def react_module_plugin_providers():
+def react_module_plugin_providers(*args, **kwargs):
     # Noop for now
     return []
+
+def react_fabric_component_plugin_provider(name, native_class_func):
+    return None
+
+HERMES_BYTECODE_VERSION = -1
+
+RCT_IMAGE_DATA_DECODER_SOCKET = None
+RCT_IMAGE_URL_LOADER_SOCKET = None
+RCT_URL_REQUEST_HANDLER_SOCKET = None
+
+def make_resource_glob(path):
+    return native.glob([path + "/**/*." + x for x in [
+        "m4a",
+        "mp3",
+        "otf",
+        "png",
+        "ttf",
+        "caf",
+    ]])

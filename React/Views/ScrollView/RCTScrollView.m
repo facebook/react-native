@@ -11,6 +11,7 @@
 
 #import "RCTConvert.h"
 #import "RCTLog.h"
+#import "RCTRefreshControl.h"
 #import "RCTScrollEvent.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerObserverCoordinator.h"
@@ -18,10 +19,6 @@
 #import "RCTUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
-
-#if !TARGET_OS_TV
-#import "RCTRefreshControl.h"
-#endif
 
 /**
  * Include a custom scroll view subclass because we want to limit certain
@@ -31,10 +28,8 @@
 @interface RCTCustomScrollView : UIScrollView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, assign) BOOL centerContent;
-#if !TARGET_OS_TV
 @property (nonatomic, strong) UIView<RCTCustomRefreshContolProtocol> *customRefreshControl;
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
-#endif
 
 @end
 
@@ -52,9 +47,7 @@
       self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
     }
 
-#if !TARGET_OS_TV
     _pinchGestureEnabled = YES;
-#endif
   }
   return self;
 }
@@ -223,14 +216,23 @@
   }
 }
 
-#if !TARGET_OS_TV
 - (void)setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)refreshControl
 {
   if (_customRefreshControl) {
     [_customRefreshControl removeFromSuperview];
   }
   _customRefreshControl = refreshControl;
-  [self addSubview:_customRefreshControl];
+  // We have to set this because we can't always guarantee the
+  // `RCTCustomRefreshContolProtocol`'s superview will always be of class
+  // `UIScrollView` like we were previously
+  if ([_customRefreshControl respondsToSelector:@selector(setScrollView:)]) {
+    _customRefreshControl.scrollView = self;
+  }
+  if ([refreshControl isKindOfClass:UIRefreshControl.class]) {
+    self.refreshControl = (UIRefreshControl *)refreshControl;
+  } else {
+    [self addSubview:_customRefreshControl];
+  }
 }
 
 - (void)setPinchGestureEnabled:(BOOL)pinchGestureEnabled
@@ -246,7 +248,6 @@
   // in the setter gets overridden when the view loads.
   self.pinchGestureRecognizer.enabled = _pinchGestureEnabled;
 }
-#endif // TARGET_OS_TV
 
 - (BOOL)shouldGroupAccessibilityChildren
 {
@@ -260,7 +261,7 @@
 @end
 
 @implementation RCTScrollView {
-  RCTEventDispatcher *_eventDispatcher;
+  id<RCTEventDispatcherProtocol> _eventDispatcher;
   CGRect _prevFirstVisibleFrame;
   __weak UIView *_firstVisibleView;
   RCTCustomScrollView *_scrollView;
@@ -274,7 +275,7 @@
   NSHashTable *_scrollListeners;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   RCTAssertParam(eventDispatcher);
 
@@ -299,9 +300,7 @@
 #endif
 
     _automaticallyAdjustContentInsets = YES;
-    _DEPRECATED_sendUpdatedChildFrames = NO;
     _contentInset = UIEdgeInsetsZero;
-    _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
 
     _scrollEventThrottle = 0.0;
@@ -342,15 +341,12 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:view atIndex:atIndex];
-#if !TARGET_OS_TV
   if ([view conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
     [_scrollView setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)view];
     if (![view isKindOfClass:[UIRefreshControl class]] && [view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
       [self addScrollListener:(UIView<UIScrollViewDelegate> *)view];
     }
-  } else
-#endif
-  {
+  } else {
     RCTAssert(
         _contentView == nil,
         @"RCTScrollView may only contain a single subview, the already set subview looks like: %@",
@@ -364,16 +360,13 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)removeReactSubview:(UIView *)subview
 {
   [super removeReactSubview:subview];
-#if !TARGET_OS_TV
   if ([subview conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
     [_scrollView setCustomRefreshControl:nil];
     if (![subview isKindOfClass:[UIRefreshControl class]] &&
         [subview conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
       [self removeScrollListener:(UIView<UIScrollViewDelegate> *)subview];
     }
-  } else
-#endif
-  {
+  } else {
     RCTAssert(_contentView == subview, @"Attempted to remove non-existent subview");
     _contentView = nil;
   }
@@ -387,7 +380,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
   if ([changedProps containsObject:@"contentSize"]) {
-    [self updateContentOffsetIfNeeded];
+    [self updateContentSizeIfNeeded];
   }
 }
 
@@ -422,7 +415,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 #if !TARGET_OS_TV
   // Adjust the refresh control frame if the scrollview layout changes.
   UIView<RCTCustomRefreshContolProtocol> *refreshControl = _scrollView.customRefreshControl;
-  if (refreshControl && refreshControl.isRefreshing) {
+  if (refreshControl && refreshControl.isRefreshing && ![refreshControl isKindOfClass:UIRefreshControl.class]) {
     refreshControl.frame =
         (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
   }
@@ -593,48 +586,12 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
    */
   if (_allowNextScrollNoMatterWhat ||
       (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
-    if (_DEPRECATED_sendUpdatedChildFrames) {
-      // Calculate changed frames
-      RCT_SEND_SCROLL_EVENT(onScroll, (@{@"updatedChildFrames" : [self calculateChildFramesData]}));
-    } else {
-      RCT_SEND_SCROLL_EVENT(onScroll, nil);
-    }
-
+    RCT_SEND_SCROLL_EVENT(onScroll, nil);
     // Update dispatch time
     _lastScrollDispatchTime = now;
     _allowNextScrollNoMatterWhat = NO;
   }
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll : scrollView);
-}
-
-- (NSArray<NSDictionary *> *)calculateChildFramesData
-{
-  NSMutableArray<NSDictionary *> *updatedChildFrames = [NSMutableArray new];
-  [[_contentView reactSubviews] enumerateObjectsUsingBlock:^(UIView *subview, NSUInteger idx, __unused BOOL *stop) {
-    // Check if new or changed
-    CGRect newFrame = subview.frame;
-    BOOL frameChanged = NO;
-    if (self->_cachedChildFrames.count <= idx) {
-      frameChanged = YES;
-      [self->_cachedChildFrames addObject:[NSValue valueWithCGRect:newFrame]];
-    } else if (!CGRectEqualToRect(newFrame, [self->_cachedChildFrames[idx] CGRectValue])) {
-      frameChanged = YES;
-      self->_cachedChildFrames[idx] = [NSValue valueWithCGRect:newFrame];
-    }
-
-    // Create JS frame object
-    if (frameChanged) {
-      [updatedChildFrames addObject:@{
-        @"index" : @(idx),
-        @"x" : @(newFrame.origin.x),
-        @"y" : @(newFrame.origin.y),
-        @"width" : @(newFrame.size.width),
-        @"height" : @(newFrame.size.height),
-      }];
-    }
-  }];
-
-  return updatedChildFrames;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -757,9 +714,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     // Pick snap point based on direction and proximity
     CGFloat fractionalIndex = (targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF;
 
-    NSInteger snapIndex = velocityAlongAxis > 0.0
-        ? ceil(fractionalIndex)
-        : velocityAlongAxis < 0.0 ? floor(fractionalIndex) : round(fractionalIndex);
+    NSInteger snapIndex = velocityAlongAxis > 0.0 ? ceil(fractionalIndex)
+        : velocityAlongAxis < 0.0                 ? floor(fractionalIndex)
+                                                  : round(fractionalIndex);
     CGFloat newTargetContentOffset = (snapIndex * snapToIntervalF) - alignmentOffset;
 
     // Set new targetContentOffset
@@ -841,8 +798,6 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   return _contentView;
 }
 
-#pragma mark - Setters
-
 - (CGSize)_calculateViewportSize
 {
   CGSize viewportSize = self.bounds.size;
@@ -855,71 +810,16 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   return viewportSize;
 }
 
-- (CGPoint)calculateOffsetForContentSize:(CGSize)newContentSize
-{
-  CGPoint oldOffset = _scrollView.contentOffset;
-  CGPoint newOffset = oldOffset;
-
-  CGSize oldContentSize = _scrollView.contentSize;
-  CGSize viewportSize = [self _calculateViewportSize];
-
-  BOOL fitsinViewportY = oldContentSize.height <= viewportSize.height && newContentSize.height <= viewportSize.height;
-  if (newContentSize.height < oldContentSize.height && !fitsinViewportY) {
-    CGFloat offsetHeight = oldOffset.y + viewportSize.height;
-    if (oldOffset.y < 0) {
-      // overscrolled on top, leave offset alone
-    } else if (offsetHeight > oldContentSize.height) {
-      // overscrolled on the bottom, preserve overscroll amount
-      newOffset.y = MAX(0, oldOffset.y - (oldContentSize.height - newContentSize.height));
-    } else if (offsetHeight > newContentSize.height) {
-      // offset falls outside of bounds, scroll back to end of list
-      newOffset.y = MAX(0, newContentSize.height - viewportSize.height);
-    }
-  }
-
-  BOOL fitsinViewportX = oldContentSize.width <= viewportSize.width && newContentSize.width <= viewportSize.width;
-  if (newContentSize.width < oldContentSize.width && !fitsinViewportX) {
-    CGFloat offsetHeight = oldOffset.x + viewportSize.width;
-    if (oldOffset.x < 0) {
-      // overscrolled at the beginning, leave offset alone
-    } else if (offsetHeight > oldContentSize.width && newContentSize.width > viewportSize.width) {
-      // overscrolled at the end, preserve overscroll amount as much as possible
-      newOffset.x = MAX(0, oldOffset.x - (oldContentSize.width - newContentSize.width));
-    } else if (offsetHeight > newContentSize.width) {
-      // offset falls outside of bounds, scroll back to end
-      newOffset.x = MAX(0, newContentSize.width - viewportSize.width);
-    }
-  }
-
-  // all other cases, offset doesn't change
-  return newOffset;
-}
-
-/**
- * Once you set the `contentSize`, to a nonzero value, it is assumed to be
- * managed by you, and we'll never automatically compute the size for you,
- * unless you manually reset it back to {0, 0}
- */
 - (CGSize)contentSize
 {
-  if (!CGSizeEqualToSize(_contentSize, CGSizeZero)) {
-    return _contentSize;
-  }
-
   return _contentView.frame.size;
 }
 
-- (void)updateContentOffsetIfNeeded
+- (void)updateContentSizeIfNeeded
 {
   CGSize contentSize = self.contentSize;
   if (!CGSizeEqualToSize(_scrollView.contentSize, contentSize)) {
-    // When contentSize is set manually, ScrollView internals will reset
-    // contentOffset to  {0, 0}. Since we potentially set contentSize whenever
-    // anything in the ScrollView updates, we workaround this issue by manually
-    // adjusting contentOffset whenever this happens
-    CGPoint newOffset = [self calculateOffsetForContentSize:contentSize];
     _scrollView.contentSize = contentSize;
-    _scrollView.contentOffset = newOffset;
   }
 }
 
@@ -1021,14 +921,24 @@ RCT_SET_AND_PRESERVE_OFFSET(setKeyboardDismissMode, keyboardDismissMode, UIScrol
 RCT_SET_AND_PRESERVE_OFFSET(setMaximumZoomScale, maximumZoomScale, CGFloat)
 RCT_SET_AND_PRESERVE_OFFSET(setMinimumZoomScale, minimumZoomScale, CGFloat)
 RCT_SET_AND_PRESERVE_OFFSET(setScrollEnabled, isScrollEnabled, BOOL)
-#if !TARGET_OS_TV
 RCT_SET_AND_PRESERVE_OFFSET(setPagingEnabled, isPagingEnabled, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, scrollsToTop, BOOL)
-#endif
 RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
+- (void)setAutomaticallyAdjustsScrollIndicatorInsets:(BOOL)automaticallyAdjusts API_AVAILABLE(ios(13.0))
+{
+  // `automaticallyAdjustsScrollIndicatorInsets` is available since iOS 13.
+  if ([_scrollView respondsToSelector:@selector(setAutomaticallyAdjustsScrollIndicatorInsets:)]) {
+    if (@available(iOS 13.0, *)) {
+      _scrollView.automaticallyAdjustsScrollIndicatorInsets = automaticallyAdjusts;
+    }
+  }
+}
+#endif
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 - (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior API_AVAILABLE(ios(11.0))
@@ -1066,9 +976,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 
 @end
 
-@implementation RCTEventDispatcher (RCTScrollView)
-
-- (void)sendFakeScrollEvent:(NSNumber *)reactTag
+void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNumber *reactTag)
 {
   // Use the selector here in case the onScroll block property is ever renamed
   NSString *eventName = NSStringFromSelector(@selector(onScroll));
@@ -1081,7 +989,5 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
                                                           scrollViewZoomScale:0
                                                                      userData:nil
                                                                 coalescingKey:0];
-  [self sendEvent:fakeScrollEvent];
+  [eventDispatcher sendEvent:fakeScrollEvent];
 }
-
-@end

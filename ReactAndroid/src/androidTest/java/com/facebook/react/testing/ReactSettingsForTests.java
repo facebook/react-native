@@ -37,7 +37,7 @@ public class ReactSettingsForTests implements DeveloperSettings {
   }
 
   @Override
-  public boolean isNuclideJSDebugEnabled() {
+  public boolean isDeviceDebugEnabled() {
     return false;
   }
 

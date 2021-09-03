@@ -780,6 +780,11 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
+  public float getFlex() {
+    return mYogaNode.getFlex();
+  }
+
+  @Override
   public void setFlex(float flex) {
     mYogaNode.setFlex(flex);
   }

@@ -45,6 +45,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private @Nullable Application mApplication;
   private boolean mUseDeveloperSupport;
+  private boolean mRequireActivity;
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable UIImplementationProvider mUIImplementationProvider;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
@@ -58,6 +59,7 @@ public class ReactInstanceManagerBuilder {
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
   private @Nullable JSIModulePackage mJSIModulesPackage;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
+  private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -118,9 +120,9 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
-   * Path to your app's main module on the packager server. This is used when reloading JS during
-   * development. All paths are relative to the root folder the packager is serving files from.
-   * Examples: {@code "index.android"} or {@code "subdirectory/index.android"}
+   * Path to your app's main module on Metro. This is used when reloading JS during development. All
+   * paths are relative to the root folder the packager is serving files from. Examples: {@code
+   * "index.android"} or {@code "subdirectory/index.android"}
    */
   public ReactInstanceManagerBuilder setJSMainModulePath(String jsMainModulePath) {
     mJSMainModulePath = jsMainModulePath;
@@ -167,6 +169,16 @@ public class ReactInstanceManagerBuilder {
    */
   public ReactInstanceManagerBuilder setUseDeveloperSupport(boolean useDeveloperSupport) {
     mUseDeveloperSupport = useDeveloperSupport;
+    return this;
+  }
+
+  /**
+   * When {@code false}, indicates that correct usage of React Native will NOT involve an Activity.
+   * For the vast majority of Android apps in the ecosystem, this will not need to change. Unless
+   * you really know what you're doing, you should probably not change this!
+   */
+  public ReactInstanceManagerBuilder setRequireActivity(boolean requireActivity) {
+    mRequireActivity = requireActivity;
     return this;
   }
 
@@ -224,6 +236,12 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setReactPackageTurboModuleManagerDelegateBuilder(
+      @Nullable ReactPackageTurboModuleManagerDelegate.Builder builder) {
+    mTMMDelegateBuilder = builder;
+    return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}. Before calling {@code build}, the following
    * must be called:
@@ -276,6 +294,7 @@ public class ReactInstanceManagerBuilder {
         mJSMainModulePath,
         mPackages,
         mUseDeveloperSupport,
+        mRequireActivity,
         mBridgeIdleDebugListener,
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mUIImplementationProvider,
@@ -286,7 +305,8 @@ public class ReactInstanceManagerBuilder {
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
         mJSIModulesPackage,
-        mCustomPackagerCommandHandlers);
+        mCustomPackagerCommandHandlers,
+        mTMMDelegateBuilder);
   }
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
