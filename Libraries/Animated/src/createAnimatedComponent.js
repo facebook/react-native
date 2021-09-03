@@ -101,6 +101,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
           this._component.getNativeScrollRef()['_internalInstanceHandle']
             ?.stateNode?.canonical != null) ||
         (this._component.getScrollResponder != null &&
+          this._component.getScrollResponder() != null &&
           this._component.getScrollResponder().getNativeScrollRef != null &&
           this._component.getScrollResponder().getNativeScrollRef() != null &&
           this._component.getScrollResponder().getNativeScrollRef()[
@@ -112,26 +113,22 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
 
     _waitForUpdate = (): void => {
       // If this works well on iOS, we should remove this check
-      if (Platform.OS === 'android') {
-        if (this._isFabric()) {
-          if (this._animatedComponentId === -1) {
-            this._animatedComponentId = animatedComponentNextId++;
-          }
-          NativeAnimatedHelper.API.setWaitingForIdentifier(
-            this._animatedComponentId,
-          );
+      if (this._isFabric()) {
+        if (this._animatedComponentId === -1) {
+          this._animatedComponentId = animatedComponentNextId++;
         }
+        NativeAnimatedHelper.API.setWaitingForIdentifier(
+          this._animatedComponentId,
+        );
       }
     };
 
     _markUpdateComplete = (): void => {
       // If this works well on iOS, we should remove this check
-      if (Platform.OS === 'android') {
-        if (this._isFabric()) {
-          NativeAnimatedHelper.API.unsetWaitingForIdentifier(
-            this._animatedComponentId,
-          );
-        }
+      if (this._isFabric()) {
+        NativeAnimatedHelper.API.unsetWaitingForIdentifier(
+          this._animatedComponentId,
+        );
       }
     };
 

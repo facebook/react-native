@@ -122,6 +122,11 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     _observers = [NSMutableArray array];
 
     _scheduler = [self _createScheduler];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_handleContentSizeCategoryDidChangeNotification:)
+                                                 name:UIContentSizeCategoryDidChangeNotification
+                                               object:nil];
   }
 
   return self;
@@ -423,6 +428,23 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
     for (RCTFabricSurface *surface in enumerator) {
       [self _stopSurface:surface scheduler:scheduler];
+    }
+  }];
+}
+
+- (void)_handleContentSizeCategoryDidChangeNotification:(NSNotification *)notification
+{
+  RCTScheduler *scheduler = [self _scheduler];
+
+  [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
+    for (RCTFabricSurface *surface in enumerator) {
+      LayoutContext layoutContext = RCTGetLayoutContext();
+
+      LayoutConstraints layoutConstraints = RCTGetLayoutConstraintsForSize(surface.minimumSize, surface.maximumSize);
+
+      [scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
+                                                layoutContext:layoutContext
+                                                    surfaceId:surface.rootTag];
     }
   }];
 }

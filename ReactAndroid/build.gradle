@@ -9,6 +9,7 @@ plugins {
     id("com.android.library")
     id("maven")
     id("de.undercouch.download")
+    id("com.facebook.react.codegen")
 }
 
 import java.nio.file.Paths

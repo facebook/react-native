@@ -16,7 +16,7 @@
 #import <React/RCTTextDecorationLineType.h>
 #import <React/RCTFontSmoothing.h> // TODO(OSS Candidate ISS#2710739)
 #import <yoga/Yoga.h>
-#if TARGET_OS_IPHONE && WEBKIT_IOS_10_APIS_AVAILABLE
+#if TARGET_OS_IPHONE
 #import <WebKit/WebKit.h>
 #endif
 
@@ -75,7 +75,7 @@ typedef NSURL RCTFileURL;
 + (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;
 #endif
 
-#if TARGET_OS_IPHONE && WEBKIT_IOS_10_APIS_AVAILABLE
+#if TARGET_OS_IPHONE
 + (WKDataDetectorTypes)WKDataDetectorTypes:(id)json;
 #endif
 

@@ -9,3 +9,6 @@ include(
     ":ReactAndroid",
     ":RNTester:android:app"
 )
+
+// Include this to enable codegen Gradle plugin.
+includeBuild("packages/react-native-codegen/android")

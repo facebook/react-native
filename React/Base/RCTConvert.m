@@ -448,7 +448,6 @@ RCT_MULTI_ENUM_CONVERTER(
     UIDataDetectorTypePhoneNumber,
     unsignedLongLongValue)
 
-#if WEBKIT_IOS_10_APIS_AVAILABLE
 RCT_MULTI_ENUM_CONVERTER(
     WKDataDetectorTypes,
     (@{
@@ -464,7 +463,6 @@ RCT_MULTI_ENUM_CONVERTER(
     }),
     WKDataDetectorTypePhoneNumber,
     unsignedLongLongValue)
-#endif // WEBKIT_IOS_10_APIS_AVAILABLE
 
 #endif // !TARGET_OS_TV
 

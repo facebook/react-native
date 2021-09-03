@@ -187,13 +187,24 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
     _scrollView.contentInset = RCTUIEdgeInsetsFromEdgeInsets(newScrollViewProps.contentInset);
   }
 
+  RCTEnhancedScrollView *scrollView = (RCTEnhancedScrollView *)_scrollView;
   if (oldScrollViewProps.contentOffset != newScrollViewProps.contentOffset) {
     _scrollView.contentOffset = RCTCGPointFromPoint(newScrollViewProps.contentOffset);
   }
 
   if (oldScrollViewProps.snapToAlignment != newScrollViewProps.snapToAlignment) {
-    ((RCTEnhancedScrollView *)_scrollView).snapToAlignment =
-        RCTNSStringFromString(toString(newScrollViewProps.snapToAlignment));
+    scrollView.snapToAlignment = RCTNSStringFromString(toString(newScrollViewProps.snapToAlignment));
+  }
+
+  scrollView.snapToStart = newScrollViewProps.snapToStart;
+  scrollView.snapToEnd = newScrollViewProps.snapToEnd;
+
+  if (oldScrollViewProps.snapToOffsets != newScrollViewProps.snapToOffsets) {
+    NSMutableArray<NSNumber *> *snapToOffsets = [NSMutableArray array];
+    for (auto const &snapToOffset : newScrollViewProps.snapToOffsets) {
+      [snapToOffsets addObject:[NSNumber numberWithFloat:snapToOffset]];
+    }
+    scrollView.snapToOffsets = snapToOffsets;
   }
 
   MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);

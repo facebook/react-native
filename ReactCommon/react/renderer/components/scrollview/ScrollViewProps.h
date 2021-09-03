@@ -48,6 +48,9 @@ class ScrollViewProps final : public ViewProps {
   Float snapToInterval{};
   ScrollViewSnapToAlignment snapToAlignment{};
   bool disableIntervalMomentum{false};
+  std::vector<Float> snapToOffsets{};
+  bool snapToStart{true};
+  bool snapToEnd{true};
 
 #pragma mark - DebugStringConvertible
 
