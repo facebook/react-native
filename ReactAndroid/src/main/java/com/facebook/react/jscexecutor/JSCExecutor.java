@@ -15,17 +15,12 @@ import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
 /* package */ public class JSCExecutor extends JavaScriptExecutor {
-  private static boolean loaded = false;
-
   static {
     loadLibrary();
   }
 
   public static void loadLibrary() throws UnsatisfiedLinkError {
-    if (!loaded) {
-      SoLoader.loadLibrary("jscexecutor");
-    }
-    loaded = true;
+    SoLoader.loadLibrary("jscexecutor");
   }
 
   /* package */ JSCExecutor(ReadableNativeMap jscConfig) {
