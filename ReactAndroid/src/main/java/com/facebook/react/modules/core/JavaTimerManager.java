@@ -20,6 +20,7 @@ import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Executors;
 
 /**
  * This class is the native implementation for JS timer execution on Android. It schedules JS timers
@@ -166,16 +167,20 @@ public class JavaTimerManager {
   private boolean mFrameCallbackPosted = false;
   private boolean mFrameIdleCallbackPosted = false;
   private boolean mSendIdleEvents = false;
+  private boolean mShouldScheduleOnMainThread = true;
+  private mSerialExecutor = SerialExecutor(Executors.newSingleThreadExecutor());
 
   public JavaTimerManager(
       ReactApplicationContext reactContext,
       JavaScriptTimerManager javaScriptTimerManager,
       ReactChoreographer reactChoreographer,
-      DevSupportManager devSupportManager) {
+      DevSupportManager devSupportManager,
+      boolean shouldScheduleOnMainThread) {
     mReactApplicationContext = reactContext;
     mJavaScriptTimerManager = javaScriptTimerManager;
     mReactChoreographer = reactChoreographer;
     mDevSupportManager = devSupportManager;
+    mShouldScheduleOnMainThread = shouldScheduleOnMainThread;
 
     // We store timers sorted by finish time.
     mTimers =
@@ -362,8 +367,8 @@ public class JavaTimerManager {
     synchronized (mIdleCallbackGuard) {
       mSendIdleEvents = sendIdleEvents;
     }
-
-    UiThreadUtil.runOnUiThread(
+    if (mShouldScheduleOnMainThread) {
+      UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
@@ -376,6 +381,21 @@ public class JavaTimerManager {
             }
           }
         });
+     } else {
+      mSerialExecutor.execute(
+        new Runnable() {
+          @Override
+          public void run() {
+            synchronized (mIdleCallbackGuard) {
+              if (sendIdleEvents) {
+                setChoreographerIdleCallback();
+              } else {
+                clearChoreographerIdleCallback();
+              }
+            }
+          }
+        });
+     }
   }
 
   /**
