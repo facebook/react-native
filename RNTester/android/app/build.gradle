@@ -60,7 +60,17 @@ plugins {
  *   // date; if you have any other folders that you want to ignore for performance reasons (gradle
  *   // indexes the entire tree), add them here. Alternatively, if you have JS files in android/
  *   // for example, you might want to remove it from here.
- *   inputExcludes: ["android/**", "ios/**"]
+ *   inputExcludes: ["android/**", "ios/**"],
+ *
+ *   // Root dir for all JS files for the app. Defaults to `root` above.
+ *   jsRootDir: "../..",
+ *
+ *   // Enable react-native-codegen during build time.
+ *   enableCodegen: true,
+ *
+ *   // Java package name to use for any codegen artifacts produced during build time.
+ *   // Defaults to "com.facebook.fbreact.specs".
+ *   codegenJavaPackageName: "com.facebook.fbreact.specs",
  * ]
  */
 
@@ -72,7 +82,9 @@ project.ext.react = [
     inputExcludes: ["android/**", "./**", ".gradle/**"],
     composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
     hermesCommand: "../../../node_modules/hermes-engine/%OS-BIN%/hermesc",
-    enableHermesForVariant: { def v -> v.name.contains("hermes") }
+    enableHermesForVariant: { def v -> v.name.contains("hermes") },
+    jsRootDir: "$rootDir/RNTester",
+    enableCodegen: System.getenv('USE_CODEGEN'),
 ]
 
 apply from: "../../../react.gradle"
@@ -121,7 +133,7 @@ android {
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"

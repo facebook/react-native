@@ -19,6 +19,7 @@
 Class RCTAnimationClassProvider(const char *name) {
   static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
     {"NativeAnimatedModule", RCTNativeAnimatedModuleCls},
+    {"NativeAnimatedTurboModule", RCTNativeAnimatedTurboModuleCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

@@ -34,7 +34,7 @@ const template = `
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/::_LIBRARY_::/EventEmitters.h>
+#include <react/renderer/components/::_LIBRARY_::/EventEmitters.h>
 
 namespace facebook {
 namespace react {

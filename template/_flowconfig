@@ -33,6 +33,8 @@ emoji=true
 esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
 
+exact_by_default=true
+
 module.file_ext=.js
 module.file_ext=.json
 module.file_ext=.ios.js
@@ -69,4 +71,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.129.0
+^0.130.0

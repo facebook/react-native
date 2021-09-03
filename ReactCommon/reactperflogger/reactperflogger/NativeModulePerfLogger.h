@@ -124,6 +124,9 @@ class NativeModulePerfLogger {
   virtual void asyncMethodCallEnd(
       const char *moduleName,
       const char *methodName) = 0;
+  virtual void asyncMethodCallFail(
+      const char *moduleName,
+      const char *methodName) = 0;
 
   /**
    * In the NativeModule system, we batch async NativeModule method calls.

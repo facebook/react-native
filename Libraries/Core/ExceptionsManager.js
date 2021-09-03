@@ -59,7 +59,7 @@ function reportException(
   const NativeExceptionsManager = require('./NativeExceptionsManager').default;
   if (NativeExceptionsManager) {
     const parseErrorStack = require('./Devtools/parseErrorStack');
-    const stack = parseErrorStack(e);
+    const stack = parseErrorStack(e?.stack);
     const currentExceptionID = ++exceptionID;
     const originalMessage = e.message || '';
     let message = originalMessage;

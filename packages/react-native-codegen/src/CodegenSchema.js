@@ -55,11 +55,6 @@ export type StringTypeAnnotation = $ReadOnly<{|
   type: 'StringTypeAnnotation',
 |}>;
 
-export type TypeAliasTypeAnnotation = $ReadOnly<{|
-  type: 'TypeAliasTypeAnnotation',
-  name: string,
-|}>;
-
 export type EventObjectPropertyType =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
@@ -200,109 +195,6 @@ export type PropTypeShape = $ReadOnly<{|
   typeAnnotation: PropTypeTypeAnnotation,
 |}>;
 
-export type PrimitiveTypeAnnotationType =
-  | 'StringTypeAnnotation'
-  | 'NumberTypeAnnotation'
-  | 'Int32TypeAnnotation'
-  | 'DoubleTypeAnnotation'
-  | 'FloatTypeAnnotation'
-  | 'BooleanTypeAnnotation'
-  | 'GenericObjectTypeAnnotation';
-
-export type PrimitiveTypeAnnotation = $ReadOnly<{|
-  type: PrimitiveTypeAnnotationType,
-|}>;
-
-export type ReservedFunctionValueTypeName = 'RootTag'; // Union with more custom types.
-
-export type FunctionTypeAnnotationParamTypeAnnotation =
-  | $ReadOnly<{|
-      type:
-        | 'AnyTypeAnnotation'
-        | 'FunctionTypeAnnotation'
-        | PrimitiveTypeAnnotationType,
-    |}>
-  | $ReadOnly<{|
-      type: 'ReservedFunctionValueTypeAnnotation',
-      name: ReservedFunctionValueTypeName,
-    |}>
-  | $ReadOnly<{|
-      type: 'ArrayTypeAnnotation',
-      elementType:
-        | ?FunctionTypeAnnotationParamTypeAnnotation
-        | ?TypeAliasTypeAnnotation,
-    |}>
-  | $ReadOnly<{|
-      type: 'ObjectTypeAnnotation',
-      properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
-    |}>;
-
-export type FunctionTypeAnnotationReturnArrayElementType =
-  | FunctionTypeAnnotationParamTypeAnnotation
-  | TypeAliasTypeAnnotation;
-
-export type ObjectParamTypeAnnotation = $ReadOnly<{|
-  optional: boolean,
-  name: string,
-  typeAnnotation?:
-    | FunctionTypeAnnotationParamTypeAnnotation
-    | TypeAliasTypeAnnotation, // TODO (T67898313): Workaround for NativeLinking's use of union type, typeAnnotations should not be optional
-|}>;
-
-export type FunctionTypeAnnotationReturn =
-  | $ReadOnly<{|
-      nullable: boolean,
-      type:
-        | 'GenericPromiseTypeAnnotation'
-        | 'VoidTypeAnnotation'
-        | PrimitiveTypeAnnotationType,
-    |}>
-  | $ReadOnly<{|
-      nullable: boolean,
-      type: 'ReservedFunctionValueTypeAnnotation',
-      name: ReservedFunctionValueTypeName,
-    |}>
-  | $ReadOnly<{|
-      nullable: boolean,
-      type: 'ArrayTypeAnnotation',
-      elementType: ?FunctionTypeAnnotationReturnArrayElementType,
-    |}>
-  | $ReadOnly<{|
-      nullable: boolean,
-      type: 'ObjectTypeAnnotation',
-      properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
-    |}>;
-
-export type FunctionTypeAnnotationParam = $ReadOnly<{|
-  nullable: boolean,
-  name: string,
-  typeAnnotation:
-    | FunctionTypeAnnotationParamTypeAnnotation
-    | TypeAliasTypeAnnotation,
-|}>;
-
-export type FunctionTypeAnnotation = $ReadOnly<{|
-  type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<FunctionTypeAnnotationParam>,
-  returnTypeAnnotation: FunctionTypeAnnotationReturn,
-  optional: boolean,
-|}>;
-
-export type NativeModuleMethodTypeShape = $ReadOnly<{|
-  name: string,
-  typeAnnotation: FunctionTypeAnnotation,
-|}>;
-
-export type ObjectTypeAliasTypeShape = $ReadOnly<{|
-  type: 'ObjectTypeAnnotation',
-  properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
-|}>;
-
-export type NativeModuleShape = $ReadOnly<{|
-  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
-  properties: $ReadOnlyArray<NativeModuleMethodTypeShape>,
-|}>;
-
 export type EventTypeShape = $ReadOnly<{|
   name: string,
   bubblingType: 'direct' | 'bubble',
@@ -362,4 +254,116 @@ export type SchemaType = $ReadOnly<{|
     |}>,
     ...,
   }>,
+|}>;
+
+/**
+ * NativeModule Types
+ */
+export type NativeModuleShape = $ReadOnly<{|
+  // We only support aliases to Objects
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
+  properties: $ReadOnlyArray<NativeModuleMethodTypeShape>,
+|}>;
+
+export type ObjectTypeAliasTypeShape = $ReadOnly<{|
+  type: 'ObjectTypeAnnotation',
+  properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
+|}>;
+
+export type NativeModuleMethodTypeShape = $ReadOnly<{|
+  name: string,
+  typeAnnotation: FunctionTypeAnnotation,
+|}>;
+
+export type FunctionTypeAnnotation = $ReadOnly<{|
+  type: 'FunctionTypeAnnotation',
+  params: $ReadOnlyArray<FunctionTypeAnnotationParam>,
+  returnTypeAnnotation: FunctionTypeAnnotationReturn,
+  optional: boolean,
+|}>;
+
+export type FunctionTypeAnnotationReturn =
+  | $ReadOnly<{|
+      nullable: boolean,
+      type:
+        | 'GenericPromiseTypeAnnotation'
+        | 'VoidTypeAnnotation'
+        | PrimitiveTypeAnnotationType,
+    |}>
+  | $ReadOnly<{|
+      nullable: boolean,
+      type: 'ReservedFunctionValueTypeAnnotation',
+      name: ReservedFunctionValueTypeName,
+    |}>
+  | $ReadOnly<{|
+      nullable: boolean,
+      type: 'ArrayTypeAnnotation',
+      elementType: ?FunctionTypeAnnotationReturnArrayElementType,
+    |}>
+  | $ReadOnly<{|
+      nullable: boolean,
+      type: 'ObjectTypeAnnotation',
+      properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
+    |}>;
+
+export type FunctionTypeAnnotationReturnArrayElementType =
+  | FunctionTypeAnnotationParamTypeAnnotation // TODO: What does FunctionTypeAnnotationParamTypeAnnotation have to do with function returns?
+  | TypeAliasTypeAnnotation;
+
+export type TypeAliasTypeAnnotation = $ReadOnly<{|
+  type: 'TypeAliasTypeAnnotation',
+  name: string,
+|}>;
+
+export type FunctionTypeAnnotationParam = $ReadOnly<{|
+  nullable: boolean,
+  name: string,
+  typeAnnotation:
+    | FunctionTypeAnnotationParamTypeAnnotation
+    | TypeAliasTypeAnnotation,
+|}>;
+
+export type FunctionTypeAnnotationParamTypeAnnotation =
+  | $ReadOnly<{|
+      type:
+        | 'AnyTypeAnnotation'
+        | 'FunctionTypeAnnotation'
+        | PrimitiveTypeAnnotationType,
+    |}>
+  | $ReadOnly<{|
+      type: 'ReservedFunctionValueTypeAnnotation',
+      name: ReservedFunctionValueTypeName,
+    |}>
+  | $ReadOnly<{|
+      type: 'ArrayTypeAnnotation',
+      elementType:
+        | ?FunctionTypeAnnotationParamTypeAnnotation
+        | ?TypeAliasTypeAnnotation,
+    |}>
+  | $ReadOnly<{|
+      type: 'ObjectTypeAnnotation',
+      properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
+    |}>;
+
+export type PrimitiveTypeAnnotationType =
+  | 'StringTypeAnnotation'
+  | 'NumberTypeAnnotation'
+  | 'Int32TypeAnnotation'
+  | 'DoubleTypeAnnotation'
+  | 'FloatTypeAnnotation'
+  | 'BooleanTypeAnnotation'
+  | 'GenericObjectTypeAnnotation';
+
+export type PrimitiveTypeAnnotation = $ReadOnly<{|
+  type: PrimitiveTypeAnnotationType,
+|}>;
+
+export type ReservedFunctionValueTypeName = 'RootTag'; // Union with more custom types.
+
+export type ObjectParamTypeAnnotation = $ReadOnly<{|
+  optional: boolean,
+  name: string,
+  typeAnnotation?:
+    | FunctionTypeAnnotationParamTypeAnnotation
+    | TypeAliasTypeAnnotation, // TODO (T67898313): Workaround for NativeLinking's use of union type, typeAnnotations should not be optional
 |}>;

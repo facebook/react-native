@@ -32,7 +32,7 @@ const fileTemplate = `
  */
 
 #include <gtest/gtest.h>
-#include <react/components/::_LIBRARY_NAME_::/Props.h>
+#include <react/renderer/components/::_LIBRARY_NAME_::/Props.h>
 ::_IMPORTS_::
 
 using namespace facebook::react;
@@ -140,9 +140,9 @@ module.exports = {
   ): FilesOutput {
     const fileName = 'Tests.cpp';
     const allImports = new Set([
-      '#include <react/core/propsConversions.h>',
-      '#include <react/core/RawProps.h>',
-      '#include <react/core/RawPropsParser.h>',
+      '#include <react/renderer/core/propsConversions.h>',
+      '#include <react/renderer/core/RawProps.h>',
+      '#include <react/renderer/core/RawPropsParser.h>',
     ]);
 
     const componentTests = Object.keys(schema.modules)

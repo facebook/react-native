@@ -113,4 +113,15 @@ import java.util.Map;
 
     mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, mPropMap);
   }
+
+  public String prettyPrint() {
+    return "PropsAnimatedNode["
+        + mTag
+        + "] connectedViewTag: "
+        + mConnectedViewTag
+        + " mPropNodeMapping: "
+        + (mPropNodeMapping != null ? mPropNodeMapping.toString() : "null")
+        + " mPropMap: "
+        + (mPropMap != null ? mPropMap.toString() : "null");
+  }
 }

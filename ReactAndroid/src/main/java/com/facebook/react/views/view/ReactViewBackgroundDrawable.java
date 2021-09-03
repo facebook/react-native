@@ -7,6 +7,9 @@
 
 package com.facebook.react.views.view;
 
+import static android.os.Build.VERSION_CODES.KITKAT;
+
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -375,43 +378,41 @@ public class ReactViewBackgroundDrawable extends Drawable {
         canvas.clipPath(mOuterClipPathForBorderRadius, Region.Op.INTERSECT);
         canvas.clipPath(mInnerClipPathForBorderRadius, Region.Op.DIFFERENCE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-          final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-          int colorStart = getBorderColor(Spacing.START);
-          int colorEnd = getBorderColor(Spacing.END);
+        final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        int colorStart = getBorderColor(Spacing.START);
+        int colorEnd = getBorderColor(Spacing.END);
 
-          if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
-            if (!isBorderColorDefined(Spacing.START)) {
-              colorStart = colorLeft;
-            }
+        if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
+          if (!isBorderColorDefined(Spacing.START)) {
+            colorStart = colorLeft;
+          }
 
-            if (!isBorderColorDefined(Spacing.END)) {
-              colorEnd = colorRight;
-            }
+          if (!isBorderColorDefined(Spacing.END)) {
+            colorEnd = colorRight;
+          }
 
-            final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
-            final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
+          final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
+          final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
 
+          colorLeft = directionAwareColorLeft;
+          colorRight = directionAwareColorRight;
+        } else {
+          final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
+          final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
+
+          final boolean isColorStartDefined = isBorderColorDefined(Spacing.START);
+          final boolean isColorEndDefined = isBorderColorDefined(Spacing.END);
+          final boolean isDirectionAwareColorLeftDefined =
+              isRTL ? isColorEndDefined : isColorStartDefined;
+          final boolean isDirectionAwareColorRightDefined =
+              isRTL ? isColorStartDefined : isColorEndDefined;
+
+          if (isDirectionAwareColorLeftDefined) {
             colorLeft = directionAwareColorLeft;
+          }
+
+          if (isDirectionAwareColorRightDefined) {
             colorRight = directionAwareColorRight;
-          } else {
-            final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
-            final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
-
-            final boolean isColorStartDefined = isBorderColorDefined(Spacing.START);
-            final boolean isColorEndDefined = isBorderColorDefined(Spacing.END);
-            final boolean isDirectionAwareColorLeftDefined =
-                isRTL ? isColorEndDefined : isColorStartDefined;
-            final boolean isDirectionAwareColorRightDefined =
-                isRTL ? isColorStartDefined : isColorEndDefined;
-
-            if (isDirectionAwareColorLeftDefined) {
-              colorLeft = directionAwareColorLeft;
-            }
-
-            if (isDirectionAwareColorRightDefined) {
-              colorRight = directionAwareColorRight;
-            }
           }
         }
 
@@ -1236,6 +1237,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     return ReactViewBackgroundDrawable.colorFromAlphaAndRGBComponents(alpha, rgb);
   }
 
+  @TargetApi(KITKAT)
   public RectF getDirectionAwareBorderInsets() {
     final float borderWidth = getBorderWidthOrDefaultTo(0, Spacing.ALL);
     final float borderTopWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);
@@ -1243,7 +1245,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     float borderLeftWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.LEFT);
     float borderRightWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.RIGHT);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mBorderWidth != null) {
+    if (mBorderWidth != null) {
       final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
       float borderStartWidth = mBorderWidth.getRaw(Spacing.START);
       float borderEndWidth = mBorderWidth.getRaw(Spacing.END);

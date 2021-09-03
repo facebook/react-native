@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -197,7 +197,7 @@ class Modal extends React.Component<Props> {
     if (
       props.presentationStyle &&
       props.presentationStyle !== 'overFullScreen' &&
-      props.transparent
+      props.transparent === true
     ) {
       console.warn(
         `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
@@ -211,7 +211,8 @@ class Modal extends React.Component<Props> {
     }
 
     const containerStyles = {
-      backgroundColor: this.props.transparent ? 'transparent' : 'white',
+      backgroundColor:
+        this.props.transparent === true ? 'transparent' : 'white',
     };
 
     let animationType = this.props.animationType || 'none';
@@ -219,7 +220,7 @@ class Modal extends React.Component<Props> {
     let presentationStyle = this.props.presentationStyle;
     if (!presentationStyle) {
       presentationStyle = 'fullScreen';
-      if (this.props.transparent) {
+      if (this.props.transparent === true) {
         presentationStyle = 'overFullScreen';
       }
     }

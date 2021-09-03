@@ -21,7 +21,6 @@ folly_version = '2020.01.13.00'
 boost_compiler_flags = '-Wno-documentation'
 
 header_subspecs = {
-  'ARTHeaders'                  => 'Libraries/ART/**/*.h',
   'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
   'RCTActionSheetHeaders'       => 'Libraries/ActionSheetIOS/*.h',
   'RCTAnimationHeaders'         => 'Libraries/NativeAnimation/{Drivers/*,Nodes/*,*}.{h}',
@@ -59,6 +58,7 @@ Pod::Spec.new do |s|
                                 "React/DevSupport/**/*",
                                 "React/Fabric/**/*",
                                 "React/Inspector/**/*",
+                                "React/Tests/**/*",
                                 "React/CxxBridge/HermesExecutorFactory.*" # TODO(macOS GH#214)
     ss.ios.exclude_files      = "React/**/RCTTV*.*",
 

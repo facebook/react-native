@@ -14,11 +14,8 @@ import type {
   ObjectParamTypeAnnotation,
   ObjectTypeAliasTypeShape,
 } from '../../../CodegenSchema';
-const {
-  flatObjects,
-  capitalizeFirstLetter,
-  getTypeAliasTypeAnnotation,
-} = require('./Utils');
+const {flatObjects, capitalizeFirstLetter} = require('./Utils');
+const {getTypeAliasTypeAnnotation} = require('../Utils');
 
 const structTemplate = `
 namespace JS {

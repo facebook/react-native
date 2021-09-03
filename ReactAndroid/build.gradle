@@ -166,7 +166,7 @@ task prepareJSC {
         def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
         if (!jscPackagePath) {
             throw new GradleScriptException("Could not find the jsc-android npm package", null)
-        } 
+        }
 
         def jscDist = file("$jscPackagePath/dist")
         if (!jscDist.exists()) {
@@ -223,7 +223,7 @@ task downloadNdkBuildDependencies {
 def findNodeModulePath(baseDir, packageName) {
     def basePath = baseDir.toPath().normalize()
     // Node's module resolution algorithm searches up to the root directory,
-    // after which the base path will be null 
+    // after which the base path will be null
     while (basePath) {
         def candidatePath = Paths.get(basePath.toString(), "node_modules", packageName)
         if (candidatePath.toFile().exists()) {
@@ -382,7 +382,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion(16)
+        minSdkVersion(19)
         targetSdkVersion(28)
         versionCode(1)
         versionName("1.0")
@@ -468,3 +468,8 @@ dependencies {
 }
 
 apply(from: "release.gradle")
+apply(from: "../architecture.gradle");
+generateNativeArtifactsFromJavaScript([
+    enableCodegen: System.getenv("USE_CODEGEN"),
+    jsRootDir: "${file('../Libraries')}",
+])

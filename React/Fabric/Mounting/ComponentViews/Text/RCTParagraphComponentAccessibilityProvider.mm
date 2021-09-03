@@ -8,10 +8,10 @@
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
 #import <Foundation/Foundation.h>
-#import <react/components/text/ParagraphProps.h>
-#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
-#import <react/textlayoutmanager/RCTTextLayoutManager.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/renderer/components/text/ParagraphProps.h>
+#import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
+#import <react/renderer/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"

@@ -25,8 +25,8 @@ const template = `
 
 #pragma once
 
-#include <react/components/::_LIBRARY_::/ShadowNodes.h>
-#include <react/core/ConcreteComponentDescriptor.h>
+#include <react/renderer/components/::_LIBRARY_::/ShadowNodes.h>
+#include <react/renderer/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {

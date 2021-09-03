@@ -1047,10 +1047,6 @@ struct RCTInstanceCallback : public InstanceCallback {
         [self enqueueApplicationScript:source.data
                                    url:source.url
                             onComplete:^{
-                              [[NSNotificationCenter defaultCenter]
-                                  postNotificationName:RCTAdditionalJavaScriptDidLoadNotification
-                                                object:self->_parentBridge
-                                              userInfo:@{@"bridge" : self}];
                               [self.devSettings setupHMRClientWithAdditionalBundleURL:source.url];
                               onComplete();
                             }];

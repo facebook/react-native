@@ -132,7 +132,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 {
   NSString *location = [self jsLocation];
 #if RCT_DEV_MENU
-  if (![RCTBundleURLProvider isPackagerRunning:location]) {
+  if ([location length] && ![RCTBundleURLProvider isPackagerRunning:location]) {
     location = nil;
   }
 #endif

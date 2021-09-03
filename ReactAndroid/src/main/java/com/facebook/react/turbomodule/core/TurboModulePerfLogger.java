@@ -72,6 +72,12 @@ public class TurboModulePerfLogger {
     }
   }
 
+  public static void moduleCreateFail(String moduleName, int id) {
+    if (sNativeModulePerfLogger != null) {
+      sNativeModulePerfLogger.moduleCreateFail(moduleName, id);
+    }
+  }
+
   private static native void jniEnableCppLogging(NativeModulePerfLogger perfLogger);
 
   public static void enableLogging(NativeModulePerfLogger perfLogger) {
