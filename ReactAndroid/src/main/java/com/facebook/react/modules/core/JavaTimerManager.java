@@ -202,7 +202,7 @@ public class JavaTimerManager {
   private boolean mFrameIdleCallbackPosted = false;
   private boolean mSendIdleEvents = false;
   private boolean mShouldScheduleOnMainThread = true;
-  private SerialExecutor mSerialExecutor = SerialExecutor(Executors.newSingleThreadExecutor());
+  private SerialExecutor mSerialExecutor = new SerialExecutor(Executors.newSingleThreadExecutor());
 
   public JavaTimerManager(
       ReactApplicationContext reactContext,
