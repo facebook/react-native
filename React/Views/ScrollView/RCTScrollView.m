@@ -934,7 +934,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 }
 #endif
 
-- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior API_AVAILABLE(ios(11.0))
+- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
 {
   // `contentInsetAdjustmentBehavior` is available since iOS 11.
   if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {

@@ -201,7 +201,7 @@
 
 - (NSInteger)bottomSafeViewHeight
 {
-  RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
+  return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
