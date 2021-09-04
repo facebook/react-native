@@ -106,11 +106,15 @@ Scheduler::Scheduler(
   uiManager_->setAnimationDelegate(animationDelegate);
 
 #ifdef ANDROID
+  enableReparentingDetection_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_reparenting_detection_android");
   enableNewStateReconciliation_ = reactNativeConfig_->getBool(
       "react_fabric:enable_new_state_reconciliation_android");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
 #else
+  enableReparentingDetection_ = reactNativeConfig_->getBool(
+      "react_fabric:enable_reparenting_detection_ios");
   enableNewStateReconciliation_ = reactNativeConfig_->getBool(
       "react_fabric:enable_new_state_reconciliation_ios");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
@@ -185,7 +189,8 @@ void Scheduler::startSurface(
       layoutContext,
       *rootComponentDescriptor_,
       *uiManager_,
-      mountingOverrideDelegate);
+      mountingOverrideDelegate,
+      enableReparentingDetection_);
 
   shadowTree->setEnableNewStateReconciliation(enableNewStateReconciliation_);
 

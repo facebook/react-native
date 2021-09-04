@@ -62,7 +62,7 @@ struct ShadowViewMutation final {
 
 #pragma mark - Type
 
-  enum Type { Create, Delete, Insert, Remove, Update };
+  enum Type { Create = 1, Delete = 2, Insert = 4, Remove = 8, Update = 16 };
 
 #pragma mark - Fields
 

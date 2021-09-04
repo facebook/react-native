@@ -5459,6 +5459,11 @@ metro-resolver@0.58.0, metro-resolver@^0.58.0:
   dependencies:
     absolute-path "^0.0.0"
 
+metro-runtime@0.62.0:
+  version "0.62.0"
+  resolved "https://registry.yarnpkg.com/metro-runtime/-/metro-runtime-0.62.0.tgz#f4d5462b3b079465f2f7b11b9d65da8f775cd9ca"
+  integrity sha512-cukazDEFviGK7jgW0AeSCXE7cAlquS/ogSQpoV66DF7Nvyf6VJ9Lv+Sz/BVTos5VP5AStJ5pZDBzfRUvzVelHw==
+
 metro-source-map@0.58.0:
   version "0.58.0"
   resolved "https://registry.yarnpkg.com/metro-source-map/-/metro-source-map-0.58.0.tgz#e951b99f4c653239ce9323bb08339c6f1978a112"

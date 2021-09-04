@@ -12,6 +12,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewRegistry.h>
+#import <React/RCTConstants.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTI18nUtil.h>
@@ -22,8 +23,6 @@
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
-
-#import <React/RCTScrollViewComponentView.h>
 
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
@@ -325,8 +324,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:sync_performance_flag_ios")) {
+    RCTExperimentSetSyncPerformanceFlag(YES);
+  }
+
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:scrollview_on_demand_mounting_ios")) {
-    RCTSetEnableOnDemandViewMounting(YES);
+    RCTExperimentSetOnDemandViewMounting(YES);
   }
 
   auto componentRegistryFactory =

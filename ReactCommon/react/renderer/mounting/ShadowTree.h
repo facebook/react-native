@@ -40,7 +40,8 @@ class ShadowTree final {
       LayoutContext const &layoutContext,
       RootComponentDescriptor const &rootComponentDescriptor,
       ShadowTreeDelegate const &delegate,
-      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate);
+      std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate,
+      bool enableReparentingDetection = false);
 
   ~ShadowTree();
 
@@ -87,6 +88,9 @@ class ShadowTree final {
   void setEnableNewStateReconciliation(bool value) {
     enableNewStateReconciliation_ = value;
   }
+  void setEnableReparentingDetection(bool value) {
+    enableReparentingDetection_ = value;
+  }
 
  private:
   RootShadowNode::Unshared cloneRootShadowNode(
@@ -106,6 +110,7 @@ class ShadowTree final {
       0}; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
   bool enableNewStateReconciliation_{false};
+  bool enableReparentingDetection_{false};
 };
 
 } // namespace react

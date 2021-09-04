@@ -10,23 +10,24 @@ package com.facebook.react.codegen.generator;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import javax.lang.model.element.Modifier;
 
 // TODO: Implement proper generator - this is a sample usage of JavaPoet
 public final class JavaGenerator {
+  private final File mSchemaFile;
+  private final String mJavaPackageName;
+  private final File mOutputDir;
 
-  private String mSchemaFilePath;
-  private String mOutputDir;
-
-  public JavaGenerator(String schemaFilePath, String outputDir) {
-    mSchemaFilePath = schemaFilePath;
+  public JavaGenerator(final File schemaFile, final String javaPackageName, final File outputDir) {
+    mSchemaFile = schemaFile;
+    mJavaPackageName = javaPackageName;
     mOutputDir = outputDir;
   }
 
   public void build() throws IOException {
-    MethodSpec main =
+    final MethodSpec main =
         MethodSpec.methodBuilder("main")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .returns(void.class)
@@ -34,18 +35,16 @@ public final class JavaGenerator {
             .addStatement("$T.out.println($S)", System.class, "Hello, JavaPoet!")
             .build();
 
-    TypeSpec helloWorld =
+    final TypeSpec helloWorld =
         TypeSpec.classBuilder("ReactNativeCodegen")
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .addMethod(main)
             .build();
 
-    JavaFile javaFile = JavaFile.builder("com.facebook.react.codegen", helloWorld).build();
+    final JavaFile javaFile = JavaFile.builder(mJavaPackageName, helloWorld).build();
 
     System.out.println(javaFile.toString());
 
-    if (!mOutputDir.isEmpty()) {
-      javaFile.writeToPath(Paths.get(mOutputDir));
-    }
+    javaFile.writeTo(mOutputDir);
   }
 }

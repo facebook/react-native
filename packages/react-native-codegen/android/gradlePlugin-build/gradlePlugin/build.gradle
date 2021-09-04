@@ -19,5 +19,7 @@ gradlePlugin {
 }
 
 dependencies {
+    implementation 'com.android.tools.build:gradle:3.5.3'
+    implementation 'com.google.guava:guava:29.0-jre'
     implementation 'com.squareup:javapoet:1.13.0'
 }

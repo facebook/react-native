@@ -404,15 +404,12 @@ class MessageQueue {
     const moduleMethods = this.getCallableModule(module);
     invariant(
       !!moduleMethods,
-      'Module %s is not a registered callable module (calling %s)',
-      module,
-      method,
+      `Module ${module} is not a registered callable module (calling ${method}). A frequent cause of the error is that the application entry file path is incorrect. 
+      This can also happen when the JS bundle is corrupt or there is an early initialization error when loading React Native.`,
     );
     invariant(
       !!moduleMethods[method],
-      'Method %s does not exist on module %s',
-      method,
-      module,
+      `Method ${method} does not exist on module ${module}`,
     );
     moduleMethods[method].apply(moduleMethods, args);
     Systrace.endEvent();

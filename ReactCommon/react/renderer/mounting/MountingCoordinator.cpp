@@ -21,11 +21,13 @@ namespace react {
 
 MountingCoordinator::MountingCoordinator(
     ShadowTreeRevision baseRevision,
-    std::weak_ptr<MountingOverrideDelegate const> delegate)
+    std::weak_ptr<MountingOverrideDelegate const> delegate,
+    bool enableReparentingDetection)
     : surfaceId_(baseRevision.getRootShadowNode().getSurfaceId()),
       baseRevision_(baseRevision),
       mountingOverrideDelegate_(delegate),
-      telemetryController_(*this) {
+      telemetryController_(*this),
+      enableReparentingDetection_(enableReparentingDetection) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   stubViewTree_ = stubViewTreeFromShadowNode(baseRevision_.getRootShadowNode());
 #endif
@@ -139,7 +141,9 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   telemetry.willDiff();
   if (lastRevision_.hasValue()) {
     diffMutations = calculateShadowViewMutations(
-        baseRevision_.getRootShadowNode(), lastRevision_->getRootShadowNode());
+        baseRevision_.getRootShadowNode(),
+        lastRevision_->getRootShadowNode(),
+        enableReparentingDetection_);
   }
   telemetry.didDiff();
 

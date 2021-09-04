@@ -7,7 +7,7 @@
 
 package com.facebook.react.uiapp;
 
-import static com.facebook.react.uiapp.BuildConfig.FLAVOR;
+import static com.facebook.react.uiapp.BuildConfig.ENABLE_FABRIC;
 
 import android.app.Application;
 import android.content.Context;
@@ -25,7 +25,6 @@ import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.fabric.ComponentFactory;
-import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.shell.MainReactPackage;
@@ -38,7 +37,7 @@ import java.util.List;
 
 public class RNTesterApplication extends Application implements ReactApplication {
 
-  static final boolean IS_FABRIC_ENABLED = FLAVOR.contains("fabric");
+  static final boolean IS_FABRIC_ENABLED = ENABLE_FABRIC;
 
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
@@ -85,7 +84,8 @@ public class RNTesterApplication extends Application implements ReactApplication
                     @Override
                     public JSIModuleProvider<UIManager> getJSIModuleProvider() {
                       ComponentFactory ComponentFactory = new ComponentFactory();
-                      CoreComponentsRegistry.register(ComponentFactory);
+                      // TODO: T71642450 Register CoreComponentsRegistry again
+                      // CoreComponentsRegistry.register(ComponentFactory);
                       return new FabricJSIModuleProvider(
                           reactApplicationContext,
                           ComponentFactory,

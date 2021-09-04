@@ -7,31 +7,160 @@
 
 package com.facebook.react.codegen.plugin;
 
+import com.android.build.gradle.BaseExtension;
 import com.facebook.react.codegen.generator.JavaGenerator;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import java.io.File;
 import java.io.IOException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
+import org.gradle.api.tasks.Exec;
 
-/** A Gradle plugin to enable code generation from JavaScript in Gradle environment. */
+/**
+ * A Gradle plugin to enable react-native-codegen in Gradle environment. See the Gradle API docs for
+ * more information: https://docs.gradle.org/6.5.1/javadoc/org/gradle/api/Project.html
+ */
 public class CodegenPlugin implements Plugin<Project> {
+
   public void apply(final Project project) {
-    // Register a task
+    final CodegenPluginExtension extension =
+        project.getExtensions().create("react", CodegenPluginExtension.class, project);
+
+    // 1. Set up build dir.
+    final File generatedSrcDir = new File(project.getBuildDir(), "generated/source/codegen");
+    final File generatedSchemaFile = new File(generatedSrcDir, "schema.json");
+
+    // 2. Task: produce schema from JS files.
     project
         .getTasks()
         .register(
-            "generateJava",
+            "generateCodegenSchemaFromJavaScript",
+            Exec.class,
             task -> {
-              task.doLast(
+              if (!extension.enableCodegen) {
+                return;
+              }
+
+              task.doFirst(
                   s -> {
-                    if (System.getenv("USE_CODEGEN").isEmpty()) {
-                      return;
-                    }
-                    try {
-                      JavaGenerator generator = new JavaGenerator("", "");
-                      generator.build();
-                    } catch (IOException e) {
-                    }
+                    generatedSrcDir.delete();
+                    generatedSrcDir.mkdirs();
                   });
+
+              task.getInputs()
+                  .files(project.fileTree(ImmutableMap.of("dir", extension.codegenDir())));
+              task.getInputs()
+                  .files(
+                      project.fileTree(
+                          ImmutableMap.of(
+                              "dir",
+                              extension.jsRootDir,
+                              "includes",
+                              ImmutableList.of("**/*.js"))));
+              task.getOutputs().file(generatedSchemaFile);
+
+              ImmutableList<String> execCommands =
+                  new ImmutableList.Builder<String>()
+                      .add("yarn")
+                      .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
+                      .add(extension.codegenGenerateSchemaCLI().getAbsolutePath())
+                      .add(generatedSchemaFile.getAbsolutePath())
+                      .add(extension.jsRootDir.getAbsolutePath())
+                      .build();
+              task.commandLine(execCommands);
             });
+
+    // 3. Task: generate Java code from schema.
+    project
+        .getTasks()
+        .register(
+            "generateCodegenArtifactsFromSchema",
+            Exec.class,
+            task -> {
+              if (!extension.enableCodegen) {
+                return;
+              }
+
+              task.dependsOn("generateCodegenSchemaFromJavaScript");
+
+              // TODO: The codegen tool should produce this outputDir structure based on
+              // the provided Java package name.
+              File outputDir =
+                  new File(
+                      generatedSrcDir,
+                      "java/" + extension.codegenJavaPackageName.replace(".", "/"));
+
+              task.getInputs()
+                  .files(project.fileTree(ImmutableMap.of("dir", extension.codegenDir())));
+              task.getInputs().files(generatedSchemaFile);
+              task.getOutputs().dir(outputDir);
+
+              if (extension.useJavaGenerator) {
+                generateJavaFromSchemaWithJavaGenerator(
+                    generatedSchemaFile,
+                    extension.codegenJavaPackageName,
+                    new File(generatedSrcDir, "java"));
+                // TODO: generate JNI C++ files.
+                task.commandLine("echo");
+              } else {
+                ImmutableList<String> execCommands =
+                    new ImmutableList.Builder<String>()
+                        .add("yarn")
+                        .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
+                        .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
+                        .add("android")
+                        .add(generatedSchemaFile.getAbsolutePath())
+                        .add(outputDir.getAbsolutePath())
+                        .build();
+                task.commandLine(execCommands);
+              }
+            });
+
+    // 4. Add dependencies & generated sources to the project.
+    // Note: This last step needs to happen after the project has been evaluated.
+    project.afterEvaluate(
+        s -> {
+          if (!extension.enableCodegen) {
+            return;
+          }
+
+          // `preBuild` is one of the base tasks automatically registered by Gradle.
+          // This will invoke the codegen before compiling the entire project.
+          Task preBuild = project.getTasks().findByName("preBuild");
+          if (preBuild != null) {
+            preBuild.dependsOn("generateCodegenArtifactsFromSchema");
+          }
+
+          /**
+           * Finally, update the android configuration to include the generated sources. This
+           * equivalent to this DSL:
+           *
+           * <p>android { sourceSets { main { java { srcDirs += "$generatedSrcDir/java" } } } }
+           *
+           * <p>See documentation at
+           * https://google.github.io/android-gradle-dsl/current/com.android.build.gradle.BaseExtension.html.
+           */
+          BaseExtension android = (BaseExtension) project.getExtensions().getByName("android");
+          android
+              .getSourceSets()
+              .getByName("main")
+              .getJava()
+              .srcDir(new File(generatedSrcDir, "java"));
+          // TODO: Add JNI sources.
+        });
+  }
+
+  // Use Java-based generator implementation to produce the source files, instead of using the
+  // JS-based generator.
+  private void generateJavaFromSchemaWithJavaGenerator(
+      final File schemaFile, final String javaPackageName, final File outputDir) {
+    final JavaGenerator generator = new JavaGenerator(schemaFile, javaPackageName, outputDir);
+    try {
+      generator.build();
+    } catch (final IOException e) {
+      // Ignore for now.
+    }
   }
 }

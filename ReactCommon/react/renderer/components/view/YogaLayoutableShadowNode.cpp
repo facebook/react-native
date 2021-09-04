@@ -398,6 +398,11 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       auto newLayoutMetrics = layoutMetricsFromYogaNode(*childYogaNode);
       newLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
 
+      // Child node's layout has changed. When a node is added to
+      // `affectedNodes`, onLayout event is called on the component. Comparing
+      // `newLayoutMetrics.frame` with `childNode.getLayoutMetrics().frame` to
+      // detect if layout has not changed is not advised, please refer to
+      // D22999891 for details.
       if (layoutContext.affectedNodes) {
         layoutContext.affectedNodes->push_back(&childNode);
       }
