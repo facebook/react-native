@@ -197,10 +197,8 @@
   if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
     self.contentOffset = originalOffset;
   } else {
-    if (@available(iOS 11.0, *)) {
-      if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
-        contentInset = self.adjustedContentInset;
-      }
+    if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
+      contentInset = self.adjustedContentInset;
     }
     CGSize boundsSize = self.bounds.size;
     CGFloat xMaxOffset = contentSize.width - boundsSize.width + contentInset.right;
@@ -941,9 +939,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
   // `contentInsetAdjustmentBehavior` is available since iOS 11.
   if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
     CGPoint contentOffset = _scrollView.contentOffset;
-    if (@available(iOS 11.0, *)) {
-      _scrollView.contentInsetAdjustmentBehavior = behavior;
-    }
+    _scrollView.contentInsetAdjustmentBehavior = behavior;
     _scrollView.contentOffset = contentOffset;
   }
 }
