@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.facebook.react</groupId>
+  <artifactId>react-native</artifactId>
+  <versioning>
+    <release>0.64.0</release>
+    <versions>
+      <version>0.64.0</version>
+    </versions>
+    <lastUpdated>20210903183819</lastUpdated>
+  </versioning>
+</metadata>
