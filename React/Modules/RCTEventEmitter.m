@@ -65,7 +65,7 @@
         [[self supportedEvents] componentsJoinedByString:@"`, `"]);
   }
 
-  BOOL shouldEmitEvent = (_observationDisabled || _listenerCount > 0);
+  BOOL shouldEmitEvent = (!_observationDisabled && _listenerCount > 0);
 
   if (shouldEmitEvent && _callableJSModules) {
     [_callableJSModules invokeModule:@"RCTDeviceEventEmitter"
