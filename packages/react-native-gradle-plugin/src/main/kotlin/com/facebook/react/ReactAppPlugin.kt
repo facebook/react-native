@@ -12,25 +12,23 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByType
 
 class ReactAppPlugin : Plugin<Project> {
   override fun apply(project: Project) {
-    val config = project.extensions.create<ReactAppExtension>("reactApp", project)
+    val config = project.extensions.create("reactApp", ReactAppExtension::class.java, project)
 
     project.afterEvaluate {
-      val androidConfiguration = extensions.getByType<BaseExtension>()
-      configureDevPorts(androidConfiguration)
+      val androidConfiguration = project.extensions.getByType(BaseExtension::class.java)
+      project.configureDevPorts(androidConfiguration)
 
-      val isAndroidLibrary = plugins.hasPlugin("com.android.library")
+      val isAndroidLibrary = project.plugins.hasPlugin("com.android.library")
       val variants =
           if (isAndroidLibrary) {
-            extensions.getByType<LibraryExtension>().libraryVariants
+            project.extensions.getByType(LibraryExtension::class.java).libraryVariants
           } else {
-            extensions.getByType<AppExtension>().applicationVariants
+            project.extensions.getByType(AppExtension::class.java).applicationVariants
           }
-      variants.all { configureReactTasks(variant = this, config = config) }
+      variants.all { project.configureReactTasks(variant = it, config = config) }
     }
   }
 }
