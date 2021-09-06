@@ -56,7 +56,7 @@ type Props = $ReadOnly<{|
    * );
    * ```
    */
-   drawerBackgroundColor: ColorValue,
+  drawerBackgroundColor: ColorValue,
 
   /**
    * Specifies the side of the screen from which the drawer will slide in.
@@ -216,6 +216,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
       <AndroidDrawerLayoutNativeComponent
         {...props}
         ref={this._nativeRef}
+        drawerBackgroundColor={drawerBackgroundColor}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
         drawerLockMode={this.props.drawerLockMode}
