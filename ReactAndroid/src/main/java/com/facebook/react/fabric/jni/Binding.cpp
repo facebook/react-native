@@ -493,6 +493,7 @@ bool isMapBufferSerializationEnabled() {
 
 void Binding::installFabricUIManager(
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
+    jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
@@ -526,6 +527,17 @@ void Binding::installFabricUIManager(
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
+
+  if (runtimeSchedulerHolder) {
+    auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get();
+    if (runtimeScheduler) {
+      runtimeExecutor =
+          [runtimeScheduler](
+              std::function<void(jsi::Runtime & runtime)> &&callback) {
+            runtimeScheduler->scheduleWork(std::move(callback));
+          };
+    }
+  }
 
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
