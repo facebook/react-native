@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<0a406a6dac4993a931e2decfc7b53f27>>
+ * @generated SignedSource<<f021bce2048d654b3e2e31276c91433c>>
  */
 
 "use strict";
@@ -1994,8 +1994,6 @@ function createTextInstance(
   hostContext,
   internalInstanceHandle
 ) {
-  if (!hostContext.isInAParentText)
-    throw Error("Text strings must be rendered within a <Text> component.");
   hostContext = nextReactTag;
   nextReactTag += 2;
   return {
@@ -3584,7 +3582,7 @@ function rerenderReducer(reducer) {
   }
   return [newState, dispatch];
 }
-function readFromUnsubcribedMutableSource(root, source, getSnapshot) {
+function readFromUnsubscribedMutableSource(root, source, getSnapshot) {
   var getVersion = source._getVersion;
   getVersion = getVersion(source._source);
   var JSCompiler_inline_result = source._workInProgressVersionSecondary;
@@ -3611,7 +3609,7 @@ function useMutableSource(hook, source, getSnapshot, subscribe) {
     version = getVersion(source._source),
     dispatcher = ReactCurrentDispatcher$1.current,
     _dispatcher$useState = dispatcher.useState(function() {
-      return readFromUnsubcribedMutableSource(root, source, getSnapshot);
+      return readFromUnsubscribedMutableSource(root, source, getSnapshot);
     }),
     setSnapshot = _dispatcher$useState[1],
     snapshot = _dispatcher$useState[0];
@@ -3674,7 +3672,7 @@ function useMutableSource(hook, source, getSnapshot, subscribe) {
     )),
     (_dispatcher$useState.queue = hook),
     (_dispatcher$useState.baseQueue = null),
-    (snapshot = readFromUnsubcribedMutableSource(root, source, getSnapshot)),
+    (snapshot = readFromUnsubscribedMutableSource(root, source, getSnapshot)),
     (_dispatcher$useState.memoizedState = _dispatcher$useState.baseState = snapshot));
   return snapshot;
 }
@@ -8380,7 +8378,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_978 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "18.0.0-424fe5870-20210816",
+    version: "18.0.0-bd5bf555e-20210823",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8422,7 +8420,7 @@ var internals$jscomp$inline_1239 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-424fe5870-20210816"
+  reconcilerVersion: "18.0.0-bd5bf555e-20210823"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1240 = __REACT_DEVTOOLS_GLOBAL_HOOK__;

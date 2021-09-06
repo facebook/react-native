@@ -5,11 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.modules.datepicker;
-
-/** Date picker modes */
-public enum DatePickerMode {
-  CALENDAR,
-  SPINNER,
-  DEFAULT
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+    }
 }

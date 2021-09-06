@@ -10,6 +10,7 @@
 #include <folly/dynamic.h>
 
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/core/Sealable.h>
 #include <react/renderer/debug/DebugStringConvertible.h>

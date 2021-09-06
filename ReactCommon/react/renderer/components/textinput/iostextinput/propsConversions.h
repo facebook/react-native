@@ -145,5 +145,38 @@ static TextInputTraits convertRawProp(
   return traits;
 }
 
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    Selection &result) {
+  if (value.hasType<better::map<std::string, int>>()) {
+    auto map = (better::map<std::string, int>)value;
+    for (const auto &pair : map) {
+      if (pair.first == "start") {
+        result.start = pair.second;
+      } else if (pair.first == "end") {
+        result.end = pair.second;
+      } else {
+        LOG(ERROR) << "Unsupported Selection map key: " << pair.first;
+        react_native_assert(false);
+      }
+    }
+    return;
+  }
+
+  react_native_assert(value.hasType<std::vector<int>>());
+  if (value.hasType<std::vector<int>>()) {
+    auto array = (std::vector<int>)value;
+    react_native_assert(array.size() == 2);
+    if (array.size() >= 2) {
+      result = {array.at(0), array.at(1)};
+    } else {
+      result = {0, 0};
+      LOG(ERROR) << "Unsupported Selection vector size: " << array.size();
+    }
+  } else {
+    LOG(ERROR) << "Unsupported Selection type";
+  }
+}
 } // namespace react
 } // namespace facebook

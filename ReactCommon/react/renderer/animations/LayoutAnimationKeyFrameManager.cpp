@@ -14,7 +14,6 @@
 #include <react/debug/react_native_assert.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
-#include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/LayoutMetrics.h>
@@ -1094,13 +1093,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   getComponentDescriptorForShadowView(baselineShadowView)
                       .cloneProps(propsParserContext, viewStart.props, {});
 
-              // Dynamic cast, because - we don't know the type of this
-              // ShadowNode, it could be Image or Text or something else with
-              // different base props.
-              const auto viewProps =
-                  dynamic_cast<const ViewProps *>(props.get());
-              if (viewProps != nullptr) {
-                const_cast<ViewProps *>(viewProps)->opacity = 0;
+              if (baselineShadowView.traits.check(
+                      ShadowNodeTraits::Trait::ViewKind)) {
+                auto const &viewProps =
+                    *std::static_pointer_cast<ViewProps const>(props);
+                const_cast<ViewProps &>(viewProps).opacity = 0;
               }
 
               react_native_assert(props != nullptr);
@@ -1119,13 +1116,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   getComponentDescriptorForShadowView(baselineShadowView)
                       .cloneProps(propsParserContext, viewStart.props, {});
 
-              // Dynamic cast, because - we don't know the type of this
-              // ShadowNode, it could be Image or Text or something else with
-              // different base props.
-              const auto viewProps =
-                  dynamic_cast<const ViewProps *>(props.get());
-              if (viewProps != nullptr) {
-                const_cast<ViewProps *>(viewProps)->transform =
+              if (baselineShadowView.traits.check(
+                      ShadowNodeTraits::Trait::ViewKind)) {
+                auto const &viewProps =
+                    *std::static_pointer_cast<ViewProps const>(props);
+                const_cast<ViewProps &>(viewProps).transform =
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
 
@@ -1222,13 +1217,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                     getComponentDescriptorForShadowView(baselineShadowView)
                         .cloneProps(propsParserContext, viewFinal.props, {});
 
-                // Dynamic cast, because - we don't know the type of this
-                // ShadowNode, it could be Image or Text or something else with
-                // different base props.
-                const auto viewProps =
-                    dynamic_cast<const ViewProps *>(props.get());
-                if (viewProps != nullptr) {
-                  const_cast<ViewProps *>(viewProps)->opacity = 0;
+                if (baselineShadowView.traits.check(
+                        ShadowNodeTraits::Trait::ViewKind)) {
+                  auto const &viewProps =
+                      *std::static_pointer_cast<ViewProps const>(props);
+                  const_cast<ViewProps &>(viewProps).opacity = 0;
                 }
 
                 react_native_assert(props != nullptr);
@@ -1249,13 +1242,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                     getComponentDescriptorForShadowView(baselineShadowView)
                         .cloneProps(propsParserContext, viewFinal.props, {});
 
-                // Dynamic cast, because - we don't know the type of this
-                // ShadowNode, it could be Image or Text or something else with
-                // different base props.
-                const auto viewProps =
-                    dynamic_cast<const ViewProps *>(props.get());
-                if (viewProps != nullptr) {
-                  const_cast<ViewProps *>(viewProps)->transform =
+                if (baselineShadowView.traits.check(
+                        ShadowNodeTraits::Trait::ViewKind)) {
+                  auto const &viewProps =
+                      *std::static_pointer_cast<ViewProps const>(props);
+                  const_cast<ViewProps &>(viewProps).transform =
                       Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
                 }
 

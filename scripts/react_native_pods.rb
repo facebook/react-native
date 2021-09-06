@@ -65,7 +65,7 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine'
+    pod 'hermes-engine', '~> 0.9.0'
     pod 'libevent', '~> 2.1.12'
   end
 end
@@ -79,6 +79,7 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   versions['Flipper-Glog'] ||= '0.3.6'
   versions['Flipper-PeerTalk'] ||= '0.0.4'
   versions['Flipper-RSocket'] ||= '1.4.3'
+  versions['OpenSSL-Universal'] ||= '1.1.180'
   pod 'FlipperKit', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
@@ -102,6 +103,7 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
+  pod 'OpenSSL-Universal', versions['OpenSSL-Universal'], :configurations => configurations
 end
 
 def has_pod(installer, name)
@@ -161,38 +163,38 @@ def use_react_native_codegen!(spec, options={})
   js_srcs = options[:js_srcs_dir] ||= "#{prefix}/Libraries"
 
   # Library name (e.g. FBReactNativeSpec)
-  modules_library_name = options[:library_name] ||= spec.name
+  library_name = options[:library_name] ||= "#{spec.name}Spec"
 
   # Output dir, relative to podspec that invoked this method
-  modules_output_dir = options[:modules_output_dir] ||= "#{prefix}/React/#{modules_library_name}/#{modules_library_name}"
+  output_dir = options[:output_dir] ||= "#{prefix}/React/#{library_name}"
 
-  generated_dirs = [ modules_output_dir ]
-  generated_filenames = [ "#{modules_library_name}.h", "#{modules_library_name}-generated.mm" ]
-  generated_files = generated_filenames.map { |filename| "#{modules_output_dir}/#{filename}" }
+  generated_dirs = [ "#{output_dir}/#{library_name}" ]
+  generated_filenames = [ "#{library_name}.h", "#{library_name}-generated.mm" ]
+  generated_files = generated_filenames.map { |filename| "#{output_dir}/#{library_name}/#{filename}" }
 
   # Run the codegen as part of the Xcode build pipeline.
-  env_vars = "SRCS_DIR='${PODS_TARGET_SRCROOT}/#{js_srcs}'"
-  env_vars += " MODULES_OUTPUT_DIR='${PODS_TARGET_SRCROOT}/#{modules_output_dir}'"
-  env_vars += " MODULES_LIBRARY_NAME='#{modules_library_name}'"
+  codegen_script_args = [ "'${PODS_TARGET_SRCROOT}/#{js_srcs}'" ]
+  codegen_script_args.push "'#{library_name}'"
+  codegen_script_args.push "'${PODS_TARGET_SRCROOT}/#{output_dir}/#{library_name}'"
 
-  if ENV['USE_FABRIC'] == '1'
-    # We use a different library name for components, as well as an additional set of files.
-    # Eventually, we want these to be part of the same library as #{modules_library_name} above.
-    components_output_dir = options[:components_output_dir] ||= "#{prefix}/ReactCommon/react/renderer/components/rncore/"
-    generated_dirs.push components_output_dir
-    env_vars += " COMPONENTS_OUTPUT_DIR='${PODS_TARGET_SRCROOT}/#{components_output_dir}'"
-    components_generated_filenames = [
-      "ComponentDescriptors.h",
-      "EventEmitters.cpp",
-      "EventEmitters.h",
-      "Props.cpp",
-      "Props.h",
-      "RCTComponentViewHelpers.h",
-      "ShadowNodes.cpp",
-      "ShadowNodes.h"
-    ]
-    generated_files = generated_files.concat(components_generated_filenames.map { |filename| "#{components_output_dir}/#{filename}" })
-  end
+  # We use a different library name for components, as well as an additional set of files.
+  # Eventually, we want these to be part of the same library as #{library_name} above.
+  component_library_name = options[:component_library_name] ||= library_name
+  component_output_dir = options[:component_output_dir] ||= output_dir
+  generated_dirs.push "#{component_output_dir}/#{component_library_name}"
+  codegen_script_args.push "'#{component_library_name}'"
+  codegen_script_args.push "'${PODS_TARGET_SRCROOT}/#{component_output_dir}/#{component_library_name}'"
+  components_generated_filenames = [
+    "ComponentDescriptors.h",
+    "EventEmitters.cpp",
+    "EventEmitters.h",
+    "Props.cpp",
+    "Props.h",
+    "RCTComponentViewHelpers.h",
+    "ShadowNodes.cpp",
+    "ShadowNodes.h"
+  ]
+  generated_files = generated_files.concat(components_generated_filenames.map { |filename| "#{component_output_dir}/#{component_library_name}/#{filename}" })
 
   # Prepare filesystem by creating empty files that will be picked up as references by CocoaPods.
   prepare_command = "mkdir -p #{generated_dirs.join(" ")} && touch -a #{generated_files.join(" ")}"
@@ -202,13 +204,48 @@ def use_react_native_codegen!(spec, options={})
   spec.script_phase = {
     :name => 'Generate Specs',
     :input_files => [ "${PODS_TARGET_SRCROOT}/#{js_srcs}" ], # This also needs to be relative to Xcode
-    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{modules_library_name}.log"].concat(generated_files.map { |filename| " ${PODS_TARGET_SRCROOT}/#{filename}"} ),
+    :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| " ${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
     :script => %{set -o pipefail
 
-bash -l -c '#{env_vars} $\{PODS_TARGET_SRCROOT\}/#{prefix}/scripts/generate-specs.sh' 2>&1 | tee "${SCRIPT_OUTPUT_FILE_0}"
+bash -l -c '$\{PODS_TARGET_SRCROOT\}/#{prefix}/scripts/generate-specs.sh #{codegen_script_args.join(" ")}' 2>&1 | tee "${SCRIPT_OUTPUT_FILE_0}"
     },
     :execution_position => :before_compile,
     :show_env_vars_in_log => true
   }
+end
+
+# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.
+# Call this in the app's main Podfile's post_install hook.
+# See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
+# Actual fix was authored by https://github.com/mikehardy.
+# New app template will call this for now until the underlying issue is resolved.
+def __apply_Xcode_12_5_M1_post_install_workaround(installer)
+  # Apple Silicon builds require a library path tweak for Swift library discovery to resolve Swift-related "symbol not found".
+  # Note: this was fixed via https://github.com/facebook/react-native/commit/eb938863063f5535735af2be4e706f70647e5b90
+  # Keeping this logic here but commented out for future reference.
+  #
+  # installer.aggregate_targets.each do |aggregate_target|
+  #   aggregate_target.user_project.native_targets.each do |target|
+  #     target.build_configurations.each do |config|
+  #       config.build_settings['LIBRARY_SEARCH_PATHS'] = ['$(SDKROOT)/usr/lib/swift', '$(inherited)']
+  #     end
+  #   end
+  #   aggregate_target.user_project.save
+  # end
+
+  # Flipper podspecs are still targeting an older iOS deployment target, and may cause an error like:
+  #   "error: thread-local storage is not supported for the current target"
+  # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+      end
+  end
+
+  # But... doing so caused another issue in Flipper:
+  #   "Time.h:52:17: error: typedef redefinition with different types"
+  # We need to make a patch to RCT-Folly - set `__IPHONE_10_0` to our iOS target + 1.
+  # See https://github.com/facebook/flipper/issues/834 for more details.
+  `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_12_0/' Pods/RCT-Folly/folly/portability/Time.h`
 end

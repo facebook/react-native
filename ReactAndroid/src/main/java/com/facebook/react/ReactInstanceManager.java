@@ -65,6 +65,7 @@ import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactCxxErrorHandler;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
@@ -91,7 +92,6 @@ import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.modules.fabric.ReactFabric;
 import com.facebook.react.packagerconnection.RequestHandler;
-import com.facebook.react.runtimescheduler.RuntimeSchedulerManager;
 import com.facebook.react.surface.ReactStage;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
@@ -107,6 +107,7 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -156,14 +157,15 @@ public class ReactInstanceManager {
   /* accessed from any thread */
   private final JavaScriptExecutorFactory mJavaScriptExecutorFactory;
 
+  // See {@code ReactInstanceManagerBuilder} for description of all flags here.
   private @Nullable List<String> mViewManagerNames = null;
   private final @Nullable JSBundleLoader mBundleLoader;
   private final @Nullable String mJSMainModulePath; /* path to JS bundle root on Metro */
   private final List<ReactPackage> mPackages;
   private final DevSupportManager mDevSupportManager;
   private final boolean mUseDeveloperSupport;
+  private final boolean mRequireActivity;
   private @Nullable ComponentNameResolverManager mComponentNameResolverManager;
-  private @Nullable RuntimeSchedulerManager mRuntimeSchedulerManager;
   private final @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private final Object mReactContextLock = new Object();
   private @Nullable volatile ReactContext mCurrentReactContext;
@@ -216,6 +218,7 @@ public class ReactInstanceManager {
       @Nullable String jsMainModulePath,
       List<ReactPackage> packages,
       boolean useDeveloperSupport,
+      boolean requireActivity,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
       @Nullable UIImplementationProvider mUIImplementationProvider,
@@ -233,6 +236,7 @@ public class ReactInstanceManager {
 
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(applicationContext);
 
+    // See {@code ReactInstanceManagerBuilder} for description of all flags here.
     mApplicationContext = applicationContext;
     mCurrentActivity = currentActivity;
     mDefaultBackButtonImpl = defaultHardwareBackBtnHandler;
@@ -241,6 +245,7 @@ public class ReactInstanceManager {
     mJSMainModulePath = jsMainModulePath;
     mPackages = new ArrayList<>();
     mUseDeveloperSupport = useDeveloperSupport;
+    mRequireActivity = requireActivity;
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.initDevSupportManager");
     mDevSupportManager =
@@ -286,6 +291,8 @@ public class ReactInstanceManager {
     if (mUseDeveloperSupport) {
       mDevSupportManager.startInspector();
     }
+
+    registerCxxErrorHandlerFunc();
   }
 
   private ReactInstanceDevHelper createDevHelperInterface() {
@@ -357,6 +364,22 @@ public class ReactInstanceManager {
 
   public List<ReactPackage> getPackages() {
     return new ArrayList<>(mPackages);
+  }
+
+  public void handleCxxError(Exception e) {
+    mDevSupportManager.handleException(e);
+  }
+
+  public void registerCxxErrorHandlerFunc() {
+    Class[] parameterTypes = new Class[1];
+    parameterTypes[0] = Exception.class;
+    Method handleCxxErrorFunc = null;
+    try {
+      handleCxxErrorFunc = ReactInstanceManager.class.getMethod("handleCxxError", parameterTypes);
+    } catch (NoSuchMethodException e) {
+      FLog.e("ReactInstanceHolder", "Failed to set cxx error hanlder function", e);
+    }
+    ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
   }
 
   static void initializeSoLoaderIfNecessary(Context applicationContext) {
@@ -558,16 +581,20 @@ public class ReactInstanceManager {
    * @param activity the activity being paused
    */
   @ThreadConfined(UI)
-  public void onHostPause(Activity activity) {
-    Assertions.assertNotNull(mCurrentActivity);
-    Assertions.assertCondition(
-        activity == mCurrentActivity,
-        "Pausing an activity that is not the current activity, this is incorrect! "
-            + "Current activity: "
-            + mCurrentActivity.getClass().getSimpleName()
-            + " "
-            + "Paused activity: "
-            + activity.getClass().getSimpleName());
+  public void onHostPause(@Nullable Activity activity) {
+    if (mRequireActivity) {
+      Assertions.assertCondition(mCurrentActivity != null);
+    }
+    if (mCurrentActivity != null) {
+      Assertions.assertCondition(
+          activity == mCurrentActivity,
+          "Pausing an activity that is not the current activity, this is incorrect! "
+              + "Current activity: "
+              + mCurrentActivity.getClass().getSimpleName()
+              + " "
+              + "Paused activity: "
+              + activity.getClass().getSimpleName());
+    }
     onHostPause();
   }
 
@@ -583,7 +610,8 @@ public class ReactInstanceManager {
    *     this instance of {@link ReactInstanceManager}.
    */
   @ThreadConfined(UI)
-  public void onHostResume(Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
+  public void onHostResume(
+      @Nullable Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
     UiThreadUtil.assertOnUiThread();
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
@@ -592,40 +620,47 @@ public class ReactInstanceManager {
 
   /** Use this method when the activity resumes. */
   @ThreadConfined(UI)
-  public void onHostResume(Activity activity) {
+  public void onHostResume(@Nullable Activity activity) {
     UiThreadUtil.assertOnUiThread();
 
     mCurrentActivity = activity;
 
     if (mUseDeveloperSupport) {
-      // Resume can be called from one of two different states:
+      // Resume can be called from one of three different states:
       // a) when activity was paused
       // b) when activity has just been created
+      // c) when there is no activity
       // In case of (a) the activity is attached to window and it is ok to add new views to it or
       // open dialogs. In case of (b) there is often a slight delay before such a thing happens.
       // As dev support manager can add views or open dialogs immediately after it gets enabled
       // (e.g. in the case when JS bundle is being fetched in background) we only want to enable
       // it once we know for sure the current activity is attached.
+      // We want to enable the various devsupport tools in case of (c) even without any activity
 
-      // We check if activity is attached to window by checking if decor view is attached
-      final View decorView = mCurrentActivity.getWindow().getDecorView();
-      if (!ViewCompat.isAttachedToWindow(decorView)) {
-        decorView.addOnAttachStateChangeListener(
-            new View.OnAttachStateChangeListener() {
-              @Override
-              public void onViewAttachedToWindow(View v) {
-                // we can drop listener now that we know the view is attached
-                decorView.removeOnAttachStateChangeListener(this);
-                mDevSupportManager.setDevSupportEnabled(true);
-              }
+      if (mCurrentActivity != null) {
+        // We check if activity is attached to window by checking if decor view is attached
+        final View decorView = mCurrentActivity.getWindow().getDecorView();
+        if (!ViewCompat.isAttachedToWindow(decorView)) {
+          decorView.addOnAttachStateChangeListener(
+              new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                  // we can drop listener now that we know the view is attached
+                  decorView.removeOnAttachStateChangeListener(this);
+                  mDevSupportManager.setDevSupportEnabled(true);
+                }
 
-              @Override
-              public void onViewDetachedFromWindow(View v) {
-                // do nothing
-              }
-            });
-      } else {
-        // activity is attached to window, we can enable dev support immediately
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                  // do nothing
+                }
+              });
+        } else {
+          // activity is attached to window, we can enable dev support immediately
+          mDevSupportManager.setDevSupportEnabled(true);
+        }
+      } else if (!mRequireActivity) {
+        // there is no activity, but we can enable dev support
         mDevSupportManager.setDevSupportEnabled(true);
       }
     }
@@ -659,7 +694,9 @@ public class ReactInstanceManager {
    * @param activity the activity being destroyed
    */
   @ThreadConfined(UI)
-  public void onHostDestroy(Activity activity) {
+  public void onHostDestroy(@Nullable Activity activity) {
+    // In some cases, Activity may (correctly) be null.
+    // See mRequireActivity flag.
     if (activity == mCurrentActivity) {
       onHostDestroy();
     }
@@ -720,7 +757,6 @@ public class ReactInstanceManager {
       mViewManagerNames = null;
     }
     mComponentNameResolverManager = null;
-    mRuntimeSchedulerManager = null;
     FLog.d(ReactConstants.TAG, "ReactInstanceManager has been destroyed");
   }
 
@@ -1324,6 +1360,10 @@ public class ReactInstanceManager {
       }
     }
 
+    if (ReactFeatureFlags.enableRuntimeScheduler) {
+      catalystInstance.installRuntimeScheduler();
+    }
+
     if (mJSIModulePackage != null) {
       catalystInstance.addJSIModules(
           mJSIModulePackage.getJSIModules(
@@ -1354,9 +1394,6 @@ public class ReactInstanceManager {
                 }
               });
       catalystInstance.setGlobalVariable("__fbStaticViewConfig", "true");
-    }
-    if (ReactFeatureFlags.enableRuntimeScheduler) {
-      mRuntimeSchedulerManager = new RuntimeSchedulerManager(catalystInstance.getRuntimeExecutor());
     }
 
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);

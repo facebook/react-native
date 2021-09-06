@@ -448,14 +448,16 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)setupHMRClientWithBundleURL:(NSURL *)bundleURL
 {
   if (bundleURL && !bundleURL.fileURL) {
-    NSString *const path = [bundleURL.path substringFromIndex:1]; // Strip initial slash.
-    NSString *const host = bundleURL.host;
-    NSNumber *const port = bundleURL.port;
+    NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithURL:bundleURL resolvingAgainstBaseURL:NO];
+    NSString *const path = [urlComponents.path substringFromIndex:1]; // Strip initial slash.
+    NSString *const host = urlComponents.host;
+    NSNumber *const port = urlComponents.port;
+    NSString *const scheme = urlComponents.scheme;
     BOOL isHotLoadingEnabled = self.isHotLoadingEnabled;
     if (self.callableJSModules) {
       [self.callableJSModules invokeModule:@"HMRClient"
                                     method:@"setup"
-                                  withArgs:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled) ]];
+                                  withArgs:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled), scheme ]];
     }
   }
 }

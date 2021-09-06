@@ -10,7 +10,6 @@
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
-#include <React/RCTUIManager.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/ManagedObjectWrapper.h>
 #include "LegacyViewManagerInteropState.h"

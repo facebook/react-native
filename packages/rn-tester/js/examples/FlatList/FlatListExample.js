@@ -59,6 +59,8 @@ type State = {|
   empty: boolean,
   useFlatListItemComponent: boolean,
   fadingEdgeLength: number,
+  onPressDisabled: boolean,
+  textSelectable: boolean,
 |};
 
 class FlatListExample extends React.PureComponent<Props, State> {
@@ -74,6 +76,8 @@ class FlatListExample extends React.PureComponent<Props, State> {
     empty: false,
     useFlatListItemComponent: false,
     fadingEdgeLength: 0,
+    onPressDisabled: false,
+    textSelectable: true,
   };
 
   _onChangeFilterText = filterText => {
@@ -162,6 +166,16 @@ class FlatListExample extends React.PureComponent<Props, State> {
                 this._setBooleanValue('debug'),
               )}
               {renderSmallSwitchOption(
+                'onPress Disabled',
+                this.state.onPressDisabled,
+                this._setBooleanValue('onPressDisabled'),
+              )}
+              {renderSmallSwitchOption(
+                'Text Selectable',
+                this.state.textSelectable,
+                this._setBooleanValue('textSelectable'),
+              )}
+              {renderSmallSwitchOption(
                 'Use FlatListItemComponent',
                 this.state.useFlatListItemComponent,
                 this._setBooleanValue('useFlatListItemComponent'),
@@ -236,6 +250,12 @@ class FlatListExample extends React.PureComponent<Props, State> {
       data: state.data.concat(genItemData(100, state.data.length)),
     }));
   };
+  _onPressCallback = () => {
+    const {onPressDisabled} = this.state;
+    const warning = () => console.log('onPress disabled');
+    const onPressAction = onPressDisabled ? warning : this._pressItem;
+    return onPressAction;
+  };
   _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
   _renderItemComponent = () => {
     const flatListPropKey = this.state.useFlatListItemComponent
@@ -253,9 +273,10 @@ class FlatListExample extends React.PureComponent<Props, State> {
             item={item}
             horizontal={this.state.horizontal}
             fixedHeight={this.state.fixedHeight}
-            onPress={this._pressItem}
+            onPress={this._onPressCallback()}
             onShowUnderlay={separators.highlight}
             onHideUnderlay={separators.unhighlight}
+            textSelectable={this.state.textSelectable}
           />
         );
       },
