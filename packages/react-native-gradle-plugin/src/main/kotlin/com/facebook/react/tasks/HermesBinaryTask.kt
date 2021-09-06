@@ -45,7 +45,7 @@ open class HermesBinaryTask : DefaultTask() {
   private fun emitHermesBinary(outputFile: File) {
     project.exec {
       @Suppress("SpreadOperator")
-      windowsAwareCommandLine(
+      it.windowsAwareCommandLine(
           hermesCommand,
           "-emit-binary",
           "-out",
@@ -57,10 +57,10 @@ open class HermesBinaryTask : DefaultTask() {
 
   private fun composeSourceMaps() {
     project.exec {
-      workingDir(reactRoot)
+      it.workingDir(reactRoot)
 
       @Suppress("SpreadOperator")
-      windowsAwareCommandLine(
+      it.windowsAwareCommandLine(
           *composeSourceMapsCommand.toTypedArray(),
           jsPackagerSourceMapFile,
           jsCompilerSourceMapFile,

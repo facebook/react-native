@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.hermes.reactexecutor;
-
-/** Holds runtime configuration for a Hermes VM instance (master or snapshot). */
-public final class RuntimeConfig {
-  public long heapSizeMB;
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+    }
 }

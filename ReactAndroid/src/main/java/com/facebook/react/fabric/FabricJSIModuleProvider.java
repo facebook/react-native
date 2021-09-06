@@ -55,6 +55,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
 
     binding.register(
         mReactApplicationContext.getCatalystInstance().getRuntimeExecutor(),
+        mReactApplicationContext.getCatalystInstance().getRuntimeScheduler(),
         uiManager,
         eventBeatManager,
         jsMessageQueueThread,

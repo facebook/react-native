@@ -16,7 +16,7 @@ fun Project.configureDevPorts(androidExt: BaseExtension) {
       project.properties["reactNativeInspectorProxyPort"]?.toString() ?: devServerPort
 
   androidExt.buildTypes.all {
-    resValue("integer", "react_native_dev_server_port", devServerPort)
-    resValue("integer", "react_native_inspector_proxy_port", inspectorProxyPort)
+    it.resValue("integer", "react_native_dev_server_port", devServerPort)
+    it.resValue("integer", "react_native_inspector_proxy_port", inspectorProxyPort)
   }
 }

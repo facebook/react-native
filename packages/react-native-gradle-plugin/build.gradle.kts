@@ -6,8 +6,8 @@
  */
 
 plugins {
-  `java-gradle-plugin`
-  `kotlin-dsl`
+  kotlin("jvm") version "1.4.21"
+  id("java-gradle-plugin")
 }
 
 repositories {
@@ -25,5 +25,6 @@ gradlePlugin {
 }
 
 dependencies {
+  implementation(gradleApi())
   implementation("com.android.tools.build:gradle:4.2.2")
 }

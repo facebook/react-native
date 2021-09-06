@@ -65,7 +65,7 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine'
+    pod 'hermes-engine', '~> 0.9.0'
     pod 'libevent', '~> 2.1.12'
   end
 end
@@ -79,6 +79,7 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   versions['Flipper-Glog'] ||= '0.3.6'
   versions['Flipper-PeerTalk'] ||= '0.0.4'
   versions['Flipper-RSocket'] ||= '1.4.3'
+  versions['OpenSSL-Universal'] ||= '1.1.180'
   pod 'FlipperKit', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configurations => configurations
@@ -102,6 +103,7 @@ def use_flipper!(versions = {}, configurations: ['Debug'])
   pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configurations => configurations
   pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configurations => configurations
+  pod 'OpenSSL-Universal', versions['OpenSSL-Universal'], :configurations => configurations
 end
 
 def has_pod(installer, name)

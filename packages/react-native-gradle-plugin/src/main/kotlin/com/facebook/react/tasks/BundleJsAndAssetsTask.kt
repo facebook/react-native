@@ -53,10 +53,10 @@ open class BundleJsAndAssetsTask : DefaultTask() {
 
   private fun executeBundleCommand() {
     project.exec {
-      workingDir(reactRoot)
+      it.workingDir(reactRoot)
 
       @Suppress("SpreadOperator")
-      windowsAwareCommandLine(
+      it.windowsAwareCommandLine(
           *execCommand.toTypedArray(),
           bundleCommand,
           "--platform",
