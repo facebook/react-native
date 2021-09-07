@@ -110,7 +110,6 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
   std::shared_ptr<LayoutAnimationDelegateProxy> _layoutAnimationDelegateProxy;
   RunLoopObserver::Unique _uiRunLoopObserver;
-  BOOL _layoutAnimationsEnabled;
 }
 
 - (instancetype)initWithToolbox:(SchedulerToolbox)toolbox
@@ -118,11 +117,10 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   if (self = [super init]) {
     auto reactNativeConfig =
         toolbox.contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
-    _layoutAnimationsEnabled = reactNativeConfig->getBool("react_fabric:enabled_layout_animations_ios");
 
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
 
-    if (_layoutAnimationsEnabled) {
+    if (reactNativeConfig->getBool("react_fabric:enabled_layout_animations_ios")) {
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
       _animationDriver =
           std::make_shared<LayoutAnimationDriver>(toolbox.runtimeExecutor, _layoutAnimationDelegateProxy.get());
