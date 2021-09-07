@@ -46,6 +46,19 @@ type Props = $ReadOnly<{|
   keyboardDismissMode?: ?('none' | 'on-drag'),
 
   /**
+   * Specifies the background color of the drawer. The default value is white.
+   * If you want to set the opacity of the drawer, use rgba. Example:
+   *
+   * ```
+   * return (
+   *   <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)">
+   *   </DrawerLayoutAndroid>
+   * );
+   * ```
+   */
+  drawerBackgroundColor?: ColorValue,
+
+  /**
    * Specifies the side of the screen from which the drawer will slide in.
    */
   drawerPosition: ?('left' | 'right'),
