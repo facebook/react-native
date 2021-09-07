@@ -37,7 +37,7 @@ if __name__ == '__main__':
     patches = get_patches()
     touched_files = set(get_touched_files(sys.argv[1], sys.argv[2]))
 
-    for patch_name in patches:
+    for patch_name in sorted(patches.keys()):
         patched_and_touched = [file for file in patches[patch_name] \
                                if file in touched_files]
         if len(patched_and_touched) > 0:
