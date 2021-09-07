@@ -34,7 +34,7 @@ index 63ac2ec11..26fee8860 100644
    /** Creates a builder that is capable of creating an instance of {@link ReactInstanceManager}. */
    public static ReactInstanceManagerBuilder builder() {
      return new ReactInstanceManagerBuilder();
-@@ -1266,7 +1277,8 @@ public class ReactInstanceManager {
+@@ -1267,7 +1278,8 @@ public class ReactInstanceManager {
              .setJSExecutor(jsExecutor)
              .setRegistry(nativeModuleRegistry)
              .setJSBundleLoader(jsBundleLoader)

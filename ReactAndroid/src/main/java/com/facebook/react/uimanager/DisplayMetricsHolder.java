@@ -13,8 +13,10 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.common.ReactConstants;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -80,7 +82,13 @@ public class DisplayMetricsHolder {
         screenDisplayMetrics.widthPixels = (Integer) mGetRawW.invoke(display);
         screenDisplayMetrics.heightPixels = (Integer) mGetRawH.invoke(display);
       } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-        throw new RuntimeException("Error getting real dimensions for API level < 17", e);
+        // this may not be 100% accurate, but it's all we've got
+        screenDisplayMetrics.widthPixels = display.getWidth();
+        screenDisplayMetrics.heightPixels = display.getHeight();
+        FLog.e(
+            ReactConstants.TAG,
+            "Unable to access getRawHeight and getRawWidth to get real dimensions.",
+            e);
       }
     }
     DisplayMetricsHolder.setScreenDisplayMetrics(screenDisplayMetrics);

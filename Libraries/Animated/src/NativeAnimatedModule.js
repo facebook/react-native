@@ -28,6 +28,9 @@ export type AnimatedNodeConfig = Object;
 export type AnimatingNodeConfig = Object;
 
 export interface Spec extends TurboModule {
+  +startOperationBatch: () => void;
+  +finishOperationBatch: () => void;
+
   +createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void;
   +getValue: (tag: number, saveValueCallback: SaveValueCallback) => void;
   +startListeningToAnimatedNodeValue: (tag: number) => void;

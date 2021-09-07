@@ -42,10 +42,7 @@ void RCTCopyBackedTextInput(
   toTextInput.scrollEnabled = fromTextInput.scrollEnabled;
   toTextInput.secureTextEntry = fromTextInput.secureTextEntry;
   toTextInput.keyboardType = fromTextInput.keyboardType;
-
-  if (@available(iOS 10.0, *)) {
-    toTextInput.textContentType = fromTextInput.textContentType;
-  }
+  toTextInput.textContentType = fromTextInput.textContentType;
 
   if (@available(iOS 12.0, *)) {
     toTextInput.passwordRules = fromTextInput.passwordRules;
@@ -138,11 +135,7 @@ UIKeyboardType RCTUIKeyboardTypeFromKeyboardType(KeyboardType keyboardType)
     case KeyboardType::WebSearch:
       return UIKeyboardTypeWebSearch;
     case KeyboardType::ASCIICapableNumberPad:
-      if (@available(iOS 10.0, *)) {
-        return UIKeyboardTypeASCIICapableNumberPad;
-      } else {
-        return UIKeyboardTypeNumberPad;
-      }
+      return UIKeyboardTypeASCIICapableNumberPad;
     // Android-only
     case KeyboardType::VisiblePassword:
       return UIKeyboardTypeDefault;

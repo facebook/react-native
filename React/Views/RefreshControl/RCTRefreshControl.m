@@ -41,12 +41,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   [super layoutSubviews];
 
-  // Fix for bug #7976
-  // TODO: Remove when updating to use iOS 10 refreshControl UIScrollView prop.
-  if (self.backgroundColor == nil) {
-    self.backgroundColor = [UIColor clearColor];
-  }
-
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
   if (_currentRefreshingState && _isInitialRender) {
@@ -59,34 +53,42 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   UInt64 beginRefreshingTimestamp = _currentRefreshingStateTimestamp;
   _refreshingProgrammatically = YES;
-  // When using begin refreshing we need to adjust the ScrollView content offset manually.
-  UIScrollView *scrollView = (UIScrollView *)self.superview;
+
   // Fix for bug #24855
   [self sizeToFit];
-  CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height};
 
-  // `beginRefreshing` must be called after the animation is done. This is why it is impossible
-  // to use `setContentOffset` with `animated:YES`.
-  [UIView animateWithDuration:0.25
-      delay:0
-      options:UIViewAnimationOptionBeginFromCurrentState
-      animations:^(void) {
-        [scrollView setContentOffset:offset];
-      }
-      completion:^(__unused BOOL finished) {
-        if (beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
-          [super beginRefreshing];
-          [self setCurrentRefreshingState:super.refreshing];
+  if (self.scrollView) {
+    // When using begin refreshing we need to adjust the ScrollView content offset manually.
+    UIScrollView *scrollView = (UIScrollView *)self.scrollView;
+
+    CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height};
+
+    // `beginRefreshing` must be called after the animation is done. This is why it is impossible
+    // to use `setContentOffset` with `animated:YES`.
+    [UIView animateWithDuration:0.25
+        delay:0
+        options:UIViewAnimationOptionBeginFromCurrentState
+        animations:^(void) {
+          [scrollView setContentOffset:offset];
         }
-      }];
+        completion:^(__unused BOOL finished) {
+          if (beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
+            [super beginRefreshing];
+            [self setCurrentRefreshingState:super.refreshing];
+          }
+        }];
+  } else if (beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
+    [super beginRefreshing];
+    [self setCurrentRefreshingState:super.refreshing];
+  }
 }
 
 - (void)endRefreshingProgrammatically
 {
   // The contentOffset of the scrollview MUST be greater than the contentInset before calling
   // endRefreshing otherwise the next pull to refresh will not work properly.
-  UIScrollView *scrollView = (UIScrollView *)self.superview;
-  if (_refreshingProgrammatically && scrollView.contentOffset.y < -scrollView.contentInset.top) {
+  UIScrollView *scrollView = self.scrollView;
+  if (scrollView && _refreshingProgrammatically && scrollView.contentOffset.y < -scrollView.contentInset.top) {
     UInt64 endRefreshingTimestamp = _currentRefreshingStateTimestamp;
     CGPoint offset = {scrollView.contentOffset.x, -scrollView.contentInset.top};
     [UIView animateWithDuration:0.25

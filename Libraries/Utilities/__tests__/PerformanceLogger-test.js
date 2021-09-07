@@ -32,7 +32,7 @@ describe('PerformanceLogger', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.startTimespan(TIMESPAN_1);
     perfLogger.stopTimespan(TIMESPAN_1);
-    perfLogger.addTimespan(TIMESPAN_2, TIMESPAN_2_DURATION);
+    perfLogger.addTimeAnnotation(TIMESPAN_2, TIMESPAN_2_DURATION);
     expect(perfLogger.hasTimespan(TIMESPAN_1)).toBe(true);
     expect(perfLogger.hasTimespan(TIMESPAN_2)).toBe(true);
     expect(perfLogger.getTimespans()[TIMESPAN_2].totalTime).toBe(
@@ -46,8 +46,31 @@ describe('PerformanceLogger', () => {
     let old = perfLogger.getTimespans()[TIMESPAN_1];
     perfLogger.startTimespan(TIMESPAN_1);
     expect(perfLogger.getTimespans()[TIMESPAN_1]).toBe(old);
-    perfLogger.addTimespan(TIMESPAN_1, 1);
+    perfLogger.addTimeAnnotation(TIMESPAN_1, 1);
     expect(perfLogger.getTimespans()[TIMESPAN_1]).toBe(old);
+  });
+
+  it('adds a timespan with start and end timestamps', () => {
+    let perfLogger = createPerformanceLogger();
+    const startTime = 0;
+    const endTime = 100;
+    const description = 'description';
+    perfLogger.addTimespan(TIMESPAN_1, startTime, endTime, description);
+    expect(perfLogger.getTimespans()[TIMESPAN_1]).toEqual({
+      description,
+      startTime,
+      endTime,
+      totalTime: endTime - startTime,
+    });
+  });
+
+  it('adds a timespan with same key will not override existing', () => {
+    let perfLogger = createPerformanceLogger();
+    perfLogger.startTimespan(TIMESPAN_1);
+    perfLogger.stopTimespan(TIMESPAN_1);
+    const existing = perfLogger.getTimespans()[TIMESPAN_1];
+    perfLogger.addTimespan(TIMESPAN_1, 0, 100, 'overriding');
+    expect(perfLogger.getTimespans()[TIMESPAN_1]).toEqual(existing);
   });
 
   it('logs an extra', () => {

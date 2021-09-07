@@ -9,9 +9,9 @@
 
 #import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
-#import <react/components/rncore/EventEmitters.h>
-#import <react/components/rncore/Props.h>
-#import <react/components/slider/SliderComponentDescriptor.h>
+#import <react/renderer/components/rncore/EventEmitters.h>
+#import <react/renderer/components/rncore/Props.h>
+#import <react/renderer/components/slider/SliderComponentDescriptor.h>
 
 #import "FBRCTFabricComponentsPlugins.h"
 

@@ -381,7 +381,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
-                                     text:[self.backedTextInputView.attributedText.string copy] // [TODO(macOS Candidate ISS#2710739)
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 }
@@ -395,13 +395,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
-                                     text:[self.backedTextInputView.attributedText.string copy] // [TODO(macOS Candidate ISS#2710739)
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
                                  reactTag:self.reactTag
-                                     text:[self.backedTextInputView.attributedText.string copy] // [TODO(macOS Candidate ISS#2710739)
+                                     text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
                                eventCount:_nativeEventCount];
 }
@@ -418,7 +418,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 #endif // ]TODO(macOS Candidate ISS#2710739)
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
                                    reactTag:self.reactTag
-                                       text:[self.backedTextInputView.attributedText.string copy] // [TODO(macOS Candidate ISS#2710739)
+                                       text:[self.backedTextInputView.attributedText.string copy]
                                         key:nil
                                  eventCount:_nativeEventCount];
 #if TARGET_OS_OSX // [TODO(macOS Candidate ISS#2710739)
@@ -481,7 +481,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
   }
 
-  NSString *previousText = [backedTextInputView.attributedText.string copy] ?: @""; // TODO(OSS Candidate ISS#2710739)
+  NSString *previousText = [backedTextInputView.attributedText.string copy] ?: @"";
 
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
@@ -528,7 +528,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   if (_onChange) {
     _onChange(@{
-       @"text": [self.attributedText.string copy], // [TODO(macOS Candidate ISS#2710739)
+       @"text": [self.attributedText.string copy],
        @"target": self.reactTag,
        @"eventCount": @(_nativeEventCount),
     });
@@ -668,9 +668,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,
   // so we create an `inputAccessoryView` with this button for them.
-  BOOL shouldHaveInputAccesoryView;
-  if (@available(iOS 10.0, *)) {
-      shouldHaveInputAccesoryView =
+  BOOL shouldHaveInputAccesoryView =
       (
        keyboardType == UIKeyboardTypeNumberPad ||
        keyboardType == UIKeyboardTypePhonePad ||
@@ -678,15 +676,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
        keyboardType == UIKeyboardTypeASCIICapableNumberPad
       ) &&
       textInputView.returnKeyType == UIReturnKeyDone;
-  } else {
-      shouldHaveInputAccesoryView =
-      (
-       keyboardType == UIKeyboardTypeNumberPad ||
-       keyboardType == UIKeyboardTypePhonePad ||
-       keyboardType == UIKeyboardTypeDecimalPad
-      ) &&
-      textInputView.returnKeyType == UIReturnKeyDone;
-  }
 
   if (_hasInputAccesoryView == shouldHaveInputAccesoryView) {
     return;

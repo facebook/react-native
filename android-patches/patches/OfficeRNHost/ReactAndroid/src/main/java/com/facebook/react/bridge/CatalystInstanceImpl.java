@@ -58,7 +58,7 @@ index dae969346..4b60fd1a7 100644
  
    @Override
    public void setSourceURLs(String deviceURL, String remoteURL) {
-@@ -398,7 +407,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
+@@ -395,7 +404,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
                                              mJavaScriptContextHolder.clear();
  
                                              mHybridData.resetNative();
@@ -68,7 +68,7 @@ index dae969346..4b60fd1a7 100644
                                              FLog.d(
                                                  ReactConstants.TAG,
                                                  "CatalystInstanceImpl.destroy() end");
-@@ -568,6 +578,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
+@@ -565,6 +575,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
    }
  
    private native long getJavaScriptContext();
@@ -76,7 +76,7 @@ index dae969346..4b60fd1a7 100644
  
    private void incrementPendingJSCalls() {
      int oldPendingCalls = mPendingJSCalls.getAndIncrement();
-@@ -671,6 +682,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
+@@ -668,6 +679,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
      private @Nullable NativeModuleRegistry mRegistry;
      private @Nullable JavaScriptExecutor mJSExecutor;
      private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
@@ -84,7 +84,7 @@ index dae969346..4b60fd1a7 100644
  
      public Builder setReactQueueConfigurationSpec(
          ReactQueueConfigurationSpec ReactQueueConfigurationSpec) {
-@@ -698,13 +710,20 @@ public class CatalystInstanceImpl implements CatalystInstance {
+@@ -695,13 +707,20 @@ public class CatalystInstanceImpl implements CatalystInstance {
        return this;
      }
  

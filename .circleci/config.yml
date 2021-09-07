@@ -122,7 +122,7 @@ commands:
         description: Homebrew package to install
         type: string
     steps:
-      - run: 
+      - run:
           name: "Brew: Install << parameters.package >>"
           command: HOMEBREW_NO_AUTO_UPDATE=1 brew install << parameters.package >> >/dev/null
 
@@ -410,7 +410,7 @@ jobs:
           name: Fetch CocoaPods Specs
           command: |
             curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-      - run: 
+      - run:
           name: Setup the CocoaPods environment
           command: pod setup
 
@@ -429,7 +429,7 @@ jobs:
       - when:
           condition: << parameters.run_unit_tests >>
           steps:
-            - run: 
+            - run:
                 name: "Run Tests: iOS Unit and Integration Tests"
                 command: yarn test-ios
       # Runs iOS Detox e2e tests
@@ -473,7 +473,7 @@ jobs:
     parameters:
       run_disabled_tests:
         type: boolean
-        default: false    
+        default: false
     steps:
       - restore_cache_checkout:
           checkout_type: android
@@ -497,8 +497,8 @@ jobs:
       # Keep configuring Android dependencies while AVD boots up
 
       - run:
-          name: Install rsync
-          command: apt-get update -y && apt-get install rsync -y
+          name: Install rsync, zip
+          command: apt-get update -y && apt-get install rsync zip -y
 
       # Install Buck
       - install_buck_tooling
@@ -606,7 +606,7 @@ jobs:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
       - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\19.2.5345600"
       - ANDROID_BUILD_VERSION: 28
-      - ANDROID_TOOLS_VERSION: 29.0.2
+      - ANDROID_TOOLS_VERSION: 29.0.3
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
       - NDK_VERSION: 19.2.5345600
     steps:
@@ -783,18 +783,18 @@ workflows:
           run_unit_tests: true
           requires:
             - setup_ios
-      - test_ios:
-          name: test_ios_detox
-          run_disabled_tests: false
-          run_detox_tests: true
-          requires:
-            - setup_ios
-      - test_ios:
-          name: test_ios_detox_frameworks
-          use_frameworks: true
-          run_detox_tests: true
-          requires:
-            - setup_ios
+      # - test_ios:
+      #     name: test_ios_detox
+      #     run_disabled_tests: false
+      #     run_detox_tests: true
+      #     requires:
+      #       - setup_ios
+      # - test_ios:
+      #     name: test_ios_detox_frameworks
+      #     use_frameworks: true
+      #     run_detox_tests: true
+      #     requires:
+      #       - setup_ios
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts

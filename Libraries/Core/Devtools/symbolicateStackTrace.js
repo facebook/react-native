@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -53,6 +53,7 @@ async function symbolicateStackTrace(
   // The fix below postpones trying to load fetch until the first call to symbolicateStackTrace.
   // At that time, we will have either global.fetch (whatwg-fetch) or RN's fetch.
   if (!fetch) {
+    // flowlint-next-line untyped-import:off
     fetch = global.fetch || require('../../Network/fetch').fetch;
   }
 

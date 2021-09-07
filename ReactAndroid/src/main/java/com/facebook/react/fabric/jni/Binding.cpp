@@ -15,20 +15,20 @@
 #include <fbjni/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
-#include <react/animations/LayoutAnimationDriver.h>
-#include <react/componentregistry/ComponentDescriptorFactory.h>
-#include <react/components/scrollview/ScrollViewProps.h>
-#include <react/core/EventBeat.h>
-#include <react/core/EventEmitter.h>
-#include <react/core/conversions.h>
-#include <react/debug/SystraceSection.h>
-#include <react/scheduler/Scheduler.h>
-#include <react/scheduler/SchedulerDelegate.h>
-#include <react/scheduler/SchedulerToolbox.h>
-#include <react/uimanager/primitives.h>
+#include <react/renderer/animations/LayoutAnimationDriver.h>
+#include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/core/EventBeat.h>
+#include <react/renderer/core/EventEmitter.h>
+#include <react/renderer/core/conversions.h>
+#include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/scheduler/Scheduler.h>
+#include <react/renderer/scheduler/SchedulerDelegate.h>
+#include <react/renderer/scheduler/SchedulerToolbox.h>
+#include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
-#include <Glog/logging.h>
+#include <glog/logging.h>
 
 using namespace facebook::jni;
 using namespace facebook::jsi;
@@ -206,12 +206,11 @@ void Binding::setConstraints(
 }
 
 void Binding::installFabricUIManager(
-    jlong jsContextNativePointer,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
-    ComponentFactoryDelegate *componentsRegistry,
+    ComponentFactory *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
@@ -240,24 +239,7 @@ void Binding::installFabricUIManager(
 
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
-
-  bool useRuntimeExecutor =
-      config->getBool("react_fabric:use_shared_runtime_executor_android");
-
-  RuntimeExecutor runtimeExecutor;
-  if (useRuntimeExecutor) {
-    runtimeExecutor = runtimeExecutorHolder->cthis()->get();
-  } else {
-    Runtime *runtime = (Runtime *)jsContextNativePointer;
-    runtimeExecutor =
-        [runtime, sharedJSMessageQueueThread](
-            std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
-          sharedJSMessageQueueThread->runOnQueue(
-              [runtime, callback = std::move(callback)]() {
-                callback(*runtime);
-              });
-        };
-  }
+  auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
@@ -296,8 +278,15 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
+  if (reactNativeConfig_->getBool(
+          "react_fabric:enable_background_executor_android")) {
+    backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
+    toolbox.backgroundExecutor = backgroundExecutor_->get();
+  }
+
   if (enableLayoutAnimations) {
-    animationDriver_ = std::make_shared<LayoutAnimationDriver>(this);
+    animationDriver_ =
+        std::make_shared<LayoutAnimationDriver>(runtimeExecutor, this);
   }
   scheduler_ = std::make_shared<Scheduler>(
       toolbox, (animationDriver_ ? animationDriver_.get() : nullptr), this);

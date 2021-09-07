@@ -66,7 +66,7 @@ loadScriptFromAssets(AAssetManager *manager, const std::string &assetName) {
 
   throw std::runtime_error(folly::to<std::string>(
       "Unable to load script. Make sure you're "
-      "either running a Metro server (run 'react-native start') or that your bundle '",
+      "either running Metro (run 'react-native start') or that your bundle '",
       assetName,
       "' is packaged correctly for release."));
 }

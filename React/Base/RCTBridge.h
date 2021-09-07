@@ -34,11 +34,6 @@ RCT_EXTERN NSString *const RCTJavaScriptWillStartExecutingNotification;
 RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
- * This notification fires every time the bridge has finished loading an additional JS bundle.
- */
-RCT_EXTERN NSString *const RCTAdditionalJavaScriptDidLoadNotification;
-
-/**
  * This notification fires when the bridge failed to load the JS bundle. The
  * `error` key can be used to determine the error that occurred.
  */
@@ -158,6 +153,10 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
 RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
+// Turn on TurboModule eager initialization
+RCT_EXTERN BOOL RCTTurboModuleEagerInitEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
+
 /**
  * Async batched bridge used to communicate with the JavaScript application.
  */
@@ -221,9 +220,9 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
 /**
  * When a NativeModule performs a lookup for a TurboModule, we need to query
- * the lookupDelegate.
+ * the TurboModuleRegistry.
  */
-- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate;
+- (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.

@@ -1131,7 +1131,7 @@ static bool YGIsBaselineLayout(const YGNodeRef node) {
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeGetChild(node, i);
-    if (child->getStyle().positionType() == YGPositionTypeRelative &&
+    if (child->getStyle().positionType() != YGPositionTypeAbsolute &&
         child->getStyle().alignSelf() == YGAlignBaseline) {
       return true;
     }
@@ -2505,7 +2505,7 @@ static void YGJustifyMainAxis(
        i < collectedFlexItemsValues.endOfLineIndex;
        i++) {
     const YGNodeRef child = node->getChild(i);
-    if (child->getStyle().positionType() == YGPositionTypeRelative) {
+    if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
       if (child->marginLeadingValue(mainAxis).unit == YGUnitAuto) {
         numberOfAutoMarginsOnCurrentLine++;
       }
@@ -2589,7 +2589,7 @@ static void YGJustifyMainAxis(
       // Now that we placed the element, we need to update the variables.
       // We need to do that only for relative elements. Absolute elements do not
       // take part in that phase.
-      if (childStyle.positionType() == YGPositionTypeRelative) {
+      if (childStyle.positionType() != YGPositionTypeAbsolute) {
         if (child->marginLeadingValue(mainAxis).unit == YGUnitAuto) {
           collectedFlexItemsValues.mainDim +=
               collectedFlexItemsValues.remainingFreeSpace /
@@ -3311,7 +3311,7 @@ static void YGNodelayoutImpl(
         if (child->getStyle().display() == YGDisplayNone) {
           continue;
         }
-        if (child->getStyle().positionType() == YGPositionTypeRelative) {
+        if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
           if (child->getLineIndex() != i) {
             break;
           }
@@ -3353,7 +3353,7 @@ static void YGNodelayoutImpl(
           if (child->getStyle().display() == YGDisplayNone) {
             continue;
           }
-          if (child->getStyle().positionType() == YGPositionTypeRelative) {
+          if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
             switch (YGNodeAlignItem(node, child)) {
               case YGAlignFlexStart: {
                 child->setLayoutPosition(
@@ -3544,7 +3544,7 @@ static void YGNodelayoutImpl(
   if (performLayout && node->getStyle().flexWrap() == YGWrapWrapReverse) {
     for (uint32_t i = 0; i < childCount; i++) {
       const YGNodeRef child = YGNodeGetChild(node, i);
-      if (child->getStyle().positionType() == YGPositionTypeRelative) {
+      if (child->getStyle().positionType() != YGPositionTypeAbsolute) {
         child->setLayoutPosition(
             node->getLayout().measuredDimensions[dim[crossAxis]] -
                 child->getLayout().position[pos[crossAxis]] -

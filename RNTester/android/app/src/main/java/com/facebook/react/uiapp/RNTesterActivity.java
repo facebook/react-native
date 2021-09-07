@@ -7,12 +7,15 @@
 
 package com.facebook.react.uiapp;
 
+import static com.facebook.react.uiapp.RNTesterApplication.IS_FABRIC_ENABLED;
+
 import android.content.res.Configuration;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactRootView;
 
 public class RNTesterActivity extends ReactActivity {
   public static class RNTesterActivityDelegate extends ReactActivityDelegate {
@@ -23,6 +26,13 @@ public class RNTesterActivity extends ReactActivity {
     public RNTesterActivityDelegate(ReactActivity activity, String mainComponentName) {
       super(activity, mainComponentName);
       this.mActivity = activity;
+    }
+
+    @Override
+    protected ReactRootView createRootView() {
+      ReactRootView reactRootView = new ReactRootView(getContext());
+      reactRootView.setIsFabric(IS_FABRIC_ENABLED);
+      return reactRootView;
     }
 
     @Override

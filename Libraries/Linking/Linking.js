@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -33,7 +33,7 @@ class Linking extends NativeEventEmitter {
    *
    * See https://reactnative.dev/docs/linking.html#addeventlistener
    */
-  addEventListener(type: string, handler: Function) {
+  addEventListener<T>(type: string, handler: T) {
     this.addListener(type, handler);
   }
 
@@ -42,7 +42,7 @@ class Linking extends NativeEventEmitter {
    *
    * See https://reactnative.dev/docs/linking.html#removeeventlistener
    */
-  removeEventListener(type: string, handler: Function) {
+  removeEventListener<T>(type: string, handler: T) {
     this.removeListener(type, handler);
   }
 
@@ -51,7 +51,7 @@ class Linking extends NativeEventEmitter {
    *
    * See https://reactnative.dev/docs/linking.html#openurl
    */
-  openURL(url: string): Promise<any> {
+  openURL(url: string): Promise<void> {
     this._validateURL(url);
     return NativeLinking.openURL(url);
   }
@@ -71,7 +71,7 @@ class Linking extends NativeEventEmitter {
    *
    * See https://reactnative.dev/docs/linking.html#opensettings
    */
-  openSettings(): Promise<any> {
+  openSettings(): Promise<void> {
     return NativeLinking.openSettings();
   }
 

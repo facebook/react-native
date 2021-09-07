@@ -8,8 +8,8 @@
 #import "RCTSafeAreaViewComponentView.h"
 
 #import <React/RCTUtils.h>
-#import <react/components/safeareaview/SafeAreaViewComponentDescriptor.h>
-#import <react/components/safeareaview/SafeAreaViewState.h>
+#import <react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h>
+#import <react/renderer/components/safeareaview/SafeAreaViewState.h>
 #import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"

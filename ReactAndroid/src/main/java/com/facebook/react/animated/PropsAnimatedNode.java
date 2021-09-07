@@ -13,6 +13,8 @@ import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,6 +71,14 @@ import java.util.Map;
     if (mConnectedViewTag == -1) {
       return;
     }
+    // Don't restore default values in Fabric.
+    // In Non-Fabric this had the effect of "restore the value to whatever the value was on the
+    // ShadowNode instead of in the View hierarchy". However, "synchronouslyUpdateViewOnUIThread"
+    // will not have that impact on Fabric, because the FabricUIManager doesn't have access to the
+    // ShadowNode layer.
+    if (ViewUtil.getUIManagerType(mConnectedViewTag) == UIManagerType.FABRIC) {
+      return;
+    }
 
     ReadableMapKeySetIterator it = mPropMap.keySetIterator();
     while (it.hasNextKey()) {
@@ -102,5 +112,16 @@ import java.util.Map;
     }
 
     mUIManager.synchronouslyUpdateViewOnUIThread(mConnectedViewTag, mPropMap);
+  }
+
+  public String prettyPrint() {
+    return "PropsAnimatedNode["
+        + mTag
+        + "] connectedViewTag: "
+        + mConnectedViewTag
+        + " mPropNodeMapping: "
+        + (mPropNodeMapping != null ? mPropNodeMapping.toString() : "null")
+        + " mPropMap: "
+        + (mPropMap != null ? mPropMap.toString() : "null");
   }
 }

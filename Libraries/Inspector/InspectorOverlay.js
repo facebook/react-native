@@ -56,7 +56,7 @@ class InspectorOverlay extends React.Component<Props> {
       <View
         onStartShouldSetResponder={this.shouldSetResponser}
         onResponderMove={this.findViewForTouchEvent}
-        nativeID="inspectorOverlay"
+        nativeID="inspectorOverlay" /* TODO: T68258846. */
         style={[styles.inspector, {height: Dimensions.get('window').height}]}>
         {content}
       </View>

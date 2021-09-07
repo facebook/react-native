@@ -7,10 +7,10 @@
 
 #import "RCTTextInputComponentView.h"
 
-#import <react/components/iostextinput/TextInputComponentDescriptor.h>
-#import <react/graphics/Geometry.h>
-#import <react/textlayoutmanager/RCTAttributedTextUtils.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/renderer/components/iostextinput/TextInputComponentDescriptor.h>
+#import <react/renderer/graphics/Geometry.h>
+#import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
+#import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTUITextField.h>
@@ -174,9 +174,7 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.traits.textContentType != oldTextInputProps.traits.textContentType) {
-    if (@available(iOS 10.0, *)) {
-      _backedTextInputView.textContentType = RCTUITextContentTypeFromString(newTextInputProps.traits.textContentType);
-    }
+    _backedTextInputView.textContentType = RCTUITextContentTypeFromString(newTextInputProps.traits.textContentType);
   }
 
   if (newTextInputProps.traits.passwordRules != oldTextInputProps.traits.passwordRules) {
@@ -224,8 +222,13 @@ using namespace facebook::react;
     return;
   }
 
+  auto data = _state->getData();
+
+  if (!oldState) {
+    _mostRecentEventCount = _state->getData().mostRecentEventCount;
+  }
+
   if (_mostRecentEventCount == _state->getData().mostRecentEventCount) {
-    auto data = _state->getData();
     _comingFromJS = YES;
     [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
     _comingFromJS = NO;

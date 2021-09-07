@@ -339,9 +339,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   public void destroy() {
     FLog.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() start");
     UiThreadUtil.assertOnUiThread();
-
-    UiThreadUtil.assertOnUiThread();
-
     if (mDestroyed) {
       return;
     }

@@ -11,12 +11,16 @@
 'use strict';
 
 const View = require('../../Components/View/View');
+const Platform = require('../../Utilities/Platform');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
+const NativeAnimatedHelper = require('./NativeAnimatedHelper');
 
 const invariant = require('invariant');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
+
+let animatedComponentNextId = 1;
 
 export type AnimatedComponentType<
   Props: {+[string]: mixed, ...},
@@ -51,6 +55,9 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
 
+    // Only to be used in this file, and only in Fabric.
+    _animatedComponentId: number = -1;
+
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
       // `ScrollResponder.Mixin`.
@@ -72,6 +79,57 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       this._eventDetachers = [];
     }
 
+    _isFabric = (): boolean => {
+      if (this._component == null) {
+        return false;
+      }
+      return (
+        // eslint-disable-next-line dot-notation
+        this._component['_internalInstanceHandle']?.stateNode?.canonical !=
+          null ||
+        // Some components have a setNativeProps function but aren't a host component
+        // such as lists like FlatList and SectionList. These should also use
+        // forceUpdate in Fabric since setNativeProps doesn't exist on the underlying
+        // host component. This crazy hack is essentially special casing those lists and
+        // ScrollView itself to use forceUpdate in Fabric.
+        // If these components end up using forwardRef then these hacks can go away
+        // as this._component would actually be the underlying host component and the above check
+        // would be sufficient.
+        (this._component.getNativeScrollRef != null &&
+          this._component.getNativeScrollRef() != null &&
+          // eslint-disable-next-line dot-notation
+          this._component.getNativeScrollRef()['_internalInstanceHandle']
+            ?.stateNode?.canonical != null) ||
+        (this._component.getScrollResponder != null &&
+          this._component.getScrollResponder() != null &&
+          this._component.getScrollResponder().getNativeScrollRef != null &&
+          this._component.getScrollResponder().getNativeScrollRef() != null &&
+          this._component.getScrollResponder().getNativeScrollRef()[
+            // eslint-disable-next-line dot-notation
+            '_internalInstanceHandle'
+          ]?.stateNode?.canonical != null)
+      );
+    };
+
+    _waitForUpdate = (): void => {
+      if (this._isFabric()) {
+        if (this._animatedComponentId === -1) {
+          this._animatedComponentId = animatedComponentNextId++;
+        }
+        NativeAnimatedHelper.API.setWaitingForIdentifier(
+          this._animatedComponentId,
+        );
+      }
+    };
+
+    _markUpdateComplete = (): void => {
+      if (this._isFabric()) {
+        NativeAnimatedHelper.API.unsetWaitingForIdentifier(
+          this._animatedComponentId,
+        );
+      }
+    };
+
     // The system is best designed when setNativeProps is implemented. It is
     // able to avoid re-rendering and directly set the attributes that changed.
     // However, setNativeProps can only be implemented on leaf native
@@ -91,29 +149,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
         // For animating properties of non-leaf/non-native components
         typeof this._component.setNativeProps !== 'function' ||
         // In Fabric, force animations to go through forceUpdate and skip setNativeProps
-        // eslint-disable-next-line dot-notation
-        this._component['_internalInstanceHandle']?.stateNode?.canonical !=
-          null ||
-        // Some components have a setNativeProps function but aren't a host component
-        // such as lists like FlatList and SectionList. These should also use
-        // forceUpdate in Fabric since setNativeProps doesn't exist on the underlying
-        // host component. This crazy hack is essentially special casing those lists and
-        // ScrollView itself to use forceUpdate in Fabric.
-        // If these components end up using forwardRef then these hacks can go away
-        // as this._component would actually be the underlying host component and the above check
-        // would be sufficient.
-        (this._component.getNativeScrollRef != null &&
-          this._component.getNativeScrollRef() != null &&
-          // eslint-disable-next-line dot-notation
-          this._component.getNativeScrollRef()['_internalInstanceHandle']
-            ?.stateNode?.canonical != null) ||
-        (this._component.getScrollResponder != null &&
-          this._component.getScrollResponder().getNativeScrollRef != null &&
-          this._component.getScrollResponder().getNativeScrollRef() != null &&
-          this._component.getScrollResponder().getNativeScrollRef()[
-            // eslint-disable-next-line dot-notation
-            '_internalInstanceHandle'
-          ]?.stateNode?.canonical != null)
+        this._isFabric()
       ) {
         this.forceUpdate();
       } else if (!this._propsAnimated.__isNative) {
@@ -187,6 +223,9 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
           {...passthruProps}
           style={mergedStyle}
           ref={this._setComponentRef}
+          nativeID={
+            this._isFabric() ? 'animatedComponent' : undefined
+          } /* TODO: T68258846. */
           // The native driver updates views directly through the UI thread so we
           // have to make sure the view doesn't get optimized away because it cannot
           // go through the NativeViewHierarchyManager since it operates on the shadow
@@ -199,6 +238,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     }
 
     UNSAFE_componentWillMount() {
+      this._waitForUpdate();
       this._attachProps(this.props);
     }
 
@@ -210,9 +250,11 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
 
       this._propsAnimated.setNativeView(this._component);
       this._attachNativeEvents();
+      this._markUpdateComplete();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
+      this._waitForUpdate();
       this._attachProps(newProps);
     }
 
@@ -224,11 +266,13 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
         this._detachNativeEvents();
         this._attachNativeEvents();
       }
+      this._markUpdateComplete();
     }
 
     componentWillUnmount() {
       this._propsAnimated && this._propsAnimated.__detach();
       this._detachNativeEvents();
+      this._markUpdateComplete();
     }
   }
 

@@ -41,7 +41,7 @@ public class ReactFeatureFlags {
    * inside view manager will be called instead.
    */
   public static boolean useViewManagerDelegatesForCommands = false;
-  
+
   /**
    * This react flag enables a custom algorithm for the getChildVisibleRect() method in the classes
    * ReactViewGroup, ReactHorizontalScrollView and ReactScrollView.
@@ -68,4 +68,7 @@ public class ReactFeatureFlags {
 
   /** Feature flag to use stopSurface when ReactRootView is unmounted. */
   public static boolean enableStopSurfaceOnRootViewUnmount = false;
+
+  /** Use experimental SetState retry mechanism in view? */
+  public static boolean enableExperimentalStateUpdateRetry = false;
 }

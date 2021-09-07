@@ -62,8 +62,8 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
-experimental.well_formed_exports=true
-experimental.types_first=true
+well_formed_exports=true
+types_first=true
 experimental.abstract_locations=true
 
 [lints]
@@ -77,7 +77,6 @@ unsafe-getters-setters=warn
 unnecessary-invariant=warn
 signature-verification-failure=warn
 deprecated-utility=error
-unsafe-addition=error
 
 [strict]
 deprecated-type
@@ -89,4 +88,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.127.0
+^0.131.0

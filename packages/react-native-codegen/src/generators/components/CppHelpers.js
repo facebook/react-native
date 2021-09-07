@@ -67,7 +67,7 @@ function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
       case 'EdgeInsetsPrimitive':
         return;
       case 'ImageSourcePrimitive':
-        imports.add('#include <react/components/image/conversions.h>');
+        imports.add('#include <react/renderer/components/image/conversions.h>');
         return;
       default:
         (name: empty);

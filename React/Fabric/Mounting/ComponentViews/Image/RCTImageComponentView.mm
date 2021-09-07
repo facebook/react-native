@@ -10,13 +10,13 @@
 #import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
-#import <react/components/image/ImageComponentDescriptor.h>
-#import <react/components/image/ImageEventEmitter.h>
-#import <react/components/image/ImageProps.h>
-#import <react/imagemanager/ImageInstrumentation.h>
-#import <react/imagemanager/ImageRequest.h>
-#import <react/imagemanager/RCTImageInstrumentationProxy.h>
-#import <react/imagemanager/RCTImagePrimitivesConversions.h>
+#import <react/renderer/components/image/ImageComponentDescriptor.h>
+#import <react/renderer/components/image/ImageEventEmitter.h>
+#import <react/renderer/components/image/ImageProps.h>
+#import <react/renderer/imagemanager/ImageInstrumentation.h>
+#import <react/renderer/imagemanager/ImageRequest.h>
+#import <react/renderer/imagemanager/RCTImageInstrumentationProxy.h>
+#import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
 #import "RCTFabricComponentsPlugins.h"

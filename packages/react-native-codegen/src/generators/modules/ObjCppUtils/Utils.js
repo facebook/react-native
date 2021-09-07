@@ -10,7 +10,11 @@
 
 'use strict';
 
-import type {ObjectParamTypeAnnotation} from '../../../CodegenSchema';
+import type {
+  ObjectParamTypeAnnotation,
+  ObjectTypeAliasTypeShape,
+} from '../../../CodegenSchema';
+const {getTypeAliasTypeAnnotation} = require('../Utils');
 
 function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -27,6 +31,7 @@ function flatObjects(
     |}>,
   >,
   forConstants: boolean = false,
+  aliases: $ReadOnly<{[aliasName: string]: ObjectTypeAliasTypeShape, ...}>,
 ): $ReadOnlyArray<
   $ReadOnly<{|
     name: string,
@@ -37,17 +42,23 @@ function flatObjects(
     properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
     name: string,
   |}> = annotations
-    .map(annotation => ({
-      name: annotation.name,
-      properties: annotation.object.properties,
-    }))
+    .map(annotation => {
+      if (annotation.object.type === 'TypeAliasTypeAnnotation') {
+        const alias = getTypeAliasTypeAnnotation(annotation.name, aliases);
+        return {name: annotation.name, properties: alias.properties};
+      }
+      return {
+        name: annotation.name,
+        properties: annotation.object.properties,
+      };
+    })
     .filter(
       annotation =>
-        (annotation.name === 'GetConstantsReturnType') === forConstants,
+        (annotation.name === 'SpecGetConstantsReturnType') === forConstants,
     )
     .filter(
       annotation =>
-        annotation.name !== 'GetConstantsReturnType' ||
+        annotation.name !== 'SpecGetConstantsReturnType' ||
         annotation.properties.length > 0,
     );
 

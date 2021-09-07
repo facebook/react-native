@@ -19,6 +19,9 @@
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                      initParams:
                                                          (const facebook::react::ObjCTurboModule::InitParams &)params;
+@optional
+- (NSArray<NSString *> *)getEagerInitModuleNames;
+- (NSArray<NSString *> *)getEagerInitMainQueueModuleNames;
 
 @optional
 
@@ -41,7 +44,7 @@
 
 @end
 
-@interface RCTTurboModuleManager : NSObject <RCTTurboModuleLookupDelegate>
+@interface RCTTurboModuleManager : NSObject <RCTTurboModuleRegistry>
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate

@@ -97,7 +97,10 @@ fb_xplat_cxx_binary(
 
 rn_android_library(
     name = "rn_codegen_library_java",
-    srcs = glob(["**/*.java"]),
+    srcs = glob(
+        ["**/*.java"],
+        exclude = ["android/gradlePlugin-build/**/*"],
+    ),
     visibility = [
         "PUBLIC",
     ],

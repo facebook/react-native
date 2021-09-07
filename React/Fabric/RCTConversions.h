@@ -7,12 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import <react/components/view/AccessibilityPrimitives.h>
-#import <react/components/view/primitives.h>
-#import <react/core/LayoutPrimitives.h>
-#import <react/graphics/Color.h>
-#import <react/graphics/Geometry.h>
-#import <react/graphics/Transform.h>
+#import <react/renderer/components/view/AccessibilityPrimitives.h>
+#import <react/renderer/components/view/primitives.h>
+#import <react/renderer/core/LayoutPrimitives.h>
+#import <react/renderer/graphics/Color.h>
+#import <react/renderer/graphics/Geometry.h>
+#import <react/renderer/graphics/Transform.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +32,7 @@ inline NSString *_Nullable RCTNSStringFromStringNilIfEmpty(
 
 inline std::string RCTStringFromNSString(NSString *string)
 {
-  return std::string([string UTF8String]);
+  return string ? std::string([string UTF8String]) : "";
 }
 
 inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
@@ -70,6 +70,8 @@ inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(const facebook::react::EdgeIns
 {
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
+
+UIAccessibilityTraits const AccessibilityTraitSwitch = 0x20000000000001;
 
 inline UIAccessibilityTraits RCTUIAccessibilityTraitsFromAccessibilityTraits(
     facebook::react::AccessibilityTraits accessibilityTraits)
@@ -123,6 +125,9 @@ inline UIAccessibilityTraits RCTUIAccessibilityTraitsFromAccessibilityTraits(
   }
   if ((accessibilityTraits & AccessibilityTraits::Header) != AccessibilityTraits::None) {
     result |= UIAccessibilityTraitHeader;
+  }
+  if ((accessibilityTraits & AccessibilityTraits::Switch) != AccessibilityTraits::None) {
+    result |= AccessibilityTraitSwitch;
   }
   return result;
 };
