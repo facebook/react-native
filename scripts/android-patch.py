@@ -35,9 +35,12 @@ if __name__ == '__main__':
         sys.stderr.write('Usage: android-patch.py <commit> <commit>')
         sys.exit(1)
     patches = get_patches()
-    patched_files = set.union(*[set(value) for value in patches.values()])
-    touched_files = get_touched_files(sys.argv[1], sys.argv[2])
+    touched_files = set(get_touched_files(sys.argv[1], sys.argv[2]))
 
-    for file in touched_files:
-        if file in patched_files:
-            print(file)
+    for patch_name in patches:
+        patched_and_touched = [file for file in patches[patch_name] \
+                               if file in touched_files]
+        if len(patched_and_touched) > 0:
+            print('\033[4m{0}\033[0m'.format(patch_name))
+            for file in patched_and_touched:
+                print('* {0}'.format(file))
