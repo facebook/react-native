@@ -1,4 +1,8 @@
 import os
+import sys
+
+# A Python script that can be used to determine which files that require
+# patching have been touched between two points in the repo.
 
 def shell(command):
     stream = os.popen(command)
@@ -21,17 +25,19 @@ def get_patches():
 
 def get_touched_files(branch_from, branch_to):
     files = []
-    for line in shell('git diff --name-status {0} {1}'.format(branch_from, branch_to)).splitlines():
+    command = 'git diff --name-status {0} {1}'.format(branch_from, branch_to)
+    for line in shell(command).splitlines():
         files.append(line.split('\t')[-1])
     return files
 
-patches = get_patches()
-patched_files = set.union(*[set(value) for value in patches.values()])
-touched_files = get_touched_files('amgleitman/0.64-merge-2020-07-17', 'master')
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        sys.stderr.write('Usage: android-patch.py <commit> <commit>')
+        sys.exit(1)
+    patches = get_patches()
+    patched_files = set.union(*[set(value) for value in patches.values()])
+    touched_files = get_touched_files(sys.argv[1], sys.argv[2])
 
-patched_and_touched = [f for f in touched_files if f in patched_files]
-
-# ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManager.java
-# ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManagerBuilder.java
-# ReactAndroid/src/main/java/com/facebook/react/bridge/CatalystInstanceImpl.java
-# ReactAndroid/src/main/jni/react/jni/Android.mk
+    for file in touched_files:
+        if file in patched_files:
+            print(file)
