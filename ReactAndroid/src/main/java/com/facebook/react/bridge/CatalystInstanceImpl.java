@@ -234,7 +234,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public void loadScriptFromAssets(
-      AssetManager assetManager, String assetURL, boolean loadSynchronously) {
+      AssetManager assetManager, 
+      String assetURL, 
+      boolean loadSynchronously
+  ) {
     mSourceURL = assetURL;
     jniLoadScriptFromAssets(assetManager, assetURL, loadSynchronously);
   }
@@ -678,7 +681,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
 
     public Builder setReactQueueConfigurationSpec(
-        ReactQueueConfigurationSpec ReactQueueConfigurationSpec) {
+        ReactQueueConfigurationSpec ReactQueueConfigurationSpec
+    ) {
       mReactQueueConfigurationSpec = ReactQueueConfigurationSpec;
       return this;
     }
