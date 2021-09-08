@@ -12,11 +12,8 @@
 #include <better/set.h>
 #include <react/renderer/animations/LayoutAnimationCallbackWrapper.h>
 #include <react/renderer/animations/primitives.h>
-#include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/debug/flags.h>
-#include <react/renderer/mounting/Differentiator.h>
-#include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>

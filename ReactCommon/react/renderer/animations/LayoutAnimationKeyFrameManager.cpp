@@ -8,7 +8,6 @@
 #include "LayoutAnimationKeyFrameManager.h"
 
 #include <algorithm>
-#include <chrono>
 
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
@@ -17,16 +16,12 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/LayoutMetrics.h>
-#include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
-#include <react/renderer/mounting/ShadowViewMutation.h>
-
-#include <react/renderer/mounting/Differentiator.h>
-#include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/ShadowView.h>
+#include <react/renderer/mounting/ShadowViewMutation.h>
 
 #include <glog/logging.h>
 
