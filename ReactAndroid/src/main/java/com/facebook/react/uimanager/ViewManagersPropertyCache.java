@@ -48,37 +48,41 @@ import java.util.Map;
      /**
      * use ThreadLocal for every shadow thread
      */
-    private static final ThreadLocal<Object[]> VIEW_MGR_ARGS = new ThreadLocal<Object[]>(){
-      @Nullable
-      @Override
-      protected Object[] initialValue() {
-        return new Object[2];
-      }
-    };
+    private static final ThreadLocal<Object[]> VIEW_MGR_ARGS =
+                new ThreadLocal<Object[]>() {
+                    @Nullable
+                    @Override
+                    protected Object[] initialValue() {
+                        return new Object[2];
+                    }
+                };
 
-    private static final ThreadLocal<Object[]> VIEW_MGR_GROUP_ARGS = new ThreadLocal<Object[]>(){
-      @Nullable
-      @Override
-      protected Object[] initialValue() {
-        return new Object[3];
-      }
-    };
+    private static final ThreadLocal<Object[]> VIEW_MGR_GROUP_ARGS =
+                new ThreadLocal<Object[]>() {
+                    @Nullable
+                    @Override
+                    protected Object[] initialValue() {
+                        return new Object[3];
+                    }
+                };
 
-    private static final ThreadLocal<Object[]> SHADOW_ARGS = new ThreadLocal<Object[]>(){
-      @Nullable
-      @Override
-      protected Object[] initialValue() {
-        return new Object[1];
-      }
-    };
+    private static final ThreadLocal<Object[]> SHADOW_ARGS =
+                new ThreadLocal<Object[]>() {
+                    @Nullable
+                    @Override
+                    protected Object[] initialValue() {
+                        return new Object[1];
+                    }
+                };
 
-    private static final ThreadLocal<Object[]> SHADOW_GROUP_ARGS = new ThreadLocal<Object[]>(){
-      @Nullable
-      @Override
-      protected Object[] initialValue() {
-        return new Object[2];
-      }
-    };
+    private static final ThreadLocal<Object[]> SHADOW_GROUP_ARGS =
+                new ThreadLocal<Object[]>() {
+                    @Nullable
+                    @Override
+                    protected Object[] initialValue() {
+                        return new Object[2];
+                    }
+                };
 
     private PropSetter(ReactProp prop, String defaultType, Method setter) {
       mPropName = prop.name();
