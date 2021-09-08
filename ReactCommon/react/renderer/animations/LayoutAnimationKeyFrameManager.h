@@ -41,17 +41,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
  public:
   LayoutAnimationKeyFrameManager(
       RuntimeExecutor runtimeExecutor,
-      LayoutAnimationStatusDelegate *delegate)
-      : runtimeExecutor_(runtimeExecutor),
-        layoutAnimationStatusDelegate_(delegate),
-        now_([]() {
-          return std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::high_resolution_clock::now()
-                         .time_since_epoch())
-              .count();
-        }) {}
+      LayoutAnimationStatusDelegate *delegate);
 
-#pragma mark UIManagerAnimationDelegate methods
+#pragma mark - UIManagerAnimationDelegate methods
 
   void uiManagerDidConfigureNextLayoutAnimation(
       jsi::Runtime &runtime,
@@ -67,7 +59,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void stopSurface(SurfaceId surfaceId) override;
 
-#pragma mark MountingOverrideDelegate methods
+#pragma mark - MountingOverrideDelegate methods
 
   bool shouldOverridePullTransaction() const override;
 
@@ -81,7 +73,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowViewMutationList mutations) const override;
 
   // Exposed for testing.
- public:
   void uiManagerDidConfigureNextLayoutAnimation(
       LayoutAnimation layoutAnimation) const;
 
@@ -90,38 +81,24 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   // delegate is protected by a mutex; ALL method calls into this delegate are
   // also protected by the mutex! The only way to set this without a mutex is
   // via a constructor.
- public:
   void setLayoutAnimationStatusDelegate(
       LayoutAnimationStatusDelegate *delegate) const;
 
- private:
-  RuntimeExecutor runtimeExecutor_;
-  mutable std::mutex layoutAnimationStatusDelegateMutex_;
-  mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
-
-  // Function that returns current time in milliseconds
-  std::function<uint64_t()> now_;
-
-  void adjustImmediateMutationIndicesForDelayedMutations(
-      SurfaceId surfaceId,
-      ShadowViewMutation &mutation,
-      bool skipLastAnimation = false,
-      bool lastAnimationOnly = false) const;
-
-  void adjustDelayedMutationIndicesForMutation(
-      SurfaceId surfaceId,
-      ShadowViewMutation const &mutation,
-      bool skipLastAnimation = false) const;
-
-  void getAndEraseConflictingAnimations(
-      SurfaceId surfaceId,
-      ShadowViewMutationList const &mutations,
-      std::vector<AnimationKeyFrame> &conflictingAnimations) const;
-
-  mutable std::mutex surfaceIdsToStopMutex_;
-  mutable better::set<SurfaceId> surfaceIdsToStop_{};
+  void setClockNow(std::function<uint64_t()> now);
 
  protected:
+  SharedComponentDescriptorRegistry componentDescriptorRegistry_;
+  mutable better::optional<LayoutAnimation> currentAnimation_{};
+  mutable std::mutex currentAnimationMutex_;
+
+  /**
+   * All mutations of inflightAnimations_ are thread-safe as long as
+   * we keep the contract of: only mutate it within the context of
+   * `pullTransaction`. If that contract is held, this is implicitly protected
+   * by the MountingCoordinator's mutex.
+   */
+  mutable std::vector<LayoutAnimation> inflightAnimations_{};
+
   bool hasComponentDescriptorForShadowView(ShadowView const &shadowView) const;
   ComponentDescriptor const &getComponentDescriptorForShadowView(
       ShadowView const &shadowView) const;
@@ -130,6 +107,15 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       LayoutAnimation const &animation,
       AnimationConfig const &mutationConfig) const;
 
+  /**
+   * Given a `progress` between 0 and 1, a mutation and LayoutAnimation config,
+   * return a ShadowView with mutated props and/or LayoutMetrics.
+   *
+   * @param progress
+   * @param layoutAnimation
+   * @param animatedMutation
+   * @return
+   */
   ShadowView createInterpolatedShadowView(
       double progress,
       ShadowView startingView,
@@ -152,20 +138,31 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       bool interrupted,
       std::string logPrefix) const;
 
-  SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  mutable better::optional<LayoutAnimation> currentAnimation_{};
-  mutable std::mutex currentAnimationMutex_;
+ private:
+  RuntimeExecutor runtimeExecutor_;
+  mutable std::mutex layoutAnimationStatusDelegateMutex_;
+  mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
+  mutable std::mutex surfaceIdsToStopMutex_;
+  mutable better::set<SurfaceId> surfaceIdsToStop_{};
 
-  /**
-   * All mutations of inflightAnimations_ are thread-safe as long as
-   * we keep the contract of: only mutate it within the context of
-   * `pullTransaction`. If that contract is held, this is implicitly protected
-   * by the MountingCoordinator's mutex.
-   */
-  mutable std::vector<LayoutAnimation> inflightAnimations_{};
+  // Function that returns current time in milliseconds
+  std::function<uint64_t()> now_;
 
- public:
-  void setClockNow(std::function<uint64_t()> now);
+  void adjustImmediateMutationIndicesForDelayedMutations(
+      SurfaceId surfaceId,
+      ShadowViewMutation &mutation,
+      bool skipLastAnimation = false,
+      bool lastAnimationOnly = false) const;
+
+  void adjustDelayedMutationIndicesForMutation(
+      SurfaceId surfaceId,
+      ShadowViewMutation const &mutation,
+      bool skipLastAnimation = false) const;
+
+  void getAndEraseConflictingAnimations(
+      SurfaceId surfaceId,
+      ShadowViewMutationList const &mutations,
+      std::vector<AnimationKeyFrame> &conflictingAnimations) const;
 };
 
 static inline bool shouldFirstComeBeforeSecondRemovesOnly(
