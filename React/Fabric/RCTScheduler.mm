@@ -114,7 +114,8 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 
     if (_layoutAnimationsEnabled) {
       _layoutAnimationDelegateProxy = std::make_shared<LayoutAnimationDelegateProxy>((__bridge void *)self);
-      _animationDriver = std::make_shared<LayoutAnimationDriver>(_layoutAnimationDelegateProxy.get());
+      _animationDriver =
+          std::make_shared<LayoutAnimationDriver>(toolbox.runtimeExecutor, _layoutAnimationDelegateProxy.get());
       _uiRunLoopObserver =
           toolbox.mainRunLoopObserverFactory(RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
       _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());

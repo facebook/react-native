@@ -58,13 +58,11 @@ const API = {
     }
   },
   setWaitingForIdentifier: function(id: number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
     waitingForQueuedOperations.add(id);
     queueOperations = true;
     queueConnections = true;
   },
   unsetWaitingForIdentifier: function(id: number): void {
-    invariant(NativeAnimatedModule, 'Native animated module is not available');
     waitingForQueuedOperations.delete(id);
 
     if (waitingForQueuedOperations.size === 0) {

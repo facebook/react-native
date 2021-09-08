@@ -61,8 +61,8 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/uimanager:uimanager"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/renderer/debug:debug"),
-        react_native_xplat_target("config:config"),
-        react_native_xplat_target("utils:utils"),
+        react_native_xplat_target("react/config:config"),
+        react_native_xplat_target("react/utils:utils"),
     ],
 )
 
@@ -82,7 +82,7 @@ fb_xplat_cxx_test(
         ":templateprocessor",
         "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
-        react_native_xplat_target("config:config"),
+        react_native_xplat_target("react/config:config"),
         react_native_xplat_target("react/renderer/components/activityindicator:activityindicator"),
         react_native_xplat_target("react/renderer/components/image:image"),
         react_native_xplat_target("react/renderer/components/root:root"),

@@ -238,23 +238,27 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
 
   shadowTreeRegistry_.visit(
       family->getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        shadowTree.tryCommit([&](RootShadowNode::Shared const
-                                     &oldRootShadowNode) {
-          return std::static_pointer_cast<
-              RootShadowNode>(oldRootShadowNode->cloneTree(
-              *family, [&](ShadowNode const &oldShadowNode) {
-                auto newData =
-                    callback(oldShadowNode.getState()->getDataPointer());
-                auto newState =
-                    componentDescriptor.createState(*family, newData);
+        bool updateSucceeded = shadowTree.tryCommit(
+            [&](RootShadowNode::Shared const &oldRootShadowNode) {
+              return std::static_pointer_cast<
+                  RootShadowNode>(oldRootShadowNode->cloneTree(
+                  *family, [&](ShadowNode const &oldShadowNode) {
+                    auto newData =
+                        callback(oldShadowNode.getState()->getDataPointer());
+                    auto newState =
+                        componentDescriptor.createState(*family, newData);
 
-                return oldShadowNode.clone({
-                    /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                    /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-                    /* .state = */ newState,
-                });
-              }));
-        });
+                    return oldShadowNode.clone({
+                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                        /* .children = */
+                        ShadowNodeFragment::childrenPlaceholder(),
+                        /* .state = */ newState,
+                    });
+                  }));
+            });
+        if (!updateSucceeded && stateUpdate.failureCallback) {
+          stateUpdate.failureCallback();
+        }
       });
 }
 
@@ -268,12 +272,16 @@ void UIManager::dispatchCommand(
 }
 
 void UIManager::configureNextLayoutAnimation(
+    jsi::Runtime &runtime,
     RawValue const &config,
-    SharedEventTarget successCallback,
-    SharedEventTarget errorCallback) const {
+    const jsi::Value &successCallback,
+    const jsi::Value &failureCallback) const {
   if (animationDelegate_) {
     animationDelegate_->uiManagerDidConfigureNextLayoutAnimation(
-        config, successCallback, errorCallback);
+        runtime,
+        config,
+        std::move(successCallback),
+        std::move(failureCallback));
   }
 }
 

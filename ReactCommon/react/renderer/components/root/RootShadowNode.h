@@ -34,6 +34,12 @@ class RootShadowNode final
   using Shared = std::shared_ptr<RootShadowNode const>;
   using Unshared = std::shared_ptr<RootShadowNode>;
 
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::RootNodeKind);
+    return traits;
+  }
+
   /*
    * Layouts the shadow tree if needed.
    * Returns `false` if the three is already laid out.
@@ -47,6 +53,8 @@ class RootShadowNode final
   RootShadowNode::Unshared clone(
       LayoutConstraints const &layoutConstraints,
       LayoutContext const &layoutContext) const;
+
+  Transform getTransform() const override;
 };
 
 } // namespace react

@@ -27,7 +27,8 @@ function requireModule<T: TurboModule>(name: string, schema?: ?$FlowFixMe): ?T {
   }
 
   if (turboModuleProxy != null) {
-    const module: ?T = turboModuleProxy(name, schema);
+    const module: ?T =
+      schema != null ? turboModuleProxy(name, schema) : turboModuleProxy(name);
     return module;
   }
 
@@ -40,7 +41,9 @@ export function get<T: TurboModule>(name: string): ?T {
    *
    * @react-native/babel-plugin-codegen will parse the NativeModule
    * spec, and pass in the generated schema as the second argument
-   * to this function
+   * to this function. The schem will then be used to perform method
+   * dispatch on, and translate arguments/return to and from the Native
+   * TurboModule object.
    */
   const schema = arguments.length === 2 ? arguments[1] : undefined;
   return requireModule<T>(name, schema);
@@ -52,7 +55,9 @@ export function getEnforcing<T: TurboModule>(name: string): T {
    *
    * @react-native/babel-plugin-codegen will parse the NativeModule
    * spec, and pass in the generated schema as the second argument
-   * to this function
+   * to this function. The schem will then be used to perform method
+   * dispatch on, and translate arguments/return to and from the Native
+   * TurboModule object.
    */
   const schema = arguments.length === 2 ? arguments[1] : undefined;
   const module = requireModule<T>(name, schema);

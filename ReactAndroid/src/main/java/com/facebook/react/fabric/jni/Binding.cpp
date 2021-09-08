@@ -28,7 +28,7 @@
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
-#include <Glog/logging.h>
+#include <glog/logging.h>
 
 using namespace facebook::jni;
 using namespace facebook::jsi;
@@ -210,7 +210,7 @@ void Binding::installFabricUIManager(
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
-    ComponentFactoryDelegate *componentsRegistry,
+    ComponentFactory *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
@@ -285,7 +285,8 @@ void Binding::installFabricUIManager(
   }
 
   if (enableLayoutAnimations) {
-    animationDriver_ = std::make_shared<LayoutAnimationDriver>(this);
+    animationDriver_ =
+        std::make_shared<LayoutAnimationDriver>(runtimeExecutor, this);
   }
   scheduler_ = std::make_shared<Scheduler>(
       toolbox, (animationDriver_ ? animationDriver_.get() : nullptr), this);

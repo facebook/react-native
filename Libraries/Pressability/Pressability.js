@@ -443,6 +443,10 @@ export default class Pressability {
     this._cancelLongPressDelayTimeout();
     this._cancelPressDelayTimeout();
     this._cancelPressOutDelayTimeout();
+
+    // Ensure that, if any async event handlers are fired after unmount
+    // due to a race, we don't call any configured callbacks.
+    this._config = Object.freeze({});
   }
 
   /**

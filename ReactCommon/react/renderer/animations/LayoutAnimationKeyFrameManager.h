@@ -7,6 +7,14 @@
 
 #pragma once
 
+// Enable some or all of these to enable very verbose logging for
+// LayoutAnimations
+//#define LAYOUT_ANIMATION_VERBOSE_LOGGING 1
+//#define RN_SHADOW_TREE_INTROSPECTION
+//#define RN_DEBUG_STRING_CONVERTIBLE 1
+
+#include <ReactCommon/RuntimeExecutor.h>
+#include <better/optional.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/mounting/Differentiator.h>
@@ -87,30 +95,72 @@ struct AnimationKeyFrame {
   double initialProgress;
 };
 
+class LayoutAnimationCallbackWrapper {
+ public:
+  LayoutAnimationCallbackWrapper(jsi::Function &&callback)
+      : callback_(std::make_shared<jsi::Function>(std::move(callback))) {}
+  LayoutAnimationCallbackWrapper() : callback_(nullptr) {}
+  ~LayoutAnimationCallbackWrapper() {}
+
+  // Copy and assignment-copy constructors should copy callback_, and not
+  // std::move it. Copying is desirable, otherwise the shared_ptr and
+  // jsi::Function will be deallocated too early.
+
+  bool readyForCleanup() const {
+    return callback_ == nullptr || *callComplete_;
+  }
+
+  void call(const RuntimeExecutor &runtimeExecutor) const {
+    if (readyForCleanup()) {
+      return;
+    }
+
+    std::weak_ptr<jsi::Function> callable = callback_;
+    std::shared_ptr<bool> callComplete = callComplete_;
+
+    runtimeExecutor(
+        [=, callComplete = std::move(callComplete)](jsi::Runtime &runtime) {
+          auto fn = callable.lock();
+
+          if (!fn || *callComplete) {
+            return;
+          }
+
+          fn->call(runtime);
+          *callComplete = true;
+        });
+  }
+
+ private:
+  std::shared_ptr<bool> callComplete_ = std::make_shared<bool>(false);
+  std::shared_ptr<jsi::Function> callback_;
+};
+
 struct LayoutAnimation {
   SurfaceId surfaceId;
   uint64_t startTime;
   bool completed = false;
   LayoutAnimationConfig layoutAnimationConfig;
-  std::shared_ptr<const EventTarget> successCallback;
-  std::shared_ptr<const EventTarget> errorCallback;
+  LayoutAnimationCallbackWrapper successCallback;
+  LayoutAnimationCallbackWrapper failureCallback;
   std::vector<AnimationKeyFrame> keyFrames;
 };
 
 class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
                                        public MountingOverrideDelegate {
  public:
-  LayoutAnimationKeyFrameManager(LayoutAnimationStatusDelegate *delegate)
-      : layoutAnimationStatusDelegate_(delegate) {
-    // This is the ONLY place where we set or access
-    // layoutAnimationStatusDelegate_ without a mutex.
-  }
+  LayoutAnimationKeyFrameManager(
+      RuntimeExecutor runtimeExecutor,
+      LayoutAnimationStatusDelegate *delegate)
+      : runtimeExecutor_(runtimeExecutor),
+        layoutAnimationStatusDelegate_(delegate) {}
   ~LayoutAnimationKeyFrameManager() {}
 
   void uiManagerDidConfigureNextLayoutAnimation(
+      jsi::Runtime &runtime,
       RawValue const &config,
-      std::shared_ptr<EventTarget const> successCallback,
-      std::shared_ptr<EventTarget const> errorCallback) const override;
+      const jsi::Value &successCallbackValue,
+      const jsi::Value &failureCallbackValue) const override;
   void setComponentDescriptorRegistry(SharedComponentDescriptorRegistry const &
                                           componentDescriptorRegistry) override;
 
@@ -138,8 +188,13 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       LayoutAnimationStatusDelegate *delegate) const;
 
  private:
+  RuntimeExecutor runtimeExecutor_;
   mutable std::mutex layoutAnimationStatusDelegateMutex_;
   mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
+
+  void adjustImmediateMutationIndicesForDelayedMutations(
+      SurfaceId surfaceId,
+      ShadowViewMutation &mutation) const;
 
   void adjustDelayedMutationIndicesForMutation(
       SurfaceId surfaceId,
@@ -162,6 +217,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowView startingView,
       ShadowView finalView) const;
 
+  void callCallback(const LayoutAnimationCallbackWrapper &callback) const;
+
   virtual void animationMutationsForFrame(
       SurfaceId surfaceId,
       ShadowViewMutation::List &mutationsList,
@@ -183,6 +240,13 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    * by the MountingCoordinator's mutex.
    */
   mutable std::vector<LayoutAnimation> inflightAnimations_{};
+
+ private:
+  // A vector of callable function wrappers that are in the process of being
+  // called
+  mutable std::mutex callbackWrappersPendingMutex_;
+  mutable std::vector<std::unique_ptr<LayoutAnimationCallbackWrapper>>
+      callbackWrappersPending_{};
 };
 
 } // namespace react

@@ -7,8 +7,9 @@
 
 #pragma once
 
+#include <jsi/jsi.h>
+
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
-#include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/RawValue.h>
 
 namespace facebook {
@@ -23,9 +24,10 @@ class UIManagerAnimationDelegate {
    * TODO: need SurfaceId here
    */
   virtual void uiManagerDidConfigureNextLayoutAnimation(
+      jsi::Runtime &runtime,
       RawValue const &config,
-      SharedEventTarget successCallback,
-      SharedEventTarget errorCallback) const = 0;
+      const jsi::Value &successCallback,
+      const jsi::Value &failureCallback) const = 0;
 
   /**
    * Set ComponentDescriptor registry.

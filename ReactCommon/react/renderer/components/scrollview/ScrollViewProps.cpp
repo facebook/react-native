@@ -145,7 +145,26 @@ ScrollViewProps::ScrollViewProps(
           rawProps,
           "snapToAlignment",
           sourceProps.snapToAlignment,
-          {})) {}
+          {})),
+      disableIntervalMomentum(convertRawProp(
+          rawProps,
+          "disableIntervalMomentum",
+          sourceProps.disableIntervalMomentum,
+          {})),
+      snapToOffsets(convertRawProp(
+          rawProps,
+          "snapToOffsets",
+          sourceProps.snapToOffsets,
+          {})),
+      snapToStart(
+          convertRawProp(rawProps, "snapToStart", sourceProps.snapToStart, {})),
+      snapToEnd(
+          convertRawProp(rawProps, "snapToEnd", sourceProps.snapToEnd, {})),
+      contentInsetAdjustmentBehavior(convertRawProp(
+          rawProps,
+          "contentInsetAdjustmentBehavior",
+          sourceProps.contentInsetAdjustmentBehavior,
+          {ContentInsetAdjustmentBehavior::Never})) {}
 
 #pragma mark - DebugStringConvertible
 
@@ -253,7 +272,14 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
               "snapToAlignment",
               snapToAlignment,
               defaultScrollViewProps.snapToAlignment),
-      };
+          debugStringConvertibleItem(
+              "disableIntervalMomentum",
+              disableIntervalMomentum,
+              defaultScrollViewProps.disableIntervalMomentum),
+          debugStringConvertibleItem(
+              "snapToStart", snapToStart, defaultScrollViewProps.snapToStart),
+          debugStringConvertibleItem(
+              "snapToEnd", snapToEnd, defaultScrollViewProps.snapToEnd)};
 }
 #endif
 

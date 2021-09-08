@@ -22,13 +22,15 @@ static jsi::Object getModule(
       runtime.global().getPropertyAsObject(runtime, "__fbBatchedBridge");
   auto getCallableModule =
       batchedBridge.getPropertyAsFunction(runtime, "getCallableModule");
-  auto module = getCallableModule
-                    .callWithThis(
-                        runtime,
-                        batchedBridge,
-                        {jsi::String::createFromUtf8(runtime, moduleName)})
-                    .asObject(runtime);
-  return module;
+  auto moduleAsValue = getCallableModule.callWithThis(
+      runtime,
+      batchedBridge,
+      {jsi::String::createFromUtf8(runtime, moduleName)});
+  if (!moduleAsValue.isObject()) {
+    LOG(ERROR) << "getModule of " << moduleName << " is not an object";
+  }
+  assert(moduleAsValue.isObject());
+  return moduleAsValue.asObject(runtime);
 }
 
 std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
@@ -54,8 +56,8 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
 }
 
 UIManagerBinding::~UIManagerBinding() {
-  LOG(WARNING) << "UIManager::~UIManager() was called (address: " << this
-               << ").";
+  LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
+               << this << ").";
 
   // We must detach the `UIBinding` on deallocation to prevent accessing
   // deallocated `UIManagerBinding`.
@@ -140,6 +142,9 @@ void UIManagerBinding::dispatchEvent(
       }
 
       // Mixing `target` into `payload`.
+      if (!payload.isObject()) {
+        LOG(ERROR) << "payload for dispatchEvent is not an object: " << eventTarget->getTag();
+      }
       assert(payload.isObject());
       payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
       return instanceHandle;
@@ -601,7 +606,8 @@ jsi::Value UIManagerBinding::get(
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,
-              {/* .includeTransform = */ true});
+              {/* .includeTransform = */ true,
+               /* includeViewportOffset = */ true});
 
           auto onSuccessFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
@@ -651,10 +657,11 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
           uiManager->configureNextLayoutAnimation(
+              runtime,
               // TODO: pass in JSI value instead of folly::dynamic to RawValue
               RawValue(commandArgsFromValue(runtime, arguments[0])),
-              eventTargetFromValue(runtime, arguments[1], -1),
-              eventTargetFromValue(runtime, arguments[2], -1));
+              arguments[1],
+              arguments[2]);
           return jsi::Value::undefined();
         });
   }

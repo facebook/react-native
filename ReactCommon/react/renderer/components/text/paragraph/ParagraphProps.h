@@ -41,6 +41,8 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
    */
   bool const isSelectable{};
 
+  bool const onTextLayout{};
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE

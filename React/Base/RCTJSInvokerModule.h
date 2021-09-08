@@ -12,5 +12,6 @@
 @protocol RCTJSInvokerModule
 
 @property (nonatomic, copy, nonnull) void (^invokeJS)(NSString * _Nullable module, NSString * _Nullable method, NSArray * _Nullable args); // TODO(macOS GH#774)
+@property (nonatomic, copy) void (^invokeJSWithModuleDotMethod)(NSString *moduleDotMethod, NSArray *args);
 
 @end

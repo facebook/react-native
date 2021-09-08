@@ -9,6 +9,7 @@
 
 #import <react/renderer/components/root/RootComponentDescriptor.h>
 #import <react/renderer/components/root/RootProps.h>
+#import "RCTConversions.h"
 
 using namespace facebook::react;
 

@@ -15,7 +15,6 @@
 @interface RCTEventEmitter : NSObject <RCTBridgeModule, RCTJSInvokerModule>
 
 @property (nonatomic, weak) RCTBridge * _Nullable bridge; // TODO(macOS GH#774)
-@property (nonatomic, copy, nonnull) void (^invokeJS)(NSString * _Nullable module, NSString * _Nullable method, NSArray * _Nullable args); // TODO(macOS GH#774)
 
 /**
  * Override this method to return an array of supported event names. Attempting

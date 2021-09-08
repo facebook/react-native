@@ -10,23 +10,23 @@
 
 'use strict';
 
-const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const ReactNative = require('../../Renderer/shims/ReactNative');
+import AnimatedImplementation from '../../Animated/src/AnimatedImplementation';
+import Platform from '../../Utilities/Platform';
+import * as React from 'react';
+import ReactNative from '../../Renderer/shims/ReactNative';
 require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311
-const ScrollResponder = require('../ScrollResponder');
-const ScrollViewStickyHeader = require('./ScrollViewStickyHeader');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
+import ScrollResponder from '../ScrollResponder';
+import ScrollViewStickyHeader from './ScrollViewStickyHeader';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
 
-const dismissKeyboard = require('../../Utilities/dismissKeyboard');
-const flattenStyle = require('../../StyleSheet/flattenStyle');
-const invariant = require('invariant');
-const processDecelerationRate = require('./processDecelerationRate');
-const resolveAssetSource = require('../../Image/resolveAssetSource');
-const splitLayoutProps = require('../../StyleSheet/splitLayoutProps');
-const setAndForwardRef = require('../../Utilities/setAndForwardRef');
+import dismissKeyboard from '../../Utilities/dismissKeyboard';
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import invariant from 'invariant';
+import processDecelerationRate from './processDecelerationRate';
+import resolveAssetSource from '../../Image/resolveAssetSource';
+import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
+import setAndForwardRef from '../../Utilities/setAndForwardRef';
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
@@ -1178,7 +1178,7 @@ class ScrollView extends React.Component<Props, State> {
           return (
             <StickyHeaderComponent
               key={key}
-              nativeID={'StickyHeader-' + key}
+              nativeID={'StickyHeader-' + key} /* TODO: T68258846. */
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(
                 this._getKeyForIndex(nextIndex, childArray),

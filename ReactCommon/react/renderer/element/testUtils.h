@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
@@ -38,6 +39,8 @@ inline ComponentBuilder simpleComponentBuilder() {
       concreteComponentDescriptorProvider<TextComponentDescriptor>());
   componentDescriptorProviderRegistry.add(
       concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
+  componentDescriptorProviderRegistry.add(
+      concreteComponentDescriptorProvider<ModalHostViewComponentDescriptor>());
 
   return ComponentBuilder{componentDescriptorRegistry};
 }

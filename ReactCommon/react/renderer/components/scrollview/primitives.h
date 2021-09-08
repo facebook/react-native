@@ -16,5 +16,12 @@ enum class ScrollViewIndicatorStyle { Default, Black, White };
 
 enum class ScrollViewKeyboardDismissMode { None, OnDrag, Interactive };
 
+enum class ContentInsetAdjustmentBehavior {
+  Never,
+  Automatic,
+  ScrollableAxes,
+  Always
+};
+
 } // namespace react
 } // namespace facebook

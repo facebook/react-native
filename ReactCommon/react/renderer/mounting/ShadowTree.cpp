@@ -222,8 +222,11 @@ ShadowTree::ShadowTree(
     LayoutContext const &layoutContext,
     RootComponentDescriptor const &rootComponentDescriptor,
     ShadowTreeDelegate const &delegate,
-    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate)
-    : surfaceId_(surfaceId), delegate_(delegate) {
+    std::weak_ptr<MountingOverrideDelegate const> mountingOverrideDelegate,
+    bool enableReparentingDetection)
+    : surfaceId_(surfaceId),
+      delegate_(delegate),
+      enableReparentingDetection_(enableReparentingDetection) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
 
@@ -241,7 +244,9 @@ ShadowTree::ShadowTree(
           family));
 
   mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
-      ShadowTreeRevision{rootShadowNode_, 0, {}}, mountingOverrideDelegate);
+      ShadowTreeRevision{rootShadowNode_, 0, {}},
+      mountingOverrideDelegate,
+      enableReparentingDetection);
 }
 
 ShadowTree::~ShadowTree() {

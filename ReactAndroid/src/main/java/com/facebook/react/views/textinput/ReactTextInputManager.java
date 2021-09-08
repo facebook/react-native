@@ -50,6 +50,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -925,7 +926,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
 
       // Fabric: update representation of AttributedString
-      JavaOnlyMap attributedString = mEditText.mAttributedString;
+      final JavaOnlyMap attributedString = mEditText.mAttributedString;
       if (attributedString != null && attributedString.hasKey("fragments")) {
         String changedText = s.subSequence(start, start + count).toString();
 
@@ -987,27 +988,35 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // we must recreate these data structures every time. It would be nice to have a
       // reusable data-structure to use for TextInput because constructing these and copying
       // on every keystroke is very expensive.
-      if (mEditText.mStateWrapper != null && attributedString != null) {
-        WritableMap map = new WritableNativeMap();
-        WritableMap newAttributedString = new WritableNativeMap();
+      if (mEditText.getFabricViewStateManager().hasStateWrapper() && attributedString != null) {
+        mEditText
+            .getFabricViewStateManager()
+            .setState(
+                new FabricViewStateManager.StateUpdateCallback() {
+                  @Override
+                  public WritableMap getStateUpdate() {
+                    WritableMap map = new WritableNativeMap();
+                    WritableMap newAttributedString = new WritableNativeMap();
 
-        WritableArray fragments = new WritableNativeArray();
+                    WritableArray fragments = new WritableNativeArray();
 
-        for (int i = 0; i < attributedString.getArray("fragments").size(); i++) {
-          ReadableMap readableFragment = attributedString.getArray("fragments").getMap(i);
-          WritableMap fragment = new WritableNativeMap();
-          fragment.putDouble("reactTag", readableFragment.getInt("reactTag"));
-          fragment.putString("string", readableFragment.getString("string"));
-          fragments.pushMap(fragment);
-        }
+                    for (int i = 0; i < attributedString.getArray("fragments").size(); i++) {
+                      ReadableMap readableFragment =
+                          attributedString.getArray("fragments").getMap(i);
+                      WritableMap fragment = new WritableNativeMap();
+                      fragment.putDouble("reactTag", readableFragment.getInt("reactTag"));
+                      fragment.putString("string", readableFragment.getString("string"));
+                      fragments.pushMap(fragment);
+                    }
 
-        newAttributedString.putString("string", attributedString.getString("string"));
-        newAttributedString.putArray("fragments", fragments);
+                    newAttributedString.putString("string", attributedString.getString("string"));
+                    newAttributedString.putArray("fragments", fragments);
 
-        map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-        map.putMap("textChanged", newAttributedString);
-
-        mEditText.mStateWrapper.updateState(map);
+                    map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
+                    map.putMap("textChanged", newAttributedString);
+                    return map;
+                  }
+                });
       }
 
       // The event that contains the event counter and updates it must be sent first.
@@ -1241,6 +1250,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Override
   public Object updateState(
       ReactEditText view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+
+    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
+
     if (stateWrapper == null) {
       throw new IllegalArgumentException("Unable to update a NULL state.");
     }
@@ -1260,7 +1272,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
-    view.mStateWrapper = stateWrapper;
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt("mostRecentEventCount"),

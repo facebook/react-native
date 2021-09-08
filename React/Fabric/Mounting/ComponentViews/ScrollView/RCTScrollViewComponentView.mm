@@ -9,6 +9,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTConstants.h>
 #import <React/RCTScrollEvent.h>
 
 #import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
@@ -16,6 +17,7 @@
 #import <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
 #import <react/renderer/components/scrollview/ScrollViewProps.h>
 #import <react/renderer/components/scrollview/ScrollViewState.h>
+#import <react/renderer/components/scrollview/conversions.h>
 #import <react/renderer/graphics/Geometry.h>
 
 #import "RCTConversions.h"
@@ -39,13 +41,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
                                                                  userData:nil
                                                             coalescingKey:coalescingKey];
   [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
-}
-
-static BOOL isOnDemandViewMountingEnabledGlobally = NO;
-
-void RCTSetEnableOnDemandViewMounting(BOOL value)
-{
-  isOnDemandViewMountingEnabledGlobally = value;
 }
 
 @interface RCTScrollViewComponentView () <UIScrollViewDelegate, RCTScrollViewProtocol, RCTScrollableProtocol>
@@ -82,7 +77,7 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
     static const auto defaultProps = std::make_shared<const ScrollViewProps>();
     _props = defaultProps;
 
-    _isOnDemandViewMountingEnabled = isOnDemandViewMountingEnabledGlobally;
+    _isOnDemandViewMountingEnabled = RCTExperimentGetOnDemandViewMounting();
     _childComponentViews = [[NSMutableArray alloc] init];
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
@@ -186,13 +181,45 @@ void RCTSetEnableOnDemandViewMounting(BOOL value)
     _scrollView.contentInset = RCTUIEdgeInsetsFromEdgeInsets(newScrollViewProps.contentInset);
   }
 
+  RCTEnhancedScrollView *scrollView = (RCTEnhancedScrollView *)_scrollView;
   if (oldScrollViewProps.contentOffset != newScrollViewProps.contentOffset) {
     _scrollView.contentOffset = RCTCGPointFromPoint(newScrollViewProps.contentOffset);
   }
 
+  if (oldScrollViewProps.snapToAlignment != newScrollViewProps.snapToAlignment) {
+    scrollView.snapToAlignment = RCTNSStringFromString(toString(newScrollViewProps.snapToAlignment));
+  }
+
+  scrollView.snapToStart = newScrollViewProps.snapToStart;
+  scrollView.snapToEnd = newScrollViewProps.snapToEnd;
+
+  if (oldScrollViewProps.snapToOffsets != newScrollViewProps.snapToOffsets) {
+    NSMutableArray<NSNumber *> *snapToOffsets = [NSMutableArray array];
+    for (auto const &snapToOffset : newScrollViewProps.snapToOffsets) {
+      [snapToOffsets addObject:[NSNumber numberWithFloat:snapToOffset]];
+    }
+    scrollView.snapToOffsets = snapToOffsets;
+  }
+
+  if (@available(iOS 11.0, *)) {
+    if (oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) {
+      auto const contentInsetAdjustmentBehavior = newScrollViewProps.contentInsetAdjustmentBehavior;
+      if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Never) {
+        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Automatic) {
+        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::ScrollableAxes) {
+        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+      } else if (contentInsetAdjustmentBehavior == ContentInsetAdjustmentBehavior::Always) {
+        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAlways;
+      }
+    }
+  }
+
+  MAP_SCROLL_VIEW_PROP(disableIntervalMomentum);
+  MAP_SCROLL_VIEW_PROP(snapToInterval);
+
   // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
-  // MAP_SCROLL_VIEW_PROP(snapToInterval);
-  // MAP_SCROLL_VIEW_PROP(snapToAlignment);
 
   [super updateProps:props oldProps:oldProps];
 }
