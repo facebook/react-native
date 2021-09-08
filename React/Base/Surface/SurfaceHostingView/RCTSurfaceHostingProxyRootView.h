@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTBridgeModule.h>
 #import <React/RCTRootView.h>
 
 #import "RCTSurfaceHostingView.h"
@@ -48,6 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
                        moduleName:(NSString *)moduleName
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions;
+
+/**
+ * Bridgeless mode initializer
+ */
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
+                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
+                 moduleRegistry:(RCTModuleRegistry *)moduleRegistry;
 
 - (void)cancelTouches;
 
