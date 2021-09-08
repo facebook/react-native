@@ -422,9 +422,12 @@ static Class getFallbackClassFromName(const char *name)
      */
 
     if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-      std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-
-      moduleClass = [_delegate getModuleClassFromName:moduleName];
+      if (RCTTurboModuleManagerDelegateLockingDisabled()) {
+        moduleClass = [_delegate getModuleClassFromName:moduleName];
+      } else {
+        std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
+        moduleClass = [_delegate getModuleClassFromName:moduleName];
+      }
     }
 
     if (!moduleClass) {
@@ -506,9 +509,12 @@ static Class getFallbackClassFromName(const char *name)
 
   TurboModulePerfLogger::moduleCreateConstructStart(moduleName, moduleId);
   if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-
-    module = [_delegate getModuleInstanceFromClass:moduleClass];
+    if (RCTTurboModuleManagerDelegateLockingDisabled()) {
+      module = [_delegate getModuleInstanceFromClass:moduleClass];
+    } else {
+      std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
+      module = [_delegate getModuleInstanceFromClass:moduleClass];
+    }
   } else {
     module = [moduleClass new];
   }
