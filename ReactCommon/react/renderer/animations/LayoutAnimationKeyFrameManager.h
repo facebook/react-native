@@ -9,6 +9,7 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <better/optional.h>
+#include <better/set.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/debug/flags.h>
@@ -243,7 +244,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       std::vector<AnimationKeyFrame> &conflictingAnimations) const;
 
   mutable std::mutex surfaceIdsToStopMutex_;
-  mutable std::vector<SurfaceId> surfaceIdsToStop_{};
+  mutable better::set<SurfaceId> surfaceIdsToStop_{};
 
  protected:
   bool hasComponentDescriptorForShadowView(ShadowView const &shadowView) const;

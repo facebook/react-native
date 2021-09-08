@@ -340,7 +340,7 @@ bool LayoutAnimationKeyFrameManager::shouldOverridePullTransaction() const {
 
 void LayoutAnimationKeyFrameManager::stopSurface(SurfaceId surfaceId) {
   std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
-  surfaceIdsToStop_.push_back(surfaceId);
+  surfaceIdsToStop_.insert(surfaceId);
 }
 
 bool LayoutAnimationKeyFrameManager::shouldAnimateFrame() const {
@@ -756,26 +756,24 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
   // Execute stopSurface on any ongoing animations
   if (inflightAnimationsExistInitially) {
-    std::vector<SurfaceId> surfaceIdsToStop{};
+    better::set<SurfaceId> surfaceIdsToStop{};
     {
       std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
       surfaceIdsToStop = surfaceIdsToStop_;
-      surfaceIdsToStop_ = {};
+      surfaceIdsToStop_.clear();
     }
 
     for (auto it = inflightAnimations_.begin();
          it != inflightAnimations_.end();) {
       const auto &animation = *it;
 
-      if (std::find(
-              surfaceIdsToStop.begin(),
-              surfaceIdsToStop.end(),
-              animation.surfaceId) != surfaceIdsToStop.end()) {
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
-        LOG(ERROR)
-            << "LayoutAnimations: stopping animation due to stopSurface on "
-            << surfaceId;
+      LOG(ERROR)
+          << "LayoutAnimations: stopping animation due to stopSurface on "
+          << surfaceId;
 #endif
+      if (surfaceIdsToStop.find(animation.surfaceId) !=
+          surfaceIdsToStop.end()) {
         it = inflightAnimations_.erase(it);
       } else {
         it++;
