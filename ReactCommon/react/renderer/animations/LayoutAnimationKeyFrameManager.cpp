@@ -1867,39 +1867,9 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
 }
 
 void LayoutAnimationKeyFrameManager::callCallback(
-    const LayoutAnimationCallbackWrapper &callback) const {
-  if (callback.readyForCleanup()) {
-    return;
-  }
-
-  // Callbacks can only be called once. Replace the callsite with an empty
-  // CallbackWrapper. We use a unique_ptr to avoid copying into the vector.
-  std::unique_ptr<LayoutAnimationCallbackWrapper> copiedCallback(
-      std::make_unique<LayoutAnimationCallbackWrapper>(callback));
-
-  // Call the callback that is being retained in the vector
-  copiedCallback->call(runtimeExecutor_);
-
-  // Protect with a mutex: this can be called on failure callbacks in the JS
-  // thread and success callbacks on the UI thread
-  {
-    std::lock_guard<std::mutex> lock(callbackWrappersPendingMutex_);
-
-    // Clean any stale data in the retention vector
-    callbackWrappersPending_.erase(
-        std::remove_if(
-            callbackWrappersPending_.begin(),
-            callbackWrappersPending_.end(),
-            [](const std::unique_ptr<LayoutAnimationCallbackWrapper> &wrapper) {
-              return wrapper->readyForCleanup();
-            }),
-        callbackWrappersPending_.end());
-
-    // Hold onto a reference to the callback, only while
-    // LayoutAnimationKeyFrameManager is alive and the callback hasn't
-    // completed yet.
-    callbackWrappersPending_.push_back(std::move(copiedCallback));
-  }
+    LayoutAnimationCallbackWrapper const &callback) const {
+  runtimeExecutor_(
+      [callback](jsi::Runtime &runtime) { callback.call(runtime); });
 }
 
 } // namespace react

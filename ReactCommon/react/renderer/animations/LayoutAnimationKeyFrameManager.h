@@ -10,6 +10,7 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <better/optional.h>
 #include <better/set.h>
+#include <react/renderer/animations/LayoutAnimationCallbackWrapper.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/debug/flags.h>
@@ -107,47 +108,6 @@ struct AnimationKeyFrame {
   // In the case where some mutation conflicts with this keyframe,
   // should we generate final synthetic UPDATE mutations for this keyframe?
   bool generateFinalSyntheticMutations{true};
-};
-
-class LayoutAnimationCallbackWrapper {
- public:
-  LayoutAnimationCallbackWrapper(jsi::Function &&callback)
-      : callback_(std::make_shared<jsi::Function>(std::move(callback))) {}
-  LayoutAnimationCallbackWrapper() : callback_(nullptr) {}
-
-  // Copy and assignment-copy constructors should copy callback_, and not
-  // std::move it. Copying is desirable, otherwise the shared_ptr and
-  // jsi::Function will be deallocated too early.
-
-  bool readyForCleanup() const {
-    return callback_ == nullptr || *callComplete_;
-  }
-
-  void call(const RuntimeExecutor &runtimeExecutor) const {
-    if (readyForCleanup()) {
-      return;
-    }
-
-    std::weak_ptr<jsi::Function> callable = callback_;
-    std::shared_ptr<std::atomic_bool> callComplete = callComplete_;
-
-    runtimeExecutor(
-        [=, callComplete = std::move(callComplete)](jsi::Runtime &runtime) {
-          auto fn = callable.lock();
-
-          if (!fn || *callComplete) {
-            return;
-          }
-
-          fn->call(runtime);
-          *callComplete = true;
-        });
-  }
-
- private:
-  std::shared_ptr<std::atomic_bool> callComplete_ =
-      std::make_shared<std::atomic_bool>(false);
-  std::shared_ptr<jsi::Function> callback_;
 };
 
 struct LayoutAnimation {
@@ -288,13 +248,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    * by the MountingCoordinator's mutex.
    */
   mutable std::vector<LayoutAnimation> inflightAnimations_{};
-
- private:
-  // A vector of callable function wrappers that are in the process of being
-  // called
-  mutable std::mutex callbackWrappersPendingMutex_;
-  mutable std::vector<std::unique_ptr<LayoutAnimationCallbackWrapper>>
-      callbackWrappersPending_{};
 
  public:
   void setClockNow(std::function<uint64_t()> now);
