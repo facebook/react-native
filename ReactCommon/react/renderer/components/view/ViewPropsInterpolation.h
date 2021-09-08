@@ -7,9 +7,8 @@
 
 #pragma once
 
-#include "ViewProps.h"
-
-#include <react/debug/react_native_assert.h>
+#include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/graphics/Transform.h>
 
 namespace facebook {
 namespace react {
