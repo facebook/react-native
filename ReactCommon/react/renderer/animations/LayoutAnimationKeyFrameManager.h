@@ -50,7 +50,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
                          .time_since_epoch())
               .count();
         }) {}
-  ~LayoutAnimationKeyFrameManager() {}
 
 #pragma mark UIManagerAnimationDelegate methods
 

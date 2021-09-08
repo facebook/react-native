@@ -21,8 +21,6 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
       LayoutAnimationStatusDelegate *delegate)
       : LayoutAnimationKeyFrameManager(runtimeExecutor, delegate) {}
 
-  virtual ~LayoutAnimationDriver() {}
-
  protected:
   virtual void animationMutationsForFrame(
       SurfaceId surfaceId,
