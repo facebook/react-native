@@ -1,6 +1,7 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/apple:config_utils_defs.bzl", "STATIC_LIBRARY_APPLETVOS_CONFIG", "fbobjc_configs")
 load("//tools/build_defs/apple:fb_apple_test.bzl", "fb_apple_test")
-load("//tools/build_defs/apple:flag_defs.bzl", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
+load("//tools/build_defs/apple:flag_defs.bzl", "get_base_appletvos_flags", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
 load("//tools/build_defs/apple/plugins:plugin_defs.bzl", "plugin")
 load("//tools/build_defs/oss:metro_defs.bzl", "rn_library")
 load(
@@ -183,6 +184,8 @@ rn_xplat_cxx_library2(
         prefix = "React",
     ),
     apple_sdks = (IOS, APPLETVOS),
+    appletvos_configs = fbobjc_configs(STATIC_LIBRARY_APPLETVOS_CONFIG),
+    appletvos_inherited_buck_flags = get_base_appletvos_flags(),
     contacts = ["oncall+react_native@xmail.facebook.com"],
     fbobjc_enable_exceptions = True,
     frameworks = [
