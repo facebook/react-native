@@ -166,6 +166,11 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       SurfaceId surfaceId,
       ShadowViewMutationList const &mutations,
       std::vector<AnimationKeyFrame> &conflictingAnimations) const;
+
+  /*
+   * Removes animations from `inflightAnimations_` for stopped surfaces.
+   */
+  void deleteAnimationsForStoppedSurfaces() const;
 };
 
 static inline bool shouldFirstComeBeforeSecondRemovesOnly(

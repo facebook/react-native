@@ -177,33 +177,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
   uint64_t now = now_();
 
   bool inflightAnimationsExistInitially = !inflightAnimations_.empty();
-
-  // Execute stopSurface on any ongoing animations
-  if (inflightAnimationsExistInitially) {
-    better::set<SurfaceId> surfaceIdsToStop{};
-    {
-      std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
-      surfaceIdsToStop = surfaceIdsToStop_;
-      surfaceIdsToStop_.clear();
-    }
-
-    for (auto it = inflightAnimations_.begin();
-         it != inflightAnimations_.end();) {
-      const auto &animation = *it;
-
-#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
-      LOG(ERROR)
-          << "LayoutAnimations: stopping animation due to stopSurface on "
-          << surfaceId;
-#endif
-      if (surfaceIdsToStop.find(animation.surfaceId) !=
-          surfaceIdsToStop.end()) {
-        it = inflightAnimations_.erase(it);
-      } else {
-        it++;
-      }
-    }
-  }
+  deleteAnimationsForStoppedSurfaces();
 
   if (!mutations.empty()) {
 #ifdef RN_SHADOW_TREE_INTROSPECTION
@@ -1690,6 +1664,38 @@ void LayoutAnimationKeyFrameManager::getAndEraseConflictingAnimations(
   if (!localConflictingMutations.empty()) {
     getAndEraseConflictingAnimations(
         surfaceId, localConflictingMutations, conflictingAnimations);
+  }
+}
+
+void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
+    const {
+  bool inflightAnimationsExistInitially = !inflightAnimations_.empty();
+
+  // Execute stopSurface on any ongoing animations
+  if (inflightAnimationsExistInitially) {
+    better::set<SurfaceId> surfaceIdsToStop{};
+    {
+      std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
+      surfaceIdsToStop = surfaceIdsToStop_;
+      surfaceIdsToStop_.clear();
+    }
+
+    for (auto it = inflightAnimations_.begin();
+         it != inflightAnimations_.end();) {
+      const auto &animation = *it;
+
+#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
+      LOG(ERROR)
+          << "LayoutAnimations: stopping animation due to stopSurface on "
+          << surfaceId;
+#endif
+      if (surfaceIdsToStop.find(animation.surfaceId) !=
+          surfaceIdsToStop.end()) {
+        it = inflightAnimations_.erase(it);
+      } else {
+        it++;
+      }
+    }
   }
 }
 
