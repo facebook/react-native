@@ -13,8 +13,8 @@
 #import <react/renderer/components/rncore/EventEmitters.h>
 #import <react/renderer/components/rncore/Props.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
 #import "RCTConversions.h"
+
 #import "RCTFabricModalHostViewController.h"
 
 using namespace facebook::react;
@@ -120,30 +120,42 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   return self;
 }
 
+- (void)presentViewController:(UIViewController *)modalViewController
+                     animated:(BOOL)animated
+                   completion:(void (^)(void))completion
+{
+  UIViewController *controller = [self reactViewController];
+  [controller presentViewController:modalViewController animated:animated completion:completion];
+}
+
+- (void)dismissViewController:(UIViewController *)modalViewController animated:(BOOL)animated
+{
+  [modalViewController dismissViewControllerAnimated:animated completion:nil];
+}
+
 - (void)ensurePresentedOnlyIfNeeded
 {
   BOOL shouldBePresented = !_isPresented && self.window;
   if (shouldBePresented) {
-    UIViewController *controller = [self reactViewController];
     _isPresented = YES;
-    return [controller
-        presentViewController:_viewController
-                     animated:_shouldAnimatePresentation
-                   completion:^{
-                     if (!self->_eventEmitter) {
-                       return;
-                     }
+    [self presentViewController:_viewController
+                       animated:_shouldAnimatePresentation
+                     completion:^{
+                       if (!self->_eventEmitter) {
+                         return;
+                       }
 
-                     assert(std::dynamic_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter));
-                     auto eventEmitter = std::static_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter);
-                     eventEmitter->onShow(ModalHostViewEventEmitter::OnShow{});
-                   }];
+                       assert(std::dynamic_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter));
+                       auto eventEmitter =
+                           std::static_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter);
+                       eventEmitter->onShow(ModalHostViewEventEmitter::OnShow{});
+                     }];
   }
 
   BOOL shouldBeHidden = _isPresented && !self.superview;
   if (shouldBeHidden) {
     _isPresented = NO;
-    [_viewController dismissViewControllerAnimated:_shouldAnimatePresentation completion:nil];
+    [self dismissViewController:_viewController animated:_shouldAnimatePresentation];
   }
 }
 
@@ -224,8 +236,3 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 }
 
 @end
-
-Class<RCTComponentViewProtocol> RCTModalHostViewCls(void)
-{
-  return RCTModalHostViewComponentView.class;
-}

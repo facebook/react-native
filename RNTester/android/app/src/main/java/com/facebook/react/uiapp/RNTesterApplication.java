@@ -25,6 +25,7 @@ import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.fabric.ComponentFactory;
+import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.shell.MainReactPackage;
@@ -84,8 +85,7 @@ public class RNTesterApplication extends Application implements ReactApplication
                     @Override
                     public JSIModuleProvider<UIManager> getJSIModuleProvider() {
                       ComponentFactory ComponentFactory = new ComponentFactory();
-                      // TODO: T71642450 Register CoreComponentsRegistry again
-                      // CoreComponentsRegistry.register(ComponentFactory);
+                      CoreComponentsRegistry.register(ComponentFactory);
                       return new FabricJSIModuleProvider(
                           reactApplicationContext,
                           ComponentFactory,

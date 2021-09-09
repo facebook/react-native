@@ -7,10 +7,12 @@
 
 package com.facebook.react.codegen.generator;
 
+import com.facebook.react.codegen.generator.model.RawSchema;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.lang.model.element.Modifier;
 
@@ -26,7 +28,11 @@ public final class JavaGenerator {
     mOutputDir = outputDir;
   }
 
-  public void build() throws IOException {
+  public void build() throws FileNotFoundException, IOException {
+    final RawSchema rawSchema = SchemaJsonParser.parse(mSchemaFile);
+    // TODO (T71663018): remove - this is for debugging
+    System.out.println(rawSchema);
+
     final MethodSpec main =
         MethodSpec.methodBuilder("main")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -42,8 +48,6 @@ public final class JavaGenerator {
             .build();
 
     final JavaFile javaFile = JavaFile.builder(mJavaPackageName, helloWorld).build();
-
-    System.out.println(javaFile.toString());
 
     javaFile.writeTo(mOutputDir);
   }

@@ -59,7 +59,6 @@ deprecated-type=warn
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
 signature-verification-failure=warn
-deprecated-utility=error
 
 [strict]
 deprecated-type
