@@ -256,13 +256,12 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       std::lock_guard<std::mutex> lock(currentAnimationMutex_);
       if (currentAnimation_) {
         currentAnimation = std::move(currentAnimation_);
-        currentAnimation_ = {};
+        currentAnimation_.reset();
       }
     }
 
-    if (currentAnimation) {
-      LayoutAnimation animation = std::move(currentAnimation.value());
-      currentAnimation = {};
+    if (currentAnimation.hasValue()) {
+      LayoutAnimation animation = std::move(currentAnimation).value();
       animation.surfaceId = surfaceId;
       animation.startTime = now;
 
