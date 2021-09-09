@@ -1313,6 +1313,10 @@ void LayoutAnimationKeyFrameManager::setClockNow(
   now_ = now;
 }
 
+void LayoutAnimationKeyFrameManager::enableSkipInvalidatedKeyFrames() {
+  skipInvalidatedKeyFrames_ = true;
+}
+
 #pragma mark - Protected
 
 bool LayoutAnimationKeyFrameManager::hasComponentDescriptorForShadowView(
@@ -1471,6 +1475,9 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     ShadowViewMutation::List &mutationsList,
     bool interrupted,
     std::string logPrefix) const {
+  if (skipInvalidatedKeyFrames_ && keyframe.invalidated) {
+    return;
+  }
   if (keyframe.finalMutationsForKeyFrame.size() > 0) {
     // TODO: modularize this segment, it is repeated 2x in KeyFrameManager
     // as well.

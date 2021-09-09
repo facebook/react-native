@@ -86,6 +86,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void setClockNow(std::function<uint64_t()> now);
 
+  void enableSkipInvalidatedKeyFrames();
+
  protected:
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable better::optional<LayoutAnimation> currentAnimation_{};
@@ -144,6 +146,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable better::set<SurfaceId> surfaceIdsToStop_{};
+  bool skipInvalidatedKeyFrames_{false};
 
   // Function that returns current time in milliseconds
   std::function<uint64_t()> now_;
