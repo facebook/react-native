@@ -272,23 +272,21 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // TODO: to prevent this step we could tag Remove/Insert mutations as
       // being moves on the Differ level, since we know that there? We could use
       // TinyMap here, but it's not exposed by Differentiator (yet).
-      std::vector<Tag> insertedTags;
-      std::vector<Tag> deletedTags;
-      std::vector<Tag> reparentedTags; // tags that are deleted and recreated
+      better::set<Tag> insertedTags;
+      better::set<Tag> deletedTags;
+      better::set<Tag> reparentedTags; // tags that are deleted and recreated
       std::unordered_map<Tag, ShadowViewMutation> movedTags;
       for (const auto &mutation : mutations) {
         if (mutation.type == ShadowViewMutation::Type::Insert) {
-          insertedTags.push_back(mutation.newChildShadowView.tag);
+          insertedTags.insert(mutation.newChildShadowView.tag);
         }
         if (mutation.type == ShadowViewMutation::Type::Delete) {
-          deletedTags.push_back(mutation.oldChildShadowView.tag);
+          deletedTags.insert(mutation.oldChildShadowView.tag);
         }
         if (mutation.type == ShadowViewMutation::Type::Create) {
-          if (std::find(
-                  deletedTags.begin(),
-                  deletedTags.end(),
-                  mutation.newChildShadowView.tag) != deletedTags.end()) {
-            reparentedTags.push_back(mutation.newChildShadowView.tag);
+          if (deletedTags.find(mutation.newChildShadowView.tag) !=
+              deletedTags.end()) {
+            reparentedTags.insert(mutation.newChildShadowView.tag);
           }
         }
       }
@@ -328,20 +326,16 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
         bool isRemoveReinserted =
             mutation.type == ShadowViewMutation::Type::Remove &&
-            std::find(
-                insertedTags.begin(),
-                insertedTags.end(),
-                mutation.oldChildShadowView.tag) != insertedTags.end();
+            insertedTags.find(mutation.oldChildShadowView.tag) !=
+                insertedTags.end();
 
         // Reparenting can result in a node being removed, inserted (moved) and
         // also deleted and created in the same frame, with the same props etc.
         // This should eventually be optimized out of the diffing algorithm, but
         // for now we detect reparenting and prevent the corresponding
         // Delete/Create instructions from being animated.
-        bool isReparented = std::find(
-                                reparentedTags.begin(),
-                                reparentedTags.end(),
-                                baselineShadowView.tag) != reparentedTags.end();
+        bool isReparented =
+            reparentedTags.find(baselineShadowView.tag) != reparentedTags.end();
 
         if (isRemoveReinserted) {
           movedTags.insert({mutation.oldChildShadowView.tag, mutation});
