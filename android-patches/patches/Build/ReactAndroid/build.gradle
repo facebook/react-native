@@ -32,7 +32,7 @@
      includeEmptyDirs = false
      into("$thirdPartyNdkDir/folly")
  }
-@@ -115,6 +128,14 @@
+@@ -115,6 +134,14 @@
      }
  }
  
@@ -47,7 +47,7 @@
  task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
      src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
      onlyIfNewer(true)
-@@ -296,7 +317,7 @@
+@@ -296,7 +323,7 @@
  }
  
  def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
@@ -56,15 +56,15 @@
  
      inputs.dir("$projectDir/../ReactCommon")
      inputs.dir("src/main/jni")
-@@ -309,6 +330,7 @@
+@@ -309,6 +336,7 @@
              "NDK_OUT=" + temporaryDir,
              "NDK_LIBS_OUT=$buildDir/react-ndk/all",
              "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
 +            "V8_NUGET_DIR=$projectDir/$V8Path",
              "REACT_COMMON_DIR=$projectDir/../ReactCommon",
              "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
-             "-C", file("src/main/jni/react/jni").absolutePath,
-@@ -322,6 +344,7 @@
+             "BUILD_FABRIC=$enableFabric",
+@@ -322,6 +351,7 @@
      commandLine(getNdkBuildFullPath(),
              "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
              "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
@@ -72,7 +72,7 @@
              "REACT_COMMON_DIR=$projectDir/../ReactCommon",
              "-C", file("src/main/jni/react/jni").absolutePath,
              "clean")
-@@ -333,10 +356,16 @@
+@@ -333,10 +363,16 @@
  
  def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
      dependsOn(buildReactNdkLib)
