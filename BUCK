@@ -687,7 +687,6 @@ rn_library(
         ],
     ),
     labels = ["supermodule:xplat/default/public.react_native.core"],
-    skip_processors = True,  # Don't anticipate routes or fbicon here
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/js:node_modules__abort_19controller",
