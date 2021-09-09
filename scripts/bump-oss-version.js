@@ -20,26 +20,29 @@ const fs = require('fs');
 const {cat, echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
 
-let argv = yargs.option('r', {
-  alias: 'remote',
-  default: 'origin',
-})
-.option('ci', {
-  type: 'boolean',
-  default: false,
-})
-.option('n', {
-  alias: 'nightly',
-  type: 'boolean',
-  default: false,
-}).argv;
+let argv = yargs
+  .option('r', {
+    alias: 'remote',
+    default: 'origin',
+  })
+  .option('ci', {
+    type: 'boolean',
+    default: false,
+  })
+  .option('n', {
+    alias: 'nightly',
+    type: 'boolean',
+    default: false,
+  }).argv;
 
 const nightlyBuild = argv.nightly;
 const ci = argv.ci;
 
 let version, branch;
 if (nightlyBuild) {
-  const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
+  const currentCommit = exec('git rev-parse HEAD', {
+    silent: true,
+  }).stdout.trim();
   version = `0.0.0-${currentCommit.slice(0, 9)}`;
 } else {
   // Check we are in release branch, e.g. 0.33-stable
@@ -130,6 +133,8 @@ fs.writeFileSync(
 
 let packageJson = JSON.parse(cat('package.json'));
 packageJson.version = version;
+delete packageJson.workspaces;
+delete packageJson.private;
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // Change ReactAndroid/gradle.properties
