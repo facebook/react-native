@@ -1200,8 +1200,8 @@ LayoutAnimationKeyFrameManager::calculateAnimationProgress(
 
 ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     double progress,
-    ShadowView startingView,
-    ShadowView finalView) const {
+    ShadowView const &startingView,
+    ShadowView const &finalView) const {
   react_native_assert(startingView.tag > 0);
   react_native_assert(finalView.tag > 0);
   if (!hasComponentDescriptorForShadowView(startingView)) {

@@ -120,8 +120,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    */
   ShadowView createInterpolatedShadowView(
       double progress,
-      ShadowView startingView,
-      ShadowView finalView) const;
+      ShadowView const &startingView,
+      ShadowView const &finalView) const;
 
   void callCallback(const LayoutAnimationCallbackWrapper &callback) const;
 
