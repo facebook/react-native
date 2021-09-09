@@ -9,6 +9,7 @@
 
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/animations/utils.h>
 #include <algorithm>
 
 namespace facebook {
