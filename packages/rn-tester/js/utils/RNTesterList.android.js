@@ -30,11 +30,6 @@ const Components: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
   {
-    key: 'FlatList-withSeparators',
-    module: require('../examples/FlatList/FlatList-withSeparators'),
-    category: 'ListView',
-  },
-  {
     key: 'ImageExample',
     category: 'Basic',
     module: require('../examples/Image/ImageExample'),

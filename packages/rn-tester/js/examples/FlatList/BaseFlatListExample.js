@@ -58,36 +58,6 @@ const Item = ({item, separators}) => {
   );
 };
 
-const Separator = (defaultColor, highlightColor) => ({
-  leadingItem,
-  trailingItem,
-  highlighted,
-  hasBeenHighlighted,
-}) => {
-  const text = `Separator for leading ${leadingItem} and trailing ${trailingItem} has ${
-    !hasBeenHighlighted ? 'not ' : ''
-  }been pressed`;
-
-  return (
-    <View
-      style={[
-        styles.separator,
-        {backgroundColor: highlighted ? highlightColor : defaultColor},
-      ]}>
-      <Text style={styles.separtorText}>{text}</Text>
-    </View>
-  );
-};
-
-export function FlatList_withSeparators(): React.Node {
-  const exampleProps = {
-    ItemSeparatorComponent: Separator('lightgreen', 'green'),
-  };
-  const ref = React.useRef(null);
-
-  return <BaseFlatListExample ref={ref} exampleProps={exampleProps} />;
-}
-
 type Props = {
   exampleProps: $Shape<React.ElementConfig<typeof FlatList>>,
   onTest?: ?() => void,
