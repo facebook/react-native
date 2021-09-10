@@ -7,9 +7,9 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
-@DoNotStrip
+@Keep
 public enum YogaLogLevel {
   ERROR(0),
   WARN(1),
@@ -28,7 +28,7 @@ public enum YogaLogLevel {
     return mIntValue;
   }
 
-  @DoNotStrip
+  @Keep
   public static YogaLogLevel fromInt(int value) {
     switch (value) {
       case 0: return ERROR;

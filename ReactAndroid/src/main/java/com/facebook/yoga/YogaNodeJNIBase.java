@@ -7,12 +7,13 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
-@DoNotStrip
+@Keep
 public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   /* Those flags needs be in sync with YGJNI.h */
@@ -39,9 +40,9 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   protected long mNativePointer;
   @Nullable private Object mData;
 
-  @DoNotStrip private @Nullable float[] arr = null;
+  @Keep private @Nullable float[] arr = null;
 
-  @DoNotStrip private int mLayoutDirection = 0;
+  @Keep private int mLayoutDirection = 0;
 
   private boolean mHasNewLayout = true;
 
@@ -514,7 +515,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   // We cache the jmethodid for this method in Yoga code. This means that even if a subclass
   // were to override measure, we'd still call this implementation from layout code since the
   // overriding method will have a different jmethodid. This is final to prevent that mistake.
-  @DoNotStrip
+  @Keep
   public final long measure(float width, int widthMode, float height, int heightMode) {
     if (!isMeasureDefined()) {
       throw new RuntimeException("Measure function isn't defined!");
@@ -533,7 +534,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeSetHasBaselineFuncJNI(mNativePointer, baselineFunction != null);
   }
 
-  @DoNotStrip
+  @Keep
   public final float baseline(float width, float height) {
     return mBaselineFunction.baseline(this, width, height);
   }
@@ -571,7 +572,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
    *
    * @return the nativePointer of the newNode {@link YogaNode}
    */
-  @DoNotStrip
+  @Keep
   private final long replaceChild(YogaNodeJNIBase newNode, int childIndex) {
     if (mChildren == null) {
       throw new IllegalStateException("Cannot replace child. YogaNode does not have children");

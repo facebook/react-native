@@ -7,14 +7,14 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /**
  * Interface for receiving logs from native layer. Use by setting YogaNode.setLogger(myLogger);
  * See YogaLogLevel for the different log levels.
  */
-@DoNotStrip
+@Keep
 public interface YogaLogger {
-  @DoNotStrip
+  @Keep
   void log(YogaLogLevel level, String message);
 }

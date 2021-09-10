@@ -7,10 +7,11 @@
 
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
+
 import com.facebook.soloader.SoLoader;
 
-@DoNotStrip
+@Keep
 public class YogaNative {
   static {
     SoLoader.loadLibrary("yoga");
