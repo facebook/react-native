@@ -62,11 +62,6 @@ const Components: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
   {
-    key: 'MultiColumnExample',
-    module: require('../examples/MultiColumn/MultiColumnExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'NewAppScreenExample',
     module: require('../examples/NewAppScreen/NewAppScreenExample'),
     supportsTVOS: false,

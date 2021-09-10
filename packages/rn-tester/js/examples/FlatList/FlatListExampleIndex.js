@@ -15,6 +15,7 @@ import ContentInsetExample from './FlatList-contentInset';
 import InvertedExample from './FlatList-inverted';
 import onViewableItemsChangedExample from './FlatList-onViewableItemsChanged';
 import WithSeparatorsExample from './FlatList-withSeparators';
+import MultiColumnExample from './FlatList-multiColumn';
 
 export default ({
   framework: 'React',
@@ -30,5 +31,6 @@ export default ({
     InvertedExample,
     onViewableItemsChangedExample,
     WithSeparatorsExample,
+    MultiColumnExample,
   ],
 }: RNTesterModule);
