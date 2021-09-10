@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import {FlatList_withSeparators} from './FlatListExamples';
+import {FlatList_withSeparators} from './BaseFlatListExample';
 const React = require('react');
 
 exports.title = 'FlatList with Separators';

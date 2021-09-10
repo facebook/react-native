@@ -40,11 +40,6 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'ListView',
   },
   {
-    key: 'FlatList-onEndReached',
-    module: require('../examples/FlatList/FlatList-onEndReached'),
-    category: 'ListView',
-  },
-  {
     key: 'ImageExample',
     category: 'Basic',
     module: require('../examples/Image/ImageExample'),
