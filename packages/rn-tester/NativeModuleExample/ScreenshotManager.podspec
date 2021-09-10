@@ -34,6 +34,7 @@ Pod::Spec.new do |s|
   use_react_native_codegen!(s, {
     :react_native_path => "../../..",
     :js_srcs_dir => "./",
+    :library_type => "modules",
     :output_dir => "./"
   })
 end

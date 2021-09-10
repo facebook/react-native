@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "11.0" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
-  s.source_files           = "**/*.{c,h,m,mm,cpp}"
+  s.source_files           = "**/FBReactNativeSpec*.{h,mm}"
   s.header_dir             = "FBReactNativeSpec"
 
   s.pod_target_xcconfig    = {
@@ -52,9 +52,7 @@ Pod::Spec.new do |s|
     :react_native_path => react_native_path,
     :js_srcs_dir => "#{react_native_path}/Libraries",
     :library_name => "FBReactNativeSpec",
-    :output_dir => "#{react_native_path}/React/FBReactNativeSpec",
-    :component_library_name => "rncore",
-    # TODO: component_output_dir should be programmatically specified, and may change with use_frameworks! support.
-    :component_output_dir => "#{react_native_path}/ReactCommon/react/renderer/components/"
+    :library_type => "modules",
+    :output_dir => "#{react_native_path}/React/FBReactNativeSpec/FBReactNativeSpec"
   })
 end
