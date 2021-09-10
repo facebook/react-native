@@ -11,6 +11,7 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 import BasicExample from './FlatList-basic';
 import OnEndReachedExample from './FlatList-onEndReached';
+import ContentInsetExample from './FlatList-contentInset';
 
 export default ({
   framework: 'React',
@@ -19,5 +20,5 @@ export default ({
   documentationURL: 'https://reactnative.dev/docs/flatlist',
   description: 'Performant, scrollable list of data.',
   showIndividualExamples: true,
-  examples: [BasicExample, OnEndReachedExample],
+  examples: [BasicExample, OnEndReachedExample, ContentInsetExample],
 }: RNTesterModule);

@@ -105,50 +105,6 @@ export function FlatList_inverted(): React.Node {
   );
 }
 
-export function FlatList_contentInset(): React.Node {
-  const [initialContentInset, toggledContentInset] = [44, 88];
-
-  const [output, setOutput] = React.useState(
-    `contentInset top: ${initialContentInset.toString()}`,
-  );
-  const [exampleProps, setExampleProps] = React.useState({
-    automaticallyAdjustContentInsets: false,
-    contentInset: {top: initialContentInset},
-    contentOffset: {y: -initialContentInset, x: 0},
-  });
-
-  const onTest = () => {
-    const newContentInset =
-      exampleProps.contentInset.top === initialContentInset
-        ? toggledContentInset
-        : initialContentInset;
-    setExampleProps({
-      automaticallyAdjustContentInsets: false,
-      contentInset: {top: newContentInset},
-      contentOffset: {y: -newContentInset, x: 0},
-    });
-    setOutput(`contentInset top: ${newContentInset.toString()}`);
-  };
-
-  return (
-    <>
-      <View
-        style={[
-          styles.titleContainer,
-          {height: exampleProps.contentInset.top},
-        ]}>
-        <Text style={styles.titleText}>Menu</Text>
-      </View>
-      <BaseFlatListExample
-        exampleProps={exampleProps}
-        testOutput={output}
-        onTest={onTest}
-        testLabel={'Toggle header size'}
-      />
-    </>
-  );
-}
-
 export function FlatList_withSeparators(): React.Node {
   const exampleProps = {
     ItemSeparatorComponent: Separator('lightgreen', 'green'),
