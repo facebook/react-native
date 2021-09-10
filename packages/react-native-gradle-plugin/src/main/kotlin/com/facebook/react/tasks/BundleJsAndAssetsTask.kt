@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.utils.recreateDir
 import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
 import org.gradle.api.DefaultTask
@@ -76,10 +77,5 @@ open class BundleJsAndAssetsTask : DefaultTask() {
               jsSourceMapsFile,
               *extraArgs.toTypedArray()))
     }
-  }
-
-  private fun File.recreateDir() {
-    deleteRecursively()
-    mkdirs()
   }
 }
