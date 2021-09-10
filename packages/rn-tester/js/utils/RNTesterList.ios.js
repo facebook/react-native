@@ -37,11 +37,6 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'ListView',
   },
   {
-    key: 'FlatList-onViewableItemsChanged',
-    module: require('../examples/FlatList/FlatList-onViewableItemsChanged'),
-    category: 'ListView',
-  },
-  {
     key: 'ImageExample',
     module: require('../examples/Image/ImageExample'),
     category: 'Basic',

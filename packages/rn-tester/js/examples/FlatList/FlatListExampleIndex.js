@@ -13,6 +13,7 @@ import BasicExample from './FlatList-basic';
 import OnEndReachedExample from './FlatList-onEndReached';
 import ContentInsetExample from './FlatList-contentInset';
 import InvertedExample from './FlatList-inverted';
+import onViewableItemsChangedExample from './FlatList-onViewableItemsChanged';
 
 export default ({
   framework: 'React',
@@ -26,5 +27,6 @@ export default ({
     OnEndReachedExample,
     ContentInsetExample,
     InvertedExample,
+    onViewableItemsChangedExample,
   ],
 }: RNTesterModule);
