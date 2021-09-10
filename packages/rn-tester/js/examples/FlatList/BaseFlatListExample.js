@@ -215,7 +215,6 @@ const styles = StyleSheet.create({
   },
   output: {
     fontSize: 12,
-    width: '80%',
   },
   separator: {
     height: 12,
