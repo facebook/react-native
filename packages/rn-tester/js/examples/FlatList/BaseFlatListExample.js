@@ -82,29 +82,6 @@ const Separator = (defaultColor, highlightColor) => ({
   );
 };
 
-export function FlatList_inverted(): React.Node {
-  const [output, setOutput] = React.useState('inverted false');
-  const [exampleProps, setExampleProps] = React.useState({
-    inverted: false,
-  });
-
-  const onTest = () => {
-    setExampleProps({
-      inverted: !exampleProps.inverted,
-    });
-    setOutput(`Is inverted: ${(!exampleProps.inverted).toString()}`);
-  };
-
-  return (
-    <BaseFlatListExample
-      exampleProps={exampleProps}
-      testOutput={output}
-      onTest={onTest}
-      testLabel={exampleProps.inverted ? 'Toggle false' : 'Toggle true'}
-    />
-  );
-}
-
 export function FlatList_withSeparators(): React.Node {
   const exampleProps = {
     ItemSeparatorComponent: Separator('lightgreen', 'green'),
