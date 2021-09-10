@@ -10,12 +10,19 @@
 
 'use strict';
 
-const RNTesterPage = require('../../components/RNTesterPage');
-const React = require('react');
-
-const infoLog = require('react-native/Libraries/Utilities/infoLog');
-
-const {
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import * as React from 'react';
+import {
+  Alert,
+  Animated,
+  Platform,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
+import RNTesterPage from '../../components/RNTesterPage';
+import infoLog from 'react-native/Libraries/Utilities/infoLog';
+import {
   FooterComponent,
   HeaderComponent,
   ItemComponent,
@@ -28,15 +35,7 @@ const {
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,
-} = require('../../components/ListExampleShared');
-const {
-  Alert,
-  Animated,
-  Platform,
-  StyleSheet,
-  TextInput,
-  View,
-} = require('react-native');
+} from '../../components/ListExampleShared';
 
 import type {Item} from '../../components/ListExampleShared';
 
@@ -340,15 +339,9 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'FlatList';
-exports.category = 'ListView';
-exports.documentationURL = 'https://reactnative.dev/docs/flatlist';
-exports.description = 'Performant, scrollable list of data.';
-exports.examples = [
-  {
-    title: 'Simple list of items',
-    render: function(): React.Element<typeof FlatListExample> {
-      return <FlatListExample />;
-    },
-  },
-];
+export default ({
+  title: 'Basic',
+  name: 'basic',
+  description: 'Simple list of items',
+  render: () => <FlatListExample />,
+}: RNTesterModuleExample);
