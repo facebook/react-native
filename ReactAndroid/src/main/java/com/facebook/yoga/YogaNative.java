@@ -8,7 +8,6 @@
 package com.facebook.yoga;
 
 import androidx.annotation.Keep;
-
 import com.facebook.soloader.SoLoader;
 
 @Keep

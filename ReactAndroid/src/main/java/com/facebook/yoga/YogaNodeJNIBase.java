@@ -8,7 +8,6 @@
 package com.facebook.yoga;
 
 import androidx.annotation.Keep;
-
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
