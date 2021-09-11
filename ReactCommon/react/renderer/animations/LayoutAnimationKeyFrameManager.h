@@ -88,6 +88,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void enableSkipInvalidatedKeyFrames();
 
+  void enableCrashOnMissingComponentDescriptor();
+
  protected:
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable better::optional<LayoutAnimation> currentAnimation_{};
@@ -147,6 +149,13 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable better::set<SurfaceId> surfaceIdsToStop_{};
   bool skipInvalidatedKeyFrames_{false};
+
+  /*
+   * Feature flag that forces a crash if component descriptor for shadow view
+   * doesn't exist. This is an unexpected state and we crash to collect extra
+   * logs.
+   */
+  bool crashOnMissingComponentDescriptor_{false};
 
   // Function that returns current time in milliseconds
   std::function<uint64_t()> now_;

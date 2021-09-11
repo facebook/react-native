@@ -127,6 +127,9 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
       if (reactNativeConfig->getBool("react_fabric:enabled_skip_invalidated_key_frames_ios")) {
         _animationDriver->enableSkipInvalidatedKeyFrames();
       }
+      if (reactNativeConfig->getBool("react_fabric:enable_crash_on_missing_component_descriptor")) {
+        _animationDriver->enableCrashOnMissingComponentDescriptor();
+      }
       _uiRunLoopObserver =
           toolbox.mainRunLoopObserverFactory(RunLoopObserver::Activity::BeforeWaiting, _layoutAnimationDelegateProxy);
       _uiRunLoopObserver->setDelegate(_layoutAnimationDelegateProxy.get());

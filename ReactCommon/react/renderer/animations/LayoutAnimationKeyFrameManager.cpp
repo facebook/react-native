@@ -1093,12 +1093,26 @@ void LayoutAnimationKeyFrameManager::enableSkipInvalidatedKeyFrames() {
   skipInvalidatedKeyFrames_ = true;
 }
 
+void LayoutAnimationKeyFrameManager::enableCrashOnMissingComponentDescriptor() {
+  crashOnMissingComponentDescriptor_ = true;
+}
+
 #pragma mark - Protected
 
 bool LayoutAnimationKeyFrameManager::hasComponentDescriptorForShadowView(
     ShadowView const &shadowView) const {
-  return componentDescriptorRegistry_->hasComponentDescriptorAt(
-      shadowView.componentHandle);
+  auto hasComponentDescriptor =
+      componentDescriptorRegistry_->hasComponentDescriptorAt(
+          shadowView.componentHandle);
+
+  if (crashOnMissingComponentDescriptor_ && !hasComponentDescriptor) {
+    LOG(FATAL) << "Component descriptor with handle: "
+               << shadowView.componentHandle
+               << " doesn't exist. The component name: "
+               << shadowView.componentName;
+  }
+
+  return hasComponentDescriptor;
 }
 
 ComponentDescriptor const &
