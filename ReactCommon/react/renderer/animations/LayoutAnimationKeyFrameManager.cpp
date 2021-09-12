@@ -303,7 +303,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // "immediate mutations". The corresponding "insert" will also be executed
       // immediately and animated as an update.
       std::vector<AnimationKeyFrame> keyFramesToAnimate;
-      std::vector<AnimationKeyFrame> movesToAnimate;
       auto const layoutAnimationConfig = animation.layoutAnimationConfig;
       for (auto const &mutation : mutations) {
         ShadowView baselineShadowView =
@@ -368,16 +367,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                         : layoutAnimationConfig.updateConfig));
         bool haveConfiguration =
             mutationConfig.animationType != AnimationType::None;
-
-        if (wasInsertedTagRemoved && haveConfiguration) {
-          movesToAnimate.push_back(AnimationKeyFrame{
-              /* .finalMutationsForKeyFrame = */ {},
-              /* .type = */ AnimationConfigurationType::Update,
-              /* .tag = */ mutation.newChildShadowView.tag,
-              /* .parentView = */ mutation.parentShadowView,
-              /* .viewStart = */ movedIt->second.oldChildShadowView,
-              /* .viewEnd = */ mutation.newChildShadowView});
-        }
 
         // Creates and inserts should also be executed immediately.
         // Mutations that would otherwise be animated, but have no
