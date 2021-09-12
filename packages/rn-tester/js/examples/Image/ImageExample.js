@@ -747,7 +747,9 @@ exports.examples = [
         <Image
           defaultSource={require('../../assets/bunny.png')}
           source={{
-            uri: 'https://origami.design/public/images/bird-logo.png',
+            // Note: Use a large image and bust cache so we can in fact
+            // visualize the `defaultSource` image.
+            uri: fullImage.uri + '?cacheBust=notinCache' + Date.now(),
           }}
           style={styles.base}
         />
