@@ -785,7 +785,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         // don't want to queue up any final UPDATE mutations here.
         bool shouldGenerateSyntheticMutations =
             keyFrame.generateFinalSyntheticMutations;
-        bool numFinalMutations = keyFrame.finalMutationsForKeyFrame.size();
+        auto numFinalMutations = keyFrame.finalMutationsForKeyFrame.size();
         bool onlyMutationIsUpdate =
             (numFinalMutations == 1 &&
              keyFrame.finalMutationsForKeyFrame[0].type ==
