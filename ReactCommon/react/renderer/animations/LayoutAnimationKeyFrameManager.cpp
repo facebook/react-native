@@ -12,6 +12,7 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 
+#include <logger/react_native_log.h>
 #include <react/renderer/animations/conversions.h>
 #include <react/renderer/animations/utils.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
@@ -432,12 +433,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 // that is being referenced by the REMOVE mutation.
                 if (keyframe.type == AnimationConfigurationType::Update &&
                     mutation.oldChildShadowView.tag > 0) {
-                  executeMutationImmediately = ShadowViewMutation{
-                      /* .type = */ mutation.type,
-                      /* .parentShadowView = */ mutation.parentShadowView,
-                      /* .oldChildShadowView = */ keyframe.viewPrev,
-                      /* .newChildShadowView = */ {},
-                      /* .index = */ mutation.index};
+                  executeMutationImmediately =
+                      ShadowViewMutation::RemoveMutation(
+                          mutation.parentShadowView,
+                          keyframe.viewPrev,
+                          mutation.index);
                 }
               }
             }
@@ -1274,18 +1274,31 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           logPrefix + ": Queuing up Final Mutation:", finalMutation);
       // Copy so that if something else mutates the inflight animations,
       // it won't change this mutation after this point.
-      auto mutation = ShadowViewMutation{
-          /* .type = */ finalMutation.type,
-          /* .parentShadowView = */ finalMutation.parentShadowView,
-          /* .oldChildShadowView = */ prev,
-          /* .newChildShadowView = */ finalMutation.newChildShadowView,
-          /* .index = */ finalMutation.index};
-      react_native_assert(mutation.oldChildShadowView.tag > 0);
-      react_native_assert(
-          mutation.newChildShadowView.tag > 0 ||
-          finalMutation.type == ShadowViewMutation::Remove ||
-          finalMutation.type == ShadowViewMutation::Delete);
-      mutationsList.push_back(mutation);
+      switch (finalMutation.type) {
+          // For CREATE/INSERT this will contain CREATE, INSERT in that order.
+          // For REMOVE/DELETE, same.
+        case ShadowViewMutation::Type::Create:
+          mutationsList.push_back(ShadowViewMutation::CreateMutation(
+              finalMutation.newChildShadowView));
+          break;
+        case ShadowViewMutation::Type::Delete:
+          mutationsList.push_back(ShadowViewMutation::DeleteMutation(prev));
+          break;
+        case ShadowViewMutation::Type::Insert:
+          mutationsList.push_back(ShadowViewMutation::InsertMutation(
+              finalMutation.parentShadowView,
+              finalMutation.newChildShadowView,
+              finalMutation.index));
+          break;
+        case ShadowViewMutation::Type::Remove:
+          mutationsList.push_back(ShadowViewMutation::RemoveMutation(
+              finalMutation.parentShadowView, prev, finalMutation.index));
+          break;
+        case ShadowViewMutation::Type::Update:
+          mutationsList.push_back(ShadowViewMutation::UpdateMutation(
+              prev, finalMutation.newChildShadowView));
+          break;
+      }
       if (finalMutation.newChildShadowView.tag > 0) {
         prev = finalMutation.newChildShadowView;
       }
@@ -1327,19 +1340,15 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           generatedMutation);
       mutationsList.push_back(generatedMutation);
     } else {
-      auto mutation = ShadowViewMutation{
-          /* .type = */ ShadowViewMutation::Type::Update,
-          /* .parentShadowView = */ keyframe.parentView,
-          /* .oldChildShadowView = */ keyframe.viewPrev,
-          /* .newChildShadowView = */ keyframe.viewEnd,
-          /* .index = */ -1};
+      auto mutation = ShadowViewMutation::UpdateMutation(
+          keyframe.viewPrev, keyframe.viewEnd);
       PrintMutationInstruction(
           logPrefix +
               "Animation Complete: Queuing up Final Synthetic Mutation:",
           mutation);
       react_native_assert(mutation.oldChildShadowView.tag > 0);
       react_native_assert(mutation.newChildShadowView.tag > 0);
-      mutationsList.push_back(mutation);
+      mutationsList.push_back(std::move(mutation));
     }
   }
 }
