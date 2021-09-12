@@ -371,12 +371,12 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
         if (wasInsertedTagRemoved && haveConfiguration) {
           movesToAnimate.push_back(AnimationKeyFrame{
-              {},
-              AnimationConfigurationType::Update,
-              mutation.newChildShadowView.tag,
-              mutation.parentShadowView,
-              movedIt->second.oldChildShadowView,
-              mutation.newChildShadowView});
+              /* .finalMutationsForKeyFrame = */ {},
+              /* .type = */ AnimationConfigurationType::Update,
+              /* .tag = */ mutation.newChildShadowView.tag,
+              /* .parentView = */ mutation.parentShadowView,
+              /* .viewStart = */ movedIt->second.oldChildShadowView,
+              /* .viewEnd = */ mutation.newChildShadowView});
         }
 
         // Creates and inserts should also be executed immediately.
@@ -524,14 +524,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 mutation);
 
             keyFrame = AnimationKeyFrame{
-                {},
-                AnimationConfigurationType::Create,
-                tag,
-                parent,
-                viewStart,
-                viewFinal,
-                baselineShadowView,
-                0};
+                /* .finalMutationsForKeyFrame = */ {},
+                /* .type = */ AnimationConfigurationType::Create,
+                /* .tag = */ tag,
+                /* .parentView = */ parent,
+                /* .viewStart = */ viewStart,
+                /* .viewEnd = */ viewFinal,
+                /* .viewPrev = */ baselineShadowView,
+                /* .initialProgress = */ 0};
           } else if (mutation.type == ShadowViewMutation::Type::Delete) {
 // This is just for assertion purposes.
 // The NDEBUG check here is to satisfy the compiler in certain environments
@@ -562,14 +562,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 mutation);
 
             keyFrame = AnimationKeyFrame{
-                {mutation},
-                AnimationConfigurationType::Update,
-                tag,
-                parent,
-                viewStart,
-                viewFinal,
-                baselineShadowView,
-                0};
+                /* .finalMutationsForKeyFrame = */ {mutation},
+                /* .type = */ AnimationConfigurationType::Update,
+                /* .tag = */ tag,
+                /* .parentView = */ parent,
+                /* .viewStart = */ viewStart,
+                /* .viewEnd = */ viewFinal,
+                /* .viewPrev = */ baselineShadowView,
+                /* .initialProgress = */ 0};
           } else {
             // This should just be "Remove" instructions that are not animated
             // (either this is a "move", or there's a corresponding "Delete"
@@ -650,14 +650,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   mutation);
 
               keyFrame = AnimationKeyFrame{
-                  {mutation, deleteMutation},
-                  AnimationConfigurationType::Delete,
-                  tag,
-                  parent,
-                  viewStart,
-                  viewFinal,
-                  baselineShadowView,
-                  0};
+                  /* .finalMutationsForKeyFrame */ {mutation, deleteMutation},
+                  /* .type */ AnimationConfigurationType::Delete,
+                  /* .tag */ tag,
+                  /* .parentView */ parent,
+                  /* .viewStart */ viewStart,
+                  /* .viewEnd */ viewFinal,
+                  /* .viewPrev */ baselineShadowView,
+                  /* .initialProgress */ 0};
             } else {
               PrintMutationInstruction(
                   "Executing Remove Immediately, due to reordering operation",
