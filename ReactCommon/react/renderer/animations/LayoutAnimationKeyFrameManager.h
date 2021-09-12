@@ -90,6 +90,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void enableCrashOnMissingComponentDescriptor();
 
+  void enableSimulateImagePropsMemoryAccess();
+
  protected:
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable better::optional<LayoutAnimation> currentAnimation_{};
@@ -157,6 +159,12 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    */
   bool crashOnMissingComponentDescriptor_{false};
 
+  /*
+   * Feature flag that enables simulation of memory access. This is a temporary
+   * flag to diagnose where crashes are coming from in LayoutAnimations on iOS.
+   */
+  bool simulateImagePropsMemoryAccess_{false};
+
   // Function that returns current time in milliseconds
   std::function<uint64_t()> now_;
 
@@ -180,6 +188,9 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
    * Removes animations from `inflightAnimations_` for stopped surfaces.
    */
   void deleteAnimationsForStoppedSurfaces() const;
+
+  void simulateImagePropsMemoryAccess(
+      ShadowViewMutationList const &mutations) const;
 };
 
 } // namespace react
