@@ -7,11 +7,8 @@
 
 #pragma once
 
-#include "ParagraphShadowNode.h"
-
-#include <react/config/ReactNativeConfig.h>
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/components/view/ViewPropsInterpolation.h>
+#include <react/renderer/components/text/ParagraphShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #include <react/utils/ContextContainer.h>
@@ -31,18 +28,6 @@ class ParagraphComponentDescriptor final
     // a shared `TextLayoutManager`.
     textLayoutManager_ = std::make_shared<TextLayoutManager>(contextContainer_);
   }
-
-  virtual SharedProps interpolateProps(
-      float animationProgress,
-      const SharedProps &props,
-      const SharedProps &newProps) const override {
-    SharedProps interpolatedPropsShared = cloneProps(newProps, {});
-
-    interpolateViewProps(
-        animationProgress, props, newProps, interpolatedPropsShared);
-
-    return interpolatedPropsShared;
-  };
 
  protected:
   void adopt(ShadowNode::Unshared const &shadowNode) const override {

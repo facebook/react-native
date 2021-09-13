@@ -18,7 +18,7 @@ else
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2020.01.13.00'
+folly_version = '2021.06.28.00'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
@@ -33,10 +33,10 @@ Pod::Spec.new do |s|
   s.source_files           = "*.{cpp,h}"
   s.exclude_files          = "SampleCxxModule.*"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
   s.header_dir             = "cxxreact"
 
-  s.dependency "boost-for-react-native", "1.63.0"
+  s.dependency "boost", "1.76.0"
   s.dependency "DoubleConversion"
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
@@ -45,4 +45,5 @@ Pod::Spec.new do |s|
   s.dependency "React-runtimeexecutor", version
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
+  s.dependency "React-logger", version
 end

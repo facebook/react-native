@@ -58,7 +58,8 @@ static bool checkGetCallableModuleIsActive(jsi::Runtime &runtime) {
 }
 
 std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
-    jsi::Runtime &runtime) {
+    jsi::Runtime &runtime,
+    RuntimeExecutor const &runtimeExecutor) {
   auto uiManagerModuleName = "nativeFabricUIManager";
 
   auto uiManagerValue =
@@ -66,7 +67,7 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
   if (uiManagerValue.isUndefined()) {
     // The global namespace does not have an instance of the binding;
     // we need to create, install and return it.
-    auto uiManagerBinding = std::make_shared<UIManagerBinding>();
+    auto uiManagerBinding = std::make_shared<UIManagerBinding>(runtimeExecutor);
     auto object = jsi::Object::createFromHostObject(runtime, uiManagerBinding);
     runtime.global().setProperty(
         runtime, uiManagerModuleName, std::move(object));
@@ -93,28 +94,16 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
   return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
 }
 
+UIManagerBinding::UIManagerBinding(RuntimeExecutor const &runtimeExecutor)
+    : runtimeExecutor_(runtimeExecutor) {}
+
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
                << this << ").";
-
-  // We must detach the `UIBinding` on deallocation to prevent accessing
-  // deallocated `UIManagerBinding`.
-  // Since `UIManagerBinding` retains `UIManager`, `UIManager` always overlive
-  // `UIManagerBinding`, therefore we don't need similar logic in `UIManager`'s
-  // destructor.
-  attach(nullptr);
 }
 
 void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
-  if (uiManager_) {
-    uiManager_->uiManagerBinding_ = nullptr;
-  }
-
   uiManager_ = uiManager;
-
-  if (uiManager_) {
-    uiManager_->uiManagerBinding_ = this;
-  }
 }
 
 static jsi::Value callMethodOfModule(
@@ -140,12 +129,40 @@ static jsi::Value callMethodOfModule(
   return jsi::Value::undefined();
 }
 
+jsi::Value UIManagerBinding::getInspectorDataForInstance(
+    jsi::Runtime &runtime,
+    SharedEventEmitter eventEmitter) const {
+  auto eventTarget = eventEmitter->eventTarget_;
+  EventEmitter::DispatchMutex().lock();
+
+  if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge") ||
+      !eventTarget) {
+    return jsi::Value::undefined();
+  }
+
+  eventTarget->retain(runtime);
+  auto instanceHandle = eventTarget->getInstanceHandle(runtime);
+  eventTarget->release(runtime);
+  EventEmitter::DispatchMutex().unlock();
+
+  if (instanceHandle.isUndefined()) {
+    return jsi::Value::undefined();
+  }
+
+  return callMethodOfModule(
+      runtime,
+      "ReactFabric",
+      "getInspectorDataForInstance",
+      {std::move(instanceHandle)});
+}
+
 void UIManagerBinding::startSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
     std::string const &moduleName,
     folly::dynamic const &initalProps,
     DisplayMode displayMode) const {
+  SystraceSection s("UIManagerBinding::startSurface");
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
@@ -179,6 +196,7 @@ void UIManagerBinding::setSurfaceProps(
     std::string const &moduleName,
     folly::dynamic const &initalProps,
     DisplayMode displayMode) const {
+  SystraceSection s("UIManagerBinding::setSurfaceProps");
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
@@ -230,6 +248,7 @@ void UIManagerBinding::dispatchEvent(
     jsi::Runtime &runtime,
     EventTarget const *eventTarget,
     std::string const &type,
+    ReactEventPriority priority,
     ValueFactory const &payloadFactory) const {
   SystraceSection s("UIManagerBinding::dispatchEvent");
 
@@ -260,11 +279,13 @@ void UIManagerBinding::dispatchEvent(
   auto &eventHandlerWrapper =
       static_cast<EventHandlerWrapper const &>(*eventHandler_);
 
+  currentEventPriority_ = priority;
   eventHandlerWrapper.callback.call(
       runtime,
       {std::move(instanceHandle),
        jsi::String::createFromUtf8(runtime, type),
        std::move(payload)});
+  currentEventPriority_ = ReactEventPriority::Default;
 }
 
 void UIManagerBinding::invalidate() const {
@@ -275,6 +296,7 @@ jsi::Value UIManagerBinding::get(
     jsi::Runtime &runtime,
     jsi::PropNameID const &name) {
   auto methodName = name.utf8(runtime);
+  SystraceSection s("UIManagerBinding::get", "name", methodName);
 
   // Convert shared_ptr<UIManager> to a raw ptr
   // Why? Because:
@@ -787,6 +809,28 @@ jsi::Value UIManagerBinding::get(
               arguments[2]);
           return jsi::Value::undefined();
         });
+  }
+
+  if (methodName == "unstable_getCurrentEventPriority") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [this](
+            jsi::Runtime &,
+            jsi::Value const &,
+            jsi::Value const *,
+            size_t) noexcept -> jsi::Value {
+          return jsi::Value(serialize(currentEventPriority_));
+        });
+  }
+
+  if (methodName == "unstable_DefaultEventPriority") {
+    return jsi::Value(serialize(ReactEventPriority::Default));
+  }
+
+  if (methodName == "unstable_DiscreteEventPriority") {
+    return jsi::Value(serialize(ReactEventPriority::Discrete));
   }
 
   return jsi::Value::undefined();

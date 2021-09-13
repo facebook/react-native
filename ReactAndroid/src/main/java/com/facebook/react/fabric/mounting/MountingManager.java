@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.mounting;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 
 import android.text.Spannable;
 import android.view.View;
@@ -18,7 +19,7 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
@@ -26,6 +27,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -34,6 +36,7 @@ import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -56,10 +59,20 @@ public class MountingManager {
 
   @NonNull private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
+  @NonNull private final MountItemExecutor mMountItemExecutor;
   @NonNull private final RootViewManager mRootViewManager = new RootViewManager();
 
-  public MountingManager(@NonNull ViewManagerRegistry viewManagerRegistry) {
+  public interface MountItemExecutor {
+    @UiThread
+    @ThreadConfined(UI)
+    void executeItems(Queue<MountItem> items);
+  }
+
+  public MountingManager(
+      @NonNull ViewManagerRegistry viewManagerRegistry,
+      @NonNull MountItemExecutor mountItemExecutor) {
     mViewManagerRegistry = viewManagerRegistry;
+    mMountItemExecutor = mountItemExecutor;
   }
 
   /** Starts surface and attaches the root view. */
@@ -78,7 +91,11 @@ public class MountingManager {
   public SurfaceMountingManager startSurface(final int surfaceId) {
     SurfaceMountingManager surfaceMountingManager =
         new SurfaceMountingManager(
-            surfaceId, mJSResponderHandler, mViewManagerRegistry, mRootViewManager, this);
+            surfaceId,
+            mJSResponderHandler,
+            mViewManagerRegistry,
+            mRootViewManager,
+            mMountItemExecutor);
 
     // There could technically be a race condition here if addRootView is called twice from
     // different threads, though this is (probably) extremely unlikely, and likely an error.
@@ -87,7 +104,7 @@ public class MountingManager {
     // This *will* crash in Debug mode, but not in production.
     mSurfaceIdToManager.putIfAbsent(surfaceId, surfaceMountingManager);
     if (mSurfaceIdToManager.get(surfaceId) != surfaceMountingManager) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Called startSurface more than once for the SurfaceId [" + surfaceId + "]"));
@@ -104,7 +121,7 @@ public class MountingManager {
         getSurfaceManagerEnforced(surfaceId, "attachView");
 
     if (surfaceMountingManager.isStopped()) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG, new IllegalStateException("Trying to attach a view to a stopped surface"));
       return;
     }
@@ -131,7 +148,7 @@ public class MountingManager {
         mMostRecentSurfaceMountingManager = null;
       }
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException(
               "Cannot call stopSurface on non-existent surface: [" + surfaceId + "]"));
@@ -149,7 +166,10 @@ public class MountingManager {
         && mMostRecentSurfaceMountingManager.getSurfaceId() == surfaceId) {
       return mMostRecentSurfaceMountingManager;
     }
-    return mSurfaceIdToManager.get(surfaceId);
+
+    SurfaceMountingManager surfaceMountingManager = mSurfaceIdToManager.get(surfaceId);
+    mLastQueriedSurfaceMountingManager = surfaceMountingManager;
+    return surfaceMountingManager;
   }
 
   @NonNull
@@ -263,13 +283,15 @@ public class MountingManager {
    * Send an accessibility eventType to a Native View. eventType is any valid `AccessibilityEvent.X`
    * value.
    *
-   * <p>Why accept `-1` SurfaceId? Currently there are calls to
-   * UIManagerModule.sendAccessibilityEvent which is a legacy API and accepts only reactTag. We will
-   * have to investigate and migrate away from those calls over time.
+   * <p>Why accept `-1` SurfaceId? Currently there are calls to UIManager.sendAccessibilityEvent
+   * which is a legacy API and accepts only reactTag. We will have to investigate and migrate away
+   * from those calls over time.
    *
-   * @param surfaceId
-   * @param reactTag
-   * @param eventType
+   * @param surfaceId {@link int} that identifies the surface or -1 to temporarily support backward
+   *     compatibility.
+   * @param reactTag {@link int} that identifies the react Tag of the view.
+   * @param eventType {@link int} that identifies Android eventType. see {@link
+   *     View#sendAccessibilityEvent}
    */
   public void sendAccessibilityEvent(int surfaceId, int reactTag, int eventType) {
     UiThreadUtil.assertOnUiThread();

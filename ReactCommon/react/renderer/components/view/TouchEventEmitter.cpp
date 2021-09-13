@@ -62,17 +62,23 @@ static jsi::Value touchEventPayload(
 void TouchEventEmitter::dispatchTouchEvent(
     std::string const &type,
     TouchEvent const &event,
-    EventPriority const &priority) const {
+    EventPriority priority,
+    RawEvent::Category category) const {
   dispatchEvent(
       type,
       [event](jsi::Runtime &runtime) {
         return touchEventPayload(runtime, event);
       },
-      priority);
+      priority,
+      category);
 }
 
 void TouchEventEmitter::onTouchStart(TouchEvent const &event) const {
-  dispatchTouchEvent("touchStart", event, EventPriority::AsynchronousBatched);
+  dispatchTouchEvent(
+      "touchStart",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousStart);
 }
 
 void TouchEventEmitter::onTouchMove(TouchEvent const &event) const {
@@ -82,11 +88,19 @@ void TouchEventEmitter::onTouchMove(TouchEvent const &event) const {
 }
 
 void TouchEventEmitter::onTouchEnd(TouchEvent const &event) const {
-  dispatchTouchEvent("touchEnd", event, EventPriority::AsynchronousBatched);
+  dispatchTouchEvent(
+      "touchEnd",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousEnd);
 }
 
 void TouchEventEmitter::onTouchCancel(TouchEvent const &event) const {
-  dispatchTouchEvent("touchCancel", event, EventPriority::AsynchronousBatched);
+  dispatchTouchEvent(
+      "touchCancel",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousEnd);
 }
 
 } // namespace react

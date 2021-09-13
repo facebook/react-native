@@ -12,7 +12,7 @@ namespace react {
 
 struct Constants {
   /*
-      Flag controling props forwarding when shadow node is cloned on Android.
+      Flag controlling props forwarding when shadow node is cloned on Android.
       Has no effect on iOS.
   */
   static void setPropsForwardingEnabled(bool propsForwardingEnabled);

@@ -128,6 +128,10 @@ case "$PLATFORM_NAME" in
     ;;
 esac
 
+if [ "${IS_MACCATALYST}" = "YES" ]; then
+  BUNDLE_PLATFORM="ios"
+fi
+
 EMIT_SOURCEMAP=
 if [[ ! -z "$SOURCEMAP_FILE" ]]; then
   EMIT_SOURCEMAP=true

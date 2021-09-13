@@ -127,7 +127,7 @@ void MapBufferBuilder::ensureDynamicDataSpace(int32_t size) {
 }
 
 void MapBufferBuilder::putString(Key key, std::string value) {
-  int32_t strLength = value.length();
+  int32_t strLength = static_cast<int32_t>(value.length());
   const char *cstring = getCstring(&value);
 
   // format [lenght of string (int)] + [Array of Characters in the string]

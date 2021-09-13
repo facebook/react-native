@@ -138,15 +138,27 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
-static BOOL turboModuleBlockGuardEnabled = NO;
-BOOL RCTTurboModuleBlockGuardEnabled(void)
+static RCTTurboModuleCleanupMode turboModuleCleanupMode = kRCTGlobalScope;
+RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void)
 {
-  return turboModuleBlockGuardEnabled;
+  return turboModuleCleanupMode;
 }
 
-void RCTEnableTurboModuleBlockGuard(BOOL enabled)
+void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode)
 {
-  turboModuleBlockGuardEnabled = enabled;
+  turboModuleCleanupMode = mode;
+}
+
+// Turn off TurboModule delegate locking
+static BOOL turboModuleManagerDelegateLockingDisabled = YES;
+BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)
+{
+  return turboModuleManagerDelegateLockingDisabled;
+}
+
+void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
+{
+  turboModuleManagerDelegateLockingDisabled = disabled;
 }
 
 @interface RCTBridge () <RCTReloadListener>
@@ -230,6 +242,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+{
+  [self.batchedBridge attachBridgeAPIsToTurboModule:module];
+}
+
 - (void)didReceiveReloadCommand
 {
 #if RCT_ENABLE_INSPECTOR
@@ -250,6 +267,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     self->_launchOptions = nil;
     [self setUp];
   });
+}
+
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return self.batchedBridge.moduleRegistry;
 }
 
 - (NSArray<Class> *)moduleClasses

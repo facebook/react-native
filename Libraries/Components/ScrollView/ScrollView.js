@@ -172,6 +172,12 @@ type IOSProps = $ReadOnly<{|
    */
   automaticallyAdjustContentInsets?: ?boolean,
   /**
+   * Controls whether iOS should automatically adjust the scroll indicator
+   * insets. The default value is true. Available on iOS 13 and later.
+   * @platform ios
+   */
+  automaticallyAdjustsScrollIndicatorInsets?: ?boolean,
+  /**
    * The amount by which the scroll view content is inset from the edges
    * of the scroll view. Defaults to `{top: 0, left: 0, bottom: 0, right: 0}`.
    * @platform ios
@@ -988,6 +994,7 @@ class ScrollView extends React.Component<Props, State> {
       UIManager.measureLayout(
         nodeHandle,
         ReactNative.findNodeHandle(this),
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
         this._inputMeasureAndScrollToKeyboard,
       );
@@ -995,6 +1002,7 @@ class ScrollView extends React.Component<Props, State> {
       nodeHandle.measureLayout(
         this._innerViewRef,
         this._inputMeasureAndScrollToKeyboard,
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this._textInputFocusError,
       );
     }
@@ -1170,11 +1178,6 @@ class ScrollView extends React.Component<Props, State> {
         );
       }
     }
-    if (Platform.OS === 'android') {
-      if (this.props.keyboardDismissMode === 'on-drag' && this._isTouching) {
-        dismissKeyboard();
-      }
-    }
     this._observedScrollSinceBecomingResponder = true;
     this.props.onScroll && this.props.onScroll(e);
   };
@@ -1291,6 +1294,14 @@ class ScrollView extends React.Component<Props, State> {
    */
   _handleScrollBeginDrag: (e: ScrollEvent) => void = (e: ScrollEvent) => {
     FrameRateLogger.beginScroll(); // TODO: track all scrolls after implementing onScrollEndAnimation
+
+    if (
+      Platform.OS === 'android' &&
+      this.props.keyboardDismissMode === 'on-drag'
+    ) {
+      dismissKeyboard();
+    }
+
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
 

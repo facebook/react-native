@@ -20,9 +20,7 @@ using GarbageCollectionTrigger = std::function<void()>;
 
 class LeakChecker final {
  public:
-  LeakChecker(
-      RuntimeExecutor const &runtimeExecutor,
-      GarbageCollectionTrigger const &garbageCollectionTrigger);
+  LeakChecker(RuntimeExecutor const &runtimeExecutor);
 
   void uiManagerDidCreateShadowNodeFamily(
       ShadowNodeFamily::Shared const &shadowNodeFamily) const;
@@ -32,7 +30,6 @@ class LeakChecker final {
   void checkSurfaceForLeaks(SurfaceId surfaceId) const;
 
   RuntimeExecutor const runtimeExecutor_{};
-  GarbageCollectionTrigger const garbageCollectionTrigger_{};
 
   WeakFamilyRegistry registry_{};
   SurfaceId previouslyStoppedSurface_;

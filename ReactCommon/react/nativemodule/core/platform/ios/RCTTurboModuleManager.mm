@@ -18,6 +18,7 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxModule.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
@@ -173,8 +174,8 @@ static Class getFallbackClassFromName(const char *name)
   std::mutex _turboModuleHoldersMutex;
   std::atomic<bool> _invalidating;
 
-  RCTModuleRegistry *_moduleRegistry;
-  RCTViewRegistry *_viewRegistry_DEPRECATED;
+  RCTRetainJSCallback _retainJSCallback;
+  std::shared_ptr<LongLivedObjectCollection> _longLivedObjectCollection;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -186,12 +187,6 @@ static Class getFallbackClassFromName(const char *name)
     _delegate = delegate;
     _bridge = bridge;
     _invalidating = false;
-    _moduleRegistry = [RCTModuleRegistry new];
-    [_moduleRegistry setBridge:bridge];
-    [_moduleRegistry setTurboModuleRegistry:self];
-
-    _viewRegistry_DEPRECATED = [RCTViewRegistry new];
-    [_viewRegistry_DEPRECATED setBridge:bridge];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
@@ -201,13 +196,25 @@ static Class getFallbackClassFromName(const char *name)
                                              selector:@selector(bridgeDidInvalidateModules:)
                                                  name:RCTBridgeDidInvalidateModulesNotification
                                                object:_bridge.parentBridge];
+
+    if (RCTGetTurboModuleCleanupMode() == kRCTGlobalScope) {
+      // Use LongLivedObjectCollection singleton regularly
+      _retainJSCallback = nil;
+    } else if (RCTGetTurboModuleCleanupMode() == kRCTGlobalScopeUsingRetainJSCallback) {
+      // Use LongLivedObjectCollection singleton via the _retainJSCallback
+      _retainJSCallback = ^(jsi::Function &&callback, jsi::Runtime &runtime, std::shared_ptr<CallInvoker> jsInvoker2) {
+        return CallbackWrapper::createWeak(std::move(callback), runtime, jsInvoker2);
+      };
+    } else if (RCTGetTurboModuleCleanupMode() == kRCTTurboModuleManagerScope) {
+      // Use a LongLivedObjectCollection scoped to the TurboModuleManager
+      _longLivedObjectCollection = std::make_shared<LongLivedObjectCollection>();
+      __block std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection = _longLivedObjectCollection;
+      _retainJSCallback = ^(jsi::Function &&callback, jsi::Runtime &runtime, std::shared_ptr<CallInvoker> jsInvoker2) {
+        return CallbackWrapper::createWeak(longLivedObjectCollection, std::move(callback), runtime, jsInvoker2);
+      };
+    }
   }
   return self;
-}
-
-- (void)setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider)viewProvider
-{
-  [_viewRegistry_DEPRECATED setBridgelessComponentViewProvider:viewProvider];
 }
 
 - (void)notifyAboutTurboModuleSetup:(const char *)name
@@ -312,6 +319,7 @@ static Class getFallbackClassFromName(const char *name)
       .jsInvoker = _jsInvoker,
       .nativeInvoker = nativeInvoker,
       .isSyncModule = methodQueue == RCTJSThread,
+      .retainJSCallback = _retainJSCallback,
   };
 
   /**
@@ -414,9 +422,12 @@ static Class getFallbackClassFromName(const char *name)
      */
 
     if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-      std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-
-      moduleClass = [_delegate getModuleClassFromName:moduleName];
+      if (RCTTurboModuleManagerDelegateLockingDisabled()) {
+        moduleClass = [_delegate getModuleClassFromName:moduleName];
+      } else {
+        std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
+        moduleClass = [_delegate getModuleClassFromName:moduleName];
+      }
     }
 
     if (!moduleClass) {
@@ -498,19 +509,18 @@ static Class getFallbackClassFromName(const char *name)
 
   TurboModulePerfLogger::moduleCreateConstructStart(moduleName, moduleId);
   if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-
-    module = [_delegate getModuleInstanceFromClass:moduleClass];
+    if (RCTTurboModuleManagerDelegateLockingDisabled()) {
+      module = [_delegate getModuleInstanceFromClass:moduleClass];
+    } else {
+      std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
+      module = [_delegate getModuleInstanceFromClass:moduleClass];
+    }
   } else {
     module = [moduleClass new];
   }
   TurboModulePerfLogger::moduleCreateConstructEnd(moduleName, moduleId);
 
   TurboModulePerfLogger::moduleCreateSetUpStart(moduleName, moduleId);
-
-  if ([module respondsToSelector:@selector(setTurboModuleRegistry:)]) {
-    [module setTurboModuleRegistry:self];
-  }
 
   /**
    * It is reasonable for NativeModules to not want/need the bridge.
@@ -543,44 +553,6 @@ static Class getFallbackClassFromName(const char *name)
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
            "permitted. You must either @synthesize the bridge property, "
-           "or provide your own setter method.",
-          RCTBridgeModuleNameForClass([module class]));
-    }
-  }
-
-  /**
-   * Attach the RCTModuleRegistry to this TurboModule, which allows this TurboModule
-   * To load other NativeModules & TurboModules.
-   *
-   * Usage: In the NativeModule @implementation, include:
-   *   `@synthesize moduleRegistry = _moduleRegistry`
-   */
-  if ([module respondsToSelector:@selector(moduleRegistry)] && _moduleRegistry) {
-    @try {
-      [(id)module setValue:_moduleRegistry forKey:@"moduleRegistry"];
-    } @catch (NSException *exception) {
-      RCTLogError(
-          @"%@ has no setter or ivar for its module registry, which is not "
-           "permitted. You must either @synthesize the moduleRegistry property, "
-           "or provide your own setter method.",
-          RCTBridgeModuleNameForClass([module class]));
-    }
-  }
-
-  /**
-   * Attach the RCTViewRegistry to this TurboModule, which allows this TurboModule
-   * To query a React component's UIView, given its reactTag.
-   *
-   * Usage: In the NativeModule @implementation, include:
-   *   `@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED`
-   */
-  if ([module respondsToSelector:@selector(viewRegistry_DEPRECATED)] && _viewRegistry_DEPRECATED) {
-    @try {
-      [(id)module setValue:_viewRegistry_DEPRECATED forKey:@"viewRegistry_DEPRECATED"];
-    } @catch (NSException *exception) {
-      RCTLogError(
-          @"%@ has no setter or ivar for its module registry, which is not "
-           "permitted. You must either @synthesize the viewRegistry_DEPRECATED property, "
            "or provide your own setter method.",
           RCTBridgeModuleNameForClass([module class]));
     }
@@ -623,11 +595,25 @@ static Class getFallbackClassFromName(const char *name)
       } @catch (NSException *exception) {
         RCTLogError(
             @"%@ has no setter or ivar for its methodQueue, which is not "
-             "permitted. You must either @synthesize the bridge property, "
+             "permitted. You must either @synthesize the methodQueue property, "
              "or provide your own setter method.",
             RCTBridgeModuleNameForClass([module class]));
       }
     }
+  }
+
+  /**
+   * Decorate TurboModules with bridgeless-compatible APIs that call into the bridge.
+   */
+  if (_bridge) {
+    [_bridge attachBridgeAPIsToTurboModule:module];
+  }
+
+  /**
+   * If the TurboModule conforms to RCTInitializing, invoke its initialize method.
+   */
+  if ([module respondsToSelector:@selector(initialize)]) {
+    [(id<RCTInitializing>)module initialize];
   }
 
   /**
@@ -648,8 +634,10 @@ static Class getFallbackClassFromName(const char *name)
   if (_bridge) {
     RCTModuleData *data = [[RCTModuleData alloc] initWithModuleInstance:(id<RCTBridgeModule>)module
                                                                  bridge:_bridge
-                                                         moduleRegistry:_moduleRegistry
-                                                viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED];
+                                                         moduleRegistry:_bridge.moduleRegistry
+                                                viewRegistry_DEPRECATED:nil
+                                                          bundleManager:nil
+                                                      callableJSModules:nil];
     [_bridge registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:data];
   }
 
@@ -770,9 +758,17 @@ static Class getFallbackClassFromName(const char *name)
     return turboModule;
   };
 
-  runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-    react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
-  });
+  if (RCTGetTurboModuleCleanupMode() == kRCTGlobalScope ||
+      RCTGetTurboModuleCleanupMode() == kRCTGlobalScopeUsingRetainJSCallback) {
+    runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
+      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
+    });
+  } else if (RCTGetTurboModuleCleanupMode() == kRCTTurboModuleManagerScope) {
+    runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider),
+                     longLivedObjectCollection = _longLivedObjectCollection](jsi::Runtime &runtime) {
+      react::TurboModuleBinding::install(runtime, std::move(turboModuleProvider), longLivedObjectCollection);
+    });
+  }
 }
 
 #pragma mark RCTTurboModuleRegistry

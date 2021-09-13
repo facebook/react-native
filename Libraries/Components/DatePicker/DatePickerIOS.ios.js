@@ -10,14 +10,13 @@
 
 // This is a controlled component version of RCTDatePickerIOS.
 
+import * as React from 'react';
 import RCTDatePickerNativeComponent, {
   Commands as DatePickerCommands,
 } from './RCTDatePickerNativeComponent';
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const View = require('../View/View');
-
-const invariant = require('invariant');
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
+import invariant from 'invariant';
 
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -118,10 +117,6 @@ type Props = $ReadOnly<{|
  * source of truth.
  */
 class DatePickerIOS extends React.Component<Props> {
-  static DefaultProps: {|mode: $TEMPORARY$string<'datetime'>|} = {
-    mode: 'datetime',
-  };
-
   _picker: ?React.ElementRef<typeof RCTDatePickerNativeComponent> = null;
 
   componentDidUpdate() {
@@ -143,6 +138,7 @@ class DatePickerIOS extends React.Component<Props> {
 
   render(): React.Node {
     const props = this.props;
+    const mode = props.mode ?? 'datetime';
     invariant(
       props.date || props.initialDate,
       'A selected date or initial date should be specified.',
@@ -154,7 +150,7 @@ class DatePickerIOS extends React.Component<Props> {
           ref={picker => {
             this._picker = picker;
           }}
-          style={getHeight(props.pickerStyle, props.mode)}
+          style={getHeight(props.pickerStyle, mode)}
           date={
             props.date
               ? props.date.getTime()
@@ -173,7 +169,7 @@ class DatePickerIOS extends React.Component<Props> {
           minimumDate={
             props.minimumDate ? props.minimumDate.getTime() : undefined
           }
-          mode={props.mode}
+          mode={mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}

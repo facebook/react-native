@@ -10,6 +10,8 @@
 
 'use strict';
 
+import * as createAnimatedComponentInjection from './createAnimatedComponentInjection';
+
 const View = require('../Components/View/View');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
@@ -121,15 +123,19 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     };
 
     _waitForUpdate = (): void => {
-      NativeAnimatedHelper.API.setWaitingForIdentifier(
-        this._animatedComponentId,
-      );
+      if (this._isFabric()) {
+        NativeAnimatedHelper.API.setWaitingForIdentifier(
+          this._animatedComponentId,
+        );
+      }
     };
 
     _markUpdateComplete = (): void => {
-      NativeAnimatedHelper.API.unsetWaitingForIdentifier(
-        this._animatedComponentId,
-      );
+      if (this._isFabric()) {
+        NativeAnimatedHelper.API.unsetWaitingForIdentifier(
+          this._animatedComponentId,
+        );
+      }
     };
 
     // The system is best designed when setNativeProps is implemented. It is
@@ -170,14 +176,11 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
     _attachProps(nextProps) {
       const oldPropsAnimated = this._propsAnimated;
 
-      if (nextProps === oldPropsAnimated) {
-        return;
-      }
-
       this._propsAnimated = new AnimatedProps(
         nextProps,
         this._animatedPropsCallback,
       );
+      this._propsAnimated.__attach();
 
       // When you call detach, it removes the element from the parent list
       // of children. If it goes to 0, then the parent also detaches itself
@@ -198,19 +201,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       setLocalRef: ref => {
         this._prevComponent = this._component;
         this._component = ref;
-
-        // TODO: Delete this in a future release.
-        if (ref != null && ref.getNode == null) {
-          ref.getNode = () => {
-            console.warn(
-              '%s: Calling `getNode()` on the ref of an Animated component ' +
-                'is no longer necessary. You can now directly use the ref ' +
-                'instead. This method will be removed in a future release.',
-              ref.constructor.name ?? '<<anonymous>>',
-            );
-            return ref;
-          };
-        }
       },
     });
 
@@ -310,4 +300,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   });
 }
 
-module.exports = createAnimatedComponent;
+// $FlowIgnore[incompatible-cast] - Will be compatible after refactors.
+module.exports = (createAnimatedComponentInjection.recordAndRetrieve() ??
+  createAnimatedComponent: typeof createAnimatedComponent);

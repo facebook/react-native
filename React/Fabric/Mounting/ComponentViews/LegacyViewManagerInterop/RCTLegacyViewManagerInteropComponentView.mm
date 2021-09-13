@@ -7,6 +7,7 @@
 
 #import "RCTLegacyViewManagerInteropComponentView.h"
 
+#import <React/RCTAssert.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
 #import <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
@@ -28,6 +29,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+    RCTWarnNotAllowedForNewArchitecture(
+        self, @"ViewManager with interop layer is not allowed in the new architecture.");
     static const auto defaultProps = std::make_shared<const LegacyViewManagerInteropViewProps>();
     _props = defaultProps;
     _viewsToBeMounted = [NSMutableArray new];

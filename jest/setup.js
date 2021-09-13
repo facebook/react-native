@@ -12,7 +12,7 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('@react-native/polyfills/Object.es7');
+jest.requireActual('@react-native/polyfills/Object.es8');
 jest.requireActual('@react-native/polyfills/error-guard');
 
 global.__DEV__ = true;
@@ -23,6 +23,7 @@ global.performance = {
 
 global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
+global.window = global;
 
 global.requestAnimationFrame = function(callback) {
   return setTimeout(callback, 0);
@@ -70,7 +71,7 @@ jest
       }
     }),
     hasViewManagerConfig: jest.fn(name => {
-      return true;
+      return name === 'AndroidDrawerLayout';
     }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
@@ -332,30 +333,6 @@ jest
         doLeftAndRightSwapInRTL: true,
       }),
     },
-    NativeAnimatedModule: {
-      startOperationBatch: jest.fn(),
-      finishOperationBatch: jest.fn(),
-      createAnimatedNode: jest.fn(),
-      getValue: jest.fn(),
-      startListeningToAnimatedNodeValue: jest.fn(),
-      stopListeningToAnimatedNodeValue: jest.fn(),
-      connectAnimatedNodes: jest.fn(),
-      disconnectAnimatedNodes: jest.fn(),
-      startAnimatingNode: jest.fn(),
-      stopAnimation: jest.fn(),
-      setAnimatedNodeValue: jest.fn(),
-      setAnimatedNodeOffset: jest.fn(),
-      flattenAnimatedNodeOffset: jest.fn(),
-      extractAnimatedNodeOffset: jest.fn(),
-      connectAnimatedNodeToView: jest.fn(),
-      disconnectAnimatedNodeFromView: jest.fn(),
-      restoreDefaultValues: jest.fn(),
-      dropAnimatedNode: jest.fn(),
-      addAnimatedEventToView: jest.fn(),
-      removeAnimatedEventFromView: jest.fn(),
-      addListener: jest.fn(),
-      removeListeners: jest.fn(),
-    },
   }))
   .mock('../Libraries/NativeComponent/NativeComponentRegistry', () => {
     return {
@@ -388,14 +365,5 @@ jest
     return {
       __esModule: true,
       default: Component,
-    };
-  })
-  .mock('../Libraries/Animated/NativeAnimatedHelper.js', () => {
-    const NativeAnimatedHelper = jest.requireActual(
-      '../Libraries/Animated/NativeAnimatedHelper.js',
-    );
-    return {
-      ...NativeAnimatedHelper,
-      shouldUseNativeDriver: jest.fn(false),
     };
   });
