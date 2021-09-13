@@ -161,7 +161,9 @@ export class URL {
 
     this._url = this._url.substr(0, queryStringStart);
     let searchParams = queryString.split('&').reduce((agg, pair) => {
-      if (!pair) { return agg; }
+      if (!pair) {
+        return agg;
+      }
       const seperatorIndex = pair.indexOf('=');
       if (seperatorIndex < 0) {
         agg[pair] = '';
