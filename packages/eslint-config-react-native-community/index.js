@@ -293,7 +293,7 @@ module.exports = {
     'react/jsx-no-duplicate-props': 2,
     'react/jsx-no-undef': 2,
     'react/jsx-sort-props': 0,
-    'react/jsx-uses-react': 1,
+    'react/jsx-uses-react': 0,
     'react/jsx-uses-vars': 1,
     'react/no-did-mount-set-state': 1,
     'react/no-did-update-set-state': 1,
@@ -301,7 +301,7 @@ module.exports = {
     'react/no-string-refs': 1,
     'react/no-unknown-property': 0,
     'react/prop-types': 0,
-    'react/react-in-jsx-scope': 1,
+    'react/react-in-jsx-scope': 0,
     'react/self-closing-comp': 1,
     'react/wrap-multilines': 0,
 
