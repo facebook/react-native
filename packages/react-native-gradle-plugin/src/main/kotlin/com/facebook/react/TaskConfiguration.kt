@@ -15,6 +15,7 @@ import com.facebook.react.tasks.BundleJsAndAssetsTask
 import com.facebook.react.tasks.HermesBinaryTask
 import com.facebook.react.utils.detectedCliPath
 import com.facebook.react.utils.detectedEntryFile
+import com.facebook.react.utils.detectedHermesCommand
 import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
@@ -94,7 +95,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
         it.description = "bundle hermes resources for $targetName"
 
         it.reactRoot = config.reactRoot
-        it.hermesCommand = config.osAwareHermesCommand
+        it.hermesCommand = detectedHermesCommand(config)
         it.hermesFlags = if (isRelease) config.hermesFlagsRelease else config.hermesFlagsDebug
         it.jsBundleFile = jsBundleFile
         it.composeSourceMapsCommand = nodeExecutableAndArgs + config.composeSourceMapsPath

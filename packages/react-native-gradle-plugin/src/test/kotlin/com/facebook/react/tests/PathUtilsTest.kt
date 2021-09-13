@@ -10,9 +10,10 @@ package com.facebook.react.tests
 import com.facebook.react.ReactAppExtension
 import com.facebook.react.utils.detectedCliPath
 import com.facebook.react.utils.detectedEntryFile
+import com.facebook.react.utils.detectedHermesCommand
 import java.io.File
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Assert.assertEquals
+import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -87,5 +88,27 @@ class PathUtilsTest {
     val extension = ReactAppExtension(project)
 
     detectedCliPath(project.projectDir, extension)
+  }
+
+  @Test
+  fun detectedHermesCommand_withPathFromExtension() {
+    val extension = ReactAppExtension(ProjectBuilder.builder().build())
+    val expected = tempFolder.newFile("hermesc")
+    extension.hermesCommand = expected.toString()
+
+    val actual = detectedHermesCommand(extension)
+
+    assertEquals(expected.toString(), actual)
+  }
+
+  @Test
+  fun detectedHermesCommand_withOSSpecificBin() {
+    val extension = ReactAppExtension(ProjectBuilder.builder().build())
+
+    val actual = detectedHermesCommand(extension)
+
+    assertTrue(actual.startsWith("node_modules/hermes-engine/"))
+    assertTrue(actual.endsWith("hermesc"))
+    assertFalse(actual.contains("%OS-BIN%"))
   }
 }

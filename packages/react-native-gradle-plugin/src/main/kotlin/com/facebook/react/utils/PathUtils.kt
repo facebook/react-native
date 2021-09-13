@@ -9,6 +9,7 @@ package com.facebook.react.utils
 
 import com.facebook.react.ReactAppExtension
 import java.io.File
+import org.apache.tools.ant.taskdefs.condition.Os
 
 /**
  * Computes the entry file for React Native. The Algo follows this order:
@@ -35,6 +36,16 @@ internal fun detectedCliPath(
 ): String =
     detectCliPath(
         projectDir = projectDir, reactRoot = config.reactRoot, preconfuredCliPath = config.cliPath)
+
+/**
+ * Computes the `hermesc` command location. The Algo follows this order:
+ * 1. The path provided by the `hermesCommand` config in the `reactApp` Gradle extension
+ * 2. The file located in `node_modules/hermes-engine/%OS-BIN%/hermesc` where `%OS-BIN%` is
+ * substituted with the correct OS arch.
+ * 3. Fails otherwise
+ */
+internal fun detectedHermesCommand(config: ReactAppExtension): String =
+    detectOSAwareHermesCommand(config.hermesCommand)
 
 private fun detectEntryFile(entryFile: File?, reactRoot: File): File =
     when {
@@ -71,4 +82,25 @@ private fun detectCliPath(projectDir: File, reactRoot: File, preconfuredCliPath:
   error(
       "Couldn't determine CLI location. " +
           "Please set `project.react.cliPath` to the path of the react-native cli.js")
+}
+
+// Make sure not to inspect the Hermes config unless we need it,
+// to avoid breaking any JSC-only setups.
+private fun detectOSAwareHermesCommand(hermesCommand: String): String {
+  // If the project specifies a Hermes command, don't second guess it.
+  if (!hermesCommand.contains("%OS-BIN%")) {
+    return hermesCommand
+  }
+
+  // Execution on Windows fails with / as separator
+  return hermesCommand.replace("%OS-BIN%", getHermesOSBin()).replace('/', File.separatorChar)
+}
+
+private fun getHermesOSBin(): String {
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) return "win64-bin"
+  if (Os.isFamily(Os.FAMILY_MAC)) return "osx-bin"
+  if (Os.isOs(null, "linux", "amd64", null)) return "linux64-bin"
+  error(
+      "OS not recognized. Please set project.react.hermesCommand " +
+          "to the path of a working Hermes compiler.")
 }
