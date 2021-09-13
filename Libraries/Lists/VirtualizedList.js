@@ -539,7 +539,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   recordInteraction() {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref.recordInteraction();
+      childList.ref && childList.ref._isNestedWithSameOrientation() && childList.ref.recordInteraction();
     });
     this._viewabilityTuples.forEach(t => {
       t.viewabilityHelper.recordInteraction();
@@ -659,7 +659,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       state: null,
     });
 
-    if (this._hasInteracted) {
+    if (this._hasInteracted && childList.ref._isNestedWithSameOrientation()) {
       childList.ref.recordInteraction();
     }
   };
@@ -734,7 +734,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    if (this._isNestedWithSameOrientation()) {
+    if (this._isNestedWithSameOrientation() || this._isNestedWithDifferentOrientation()) {
       this.context.registerAsNestedChild({
         cellKey: this._getCellKey(),
         key: this._getListKey(),
@@ -749,7 +749,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   componentWillUnmount() {
-    if (this._isNestedWithSameOrientation()) {
+    if (this._isNestedWithSameOrientation() || this._isNestedWithDifferentOrientation()) {
       this.context.unregisterAsNestedChild({
         key: this._getListKey(),
         state: {
@@ -851,6 +851,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return !!(
       nestedContext &&
       !!nestedContext.horizontal === horizontalOrDefault(this.props.horizontal)
+    );
+  }
+
+  _isNestedWithDifferentOrientation(): boolean {
+    const nestedContext = this.context;
+    return !!(
+      nestedContext &&
+      !!nestedContext.horizontal !== horizontalOrDefault(this.props.horizontal)
     );
   }
 
@@ -1317,7 +1325,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       for (let childKey of childListKeys) {
         const childList = this._nestedChildLists.get(childKey);
         childList &&
-          childList.ref &&
+          childList.ref && childList.ref._isNestedWithSameOrientation() &&
           childList.ref.measureLayoutRelativeToContainingList();
       }
     }
@@ -1359,7 +1367,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 for (let childKey of childListKeys) {
                   const childList = this._nestedChildLists.get(childKey);
                   childList &&
-                    childList.ref &&
+                    childList.ref && childList.ref._isNestedWithSameOrientation() &&
                     childList.ref.measureLayoutRelativeToContainingList();
                 }
               }
@@ -1571,7 +1579,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onScroll = (e: Object) => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onScroll(e);
+      //pass on scroll events to child if nested in the same orientation
+      childList.ref?._isNestedWithSameOrientation() && childList.ref._onScroll(e);
+
+      //trigger viewable items check for child of different orientation when this list scrolls
+      childList.ref?._isNestedWithDifferentOrientation() &&
+        childList.ref._updateViewableItems(childList.ref.props.data);
     });
     if (this.props.onScroll) {
       this.props.onScroll(e);
@@ -1690,7 +1703,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onScrollBeginDrag = (e): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onScrollBeginDrag(e);
+      childList.ref && childList.ref._isNestedWithSameOrientation() && childList.ref._onScrollBeginDrag(e);
     });
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.recordInteraction();
@@ -1701,7 +1714,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onScrollEndDrag = (e): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onScrollEndDrag(e);
+      childList.ref && childList.ref._isNestedWithSameOrientation() && childList.ref._onScrollEndDrag(e);
     });
     const {velocity} = e.nativeEvent;
     if (velocity) {
@@ -1713,14 +1726,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onMomentumScrollBegin = (e): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onMomentumScrollBegin(e);
+      childList.ref && childList.ref._isNestedWithSameOrientation() && childList.ref._onMomentumScrollBegin(e);
     });
     this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
   };
 
   _onMomentumScrollEnd = (e): void => {
     this._nestedChildLists.forEach(childList => {
-      childList.ref && childList.ref._onMomentumScrollEnd(e);
+      childList.ref && childList.ref._isNestedWithSameOrientation() && childList.ref._onMomentumScrollEnd(e);
     });
     this._scrollMetrics.velocity = 0;
     this._computeBlankness();
@@ -1796,7 +1809,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           // For each cell, need to check whether any child list in it has more elements to render
           for (let childKey of childListKeys) {
             const childList = this._nestedChildLists.get(childKey);
-            if (childList && childList.ref && childList.ref.hasMore()) {
+            if (childList?.ref?._isNestedWithSameOrientation() && childList.ref.hasMore()) {
               someChildHasMore = true;
               break;
             }
@@ -1876,6 +1889,23 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return frame;
   };
 
+  _getParentViewTokenIfNested() {
+    if(this._isNestedWithDifferentOrientation()) {
+      const parentRef = this.context.getOutermostParentListRef();
+
+      //use the child's viewbilityHelper to use same viewability config, but applied to it's parent
+      const parentViewables = this._viewabilityTuples[0]?.viewabilityHelper.computeViewableItems(
+        parentRef.props.getItemCount(parentRef.props.data),
+        parentRef._scrollMetrics.offset,
+        parentRef._scrollMetrics.visibleLength,
+        parentRef._getFrameMetrics,
+        {first: this.context.cellKey, last: this.context.cellKey}, // use the scan range optimization
+      )
+
+      return parentRef._createViewToken(this.context.cellKey, parentViewables.length > 0)
+    }
+  }
+
   _updateViewableItems(data: any) {
     const {getItemCount} = this.props;
 
@@ -1887,6 +1917,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._getFrameMetrics,
         this._createViewToken,
         tuple.onViewableItemsChanged,
+        this._getParentViewTokenIfNested(),
         this.state,
       );
     });

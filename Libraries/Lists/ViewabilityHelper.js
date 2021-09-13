@@ -192,6 +192,7 @@ class ViewabilityHelper {
       changed: Array<ViewToken>,
       ...
     }) => void,
+    parentViewToken: ViewToken,
     // Optional optimization to reduce the scan size
     renderRange?: {
       first: number,
@@ -215,6 +216,12 @@ class ViewabilityHelper {
         getFrameMetrics,
         renderRange,
       );
+    }
+    if(!parentViewToken?.isViewable) {
+      if(this._viewableIndices.length === 0) {
+        return
+      }
+      viewableIndices = []
     }
     if (
       this._viewableIndices.length === viewableIndices.length &&
