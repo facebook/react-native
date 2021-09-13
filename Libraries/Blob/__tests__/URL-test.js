@@ -56,5 +56,14 @@ describe('URL', function() {
     d.searchParams.append('utm', 'facebook');
     expect(d.href).toBe('https://google.com/search?q=test&utm=facebook');
     expect([...d.searchParams].length).toBe(2);
+    const e = new URL('https://google.com/search?q');
+    expect(e.href).toBe('https://google.com/search?q=');
+    expect([...e.searchParams].length).toBe(1);
+    const f = new URL('https://google.com/search?q=test&');
+    expect(f.href).toBe('https://google.com/search?q=test');
+    expect([...f.searchParams].length).toBe(1);
+    const g = new URL('https://google.com/search?q=test=again');
+    expect(g.href).toBe('https://google.com/search?q=test=again');
+    expect([...g.searchParams].length).toBe(1);
   });
 });

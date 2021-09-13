@@ -126,10 +126,9 @@ export class URL {
 
   constructor(url: string, base: string) {
     let baseUrl = null;
-    const queryStringStart = url.indexOf('?');
     if (!base || validateBaseUrl(url)) {
       this._url = url;
-      if (!this._url.endsWith('/') && queryStringStart < 0) {
+      if (!this._url.endsWith('/') && url.indexOf('?') < 0) {
         this._url += '/';
       }
     } else {
@@ -153,16 +152,25 @@ export class URL {
       this._url = `${baseUrl}${url}`;
     }
 
+    let queryStringStart = this._url.indexOf('?');
     if (queryStringStart < 0) {
       return;
     }
 
-    let queryString = this._url.substring(queryStringStart + 1);
+    const queryString = this._url.substring(queryStringStart + 1);
 
     this._url = this._url.substr(0, queryStringStart);
     let searchParams = queryString.split('&').reduce((agg, pair) => {
-      let [key, value] = pair.split('=');
-      agg[key] = value;
+      if (!pair) { return agg; }
+      const seperatorIndex = pair.indexOf('=');
+      if (seperatorIndex < 0) {
+        agg[pair] = '';
+      } else {
+        const key = pair.substring(0, seperatorIndex);
+        const value = pair.substr(seperatorIndex + 1);
+        agg[key] = value;
+      }
+
       return agg;
     }, {});
 
