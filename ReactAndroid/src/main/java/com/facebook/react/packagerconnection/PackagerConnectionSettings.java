@@ -53,15 +53,13 @@ public class PackagerConnectionSettings {
     return host;
   }
 
-  public void setDebugServerHost(final String host) {
-    setDebugServerHost(host, true);
+  public void setDebugServerHost(String host) {
+    mDebugServerHost = host;
+    mPreferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply();
   }
 
-  public void setDebugServerHost(final String host, final boolean savePrefs) {
+  public void setDebugServerHostWithoutPersisting(final String host, final boolean savePrefs) {
     mDebugServerHost = host;
-    if (savePrefs) {
-      mPreferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply();
-    }
   }
 
   public String getInspectorServerHost() {
