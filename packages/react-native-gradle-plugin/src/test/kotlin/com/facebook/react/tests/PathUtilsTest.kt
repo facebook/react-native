@@ -58,12 +58,25 @@ class PathUtilsTest {
   fun detectedCliPath_withCliPathFromExtension() {
     val project = ProjectBuilder.builder().build()
     val extension = ReactAppExtension(project)
-    val expected = tempFolder.newFile("fake-cli.sh")
-    extension.cliPath = expected.toString()
+    val expected = File(project.projectDir, "fake-cli.sh").apply { writeText("#!/bin/bash") }
+    extension.cliPath = "./fake-cli.sh"
 
     val actual = detectedCliPath(project.projectDir, extension)
 
-    assertEquals(expected.toString(), actual)
+    assertEquals(expected.canonicalPath, File(actual).canonicalPath)
+  }
+
+  @Test
+  fun detectedCliPath_withCliPathFromExtensionInParentFolder() {
+    val rootProject = ProjectBuilder.builder().build()
+    val project = ProjectBuilder.builder().withParent(rootProject).build()
+    val extension = ReactAppExtension(project)
+    val expected = File(rootProject.projectDir, "cli-in-root.sh").apply { writeText("#!/bin/bash") }
+    extension.cliPath = "../cli-in-root.sh"
+
+    val actual = detectedCliPath(project.projectDir, extension)
+
+    assertEquals(expected.canonicalPath, File(actual).canonicalPath)
   }
 
   @Test

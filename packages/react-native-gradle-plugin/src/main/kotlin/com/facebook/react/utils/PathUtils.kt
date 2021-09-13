@@ -35,7 +35,9 @@ internal fun detectedCliPath(
     config: ReactAppExtension,
 ): String =
     detectCliPath(
-        projectDir = projectDir, reactRoot = config.reactRoot, preconfuredCliPath = config.cliPath)
+        projectDir = projectDir,
+        reactRoot = config.reactRoot,
+        preconfiguredCliPath = config.cliPath)
 
 /**
  * Computes the `hermesc` command location. The Algo follows this order:
@@ -55,9 +57,15 @@ private fun detectEntryFile(entryFile: File?, reactRoot: File): File =
       else -> File(reactRoot, "index.js")
     }
 
-private fun detectCliPath(projectDir: File, reactRoot: File, preconfuredCliPath: String?): String {
+private fun detectCliPath(
+    projectDir: File,
+    reactRoot: File,
+    preconfiguredCliPath: String?
+): String {
   // 1. preconfigured path
-  if (preconfuredCliPath != null) return preconfuredCliPath
+  if (preconfiguredCliPath != null) {
+    return File(projectDir, preconfiguredCliPath).toString()
+  }
 
   // 2. node module path
   val nodeProcess =
