@@ -42,5 +42,10 @@ rn_xplat_cxx_library(
         "//xplat/jsi:jsi",
         "//xplat/third-party/linker_lib:atomic",
         FBJNI_TARGET,
+        # TODO T71316899: Extract CoreComponentsRegistry out of this module
+        # The following dependencies are required by CoreComponentsRegistry
+        "//xplat/js/react-native-github:generated_components-rncore",
+        react_native_xplat_target("react/renderer/components/image:image"),
+        react_native_xplat_target("react/renderer/components/text:text"),
     ],
 )

@@ -15,9 +15,9 @@ LOCAL_SHARED_LIBRARIES := libfolly_futures libreactnativeutilsjni libreact_utils
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/platform/cxx/android/
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/platform/android/
 
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/platform/cxx/android/
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/platform/android/
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
