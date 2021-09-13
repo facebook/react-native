@@ -217,7 +217,7 @@ class ViewabilityHelper {
         renderRange,
       );
     }
-    if(!parentViewToken?.isViewable) {
+    if(parentViewToken && !parentViewToken.isViewable) {
       if(this._viewableIndices.length === 0) {
         return
       }
