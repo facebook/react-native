@@ -55,6 +55,7 @@ export type RenderItemProps<ItemT> = {
   item: ItemT,
   index: number,
   separators: Separators,
+  extraData?: any,
   ...
 };
 

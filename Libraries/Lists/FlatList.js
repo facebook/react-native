@@ -580,14 +580,21 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   _renderer = () => {
-    const {ListItemComponent, renderItem, columnWrapperStyle} = this.props;
+    const {
+      ListItemComponent,
+      renderItem,
+      columnWrapperStyle,
+      extraData,
+    } = this.props;
     const numColumns = numColumnsOrDefault(this.props.numColumns);
 
     let virtualizedListRenderKey = ListItemComponent
       ? 'ListItemComponent'
       : 'renderItem';
 
-    const renderer = (props): React.Node => {
+    const renderer = (info): React.Node => {
+      const props = {...info, extraData};
+
       if (ListItemComponent) {
         // $FlowFixMe[not-a-component] Component isn't valid
         // $FlowFixMe[incompatible-type-arg] Component isn't valid

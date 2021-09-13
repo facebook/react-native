@@ -93,6 +93,37 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
+  it('invoke renderItem with extraData param', () => {
+    const renderItem = jest.fn().mockReturnValue(null);
+    const selectedId = 2;
+    const ids = [1, 2, 3];
+
+    ReactTestRenderer.create(
+      <FlatList data={ids} renderItem={renderItem} extraData={selectedId} />,
+    );
+
+    expect(renderItem).toBeCalledWith(
+      expect.objectContaining({extraData: selectedId}),
+    );
+  });
+  it('render ListItemComponent with extraData prop', () => {
+    const ListItemComponent = jest.fn().mockReturnValue(null);
+    const selectedId = 2;
+    const ids = [1, 2, 3];
+
+    ReactTestRenderer.create(
+      <FlatList
+        data={ids}
+        ListItemComponent={ListItemComponent}
+        extraData={selectedId}
+      />,
+    );
+
+    expect(ListItemComponent).toBeCalledWith(
+      expect.objectContaining({extraData: selectedId}),
+      {},
+    );
+  });
   it('getNativeScrollRef for case where it returns a native view', () => {
     jest.resetModules();
     jest.unmock('../../Components/ScrollView/ScrollView');
