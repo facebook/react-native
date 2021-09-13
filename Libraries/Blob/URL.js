@@ -126,9 +126,10 @@ export class URL {
 
   constructor(url: string, base: string) {
     let baseUrl = null;
+    const queryStringStart = url.indexOf('?');
     if (!base || validateBaseUrl(url)) {
       this._url = url;
-      if (!this._url.endsWith('/') && url.indexOf('?') < 0) {
+      if (!this._url.endsWith('/') && queryStringStart < 0) {
         this._url += '/';
       }
     } else {
@@ -152,10 +153,10 @@ export class URL {
       this._url = `${baseUrl}${url}`;
     }
 
-    let queryStringStart = this._url.indexOf('?');
     if (queryStringStart < 0) {
       return;
     }
+
     let queryString = this._url.substring(queryStringStart + 1);
 
     this._url = this._url.substr(0, queryStringStart);
