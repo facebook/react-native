@@ -1118,65 +1118,6 @@ LayoutAnimationKeyFrameManager::getComponentDescriptorForShadowView(
   return componentDescriptorRegistry_->at(shadowView.componentHandle);
 }
 
-std::pair<double, double>
-LayoutAnimationKeyFrameManager::calculateAnimationProgress(
-    uint64_t now,
-    const LayoutAnimation &animation,
-    const AnimationConfig &mutationConfig) const {
-  if (mutationConfig.animationType == AnimationType::None) {
-    return {1, 1};
-  }
-
-  uint64_t startTime = animation.startTime;
-  uint64_t delay = mutationConfig.delay;
-  uint64_t endTime = startTime + delay + mutationConfig.duration;
-
-  static const float PI = 3.14159265358979323846;
-
-  if (now >= endTime) {
-    return {1, 1};
-  }
-  if (now < startTime + delay) {
-    return {0, 0};
-  }
-
-  double linearTimeProgression = 1 -
-      (double)(endTime - delay - now) / (double)(endTime - animation.startTime);
-
-  if (mutationConfig.animationType == AnimationType::Linear) {
-    return {linearTimeProgression, linearTimeProgression};
-  } else if (mutationConfig.animationType == AnimationType::EaseIn) {
-    // This is an accelerator-style interpolator.
-    // In the future, this parameter (2.0) could be adjusted. This has been the
-    // default for Classic RN forever.
-    return {linearTimeProgression, pow(linearTimeProgression, 2.0)};
-  } else if (mutationConfig.animationType == AnimationType::EaseOut) {
-    // This is an decelerator-style interpolator.
-    // In the future, this parameter (2.0) could be adjusted. This has been the
-    // default for Classic RN forever.
-    return {linearTimeProgression, 1.0 - pow(1 - linearTimeProgression, 2.0)};
-  } else if (mutationConfig.animationType == AnimationType::EaseInEaseOut) {
-    // This is a combination of accelerate+decelerate.
-    // The animation starts and ends slowly, and speeds up in the middle.
-    return {
-        linearTimeProgression,
-        cos((linearTimeProgression + 1.0) * PI) / 2 + 0.5};
-  } else if (mutationConfig.animationType == AnimationType::Spring) {
-    // Using mSpringDamping in this equation is not really the exact
-    // mathematical springDamping, but a good approximation We need to replace
-    // this equation with the right Factor that accounts for damping and
-    // friction
-    double damping = mutationConfig.springDamping;
-    return {
-        linearTimeProgression,
-        (1 +
-         pow(2, -10 * linearTimeProgression) *
-             sin((linearTimeProgression - damping / 4) * PI * 2 / damping))};
-  } else {
-    return {linearTimeProgression, linearTimeProgression};
-  }
-}
-
 ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     double progress,
     ShadowView const &startingView,

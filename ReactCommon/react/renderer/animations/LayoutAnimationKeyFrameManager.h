@@ -108,10 +108,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   bool hasComponentDescriptorForShadowView(ShadowView const &shadowView) const;
   ComponentDescriptor const &getComponentDescriptorForShadowView(
       ShadowView const &shadowView) const;
-  std::pair<double, double> calculateAnimationProgress(
-      uint64_t now,
-      LayoutAnimation const &animation,
-      AnimationConfig const &mutationConfig) const;
 
   /**
    * Given a `progress` between 0 and 1, a mutation and LayoutAnimation config,
