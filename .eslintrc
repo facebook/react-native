@@ -22,7 +22,7 @@
         "**/__mocks__/**/*.js",
         "**/__tests__/**/*.js",
         "jest/**/*.js",
-        "RNTester/**/*.js",
+        "packages/rn-tester/**/*.js",
       ],
       "globals": {
         // Expose some Jest globals for test helpers

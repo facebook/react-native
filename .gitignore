@@ -26,10 +26,10 @@ project.xcworkspace/*
 
 # Gradle
 /build/
-/RNTester/android/app/build/
-/RNTester/android/app/gradle/
-/RNTester/android/app/gradlew
-/RNTester/android/app/gradlew.bat
+/packages/rn-tester/android/app/build/
+/packages/rn-tester/android/app/gradle/
+/packages/rn-tester/android/app/gradlew
+/packages/rn-tester/android/app/gradlew.bat
 /ReactAndroid/build/
 /ReactAndroid/gradle/
 /ReactAndroid/gradlew
@@ -76,6 +76,7 @@ package-lock.json
 /coverage
 /third-party
 /packages/*
+!/packages/rn-tester
 !/packages/react-native-macos-init/
 
 # Root dir shouldn't have Xcode project
@@ -83,7 +84,8 @@ package-lock.json
 
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
-RNTester/build
+/packages/rn-tester/build
+/packages/rn-tester/android/app/build/*
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
@@ -95,11 +97,11 @@ RNTester/build
 # CocoaPods
 /template/ios/Pods/
 /template/ios/Podfile.lock
-/RNTester/Gemfile.lock
+/packages/rn-tester/Gemfile.lock
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
-RNTester/Pods/*
-!RNTester/Pods/__offline_mirrors
+/packages/rn-tester/Pods/*
+!/packages/rn-tester/Pods/__offline_mirrors__
 
 # react-native-codegen
 /packages/react-native-codegen/lib
