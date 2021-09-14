@@ -28,7 +28,7 @@
 
 - (void)setUp
 {
-  _runner = RCTInitRunnerForApp(@"RNTester/js/RNTesterApp", nil, nil);
+  _runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp", nil, nil);
 }
 
 - (id)initWithName:(NSString *)testName {
@@ -61,7 +61,7 @@
 }
 
 + (XCTestSuite*)defaultTestSuite {
-  RCTTestRunner *runner = RCTInitRunnerForApp(@"RNTester/js/RNTesterApp", nil, nil);
+  RCTTestRunner *runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp", nil, nil);
 
   __block NSMutableArray<NSString *> *testNames = [NSMutableArray new];
 

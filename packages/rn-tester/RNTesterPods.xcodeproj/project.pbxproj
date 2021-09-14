@@ -1056,7 +1056,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\nexport PROJECT_ROOT=$SRCROOT/../..\nexport SOURCEMAP_FILE=sourcemap.macOS.map\n# export FORCE_BUNDLING=true\n\"$SRCROOT/../../scripts/react-native-xcode.sh\" RNTester/js/RNTesterApp.macos.js\n";
+			shellScript = "export NODE_BINARY=node\nexport PROJECT_ROOT=$SRCROOT/../..\nexport SOURCEMAP_FILE=sourcemap.macOS.map\n# export FORCE_BUNDLING=true\n\"$SRCROOT/../../scripts/react-native-xcode.sh\" packages/rn-tester/js/RNTesterApp.macos.js\n";
 		};
 		4BDC0C5271A785332898B818 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1121,7 +1121,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\nexport PROJECT_ROOT=$SRCROOT/..\nexport SOURCEMAP_FILE=../sourcemap.ios.map\n# export FORCE_BUNDLING=true\n\"$SRCROOT/../scripts/react-native-xcode.sh\" RNTester/js/RNTesterApp.ios.js\n";
+			shellScript = "export NODE_BINARY=node\nexport PROJECT_ROOT=$SRCROOT/../..\nexport SOURCEMAP_FILE=../../sourcemap.ios.map\n# export FORCE_BUNDLING=true\n\"$SRCROOT/../../scripts/react-native-xcode.sh\" packages/rn-tester/js/RNTesterApp.ios.js\n";
 		};
 		79A2B74F37E4F8AF8B3D0A7A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
