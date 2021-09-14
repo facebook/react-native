@@ -77,7 +77,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
 
         extraArgs.addAll(config.extraPackagerArgs)
 
-        it.extraArgs = emptyList()
+        it.extraArgs = extraArgs
 
         it.jsBundleDir = jsBundleDir
         it.jsBundleFile = jsBundleFile
