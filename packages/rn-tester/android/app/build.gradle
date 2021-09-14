@@ -77,7 +77,7 @@ plugins {
  */
 
 reactApp {
-    cliPath = "$rootDir/cli.js"
+    cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
     reactRoot = rootDir
