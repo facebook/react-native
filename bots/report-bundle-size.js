@@ -146,10 +146,10 @@ function android_getApkSize(engine, arch) {
  * Reports app bundle size.
  * @param {string} target
  */
-function report(target) {
+async function report(target) {
   switch (target) {
     case 'android':
-      reportSizeStats(
+      await reportSizeStats(
         {
           'android-hermes-arm64-v8a': android_getApkSize('hermes', 'arm64-v8a'),
           'android-hermes-armeabi-v7a': android_getApkSize(
@@ -168,7 +168,7 @@ function report(target) {
       break;
 
     case 'ios':
-      reportSizeStats(
+      await reportSizeStats(
         {
           'ios-universal': getFileSize(
             'packages/rn-tester/build/Build/Products/Release-iphonesimulator/RNTester.app/RNTester',
@@ -181,10 +181,14 @@ function report(target) {
     default: {
       const path = require('path');
       console.log(`Syntax: ${path.basename(process.argv[1])} [android | ios]`);
+      process.exitCode = 2;
       break;
     }
   }
 }
 
 const {[2]: target} = process.argv;
-report(target);
+report(target).catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});
