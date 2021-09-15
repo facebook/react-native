@@ -17,6 +17,7 @@ import com.facebook.react.utils.detectedCliPath
 import com.facebook.react.utils.detectedEntryFile
 import com.facebook.react.utils.detectedHermesCommand
 import java.io.File
+import java.util.*
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 
@@ -24,7 +25,7 @@ private const val REACT_GROUP = "react"
 
 @Suppress("SpreadOperator")
 internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppExtension) {
-  val targetName = variant.name.capitalize()
+  val targetName = variant.name.capitalize(Locale.ROOT)
   val isRelease = variant.isRelease
   val targetPath = variant.dirName
 
@@ -239,4 +240,4 @@ private fun BaseVariant.checkBundleEnabled(config: ReactAppExtension): Boolean {
 }
 
 private val BaseVariant.isRelease: Boolean
-  get() = name.toLowerCase().contains("release")
+  get() = name.toLowerCase(Locale.ROOT).contains("release")
