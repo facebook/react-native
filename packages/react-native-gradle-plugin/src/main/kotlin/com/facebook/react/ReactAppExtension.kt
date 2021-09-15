@@ -8,6 +8,7 @@
 package com.facebook.react
 
 import com.android.build.gradle.api.BaseVariant
+import com.facebook.react.utils.projectPathToLibraryName
 import java.io.File
 import javax.inject.Inject
 import org.gradle.api.Project
@@ -152,4 +153,40 @@ abstract class ReactAppExtension @Inject constructor(project: Project) {
       objects
           .property(String::class.java)
           .convention("node_modules/react-native/scripts/compose-source-maps.js")
+
+  /** Codegen Config */
+
+  /**
+   * The path to the react-native-codegen folder.
+   *
+   * Default: $projectDir/../../packages/react-native-codegen
+   */
+  val codegenDir: DirectoryProperty =
+      objects.directoryProperty().convention(reactRoot.dir("packages/react-native-codegen"))
+
+  /**
+   * The root directory for all JS files for the app.
+   *
+   * Default: $projectDir/../../
+   */
+  val jsRootDir: DirectoryProperty = objects.directoryProperty().convention(reactRoot.get())
+
+  /**
+   * The library name that will be used for the codegen artifacts.
+   *
+   * Default: <UpperCamelVersionOfProjectPath>Spec (e.g. for :example:project it will be
+   * ExampleProjectSpec).
+   */
+  val libraryName: Property<String> =
+      objects.property(String::class.java).convention(projectPathToLibraryName(project.path))
+
+  /**
+   * Java package name to use for any codegen artifacts produced during build time. Default:
+   * com.facebook.fbreact.specs
+   */
+  val codegenJavaPackageName: Property<String> =
+      objects.property(String::class.java).convention("com.facebook.fbreact.specs")
+
+  /** Whether the Java Generator (based on Javapoet) should be used or not. Default: false */
+  val useJavaGenerator: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
 }

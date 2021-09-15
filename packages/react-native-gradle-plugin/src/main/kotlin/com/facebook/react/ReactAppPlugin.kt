@@ -11,6 +11,7 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.facebook.react.codegen.plugin.CodegenPlugin
+import com.facebook.react.utils.GradleUtils.createOrGet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -21,7 +22,7 @@ class ReactAppPlugin : Plugin<Project> {
   }
 
   private fun applyAppPlugin(project: Project) {
-    val config = project.extensions.create("reactApp", ReactAppExtension::class.java, project)
+    val config = project.extensions.createOrGet("reactApp", ReactAppExtension::class.java, project)
 
     if (config.applyAppPlugin.getOrElse(false)) {
       project.afterEvaluate {

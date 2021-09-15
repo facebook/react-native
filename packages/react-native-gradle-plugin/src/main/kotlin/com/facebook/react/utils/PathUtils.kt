@@ -5,10 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:JvmName("PathUtils")
+
 package com.facebook.react.utils
 
 import com.facebook.react.ReactAppExtension
 import java.io.File
+import java.util.*
 import org.apache.tools.ant.taskdefs.condition.Os
 
 /**
@@ -113,3 +116,15 @@ private fun getHermesOSBin(): String {
       "OS not recognized. Please set project.react.hermesCommand " +
           "to the path of a working Hermes compiler.")
 }
+
+internal fun projectPathToLibraryName(projectPath: String): String =
+    projectPath
+        .split(':', '-', '_', '.')
+        .joinToString("") { it.capitalize(Locale.ROOT) }
+        .plus("Spec")
+
+fun codegenGenerateSchemaCLI(config: ReactAppExtension): File =
+    config.codegenDir.file("lib/cli/combine/combine-js-to-schema-cli.js").get().asFile
+
+fun codegenGenerateNativeModuleSpecsCLI(config: ReactAppExtension): File =
+    config.reactRoot.file("scripts/generate-specs-cli.js").get().asFile

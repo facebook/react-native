@@ -8,9 +8,7 @@
 package com.facebook.react.tests
 
 import com.facebook.react.TestReactAppExtension
-import com.facebook.react.utils.detectedCliPath
-import com.facebook.react.utils.detectedEntryFile
-import com.facebook.react.utils.detectedHermesCommand
+import com.facebook.react.utils.*
 import java.io.File
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
@@ -123,5 +121,51 @@ class PathUtilsTest {
     assertTrue(actual.startsWith("node_modules/hermes-engine/"))
     assertTrue(actual.endsWith("hermesc"))
     assertFalse(actual.contains("%OS-BIN%"))
+  }
+
+  @Test
+  fun projectPathToLibraryName_withSimplePath() {
+    assertEquals("SampleSpec", projectPathToLibraryName(":sample"))
+  }
+
+  @Test
+  fun projectPathToLibraryName_withComplexPath() {
+    assertEquals("SampleAndroidAppSpec", projectPathToLibraryName(":sample:android:app"))
+  }
+
+  @Test
+  fun projectPathToLibraryName_withKebabCase() {
+    assertEquals("SampleAndroidAppSpec", projectPathToLibraryName("sample-android-app"))
+  }
+
+  @Test
+  fun projectPathToLibraryName_withDotsAndUnderscores() {
+    assertEquals("SampleAndroidAppSpec", projectPathToLibraryName("sample_android.app"))
+  }
+
+  @Test
+  fun codegenGenerateSchemaCLI_worksCorrectly() {
+    val extension = TestReactAppExtension(ProjectBuilder.builder().build())
+    extension.codegenDir.set(tempFolder.root)
+    val expected =
+        File(tempFolder.root, "lib/cli/combine/combine-js-to-schema-cli.js").apply {
+          parentFile.mkdirs()
+          createNewFile()
+        }
+
+    assertEquals(expected, codegenGenerateSchemaCLI(extension))
+  }
+
+  @Test
+  fun codegenGenerateNativeModuleSpecsCLI_worksCorrectly() {
+    val extension = TestReactAppExtension(ProjectBuilder.builder().build())
+    extension.reactRoot.set(tempFolder.root)
+    val expected =
+        File(tempFolder.root, "scripts/generate-specs-cli.js").apply {
+          parentFile.mkdirs()
+          createNewFile()
+        }
+
+    assertEquals(expected, codegenGenerateNativeModuleSpecsCLI(extension))
   }
 }

@@ -8,7 +8,10 @@
 package com.facebook.react.codegen.plugin;
 
 import com.android.build.gradle.BaseExtension;
+import com.facebook.react.ReactAppExtension;
 import com.facebook.react.codegen.generator.JavaGenerator;
+import com.facebook.react.utils.GradleUtils;
+import com.facebook.react.utils.PathUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
@@ -27,8 +30,9 @@ import org.gradle.api.tasks.TaskProvider;
 public class CodegenPlugin {
 
   public void apply(final Project project) {
-    final CodegenPluginExtension extension =
-        project.getExtensions().create("react", CodegenPluginExtension.class, project);
+    final ReactAppExtension extension =
+        GradleUtils.createOrGet(
+            project.getExtensions(), "reactApp", ReactAppExtension.class, project);
 
     // 1. Set up build dir.
     final File generatedSrcDir = new File(project.getBuildDir(), "generated/source/codegen");
@@ -46,7 +50,7 @@ public class CodegenPlugin {
                 task -> {
                   // This task is required when using react-native-codegen from source, instead of
                   // npm.
-                  File codegenRoot = extension.codegenDir();
+                  File codegenRoot = extension.getCodegenDir().getAsFile().get();
 
                   task.getInputs()
                       .files(
@@ -104,13 +108,15 @@ public class CodegenPlugin {
                   });
 
               task.getInputs()
-                  .files(project.fileTree(ImmutableMap.of("dir", extension.codegenDir())));
+                  .files(
+                      project.fileTree(
+                          ImmutableMap.of("dir", extension.getCodegenDir().getAsFile().get())));
               task.getInputs()
                   .files(
                       project.fileTree(
                           ImmutableMap.of(
                               "dir",
-                              extension.jsRootDir,
+                              extension.getJsRootDir().getAsFile().get(),
                               "includes",
                               ImmutableList.of("**/*.js"))));
               task.getOutputs().file(generatedSchemaFile);
@@ -118,10 +124,10 @@ public class CodegenPlugin {
               ImmutableList<String> execCommands =
                   new ImmutableList.Builder<String>()
                       .add(os.contains("windows") ? "yarn.cmd" : "yarn")
-                      .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
-                      .add(extension.codegenGenerateSchemaCLI().getAbsolutePath())
+                      .addAll(ImmutableList.copyOf(extension.getNodeExecutableAndArgs().get()))
+                      .add(PathUtils.codegenGenerateSchemaCLI(extension).getAbsolutePath())
                       .add(generatedSchemaFile.getAbsolutePath())
-                      .add(extension.jsRootDir.getAbsolutePath())
+                      .add(extension.getJsRootDir().getAsFile().get().getAbsolutePath())
                       .build();
               task.commandLine(execCommands);
             });
@@ -136,29 +142,36 @@ public class CodegenPlugin {
               task.dependsOn("generateCodegenSchemaFromJavaScript");
 
               task.getInputs()
-                  .files(project.fileTree(ImmutableMap.of("dir", extension.codegenDir())));
-              task.getInputs().files(extension.codegenGenerateNativeModuleSpecsCLI());
+                  .files(
+                      project.fileTree(
+                          ImmutableMap.of("dir", extension.getCodegenDir().getAsFile().get())));
+              task.getInputs()
+                  .files(PathUtils.codegenGenerateSchemaCLI(extension).getAbsolutePath());
               task.getInputs().files(generatedSchemaFile);
               task.getOutputs().dir(generatedSrcDir);
 
-              if (extension.useJavaGenerator) {
+              if (extension.getUseJavaGenerator().get()) {
                 task.doLast(
                     s -> {
                       generateJavaFromSchemaWithJavaGenerator(
-                          generatedSchemaFile, extension.codegenJavaPackageName, generatedSrcDir);
+                          generatedSchemaFile,
+                          extension.getCodegenJavaPackageName().get(),
+                          generatedSrcDir);
                     });
               }
 
               ImmutableList<String> execCommands =
                   new ImmutableList.Builder<String>()
                       .add(os.contains("windows") ? "yarn.cmd" : "yarn")
-                      .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
-                      .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
+                      .addAll(ImmutableList.copyOf(extension.getNodeExecutableAndArgs().get()))
+                      .add(
+                          PathUtils.codegenGenerateNativeModuleSpecsCLI(extension)
+                              .getAbsolutePath())
                       .add("android")
                       .add(generatedSchemaFile.getAbsolutePath())
                       .add(generatedSrcDir.getAbsolutePath())
-                      .add(extension.libraryName)
-                      .add(extension.codegenJavaPackageName)
+                      .add(extension.getLibraryName().get())
+                      .add(extension.getCodegenJavaPackageName().get())
                       .build();
               task.commandLine(execCommands);
             });
