@@ -64,7 +64,7 @@ RCT_EXPORT_MODULE()
 #define IMPLEMENT_KEYBOARD_HANDLER(EVENT)                                              \
   -(void)EVENT : (NSNotification *)notification                                        \
   {                                                                                    \
-    if (!self.bridge) {                                                                \
+    if (!self.bridge && !self.invokeJS) {                                              \
       return;                                                                          \
     }                                                                                  \
     [self sendEventWithName:@ #EVENT body:RCTParseKeyboardNotification(notification)]; \

@@ -83,6 +83,7 @@
     "postinstall": "node scripts/postInstall.js"
   },
   "workspaces": [
+    "packages/!(eslint-config-react-native-community)",
     "repo-config"
   ],
   "peerDependencies": {
@@ -121,6 +122,9 @@
     "use-subscription": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.1.4"
+  },
+  "devDependencies": {
+    "react": "16.13.1"
   },
   "detox": {
     "test-runner": "jest",

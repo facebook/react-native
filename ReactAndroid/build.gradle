@@ -101,7 +101,7 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     into("$thirdPartyNdkDir/folly")
 }
 
-task prepareHermes() {
+task prepareHermes(dependsOn: createNativeDepsDirectories, type: Copy) {
     def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
     if (!hermesPackagePath) {
         throw new GradleScriptException("Could not find the hermes-engine npm package", null)
@@ -114,11 +114,9 @@ task prepareHermes() {
 
     def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
 
-    copy {
-        from soFiles
-        from "src/main/jni/first-party/hermes/Android.mk"
-        into "$thirdPartyNdkDir/hermes"
-    }
+    from soFiles
+    from "src/main/jni/first-party/hermes/Android.mk"
+    into "$thirdPartyNdkDir/hermes"
 }
 
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
@@ -314,7 +312,7 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             "NDK_OUT=" + temporaryDir,
             "NDK_LIBS_OUT=$buildDir/react-ndk/all",
-            "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+            "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
             "BUILD_FABRIC=$enableFabric",
@@ -328,7 +326,7 @@ def cleanReactNdkLib = tasks.register("cleanReactNdkLib", Exec) {
     errorOutput(new ByteArrayOutputStream())
     commandLine(getNdkBuildFullPath(),
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-            "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+            "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "-C", file("src/main/jni/react/jni").absolutePath,
             "clean")

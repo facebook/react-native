@@ -15,3 +15,4 @@ question-bookmarklet.js
 bots/node_modules
 android-patches/
 packages/react-native-codegen/lib
+repo-config/node_modules

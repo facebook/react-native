@@ -55,15 +55,6 @@ using RCTMaskedViewShadowNode = ConcreteViewShadowNode<
     RCTMaskedViewComponentName,
     RCTMaskedViewProps>;
 
-extern const char AndroidProgressBarComponentName[];
-
-/*
- * `ShadowNode` for <AndroidProgressBar> component.
- */
-using AndroidProgressBarShadowNode = ConcreteViewShadowNode<
-    AndroidProgressBarComponentName,
-    AndroidProgressBarProps>;
-
 extern const char RCTProgressViewComponentName[];
 
 /*

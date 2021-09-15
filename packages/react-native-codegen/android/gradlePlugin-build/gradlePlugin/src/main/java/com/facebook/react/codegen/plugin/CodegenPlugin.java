@@ -98,10 +98,13 @@ public class CodegenPlugin implements Plugin<Project> {
               task.getOutputs().dir(outputDir);
 
               if (extension.useJavaGenerator) {
-                generateJavaFromSchemaWithJavaGenerator(
-                    generatedSchemaFile,
-                    extension.codegenJavaPackageName,
-                    new File(generatedSrcDir, "java"));
+                task.doLast(
+                    s -> {
+                      generateJavaFromSchemaWithJavaGenerator(
+                          generatedSchemaFile,
+                          extension.codegenJavaPackageName,
+                          new File(generatedSrcDir, "java"));
+                    });
                 // TODO: generate JNI C++ files.
                 task.commandLine("echo");
               } else {

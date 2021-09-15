@@ -8,10 +8,11 @@
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
-  "scripts": {},
   "dependencies": {
     "invariant": "^2.2.4",
-    "nullthrows": "^1.1.1",
+    "nullthrows": "^1.1.1"
+  },
+  "peerDependencies": {
     "react": "16.13.1",
     "react-native": "*"
   },

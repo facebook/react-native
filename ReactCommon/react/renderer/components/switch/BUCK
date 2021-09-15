@@ -19,18 +19,18 @@ APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 rn_xplat_cxx_library(
     name = "androidswitch",
     srcs = glob(
-        ["**/*.cpp"],
+        ["androidswitch/react/renderer/components/androidswitch/*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
-        ["**/*.h"],
+        ["androidswitch/react/renderer/components/androidswitch/*.h"],
         exclude = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             ("", "*.h"),
-            ("androidswitch", "*.h"),
+            ("androidswitch/react/renderer/components/androidswitch", "*.h"),
         ],
         prefix = "react/renderer/components/androidswitch",
     ),

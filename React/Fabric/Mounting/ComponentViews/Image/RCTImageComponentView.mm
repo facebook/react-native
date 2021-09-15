@@ -7,6 +7,7 @@
 
 #import "RCTImageComponentView.h"
 
+#import <React/RCTConversions.h>
 #import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
@@ -17,9 +18,6 @@
 #import <react/renderer/imagemanager/ImageRequest.h>
 #import <react/renderer/imagemanager/RCTImageInstrumentationProxy.h>
 #import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
-
-#import "RCTConversions.h"
-#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -208,6 +206,17 @@ using namespace facebook::react;
 }
 
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Can't the import generated Plugin.h because plugins are not in this BUCK target
+Class<RCTComponentViewProtocol> RCTImageCls(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 Class<RCTComponentViewProtocol> RCTImageCls(void)
 {

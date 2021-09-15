@@ -7,7 +7,7 @@
 
 package com.facebook.react.uiapp;
 
-import static com.facebook.react.uiapp.BuildConfig.FLAVOR;
+import static com.facebook.react.uiapp.BuildConfig.ENABLE_FABRIC;
 
 import android.app.Application;
 import android.content.Context;
@@ -38,7 +38,7 @@ import java.util.List;
 
 public class RNTesterApplication extends Application implements ReactApplication {
 
-  static final boolean IS_FABRIC_ENABLED = FLAVOR.contains("fabric");
+  static final boolean IS_FABRIC_ENABLED = ENABLE_FABRIC;
 
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {

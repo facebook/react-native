@@ -120,6 +120,15 @@ public class MountingManager {
       for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
         if (getNullableViewState(child.getId()) != null) {
+          if (SHOW_CHANGED_VIEW_HIERARCHIES) {
+            FLog.e(
+                TAG,
+                "Automatically dropping view that is still attached to a parent being dropped. Parent: ["
+                    + reactTag
+                    + "] child: ["
+                    + child.getId()
+                    + "]");
+          }
           dropView(child);
         }
         viewGroupManager.removeViewAt(viewGroup, i);
