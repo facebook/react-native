@@ -7,8 +7,7 @@
 
 plugins {
     id("com.android.application")
-    id("com.facebook.react.codegen")
-    id("com.facebook.react.app")
+    id("com.facebook.react")
 }
 
 /**
@@ -77,6 +76,7 @@ plugins {
  */
 
 reactApp {
+    applyAppPlugin = true
     cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
