@@ -14,7 +14,8 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import java.util.ArrayDeque;
-
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Executors;
 /**
  * A simple wrapper around Choreographer that allows us to control the order certain callbacks are
  * executed within a given frame. The main difference is that we enforce this is accessed from the
@@ -70,6 +71,8 @@ public class ReactChoreographer {
   private @Nullable volatile ChoreographerCompat mChoreographer;
   private final ReactChoreographerDispatcher mReactChoreographerDispatcher;
   private final Object mCallbackQueuesLock = new Object();
+  private boolean mShouldScheduleOnMainThread = true;
+  private ScheduledExecutorService mExecutor = null;
 
   @GuardedBy("mCallbackQueuesLock")
   private final ArrayDeque<ChoreographerCompat.FrameCallback>[] mCallbackQueues;
@@ -77,7 +80,16 @@ public class ReactChoreographer {
   private int mTotalCallbacks = 0;
   private boolean mHasPostedCallback = false;
 
-  private ReactChoreographer() {
+  public ReactChoreographer() {
+    this(true);
+  }
+
+  public ReactChoreographer(boolean shouldScheduleOnMainThread) {
+    mShouldScheduleOnMainThread = shouldScheduleOnMainThread;
+    if (!shouldScheduleOnMainThread) {
+      mExecutor = Executors.newSingleThreadScheduledExecutor();
+      mChoreographer = new ChoreographerCompat(mExecutor);
+    }
     mReactChoreographerDispatcher = new ReactChoreographerDispatcher();
     mCallbackQueues = new ArrayDeque[CallbackType.values().length];
     for (int i = 0; i < mCallbackQueues.length; i++) {
@@ -118,7 +130,8 @@ public class ReactChoreographer {
   }
 
   public void initializeChoreographer(@Nullable final Runnable runnable) {
-    UiThreadUtil.runOnUiThread(
+    if (mShouldScheduleOnMainThread) {
+      UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
@@ -132,6 +145,17 @@ public class ReactChoreographer {
             }
           }
         });
+    } else {
+      mExecutor.execute(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (runnable != null) {
+              runnable.run();
+            }
+          }
+        });
+    }
   }
 
   public void removeFrameCallback(

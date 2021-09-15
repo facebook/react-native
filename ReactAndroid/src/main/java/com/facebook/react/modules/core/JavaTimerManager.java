@@ -22,6 +22,7 @@ import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -202,7 +203,8 @@ public class JavaTimerManager {
   private boolean mFrameIdleCallbackPosted = false;
   private boolean mSendIdleEvents = false;
   private boolean mShouldScheduleOnMainThread = true;
-  private SerialExecutor mSerialExecutor = new SerialExecutor(Executors.newSingleThreadExecutor());
+  private ScheduledExecutorService mScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+  private SerialExecutor mSerialExecutor = new SerialExecutor(mScheduledExecutor);
 
   public JavaTimerManager(
       ReactApplicationContext reactContext,
