@@ -554,19 +554,22 @@ jobs:
   # -------------------------
   #    JOBS: Test Docker
   # -------------------------
-  test_docker:
+  test_docker_android:
     machine: true
     steps:
       - checkout
       - run:
-          name: Build Docker container for Android RNTester App
+          name: Configure Node
           command: |
             source ~/.bashrc
             nvm i node
-            npm i -g yarn
             echo y | npx envinfo@latest
-            yarn run docker-setup-android
-            yarn run docker-build-android
+      - run:
+          name: Pulls down the React Native Community Android Docker image
+          command: npm run docker-setup-android
+      - run:
+          name: Builds the Docker image with a compiled instance of the test app
+          command: npm run docker-build-android
 
   # -------------------------
   #    JOBS: Windows
@@ -774,7 +777,7 @@ workflows:
           filters:
             branches:
               ignore: gh-pages
-      - test_docker:
+      - test_docker_android:
           filters:
             branches:
               ignore: gh-pages
