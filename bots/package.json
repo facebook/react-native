@@ -10,6 +10,6 @@
   },
   "dependencies": {
     "@octokit/rest": "^16.43.0",
-    "firebase": "9.0.2"
+    "firebase": "^9.0.2"
   }
 }
