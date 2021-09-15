@@ -20,6 +20,15 @@
        android:insetBottom="@dimen/abc_edit_text_inset_bottom_material">
 
     <selector>
+        <!-- 
+          This file is a copy of abc_edit_text_material (https://bit.ly/3k8fX7I).
+          The item below with state_pressed="false" and state_focused="false" causes a NullPointerException.
+          NullPointerException:tempt to invoke virtual method 'android.graphics.drawable.Drawable android.graphics.drawable.Drawable$ConstantState.newDrawable(android.content.res.Resources)'
+
+          <item android:state_pressed="false" android:state_focused="false" android:drawable="@drawable/abc_textfield_default_mtrl_alpha"/>
+
+          For more info, see https://bit.ly/3CdLStv (react-native/pull/29452) and https://bit.ly/3nxOMoR.
+        -->
         <item android:state_enabled="false" android:drawable="@drawable/abc_textfield_default_mtrl_alpha"/>
         <item android:drawable="@drawable/abc_textfield_activated_mtrl_alpha"/>
     </selector>
