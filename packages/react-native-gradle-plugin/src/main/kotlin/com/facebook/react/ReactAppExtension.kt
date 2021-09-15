@@ -9,29 +9,147 @@ package com.facebook.react
 
 import com.android.build.gradle.api.BaseVariant
 import java.io.File
+import javax.inject.Inject
 import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
 
-open class ReactAppExtension(private val project: Project) {
-  var applyAppPlugin: Boolean = false
-  var composeSourceMapsPath: String = "node_modules/react-native/scripts/compose-source-maps.js"
-  var bundleAssetName: String = "index.android.bundle"
-  var entryFile: File? = null
-  var bundleCommand: String = "bundle"
-  var reactRoot: File = File(project.projectDir, "../../")
-  var inputExcludes: List<String> = listOf("android/**", "ios/**")
-  var bundleConfig: String? = null
-  var enableVmCleanup: Boolean = true
-  var hermesCommand: String = "node_modules/hermes-engine/%OS-BIN%/hermesc"
-  var cliPath: String? = null
-  var nodeExecutableAndArgs: List<String> = listOf("node")
-  var enableHermes: Boolean = false
-  var enableHermesForVariant: (BaseVariant) -> Boolean = { enableHermes }
-  var devDisabledInVariants: List<String> = emptyList()
+abstract class ReactAppExtension @Inject constructor(project: Project) {
+
+  private val objects = project.objects
+
+  /**
+   * Whether the React App plugin should apply its logic or not. Set it to false if you're still
+   * relying on `react.gradle` to configure your build. Default: false
+   */
+  val applyAppPlugin: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
+
+  /**
+   * The path to the react root folder. This is the path to the root folder where the `node_modules`
+   * folder is present. All the CLI commands will be invoked from this folder as working directory.
+   *
+   * Default: $projectDir/../../
+   */
+  val reactRoot: DirectoryProperty =
+      objects.directoryProperty().convention(project.layout.projectDirectory.dir("../../"))
+
+  /**
+   * The path to the JS entry file. If not specified, the plugin will try to resolve it using a list
+   * of known locations (e.g. `index.android.js`, `index.js`, etc.).
+   */
+  val entryFile: RegularFileProperty = objects.fileProperty()
+
+  /**
+   * The path to the React Native CLI. If not specified, the plugin will try to resolve it looking
+   * for `react-native` CLI inside `node_modules` in [reactRoot].
+   */
+  val cliPath: Property<String> = objects.property(String::class.java)
+
+  /**
+   * The path to the Node executable and extra args. By default it assumes that you have `node`
+   * installed and configured in your $PATH. Default: ["node"]
+   */
+  val nodeExecutableAndArgs: ListProperty<String> =
+      objects.listProperty(String::class.java).convention(listOf("node"))
+
+  /**
+   * The command to use to invoke bundle. Default is `bundle` and will be invoked on [reactRoot].
+   */
+  val bundleCommand: Property<String> = objects.property(String::class.java).convention("bundle")
+
+  /**
+   * Custom configuration for the [bundleCommand]. If provided it will be passed over with a
+   * `--config` flag to the bundle command.
+   */
+  val bundleConfig: Property<String> = objects.property(String::class.java)
+
+  /**
+   * The Bundle Asset name. This name will be used also for deriving other bundle outputs such as
+   * the packager source map, the compiler source map and the output source map file.
+   *
+   * Default: index.android.bundle
+   */
+  val bundleAssetName: Property<String> =
+      objects.property(String::class.java).convention("index.android.bundle")
+
+  /**
+   * Variant Name to File destination map that allows to specify where is the resource dir for a
+   * specific variant. If a value is supplied, the plugin will copy the bundled resource for that
+   * variant from `generated/res/react/<variant>` into the custom specified location. Default: {}
+   */
+  val resourcesDir: MapProperty<String, File> =
+      objects.mapProperty(String::class.java, File::class.java).convention(emptyMap())
+
+  /**
+   * Variant Name to File destination map that allows to specify where is the asset dir for a
+   * specific variant. If a value is supplied, the plugin will copy the bundled JS for that variant
+   * from `generated/assets/react/<variant>` into the custom specified location. Default: {}
+   */
+  val jsBundleDir: MapProperty<String, File> =
+      objects.mapProperty(String::class.java, File::class.java).convention(emptyMap())
+
+  /** ANT-style excludes for the bundle command. Default: ["android / **", "ios / **"] */
+  val inputExcludes: ListProperty<String> =
+      objects.listProperty(String::class.java).convention(listOf("android/**", "ios/**"))
+
+  /**
+   * Toggles the VM Cleanup step. If enabled, before the bundle task we will clean up all the
+   * unnecessary files. If disabled, the developers will have to manually cleanup the files.
+   * Default: true
+   */
+  val enableVmCleanup: Property<Boolean> = objects.property(Boolean::class.java).convention(true)
+
+  /** Extra args that will be passed to the [bundleCommand] Default: [] */
+  val extraPackagerArgs: ListProperty<String> =
+      objects.listProperty(String::class.java).convention(emptyList())
+
+  /**
+   * Allows to disable dev mode for certain variants. That's useful if you have a production variant
+   * (say `canary`) where you don't want dev mode to be enabled. Default: []
+   */
+  val devDisabledInVariants: ListProperty<String> =
+      objects.listProperty(String::class.java).convention(emptyList())
+
+  /**
+   * Variant Name to Boolean map that allows to toggle the bundle command for a specific variant.
+   * Default: {}
+   */
   // todo maybe lambda as for hermes?
-  var bundleIn: Map<String, Boolean> = emptyMap()
-  var extraPackagerArgs: List<String> = emptyList()
-  var hermesFlagsDebug: List<String> = emptyList()
-  var hermesFlagsRelease: List<String> = listOf("-O", "-output-source-map")
-  var resourcesDir: Map<String, File> = emptyMap()
-  var jsBundleDir: Map<String, File> = emptyMap()
+  val bundleIn: MapProperty<String, Boolean> =
+      objects.mapProperty(String::class.java, Boolean::class.java).convention(emptyMap())
+
+  /** Hermes Config */
+
+  /** The command to use to invoke hermes. Default is `hermesc` for the correct OS. */
+  val hermesCommand: Property<String> =
+      objects.property(String::class.java).convention("node_modules/hermes-engine/%OS-BIN%/hermesc")
+
+  /** Toggle Hermes for the whole build. Default: false */
+  val enableHermes: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
+
+  /**
+   * Functional interface to selectively enabled Hermes only on specific [BaseVariant] Default: will
+   * return [enableHermes] for all the variants.
+   */
+  var enableHermesForVariant: (BaseVariant) -> Boolean = { enableHermes.get() }
+
+  /** Flags to pass to Hermes for Debug variants. Default: [] */
+  val hermesFlagsDebug: ListProperty<String> =
+      objects.listProperty(String::class.java).convention(emptyList())
+
+  /** Flags to pass to Hermes for Release variants. Default: ["-O", "-output-source-map"] */
+  val hermesFlagsRelease: ListProperty<String> =
+      objects.listProperty(String::class.java).convention(listOf("-O", "-output-source-map"))
+
+  /**
+   * The path to the Compose Source Map script. Default:
+   * "node_modules/react-native/scripts/compose-source-maps.js"
+   */
+  val composeSourceMapsPath: Property<String> =
+      objects
+          .property(String::class.java)
+          .convention("node_modules/react-native/scripts/compose-source-maps.js")
 }
