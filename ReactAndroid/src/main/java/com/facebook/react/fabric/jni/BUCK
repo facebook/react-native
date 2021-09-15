@@ -47,5 +47,6 @@ rn_xplat_cxx_library(
         "//xplat/js/react-native-github:generated_components-rncore",
         react_native_xplat_target("react/renderer/components/image:image"),
         react_native_xplat_target("react/renderer/components/text:text"),
+        react_native_xplat_target("react/renderer/components/textinput:androidtextinput"),
     ],
 )

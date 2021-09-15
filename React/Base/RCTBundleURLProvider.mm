@@ -131,6 +131,12 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 - (NSString *)packagerServerHost
 {
   NSString *location = [self jsLocation];
+  if (location) {
+    NSInteger index = [location rangeOfString:@":"].location;
+    if (index != NSNotFound) {
+      location = [location substringToIndex:index];
+    }
+  }
 #if RCT_DEV_MENU
   if ([location length] && ![RCTBundleURLProvider isPackagerRunning:location]) {
     location = nil;
