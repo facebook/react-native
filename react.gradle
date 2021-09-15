@@ -26,7 +26,7 @@ def detectEntryFile(config) {
  */
 def detectCliPath(config) {
     if (config.cliPath) {
-        return config.cliPath
+        return "${projectDir}/${config.cliPath}"
     }
     if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
         return "${projectDir}/../../node_modules/react-native/cli.js"
