@@ -39,9 +39,10 @@ def rn_codegen(
 
         spec_srcs = native.glob(
             [
-                src_prefix + "**/[Nn]ative*.js",
+                src_prefix + "**/Native*.js",
             ],
             exclude = [
+                src_prefix + "**/nativeImageSource.js",
                 "**/__*__/**",
             ],
         )

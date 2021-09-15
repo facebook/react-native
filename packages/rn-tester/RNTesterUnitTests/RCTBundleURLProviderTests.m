@@ -97,7 +97,7 @@ static NSURL *ipBundleURL()
 - (void)testIPURL
 {
   id classMock = OCMClassMock([RCTBundleURLProvider class]);
-  [[[classMock stub] andReturnValue:@YES] isPackagerRunning:[OCMArg any]];
+  [[[classMock stub] andReturnValue:@YES] isPackagerRunning:[OCMArg any] scheme:[OCMArg any]];
   RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
   settings.jsLocation = @"192.168.1.1";
   NSURL *URL = [settings jsBundleURLForBundleRoot:testFile fallbackResource:nil];

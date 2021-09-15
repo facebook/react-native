@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<6c8346987db638ec0cd71246cb829ef6>>
+ * @generated SignedSource<<1a3cb2d94c0721509af63438d7639b77>>
  */
 
 'use strict';
@@ -32,32 +32,36 @@ var ReactSharedInternals =
 
 function warn(format) {
   {
-    for (
-      var _len = arguments.length,
-        args = new Array(_len > 1 ? _len - 1 : 0),
-        _key = 1;
-      _key < _len;
-      _key++
-    ) {
-      args[_key - 1] = arguments[_key];
-    }
+    {
+      for (
+        var _len = arguments.length,
+          args = new Array(_len > 1 ? _len - 1 : 0),
+          _key = 1;
+        _key < _len;
+        _key++
+      ) {
+        args[_key - 1] = arguments[_key];
+      }
 
-    printWarning("warn", format, args);
+      printWarning("warn", format, args);
+    }
   }
 }
 function error(format) {
   {
-    for (
-      var _len2 = arguments.length,
-        args = new Array(_len2 > 1 ? _len2 - 1 : 0),
-        _key2 = 1;
-      _key2 < _len2;
-      _key2++
-    ) {
-      args[_key2 - 1] = arguments[_key2];
-    }
+    {
+      for (
+        var _len2 = arguments.length,
+          args = new Array(_len2 > 1 ? _len2 - 1 : 0),
+          _key2 = 1;
+        _key2 < _len2;
+        _key2++
+      ) {
+        args[_key2 - 1] = arguments[_key2];
+      }
 
-    printWarning("error", format, args);
+      printWarning("error", format, args);
+    }
   }
 }
 
@@ -2939,7 +2943,7 @@ var MountPassiveDev =
   4194304; // Groups of flags that are used in the commit phase to skip over trees that
 // don't contain effects, by checking subtreeFlags.
 
-var BeforeMutationMask = // TODO: Remove Update flag from before mutation phase by re-landing Visiblity
+var BeforeMutationMask = // TODO: Remove Update flag from before mutation phase by re-landing Visibility
   // flag logic (see #20043)
   Update | Snapshot | 0;
 var MutationMask =
@@ -2953,7 +2957,7 @@ var MutationMask =
 var LayoutMask = Update | Callback | Ref | Visibility; // TODO: Split into PassiveMountMask and PassiveUnmountMask
 
 var PassiveMask = Passive | ChildDeletion; // Union of tags that don't get reset on clones.
-// This allows certain concepts to persist without recalculting them,
+// This allows certain concepts to persist without recalculating them,
 // e.g. whether a subtree contains passive effects or portals.
 
 var StaticMask = LayoutStatic | PassiveStatic | RefStatic;
@@ -4988,8 +4992,10 @@ function createTextInstance(
   hostContext,
   internalInstanceHandle
 ) {
-  if (!hostContext.isInAParentText) {
-    throw Error("Text strings must be rendered within a <Text> component.");
+  {
+    if (!hostContext.isInAParentText) {
+      error("Text strings must be rendered within a <Text> component.");
+    }
   }
 
   var tag = nextReactTag;
@@ -5859,7 +5865,7 @@ function flushSyncCallbacksOnlyInLegacyMode() {
 }
 function flushSyncCallbacks() {
   if (!isFlushingSyncQueue && syncQueue !== null) {
-    // Prevent re-entrancy.
+    // Prevent re-entrance.
     isFlushingSyncQueue = true;
     var i = 0;
     var previousUpdatePriority = getCurrentUpdatePriority();
@@ -5898,22 +5904,7 @@ function flushSyncCallbacks() {
   return null;
 }
 
-var NoFlags$1 =
-  /*  */
-  0; // Represents whether effect should fire.
-
-var HasEffect =
-  /* */
-  1; // Represents the phase in which the effect (not the clean-up) fires.
-
-var Layout =
-  /*    */
-  2;
-var Passive$1 =
-  /*   */
-  4;
-
-var ReactVersion = "18.0.0-19092ac8c-20210803";
+var ReactVersion = "18.0.0-95d762e40-20210908";
 
 var ReactCurrentBatchConfig = ReactSharedInternals.ReactCurrentBatchConfig;
 var NoTransition = 0;
@@ -6710,7 +6701,7 @@ function readContext(context) {
 
 // An array of all update queues that received updates during the current
 // render. When this render exits, either because it finishes or because it is
-// interrupted, the interleaved updates will be transfered onto the main part
+// interrupted, the interleaved updates will be transferred onto the main part
 // of the queue.
 var interleavedQueues = null;
 function pushInterleavedQueue(queue) {
@@ -6823,7 +6814,7 @@ function enqueueUpdate(fiber, update, lane) {
     if (interleaved === null) {
       // This is the first update. Create a circular list.
       update.next = update; // At the end of the current render, this queue's interleaved updates will
-      // be transfered to the pending queue.
+      // be transferred to the pending queue.
 
       pushInterleavedQueue(sharedQueue);
     } else {
@@ -6991,12 +6982,12 @@ function getStateFromUpdate(
 
         {
           if (workInProgress.mode & StrictLegacyMode) {
-            disableLogs();
+            setIsStrictModeForDevtools(true);
 
             try {
               payload.call(instance, prevState, nextProps);
             } finally {
-              reenableLogs();
+              setIsStrictModeForDevtools(false);
             }
           }
 
@@ -7029,12 +7020,12 @@ function getStateFromUpdate(
 
         {
           if (workInProgress.mode & StrictLegacyMode) {
-            disableLogs();
+            setIsStrictModeForDevtools(true);
 
             try {
               _payload.call(instance, prevState, nextProps);
             } finally {
-              reenableLogs();
+              setIsStrictModeForDevtools(false);
             }
           }
 
@@ -7381,13 +7372,13 @@ function applyDerivedStateFromProps(
 
   {
     if (workInProgress.mode & StrictLegacyMode) {
-      disableLogs();
+      setIsStrictModeForDevtools(true);
 
       try {
         // Invoke the function an extra time to help detect side-effects.
         partialState = getDerivedStateFromProps(nextProps, prevState);
       } finally {
-        reenableLogs();
+        setIsStrictModeForDevtools(false);
       }
     }
 
@@ -7499,7 +7490,7 @@ function checkShouldComponentUpdate(
 
     {
       if (workInProgress.mode & StrictLegacyMode) {
-        disableLogs();
+        setIsStrictModeForDevtools(true);
 
         try {
           // Invoke the function an extra time to help detect side-effects.
@@ -7509,7 +7500,7 @@ function checkShouldComponentUpdate(
             nextContext
           );
         } finally {
-          reenableLogs();
+          setIsStrictModeForDevtools(false);
         }
       }
 
@@ -7833,12 +7824,12 @@ function constructClassInstance(workInProgress, ctor, props) {
 
   {
     if (workInProgress.mode & StrictLegacyMode) {
-      disableLogs();
+      setIsStrictModeForDevtools(true);
 
       try {
         instance = new ctor(props, context); // eslint-disable-line no-new
       } finally {
-        reenableLogs();
+        setIsStrictModeForDevtools(false);
       }
     }
   }
@@ -9866,6 +9857,21 @@ function findFirstSuspended(row) {
   return null;
 }
 
+var NoFlags$1 =
+  /*  */
+  0; // Represents whether effect should fire.
+
+var HasEffect =
+  /* */
+  1; // Represents the phase in which the effect (not the clean-up) fires.
+
+var Layout =
+  /*    */
+  2;
+var Passive$1 =
+  /*   */
+  4;
+
 var isHydrating = false;
 
 function enterHydrationState(fiber) {
@@ -9971,6 +9977,7 @@ var ReactCurrentDispatcher$1 = ReactSharedInternals.ReactCurrentDispatcher,
   ReactCurrentBatchConfig$1 = ReactSharedInternals.ReactCurrentBatchConfig;
 var didWarnAboutMismatchedHooksForComponent;
 var didWarnAboutUseOpaqueIdentifier;
+var didWarnUncachedGetSnapshot;
 
 {
   didWarnAboutUseOpaqueIdentifier = {};
@@ -10234,7 +10241,7 @@ function renderWithHooks(
       children = Component(props, secondArg);
     } while (didScheduleRenderPhaseUpdateDuringThisPass);
   } // We can assume the previous dispatcher is always this one, since we set it
-  // at the beginning of the render phase and there's no re-entrancy.
+  // at the beginning of the render phase and there's no re-entrance.
 
   ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
 
@@ -10302,7 +10309,7 @@ function bailoutHooks(current, workInProgress, lanes) {
 }
 function resetHooksAfterThrow() {
   // We can assume the previous dispatcher is always this one, since we set it
-  // at the beginning of the render phase and there's no re-entrancy.
+  // at the beginning of the render phase and there's no re-entrance.
   ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
 
   if (didScheduleRenderPhaseUpdate) {
@@ -10446,14 +10453,15 @@ function mountReducer(reducer, initialArg, init) {
   }
 
   hook.memoizedState = hook.baseState = initialState;
-  var queue = (hook.queue = {
+  var queue = {
     pending: null,
     interleaved: null,
     lanes: NoLanes,
     dispatch: null,
     lastRenderedReducer: reducer,
     lastRenderedState: initialState
-  });
+  };
+  hook.queue = queue;
   var dispatch = (queue.dispatch = dispatchAction.bind(
     null,
     currentlyRenderingFiber$1,
@@ -10667,7 +10675,7 @@ function rerenderReducer(reducer, initialArg, init) {
   return [newState, dispatch];
 }
 
-function readFromUnsubcribedMutableSource(root, source, getSnapshot) {
+function readFromUnsubscribedMutableSource(root, source, getSnapshot) {
   {
     warnAboutMultipleRenderersDEV(source);
   }
@@ -10750,9 +10758,9 @@ function readFromUnsubcribedMutableSource(root, source, getSnapshot) {
 
     {
       // eslint-disable-next-line react-internal/no-production-logging
-      if (console.log.__reactDisabledLog) {
-        // If the logs are disabled, this is the dev-only double render. This is
-        // only reachable if there was a mutation during render. Show a helpful
+      if (getIsStrictModeForDevtools()) {
+        // If getIsStrictModeForDevtools is true, this is the dev-only double render
+        // This is only reachable if there was a mutation during render. Show a helpful
         // error message.
         //
         // Something interesting to note: because we only double render in
@@ -10799,7 +10807,7 @@ function useMutableSource(hook, source, getSnapshot, subscribe) {
   var dispatcher = ReactCurrentDispatcher$1.current; // eslint-disable-next-line prefer-const
 
   var _dispatcher$useState = dispatcher.useState(function() {
-      return readFromUnsubcribedMutableSource(root, source, getSnapshot);
+      return readFromUnsubscribedMutableSource(root, source, getSnapshot);
     }),
     currentSnapshot = _dispatcher$useState[0],
     setSnapshot = _dispatcher$useState[1];
@@ -10928,7 +10936,7 @@ function useMutableSource(hook, source, getSnapshot, subscribe) {
     );
     stateHook.queue = newQueue;
     stateHook.baseQueue = null;
-    snapshot = readFromUnsubcribedMutableSource(root, source, getSnapshot);
+    snapshot = readFromUnsubscribedMutableSource(root, source, getSnapshot);
     stateHook.memoizedState = stateHook.baseState = snapshot;
   }
 
@@ -10953,6 +10961,135 @@ function updateMutableSource(source, getSnapshot, subscribe) {
   return useMutableSource(hook, source, getSnapshot, subscribe);
 }
 
+function mountSyncExternalStore(subscribe, getSnapshot) {
+  var hook = mountWorkInProgressHook(); // Read the current snapshot from the store on every render. This breaks the
+  // normal rules of React, and only works because store updates are
+  // always synchronous.
+
+  var nextSnapshot = getSnapshot();
+
+  {
+    if (!didWarnUncachedGetSnapshot) {
+      if (nextSnapshot !== getSnapshot()) {
+        error(
+          "The result of getSnapshot should be cached to avoid an infinite loop"
+        );
+
+        didWarnUncachedGetSnapshot = true;
+      }
+    }
+  }
+
+  hook.memoizedState = nextSnapshot;
+  var inst = {
+    value: nextSnapshot,
+    getSnapshot: getSnapshot
+  };
+  hook.queue = inst;
+  return useSyncExternalStore(hook, inst, subscribe, getSnapshot, nextSnapshot);
+}
+
+function updateSyncExternalStore(subscribe, getSnapshot) {
+  var hook = updateWorkInProgressHook(); // Read the current snapshot from the store on every render. This breaks the
+  // normal rules of React, and only works because store updates are
+  // always synchronous.
+
+  var nextSnapshot = getSnapshot();
+
+  {
+    if (!didWarnUncachedGetSnapshot) {
+      if (nextSnapshot !== getSnapshot()) {
+        error(
+          "The result of getSnapshot should be cached to avoid an infinite loop"
+        );
+
+        didWarnUncachedGetSnapshot = true;
+      }
+    }
+  }
+
+  var prevSnapshot = hook.memoizedState;
+
+  if (!objectIs(prevSnapshot, nextSnapshot)) {
+    hook.memoizedState = nextSnapshot;
+    markWorkInProgressReceivedUpdate();
+  }
+
+  var inst = hook.queue;
+  return useSyncExternalStore(hook, inst, subscribe, getSnapshot, nextSnapshot);
+}
+
+function useSyncExternalStore(
+  hook,
+  inst,
+  subscribe,
+  getSnapshot,
+  nextSnapshot
+) {
+  var fiber = currentlyRenderingFiber$1;
+  var dispatcher = ReactCurrentDispatcher$1.current; // Track the latest getSnapshot function with a ref. This needs to be updated
+  // in the layout phase so we can access it during the tearing check that
+  // happens on subscribe.
+  // TODO: Circumvent SSR warning
+
+  dispatcher.useLayoutEffect(
+    function() {
+      inst.value = nextSnapshot;
+      inst.getSnapshot = getSnapshot; // Whenever getSnapshot or subscribe changes, we need to check in the
+      // commit phase if there was an interleaved mutation. In concurrent mode
+      // this can happen all the time, but even in synchronous mode, an earlier
+      // effect may have mutated the store.
+      // TODO: Move the tearing checks to an earlier, pre-commit phase so that the
+      // layout effects always observe a consistent tree.
+
+      if (checkIfSnapshotChanged(inst)) {
+        // Force a re-render.
+        forceStoreRerender(fiber);
+      }
+    },
+    [subscribe, nextSnapshot, getSnapshot]
+  );
+  dispatcher.useEffect(
+    function() {
+      var handleStoreChange = function() {
+        // TODO: Because there is no cross-renderer API for batching updates, it's
+        // up to the consumer of this library to wrap their subscription event
+        // with unstable_batchedUpdates. Should we try to detect when this isn't
+        // the case and print a warning in development?
+        // The store changed. Check if the snapshot changed since the last time we
+        // read from the store.
+        if (checkIfSnapshotChanged(inst)) {
+          // Force a re-render.
+          forceStoreRerender(fiber);
+        }
+      }; // Check for changes right before subscribing. Subsequent changes will be
+      // detected in the subscription handler.
+
+      handleStoreChange(); // Subscribe to the store and return a clean-up function.
+
+      return subscribe(handleStoreChange);
+    },
+    [subscribe]
+  );
+  return nextSnapshot;
+}
+
+function checkIfSnapshotChanged(inst) {
+  var latestGetSnapshot = inst.getSnapshot;
+  var prevValue = inst.value;
+
+  try {
+    var nextValue = latestGetSnapshot();
+    return !objectIs(prevValue, nextValue);
+  } catch (error) {
+    return true;
+  }
+}
+
+function forceStoreRerender(fiber) {
+  scheduleUpdateOnFiber(fiber, SyncLane, NoTimestamp);
+}
+
 function mountState(initialState) {
   var hook = mountWorkInProgressHook();
 
@@ -10962,14 +11099,15 @@ function mountState(initialState) {
   }
 
   hook.memoizedState = hook.baseState = initialState;
-  var queue = (hook.queue = {
+  var queue = {
     pending: null,
     interleaved: null,
     lanes: NoLanes,
     dispatch: null,
     lastRenderedReducer: basicStateReducer,
     lastRenderedState: initialState
-  });
+  };
+  hook.queue = queue;
   var dispatch = (queue.dispatch = dispatchAction.bind(
     null,
     currentlyRenderingFiber$1,
@@ -11454,7 +11592,7 @@ function dispatchAction(fiber, queue, action) {
       if (interleaved === null) {
         // This is the first update. Create a circular list.
         update.next = update; // At the end of the current render, this queue's interleaved updates will
-        // be transfered to the pending queue.
+        // be transferred to the pending queue.
 
         pushInterleavedQueue(queue);
       } else {
@@ -11557,6 +11695,7 @@ var ContextOnlyDispatcher = {
   useDeferredValue: throwInvalidHookError,
   useTransition: throwInvalidHookError,
   useMutableSource: throwInvalidHookError,
+  useSyncExternalStore: throwInvalidHookError,
   useOpaqueIdentifier: throwInvalidHookError,
   unstable_isNewReconciler: enableNewReconciler
 };
@@ -11683,6 +11822,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       mountHookTypesDev();
       return mountMutableSource(source, getSnapshot, subscribe);
     },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      mountHookTypesDev();
+      return mountSyncExternalStore(subscribe, getSnapshot);
+    },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
       mountHookTypesDev();
@@ -11780,6 +11924,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       currentHookNameInDev = "useMutableSource";
       updateHookTypesDev();
       return mountMutableSource(source, getSnapshot, subscribe);
+    },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      updateHookTypesDev();
+      return mountSyncExternalStore(subscribe, getSnapshot);
     },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
@@ -11879,6 +12028,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
     },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      updateHookTypesDev();
+      return updateSyncExternalStore(subscribe, getSnapshot);
+    },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
       updateHookTypesDev();
@@ -11976,6 +12130,11 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       currentHookNameInDev = "useMutableSource";
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
+    },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      updateHookTypesDev();
+      return updateSyncExternalStore(subscribe, getSnapshot);
     },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
@@ -12088,6 +12247,12 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       warnInvalidHookAccess();
       mountHookTypesDev();
       return mountMutableSource(source, getSnapshot, subscribe);
+    },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      warnInvalidHookAccess();
+      mountHookTypesDev();
+      return mountSyncExternalStore(subscribe, getSnapshot);
     },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
@@ -12202,6 +12367,12 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
     },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return updateSyncExternalStore(subscribe, getSnapshot);
+    },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
       warnInvalidHookAccess();
@@ -12314,6 +12485,12 @@ var InvalidNestedHooksDispatcherOnRerenderInDEV = null;
       warnInvalidHookAccess();
       updateHookTypesDev();
       return updateMutableSource(source, getSnapshot, subscribe);
+    },
+    useSyncExternalStore: function(subscribe, getSnapshot) {
+      currentHookNameInDev = "useSyncExternalStore";
+      warnInvalidHookAccess();
+      updateHookTypesDev();
+      return updateSyncExternalStore(subscribe, getSnapshot);
     },
     useOpaqueIdentifier: function() {
       currentHookNameInDev = "useOpaqueIdentifier";
@@ -13835,7 +14012,7 @@ function completeWork(current, workInProgress, renderLanes) {
                 workInProgress.flags |= DidCapture;
                 cutOffTailIfNeeded(renderState, false); // If this is a newly suspended tree, it might not get committed as
                 // part of the second pass. In that case nothing will subscribe to
-                // its thennables. Instead, we'll transfer its thennables to the
+                // its thenables. Instead, we'll transfer its thenables to the
                 // SuspenseList so that it can retry if they resolve.
                 // There might be multiple of these in the list but since we're
                 // going to wait for all of them anyway, it doesn't really matter
@@ -13846,10 +14023,10 @@ function completeWork(current, workInProgress, renderLanes) {
                 // doesn't matter since that means that the other boundaries that
                 // we did find already has their listeners attached.
 
-                var newThennables = suspended.updateQueue;
+                var newThenables = suspended.updateQueue;
 
-                if (newThennables !== null) {
-                  workInProgress.updateQueue = newThennables;
+                if (newThenables !== null) {
+                  workInProgress.updateQueue = newThenables;
                   workInProgress.flags |= Update;
                 } // Rerender the whole list, but this time, we'll force fallbacks
                 // to stay in place.
@@ -13905,10 +14082,10 @@ function completeWork(current, workInProgress, renderLanes) {
             didSuspendAlready = true; // Ensure we transfer the update queue to the parent so that it doesn't
             // get lost if this row ends up dropped during a second pass.
 
-            var _newThennables = _suspended.updateQueue;
+            var _newThenables = _suspended.updateQueue;
 
-            if (_newThennables !== null) {
-              workInProgress.updateQueue = _newThennables;
+            if (_newThenables !== null) {
+              workInProgress.updateQueue = _newThenables;
               workInProgress.flags |= Update;
             }
 
@@ -14176,7 +14353,7 @@ function updateForwardRef(
     );
 
     if (workInProgress.mode & StrictLegacyMode) {
-      disableLogs();
+      setIsStrictModeForDevtools(true);
 
       try {
         nextChildren = renderWithHooks(
@@ -14188,7 +14365,7 @@ function updateForwardRef(
           renderLanes
         );
       } finally {
-        reenableLogs();
+        setIsStrictModeForDevtools(false);
       }
     }
 
@@ -14646,7 +14823,7 @@ function updateFunctionComponent(
     );
 
     if (workInProgress.mode & StrictLegacyMode) {
-      disableLogs();
+      setIsStrictModeForDevtools(true);
 
       try {
         nextChildren = renderWithHooks(
@@ -14658,7 +14835,7 @@ function updateFunctionComponent(
           renderLanes
         );
       } finally {
-        reenableLogs();
+        setIsStrictModeForDevtools(false);
       }
     }
 
@@ -14856,12 +15033,12 @@ function finishClassComponent(
       nextChildren = instance.render();
 
       if (workInProgress.mode & StrictLegacyMode) {
-        disableLogs();
+        setIsStrictModeForDevtools(true);
 
         try {
           instance.render();
         } finally {
-          reenableLogs();
+          setIsStrictModeForDevtools(false);
         }
       }
 
@@ -15325,7 +15502,7 @@ function mountIndeterminateComponent(
 
     {
       if (workInProgress.mode & StrictLegacyMode) {
-        disableLogs();
+        setIsStrictModeForDevtools(true);
 
         try {
           value = renderWithHooks(
@@ -15337,7 +15514,7 @@ function mountIndeterminateComponent(
             renderLanes
           );
         } finally {
-          reenableLogs();
+          setIsStrictModeForDevtools(false);
         }
       }
     }
@@ -15455,7 +15632,7 @@ function shouldRemainOnFallback(
     var suspenseState = current.memoizedState;
 
     if (suspenseState === null) {
-      // Currently showing content. Don't hide it, even if ForceSuspenseFallack
+      // Currently showing content. Don't hide it, even if ForceSuspenseFallback
       // is true. More precise name might be "ForceRemainSuspenseFallback".
       // Note: This is a factoring smell. Can't remain on a fallback if there's
       // no fallback to remain on.
@@ -15507,7 +15684,7 @@ function updateSuspenseComponent(current, workInProgress, renderLanes) {
 
   suspenseContext = setDefaultShallowSuspenseContext(suspenseContext);
   pushSuspenseContext(workInProgress, suspenseContext); // OK, the next part is confusing. We're about to reconcile the Suspense
-  // boundary's children. This involves some custom reconcilation logic. Two
+  // boundary's children. This involves some custom reconciliation logic. Two
   // main reasons this is so complicated.
   //
   // First, Legacy Mode has different semantics for backwards compatibility. The
@@ -18356,7 +18533,7 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
   // TODO: The factoring of this phase could probably be improved. Consider
   // switching on the type of work before checking the flags. That's what
   // we do in all the other phases. I think this one is only different
-  // because of the shared reconcilation logic below.
+  // because of the shared reconciliation logic below.
   var flags = finishedWork.flags;
 
   if (flags & Ref) {
@@ -19003,10 +19180,7 @@ var nestedPassiveUpdateCount = 0; // If two updates are scheduled within the sam
 // between the first and second call.
 
 var currentEventTime = NoTimestamp;
-var currentEventTransitionLane = NoLanes; // Dev only flag that tracks if passive effects are currently being flushed.
-// We warn about state updates for unmounted components differently in this case.
-
-var isFlushingPassiveEffects = false;
+var currentEventTransitionLane = NoLanes;
 function getWorkInProgressRoot() {
   return workInProgressRoot;
 }
@@ -19104,7 +19278,6 @@ function scheduleUpdateOnFiber(fiber, lane, eventTime) {
   var root = markUpdateLaneFromFiberToRoot(fiber, lane);
 
   if (root === null) {
-    warnAboutUpdateOnUnmountedFiberInDEV(fiber);
     return null;
   }
 
@@ -20429,10 +20602,6 @@ function flushPassiveEffectsImpl() {
     throw Error("Cannot flush passive effects while already rendering.");
   }
 
-  {
-    isFlushingPassiveEffects = true;
-  }
-
   var prevExecutionContext = executionContext;
   executionContext |= CommitContext;
   commitPassiveUnmountEffects(root.current);
@@ -20446,10 +20615,6 @@ function flushPassiveEffectsImpl() {
       var _fiber = profilerEffects[i];
       commitPassiveEffectDurations(root, _fiber);
     }
-  }
-
-  {
-    isFlushingPassiveEffects = false;
   }
 
   {
@@ -20826,86 +20991,6 @@ function warnAboutUpdateOnNotYetMountedFiberInDEV(fiber) {
         setCurrentFiber(fiber);
       } else {
         resetCurrentFiber();
-      }
-    }
-  }
-}
-
-var didWarnStateUpdateForUnmountedComponent = null;
-
-function warnAboutUpdateOnUnmountedFiberInDEV(fiber) {
-  {
-    var tag = fiber.tag;
-
-    if (
-      tag !== HostRoot &&
-      tag !== ClassComponent &&
-      tag !== FunctionComponent &&
-      tag !== ForwardRef &&
-      tag !== MemoComponent &&
-      tag !== SimpleMemoComponent
-    ) {
-      // Only warn for user-defined components, not internal ones like Suspense.
-      return;
-    }
-
-    if ((fiber.flags & PassiveStatic) !== NoFlags) {
-      var updateQueue = fiber.updateQueue;
-
-      if (updateQueue !== null) {
-        var lastEffect = updateQueue.lastEffect;
-
-        if (lastEffect !== null) {
-          var firstEffect = lastEffect.next;
-          var effect = firstEffect;
-
-          do {
-            if (effect.destroy !== undefined) {
-              if ((effect.tag & Passive$1) !== NoFlags$1) {
-                return;
-              }
-            }
-
-            effect = effect.next;
-          } while (effect !== firstEffect);
-        }
-      }
-    } // We show the whole stack but dedupe on the top component's name because
-    // the problematic code almost always lies inside that component.
-
-    var componentName = getComponentNameFromFiber(fiber) || "ReactComponent";
-
-    if (didWarnStateUpdateForUnmountedComponent !== null) {
-      if (didWarnStateUpdateForUnmountedComponent.has(componentName)) {
-        return;
-      }
-
-      didWarnStateUpdateForUnmountedComponent.add(componentName);
-    } else {
-      didWarnStateUpdateForUnmountedComponent = new Set([componentName]);
-    }
-
-    if (isFlushingPassiveEffects);
-    else {
-      var previousFiber = current;
-
-      try {
-        setCurrentFiber(fiber);
-
-        error(
-          "Can't perform a React state update on an unmounted component. This " +
-            "is a no-op, but it indicates a memory leak in your application. To " +
-            "fix, cancel all subscriptions and asynchronous tasks in %s.",
-          tag === ClassComponent
-            ? "the componentWillUnmount method"
-            : "a useEffect cleanup function"
-        );
-      } finally {
-        if (previousFiber) {
-          setCurrentFiber(fiber);
-        } else {
-          resetCurrentFiber();
-        }
       }
     }
   }
@@ -22461,6 +22546,7 @@ var shouldSuspendImpl = function(fiber) {
 function shouldSuspend(fiber) {
   return shouldSuspendImpl(fiber);
 }
+var isStrictMode = false;
 var overrideHookState = null;
 var overrideHookStateDeletePath = null;
 var overrideHookStateRenamePath = null;
@@ -22683,6 +22769,20 @@ function getCurrentFiberForDevTools() {
   return current;
 }
 
+function getIsStrictModeForDevtools() {
+  return isStrictMode;
+}
+function setIsStrictModeForDevtools(newIsStrictMode) {
+  isStrictMode = newIsStrictMode;
+
+  {
+    if (newIsStrictMode) {
+      disableLogs();
+    } else {
+      reenableLogs();
+    }
+  }
+}
 function injectIntoDevTools(devToolsConfig) {
   var findFiberByHostInstance = devToolsConfig.findFiberByHostInstance;
   var ReactCurrentDispatcher = ReactSharedInternals.ReactCurrentDispatcher;
@@ -22711,6 +22811,7 @@ function injectIntoDevTools(devToolsConfig) {
     setRefreshHandler: setRefreshHandler,
     // Enables DevTools to append owner stacks to error messages in DEV mode.
     getCurrentFiber: getCurrentFiberForDevTools,
+    getIsStrictMode: getIsStrictModeForDevtools,
     // Enables DevTools to detect reconciler version rather than renderer version
     // which may not match for third party renderers.
     reconcilerVersion: ReactVersion

@@ -50,4 +50,11 @@ public class ReactSoftExceptionLogger {
       FLog.e(category, "Unhandled SoftException", cause);
     }
   }
+
+  @DoNotStrip
+  // For use from within the C++ JReactSoftExceptionLogger
+  private static void logNoThrowSoftExceptionWithMessage(
+      final String category, final String message) {
+    logSoftException(category, new ReactNoCrashSoftException(message));
+  }
 }

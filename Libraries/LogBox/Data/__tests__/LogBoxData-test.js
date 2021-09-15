@@ -418,6 +418,26 @@ describe('LogBoxData', () => {
     expect(logs[0].count).toBe(2);
   });
 
+  it('adding same pattern multiple times', () => {
+    expect(LogBoxData.getIgnorePatterns().length).toBe(0);
+    LogBoxData.addIgnorePatterns(['abc']);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(1);
+    LogBoxData.addIgnorePatterns([/abc/]);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(2);
+    LogBoxData.addIgnorePatterns(['abc']);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(2);
+    LogBoxData.addIgnorePatterns([/abc/]);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(2);
+  });
+
+  it('adding duplicated patterns', () => {
+    expect(LogBoxData.getIgnorePatterns().length).toBe(0);
+    LogBoxData.addIgnorePatterns(['abc', /ab/, /abc/, /abc/, 'abc']);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(3);
+    LogBoxData.addIgnorePatterns([/ab/, /abc/]);
+    expect(LogBoxData.getIgnorePatterns().length).toBe(3);
+  });
+
   it('ignores logs matching patterns (logs)', () => {
     addLogs(['A!', 'B?', 'C!']);
 

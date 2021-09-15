@@ -124,7 +124,7 @@ RCT_EXTERN_C_END
  * moduleRegistry = _moduleRegistry;`. If using Swift, add
  * `@objc var moduleRegistry: RCTModuleRegistry!` to your module.
  */
-@property (nonatomic, weak, readonly) RCTModuleRegistry *moduleRegistry;
+@property (nonatomic, weak, readwrite) RCTModuleRegistry *moduleRegistry;
 
 /**
  * A reference to the RCTViewRegistry. Useful for modules that query UIViews,

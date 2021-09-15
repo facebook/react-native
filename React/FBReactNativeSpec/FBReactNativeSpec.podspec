@@ -4,7 +4,9 @@
 # LICENSE file in the root directory of this source tree.
 
 require "json"
-require_relative "../../scripts/react_native_pods.rb"
+
+react_native_path = "../.."
+require_relative "#{react_native_path}/scripts/react_native_pods.rb"
 
 package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
 version = package['version']
@@ -30,7 +32,7 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "11.0" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
-  s.source_files           = "**/*.{c,h,m,mm,cpp}"
+  s.source_files           = "**/FBReactNativeSpec*.{h,mm}"
   s.header_dir             = "FBReactNativeSpec"
 
   s.pod_target_xcconfig    = {
@@ -46,5 +48,11 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi", version
   s.dependency "ReactCommon/turbomodule/core", version
 
-  use_react_native_codegen! (s)
+  use_react_native_codegen!(s, {
+    :react_native_path => react_native_path,
+    :js_srcs_dir => "#{react_native_path}/Libraries",
+    :library_name => "FBReactNativeSpec",
+    :library_type => "modules",
+    :output_dir => "#{react_native_path}/React/FBReactNativeSpec/FBReactNativeSpec"
+  })
 end

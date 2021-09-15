@@ -24,7 +24,7 @@ class ViewShadowNode final : public ConcreteViewShadowNode<
                                  ViewEventEmitter> {
  public:
   static ShadowNodeTraits BaseTraits() {
-    auto traits = BaseShadowNode::BaseTraits();
+    auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::View);
     return traits;
   }

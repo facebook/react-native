@@ -20,8 +20,7 @@ EventDispatcher::EventDispatcher(
     EventQueueProcessor eventProcessor,
     EventBeat::Factory const &synchonousEventBeatFactory,
     EventBeat::Factory const &asynchonousEventBeatFactory,
-    EventBeat::SharedOwnerBox const &ownerBox,
-    bool unbatchedQueuesOnly)
+    EventBeat::SharedOwnerBox const &ownerBox)
     : synchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
           eventProcessor,
           synchonousEventBeatFactory(ownerBox))),
@@ -33,8 +32,7 @@ EventDispatcher::EventDispatcher(
           asynchonousEventBeatFactory(ownerBox))),
       asynchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
           eventProcessor,
-          asynchonousEventBeatFactory(ownerBox))),
-      unbatchedQueuesOnly_(unbatchedQueuesOnly) {}
+          asynchonousEventBeatFactory(ownerBox))) {}
 
 void EventDispatcher::dispatchEvent(RawEvent &&rawEvent, EventPriority priority)
     const {
@@ -48,36 +46,19 @@ void EventDispatcher::dispatchStateUpdate(
 }
 
 void EventDispatcher::dispatchUniqueEvent(RawEvent &&rawEvent) const {
-  if (unbatchedQueuesOnly_) {
-    asynchronousUnbatchedQueue_->enqueueUniqueEvent(std::move(rawEvent));
-  } else {
-    asynchronousBatchedQueue_->enqueueUniqueEvent(std::move(rawEvent));
-  }
+  asynchronousBatchedQueue_->enqueueUniqueEvent(std::move(rawEvent));
 }
 
 const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
-  if (unbatchedQueuesOnly_) {
-    switch (priority) {
-      case EventPriority::SynchronousUnbatched:
-        return *synchronousUnbatchedQueue_;
-      case EventPriority::SynchronousBatched:
-        return *synchronousUnbatchedQueue_;
-      case EventPriority::AsynchronousUnbatched:
-        return *asynchronousUnbatchedQueue_;
-      case EventPriority::AsynchronousBatched:
-        return *asynchronousUnbatchedQueue_;
-    }
-  } else {
-    switch (priority) {
-      case EventPriority::SynchronousUnbatched:
-        return *synchronousUnbatchedQueue_;
-      case EventPriority::SynchronousBatched:
-        return *synchronousBatchedQueue_;
-      case EventPriority::AsynchronousUnbatched:
-        return *asynchronousUnbatchedQueue_;
-      case EventPriority::AsynchronousBatched:
-        return *asynchronousBatchedQueue_;
-    }
+  switch (priority) {
+    case EventPriority::SynchronousUnbatched:
+      return *synchronousUnbatchedQueue_;
+    case EventPriority::SynchronousBatched:
+      return *synchronousBatchedQueue_;
+    case EventPriority::AsynchronousUnbatched:
+      return *asynchronousUnbatchedQueue_;
+    case EventPriority::AsynchronousBatched:
+      return *asynchronousBatchedQueue_;
   }
 }
 

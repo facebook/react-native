@@ -7,7 +7,6 @@
 
 #include "Binding.h"
 #include "AsyncEventBeat.h"
-#include "AsyncEventBeatV2.h"
 #include "EventEmitterWrapper.h"
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
@@ -494,6 +493,7 @@ bool isMapBufferSerializationEnabled() {
 
 void Binding::installFabricUIManager(
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
+    jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
@@ -528,39 +528,35 @@ void Binding::installFabricUIManager(
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
-  auto enableV2AsynchronousEventBeat =
-      config->getBool("react_fabric:enable_asynchronous_event_beat_v2_android");
+  if (runtimeSchedulerHolder) {
+    auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get();
+    if (runtimeScheduler) {
+      runtimeScheduler->setEnableYielding(config->getBool(
+          "react_native_new_architecture:runtimescheduler_enable_yielding_android"));
+      runtimeExecutor =
+          [runtimeScheduler](
+              std::function<void(jsi::Runtime & runtime)> &&callback) {
+            runtimeScheduler->scheduleWork(std::move(callback));
+          };
+    }
+  }
 
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
   EventBeat::Factory synchronousBeatFactory =
-      [eventBeatManager,
-       runtimeExecutor,
-       localJavaUIManager,
-       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
+      [eventBeatManager, runtimeExecutor, localJavaUIManager](
+          EventBeat::SharedOwnerBox const &ownerBox)
       -> std::unique_ptr<EventBeat> {
-    if (enableV2AsynchronousEventBeat) {
-      return std::make_unique<AsyncEventBeatV2>(
-          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
-    } else {
-      return std::make_unique<AsyncEventBeat>(
-          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
-    }
+    return std::make_unique<AsyncEventBeat>(
+        ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
   };
 
   EventBeat::Factory asynchronousBeatFactory =
-      [eventBeatManager,
-       runtimeExecutor,
-       localJavaUIManager,
-       enableV2AsynchronousEventBeat](EventBeat::SharedOwnerBox const &ownerBox)
+      [eventBeatManager, runtimeExecutor, localJavaUIManager](
+          EventBeat::SharedOwnerBox const &ownerBox)
       -> std::unique_ptr<EventBeat> {
-    if (enableV2AsynchronousEventBeat) {
-      return std::make_unique<AsyncEventBeatV2>(
-          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
-    } else {
-      return std::make_unique<AsyncEventBeat>(
-          ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
-    }
+    return std::make_unique<AsyncEventBeat>(
+        ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
   };
 
   contextContainer->insert("ReactNativeConfig", config);
@@ -574,9 +570,6 @@ void Binding::installFabricUIManager(
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
-
-  disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
-      "react_fabric:disable_virtual_node_preallocation");
 
   enableEarlyEventEmitterUpdate_ = reactNativeConfig_->getBool(
       "react_fabric:enable_early_event_emitter_update");
@@ -1212,8 +1205,7 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
 
   auto shadowView = ShadowView(shadowNode);
 
-  if (disableVirtualNodePreallocation_ &&
-      !shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
+  if (!shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
     return;
   }
 
@@ -1226,9 +1218,6 @@ void Binding::schedulerDidCloneShadowNode(
     const ShadowNode &newShadowNode) {
   // This is only necessary if view preallocation was skipped during
   // createShadowNode
-  if (!disableVirtualNodePreallocation_) {
-    return;
-  }
 
   // We may need to PreAllocate a ShadowNode at this point if this is the
   // earliest point it is possible to do so:

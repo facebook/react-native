@@ -84,6 +84,18 @@ bool ShadowViewMutation::mutatedViewIsVirtual() const {
   return viewIsVirtual;
 }
 
+ShadowViewMutation::ShadowViewMutation(
+    Type type,
+    ShadowView parentShadowView,
+    ShadowView oldChildShadowView,
+    ShadowView newChildShadowView,
+    int index)
+    : type(type),
+      parentShadowView(parentShadowView),
+      oldChildShadowView(oldChildShadowView),
+      newChildShadowView(newChildShadowView),
+      index(index) {}
+
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(ShadowViewMutation const &mutation) {

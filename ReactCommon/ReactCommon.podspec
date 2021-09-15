@@ -45,6 +45,7 @@ Pod::Spec.new do |s|
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version
     ss.dependency "RCT-Folly", folly_version
+    s.dependency "React-logger", version
     ss.dependency "DoubleConversion"
     ss.dependency "glog"
 

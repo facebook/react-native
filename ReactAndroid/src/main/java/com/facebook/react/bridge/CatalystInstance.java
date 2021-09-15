@@ -111,6 +111,10 @@ public interface CatalystInstance
 
   RuntimeExecutor getRuntimeExecutor();
 
+  RuntimeScheduler getRuntimeScheduler();
+
+  void installRuntimeScheduler();
+
   void addJSIModules(List<JSIModuleSpec> jsiModules);
 
   /**

@@ -5,9 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import org.gradle.api.internal.classpath.ModuleRegistry
+import org.gradle.configurationcache.extensions.serviceOf
+
 plugins {
-  `java-gradle-plugin`
-  `kotlin-dsl`
+  kotlin("jvm") version "1.4.21"
+  id("java-gradle-plugin")
 }
 
 repositories {
@@ -25,5 +28,14 @@ gradlePlugin {
 }
 
 dependencies {
-  implementation("com.android.tools.build:gradle:4.2.1")
+  implementation(gradleApi())
+  implementation("com.android.tools.build:gradle:4.2.2")
+  
+  testImplementation("junit:junit:4.13.2")
+
+  testRuntimeOnly(
+    files(
+      serviceOf<ModuleRegistry>().getModule("gradle-tooling-api-builders").classpath.asFiles.first()
+    )
+  )
 }

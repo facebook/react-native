@@ -46,7 +46,16 @@ fileList.forEach(file => {
   }
 });
 
-const formattedSchema = JSON.stringify(combine(allFiles), null, 2);
+const combined = combine(allFiles);
+
+// Warn users if there is no modules to process
+if (Object.keys(combined.modules).length === 0) {
+  console.error(
+    'No modules to process in combine-js-to-schema-cli. If this is unexpected, please check if you set up your NativeComponent correctly. See combine-js-to-schema.js for how codegen finds modules.',
+  );
+}
+const formattedSchema = JSON.stringify(combined, null, 2);
+
 if (outfile != null) {
   fs.writeFileSync(outfile, formattedSchema);
 } else {

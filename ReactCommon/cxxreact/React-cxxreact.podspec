@@ -45,4 +45,5 @@ Pod::Spec.new do |s|
   s.dependency "React-runtimeexecutor", version
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
+  s.dependency "React-logger", version
 end

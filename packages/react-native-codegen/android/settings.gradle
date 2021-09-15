@@ -13,8 +13,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'react-native-codegen'
-
-include(":generator")
-
-includeBuild("gradlePlugin-build")
+rootProject.name = 'react-native-codegen-android'

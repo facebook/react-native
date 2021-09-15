@@ -12,7 +12,7 @@
 RCT_EXTERN NSString *const RCTBundleURLProviderUpdatedNotification;
 RCT_EXTERN const NSUInteger kRCTBundleURLProviderDefaultPort;
 
-#if RCT_DEV_MENU
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
 /**
  * Allow/disallow accessing the packager server for various runtime scenario.
  * For instance, if a test run should never access the packager, disable it
@@ -51,6 +51,13 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
  * The port is optional, if not specified, kRCTBundleURLProviderDefaultPort will be used
  */
 + (BOOL)isPackagerRunning:(NSString *)hostPort;
+
+/**
+ * Returns if there's a packager running at the given scheme://host:port.
+ * The port is optional, if not specified, kRCTBundleURLProviderDefaultPort will be used
+ * The scheme is also optional, if not specified, a default http protocol will be used
+ */
++ (BOOL)isPackagerRunning:(NSString *)hostPort scheme:(NSString *)scheme;
 
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
@@ -99,8 +106,14 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
  * The IP address or hostname of the packager.
  */
 @property (nonatomic, copy) NSString *jsLocation;
+
 @property (nonatomic, assign) BOOL enableMinification;
 @property (nonatomic, assign) BOOL enableDev;
+
+/**
+ * The scheme/protocol used of the packager, the default is the http protocol
+ */
+@property (nonatomic, copy) NSString *packagerScheme;
 
 + (instancetype)sharedSettings;
 
@@ -129,11 +142,23 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
                         modulesOnly:(BOOL)modulesOnly
                           runModule:(BOOL)runModule;
 
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                     packagerScheme:(NSString *)scheme
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification
+                        modulesOnly:(BOOL)modulesOnly
+                          runModule:(BOOL)runModule;
 /**
  * Given a hostname for the packager and a resource path (including "/"), return the URL to the resource.
  * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged
  * resource if it is not: -resourceURLForResourceRoot:resourceName:resourceExtension:offlineBundle:
  */
 + (NSURL *)resourceURLForResourcePath:(NSString *)path packagerHost:(NSString *)packagerHost query:(NSString *)query;
+
++ (NSURL *)resourceURLForResourcePath:(NSString *)path
+                         packagerHost:(NSString *)packagerHost
+                               scheme:(NSString *)scheme
+                                query:(NSString *)query;
 
 @end

@@ -48,7 +48,9 @@ public final class ReconnectingWebSocket extends WebSocketListener {
   private @Nullable ConnectionCallback mConnectionCallback;
 
   public ReconnectingWebSocket(
-      String url, MessageCallback messageCallback, ConnectionCallback connectionCallback) {
+      String url,
+      @Nullable MessageCallback messageCallback,
+      @Nullable ConnectionCallback connectionCallback) {
     super();
     mUrl = url;
     mMessageCallback = messageCallback;

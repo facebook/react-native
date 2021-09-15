@@ -69,22 +69,13 @@ Scheduler::Scheduler(
     uiManager->updateState(stateUpdate);
   };
 
-#ifdef ANDROID
-  auto unbatchedQueuesOnly =
-      reactNativeConfig_->getBool("react_fabric:unbatched_queues_only_android");
-#else
-  auto unbatchedQueuesOnly =
-      reactNativeConfig_->getBool("react_fabric:unbatched_queues_only_ios");
-#endif
-
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
       EventQueueProcessor(eventPipe, statePipe),
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox,
-      unbatchedQueuesOnly);
+      eventOwnerBox);
 
   // Casting to `std::shared_ptr<EventDispatcher const>`.
   auto eventDispatcher =

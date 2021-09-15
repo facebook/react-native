@@ -39,9 +39,6 @@ inline RawTextShadowNode const &traitCast<RawTextShadowNode const &>(
     ShadowNode const &shadowNode) {
   bool castable =
       shadowNode.getTraits().check(ShadowNodeTraits::Trait::RawText);
-  react_native_assert(
-      castable ==
-      (dynamic_cast<RawTextShadowNode const *>(&shadowNode) != nullptr));
   react_native_assert(castable);
   (void)castable;
   return static_cast<RawTextShadowNode const &>(shadowNode);
@@ -55,9 +52,6 @@ inline RawTextShadowNode const *traitCast<RawTextShadowNode const *>(
   }
   bool castable =
       shadowNode->getTraits().check(ShadowNodeTraits::Trait::RawText);
-  react_native_assert(
-      castable ==
-      (dynamic_cast<RawTextShadowNode const *>(shadowNode) != nullptr));
   if (!castable) {
     return nullptr;
   }
