@@ -112,9 +112,7 @@ async function reportSizeStats(stats, replacePattern) {
     createOrUpdateComment(comment, replacePattern);
   }
 
-  // Documentation says that we don't need to call `terminate()` but the script
-  // will just hang around until the connection times out if we don't.
-  store.terminate();
+  await datastore.terminateStore(store);
 }
 
 /**

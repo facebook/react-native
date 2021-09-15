@@ -142,6 +142,18 @@ async function getLatestDocument(collectionRef) {
 }
 
 /**
+ * Terminates the supplied store.
+ *
+ * Documentation says that we don't need to call `terminate()` but the script
+ * will just hang around until the connection times out if we don't.
+ *
+ * @param {Promise<Firestore>} db
+ */
+async function terminateStore(db) {
+  await firestore.terminate(db);
+}
+
+/**
  * Example usage:
  *
  *     const datastore = require('./datastore');
@@ -149,10 +161,7 @@ async function getLatestDocument(collectionRef) {
  *     const binarySizes = datastore.getBinarySizesCollection(store);
  *     console.log(await getLatestDocument(binarySizes));
  *     console.log(await createOrUpdateDocument(binarySizes, 'some-id', {data: 0}));
- *
- *     // Documentation says that we don't need to call `terminate()` but the script
- *     // will just hang around until the connection times out if we don't.
- *     firestore.terminate();
+ *     terminateStore(store);
  *
  */
 module.exports = {
@@ -161,4 +170,5 @@ module.exports = {
   getBinarySizesCollection,
   createOrUpdateDocument,
   getLatestDocument,
+  terminateStore,
 };
