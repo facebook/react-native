@@ -58,7 +58,7 @@ public class PackagerConnectionSettings {
     mPreferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply();
   }
 
-  public void setDebugServerHostWithoutPersisting(final String host, final boolean savePrefs) {
+  public void setDebugServerHostWithoutPersisting(final String host) {
     mDebugServerHost = host;
   }
 
