@@ -7,7 +7,7 @@
 
 package com.facebook.react.tests
 
-import com.facebook.react.ReactAppExtension
+import com.facebook.react.TestReactAppExtension
 import com.facebook.react.utils.detectedCliPath
 import com.facebook.react.utils.detectedEntryFile
 import com.facebook.react.utils.detectedHermesCommand
@@ -24,9 +24,9 @@ class PathUtilsTest {
 
   @Test
   fun detectedEntryFile_withProvidedVariable() {
-    val extension = ReactAppExtension(ProjectBuilder.builder().build())
+    val extension = TestReactAppExtension(ProjectBuilder.builder().build())
     val expected = tempFolder.newFile("fake.index.js")
-    extension.entryFile = expected
+    extension.entryFile.set(expected)
 
     val actual = detectedEntryFile(extension)
 
@@ -35,8 +35,8 @@ class PathUtilsTest {
 
   @Test
   fun detectedEntryFile_withAndroidEntryPoint() {
-    val extension = ReactAppExtension(ProjectBuilder.builder().build())
-    extension.reactRoot = tempFolder.root
+    val extension = TestReactAppExtension(ProjectBuilder.builder().build())
+    extension.reactRoot.set(tempFolder.root)
     tempFolder.newFile("index.android.js")
 
     val actual = detectedEntryFile(extension)
@@ -46,8 +46,8 @@ class PathUtilsTest {
 
   @Test
   fun detectedEntryFile_withDefaultEntryPoint() {
-    val extension = ReactAppExtension(ProjectBuilder.builder().build())
-    extension.reactRoot = tempFolder.root
+    val extension = TestReactAppExtension(ProjectBuilder.builder().build())
+    extension.reactRoot.set(tempFolder.root)
 
     val actual = detectedEntryFile(extension)
 
@@ -57,22 +57,22 @@ class PathUtilsTest {
   @Test
   fun detectedCliPath_withCliPathFromExtension() {
     val project = ProjectBuilder.builder().build()
-    val extension = ReactAppExtension(project)
-    val expected = File(project.projectDir, "fake-cli.sh").apply { writeText("#!/bin/bash") }
-    extension.cliPath = "./fake-cli.sh"
+    val extension = TestReactAppExtension(project)
+    val expected = File(project.projectDir, "fake-cli.sh")
+    extension.cliPath.set("fake-cli.sh")
 
     val actual = detectedCliPath(project.projectDir, extension)
 
-    assertEquals(expected.canonicalPath, File(actual).canonicalPath)
+    assertEquals(expected.toString(), actual)
   }
 
   @Test
   fun detectedCliPath_withCliPathFromExtensionInParentFolder() {
     val rootProject = ProjectBuilder.builder().build()
     val project = ProjectBuilder.builder().withParent(rootProject).build()
-    val extension = ReactAppExtension(project)
+    val extension = TestReactAppExtension(project)
     val expected = File(rootProject.projectDir, "cli-in-root.sh").apply { writeText("#!/bin/bash") }
-    extension.cliPath = "../cli-in-root.sh"
+    extension.cliPath.set("../cli-in-root.sh")
 
     val actual = detectedCliPath(project.projectDir, extension)
 
@@ -82,8 +82,8 @@ class PathUtilsTest {
   @Test
   fun detectedCliPath_withCliFromNodeModules() {
     val project = ProjectBuilder.builder().build()
-    val extension = ReactAppExtension(project)
-    extension.reactRoot = tempFolder.root
+    val extension = TestReactAppExtension(project)
+    extension.reactRoot.set(tempFolder.root)
     val expected =
         File(tempFolder.root, "node_modules/react-native/cli.js").apply {
           parentFile.mkdirs()
@@ -98,16 +98,16 @@ class PathUtilsTest {
   @Test(expected = IllegalStateException::class)
   fun detectedCliPath_failsIfNotFound() {
     val project = ProjectBuilder.builder().build()
-    val extension = ReactAppExtension(project)
+    val extension = TestReactAppExtension(project)
 
     detectedCliPath(project.projectDir, extension)
   }
 
   @Test
   fun detectedHermesCommand_withPathFromExtension() {
-    val extension = ReactAppExtension(ProjectBuilder.builder().build())
+    val extension = TestReactAppExtension(ProjectBuilder.builder().build())
     val expected = tempFolder.newFile("hermesc")
-    extension.hermesCommand = expected.toString()
+    extension.hermesCommand.set(expected.toString())
 
     val actual = detectedHermesCommand(extension)
 
@@ -116,7 +116,7 @@ class PathUtilsTest {
 
   @Test
   fun detectedHermesCommand_withOSSpecificBin() {
-    val extension = ReactAppExtension(ProjectBuilder.builder().build())
+    val extension = TestReactAppExtension(ProjectBuilder.builder().build())
 
     val actual = detectedHermesCommand(extension)
 

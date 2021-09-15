@@ -21,7 +21,8 @@ import org.apache.tools.ant.taskdefs.condition.Os
  * @param config The [ReactAppExtension] configured for this project
  */
 internal fun detectedEntryFile(config: ReactAppExtension): File =
-    detectEntryFile(entryFile = config.entryFile, reactRoot = config.reactRoot)
+    detectEntryFile(
+        entryFile = config.entryFile.orNull?.asFile, reactRoot = config.reactRoot.get().asFile)
 
 /**
  * Computes the CLI location for React Native. The Algo follows this order:
@@ -36,8 +37,8 @@ internal fun detectedCliPath(
 ): String =
     detectCliPath(
         projectDir = projectDir,
-        reactRoot = config.reactRoot,
-        preconfiguredCliPath = config.cliPath)
+        reactRoot = config.reactRoot.get().asFile,
+        preconfiguredCliPath = config.cliPath.orNull)
 
 /**
  * Computes the `hermesc` command location. The Algo follows this order:
@@ -47,7 +48,7 @@ internal fun detectedCliPath(
  * 3. Fails otherwise
  */
 internal fun detectedHermesCommand(config: ReactAppExtension): String =
-    detectOSAwareHermesCommand(config.hermesCommand)
+    detectOSAwareHermesCommand(config.hermesCommand.get())
 
 private fun detectEntryFile(entryFile: File?, reactRoot: File): File =
     when {
