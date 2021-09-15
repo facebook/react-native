@@ -7,7 +7,7 @@
 
 plugins {
     id("com.android.library")
-    id("com.facebook.react.codegen")
+    id("com.facebook.react")
     id("maven-publish")
     id("de.undercouch.download")
 }

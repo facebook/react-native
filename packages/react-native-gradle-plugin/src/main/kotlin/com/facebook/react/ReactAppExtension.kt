@@ -12,6 +12,7 @@ import java.io.File
 import org.gradle.api.Project
 
 open class ReactAppExtension(private val project: Project) {
+  var applyAppPlugin: Boolean = false
   var composeSourceMapsPath: String = "node_modules/react-native/scripts/compose-source-maps.js"
   var bundleAssetName: String = "index.android.bundle"
   var entryFile: File? = null
