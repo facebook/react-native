@@ -18,7 +18,7 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 
-abstract class ReactAppExtension @Inject constructor(project: Project) {
+abstract class ReactExtension @Inject constructor(project: Project) {
 
   private val objects = project.objects
 

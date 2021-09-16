@@ -8,7 +8,7 @@
 package com.facebook.react.codegen.plugin;
 
 import com.android.build.gradle.BaseExtension;
-import com.facebook.react.ReactAppExtension;
+import com.facebook.react.ReactExtension;
 import com.facebook.react.codegen.generator.JavaGenerator;
 import com.facebook.react.utils.GradleUtils;
 import com.facebook.react.utils.PathUtils;
@@ -30,9 +30,8 @@ import org.gradle.api.tasks.TaskProvider;
 public class CodegenPlugin {
 
   public void apply(final Project project) {
-    final ReactAppExtension extension =
-        GradleUtils.createOrGet(
-            project.getExtensions(), "reactApp", ReactAppExtension.class, project);
+    final ReactExtension extension =
+        GradleUtils.createOrGet(project.getExtensions(), "react", ReactExtension.class, project);
 
     // 1. Set up build dir.
     final File generatedSrcDir = new File(project.getBuildDir(), "generated/source/codegen");

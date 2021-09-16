@@ -7,7 +7,7 @@
 
 package com.facebook.react.tests
 
-import com.facebook.react.ReactAppExtension
+import com.facebook.react.ReactExtension
 import com.facebook.react.utils.GradleUtils.createOrGet
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
@@ -19,21 +19,20 @@ class GradleUtilsTest {
   fun createOrGet_createsNewExtension() {
     val project = ProjectBuilder.builder().build()
 
-    assertNull(project.extensions.findByType(ReactAppExtension::class.java))
+    assertNull(project.extensions.findByType(ReactExtension::class.java))
 
-    project.extensions.createOrGet("testExtension", ReactAppExtension::class.java, project)
+    project.extensions.createOrGet("testExtension", ReactExtension::class.java, project)
 
-    assertNotNull(project.extensions.findByType(ReactAppExtension::class.java))
+    assertNotNull(project.extensions.findByType(ReactExtension::class.java))
   }
 
   @Test
   fun createOrGet_returnsExistingExtension() {
     val project = ProjectBuilder.builder().build()
-    val expected =
-        project.extensions.create("testExtension", ReactAppExtension::class.java, project)
+    val expected = project.extensions.create("testExtension", ReactExtension::class.java, project)
 
     assertEquals(
         expected,
-        project.extensions.createOrGet("testExtension", ReactAppExtension::class.java, project))
+        project.extensions.createOrGet("testExtension", ReactExtension::class.java, project))
   }
 }

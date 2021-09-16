@@ -24,7 +24,7 @@ import org.gradle.api.tasks.Copy
 private const val REACT_GROUP = "react"
 
 @Suppress("SpreadOperator")
-internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppExtension) {
+internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExtension) {
   val targetName = variant.name.capitalize(Locale.ROOT)
   val isRelease = variant.isRelease
   val targetPath = variant.dirName
@@ -227,7 +227,7 @@ private fun Project.cleanupVMFiles(enableHermes: Boolean, isRelease: Boolean, ta
       }
 }
 
-private fun BaseVariant.checkBundleEnabled(config: ReactAppExtension): Boolean {
+private fun BaseVariant.checkBundleEnabled(config: ReactExtension): Boolean {
   if (config.bundleIn.getting(name).isPresent) {
     return config.bundleIn.getting(name).get()
   }

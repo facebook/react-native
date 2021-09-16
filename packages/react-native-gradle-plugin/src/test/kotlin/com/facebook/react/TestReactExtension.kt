@@ -9,4 +9,4 @@ package com.facebook.react
 
 import org.gradle.api.Project
 
-class TestReactAppExtension(project: Project) : ReactAppExtension(project)
+class TestReactExtension(project: Project) : ReactExtension(project)
