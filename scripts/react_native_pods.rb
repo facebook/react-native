@@ -160,7 +160,7 @@ def use_react_native_codegen!(spec, options={})
   prefix = options[:react_native_path] ||= "../.."
 
   # Library name (e.g. FBReactNativeSpec)
-  library_name = options[:library_name] ||= "#{spec.name}Spec"
+  library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
 
   # Output dir, relative to podspec that invoked this method
   output_dir = options[:output_dir] ||= "#{library_name}"

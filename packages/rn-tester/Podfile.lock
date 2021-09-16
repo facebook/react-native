@@ -915,7 +915,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 1a58f6ab1ae5fad004119979b676cb5e912f2e44
   React-runtimeexecutor: 4b0c6eb341c7d3ceb5e2385cb0fdb9bf701024f3
   ReactCommon: 632474905edd9a20ec4f4084142ff4b4a4f3fd8b
-  ScreenshotManager: ba35548b279a0ec9ea99b25f4e8cbb26164d2ac4
+  ScreenshotManager: c5c6453f0227490e8610f405c79ecfe39b0114e4
   Yoga: c0d06f5380d34e939f55420669a60fe08b79bd75
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
