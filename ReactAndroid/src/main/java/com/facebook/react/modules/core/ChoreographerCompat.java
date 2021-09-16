@@ -10,6 +10,7 @@
 package com.facebook.react.modules.core;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import android.os.Handler;
 import android.view.Choreographer;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -26,10 +27,6 @@ public class ChoreographerCompat {
   private Handler mHandler;
   private Choreographer mChoreographer;
   private ScheduledExecutorService mSerialExecutor = null;
-
-  public void setExecutor(ScheduledExecutorService serialExecutor) {
-    mSerialExecutor = serialExecutor;
-  }
 
   public static ChoreographerCompat getInstance() {
     UiThreadUtil.assertOnUiThread();
@@ -60,7 +57,7 @@ public class ChoreographerCompat {
   }
 
   public void removeFrameCallback(FrameCallback callbackWrapper) {
-    choreographerRemoveFrameCallback(callbackWrapper.getFrameCallback());
+    choreographerRemoveFrameCallback(callbackWrapper);
   }
 
   private Choreographer getChoreographer() {
@@ -69,7 +66,7 @@ public class ChoreographerCompat {
 
   private void choreographerPostFrameCallback(FrameCallback callbackWrapper) {
     if (mSerialExecutor != null) {
-      mSerialExecutor.execute(callbackWrapper.getRunnable());
+      callbackWrapper.future = mSerialExecutor.schedule(callbackWrapper.getRunnable(), 0, TimeUnit.MILLISECONDS);
     } else {
       mChoreographer.postFrameCallback(callbackWrapper.getFrameCallback());
     }
@@ -78,17 +75,19 @@ public class ChoreographerCompat {
   private void choreographerPostFrameCallbackDelayed(
       FrameCallback callbackWrapper, long delayMillis) {
     if (mSerialExecutor != null) {
-      mSerialExecutor.schedule(callbackWrapper.getRunnable(), delayMillis, TimeUnit.MILLISECONDS);
+      callbackWrapper.future = mSerialExecutor.schedule(callbackWrapper.getRunnable(), delayMillis, TimeUnit.MILLISECONDS);
     } else {
       mChoreographer.postFrameCallbackDelayed(callbackWrapper.getFrameCallback(), delayMillis);
     }
   }
 
-  private void choreographerRemoveFrameCallback(Choreographer.FrameCallback frameCallback) {
+  private void choreographerRemoveFrameCallback(FrameCallback callbackWrapper) {
     if (mSerialExecutor != null) {
-      // TODO
+      if (callbackWrapper.future != null && !callbackWrapper.future.isCancelled()) {
+        callbackWrapper.future.cancel(false);
+      }
     } else {
-      mChoreographer.removeFrameCallback(frameCallback);
+      mChoreographer.removeFrameCallback(callbackWrapper.getFrameCallback());
     }
   }
 
@@ -101,7 +100,7 @@ public class ChoreographerCompat {
 
     private Runnable mRunnable;
     private Choreographer.FrameCallback mFrameCallback;
-    private 
+    public ScheduledFuture future;
 
     Choreographer.FrameCallback getFrameCallback() {
       if (mFrameCallback == null) {
