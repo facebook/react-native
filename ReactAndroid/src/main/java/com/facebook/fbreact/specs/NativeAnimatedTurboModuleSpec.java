@@ -26,32 +26,32 @@ public abstract class NativeAnimatedTurboModuleSpec extends ReactContextBaseJava
   }
 
   @ReactMethod
-  public abstract void dropAnimatedNode(double tag);
+  public abstract void connectAnimatedNodes(double parentTag, double childTag);
 
   @ReactMethod
-  public abstract void connectAnimatedNodes(double parentTag, double childTag);
+  public abstract void dropAnimatedNode(double tag);
 
   @ReactMethod
   public abstract void stopAnimation(double animationId);
 
   @ReactMethod
+  public abstract void disconnectAnimatedNodeFromView(double nodeTag, double viewTag);
+
+  @ReactMethod
   public abstract void removeListeners(double count);
 
   @ReactMethod
-  public abstract void disconnectAnimatedNodeFromView(double nodeTag, double viewTag);
+  public abstract void flattenAnimatedNodeOffset(double nodeTag);
 
   @ReactMethod
   public abstract void removeAnimatedEventFromView(double viewTag, String eventName,
       double animatedNodeTag);
 
   @ReactMethod
-  public abstract void flattenAnimatedNodeOffset(double nodeTag);
+  public abstract void disconnectAnimatedNodes(double parentTag, double childTag);
 
   @ReactMethod
   public abstract void extractAnimatedNodeOffset(double nodeTag);
-
-  @ReactMethod
-  public abstract void disconnectAnimatedNodes(double parentTag, double childTag);
 
   @ReactMethod
   public abstract void setAnimatedNodeValue(double nodeTag, double value);
@@ -63,11 +63,11 @@ public abstract class NativeAnimatedTurboModuleSpec extends ReactContextBaseJava
   public abstract void setAnimatedNodeOffset(double nodeTag, double offset);
 
   @ReactMethod
-  public abstract void restoreDefaultValues(double nodeTag);
-
-  @ReactMethod
   public abstract void startAnimatingNode(double animationId, double nodeTag, ReadableMap config,
       Callback endCallback);
+
+  @ReactMethod
+  public abstract void restoreDefaultValues(double nodeTag);
 
   @ReactMethod
   public abstract void getValue(double tag, Callback saveValueCallback);

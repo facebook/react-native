@@ -207,6 +207,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
         shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
           shadowTree.tryCommit(
               [&](RootShadowNode::Shared const &oldRootShadowNode) {
+                owningAncestorShadowNode = oldRootShadowNode;
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
               },

@@ -445,7 +445,9 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
   auto oldNode =
       static_cast<YogaLayoutableShadowNode *>(oldYogaNode->getContext());
 
-  auto clonedNode = oldNode->clone({});
+  auto clonedNode = oldNode->clone({ShadowNodeFragment::propsPlaceholder(),
+                                    ShadowNodeFragment::childrenPlaceholder(),
+                                    oldNode->getState()});
   parentNode->replaceChild(*oldNode, clonedNode, childIndex);
   return &static_cast<YogaLayoutableShadowNode &>(*clonedNode).yogaNode_;
 }

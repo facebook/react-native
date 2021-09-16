@@ -88,7 +88,7 @@
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelWarning);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
-  XCTAssertEqualObjects(_lastLogMessage, @"Warning: Generating warning");
+  XCTAssertEqualObjects(_lastLogMessage, @"Generating warning");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.invariant" args:@[@"Invariant failed"]];
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)

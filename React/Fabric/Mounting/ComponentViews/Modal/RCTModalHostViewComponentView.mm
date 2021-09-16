@@ -100,7 +100,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 @implementation RCTModalHostViewComponentView {
   RCTFabricModalHostViewController *_viewController;
-  ModalHostViewShadowNode::ConcreteState::Shared _state;
+  ModalHostViewShadowNode::ConcreteStateTeller _stateTeller;
   BOOL _shouldAnimatePresentation;
   BOOL _isPresented;
 }
@@ -182,10 +182,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     eventEmitter->onOrientationChange(onOrientationChangeStruct(newBounds));
   }
 
-  if (_state != nullptr) {
-    auto newState = ModalHostViewState{RCTSizeFromCGSize(newBounds.size)};
-    _state->updateState(std::move(newState));
-  }
+  auto newState = ModalHostViewState{RCTSizeFromCGSize(newBounds.size)};
+  _stateTeller.updateState(std::move(newState));
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -198,7 +196,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _state.reset();
+  _stateTeller.invalidate();
   _isPresented = NO;
 }
 
@@ -219,10 +217,9 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(facebook::react::State::Shared const &)state
-           oldState:(facebook::react::State::Shared const &)oldState
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<const ModalHostViewShadowNode::ConcreteState>(state);
+  _stateTeller.setConcreteState(state);
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index

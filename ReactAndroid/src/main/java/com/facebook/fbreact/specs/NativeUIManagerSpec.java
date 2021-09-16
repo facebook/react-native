@@ -43,10 +43,10 @@ public abstract class NativeUIManagerSpec extends ReactContextBaseJavaModule imp
       Callback errorCallback);
 
   @ReactMethod
-  public abstract void blur(Double reactTag);
+  public abstract void focus(Double reactTag);
 
   @ReactMethod
-  public abstract void focus(Double reactTag);
+  public abstract void blur(Double reactTag);
 
   @ReactMethod
   public abstract void removeSubviewsFromContainerWithID(double containerID);
@@ -55,11 +55,11 @@ public abstract class NativeUIManagerSpec extends ReactContextBaseJavaModule imp
   public abstract void setJSResponder(Double reactTag, boolean blockNativeResponder);
 
   @ReactMethod
-  public abstract void clearJSResponder();
-
-  @ReactMethod
   public abstract void measureLayout(Double reactTag, Double ancestorReactTag,
       Callback errorCallback, Callback callback);
+
+  @ReactMethod
+  public abstract void clearJSResponder();
 
   @ReactMethod(
       isBlockingSynchronousMethod = true
@@ -78,19 +78,19 @@ public abstract class NativeUIManagerSpec extends ReactContextBaseJavaModule imp
       ReadableMap props);
 
   @ReactMethod
-  public abstract void sendAccessibilityEvent(Double reactTag, double eventType);
-
-  @ReactMethod
   public abstract void measureInWindow(Double reactTag, Callback callback);
 
   @ReactMethod
-  public abstract void viewIsDescendantOf(Double reactTag, Double ancestorReactTag,
-      Callback callback);
+  public abstract void sendAccessibilityEvent(Double reactTag, double eventType);
 
   @ReactMethod(
       isBlockingSynchronousMethod = true
   )
   public abstract WritableMap lazilyLoadView(String name);
+
+  @ReactMethod
+  public abstract void viewIsDescendantOf(Double reactTag, Double ancestorReactTag,
+      Callback callback);
 
   @ReactMethod
   public abstract void findSubviewIn(Double reactTag, ReadableArray point, Callback callback);

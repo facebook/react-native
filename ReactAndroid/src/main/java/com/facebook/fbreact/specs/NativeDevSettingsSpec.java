@@ -31,10 +31,10 @@ public abstract class NativeDevSettingsSpec extends ReactContextBaseJavaModule i
   }
 
   @ReactMethod
-  public abstract void removeListeners(double count);
+  public abstract void reload();
 
   @ReactMethod
-  public abstract void reload();
+  public abstract void removeListeners(double count);
 
   @ReactMethod
   public abstract void setProfilingEnabled(boolean isProfilingEnabled);
@@ -43,18 +43,18 @@ public abstract class NativeDevSettingsSpec extends ReactContextBaseJavaModule i
   public abstract void addMenuItem(String title);
 
   @ReactMethod
-  public abstract void toggleElementInspector();
+  public abstract void setHotLoadingEnabled(boolean isHotLoadingEnabled);
 
   @ReactMethod
-  public abstract void setHotLoadingEnabled(boolean isHotLoadingEnabled);
+  public abstract void toggleElementInspector();
 
   @ReactMethod
   public void reloadWithReason(String reason) {
   }
 
   @ReactMethod
-  public abstract void setIsShakeToShowDevMenuEnabled(boolean enabled);
+  public abstract void addListener(String eventName);
 
   @ReactMethod
-  public abstract void addListener(String eventName);
+  public abstract void setIsShakeToShowDevMenuEnabled(boolean enabled);
 }

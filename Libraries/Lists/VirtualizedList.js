@@ -23,7 +23,6 @@ const ViewabilityHelper = require('./ViewabilityHelper');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
-const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
@@ -913,11 +912,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   render(): React.Node {
     if (__DEV__) {
       const flatStyles = flattenStyle(this.props.contentContainerStyle);
-      warning(
-        flatStyles == null || flatStyles.flexWrap !== 'wrap',
-        '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
-          'Consider using `numColumns` with `FlatList` instead.',
-      );
+      if (flatStyles != null && flatStyles.flexWrap === 'wrap') {
+        console.warn(
+          '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
+            'Consider using `numColumns` with `FlatList` instead.',
+        );
+      }
     }
     const {
       ListEmptyComponent,

@@ -10,10 +10,10 @@ package com.facebook.react.codegen.generator.model;
 public final class NullableType extends Type {
   public static final String TYPE_NAME = "NullableTypeAnnotation";
 
-  public final Type referredType;
+  public final Type innerType;
 
-  public NullableType(final TypeId typeId, final Type referredType) {
+  public NullableType(final TypeId typeId, final Type innerType) {
     super(typeId);
-    this.referredType = referredType;
+    this.innerType = innerType;
   }
 }

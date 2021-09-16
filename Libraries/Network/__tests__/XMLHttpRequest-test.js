@@ -98,16 +98,16 @@ describe('XMLHttpRequest', function() {
   it('should expose responseType correctly', function() {
     expect(xhr.responseType).toBe('');
 
-    jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+    jest.spyOn(console, 'warn').mockReturnValue(undefined);
 
     // Setting responseType to an unsupported value has no effect.
     xhr.responseType = 'arrayblobbuffertextfile';
     expect(xhr.responseType).toBe('');
 
-    expect(console.error).toBeCalledWith(
-      "Warning: The provided value 'arrayblobbuffertextfile' is not a valid 'responseType'.",
+    expect(console.warn).toBeCalledWith(
+      "The provided value 'arrayblobbuffertextfile' is not a valid 'responseType'.",
     );
-    console.error.mockRestore();
+    console.warn.mockRestore();
 
     xhr.responseType = 'arraybuffer';
     expect(xhr.responseType).toBe('arraybuffer');

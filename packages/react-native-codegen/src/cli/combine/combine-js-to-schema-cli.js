@@ -29,6 +29,9 @@ fileList.forEach(file => {
       .filter(
         f =>
           /^(Native.+|.+NativeComponent)/.test(path.basename(f)) &&
+          // NativeUIManager will be deprecated by Fabric UIManager.
+          // For now, ignore this spec completely because the types are not fully supported.
+          !f.endsWith('NativeUIManager.js') &&
           !f.includes('__tests'),
       );
     allFiles.push(...dirFiles);

@@ -29,7 +29,7 @@ using namespace facebook::react;
 @end
 
 @implementation RCTTextInputComponentView {
-  TextInputShadowNode::ConcreteState::Shared _state;
+  TextInputShadowNode::ConcreteStateTeller _stateTeller;
   UIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
@@ -214,21 +214,21 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<TextInputShadowNode::ConcreteState const>(state);
+  _stateTeller.setConcreteState(state);
 
-  if (!_state) {
+  if (!_stateTeller.isValid()) {
     assert(false && "State is `null` for <TextInput> component.");
     _backedTextInputView.attributedText = nil;
     return;
   }
 
-  auto data = _state->getData();
+  auto data = _stateTeller.getData().value();
 
   if (!oldState) {
-    _mostRecentEventCount = _state->getData().mostRecentEventCount;
+    _mostRecentEventCount = data.mostRecentEventCount;
   }
 
-  if (_mostRecentEventCount == _state->getData().mostRecentEventCount) {
+  if (_mostRecentEventCount == data.mostRecentEventCount) {
     _comingFromJS = YES;
     [self _setAttributedString:RCTNSAttributedStringFromAttributedStringBox(data.attributedStringBox)];
     _comingFromJS = NO;
@@ -249,9 +249,9 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
+  _stateTeller.invalidate();
   _backedTextInputView.attributedText = nil;
   _mostRecentEventCount = 0;
-  _state.reset();
   _comingFromJS = NO;
   _lastStringStateWasUpdatedWith = nil;
   _ignoreNextTextInputCall = NO;
@@ -442,16 +442,17 @@ using namespace facebook::react;
 
 - (void)_updateState
 {
-  if (!_state) {
+  if (!_stateTeller.isValid()) {
     return;
   }
+
   NSAttributedString *attributedString = _backedTextInputView.attributedText;
-  auto data = _state->getData();
+  auto data = _stateTeller.getData().value();
   _lastStringStateWasUpdatedWith = attributedString;
   data.attributedStringBox = RCTAttributedStringBoxFromNSAttributedString(attributedString);
   _mostRecentEventCount += _comingFromJS ? 0 : 1;
   data.mostRecentEventCount = _mostRecentEventCount;
-  _state->updateState(std::move(data));
+  _stateTeller.updateState(std::move(data));
 }
 
 - (AttributedString::Range)_selectionRange

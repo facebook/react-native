@@ -55,8 +55,8 @@ using namespace facebook::react;
     _rootTag = [RCTAllocateRootViewTag() integerValue];
 
     _minimumSize = CGSizeZero;
-    // FIXME: Replace with `_maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);`.
-    _maximumSize = RCTScreenSize();
+
+    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
     _touchHandler = [RCTSurfaceTouchHandler new];
 

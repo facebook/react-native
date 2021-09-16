@@ -131,7 +131,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   RCTBridge *bridge = [OCMockObject niceMockForClass:[RCTBridge class]];
   _uiManager = [OCMockObject niceMockForClass:[RCTUIManager class]];
   OCMStub([bridge uiManager]).andReturn(_uiManager);
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:bridge];
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:bridge surfacePresenter:bridge.surfacePresenter];
   _displayLink = [RCTFakeDisplayLink new];
 }
 

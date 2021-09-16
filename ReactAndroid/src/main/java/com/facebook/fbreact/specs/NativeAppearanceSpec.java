@@ -27,11 +27,11 @@ public abstract class NativeAppearanceSpec extends ReactContextBaseJavaModule im
   @ReactMethod
   public abstract void removeListeners(double count);
 
-  @ReactMethod
-  public abstract void addListener(String eventName);
-
   @ReactMethod(
       isBlockingSynchronousMethod = true
   )
   public abstract @Nullable String getColorScheme();
+
+  @ReactMethod
+  public abstract void addListener(String eventName);
 }

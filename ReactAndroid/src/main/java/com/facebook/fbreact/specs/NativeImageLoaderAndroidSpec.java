@@ -27,10 +27,10 @@ public abstract class NativeImageLoaderAndroidSpec extends ReactContextBaseJavaM
   }
 
   @ReactMethod
-  public abstract void getSize(String uri, Promise promise);
+  public abstract void abortRequest(double requestId);
 
   @ReactMethod
-  public abstract void abortRequest(double requestId);
+  public abstract void getSize(String uri, Promise promise);
 
   @ReactMethod
   public abstract void prefetchImage(String uri, double requestId, Promise promise);

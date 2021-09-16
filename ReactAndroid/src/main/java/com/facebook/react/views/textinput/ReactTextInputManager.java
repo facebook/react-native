@@ -35,17 +35,13 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.JavaOnlyArray;
-import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -250,8 +246,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  // TODO: if we're able to fill in all these values and call maybeSetText when appropriate
-  // I think this is all that's needed to fully support TextInput in Fabric
   private ReactTextUpdate getReactTextUpdate(
       String text, int mostRecentEventCount, int start, int end) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
@@ -926,69 +920,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
 
       // Fabric: update representation of AttributedString
-      final JavaOnlyMap attributedString = mEditText.mAttributedString;
-      if (attributedString != null && attributedString.hasKey("fragments")) {
-        String changedText = s.subSequence(start, start + count).toString();
-
-        String completeStr = attributedString.getString("string");
-        String newCompleteStr =
-            completeStr.substring(0, start)
-                + changedText
-                + (completeStr.length() > start + before
-                    ? completeStr.substring(start + before)
-                    : "");
-        attributedString.putString("string", newCompleteStr);
-
-        // Loop through all fragments and change them in-place
-        JavaOnlyArray fragments = (JavaOnlyArray) attributedString.getArray("fragments");
-        int positionInAttributedString = 0;
-        boolean found = false;
-        for (int i = 0; i < fragments.size() && !found; i++) {
-          JavaOnlyMap fragment = (JavaOnlyMap) fragments.getMap(i);
-          String fragmentStr = fragment.getString("string");
-          int positionBefore = positionInAttributedString;
-          positionInAttributedString += fragmentStr.length();
-          if (positionInAttributedString < start) {
-            continue;
-          }
-
-          int relativePosition = start - positionBefore;
-          found = true;
-
-          // Does the change span multiple Fragments?
-          // If so, we put any new text entirely in the first
-          // Fragment that we edit. For example, if you select two words
-          // across Fragment boundaries, "one | two", and replace them with a
-          // character "x", the first Fragment will replace "one " with "x", and the
-          // second Fragment will replace "two" with an empty string.
-          int remaining = fragmentStr.length() - relativePosition;
-
-          String newString =
-              fragmentStr.substring(0, relativePosition)
-                  + changedText
-                  + (fragmentStr.substring(relativePosition + Math.min(before, remaining)));
-          fragment.putString("string", newString);
-
-          // If we're changing 10 characters (before=10) and remaining=3,
-          // we want to remove 3 characters from this fragment (`Math.min(before, remaining)`)
-          // and 7 from the next Fragment (`before = 10 - 3`)
-          if (remaining < before) {
-            changedText = "";
-            start += remaining;
-            before = before - remaining;
-            found = false;
-          }
-        }
-      }
-
-      // Fabric: communicate to C++ layer that text has changed
-      // We need to call `incrementAndGetEventCounter` here explicitly because this
-      // update may race with other updates.
-      // TODO: currently WritableNativeMaps/WritableNativeArrays cannot be reused so
-      // we must recreate these data structures every time. It would be nice to have a
-      // reusable data-structure to use for TextInput because constructing these and copying
-      // on every keystroke is very expensive.
-      if (mEditText.getFabricViewStateManager().hasStateWrapper() && attributedString != null) {
+      if (mEditText.getFabricViewStateManager().hasStateWrapper()) {
+        // Fabric: communicate to C++ layer that text has changed
+        // We need to call `incrementAndGetEventCounter` here explicitly because this
+        // update may race with other updates.
+        // We simply pass in the cache ID, which never changes, but UpdateState will still be called
+        // on the native side, triggering a measure.
         mEditText
             .getFabricViewStateManager()
             .setState(
@@ -996,24 +933,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                   @Override
                   public WritableMap getStateUpdate() {
                     WritableMap map = new WritableNativeMap();
-                    WritableMap newAttributedString = new WritableNativeMap();
-
-                    WritableArray fragments = new WritableNativeArray();
-
-                    for (int i = 0; i < attributedString.getArray("fragments").size(); i++) {
-                      ReadableMap readableFragment =
-                          attributedString.getArray("fragments").getMap(i);
-                      WritableMap fragment = new WritableNativeMap();
-                      fragment.putDouble("reactTag", readableFragment.getInt("reactTag"));
-                      fragment.putString("string", readableFragment.getString("string"));
-                      fragments.pushMap(fragment);
-                    }
-
-                    newAttributedString.putString("string", attributedString.getString("string"));
-                    newAttributedString.putArray("fragments", fragments);
-
                     map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-                    map.putMap("textChanged", newAttributedString);
+                    map.putInt("opaqueCacheId", mEditText.getId());
                     return map;
                   }
                 });
@@ -1253,11 +1174,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     view.getFabricViewStateManager().setStateWrapper(stateWrapper);
 
-    if (stateWrapper == null) {
-      throw new IllegalArgumentException("Unable to update a NULL state.");
-    }
     ReadableNativeMap state = stateWrapper.getState();
 
+    if (!state.hasKey("attributedString")) {
+      return null;
+    }
     ReadableMap attributedString = state.getMap("attributedString");
     ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
 

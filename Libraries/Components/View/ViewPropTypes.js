@@ -614,13 +614,13 @@ export type ViewProps = $ReadOnly<{|
    * Array of keys to receive key down events for
    * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
    */
-  validKeysDown?: ?array<string>,
+  validKeysDown?: ?Array<string>,
 
   /*
    * Array of keys to receive key up events for
    * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
    */
-  validKeysUp?: ?array<string>,
+  validKeysUp?: ?Array<string>,
 
   /**
    * Enables Dran'n'Drop Support for certain types of dragged types

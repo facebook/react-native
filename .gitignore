@@ -40,6 +40,8 @@ project.xcworkspace/*
 # Buck
 .buckd
 buck-out
+/.lsp.buckd
+/.lsp-buck-out
 /ReactAndroid/src/main/jni/prebuilt/lib/
 /ReactAndroid/src/main/gen
 

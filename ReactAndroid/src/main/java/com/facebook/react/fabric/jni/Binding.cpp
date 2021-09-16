@@ -262,8 +262,11 @@ void Binding::installFabricUIManager(
 
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
-  collapseDeleteCreateMountingInstructions_ = reactNativeConfig_->getBool(
-      "react_fabric:enabled_collapse_delete_create_mounting_instructions");
+  collapseDeleteCreateMountingInstructions_ =
+      reactNativeConfig_->getBool(
+          "react_fabric:enabled_collapse_delete_create_mounting_instructions") &&
+      !reactNativeConfig_->getBool(
+          "react_fabric:enable_reparenting_detection_android");
 
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");

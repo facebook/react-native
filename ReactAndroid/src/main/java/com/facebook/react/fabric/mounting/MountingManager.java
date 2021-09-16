@@ -502,10 +502,7 @@ public class MountingManager {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getViewState(reactTag);
     @Nullable ReadableNativeMap newState = stateWrapper == null ? null : stateWrapper.getState();
-    if ((viewState.mCurrentState != null && viewState.mCurrentState.equals(newState))
-        || (viewState.mCurrentState == null && stateWrapper == null)) {
-      return;
-    }
+
     viewState.mCurrentState = newState;
 
     ViewManager viewManager = viewState.mViewManager;
