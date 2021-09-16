@@ -40,7 +40,7 @@ public class ChoreographerCompat {
   }
 
   public ChoreographerCompat(ScheduledExecutorService executor) {
-    if (executor === null ) {
+    if (executor == null ) {
       mChoreographer = getChoreographer();
     } else {
       mSerialExecutor = executor;
