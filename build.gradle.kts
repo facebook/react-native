@@ -10,7 +10,6 @@ buildscript {
         mavenLocal()
         google()
         mavenCentral()
-        jcenter()
     }
     dependencies {
         val kotlin_version: String by project
