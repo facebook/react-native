@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Border';
+exports.category = 'UI';
 exports.description =
   'Demonstrates some of the border styles available to Views.';
 exports.examples = [

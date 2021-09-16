@@ -62,6 +62,7 @@ const style = StyleSheet.create({
 });
 
 exports.title = 'Snapshot / Screenshot';
+exports.category = 'Basic';
 exports.description = 'API to capture images from the screen.';
 exports.examples = [
   {

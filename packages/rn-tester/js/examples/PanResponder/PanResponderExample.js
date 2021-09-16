@@ -141,6 +141,8 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'PanResponder Sample';
+exports.category = 'Basic';
+exports.documentationURL = 'https://reactnative.dev/docs/panresponder';
 exports.description =
   'Shows the Use of PanResponder to provide basic gesture handling';
 exports.simpleExampleContainer = true;

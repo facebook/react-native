@@ -18,8 +18,8 @@ describe('Touchable', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
     await openComponentWithLabel(
-      '<Touchable*',
-      '<Touchable*> and onPress Touchable and onPress examples.',
+      'Touchable*',
+      'Touchable* and onPress Touchable and onPress examples.',
     );
   });
 

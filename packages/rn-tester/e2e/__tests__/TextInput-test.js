@@ -18,7 +18,7 @@ describe('TextInput', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
     await openComponentWithLabel(
-      '<TextInput>',
+      'TextInput',
       'Single and multi-line text inputs.',
     );
   });

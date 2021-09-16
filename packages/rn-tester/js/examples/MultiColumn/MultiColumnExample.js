@@ -177,7 +177,8 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<FlatList> - MultiColumn';
+exports.title = 'FlatList - MultiColumn';
+exports.category = 'ListView';
 exports.description = 'Performant, scrollable grid of data.';
 exports.examples = [
   {

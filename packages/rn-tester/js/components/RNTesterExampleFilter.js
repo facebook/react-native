@@ -11,23 +11,36 @@
 'use strict';
 
 const React = require('react');
-
-const {StyleSheet, TextInput, View} = require('react-native');
+const RNTesterListFilters = require('./RNTesterListFilters');
+const {
+  StyleSheet,
+  TextInput,
+  View,
+  ScrollView,
+  Image,
+} = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
+import type {RNTesterExample} from '../types/RNTesterTypes';
 
 type Props = {
   filter: Function,
   render: Function,
-  sections: Object,
   disableSearch?: boolean,
   testID?: string,
+  hideFilterPills?: boolean,
+  page: string, // possible values -> examples_page, components_page, bookmarks_page
+  sections: Array<{
+    data: Array<RNTesterExample>,
+    title: string,
+    key: string,
+  }>,
   ...
 };
 
-type State = {filter: string, ...};
+type State = {filter: string, category: string, ...};
 
 class RNTesterExampleFilter extends React.Component<Props, State> {
-  state: State = {filter: ''};
+  state: State = {filter: '', category: ''};
 
   render(): React.Node {
     const filterText = this.state.filter;
@@ -43,20 +56,50 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       );
     }
 
-    const filter = example =>
-      this.props.disableSearch || this.props.filter({example, filterRegex});
+    const filter = example => {
+      const category = this.state.category;
+      return (
+        this.props.disableSearch ||
+        this.props.filter({example, filterRegex, category})
+      );
+    };
 
-    const filteredSections = this.props.sections.map(section => ({
+    let filteredSections = this.props.sections.map(section => ({
       ...section,
       data: section.data.filter(filter),
     }));
 
+    if (this.state.filter.trim() !== '' || this.state.category.trim() !== '') {
+      filteredSections = filteredSections.filter(
+        section => section.title !== 'Recently viewed',
+      );
+    }
+
     return (
       <View style={styles.container}>
         {this._renderTextInput()}
-        {this.props.render({filteredSections})}
+        {this._renderFilteredSections(filteredSections)}
       </View>
     );
+  }
+
+  _renderFilteredSections(filteredSections): ?React.Element<any> {
+    if (this.props.page === 'examples_page') {
+      return (
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive">
+          {this.props.render({filteredSections})}
+          {/**
+           * This is a fake list item. It is needed to provide the ScrollView some bottom padding.
+           * The height of this item is basically ScreenHeight - the height of (Header + bottom navbar)
+           * */}
+          <View style={{height: 350}} />
+        </ScrollView>
+      );
+    } else {
+      return this.props.render({filteredSections});
+    }
   }
 
   _renderTextInput(): ?React.Element<any> {
@@ -67,32 +110,41 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       <RNTesterThemeContext.Consumer>
         {theme => {
           return (
-            <View
-              style={[
-                styles.searchRow,
-                {backgroundColor: theme.GroupedBackgroundColor},
-              ]}>
-              <TextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                clearButtonMode="always"
-                onChangeText={text => {
-                  this.setState(() => ({filter: text}));
-                }}
-                placeholder="Search..."
-                placeholderTextColor={theme.PlaceholderTextColor}
-                underlineColorAndroid="transparent"
-                style={[
-                  styles.searchTextInput,
-                  {
-                    color: theme.LabelColor,
-                    backgroundColor: theme.SecondaryGroupedBackgroundColor,
-                    borderColor: theme.QuaternaryLabelColor,
-                  },
-                ]}
-                testID={this.props.testID}
-                value={this.state.filter}
-              />
+            <View style={[styles.searchRow, {backgroundColor: '#F3F8FF'}]}>
+              <View style={styles.textInputStyle}>
+                <Image
+                  source={require('../assets/search-icon.png')}
+                  style={styles.searchIcon}
+                />
+                <TextInput
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  clearButtonMode="always"
+                  onChangeText={text => {
+                    this.setState(() => ({filter: text}));
+                  }}
+                  placeholder="Search..."
+                  placeholderTextColor={theme.PlaceholderTextColor}
+                  underlineColorAndroid="transparent"
+                  style={[
+                    styles.searchTextInput,
+                    {
+                      color: theme.LabelColor,
+                      backgroundColor: theme.SecondaryGroupedBackgroundColor,
+                      borderColor: theme.QuaternaryLabelColor,
+                    },
+                  ]}
+                  testID={this.props.testID}
+                  value={this.state.filter}
+                />
+              </View>
+              {!this.props.hideFilterPills && (
+                <RNTesterListFilters
+                  onFilterButtonPress={filterLabel =>
+                    this.setState({category: filterLabel})
+                  }
+                />
+              )}
             </View>
           );
         }}
@@ -102,18 +154,36 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
 }
 
 const styles = StyleSheet.create({
-  searchRow: {
-    padding: 10,
-  },
-  searchTextInput: {
-    borderRadius: 3,
-    borderWidth: 1,
-    paddingLeft: 8,
-    paddingVertical: 0,
-    height: 35,
-  },
   container: {
     flex: 1,
+  },
+  searchRow: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  searchTextInput: {
+    borderRadius: 6,
+    borderWidth: 1,
+    paddingVertical: 0,
+    height: 35,
+    flex: 1,
+    alignSelf: 'center',
+    paddingLeft: 35,
+  },
+  textInputStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative',
+    right: 10,
+  },
+  searchIcon: {
+    width: 20,
+    height: 20,
+    position: 'relative',
+    top: 0,
+    left: 27,
+    zIndex: 2,
   },
 });
 

@@ -272,7 +272,9 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<FlatList>';
+exports.title = 'FlatList';
+exports.category = 'ListView';
+exports.documentationURL = 'https://reactnative.dev/docs/flatlist';
 exports.description = 'Performant, scrollable list of data.';
 exports.simpleExampleContainer = true;
 exports.examples = [

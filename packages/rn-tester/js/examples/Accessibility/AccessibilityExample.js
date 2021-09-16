@@ -892,6 +892,7 @@ class SetAccessibilityFocus extends React.Component<{}> {
 }
 
 exports.title = 'Accessibility';
+exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
   {

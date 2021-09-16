@@ -16,66 +16,66 @@ const RNTesterExampleList = require('./components/RNTesterExampleList');
 const RNTesterList = require('./utils/RNTesterList');
 const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
-const URIActionMap = require('./utils/URIActionMap');
-
-const nativeImageSource = require('../../../Libraries/Image/nativeImageSource');
+const RNTesterNavBar = require('./components/RNTesterNavbar');
 
 const {
   AppRegistry,
   AsyncStorage,
   BackHandler,
-  Dimensions,
-  DrawerLayoutAndroid,
-  Image,
-  Linking,
-  StatusBar,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   UIManager,
   useColorScheme,
   View,
+  LogBox,
 } = require('react-native');
 
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
+import RNTesterDocumentationURL from './components/RNTesterDocumentationURL';
+import {
+  RNTesterBookmarkContext,
+  bookmarks,
+} from './components/RNTesterBookmark';
+import type {RNTesterBookmark} from './components/RNTesterBookmark';
 
-UIManager.setLayoutAnimationEnabledExperimental(true);
+import {
+  initializeAsyncStore,
+  addApi,
+  addComponent,
+  removeApi,
+  removeComponent,
+  checkBookmarks,
+  updateRecentlyViewedList,
+} from './utils/RNTesterAsyncStorageAbstraction';
 
-const DRAWER_WIDTH_LEFT = 56;
+UIManager.setLayoutAnimationEnabledExperimental &&
+  UIManager.setLayoutAnimationEnabledExperimental(true);
 
 type Props = {exampleFromAppetizeParams?: ?string, ...};
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
-const HEADER_NAV_ICON = nativeImageSource({
-  android: 'ic_menu_black_24dp',
-  width: 48,
-  height: 48,
-});
-
 const Header = ({
-  onPressDrawer,
   title,
+  documentationURL,
 }: {
-  onPressDrawer?: () => mixed,
   title: string,
+  documentationURL?: string,
   ...
 }) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
       return (
-        <View style={[styles.toolbar, {backgroundColor: theme.ToolbarColor}]}>
+        <View style={[styles.toolbar, {backgroundColor: '#F3F8FF'}]}>
           <View style={styles.toolbarCenter}>
             <Text style={[styles.title, {color: theme.LabelColor}]}>
               {title}
             </Text>
-          </View>
-          <View style={styles.toolbarLeft}>
-            <TouchableWithoutFeedback onPress={onPressDrawer}>
-              <Image source={HEADER_NAV_ICON} />
-            </TouchableWithoutFeedback>
+            {documentationURL && (
+              <RNTesterDocumentationURL documentationURL={documentationURL} />
+            )}
           </View>
         </View>
       );
@@ -84,12 +84,10 @@ const Header = ({
 );
 
 const RNTesterExampleContainerViaHook = ({
-  onPressDrawer,
   title,
   module,
   exampleRef,
 }: {
-  onPressDrawer?: () => mixed,
   title: string,
   module: RNTesterExample,
   exampleRef: () => void,
@@ -100,40 +98,8 @@ const RNTesterExampleContainerViaHook = ({
   return (
     <RNTesterThemeContext.Provider value={theme}>
       <View style={styles.container}>
-        <Header title={title} onPressDrawer={onPressDrawer} />
+        <Header title={title} documentationURL={module.documentationURL} />
         <RNTesterExampleContainer module={module} ref={exampleRef} />
-      </View>
-    </RNTesterThemeContext.Provider>
-  );
-};
-
-const RNTesterDrawerContentViaHook = ({
-  onNavigate,
-  list,
-}: {
-  onNavigate?: () => mixed,
-  list: {
-    ComponentExamples: Array<RNTesterExample>,
-    APIExamples: Array<RNTesterExample>,
-    ...
-  },
-  ...
-}) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
-  return (
-    <RNTesterThemeContext.Provider value={theme}>
-      <View
-        style={[
-          styles.drawerContentWrapper,
-          {backgroundColor: theme.SystemBackgroundColor},
-        ]}>
-        <RNTesterExampleList
-          list={list}
-          displayTitleRow={true}
-          disableSearch={true}
-          onNavigate={onNavigate}
-        />
       </View>
     </RNTesterThemeContext.Provider>
   );
@@ -141,61 +107,89 @@ const RNTesterDrawerContentViaHook = ({
 
 const RNTesterExampleListViaHook = ({
   title,
-  onPressDrawer,
   onNavigate,
+  UpdateRecentlyViewedList,
+  recentComponents,
+  recentApis,
+  bookmark,
   list,
+  screen,
 }: {
   title: string,
-  onPressDrawer?: () => mixed,
+  screen: string,
   onNavigate?: () => mixed,
+  UpdateRecentlyViewedList?: (item: RNTesterExample, key: string) => mixed,
+  recentComponents: Array<RNTesterExample>,
+  recentApis: Array<RNTesterExample>,
   list: {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
     ...
   },
+  bookmark: RNTesterBookmark,
   ...
 }) => {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? themes.dark : themes.light;
+  const exampleTitle =
+    screen === 'component'
+      ? 'Component Store'
+      : screen === 'api'
+      ? 'API Store'
+      : 'Bookmarks';
   return (
     <RNTesterThemeContext.Provider value={theme}>
-      <View style={styles.container}>
-        <Header title={title} onPressDrawer={onPressDrawer} />
-        <RNTesterExampleList onNavigate={onNavigate} list={list} />
-      </View>
+      <RNTesterBookmarkContext.Provider value={bookmark}>
+        <View style={styles.container}>
+          <Header title={exampleTitle} />
+          <RNTesterExampleList
+            onNavigate={onNavigate}
+            recentComponents={recentComponents}
+            recentApis={recentApis}
+            updateRecentlyViewedList={UpdateRecentlyViewedList}
+            list={list}
+            screen={screen}
+          />
+        </View>
+      </RNTesterBookmarkContext.Provider>
     </RNTesterThemeContext.Provider>
   );
 };
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
+  constructor() {
+    super();
+
+    // RNTester App currently uses Async Storage from react-native for storing navigation state
+    // and bookmark items.
+    // TODO: Add Native Async Storage Module in RNTester
+    LogBox.ignoreLogs([new RegExp('has been extracted from react-native')]);
+
+    this.state = {
+      openExample: null,
+      Components: bookmarks.Components,
+      Api: bookmarks.Api,
+      recentComponents: [],
+      recentApis: [],
+      screen: 'component',
+      AddApi: (apiName, api) => addApi(apiName, api, this),
+      AddComponent: (componentName, component) =>
+        addComponent(componentName, component, this),
+      RemoveApi: apiName => removeApi(apiName, this),
+      RemoveComponent: componentName => removeComponent(componentName, this),
+      checkBookmark: (title, key) => checkBookmarks(title, key, this),
+      updateRecentlyViewedList: (item, key) =>
+        updateRecentlyViewedList(item, key, this),
+    };
+  }
   UNSAFE_componentWillMount() {
-    BackHandler.addEventListener(
-      'hardwareBackPress',
-      this._handleBackButtonPress,
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this._handleBackButtonPress(this.state.screen),
     );
   }
 
   componentDidMount() {
-    Linking.getInitialURL().then(url => {
-      AsyncStorage.getItem(APP_STATE_KEY, (err, storedString) => {
-        const exampleAction = URIActionMap(
-          this.props.exampleFromAppetizeParams,
-        );
-        const urlAction = URIActionMap(url);
-        const launchAction = exampleAction || urlAction;
-        if (err || !storedString) {
-          const initialAction = launchAction || {type: 'InitialAction'};
-          this.setState(RNTesterNavigationReducer(null, initialAction));
-          return;
-        }
-        const storedState = JSON.parse(storedString);
-        if (launchAction) {
-          this.setState(RNTesterNavigationReducer(storedState, launchAction));
-          return;
-        }
-        this.setState(storedState);
-      });
-    });
+    initializeAsyncStore(this);
   }
 
   render(): React.Node {
@@ -203,43 +197,28 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       return null;
     }
     return (
-      <DrawerLayoutAndroid
-        drawerPosition="left"
-        drawerWidth={Dimensions.get('window').width - DRAWER_WIDTH_LEFT}
-        keyboardDismissMode="on-drag"
-        onDrawerOpen={() => {
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          this._overrideBackPressForDrawerLayout = true;
-        }}
-        onDrawerClose={() => {
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          this._overrideBackPressForDrawerLayout = false;
-        }}
-        ref={drawer => {
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          this.drawer = drawer;
-        }}
-        renderNavigationView={this._renderDrawerContent}
-        statusBarBackgroundColor="#589c90">
-        {this._renderApp()}
-      </DrawerLayoutAndroid>
+      <View style={styles.container}>
+        {this._renderApp({
+          Components: this.state.Components,
+          Api: this.state.Api,
+          AddApi: this.state.AddApi,
+          AddComponent: this.state.AddComponent,
+          RemoveApi: this.state.RemoveApi,
+          RemoveComponent: this.state.RemoveComponent,
+          checkBookmark: this.state.checkBookmark,
+        })}
+        <View style={styles.bottomNavbar}>
+          <RNTesterNavBar
+            screen={this.state.screen}
+            onNavigate={this._handleAction}
+          />
+        </View>
+      </View>
     );
   }
 
-  _renderDrawerContent = () => {
-    return (
-      <RNTesterDrawerContentViaHook
-        onNavigate={this._handleAction}
-        list={RNTesterList}
-      />
-    );
-  };
-
-  _renderApp() {
-    const {openExample} = this.state;
+  _renderApp(bookmark) {
+    const {openExample, screen} = this.state;
 
     if (openExample) {
       const ExampleModule = RNTesterList.Modules[openExample];
@@ -247,7 +226,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         return (
           <ExampleModule
             onExampleExit={() => {
-              this._handleAction(RNTesterActions.Back());
+              this._handleAction(RNTesterActions.Back(screen));
             }}
             ref={example => {
               /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
@@ -258,30 +237,36 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         );
       } else if (ExampleModule) {
         return (
-          <RNTesterExampleContainerViaHook
-            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-             * when making Flow check .android.js files. */
-            onPressDrawer={() => this.drawer.openDrawer()}
-            title={ExampleModule.title}
-            module={ExampleModule}
-            exampleRef={example => {
-              /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
-               * was found when making Flow check .android.js files. */
-              this._exampleRef = example;
-            }}
-          />
+          <>
+            <RNTesterExampleContainerViaHook
+              /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+               * when making Flow check .android.js files. */
+              title={ExampleModule.title}
+              module={ExampleModule}
+              exampleRef={example => {
+                /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
+                 * was found when making Flow check .android.js files. */
+                this._exampleRef = example;
+              }}
+            />
+          </>
         );
       }
     }
 
     return (
       <RNTesterExampleListViaHook
+        key={screen}
         title={'RNTester'}
         /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
          * when making Flow check .android.js files. */
-        onPressDrawer={() => this.drawer.openDrawer()}
         onNavigate={this._handleAction}
+        UpdateRecentlyViewedList={this.state.updateRecentlyViewedList}
+        recentComponents={this.state.recentComponents}
+        recentApis={this.state.recentApis}
+        bookmark={bookmark}
         list={RNTesterList}
+        screen={screen}
       />
     );
   }
@@ -289,7 +274,6 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   _handleAction = (action: Object): boolean => {
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    this.drawer && this.drawer.closeDrawer();
     const newState = RNTesterNavigationReducer(this.state, action);
     if (this.state !== newState) {
       this.setState(newState, () =>
@@ -300,18 +284,9 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     return false;
   };
 
-  _handleBackButtonPress = () => {
+  _handleBackButtonPress = screen => {
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    if (this._overrideBackPressForDrawerLayout) {
-      // This hack is necessary because drawer layout provides an imperative API
-      // with open and close methods. This code would be cleaner if the drawer
-      // layout provided an `isOpen` prop and allowed us to pass a `onDrawerClose` handler.
-      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-       * when making Flow check .android.js files. */
-      this.drawer && this.drawer.closeDrawer();
-      return true;
-    }
     if (
       /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
        * when making Flow check .android.js files. */
@@ -325,7 +300,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     ) {
       return true;
     }
-    return this._handleAction(RNTesterActions.Back());
+    return this._handleAction(RNTesterActions.Back(screen));
   };
 }
 
@@ -352,9 +327,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  drawerContentWrapper: {
-    flex: 1,
-    paddingTop: StatusBar.currentHeight,
+  bottomNavbar: {
+    bottom: 0,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'absolute',
   },
 });
 

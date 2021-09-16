@@ -374,6 +374,7 @@ const styles = StyleSheet.create({
 
 exports.framework = 'React';
 exports.title = 'Native Animated Example';
+exports.category = 'UI';
 exports.description = 'Test out Native Animations';
 
 exports.examples = [

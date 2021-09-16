@@ -103,6 +103,7 @@ class PermissionsExample extends React.Component<{...}, $FlowFixMeState> {
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = 'PermissionsAndroid';
+exports.category = 'Android';
 exports.description = 'Permissions example for API 23+.';
 exports.examples = [
   {

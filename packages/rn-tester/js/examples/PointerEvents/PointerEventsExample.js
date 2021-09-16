@@ -235,6 +235,7 @@ const styles = StyleSheet.create({
 
 exports.framework = 'React';
 exports.title = 'Pointer Events';
+exports.category = 'Basic';
 exports.description = ('Demonstrates the use of the pointerEvents prop of a ' +
   'View to control how touches should be handled.': string);
 exports.examples = (exampleClasses.map(infoToExample): Array<any>);

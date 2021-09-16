@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Layout Events';
+exports.category = 'UI';
 exports.description = ('Examples that show how Layout events can be used to ' +
   'measure view size and position.': string);
 exports.examples = [

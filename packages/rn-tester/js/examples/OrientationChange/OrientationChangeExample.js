@@ -54,6 +54,7 @@ class OrientationChangeExample extends React.Component<{...}, $FlowFixMeState> {
 }
 
 exports.title = 'OrientationChangeExample';
+exports.category = 'Basic';
 exports.description = 'listening to orientation changes';
 exports.examples = [
   {

@@ -33,6 +33,8 @@ const styles = StyleSheet.create({
 
 exports.framework = 'React';
 exports.title = 'Animated - Examples';
+exports.category = 'UI';
+exports.documentationURL = 'https://reactnative.dev/docs/animated';
 exports.description = ('Animated provides a powerful ' +
   'and easy-to-use API for building modern, ' +
   'interactive user experiences.': string);

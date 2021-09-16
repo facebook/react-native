@@ -35,6 +35,8 @@ export type RNTesterTheme = {
   LinkColor: ColorValue,
   SystemPurpleColor: ColorValue,
   ToolbarColor: ColorValue,
+  BackgroundColor: ColorValue,
+  BorderColor: ColorValue,
   ...
 };
 
@@ -59,6 +61,8 @@ export const RNTesterLightTheme = {
   LinkColor: '#007affff',
   SystemPurpleColor: '#af52deff',
   ToolbarColor: '#e9eaedff',
+  BackgroundColor: '#f3f8ffff',
+  BorderColor: '#005dffff',
 };
 
 export const RNTesterDarkTheme = {
@@ -82,6 +86,8 @@ export const RNTesterDarkTheme = {
   LinkColor: '#0984ffff',
   SystemPurpleColor: '#bf5af2ff',
   ToolbarColor: '#3c3c43ff',
+  BackgroundColor: '#0c0700ff',
+  BorderColor: '#005dffff',
 };
 
 export const themes = {light: RNTesterLightTheme, dark: RNTesterDarkTheme};

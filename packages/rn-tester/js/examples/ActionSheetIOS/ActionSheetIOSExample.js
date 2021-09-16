@@ -295,6 +295,7 @@ const style = StyleSheet.create({
 });
 
 exports.title = 'ActionSheetIOS';
+exports.category = 'iOS';
 exports.description = "Interface to show iOS' action sheets";
 exports.examples = [
   {

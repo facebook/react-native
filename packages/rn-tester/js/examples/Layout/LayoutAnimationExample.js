@@ -345,6 +345,8 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Layout Animation';
+exports.category = 'UI';
+exports.documentationURL = 'https://reactnative.dev/docs/layoutanimation';
 exports.description = 'Layout animation';
 exports.examples = [
   {

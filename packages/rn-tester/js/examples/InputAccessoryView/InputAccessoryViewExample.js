@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = '<InputAccessoryView>';
+exports.title = 'InputAccessoryView';
 exports.description =
   'Example showing how to use an InputAccessoryView to build an iMessage-like sticky text input';
 exports.examples = [

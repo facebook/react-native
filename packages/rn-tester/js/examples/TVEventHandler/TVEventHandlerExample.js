@@ -77,6 +77,7 @@ class TVEventHandlerView extends React.Component<Props, State> {
 
 exports.framework = 'React';
 exports.title = 'TVEventHandler example';
+exports.category = 'iOS';
 exports.description = 'iOS alerts and action sheets';
 exports.examples = [
   {

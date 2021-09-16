@@ -20,6 +20,7 @@ const XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
 
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';
+exports.category = 'Basic';
 exports.description = ('Example that demonstrates upload and download ' +
   'requests using XMLHttpRequest.': string);
 exports.examples = [
