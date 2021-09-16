@@ -6,4 +6,4 @@
 
 set -e
 
-./gradlew :ReactAndroid:downloadNdkBuildDependencies
+./gradlew --no-daemon :ReactAndroid:downloadNdkBuildDependencies
