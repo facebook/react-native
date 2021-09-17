@@ -184,6 +184,7 @@ public class ReactInstanceManager {
   private final @Nullable JSIModulePackage mJSIModulePackage;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
+  private boolean mUseFallbackBundle = false;
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;
@@ -350,6 +351,10 @@ public class ReactInstanceManager {
     };
   }
 
+  public synchronized void setUseFallbackBundle(boolean useFallbackBundle) {
+    mUseFallbackBundle = useFallbackBundle;
+  }
+
   private JavaScriptExecutorFactory getJSExecutorFactory() {
     return mJavaScriptExecutorFactory;
   }
@@ -452,7 +457,8 @@ public class ReactInstanceManager {
                           if (packagerIsRunning) {
                             mDevSupportManager.handleReloadJS();
                           } else if (mDevSupportManager.hasUpToDateJSBundleInCache()
-                              && !devSettings.isRemoteJSDebugEnabled()) {
+                              && !devSettings.isRemoteJSDebugEnabled()
+                              && !mUseFallbackBundle) {
                             // If there is a up-to-date bundle downloaded from server,
                             // with remote JS debugging disabled, always use that.
                             onJSBundleLoadedFromServer();
