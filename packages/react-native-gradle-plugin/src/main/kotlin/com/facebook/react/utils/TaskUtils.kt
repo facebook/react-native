@@ -13,3 +13,13 @@ internal fun windowsAwareCommandLine(vararg args: Any): List<Any> =
     } else {
       args.toList()
     }
+
+internal fun windowsAwareBashCommandLine(
+    vararg args: String,
+    bashWindowsHome: String? = null
+): List<String> =
+    if (Os.isWindows()) {
+      listOf(bashWindowsHome ?: "bash", "-c") + args
+    } else {
+      args.toList()
+    }

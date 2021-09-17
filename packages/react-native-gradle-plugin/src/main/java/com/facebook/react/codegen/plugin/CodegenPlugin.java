@@ -10,13 +10,12 @@ package com.facebook.react.codegen.plugin;
 import com.android.build.gradle.BaseExtension;
 import com.facebook.react.ReactExtension;
 import com.facebook.react.codegen.generator.JavaGenerator;
+import com.facebook.react.tasks.BuildCodegenCLITask;
 import com.facebook.react.utils.GradleUtils;
 import com.facebook.react.utils.PathUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
-import java.io.IOException;
-import org.apache.tools.ant.taskdefs.condition.Os;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -40,55 +39,16 @@ public class CodegenPlugin {
     // 2. Task: produce schema from JS files.
     String os = System.getProperty("os.name").toLowerCase();
 
-    TaskProvider<Exec> buildCodegenTask =
+    TaskProvider<BuildCodegenCLITask> buildCodegenTask =
         project
             .getTasks()
             .register(
                 "buildCodegenCLI",
-                Exec.class,
+                BuildCodegenCLITask.class,
                 task -> {
-                  // This task is required when using react-native-codegen from source, instead of
-                  // npm.
-                  File codegenRoot = extension.getCodegenDir().getAsFile().get();
-
-                  task.getInputs()
-                      .files(
-                          project.file(new File(codegenRoot, "scripts")),
-                          project.file(new File(codegenRoot, "src")),
-                          project.file(new File(codegenRoot, "package.json")),
-                          project.file(new File(codegenRoot, ".babelrc")),
-                          project.file(new File(codegenRoot, ".prettierrc")));
-
-                  File libDir = project.file(new File(codegenRoot, "lib"));
-                  File nodeModulesDir = project.file(new File(codegenRoot, "node_modules"));
-                  task.getOutputs().dirs(libDir, nodeModulesDir);
-
-                  task.onlyIf(
-                      spec -> {
-                        File cliDir = new File(codegenRoot, "lib/cli/");
-                        return !cliDir.exists() || cliDir.listFiles().length == 0;
-                      });
-
-                  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    // Convert path to Linux format: use canonical path to strip it off relative
-                    // elements in the middle of the string.
-                    // Then replace baskslashes with slashes, remove leading colon, add leading
-                    // slash.
-                    // Eg. D:\path1\sub2/.. -> /D/path1/path2
-                    try {
-                      String canonicalPath = codegenRoot.getCanonicalPath();
-                      String linuxPath = "/" + canonicalPath.replace('\\', '/').replace(":", "");
-
-                      // Get the location of bash in the system; assume environment variable created
-                      // to store it.
-                      String bashHome = System.getenv("REACT_WINDOWS_BASH");
-                      task.commandLine(bashHome, "-c", linuxPath + "/scripts/oss/build.sh");
-                    } catch (IOException e) {
-                      e.printStackTrace();
-                    }
-                  } else {
-                    task.commandLine(codegenRoot.getAbsolutePath() + "/scripts/oss/build.sh");
-                  }
+                  task.getCodegenDir().set(extension.getCodegenDir());
+                  String bashWindowsHome = (String) project.findProperty("REACT_WINDOWS_BASH");
+                  task.getBashWindowsHome().set(bashWindowsHome);
                 });
 
     project
