@@ -179,7 +179,7 @@ static NSArray<NSString *> *fontNamesForFamilyName(NSString *familyName)
   auto names = [cache objectForKey:familyName];
   if (!names) {
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
-    names = [UIFont fontNamesForFamilyName:familyName];
+    names = [UIFont fontNamesForFamilyName:familyName] ?: [NSArray new];
 #else
     NSMutableArray<NSString *> *fontNames = [NSMutableArray array];
     for (NSArray *fontSettings in [[NSFontManager sharedFontManager] availableMembersOfFontFamily:familyName]) {
