@@ -253,9 +253,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @AnyThread
   @ThreadConfined(ANY)
   @Override
-  public void stopSurface(int surfaceID) {
+  public void stopSurface(final int surfaceID) {
     mReactContextForRootTag.remove(surfaceID);
     mBinding.stopSurface(surfaceID);
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            mMountingManager.deleteRootView(surfaceID);
+          }
+        });
   }
 
   @Override
@@ -876,7 +883,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             BatchMountItem batchMountItem = (BatchMountItem) mountItem;
             if (!surfaceActiveForExecution(
                 batchMountItem.getRootTag(), "dispatchMountItems BatchMountItem")) {
-              batchMountItem.executeDeletes(mMountingManager);
               continue;
             }
           }

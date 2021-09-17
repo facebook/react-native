@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.config.ReactFeatureFlags;
 
@@ -90,5 +91,9 @@ public class FabricViewStateManager {
 
   public void setState(final StateUpdateCallback stateUpdateCallback) {
     setState(mStateWrapper, stateUpdateCallback, 0);
+  }
+
+  public @Nullable ReadableMap getState() {
+    return mStateWrapper != null ? mStateWrapper.getState() : null;
   }
 }

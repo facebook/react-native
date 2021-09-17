@@ -21,8 +21,7 @@ import typeof AnimatedView from './components/AnimatedView';
 const AnimatedMock = require('./AnimatedMock');
 const AnimatedImplementation = require('./AnimatedImplementation');
 
-const Animated = ((Platform.isTesting ||
-(Platform.OS === 'android' && global.RN$Bridgeless)
+const Animated = ((Platform.isTesting
   ? AnimatedMock
   : AnimatedImplementation): typeof AnimatedMock);
 

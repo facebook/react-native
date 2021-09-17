@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <react/renderer/mounting/MountingTelemetry.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/SurfaceTelemetry.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 
 namespace facebook {
 namespace react {
@@ -37,7 +37,7 @@ class MountingTransaction final {
       SurfaceId surfaceId,
       Number number,
       ShadowViewMutationList &&mutations,
-      MountingTelemetry telemetry);
+      TransactionTelemetry telemetry);
 
   /*
    * Copy semantic.
@@ -65,7 +65,7 @@ class MountingTransaction final {
   /*
    * Returns telemetry associated with this transaction.
    */
-  MountingTelemetry const &getTelemetry() const;
+  TransactionTelemetry const &getTelemetry() const;
 
   /*
    * Returns the id of the surface that the transaction belongs to.
@@ -81,7 +81,7 @@ class MountingTransaction final {
   SurfaceId surfaceId_;
   Number number_;
   ShadowViewMutationList mutations_;
-  MountingTelemetry telemetry_;
+  TransactionTelemetry telemetry_;
 };
 
 } // namespace react

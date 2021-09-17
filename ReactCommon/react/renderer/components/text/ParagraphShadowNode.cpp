@@ -13,6 +13,7 @@
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/graphics/rounding.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 
 #include "ParagraphState.h"
 
@@ -135,6 +136,11 @@ Size ParagraphShadowNode::measureContent(
     textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
     textAttributes.apply(getConcreteProps().textAttributes);
     attributedString.appendFragment({string, textAttributes, {}});
+  }
+
+  auto telemetry = TransactionTelemetry::threadLocalTelemetry();
+  if (telemetry) {
+    telemetry->didMeasureText();
   }
 
   return textLayoutManager_

@@ -510,8 +510,8 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
   DoubleConversion: 2b45d0f8e156a5b02354c8a4062de64d41ccb4e0
-  FBLazyVector: 4dcbb88cea8d69a8fe40df2039f14a945a980d9d
-  FBReactNativeSpec: 0a14c1e5b256aee3791a65fd3f078d9053e4f4b1
+  FBLazyVector: 59289e609b48c72dff5e4684079b8f4d9fac76a2
+  FBReactNativeSpec: a018f1a63a039d2c9023f61d363e8277a8cbea7b
   Flipper: be611d4b742d8c87fbae2ca5f44603a02539e365
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: c12092ea368353b58e992843a990a3225d4533c3
@@ -522,33 +522,33 @@ SPEC CHECKSUMS:
   glog: 789873d01e4b200777d0a09bc23d548446758699
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RCT-Folly: 55d0039b24e192081ec0b2257f7bd9f42e382fb7
-  RCTRequired: b921a511fa1b8c4af864d56075b6d332a086bacf
-  RCTTypeSafety: e4ca6fc0194fcf4d43befc8c060c07b689a20a10
-  React: 34a1eefd0ecc18c94439f0784bbf415abb167a4f
-  React-callinvoker: ae1a9cade7d440d4d491002d1847c62db9a625d1
-  React-Core: 333b5bda044c4519edd7611ddf054148c5384597
-  React-CoreModules: a6ee8fe2cd9eabf9f98e55a4d97f25277a02f936
-  React-cxxreact: 12c5d8baa62766d41519dbe4f18424ca4e971183
-  React-jsi: 9da8c5c7a2fa532799149dbf272822e7db9bce61
-  React-jsiexecutor: 7e838e0df653311ac73d464da7d54a6a31dde308
-  React-jsinspector: ddcd2cec9c6248dfbf49cbbe54399d096794e880
-  React-perflogger: fa4314ea68f45ee5e95db41aad8a82446c147ecf
-  React-RCTActionSheet: 2ce1036e019a6207272b54b1557c370a599c7532
-  React-RCTAnimation: 265c876e72685d04aa2a4a61ab39e761641fcf9a
-  React-RCTBlob: a299faa12e80557b5ebea8f006f8bd7c3cdfddf8
-  React-RCTImage: 46adce21abde2340ae4a0d2427eabf31ea28fb29
-  React-RCTLinking: ee9d3cd9e23b4000d054e9778c988c2173644115
-  React-RCTNetwork: 50b29382ae8d2f6a263178a0f8cbc96a483b48f4
-  React-RCTPushNotification: cebafa1eb73c63e113b52feb940e4d9cc4c658f2
-  React-RCTSettings: e9607dadad6c1e84600a5e89e957febc83b3c545
-  React-RCTTest: 47bb0725c734fbe744d04414fc7935c593d4cca0
-  React-RCTText: c6f40c08be94df282b8ac73b703cdb7315160261
-  React-RCTVibration: 7fd86200b19073e3c64e3596ca6bf640a2d5c8b9
-  React-runtimeexecutor: 19b90d01dc8fbe46598ce4876e6da377c1894aa0
+  RCTRequired: 75108b240eb0429c72875f21f69053064d8e758f
+  RCTTypeSafety: 8b4ed5873c08dd9de8274b1cb7b941cc700a43c8
+  React: b630932039e38d0c5430bca62b86a58a52a73cd4
+  React-callinvoker: 9c42e06ad8114ded786c6571e92a583b39a87628
+  React-Core: a486b857e4b10b1ff9b50612ca6c3bbe8bee2def
+  React-CoreModules: 1f3f7c616c34615f8c8de07ff8c2bc4d810e46c1
+  React-cxxreact: 17581c5981a5b9b2c1b49f0d9a9f165e3f31ccbd
+  React-jsi: 55cfab3bcebc367789050eb9e91d642987b1bcf3
+  React-jsiexecutor: 3166aea64f31dc3432f6204c3e614cbe2f3beb3a
+  React-jsinspector: e02fe6d2205a9d8f204fd86d63738a20f0c3c98e
+  React-perflogger: 018ba714a9fe5edb23038ca026b78ddf09ed4eb6
+  React-RCTActionSheet: c09570920baa6b098c50aa11e7cec7fce8377de1
+  React-RCTAnimation: c492dcac1121788481d1be24c4c3de22c2d4aa90
+  React-RCTBlob: 86b3e21c4de0185a8bdde5b72893e24c59ca0c8b
+  React-RCTImage: 88cb86e1b8371e80c626af0b2b671a3adaa7b69c
+  React-RCTLinking: b399479869366cbdf35e82422c5f784d04d022dd
+  React-RCTNetwork: 1ded16df9814ff128b52aa3b141f64e53b915cb9
+  React-RCTPushNotification: f6e3fd23c828c92a9212fa4719f88f896e8d6a1e
+  React-RCTSettings: 0518a25af4b868677fd3841566281f870252e683
+  React-RCTTest: adc31c53ac0b14ed6e37ff54b40fe6987afaac74
+  React-RCTText: edad034747063abd1a5c633b53a65f6076abe59c
+  React-RCTVibration: 5e269a938c11f0d0a23dd4138890a98cf293a494
+  React-runtimeexecutor: 173a088b32a7d9f2474c453caff49883842acef2
   React-TurboModuleCxx-RNW: 18bb71af41fe34c8b12a56bef60aae7ee32b0817
-  React-TurboModuleCxx-WinRTPort: b1c5f18bcbf81b601912927e0285a5e9b23fea39
-  ReactCommon: ed000522754a0e1173c8190a178ce11f11462f63
-  Yoga: d0db28131fd750f853100ca79a021a4a5fad5954
+  React-TurboModuleCxx-WinRTPort: 8907c6950986fd08e575d6df36b93c5a32143e11
+  ReactCommon: ad5703d31ea960522f4bfb2e497f9397c5cb9623
+  Yoga: f515e371378bbdb6243228cd0db68418c7c51cc2
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: b094441b1ba4851633f5beb455fbe1ed8d36a989

@@ -25,16 +25,16 @@ public abstract class NativeImageStoreSpec extends ReactContextBaseJavaModule im
   }
 
   @ReactMethod
-  public abstract void getBase64ForTag(String uri, Callback successCallback,
-      Callback errorCallback);
-
-  @ReactMethod
-  public abstract void removeImageForTag(String uri);
-
-  @ReactMethod
   public abstract void addImageFromBase64(String base64ImageData, Callback successCallback,
       Callback errorCallback);
 
   @ReactMethod
+  public abstract void getBase64ForTag(String uri, Callback successCallback,
+      Callback errorCallback);
+
+  @ReactMethod
   public abstract void hasImageForTag(String uri, Callback callback);
+
+  @ReactMethod
+  public abstract void removeImageForTag(String uri);
 }

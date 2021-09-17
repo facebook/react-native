@@ -707,7 +707,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     updateStagedInputTypeFlag(
         view,
         password
-            ? 0
+            ? InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             : InputType.TYPE_NUMBER_VARIATION_PASSWORD | InputType.TYPE_TEXT_VARIATION_PASSWORD,
         password ? InputType.TYPE_TEXT_VARIATION_PASSWORD : 0);
     checkPasswordType(view);

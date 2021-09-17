@@ -56,30 +56,11 @@ public class RemoveDeleteMultiMountItem implements MountItem {
     }
 
     // After removing all views, delete all views marked for deletion.
-    executeDeletes(mountingManager, false);
-  }
-
-  /**
-   * Execute only deletion operations. When being executed as part of shutdown/stopping surface,
-   * deletion failures can be ignored. For example: if there is a batch of MountItems being executed
-   * as part of stopSurface, a "Create" that is not executed may have a matching "Delete". The
-   * Delete will fail but we can safely ignore it in those cases.
-   *
-   * @param mountingManager
-   * @param ignoreFailures
-   */
-  public void executeDeletes(@NonNull MountingManager mountingManager, boolean ignoreFailures) {
     for (int i = 0; i < mMetadata.length; i += 4) {
       int flags = mMetadata[i + FLAGS_INDEX];
       if ((flags & DELETE_FLAG) != 0) {
         int tag = mMetadata[i + TAG_INDEX];
-        try {
-          mountingManager.deleteView(tag);
-        } catch (IllegalStateException e) {
-          if (!ignoreFailures) {
-            throw e;
-          }
-        }
+        mountingManager.deleteView(tag);
       }
     }
   }

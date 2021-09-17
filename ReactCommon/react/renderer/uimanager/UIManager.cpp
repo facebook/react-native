@@ -336,6 +336,12 @@ void UIManager::setAnimationDelegate(UIManagerAnimationDelegate *delegate) {
   animationDelegate_ = delegate;
 }
 
+void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) {
+  if (animationDelegate_ != nullptr) {
+    animationDelegate_->stopSurface(surfaceId);
+  }
+}
+
 void UIManager::animationTick() {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {

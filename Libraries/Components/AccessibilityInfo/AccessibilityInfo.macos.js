@@ -13,7 +13,7 @@
 'use strict';
 
 const Promise = require('../../Promise');
-const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
+import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 
 import NativeAccessibilityManager from './NativeAccessibilityManager';
 

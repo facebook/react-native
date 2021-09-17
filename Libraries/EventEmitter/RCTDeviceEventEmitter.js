@@ -80,4 +80,4 @@ class RCTDeviceEventEmitter extends EventEmitter {
   }
 }
 
-module.exports = (new RCTDeviceEventEmitter(): RCTDeviceEventEmitter);
+export default (new RCTDeviceEventEmitter(): RCTDeviceEventEmitter);

@@ -182,6 +182,15 @@
   NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
+#if TARGET_OS_MACCATALYST
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSaveGState(context);
+  // NSLayoutManager tries to draw text with sub-pixel anti-aliasing by default on
+  // macOS, but rendering SPAA onto a transparent background produces poor results.
+  // CATextLayer disables font smoothing by default now on macOS; we follow suit.
+  CGContextSetShouldSmoothFonts(context, NO);
+#endif
+  
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange
                                                      actualGlyphRange:NULL];
@@ -257,6 +266,10 @@
     [_highlightLayer removeFromSuperlayer];
     _highlightLayer = nil;
   }
+  
+#if TARGET_OS_MACCATALYST
+  CGContextRestoreGState(context);
+#endif
 }
 
 

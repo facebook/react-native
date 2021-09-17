@@ -32,9 +32,6 @@ public abstract class NativeBlobModuleSpec extends ReactContextBaseJavaModule im
   }
 
   @ReactMethod
-  public abstract void sendOverSocket(ReadableMap blob, double socketID);
-
-  @ReactMethod
   public abstract void addNetworkingHandler();
 
   @ReactMethod
@@ -48,6 +45,9 @@ public abstract class NativeBlobModuleSpec extends ReactContextBaseJavaModule im
 
   @ReactMethod
   public abstract void removeWebSocketHandler(double id);
+
+  @ReactMethod
+  public abstract void sendOverSocket(ReadableMap blob, double socketID);
 
   protected abstract Map<String, Object> getTypedExportedConstants();
 

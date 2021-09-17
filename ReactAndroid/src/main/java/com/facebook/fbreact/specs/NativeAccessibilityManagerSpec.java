@@ -26,10 +26,7 @@ public abstract class NativeAccessibilityManagerSpec extends ReactContextBaseJav
   }
 
   @ReactMethod
-  public abstract void getCurrentReduceMotionState(Callback onSuccess, Callback onError);
-
-  @ReactMethod
-  public abstract void getCurrentReduceTransparencyState(Callback onSuccess, Callback onError);
+  public abstract void announceForAccessibility(String announcement);
 
   @ReactMethod
   public abstract void getCurrentBoldTextState(Callback onSuccess, Callback onError);
@@ -41,14 +38,17 @@ public abstract class NativeAccessibilityManagerSpec extends ReactContextBaseJav
   public abstract void getCurrentInvertColorsState(Callback onSuccess, Callback onError);
 
   @ReactMethod
-  public abstract void setAccessibilityFocus(double reactTag);
+  public abstract void getCurrentReduceMotionState(Callback onSuccess, Callback onError);
+
+  @ReactMethod
+  public abstract void getCurrentReduceTransparencyState(Callback onSuccess, Callback onError);
 
   @ReactMethod
   public abstract void getCurrentVoiceOverState(Callback onSuccess, Callback onError);
 
   @ReactMethod
-  public abstract void announceForAccessibility(String announcement);
+  public abstract void setAccessibilityContentSizeMultipliers(ReadableMap JSMultipliers);
 
   @ReactMethod
-  public abstract void setAccessibilityContentSizeMultipliers(ReadableMap JSMultipliers);
+  public abstract void setAccessibilityFocus(double reactTag);
 }

@@ -10,8 +10,6 @@
 
 'use strict';
 
-const warning = require('fbjs/lib/warning');
-
 export type FillRateInfo = Info;
 
 class Info {

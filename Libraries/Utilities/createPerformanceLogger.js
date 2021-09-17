@@ -31,19 +31,14 @@ export type IPerformanceLogger = {
   stopTimespan(string, options?: {update?: boolean}): void,
   clear(): void,
   clearCompleted(): void,
-  clearExceptTimespans(Array<string>): void,
   currentTimestamp(): number,
   getTimespans(): {[key: string]: Timespan, ...},
   hasTimespan(string): boolean,
-  logTimespans(): void,
-  addTimeAnnotations(Array<number>, Array<string>): void,
   setExtra(string, mixed): void,
   getExtras(): {[key: string]: mixed, ...},
   removeExtra(string): ?mixed,
-  logExtras(): void,
   markPoint(string, number | void): void,
   getPoints(): {[key: string]: number, ...},
-  logPoints(): void,
   logEverything(): void,
   ...
 };
@@ -185,24 +180,6 @@ function createPerformanceLogger(): IPerformanceLogger {
       }
     },
 
-    clearExceptTimespans(keys: Array<string>) {
-      this._timespans = Object.keys(this._timespans).reduce(function(
-        previous,
-        key,
-      ) {
-        if (keys.indexOf(key) !== -1) {
-          previous[key] = this._timespans[key];
-        }
-        return previous;
-      },
-      {});
-      this._extras = {};
-      this._points = {};
-      if (PRINT_TO_CONSOLE) {
-        infoLog('PerformanceLogger.js', 'clearExceptTimespans', keys);
-      }
-    },
-
     currentTimestamp() {
       return performanceNow();
     },
@@ -213,27 +190,6 @@ function createPerformanceLogger(): IPerformanceLogger {
 
     hasTimespan(key: string) {
       return !!this._timespans[key];
-    },
-
-    logTimespans() {
-      if (PRINT_TO_CONSOLE) {
-        for (const key in this._timespans) {
-          if (this._timespans[key].totalTime) {
-            infoLog(key + ': ' + this._timespans[key].totalTime + 'ms');
-          }
-        }
-      }
-    },
-
-    addTimeAnnotations(durationsInMs: Array<number>, labels: Array<string>) {
-      for (let ii = 0, l = durationsInMs.length; ii < l; ii += 2) {
-        const label = labels[ii / 2];
-        this.addTimespan(
-          label,
-          durationsInMs[ii + 1] - durationsInMs[ii],
-          label,
-        );
-      }
     },
 
     setExtra(key: string, value: mixed) {
@@ -259,12 +215,6 @@ function createPerformanceLogger(): IPerformanceLogger {
       return value;
     },
 
-    logExtras() {
-      if (PRINT_TO_CONSOLE) {
-        infoLog(this._extras);
-      }
-    },
-
     markPoint(key: string, timestamp?: number) {
       if (this._points[key]) {
         if (PRINT_TO_CONSOLE && __DEV__) {
@@ -282,18 +232,23 @@ function createPerformanceLogger(): IPerformanceLogger {
       return this._points;
     },
 
-    logPoints() {
+    logEverything() {
       if (PRINT_TO_CONSOLE) {
+        // log timespans
+        for (const key in this._timespans) {
+          if (this._timespans[key].totalTime) {
+            infoLog(key + ': ' + this._timespans[key].totalTime + 'ms');
+          }
+        }
+
+        // log extras
+        infoLog(this._extras);
+
+        // log points
         for (const key in this._points) {
           infoLog(key + ': ' + this._points[key] + 'ms');
         }
       }
-    },
-
-    logEverything() {
-      this.logTimespans();
-      this.logExtras();
-      this.logPoints();
     },
   };
   return result;

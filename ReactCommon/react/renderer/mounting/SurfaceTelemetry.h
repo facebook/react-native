@@ -10,7 +10,7 @@
 #include <better/small_vector.h>
 #include <vector>
 
-#include <react/renderer/mounting/MountingTelemetry.h>
+#include <react/renderer/mounting/TransactionTelemetry.h>
 #include <react/utils/Telemetry.h>
 
 namespace facebook {
@@ -34,14 +34,18 @@ class SurfaceTelemetry final {
 
   int getNumberOfTransactions() const;
   int getNumberOfMutations() const;
+  int getNumberOfTextMeasurements() const;
+  int getLastRevisionNumber() const;
 
-  std::vector<MountingTelemetry> getRecentCommitTelemetries() const;
+  std::vector<TransactionTelemetry> getRecentTransactionTelemetries() const;
 
   /*
    * Incorporate data from given transaction telemetry into aggregated data
    * for the Surface.
    */
-  void incorporate(MountingTelemetry const &telemetry, int numberOfMutations);
+  void incorporate(
+      TransactionTelemetry const &telemetry,
+      int numberOfMutations);
 
  private:
   TelemetryDuration layoutTime_{};
@@ -51,9 +55,12 @@ class SurfaceTelemetry final {
 
   int numberOfTransactions_{};
   int numberOfMutations_{};
+  int numberOfTextMeasurements_{};
+  int lastRevisionNumber_{};
 
-  better::small_vector<MountingTelemetry, kMaxNumberOfRecordedCommitTelemetries>
-      recentCommitTelemetries_{};
+  better::
+      small_vector<TransactionTelemetry, kMaxNumberOfRecordedCommitTelemetries>
+          recentTransactionTelemetries_{};
 };
 
 } // namespace react

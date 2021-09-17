@@ -29,14 +29,14 @@ public abstract class NativeNetworkingIOSSpec extends ReactContextBaseJavaModule
   public abstract void abortRequest(double requestId);
 
   @ReactMethod
-  public abstract void removeListeners(double count);
+  public abstract void addListener(String eventName);
 
   @ReactMethod
   public abstract void clearCookies(Callback callback);
 
   @ReactMethod
-  public abstract void sendRequest(ReadableMap query, Callback callback);
+  public abstract void removeListeners(double count);
 
   @ReactMethod
-  public abstract void addListener(String eventName);
+  public abstract void sendRequest(ReadableMap query, Callback callback);
 }

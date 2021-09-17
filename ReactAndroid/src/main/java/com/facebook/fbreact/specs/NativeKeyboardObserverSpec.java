@@ -24,8 +24,8 @@ public abstract class NativeKeyboardObserverSpec extends ReactContextBaseJavaMod
   }
 
   @ReactMethod
-  public abstract void removeListeners(double count);
+  public abstract void addListener(String eventName);
 
   @ReactMethod
-  public abstract void addListener(String eventName);
+  public abstract void removeListeners(double count);
 }

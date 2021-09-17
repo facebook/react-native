@@ -5,112 +5,137 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "MountingTelemetry.h"
+#include "TransactionTelemetry.h"
 
 #include <cassert>
 
 namespace facebook {
 namespace react {
 
-void MountingTelemetry::willCommit() {
+using ThreadLocalTransactionTelemetry = ThreadStorage<TransactionTelemetry *>;
+
+TransactionTelemetry *TransactionTelemetry::threadLocalTelemetry() {
+  return ThreadLocalTransactionTelemetry::getInstance().get().value_or(nullptr);
+}
+
+void TransactionTelemetry::setAsThreadLocal() {
+  ThreadLocalTransactionTelemetry::getInstance().set(this);
+}
+
+void TransactionTelemetry::unsetAsThreadLocal() {
+  ThreadLocalTransactionTelemetry::getInstance().set(nullptr);
+}
+
+void TransactionTelemetry::willCommit() {
   assert(commitStartTime_ == kTelemetryUndefinedTimePoint);
   assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
   commitStartTime_ = telemetryTimePointNow();
-  commitNumber_++;
 }
 
-void MountingTelemetry::didCommit() {
+void TransactionTelemetry::didCommit() {
   assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
   assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
   commitEndTime_ = telemetryTimePointNow();
 }
 
-void MountingTelemetry::willDiff() {
+void TransactionTelemetry::willDiff() {
   assert(diffStartTime_ == kTelemetryUndefinedTimePoint);
   assert(diffEndTime_ == kTelemetryUndefinedTimePoint);
   diffStartTime_ = telemetryTimePointNow();
 }
 
-void MountingTelemetry::didDiff() {
+void TransactionTelemetry::didDiff() {
   assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
   assert(diffEndTime_ == kTelemetryUndefinedTimePoint);
   diffEndTime_ = telemetryTimePointNow();
 }
 
-void MountingTelemetry::willLayout() {
+void TransactionTelemetry::willLayout() {
   assert(layoutStartTime_ == kTelemetryUndefinedTimePoint);
   assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
   layoutStartTime_ = telemetryTimePointNow();
 }
 
-void MountingTelemetry::didLayout() {
+void TransactionTelemetry::didMeasureText() {
+  numberOfTextMeasurements_++;
+}
+
+void TransactionTelemetry::didLayout() {
   assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
   assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
   layoutEndTime_ = telemetryTimePointNow();
 }
 
-void MountingTelemetry::willMount() {
+void TransactionTelemetry::willMount() {
   assert(mountStartTime_ == kTelemetryUndefinedTimePoint);
   assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
   mountStartTime_ = telemetryTimePointNow();
 }
 
-void MountingTelemetry::didMount() {
+void TransactionTelemetry::didMount() {
   assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
   assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
   mountEndTime_ = telemetryTimePointNow();
 }
 
-TelemetryTimePoint MountingTelemetry::getDiffStartTime() const {
+void TransactionTelemetry::setRevisionNumber(int revisionNumber) {
+  revisionNumber_ = revisionNumber;
+}
+
+TelemetryTimePoint TransactionTelemetry::getDiffStartTime() const {
   assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
   assert(diffEndTime_ != kTelemetryUndefinedTimePoint);
   return diffStartTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getDiffEndTime() const {
+TelemetryTimePoint TransactionTelemetry::getDiffEndTime() const {
   assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
   assert(diffEndTime_ != kTelemetryUndefinedTimePoint);
   return diffEndTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getCommitStartTime() const {
+TelemetryTimePoint TransactionTelemetry::getCommitStartTime() const {
   assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
   assert(commitEndTime_ != kTelemetryUndefinedTimePoint);
   return commitStartTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getCommitEndTime() const {
+TelemetryTimePoint TransactionTelemetry::getCommitEndTime() const {
   assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
   assert(commitEndTime_ != kTelemetryUndefinedTimePoint);
   return commitEndTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getLayoutStartTime() const {
+TelemetryTimePoint TransactionTelemetry::getLayoutStartTime() const {
   assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
   assert(layoutEndTime_ != kTelemetryUndefinedTimePoint);
   return layoutStartTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getLayoutEndTime() const {
+TelemetryTimePoint TransactionTelemetry::getLayoutEndTime() const {
   assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
   assert(layoutEndTime_ != kTelemetryUndefinedTimePoint);
   return layoutEndTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getMountStartTime() const {
+TelemetryTimePoint TransactionTelemetry::getMountStartTime() const {
   assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
   assert(mountEndTime_ != kTelemetryUndefinedTimePoint);
   return mountStartTime_;
 }
 
-TelemetryTimePoint MountingTelemetry::getMountEndTime() const {
+TelemetryTimePoint TransactionTelemetry::getMountEndTime() const {
   assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
   assert(mountEndTime_ != kTelemetryUndefinedTimePoint);
   return mountEndTime_;
 }
 
-int MountingTelemetry::getCommitNumber() const {
-  return commitNumber_;
+int TransactionTelemetry::getNumberOfTextMeasurements() const {
+  return numberOfTextMeasurements_;
+}
+
+int TransactionTelemetry::getRevisionNumber() const {
+  return revisionNumber_;
 }
 
 } // namespace react

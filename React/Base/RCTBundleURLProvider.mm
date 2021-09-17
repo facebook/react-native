@@ -82,9 +82,9 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 }
 
 #if RCT_DEV_MENU
-+ (BOOL)isPackagerRunning:(NSString *)host
++ (BOOL)isPackagerRunning:(NSString *)hostPort
 {
-  NSURL *url = [serverRootWithHostPort(host) URLByAppendingPathComponent:@"status"];
+  NSURL *url = [serverRootWithHostPort(hostPort) URLByAppendingPathComponent:@"status"];
 
   NSURLSession *session = [NSURLSession sharedSession];
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
@@ -122,7 +122,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   return nil;
 }
 #else
-+ (BOOL)isPackagerRunning:(NSString *)host
++ (BOOL)isPackagerRunning:(NSString *)hostPort
 {
   return false;
 }
@@ -130,13 +130,19 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 
 - (NSString *)packagerServerHost
 {
-  NSString *location = [self jsLocation];
+  NSString *location = [self packagerServerHostPort];
   if (location) {
     NSInteger index = [location rangeOfString:@":"].location;
     if (index != NSNotFound) {
       location = [location substringToIndex:index];
     }
   }
+  return location;
+}
+
+- (NSString *)packagerServerHostPort
+{
+  NSString *location = [self jsLocation];
 #if RCT_DEV_MENU
   if ([location length] && ![RCTBundleURLProvider isPackagerRunning:location]) {
     location = nil;
@@ -156,12 +162,12 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackURLProvider:(NSURL * (^)(void))fallbackURLProvider
 {
-  NSString *packagerServerHost = [self packagerServerHost];
-  if (!packagerServerHost) {
+  NSString *packagerServerHostPort = [self packagerServerHostPort];
+  if (!packagerServerHostPort) {
     return fallbackURLProvider();
   } else {
     return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
-                                             packagerHost:packagerServerHost
+                                             packagerHost:packagerServerHostPort
                                                 enableDev:[self enableDev]
                                        enableMinification:[self enableMinification]];
   }
@@ -170,7 +176,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 - (NSURL *)jsBundleURLForSplitBundleRoot:(NSString *)bundleRoot
 {
   return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
-                                           packagerHost:[self packagerServerHost]
+                                           packagerHost:[self packagerServerHostPort]
                                               enableDev:[self enableDev]
                                      enableMinification:[self enableMinification]
                                             modulesOnly:YES
@@ -204,14 +210,14 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
                     resourceExtension:(NSString *)extension
                         offlineBundle:(NSBundle *)offlineBundle
 {
-  NSString *packagerServerHost = [self packagerServerHost];
-  if (!packagerServerHost) {
+  NSString *packagerServerHostPort = [self packagerServerHostPort];
+  if (!packagerServerHostPort) {
     // Serve offline bundle (local file)
     NSBundle *bundle = offlineBundle ?: [NSBundle mainBundle];
     return [bundle URLForResource:name withExtension:extension];
   }
   NSString *path = [NSString stringWithFormat:@"/%@/%@.%@", root, name, extension];
-  return [[self class] resourceURLForResourcePath:path packagerHost:packagerServerHost query:nil];
+  return [[self class] resourceURLForResourcePath:path packagerHost:packagerServerHostPort query:nil];
 }
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot

@@ -24,17 +24,17 @@ public abstract class NativeDevMenuSpec extends ReactContextBaseJavaModule imple
   }
 
   @ReactMethod
+  public abstract void debugRemotely(boolean enableDebug);
+
+  @ReactMethod
   public abstract void reload();
 
   @ReactMethod
-  public abstract void debugRemotely(boolean enableDebug);
+  public abstract void setHotLoadingEnabled(boolean enabled);
 
   @ReactMethod
   public abstract void setProfilingEnabled(boolean enabled);
 
   @ReactMethod
   public abstract void show();
-
-  @ReactMethod
-  public abstract void setHotLoadingEnabled(boolean enabled);
 }
