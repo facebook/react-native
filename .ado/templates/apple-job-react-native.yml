@@ -33,7 +33,7 @@ steps:
     displayName: pod install
     inputs:
       script: |
-        cd RNTester
+        cd packages/rn-tester
         pod install
 
   - task: ShellScript@2
