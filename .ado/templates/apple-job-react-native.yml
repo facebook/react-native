@@ -54,7 +54,7 @@ steps:
     parameters:
       xcode_sdk: ${{ parameters.xcode_sdk }}
       xcode_configuration: Debug
-      xcode_workspacePath: RNTester/RNTesterPods.xcworkspace
+      xcode_workspacePath: packages/rn-tester/RNTesterPods.xcworkspace
       xcode_scheme: ${{ parameters.xcode_scheme }}
       xcode_actions: ${{ parameters.xcode_actions_debug }}
       xcode_useXcpretty: true
@@ -64,7 +64,7 @@ steps:
     parameters:
       xcode_sdk: ${{ parameters.xcode_sdk }}
       xcode_configuration: Release
-      xcode_workspacePath: RNTester/RNTesterPods.xcworkspace
+      xcode_workspacePath: packages/rn-tester/RNTesterPods.xcworkspace
       xcode_scheme: ${{ parameters.xcode_scheme }}
       xcode_actions: ${{ parameters.xcode_actions_release }}
       xcode_useXcpretty: false
