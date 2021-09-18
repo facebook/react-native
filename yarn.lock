@@ -2322,11 +2322,6 @@ big-integer@^1.6.7:
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.36.tgz#78631076265d4ae3555c04f85e7d9d2f3a071a36"
   integrity sha512-t70bfa7HYEA1D9idDbmuv7YbsbVkQ+Hp+8KFSul4aE5e/i1bjCNIRYJZlA8Q8p0r9T8cF/RVvwUgRA//FydEyg==
 
-bluebird@3.5.x:
-  version "3.5.5"
-  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.5.tgz#a8d0afd73251effbbd5fe384a77d73003c17a71f"
-  integrity sha512-5am6HnnfN+urzt4yfg7IgTbotDjIT/u8AJpEt0sIU9FtXfVeezXAPKswrG+xKUCOYAINpSdgZVDU6QFh+cuH3w==
-
 bluebird@^3.5.1, bluebird@^3.5.4, bluebird@^3.5.5:
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
@@ -3244,33 +3239,6 @@ detect-newline@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-3.1.0.tgz#576f5dfc63ae1a192ff192d8ad3af6308991b651"
   integrity sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==
-
-detox@15.4.4:
-  version "15.4.4"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-15.4.4.tgz#0f56b0eb9dd81b65e9bd6b3a8730f323dd6cd897"
-  integrity sha512-mbsw/REE3yDuq+0fbPZSktfV5OVO/80LMHsistgKUcBEEM3BrwLkZsji8a7syJj9tiDo+SsUjEzXGhQwDLlitA==
-  dependencies:
-    "@babel/core" "^7.4.5"
-    bunyan "^1.8.12"
-    bunyan-debug-stream "^1.1.0"
-    chalk "^2.4.2"
-    child-process-promise "^2.2.0"
-    fs-extra "^4.0.2"
-    funpermaproxy "^1.0.1"
-    get-port "^2.1.0"
-    ini "^1.3.4"
-    lodash "^4.17.5"
-    minimist "^1.2.0"
-    proper-lockfile "^3.0.2"
-    sanitize-filename "^1.6.1"
-    shell-utils "^1.0.9"
-    tail "^2.0.0"
-    telnet-client "0.15.3"
-    tempfile "^2.0.0"
-    which "^1.3.1"
-    ws "^3.3.1"
-    yargs "^13.0.0"
-    yargs-parser "^13.0.0"
 
 detox@16.7.2:
   version "16.7.2"
@@ -9156,13 +9124,6 @@ tar@^4.4.8:
     mkdirp "^0.5.5"
     safe-buffer "^5.2.1"
     yallist "^3.1.1"
-
-telnet-client@0.15.3:
-  version "0.15.3"
-  resolved "https://registry.yarnpkg.com/telnet-client/-/telnet-client-0.15.3.tgz#99ec754e4acf6fa51dc69898f574df3c2550712e"
-  integrity sha512-GSfdzQV0BKIYsmeXq7bJFJ2wHeJud6icaIxCUf6QCGQUD6R0BBGbT1+yLDhq67JRdgRpwyPwUbV7JxFeRrZomQ==
-  dependencies:
-    bluebird "3.5.x"
 
 telnet-client@1.2.8:
   version "1.2.8"
