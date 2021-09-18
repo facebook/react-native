@@ -57,9 +57,9 @@ export class URLSearchParams {
 
   constructor(params: any) {
     warnOnce(
-      'urlsearchparams-deprecated',
-      'URLSearchParams from React Native has been deprecated and will be removed in a future release. ' +
-        "It can now be installed from 'react-native-url-polyfill'. " +
+      'urlsearchparams-warn-non-spec-compliant',
+      'URLSearchParams from React Native is not spec-compliant. ' +
+        "You should use a spec-compliant polyfill like 'react-native-url-polyfill'. " +
         'See https://github.com/charpeni/react-native-url-polyfill',
     );
 
@@ -123,9 +123,9 @@ export class URL {
 
   static createObjectURL(blob: Blob) {
     warnOnce(
-      'url-deprecated',
-      'URL from React Native has been deprecated and will be removed in a future release. ' +
-        "It can now be installed from 'react-native-url-polyfill'. " +
+      'url-warn-non-spec-compliant',
+      'URL from React Native is not spec-compliant. ' +
+        "You should use a spec-compliant polyfill like 'react-native-url-polyfill'. " +
         'See https://github.com/charpeni/react-native-url-polyfill',
     );
 
@@ -141,9 +141,9 @@ export class URL {
 
   constructor(url: string, base: string) {
     warnOnce(
-      'url-deprecated',
-      'URL from React Native has been deprecated and will be removed in a future release. ' +
-        "It can now be installed from 'react-native-url-polyfill'. " +
+      'url-warn-non-spec-compliant',
+      'URL from React Native is not spec-compliant. ' +
+        "You should use a spec-compliant polyfill like 'react-native-url-polyfill'. " +
         'See https://github.com/charpeni/react-native-url-polyfill',
     );
 
