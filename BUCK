@@ -247,6 +247,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTInvalidating.h": RCTBASE_PATH + "RCTInvalidating.h",
     "React/RCTJSScriptLoaderModule.h": RCTBASE_PATH + "RCTJSScriptLoaderModule.h",
     "React/RCTJSStackFrame.h": RCTBASE_PATH + "RCTJSStackFrame.h",
+    "React/RCTJSThread.h": RCTBASE_PATH + "RCTJSThread.h",
     "React/RCTJavaScriptExecutor.h": RCTBASE_PATH + "RCTJavaScriptExecutor.h",
     "React/RCTJavaScriptLoader.h": RCTBASE_PATH + "RCTJavaScriptLoader.h",
     "React/RCTKeyCommands.h": RCTBASE_PATH + "RCTKeyCommands.h",
