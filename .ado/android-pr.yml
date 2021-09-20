@@ -37,7 +37,7 @@ jobs:
       - task: CmdLine@2
         displayName: Create RNTester bundle
         inputs:
-          script: node cli.js bundle --entry-file ./RNTester/js/RNTesterApp.android.js --bundle-output RNTesterApp.android.bundle --platform android
+          script: node cli.js bundle --entry-file ./packages/rn-tester/js/RNTesterApp.android.js --bundle-output RNTesterApp.android.bundle --platform android
 
       - task: CmdLine@2
         displayName: gradlew installArchives
