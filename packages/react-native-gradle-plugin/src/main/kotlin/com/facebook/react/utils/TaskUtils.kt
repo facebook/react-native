@@ -14,6 +14,13 @@ internal fun windowsAwareCommandLine(vararg args: Any): List<Any> =
       args.toList()
     }
 
+internal fun windowsAwareYarn(vararg args: Any): List<Any> =
+    if (Os.isWindows()) {
+      listOf("yarn.cmd") + args
+    } else {
+      listOf("yarn") + args
+    }
+
 internal fun windowsAwareBashCommandLine(
     vararg args: String,
     bashWindowsHome: String? = null

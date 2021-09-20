@@ -11,6 +11,7 @@ import com.android.build.gradle.BaseExtension;
 import com.facebook.react.ReactExtension;
 import com.facebook.react.codegen.generator.JavaGenerator;
 import com.facebook.react.tasks.BuildCodegenCLITask;
+import com.facebook.react.tasks.GenerateCodegenSchemaTask;
 import com.facebook.react.utils.GradleUtils;
 import com.facebook.react.utils.PathUtils;
 import com.google.common.collect.ImmutableList;
@@ -51,45 +52,19 @@ public class CodegenPlugin {
                   task.getBashWindowsHome().set(bashWindowsHome);
                 });
 
-    project
-        .getTasks()
-        .register(
-            "generateCodegenSchemaFromJavaScript",
-            Exec.class,
-            task -> {
-              // This is needed when using codegen from source, not from npm.
-              task.dependsOn(buildCodegenTask);
-
-              task.doFirst(
-                  s -> {
-                    generatedSrcDir.delete();
-                    generatedSrcDir.mkdirs();
-                  });
-
-              task.getInputs()
-                  .files(
-                      project.fileTree(
-                          ImmutableMap.of("dir", extension.getCodegenDir().getAsFile().get())));
-              task.getInputs()
-                  .files(
-                      project.fileTree(
-                          ImmutableMap.of(
-                              "dir",
-                              extension.getJsRootDir().getAsFile().get(),
-                              "includes",
-                              ImmutableList.of("**/*.js"))));
-              task.getOutputs().file(generatedSchemaFile);
-
-              ImmutableList<String> execCommands =
-                  new ImmutableList.Builder<String>()
-                      .add(os.contains("windows") ? "yarn.cmd" : "yarn")
-                      .addAll(ImmutableList.copyOf(extension.getNodeExecutableAndArgs().get()))
-                      .add(PathUtils.codegenGenerateSchemaCLI(extension).getAbsolutePath())
-                      .add(generatedSchemaFile.getAbsolutePath())
-                      .add(extension.getJsRootDir().getAsFile().get().getAbsolutePath())
-                      .build();
-              task.commandLine(execCommands);
-            });
+    TaskProvider<GenerateCodegenSchemaTask> generateCodegenSchemaTask =
+        project
+            .getTasks()
+            .register(
+                "generateCodegenSchemaFromJavaScript",
+                GenerateCodegenSchemaTask.class,
+                task -> {
+                  task.getJsRootDir().set(extension.getJsRootDir());
+                  task.getNodeExecutableAndArgs().set(extension.getNodeExecutableAndArgs());
+                  task.getCodegenDir().set(extension.getCodegenDir());
+                  task.getGeneratedSrcDir().set(generatedSrcDir);
+                  task.dependsOn(buildCodegenTask);
+                });
 
     // 3. Task: generate Java code from schema.
     project
@@ -98,7 +73,7 @@ public class CodegenPlugin {
             "generateCodegenArtifactsFromSchema",
             Exec.class,
             task -> {
-              task.dependsOn("generateCodegenSchemaFromJavaScript");
+              task.dependsOn(generateCodegenSchemaTask);
 
               task.getInputs()
                   .files(
