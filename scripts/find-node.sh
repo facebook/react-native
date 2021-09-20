@@ -6,6 +6,10 @@
 
 set -e
 
+# remove global prefix if it's already set
+# the running shell process will choose a node binary and a global package directory breaks version managers
+unset PREFIX
+
 # Support Homebrew on M1
 HOMEBREW_M1_BIN=/opt/homebrew/bin
 if [[ -d $HOMEBREW_M1_BIN && ! $PATH =~ $HOMEBREW_M1_BIN ]]; then
