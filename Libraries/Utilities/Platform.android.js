@@ -42,6 +42,8 @@ const Platform = {
     Model: string,
     ServerHost?: string,
     uiMode: string,
+    Brand: string,
+    Manufacturer: string,
   |} {
     if (this.__constants == null) {
       this.__constants = NativePlatformConstantsAndroid.getConstants();

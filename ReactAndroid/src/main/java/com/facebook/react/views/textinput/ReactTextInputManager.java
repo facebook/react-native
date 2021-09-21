@@ -479,6 +479,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public void setCaretHidden(ReactEditText view, boolean caretHidden) {
+    // Set cursor's visibility to False to fix a crash on some Xiaomi devices with Android Q. This
+    // crash happens when focusing on a email EditText, during which a prompt will be triggered but
+    // the system fail to locate it properly. Here is an example post discussing about this
+    // issue: https://github.com/facebook/react-native/issues/27204
+    String manufacturer = Build.MANUFACTURER.toLowerCase();
+    if ((view.getInputType() == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+            || view.getInputType() == InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS)
+        && Build.VERSION.SDK_INT == Build.VERSION_CODES.Q
+        && manufacturer.contains("xiaomi")) {
+      view.setCursorVisible(false);
+      return;
+    }
+
     view.setCursorVisible(!caretHidden);
   }
 

@@ -1921,6 +1921,8 @@ namespace JS {
           RCTRequired<NSString *> Model;
           NSString *ServerHost;
           RCTRequired<NSString *> uiMode;
+          RCTRequired<NSString *> Brand;
+          RCTRequired<NSString *> Manufacturer;
         };
 
         /** Initialize with a set of values */
@@ -3414,6 +3416,10 @@ inline JS::NativePlatformConstantsAndroid::Constants::Builder::Builder(const Inp
   d[@"ServerHost"] = ServerHost;
   auto uiMode = i.uiMode.get();
   d[@"uiMode"] = uiMode;
+  auto Brand = i.Brand.get();
+  d[@"Brand"] = Brand;
+  auto Manufacturer = i.Manufacturer.get();
+  d[@"Manufacturer"] = Manufacturer;
   return d;
 }) {}
 inline JS::NativePlatformConstantsAndroid::Constants::Builder::Builder(Constants i) : _factory(^{

@@ -99,10 +99,7 @@ class TouchableText extends React.Component<Props, State> {
   touchableHandleActivePressOut: ?() => void;
   touchableHandleLongPress: ?(event: PressEvent) => void;
   touchableHandlePress: ?(event: PressEvent) => void;
-  touchableHandleResponderGrant: ?(
-    event: PressEvent,
-    dispatchID: string,
-  ) => void;
+  touchableHandleResponderGrant: ?(event: PressEvent) => void;
   touchableHandleResponderMove: ?(event: PressEvent) => void;
   touchableHandleResponderRelease: ?(event: PressEvent) => void;
   touchableHandleResponderTerminate: ?(event: PressEvent) => void;
@@ -180,10 +177,10 @@ class TouchableText extends React.Component<Props, State> {
         }
         return shouldSetResponder;
       },
-      onResponderGrant: (event: PressEvent, dispatchID: string): void => {
-        nullthrows(this.touchableHandleResponderGrant)(event, dispatchID);
+      onResponderGrant: (event: PressEvent): void => {
+        nullthrows(this.touchableHandleResponderGrant)(event);
         if (this.props.onResponderGrant != null) {
-          this.props.onResponderGrant.call(this, event, dispatchID);
+          this.props.onResponderGrant.call(this, event);
         }
       },
       onResponderMove: (event: PressEvent): void => {

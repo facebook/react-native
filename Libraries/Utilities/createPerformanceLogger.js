@@ -24,24 +24,32 @@ type Timespan = {
   ...
 };
 
-export type IPerformanceLogger = {
-  addTimeAnnotation(string, number, string | void): void,
-  addTimespan(string, number, number, string | void): void,
-  startTimespan(string, string | void): void,
-  stopTimespan(string, options?: {update?: boolean}): void,
-  clear(): void,
-  clearCompleted(): void,
-  currentTimestamp(): number,
-  getTimespans(): {[key: string]: Timespan, ...},
-  hasTimespan(string): boolean,
-  setExtra(string, mixed): void,
-  getExtras(): {[key: string]: mixed, ...},
-  removeExtra(string): ?mixed,
-  markPoint(string, number | void): void,
-  getPoints(): {[key: string]: number, ...},
-  logEverything(): void,
-  ...
-};
+export interface IPerformanceLogger {
+  addTimeAnnotation(
+    key: string,
+    durationInMs: number,
+    description?: string,
+  ): void;
+  addTimespan(
+    key: string,
+    startTime: number,
+    endTime: number,
+    description?: string,
+  ): void;
+  startTimespan(key: string, description?: string): void;
+  stopTimespan(key: string, options?: {update?: boolean}): void;
+  clear(): void;
+  clearCompleted(): void;
+  currentTimestamp(): number;
+  getTimespans(): {[key: string]: Timespan, ...};
+  hasTimespan(key: string): boolean;
+  setExtra(key: string, value: mixed): void;
+  getExtras(): {[key: string]: mixed, ...};
+  removeExtra(key: string): ?mixed;
+  markPoint(key: string, timestamp?: number): void;
+  getPoints(): {[key: string]: number, ...};
+  logEverything(): void;
+}
 
 const _cookies: {[key: string]: number, ...} = {};
 

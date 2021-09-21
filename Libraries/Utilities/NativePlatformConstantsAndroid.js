@@ -29,6 +29,8 @@ export interface Spec extends TurboModule {
     Model: string,
     ServerHost?: string,
     uiMode: string,
+    Brand: string,
+    Manufacturer: string,
   |};
   +getAndroidID: () => string;
 }

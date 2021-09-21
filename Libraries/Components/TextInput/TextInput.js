@@ -502,8 +502,6 @@ export type Props = $ReadOnly<{|
    *
    * - `visible-password`
    *
-   * On Android devices manufactured by Xiaomi with Android Q, 'email-address'
-   * type will be replaced in native by 'default' to prevent a system related crash.
    */
   keyboardType?: ?KeyboardType,
 
@@ -700,7 +698,12 @@ export type Props = $ReadOnly<{|
 
   /**
    * If `true`, caret is hidden. The default value is `false`.
-   * This property is supported only for single-line TextInput component on iOS.
+   *
+   * On Android devices manufactured by Xiaomi with Android Q,
+   * when keyboardType equals 'email-address'this will be set
+   * in native to 'true' to prevent a system related crash. This
+   * will cause cursor to be diabled as a side-effect.
+   *
    */
   caretHidden?: ?boolean,
 
