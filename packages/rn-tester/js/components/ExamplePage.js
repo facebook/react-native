@@ -36,7 +36,7 @@ export default function ExamplePage(props: Props): React.Node {
   return (
     <>
       <View style={styles.titleView}>
-        <Text style={{marginVertical: 8, fontSize: 16}}>{description}</Text>
+        <Text style={styles.description}>{description}</Text>
         <View style={styles.rowStyle}>
           <Text style={{color: theme.SecondaryLabelColor, width: 65}}>
             {category || 'Other'}
@@ -80,9 +80,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   description: {
-    paddingVertical: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    marginVertical: 8,
+    fontSize: 16,
   },
   docsContainer: {
     alignContent: 'center',
