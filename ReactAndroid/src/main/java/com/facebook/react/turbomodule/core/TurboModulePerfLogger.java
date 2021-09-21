@@ -13,10 +13,7 @@ import javax.annotation.Nullable;
 
 public class TurboModulePerfLogger {
   @Nullable private static NativeModulePerfLogger sNativeModulePerfLogger = null;
-
-  static {
-    SoLoader.loadLibrary("turbomodulejsijni");
-  }
+  private static boolean sIsSoLibraryLoaded = false;
 
   public static void moduleDataCreateStart(String moduleName, int id) {
     if (sNativeModulePerfLogger != null) {
@@ -80,9 +77,17 @@ public class TurboModulePerfLogger {
 
   private static native void jniEnableCppLogging(NativeModulePerfLogger perfLogger);
 
+  private static synchronized void maybeLoadSoLibrary() {
+    if (!sIsSoLibraryLoaded) {
+      SoLoader.loadLibrary("turbomodulejsijni");
+      sIsSoLibraryLoaded = true;
+    }
+  }
+
   public static void enableLogging(NativeModulePerfLogger perfLogger) {
     if (perfLogger != null) {
       sNativeModulePerfLogger = perfLogger;
+      maybeLoadSoLibrary();
       jniEnableCppLogging(perfLogger);
     }
   }

@@ -25,7 +25,7 @@
 using namespace facebook::react;
 
 @implementation RCTParagraphComponentView {
-  ParagraphShadowNode::ConcreteState::Shared _state;
+  ParagraphShadowNode::ConcreteStateTeller _stateTeller;
   ParagraphAttributes _paragraphAttributes;
   RCTParagraphComponentAccessibilityProvider *_accessibilityProvider;
 }
@@ -58,11 +58,12 @@ using namespace facebook::react;
 
 - (NSAttributedString *_Nullable)attributedText
 {
-  if (!_state) {
+  auto data = _stateTeller.getData();
+  if (!data.hasValue()) {
     return nil;
   }
 
-  return RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
+  return RCTNSAttributedStringFromAttributedString(data.value().attributedString);
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -90,23 +91,24 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<ParagraphShadowNode::ConcreteState const>(state);
+  _stateTeller.setConcreteState(state);
   [self setNeedsDisplay];
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  _state.reset();
+  _stateTeller.invalidate();
 }
 
 - (void)drawRect:(CGRect)rect
 {
-  if (!_state) {
+  auto data = _stateTeller.getData();
+  if (!data.hasValue()) {
     return;
   }
 
-  auto textLayoutManager = _state->getData().layoutManager;
+  auto textLayoutManager = data.value().layoutManager;
   assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
 
   if (!textLayoutManager) {
@@ -118,7 +120,7 @@ using namespace facebook::react;
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
+  [nativeTextLayoutManager drawAttributedString:data.value().attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame];
 }
@@ -132,25 +134,27 @@ using namespace facebook::react;
     return superAccessibilityLabel;
   }
 
-  if (!_state) {
+  auto data = _stateTeller.getData();
+
+  if (!data.hasValue()) {
     return nil;
   }
 
-  return RCTNSStringFromString(_state->getData().attributedString.getString());
+  return RCTNSStringFromString(data.value().attributedString.getString());
 }
 
 - (NSArray *)accessibilityElements
 {
-  if (![_accessibilityProvider isUpToDate:_state->getData().attributedString]) {
+  auto data = _stateTeller.getData().value();
+  if (![_accessibilityProvider isUpToDate:data.attributedString]) {
     RCTTextLayoutManager *textLayoutManager =
-        (RCTTextLayoutManager *)unwrapManagedObject(_state->getData().layoutManager->getNativeTextLayoutManager());
+        (RCTTextLayoutManager *)unwrapManagedObject(data.layoutManager->getNativeTextLayoutManager());
     CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
-    _accessibilityProvider =
-        [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:_state->getData().attributedString
-                                                             layoutManager:textLayoutManager
-                                                       paragraphAttributes:_state->getData().paragraphAttributes
-                                                                     frame:frame
-                                                                      view:self];
+    _accessibilityProvider = [[RCTParagraphComponentAccessibilityProvider alloc] initWithString:data.attributedString
+                                                                                  layoutManager:textLayoutManager
+                                                                            paragraphAttributes:data.paragraphAttributes
+                                                                                          frame:frame
+                                                                                           view:self];
   }
 
   self.isAccessibilityElement = NO;
@@ -164,11 +168,12 @@ using namespace facebook::react;
 
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {
-  if (!_state) {
+  auto data = _stateTeller.getData();
+  if (!data.hasValue()) {
     return _eventEmitter;
   }
 
-  auto textLayoutManager = _state->getData().layoutManager;
+  auto textLayoutManager = data.value().layoutManager;
 
   assert(textLayoutManager && "TextLayoutManager must not be `nullptr`.");
 
@@ -180,7 +185,7 @@ using namespace facebook::react;
       (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
+  auto eventEmitter = [nativeTextLayoutManager getEventEmitterWithAttributeString:data.value().attributedString
                                                               paragraphAttributes:_paragraphAttributes
                                                                             frame:frame
                                                                           atPoint:point];

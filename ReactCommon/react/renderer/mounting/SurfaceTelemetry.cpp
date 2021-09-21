@@ -13,7 +13,7 @@ namespace facebook {
 namespace react {
 
 void SurfaceTelemetry::incorporate(
-    MountingTelemetry const &telemetry,
+    TransactionTelemetry const &telemetry,
     int numberOfMutations) {
   layoutTime_ += telemetry.getLayoutEndTime() - telemetry.getLayoutStartTime();
   commitTime_ += telemetry.getCommitEndTime() - telemetry.getCommitStartTime();
@@ -22,13 +22,15 @@ void SurfaceTelemetry::incorporate(
 
   numberOfTransactions_++;
   numberOfMutations_ += numberOfMutations;
+  numberOfTextMeasurements_ += telemetry.getNumberOfTextMeasurements();
+  lastRevisionNumber_ = telemetry.getRevisionNumber();
 
-  while (recentCommitTelemetries_.size() >=
+  while (recentTransactionTelemetries_.size() >=
          kMaxNumberOfRecordedCommitTelemetries) {
-    recentCommitTelemetries_.erase(recentCommitTelemetries_.begin());
+    recentTransactionTelemetries_.erase(recentTransactionTelemetries_.begin());
   }
 
-  recentCommitTelemetries_.push_back(telemetry);
+  recentTransactionTelemetries_.push_back(telemetry);
 }
 
 TelemetryDuration SurfaceTelemetry::getLayoutTime() const {
@@ -55,13 +57,21 @@ int SurfaceTelemetry::getNumberOfMutations() const {
   return numberOfMutations_;
 }
 
-std::vector<MountingTelemetry> SurfaceTelemetry::getRecentCommitTelemetries()
-    const {
-  auto result = std::vector<MountingTelemetry>{};
-  result.reserve(recentCommitTelemetries_.size());
+int SurfaceTelemetry::getNumberOfTextMeasurements() const {
+  return numberOfTextMeasurements_;
+}
+
+int SurfaceTelemetry::getLastRevisionNumber() const {
+  return lastRevisionNumber_;
+}
+
+std::vector<TransactionTelemetry>
+SurfaceTelemetry::getRecentTransactionTelemetries() const {
+  auto result = std::vector<TransactionTelemetry>{};
+  result.reserve(recentTransactionTelemetries_.size());
   std::copy(
-      recentCommitTelemetries_.begin(),
-      recentCommitTelemetries_.end(),
+      recentTransactionTelemetries_.begin(),
+      recentTransactionTelemetries_.end(),
       std::back_inserter(result));
   return result;
 }

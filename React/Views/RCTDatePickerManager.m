@@ -82,9 +82,9 @@ RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *
 #endif // ]TODO(macOS GH#774)
     } else {
       // This component is used in Fabric through LegacyInteropLayer.
-      // `RCTPicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
+      // `RCTDatePicker` view is subview of `RCTLegacyViewManagerInteropComponentView`.
       // `viewTag` passed as parameter to this method is tag of the `RCTLegacyViewManagerInteropComponentView`.
-      RCTPlatformView *subview = view.subviews.firstObject; // TODO(macOS GH#774)
+      RCTPlatformView *subview = [uiManager viewForReactTag:viewTag].subviews.firstObject; // TODO(macOS GH#774)
       if ([subview isKindOfClass:[RCTDatePicker class]]) {
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
         [(RCTDatePicker *)subview setDate:date];
@@ -92,7 +92,7 @@ RCT_EXPORT_METHOD(setNativeDate : (nonnull NSNumber *)viewTag toDate : (NSDate *
         [(RCTDatePicker *)subview setDateValue:date];
 #endif // ]TODO(macOS GH#774)
       } else {
-        RCTLogError(@"view type must be RCTPicker");
+        RCTLogError(@"view type must be RCTDatePicker");
       }
     }
   }];

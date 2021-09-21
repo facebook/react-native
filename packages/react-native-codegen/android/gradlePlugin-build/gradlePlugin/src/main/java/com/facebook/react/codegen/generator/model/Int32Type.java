@@ -8,6 +8,7 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class Int32Type extends NumberType {
+  public static final String TYPE_NAME = "Int32TypeAnnotation";
 
   public Int32Type(final TypeId typeId) {
     super(typeId);

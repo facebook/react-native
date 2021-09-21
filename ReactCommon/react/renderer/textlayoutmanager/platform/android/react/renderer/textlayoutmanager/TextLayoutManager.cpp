@@ -36,6 +36,64 @@ TextMeasurement TextLayoutManager::measure(
       });
 }
 
+TextMeasurement TextLayoutManager::measureCachedSpannableById(
+    int cacheId,
+    ParagraphAttributes paragraphAttributes,
+    LayoutConstraints layoutConstraints) const {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
+  auto env = Environment::current();
+  auto attachmentPositions = env->NewFloatArray(0);
+
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jint,
+              jstring,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloatArray)>("measure");
+
+  auto minimumSize = layoutConstraints.minimumSize;
+  auto maximumSize = layoutConstraints.maximumSize;
+
+  local_ref<JString> componentName = make_jstring("RCTText");
+  folly::dynamic cacheIdMap;
+  cacheIdMap["cacheId"] = cacheId;
+  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
+      ReadableNativeMap::newObjectCxxArgs(cacheIdMap);
+  local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
+      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
+
+  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
+  local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
+  auto size = yogaMeassureToSize(measure(
+      fabricUIManager,
+      -1, // TODO: we should pass rootTag in
+      componentName.get(),
+      attributedStringRM.get(),
+      paragraphAttributesRM.get(),
+      nullptr,
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height,
+      attachmentPositions));
+
+  // TODO: currently we do not support attachments for cached IDs - should we?
+  auto attachments = TextMeasurement::Attachments{};
+
+  return TextMeasurement{size, attachments};
+}
+
 TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
@@ -82,7 +140,7 @@ TextMeasurement TextLayoutManager::doMeasure(
       reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
   auto size = yogaMeassureToSize(measure(
       fabricUIManager,
-      -1,
+      -1, // TODO: we should pass rootTag in
       componentName.get(),
       attributedStringRM.get(),
       paragraphAttributesRM.get(),

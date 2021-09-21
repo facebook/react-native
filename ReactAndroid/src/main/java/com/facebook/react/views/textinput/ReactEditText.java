@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -37,7 +38,6 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -46,6 +46,7 @@ import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 
@@ -100,7 +101,6 @@ public class ReactEditText extends AppCompatEditText
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
-  protected @Nullable JavaOnlyMap mAttributedString = null;
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
   protected boolean mDisableTextDiffing = false;
 
@@ -150,6 +150,11 @@ public class ReactEditText extends AppCompatEditText
             return super.performAccessibilityAction(host, action, args);
           }
         });
+  }
+
+  @Override
+  protected void finalize() {
+    TextLayoutManager.deleteCachedSpannableForTag(getId());
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -495,16 +500,13 @@ public class ReactEditText extends AppCompatEditText
       return;
     }
 
-    if (reactTextUpdate.mAttributedString != null) {
-      mAttributedString = JavaOnlyMap.deepClone(reactTextUpdate.mAttributedString);
-    }
-
     // The current text gets replaced with the text received from JS. However, the spans on the
     // current text need to be adapted to the new text. Since TextView#setText() will remove or
     // reset some of these spans even if they are set directly, SpannableStringBuilder#replace() is
     // used instead (this is also used by the keyboard implementation underneath the covers).
     SpannableStringBuilder spannableStringBuilder =
         new SpannableStringBuilder(reactTextUpdate.getText());
+
     manageSpans(spannableStringBuilder);
     mContainsImages = reactTextUpdate.containsImages();
 
@@ -529,6 +531,11 @@ public class ReactEditText extends AppCompatEditText
       if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
         setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
       }
+    }
+
+    // Update cached spans (in Fabric only)
+    if (this.getFabricViewStateManager() != null) {
+      TextLayoutManager.setCachedSpannabledForTag(getId(), spannableStringBuilder);
     }
   }
 
@@ -860,6 +867,10 @@ public class ReactEditText extends AppCompatEditText
         for (TextWatcher listener : mListeners) {
           listener.onTextChanged(s, start, before, count);
         }
+      }
+
+      if (getFabricViewStateManager() != null) {
+        TextLayoutManager.setCachedSpannabledForTag(getId(), new SpannableString(getText()));
       }
 
       onContentSizeChange();

@@ -12,4 +12,18 @@
  */
 @interface RCTModalHostViewComponentView : RCTViewComponentView
 
+/**
+ * Subclasses may override this method and present the modal on different view controller.
+ * Default implementation presents the modal on `[self reactViewController]`.
+ */
+- (void)presentViewController:(UIViewController *)modalViewController
+                     animated:(BOOL)animated
+                   completion:(void (^)(void))completion;
+
+/**
+ * Subclasses may override this method.
+ * Default implementation calls `[UIViewController dismissViewControllerAnimated:completion:]`.
+ */
+- (void)dismissViewController:(UIViewController *)modalViewController animated:(BOOL)animated;
+
 @end

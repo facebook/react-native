@@ -8,8 +8,10 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class VoidType extends Type {
+  public static final String TYPE_NAME = "VoidTypeAnnotation";
+  public static final VoidType VOID = new VoidType(TypeId.of(""));
 
-  public VoidType(final TypeId typeId) {
+  private VoidType(final TypeId typeId) {
     super(typeId);
   }
 }

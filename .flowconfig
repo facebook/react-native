@@ -16,10 +16,6 @@
 ; TODO(macOS GH#774): Ignore metro.config.js
 <PROJECT_ROOT>/metro.config.js
 
-; These should not be required directly
-; require from fbjs/lib instead: require('fbjs/lib/warning')
-.*/node_modules/warning/.*
-
 ; Flow doesn't support platforms
 .*/Libraries/Utilities/LoadingView.js
 
@@ -73,7 +69,6 @@ deprecated-type=warn
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
 signature-verification-failure=warn
-deprecated-utility=error
 
 [strict]
 deprecated-type
@@ -85,4 +80,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.131.0
+^0.132.0

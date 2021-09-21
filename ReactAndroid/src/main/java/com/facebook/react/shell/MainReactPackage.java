@@ -57,6 +57,7 @@ import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactVirtualTextViewManager;
 import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager;
 import com.facebook.react.views.textinput.ReactTextInputManager;
+import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager;
 import com.facebook.react.views.view.ReactViewManager;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -179,6 +180,8 @@ public class MainReactPackage extends TurboReactPackage {
     viewManagers.add(new ReactTextViewManager());
     viewManagers.add(new ReactViewManager());
     viewManagers.add(new ReactVirtualTextViewManager());
+
+    viewManagers.add(new ReactUnimplementedViewManager());
 
     return viewManagers;
   }

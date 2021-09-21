@@ -11,7 +11,6 @@
 
 const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
 
-const warning = require('fbjs/lib/warning');
 const invariant = require('invariant');
 
 const LoggingTestModule = {
@@ -24,7 +23,7 @@ const LoggingTestModule = {
     }, timeout_ms);
   },
   warning: function(str) {
-    warning(false, str);
+    console.warn(str);
   },
   invariant: function(str) {
     invariant(false, str);

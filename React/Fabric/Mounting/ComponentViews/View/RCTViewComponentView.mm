@@ -9,13 +9,11 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
+#import <React/RCTConversions.h>
 #import <objc/runtime.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
-
-#import "RCTConversions.h"
-#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
@@ -621,6 +619,17 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 }
 
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Can't the import generated Plugin.h because plugins are not in this BUCK target
+Class<RCTComponentViewProtocol> RCTViewCls(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 Class<RCTComponentViewProtocol> RCTViewCls(void)
 {

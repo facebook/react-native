@@ -12,7 +12,7 @@ import com.facebook.react.codegen.generator.JavaGenerator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
-import java.io.IOException;
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -98,10 +98,13 @@ public class CodegenPlugin implements Plugin<Project> {
               task.getOutputs().dir(outputDir);
 
               if (extension.useJavaGenerator) {
-                generateJavaFromSchemaWithJavaGenerator(
-                    generatedSchemaFile,
-                    extension.codegenJavaPackageName,
-                    new File(generatedSrcDir, "java"));
+                task.doLast(
+                    s -> {
+                      generateJavaFromSchemaWithJavaGenerator(
+                          generatedSchemaFile,
+                          extension.codegenJavaPackageName,
+                          new File(generatedSrcDir, "java"));
+                    });
                 // TODO: generate JNI C++ files.
                 task.commandLine("echo");
               } else {
@@ -159,8 +162,8 @@ public class CodegenPlugin implements Plugin<Project> {
     final JavaGenerator generator = new JavaGenerator(schemaFile, javaPackageName, outputDir);
     try {
       generator.build();
-    } catch (final IOException e) {
-      // Ignore for now.
+    } catch (final Exception ex) {
+      throw new GradleException("Failed to generate Java from schema.", ex);
     }
   }
 }

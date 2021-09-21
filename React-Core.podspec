@@ -84,7 +84,6 @@ Pod::Spec.new do |s|
     ss.private_header_files   = "React/Cxx*/*.h"
   end
 
-  # [TODO(macOS GH#214)
   s.subspec "Hermes" do |ss|
     ss.platforms = { :osx => "10.14" }
     ss.source_files = "ReactCommon/hermes/executor/*.{cpp,h}",
@@ -95,7 +94,6 @@ Pod::Spec.new do |s|
     ss.dependency "RCT-Folly/Futures"
     ss.dependency "hermes", "~> 0.5.0"
   end
-  # ]TODO(macOS GH#214)
 
   s.subspec "DevSupport" do |ss|
     ss.source_files = "React/DevSupport/*.{h,mm,m}",

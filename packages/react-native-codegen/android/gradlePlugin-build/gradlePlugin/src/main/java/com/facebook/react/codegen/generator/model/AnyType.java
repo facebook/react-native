@@ -8,6 +8,7 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class AnyType extends Type {
+  public static final String TYPE_NAME = "AnyTypeAnnotation";
 
   public AnyType(final TypeId typeId) {
     super(typeId);

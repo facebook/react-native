@@ -31,7 +31,7 @@ public abstract class NativeStatusBarManagerIOSSpec extends ReactContextBaseJava
   }
 
   @ReactMethod
-  public abstract void setNetworkActivityIndicatorVisible(boolean visible);
+  public abstract void addListener(String eventType);
 
   @ReactMethod
   public abstract void getHeight(Callback callback);
@@ -43,10 +43,10 @@ public abstract class NativeStatusBarManagerIOSSpec extends ReactContextBaseJava
   public abstract void setHidden(boolean hidden, String withAnimation);
 
   @ReactMethod
-  public abstract void setStyle(@Nullable String statusBarStyle, boolean animated);
+  public abstract void setNetworkActivityIndicatorVisible(boolean visible);
 
   @ReactMethod
-  public abstract void addListener(String eventType);
+  public abstract void setStyle(@Nullable String statusBarStyle, boolean animated);
 
   protected abstract Map<String, Object> getTypedExportedConstants();
 

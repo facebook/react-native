@@ -1,6 +1,6 @@
 --- "E:\\github\\rnm-63-fresh\\ReactAndroid\\build.gradle"	2020-10-27 20:26:16.652167500 -0700
 +++ "E:\\github\\rnm-63\\ReactAndroid\\build.gradle"	2020-10-13 22:03:22.833541000 -0700
-@@ -37,6 +37,8 @@
+@@ -43,6 +43,8 @@
  // and the build will use that.
  def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
  
@@ -9,7 +9,7 @@
  // Setup build type for NDK, supported values: {debug, release}
  def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
  
-@@ -86,11 +88,22 @@
+@@ -92,11 +92,22 @@
      dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
  }
  
@@ -32,8 +32,8 @@
      includeEmptyDirs = false
      into("$thirdPartyNdkDir/folly")
  }
-@@ -115,6 +134,14 @@
-     }
+@@ -119,6 +138,14 @@
+     into "$thirdPartyNdkDir/hermes"
  }
  
 +task prepareV8() {
@@ -47,7 +47,7 @@
  task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
      src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
      onlyIfNewer(true)
-@@ -296,7 +323,7 @@
+@@ -300,7 +327,7 @@
  }
  
  def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
@@ -56,10 +56,10 @@
  
      inputs.dir("$projectDir/../ReactCommon")
      inputs.dir("src/main/jni")
-@@ -309,6 +336,7 @@
+@@ -313,6 +340,7 @@
              "NDK_OUT=" + temporaryDir,
              "NDK_LIBS_OUT=$buildDir/react-ndk/all",
-             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+             "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
 +            "V8_NUGET_DIR=$projectDir/$V8Path",
              "REACT_COMMON_DIR=$projectDir/../ReactCommon",
              "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
@@ -67,7 +67,7 @@
 @@ -322,6 +351,7 @@
      commandLine(getNdkBuildFullPath(),
              "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+             "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
 +            "V8_NUGET_DIR=$projectDir/$V8Path",
              "REACT_COMMON_DIR=$projectDir/../ReactCommon",
              "-C", file("src/main/jni/react/jni").absolutePath,

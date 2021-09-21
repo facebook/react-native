@@ -148,17 +148,17 @@ commands:
     steps:
       - run:
           name: Setup CocoaPods cache
-          # Copy RNTester/Podfile.lock since it can be changed by pod install
-          command: cp RNTester/Podfile.lock RNTester/Podfile.lock.bak
+          # Copy packages/rn-tester/Podfile.lock since it can be changed by pod install
+          command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
       - restore_cache:
           keys:
-            - v1-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "RNTester/Podfile.lock.bak" }}
+            - v1-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
             - v1-pods-{{ .Environment.CIRCLE_JOB }}-
       - steps: << parameters.steps >>
       - save_cache:
           paths:
-            - RNTester/Pods
-          key: v1-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "RNTester/Podfile.lock.bak" }}
+            - packages/rn-tester/Pods
+          key: v1-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
 
   download_gradle_dependencies:
     steps:
@@ -371,7 +371,7 @@ jobs:
       - run_yarn
 
       - run: |
-          cd RNTester
+          cd packages/rn-tester
           bundle check || bundle install
       - run:
           name: Boot iPhone Simulator
@@ -418,11 +418,11 @@ jobs:
           steps:
             - run:
                 name: Generate RNTesterPods Workspace
-                command: cd RNTester && pod install --verbose
+                command: cd packages/rn-tester && pod install --verbose
 
       - run:
           name: Generate RNTesterPods Xcode Workspace
-          command: pushd RNTester && pod install --verbose && popd
+          command: pushd packages/rn-tester && pod install --verbose && popd
 
       # -------------------------
       # Runs iOS unit tests
@@ -534,7 +534,7 @@ jobs:
 
       - run:
           name: Assemble RNTester App
-          command: ./gradlew RNTester:android:app:assembleRelease
+          command: ./gradlew packages:rn-tester:android:app:assembleRelease
 
       # -------------------------
       # Run Android tests
@@ -667,7 +667,7 @@ jobs:
             - run: echo "Failing tests may be moved here temporarily."
             - run:
                 name: Android Build
-                command: ./gradlew.bat RNTester:android:app:assembleRelease
+                command: ./gradlew.bat packages:rn-tester:android:app:assembleRelease
 
   # -------------------------
   #      JOBS: Coverage

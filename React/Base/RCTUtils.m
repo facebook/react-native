@@ -348,6 +348,12 @@ CGSize RCTScreenSize()
 #endif // TODO(macOS GH#774)
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
+CGSize RCTViewportSize()
+{
+  UIWindow *window = RCTKeyWindow();
+  return window ? window.bounds.size : RCTScreenSize();
+}
+
 CGFloat RCTRoundPixelValue(CGFloat value)
 {
   CGFloat scale = RCTScreenScale();

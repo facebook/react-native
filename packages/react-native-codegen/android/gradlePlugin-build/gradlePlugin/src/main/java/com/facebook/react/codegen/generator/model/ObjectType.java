@@ -7,26 +7,38 @@
 
 package com.facebook.react.codegen.generator.model;
 
-public final class ObjectType extends Type {
+import java.util.Collections;
+import java.util.List;
 
-  public ObjectType(final TypeId typeId) {
-    super(typeId);
-  }
+public final class ObjectType extends Type {
+  public static final String TYPE_NAME = "ObjectTypeAnnotation";
 
   public static class Property {
-    public final String propertyName;
+    public final String name;
     public final Type type;
     public final boolean optional;
 
-    public Property(String propertyName, Type type, boolean optional) {
-      this.propertyName = propertyName;
+    public Property(String name, Type type, boolean optional) {
+      this.name = name;
       this.type = type;
       this.optional = optional;
     }
 
     @Override
     public String toString() {
-      return propertyName + " " + type;
+      return (optional ? "?" : "") + name + ": " + type;
     }
+  }
+
+  public final List<Property> properties;
+
+  public ObjectType(final TypeId typeId, final List<Property> properties) {
+    super(typeId);
+    this.properties = Collections.unmodifiableList(properties);
+  }
+
+  @Override
+  public String toString() {
+    return getTypeId() + " -> " + properties;
   }
 }

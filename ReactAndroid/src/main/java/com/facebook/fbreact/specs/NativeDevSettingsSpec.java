@@ -24,37 +24,37 @@ public abstract class NativeDevSettingsSpec extends ReactContextBaseJavaModule i
   }
 
   @ReactMethod
-  public abstract void setIsDebuggingRemotely(boolean isDebuggingRemotelyEnabled);
+  public abstract void addListener(String eventName);
+
+  @ReactMethod
+  public abstract void addMenuItem(String title);
 
   @ReactMethod
   public void onFastRefresh() {
   }
 
   @ReactMethod
-  public abstract void removeListeners(double count);
-
-  @ReactMethod
   public abstract void reload();
-
-  @ReactMethod
-  public abstract void setProfilingEnabled(boolean isProfilingEnabled);
-
-  @ReactMethod
-  public abstract void addMenuItem(String title);
-
-  @ReactMethod
-  public abstract void toggleElementInspector();
-
-  @ReactMethod
-  public abstract void setHotLoadingEnabled(boolean isHotLoadingEnabled);
 
   @ReactMethod
   public void reloadWithReason(String reason) {
   }
 
   @ReactMethod
+  public abstract void removeListeners(double count);
+
+  @ReactMethod
+  public abstract void setHotLoadingEnabled(boolean isHotLoadingEnabled);
+
+  @ReactMethod
+  public abstract void setIsDebuggingRemotely(boolean isDebuggingRemotelyEnabled);
+
+  @ReactMethod
   public abstract void setIsShakeToShowDevMenuEnabled(boolean enabled);
 
   @ReactMethod
-  public abstract void addListener(String eventName);
+  public abstract void setProfilingEnabled(boolean isProfilingEnabled);
+
+  @ReactMethod
+  public abstract void toggleElementInspector();
 }

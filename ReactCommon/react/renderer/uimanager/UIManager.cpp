@@ -207,6 +207,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
         shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
           shadowTree.tryCommit(
               [&](RootShadowNode::Shared const &oldRootShadowNode) {
+                owningAncestorShadowNode = oldRootShadowNode;
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
               },
@@ -333,6 +334,12 @@ void UIManager::shadowTreeDidFinishTransaction(
 
 void UIManager::setAnimationDelegate(UIManagerAnimationDelegate *delegate) {
   animationDelegate_ = delegate;
+}
+
+void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) {
+  if (animationDelegate_ != nullptr) {
+    animationDelegate_->stopSurface(surfaceId);
+  }
 }
 
 void UIManager::animationTick() {

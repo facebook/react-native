@@ -8,6 +8,7 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class GenericObjectType extends Type {
+  public static final String TYPE_NAME = "GenericObjectTypeAnnotation";
 
   public GenericObjectType(final TypeId typeId) {
     super(typeId);

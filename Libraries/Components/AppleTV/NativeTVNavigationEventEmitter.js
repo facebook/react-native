@@ -18,6 +18,22 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default (TurboModuleRegistry.get<Spec>(
-  'TVNavigationEventEmitter',
-): ?Spec);
+let NativeModule: ?Spec = null;
+
+const wrapperModule = {
+  addListener(eventName: string) {
+    if (NativeModule == null) {
+      NativeModule = TurboModuleRegistry.get<Spec>('TVNavigationEventEmitter');
+    }
+    NativeModule && NativeModule.addListener(eventName);
+  },
+
+  removeListeners(count: number) {
+    if (NativeModule == null) {
+      NativeModule = TurboModuleRegistry.get<Spec>('TVNavigationEventEmitter');
+    }
+    NativeModule && NativeModule.removeListeners(count);
+  },
+};
+
+export default wrapperModule;

@@ -127,6 +127,8 @@ fi
 
 BUNDLE_FILE="$CONFIGURATION_BUILD_DIR/main.jsbundle"
 
+EXTRA_ARGS=
+
 case "$PLATFORM_NAME" in
   "macosx")
     BUNDLE_PLATFORM="macos"

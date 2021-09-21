@@ -363,6 +363,9 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
 
 /**
  * Test reparenting mutation instruction generation.
+ * We cannot practically handle all possible use-cases here.
+ * It would be helpful to do verification with randomized trees, but it's
+ * much easier to do that in JS.
  */
 TEST(MountingTest, testViewReparentingInstructionGeneration) {
   auto eventDispatcher = EventDispatcher::Shared{};
@@ -418,25 +421,30 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
           childF->clone({}), childE->clone({}), childD->clone({})});
 
   // Root -> G* -> H -> I -> J -> A* [nodes with * are _not_ flattened]
-  auto shadowNodeV1 = viewComponentDescriptor.createShadowNode(ShadowNodeFragment{
-      generateDefaultProps(viewComponentDescriptor),
-      std::make_shared<SharedShadowNodeList>(
-          SharedShadowNodeList{childG->clone(ShadowNodeFragment{
-              nonFlattenedDefaultProps(viewComponentDescriptor),
-              std::make_shared<SharedShadowNodeList>(
-                  SharedShadowNodeList{childH->clone(ShadowNodeFragment{
-                      generateDefaultProps(viewComponentDescriptor),
-                      std::make_shared<SharedShadowNodeList>(
-                          SharedShadowNodeList{childI->clone(ShadowNodeFragment{
-                              generateDefaultProps(viewComponentDescriptor),
-                              std::make_shared<
-                                  SharedShadowNodeList>(SharedShadowNodeList{
-                                  childJ->clone(ShadowNodeFragment{
-                                      generateDefaultProps(
-                                          viewComponentDescriptor),
-                                      std::make_shared<SharedShadowNodeList>(
-                                          SharedShadowNodeList{
-                                              reparentedViewA->clone({})})})})})})})})})})}, family);
+  auto shadowNodeV1 = viewComponentDescriptor.createShadowNode(
+      ShadowNodeFragment{
+          generateDefaultProps(viewComponentDescriptor),
+          std::make_shared<SharedShadowNodeList>(
+              SharedShadowNodeList{childG->clone(ShadowNodeFragment{
+                  nonFlattenedDefaultProps(viewComponentDescriptor),
+                  std::make_shared<SharedShadowNodeList>(
+                      SharedShadowNodeList{childH->clone(ShadowNodeFragment{
+                          generateDefaultProps(viewComponentDescriptor),
+                          std::make_shared<
+                              SharedShadowNodeList>(SharedShadowNodeList{
+                              childI->clone(ShadowNodeFragment{
+                                  generateDefaultProps(viewComponentDescriptor),
+                                  std::make_shared<SharedShadowNodeList>(
+                                      SharedShadowNodeList{
+                                          childJ->clone(ShadowNodeFragment{
+                                              generateDefaultProps(
+                                                  viewComponentDescriptor),
+                                              std::make_shared<
+                                                  SharedShadowNodeList>(
+                                                  SharedShadowNodeList{
+                                                      reparentedViewA->clone(
+                                                          {})})})})})})})})})})},
+      family);
 
   // Root -> G* -> H* -> I -> J -> A* [nodes with * are _not_ flattened]
   auto shadowNodeV2 = shadowNodeV1->clone(ShadowNodeFragment{
@@ -457,7 +465,8 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
                                           viewComponentDescriptor),
                                       std::make_shared<SharedShadowNodeList>(
                                           SharedShadowNodeList{
-                                              reparentedViewA->clone({})})})})})})})})})})});
+                                              reparentedViewA->clone(
+                                                  {})})})})})})})})})})});
 
   // Root -> G* -> H -> I -> J -> A* [nodes with * are _not_ flattened]
   auto shadowNodeV3 = shadowNodeV2->clone(ShadowNodeFragment{
@@ -478,7 +487,8 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
                                           viewComponentDescriptor),
                                       std::make_shared<SharedShadowNodeList>(
                                           SharedShadowNodeList{
-                                              reparentedViewA->clone({})})})})})})})})})})});
+                                              reparentedViewA->clone(
+                                                  {})})})})})})})})})})});
 
   // The view is reparented 1 level down with a different sibling
   // Root -> G* -> H* -> I* -> J -> [B*, A*] [nodes with * are _not_ flattened]
@@ -501,7 +511,8 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
                                       std::make_shared<SharedShadowNodeList>(
                                           SharedShadowNodeList{
                                               reparentedViewB->clone({}),
-                                              reparentedViewA->clone({})})})})})})})})})})});
+                                              reparentedViewA->clone(
+                                                  {})})})})})})})})})})});
 
   // The view is reparented 1 level further down with its order with the sibling
   // swapped
@@ -525,8 +536,8 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
                                       std::make_shared<SharedShadowNodeList>(
                                           SharedShadowNodeList{
                                               reparentedViewA->clone({}),
-                                              reparentedViewB->clone({})
-                                          })})})})})})})})})});
+                                              reparentedViewB->clone(
+                                                  {})})})})})})})})})})});
 
   // Injecting a tree into the root node.
   auto rootNodeV1 = std::static_pointer_cast<RootShadowNode const>(
@@ -598,9 +609,9 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations1[2].type, ShadowViewMutation::Create);
   EXPECT_EQ(mutations1[2].newChildShadowView.tag, 107);
   EXPECT_EQ(mutations1[3].type, ShadowViewMutation::Insert);
-  EXPECT_EQ(mutations1[3].newChildShadowView.tag, 1000);
+  EXPECT_EQ(mutations1[3].newChildShadowView.tag, 107);
   EXPECT_EQ(mutations1[4].type, ShadowViewMutation::Insert);
-  EXPECT_EQ(mutations1[4].newChildShadowView.tag, 107);
+  EXPECT_EQ(mutations1[4].newChildShadowView.tag, 1000);
 
   auto mutations2 =
       calculateShadowViewMutations(*rootNodeV2, *rootNodeV3, true);
@@ -633,9 +644,9 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations3[2].type, ShadowViewMutation::Create);
   EXPECT_EQ(mutations3[2].newChildShadowView.tag, 107);
   EXPECT_EQ(mutations3[3].type, ShadowViewMutation::Create);
-  EXPECT_EQ(mutations3[3].newChildShadowView.tag, 108);
+  EXPECT_EQ(mutations3[3].newChildShadowView.tag, 2000);
   EXPECT_EQ(mutations3[4].type, ShadowViewMutation::Create);
-  EXPECT_EQ(mutations3[4].newChildShadowView.tag, 2000);
+  EXPECT_EQ(mutations3[4].newChildShadowView.tag, 108);
   EXPECT_EQ(mutations3[5].type, ShadowViewMutation::Create);
   EXPECT_EQ(mutations3[5].newChildShadowView.tag, 105);
   EXPECT_EQ(mutations3[6].type, ShadowViewMutation::Create);
@@ -649,13 +660,13 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations3[10].type, ShadowViewMutation::Insert);
   EXPECT_EQ(mutations3[10].newChildShadowView.tag, 103);
   EXPECT_EQ(mutations3[11].type, ShadowViewMutation::Insert);
-  EXPECT_EQ(mutations3[11].newChildShadowView.tag, 2000);
+  EXPECT_EQ(mutations3[11].newChildShadowView.tag, 107);
   EXPECT_EQ(mutations3[12].type, ShadowViewMutation::Insert);
-  EXPECT_EQ(mutations3[12].newChildShadowView.tag, 1000);
+  EXPECT_EQ(mutations3[12].newChildShadowView.tag, 108);
   EXPECT_EQ(mutations3[13].type, ShadowViewMutation::Insert);
-  EXPECT_EQ(mutations3[13].newChildShadowView.tag, 108);
+  EXPECT_EQ(mutations3[13].newChildShadowView.tag, 2000);
   EXPECT_EQ(mutations3[14].type, ShadowViewMutation::Insert);
-  EXPECT_EQ(mutations3[14].newChildShadowView.tag, 107);
+  EXPECT_EQ(mutations3[14].newChildShadowView.tag, 1000);
 
   auto mutations4 =
       calculateShadowViewMutations(*rootNodeV4, *rootNodeV5, true);
@@ -674,11 +685,11 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations4[5].type, ShadowViewMutation::Create);
   EXPECT_EQ(mutations4[5].newChildShadowView.tag, 109);
   EXPECT_EQ(mutations4[6].type, ShadowViewMutation::Insert);
-  EXPECT_EQ(mutations4[6].newChildShadowView.tag, 1000);
+  EXPECT_EQ(mutations4[6].newChildShadowView.tag, 109);
   EXPECT_EQ(mutations4[7].type, ShadowViewMutation::Insert);
-  EXPECT_EQ(mutations4[7].newChildShadowView.tag, 2000);
+  EXPECT_EQ(mutations4[7].newChildShadowView.tag, 1000);
   EXPECT_EQ(mutations4[8].type, ShadowViewMutation::Insert);
-  EXPECT_EQ(mutations4[8].newChildShadowView.tag, 109);
+  EXPECT_EQ(mutations4[8].newChildShadowView.tag, 2000);
 }
 
 } // namespace react

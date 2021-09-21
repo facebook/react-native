@@ -16,7 +16,8 @@ namespace react {
  * Creates a lambda used to bind a JSIRuntime in the context of
  * Apple platforms, such as console logging, performance metrics, etc.
  */
-JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(JSIExecutor::RuntimeInstaller runtimeInstallerToWrap);
+JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(
+    JSIExecutor::RuntimeInstaller runtimeInstallerToWrap);
 
 } // namespace react
 } // namespace facebook

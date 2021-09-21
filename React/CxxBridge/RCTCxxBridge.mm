@@ -392,11 +392,11 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
     if (!executorFactory) {
       auto installBindings = RCTJSIExecutorRuntimeInstaller(nullptr);
- #if RCT_USE_HERMES
+#if RCT_USE_HERMES
       executorFactory = std::make_shared<HermesExecutorFactory>(installBindings);
- #else
+#else
       executorFactory = std::make_shared<JSCExecutorFactory>(installBindings);
- #endif
+#endif
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];

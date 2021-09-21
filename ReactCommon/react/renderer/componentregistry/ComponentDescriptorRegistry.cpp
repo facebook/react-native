@@ -91,10 +91,6 @@ static std::string componentNameByReactViewName(std::string viewName) {
     return "PullToRefreshView";
   }
 
-  if (viewName == "AndroidProgressBar") {
-    return "ActivityIndicatorView";
-  }
-
   // We need this temporarily for testing purposes until we have proper
   // implementation of core components.
   if (viewName == "ScrollContentView" ||

@@ -12,7 +12,7 @@
 
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativeModalManager from './NativeModalManager';
 const Platform = require('../Utilities/Platform');
 const React = require('react');

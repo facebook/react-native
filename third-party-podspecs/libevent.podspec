@@ -1,3 +1,8 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 # Because libevent is also relied on by Flipper and *with* OpenSSL bindings,
 # building it as a prebuilt binary may lead to hard to satisfy permutations, if
 # we'd ever try to build this for other Apple platforms besides macOS. Therefore

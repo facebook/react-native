@@ -7,6 +7,7 @@
 
 #import "RCTImageComponentView.h"
 
+#import <React/RCTConversions.h>
 #import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
@@ -18,9 +19,6 @@
 #import <react/renderer/imagemanager/RCTImageInstrumentationProxy.h>
 #import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
 
-#import "RCTConversions.h"
-#import "RCTFabricComponentsPlugins.h"
-
 using namespace facebook::react;
 
 @interface RCTImageComponentView () <RCTImageResponseDelegate>
@@ -28,7 +26,7 @@ using namespace facebook::react;
 
 @implementation RCTImageComponentView {
   UIImageView *_imageView;
-  ImageShadowNode::ConcreteState::Shared _state;
+  ImageShadowNode::ConcreteStateTeller _stateTeller;
   ImageResponseObserverCoordinator const *_coordinator;
   RCTImageResponseObserverProxy _imageResponseObserverProxy;
 }
@@ -86,9 +84,9 @@ using namespace facebook::react;
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(state);
+  _stateTeller.setConcreteState(state);
   auto _oldState = std::static_pointer_cast<ImageShadowNode::ConcreteState const>(oldState);
-  auto data = _state->getData();
+  auto data = _stateTeller.getData().value();
 
   // This call (setting `coordinator`) must be unconditional (at the same block as setting `State`)
   // because the setter stores a raw pointer to object that `State` owns.
@@ -103,11 +101,6 @@ using namespace facebook::react;
 
     // TODO (T58941612): Tracking for visibility should be done directly on this class.
     // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
-    auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-        data.getImageRequest().getSharedImageInstrumentation());
-    if (instrumentation) {
-      instrumentation->trackNativeImageView(self);
-    }
   }
 }
 
@@ -127,7 +120,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
   self.coordinator = nullptr;
   _imageView.image = nil;
-  _state.reset();
+  _stateTeller.invalidate();
 }
 
 - (void)dealloc
@@ -139,7 +132,7 @@ using namespace facebook::react;
 
 - (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
 {
-  if (!_eventEmitter || !_state) {
+  if (!_eventEmitter || !_stateTeller.isValid()) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.
     // In the future, we should incorporate an `EventEmitter` into a separate object owned by `ImageRequest` or `State`.
     // See for more info: T46311063.
@@ -165,12 +158,12 @@ using namespace facebook::react;
   }
 
   void (^didSetImage)() = ^() {
-    if (!self->_state) {
+    auto data = self->_stateTeller.getData();
+    if (!data.hasValue()) {
       return;
     }
-    auto data = self->_state->getData();
     auto instrumentation = std::static_pointer_cast<RCTImageInstrumentationProxy const>(
-        data.getImageRequest().getSharedImageInstrumentation());
+        data.value().getImageRequest().getSharedImageInstrumentation());
     if (instrumentation) {
       instrumentation->didSetImage();
     }
@@ -213,6 +206,17 @@ using namespace facebook::react;
 }
 
 @end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Can't the import generated Plugin.h because plugins are not in this BUCK target
+Class<RCTComponentViewProtocol> RCTImageCls(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 Class<RCTComponentViewProtocol> RCTImageCls(void)
 {

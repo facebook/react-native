@@ -166,7 +166,8 @@ def rn_codegen_components(
 
     fb_native.genrule(
         name = copy_generated_cxx_files,
-        cmd = "mkdir $OUT && find $(location :{}) -name '*.cpp' -o -name '*.h' -exec cp {{}} $OUT \\;".format(generate_fixtures_rule_name),
+        # The command below is filtering C++ iOS files, this will be refactored when C++ codegen is finished.
+        cmd = "mkdir -p $OUT && find $(location :{}) -not -path '*/rncore*' -not -path '*Tests*' -not -path '*NativeModules*' -not -path '*RCTComponentViewHelpers*' -type f \\( -iname \\*.h -o -iname \\*.cpp \\) -print0 -exec cp {{}} $OUT \\;".format(generate_fixtures_rule_name),
         out = "cxx",
         labels = ["codegen_rule"],
     )

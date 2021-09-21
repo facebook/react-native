@@ -10,7 +10,7 @@
 
 'use strict';
 
-import AnimatedImplementation from '../../Animated/src/AnimatedImplementation';
+import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import ReactNative from '../../Renderer/shims/ReactNative';
@@ -42,6 +42,7 @@ import type {State as ScrollResponderState} from '../ScrollResponder';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
+import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
 import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
 import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
@@ -628,14 +629,8 @@ function createScrollResponder(
   return scrollResponder;
 }
 
-type ContextType = {|horizontal: boolean|} | null;
-const Context: React.Context<ContextType> = React.createContext(null);
-const standardHorizontalContext: ContextType = Object.freeze({
-  horizontal: true,
-});
-const standardVerticalContext: ContextType = Object.freeze({horizontal: false});
 type ScrollViewComponentStatics = $ReadOnly<{|
-  Context: typeof Context,
+  Context: typeof ScrollViewContext,
 |}>;
 
 /**
@@ -674,7 +669,7 @@ type ScrollViewComponentStatics = $ReadOnly<{|
  * supports out of the box.
  */
 class ScrollView extends React.Component<Props, State> {
-  static Context: React$Context<ContextType> = Context;
+  static Context: typeof ScrollViewContext = ScrollViewContext;
   /**
    * Part 1: Removing ScrollResponder.Mixin:
    *
@@ -1196,14 +1191,10 @@ class ScrollView extends React.Component<Props, State> {
       });
     }
     children = (
-      <Context.Provider
-        value={
-          this.props.horizontal === true
-            ? standardHorizontalContext
-            : standardVerticalContext
-        }>
+      <ScrollViewContext.Provider
+        value={this.props.horizontal === true ? HORIZONTAL : VERTICAL}>
         {children}
-      </Context.Provider>
+      </ScrollViewContext.Provider>
     );
 
     const hasStickyHeaders =
@@ -1386,7 +1377,7 @@ Wrapper.displayName = 'ScrollView';
 const ForwardedScrollView = React.forwardRef(Wrapper);
 
 // $FlowFixMe Add static context to ForwardedScrollView
-ForwardedScrollView.Context = Context;
+ForwardedScrollView.Context = ScrollViewContext;
 
 ForwardedScrollView.displayName = 'ScrollView';
 

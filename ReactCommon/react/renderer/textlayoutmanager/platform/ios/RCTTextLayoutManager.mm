@@ -108,9 +108,19 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
+#if TARGET_OS_MACCATALYST
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSaveGState(context);
+  CGContextSetShouldSmoothFonts(context, NO);
+#endif
+
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:frame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:frame.origin];
+
+#if TARGET_OS_MACCATALYST
+  CGContextRestoreGState(context);
+#endif
 }
 
 - (LinesMeasurements)getLinesForAttributedString:(facebook::react::AttributedString)attributedString

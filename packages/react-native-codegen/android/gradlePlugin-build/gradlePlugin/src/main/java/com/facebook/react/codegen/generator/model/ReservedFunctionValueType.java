@@ -8,6 +8,8 @@
 package com.facebook.react.codegen.generator.model;
 
 public final class ReservedFunctionValueType extends Type {
+  public static final String TYPE_NAME = "ReservedFunctionValueTypeAnnotation";
+
   public enum ReservedName {
     RootTag,
   }
@@ -17,5 +19,10 @@ public final class ReservedFunctionValueType extends Type {
   public ReservedFunctionValueType(final TypeId typeId, ReservedName reservedName) {
     super(typeId);
     this.reservedName = reservedName;
+  }
+
+  @Override
+  public String toString() {
+    return mTypeId + "(" + reservedName.toString() + ")";
   }
 }

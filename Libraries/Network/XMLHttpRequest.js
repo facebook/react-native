@@ -17,7 +17,6 @@ const RCTNetworking = require('./RCTNetworking');
 
 const base64 = require('base64-js');
 const invariant = require('invariant');
-const warning = require('fbjs/lib/warning');
 
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
 
@@ -184,8 +183,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       );
     }
     if (!SUPPORTED_RESPONSE_TYPES.hasOwnProperty(responseType)) {
-      warning(
-        false,
+      console.warn(
         `The provided value '${responseType}' is not a valid 'responseType'.`,
       );
       return;
