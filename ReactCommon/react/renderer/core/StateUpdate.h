@@ -26,6 +26,7 @@ class StateUpdate {
   SharedShadowNodeFamily family;
   Callback callback;
   FailureCallback failureCallback;
+  bool autorepeat;
 };
 
 } // namespace react

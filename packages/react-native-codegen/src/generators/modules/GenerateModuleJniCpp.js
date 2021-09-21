@@ -44,6 +44,10 @@ Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(const JavaTurboMo
 ::_PROPERTIES_MAP_::
 }`.trim();
 
+const oneModuleLookupTemplate = `  if (moduleName == "::_MODULE_NAME_::") {
+    return std::make_shared<Native::_MODULE_NAME_::SpecJSI>(params);
+  }`;
+
 const template = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -60,6 +64,10 @@ namespace facebook {
 namespace react {
 
 ::_MODULES_::
+
+std::shared_ptr<TurboModule> ::_LIBRARY_NAME_::_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
+::_MODULE_LOOKUP_::
+}
 
 } // namespace react
 } // namespace facebook
@@ -323,10 +331,17 @@ module.exports = {
       })
       .join('\n');
 
+    const moduleLookup = Object.keys(nativeModules)
+      .map(name => {
+        return oneModuleLookupTemplate.replace(/::_MODULE_NAME_::/g, name);
+      })
+      .join('\n');
+
     const fileName = `${moduleSpecName}-generated.cpp`;
     const replacedTemplate = template
       .replace(/::_MODULES_::/g, modules)
       .replace(/::_LIBRARY_NAME_::/g, libraryName)
+      .replace(/::_MODULE_LOOKUP_::/g, moduleLookup)
       .replace(/::_INCLUDE_::/g, `"${moduleSpecName}.h"`);
     return new Map([[fileName, replacedTemplate]]);
   },

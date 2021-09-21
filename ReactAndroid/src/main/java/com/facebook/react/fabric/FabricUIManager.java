@@ -22,6 +22,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.View;
 import androidx.annotation.AnyThread;
@@ -34,6 +35,7 @@ import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -230,6 +232,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
+
+    Point viewportOffset = ReactRootView.getViewportOffset(rootView);
+
     mBinding.startSurfaceWithConstraints(
         rootTag,
         moduleName,
@@ -238,6 +243,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         getMaxSize(widthMeasureSpec),
         getMinSize(heightMeasureSpec),
         getMaxSize(heightMeasureSpec),
+        viewportOffset.x,
+        viewportOffset.y,
         I18nUtil.getInstance().isRTL(context),
         I18nUtil.getInstance().doLeftAndRightSwapInRTL(context));
     return rootTag;
@@ -957,7 +964,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @UiThread
   @ThreadConfined(UI)
   public void updateRootLayoutSpecs(
-      final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
+      final int rootTag,
+      final int widthMeasureSpec,
+      final int heightMeasureSpec,
+      final int offsetX,
+      final int offsetY) {
 
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Updating Root Layout Specs");
@@ -977,6 +988,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         getMaxSize(widthMeasureSpec),
         getMinSize(heightMeasureSpec),
         getMaxSize(heightMeasureSpec),
+        offsetX,
+        offsetY,
         isRTL,
         doLeftAndRightSwapInRTL);
   }

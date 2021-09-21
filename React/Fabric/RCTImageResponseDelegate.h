@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTImageResponseDelegate <NSObject>
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer;
+- (void)didReceiveImage:(UIImage *)image metadata:(id)metadata fromObserver:(void const *)observer;
 - (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer;
 - (void)didReceiveFailureFromObserver:(void const *)observer;
 

@@ -43,6 +43,8 @@ namespace react {
 
 ::_MODULES_::
 
+std::shared_ptr<TurboModule> ::_LIBRARY_NAME_::_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
+
 } // namespace react
 } // namespace facebook
 `;
@@ -71,8 +73,9 @@ module.exports = {
       .join('\n');
 
     const fileName = `${moduleSpecName}.h`;
-    const replacedTemplate = template.replace(/::_MODULES_::/g, modules);
-
+    const replacedTemplate = template
+      .replace(/::_MODULES_::/g, modules)
+      .replace(/::_LIBRARY_NAME_::/g, libraryName);
     return new Map([[fileName, replacedTemplate]]);
   },
 };

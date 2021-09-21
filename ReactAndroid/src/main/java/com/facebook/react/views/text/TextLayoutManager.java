@@ -29,6 +29,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
@@ -115,7 +116,12 @@ public class TextLayoutManager {
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
-        if (textAttributes.mIsColorSet) {
+        if (ReactAccessibilityDelegate.AccessibilityRole.LINK.equals(
+            textAttributes.mAccessibilityRole)) {
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new ReactClickableSpan(reactTag, textAttributes.mColor)));
+        } else if (textAttributes.mIsColorSet) {
           ops.add(
               new SetSpanOperation(
                   start, end, new ReactForegroundColorSpan(textAttributes.mColor)));
@@ -268,7 +274,7 @@ public class TextLayoutManager {
     if (attributedString.hasKey("cacheId")) {
       int cacheId = attributedString.getInt("cacheId");
       if (sTagToSpannableCache.containsKey(cacheId)) {
-        text = sTagToSpannableCache.get(attributedString.getInt("cacheId"));
+        text = sTagToSpannableCache.get(cacheId);
       } else {
         return 0;
       }
@@ -501,13 +507,13 @@ public class TextLayoutManager {
     protected int start, end;
     protected ReactSpan what;
 
-    SetSpanOperation(int start, int end, ReactSpan what) {
+    public SetSpanOperation(int start, int end, ReactSpan what) {
       this.start = start;
       this.end = end;
       this.what = what;
     }
 
-    public void execute(SpannableStringBuilder sb, int priority) {
+    public void execute(Spannable sb, int priority) {
       // All spans will automatically extend to the right of the text, but not the left - except
       // for spans that start at the beginning of the text.
       int spanFlags = Spannable.SPAN_EXCLUSIVE_INCLUSIVE;

@@ -11,6 +11,7 @@
 NSString *const RCTErrorDomain = @"RCTErrorDomain";
 NSString *const RCTJSStackTraceKey = @"RCTJSStackTraceKey";
 NSString *const RCTJSRawStackTraceKey = @"RCTJSRawStackTraceKey";
+NSString *const RCTObjCStackTraceKey = @"RCTObjCStackTraceKey";
 NSString *const RCTFatalExceptionName = @"RCTFatalException";
 NSString *const RCTUntruncatedMessageKey = @"RCTUntruncatedMessageKey";
 

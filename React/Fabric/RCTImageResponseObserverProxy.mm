@@ -23,10 +23,11 @@ RCTImageResponseObserverProxy::RCTImageResponseObserverProxy(id<RCTImageResponse
 void RCTImageResponseObserverProxy::didReceiveImage(ImageResponse const &imageResponse) const
 {
   UIImage *image = (UIImage *)unwrapManagedObject(imageResponse.getImage());
+  id metadata = unwrapManagedObject(imageResponse.getMetadata());
   id<RCTImageResponseDelegate> delegate = delegate_;
   auto this_ = this;
   RCTExecuteOnMainQueue(^{
-    [delegate didReceiveImage:image fromObserver:this_];
+    [delegate didReceiveImage:image metadata:metadata fromObserver:this_];
   });
 }
 

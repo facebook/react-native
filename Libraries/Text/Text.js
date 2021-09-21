@@ -152,7 +152,13 @@ class TouchableText extends React.Component<Props, State> {
       <TextAncestor.Consumer>
         {hasTextAncestor =>
           hasTextAncestor ? (
-            <RCTVirtualText {...props} ref={props.forwardedRef} />
+            <RCTVirtualText
+              {...props}
+              // This is used on Android to call a nested Text component's press handler from the context menu.
+              // TODO T75145059 Clean this up once Text is migrated off of Touchable
+              onClick={props.onPress}
+              ref={props.forwardedRef}
+            />
           ) : (
             <TextAncestor.Provider value={true}>
               <RCTText {...props} ref={props.forwardedRef} />

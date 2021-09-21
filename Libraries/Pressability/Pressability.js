@@ -720,6 +720,11 @@ export default class Pressability {
     }
 
     if (isPressInSignal(prevState) && signal === 'RESPONDER_RELEASE') {
+      // If we never activated (due to delays), activate and deactivate now.
+      if (!isNextActive && !isPrevActive) {
+        this._activate(event);
+        this._deactivate(event);
+      }
       const {onLongPress, onPress, android_disableSound} = this._config;
       if (onPress != null) {
         const isPressCanceledByLongPress =
@@ -727,11 +732,6 @@ export default class Pressability {
           prevState === 'RESPONDER_ACTIVE_LONG_PRESS_IN' &&
           this._shouldLongPressCancelPress();
         if (!isPressCanceledByLongPress) {
-          // If we never activated (due to delays), activate and deactivate now.
-          if (!isNextActive && !isPrevActive) {
-            this._activate(event);
-            this._deactivate(event);
-          }
           if (Platform.OS === 'android' && android_disableSound !== true) {
             SoundManager.playTouchSound();
           }

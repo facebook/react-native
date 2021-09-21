@@ -203,13 +203,6 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
  private:
   friend ShadowNodeFamily;
 
-  /**
-   * This number is deterministically, statelessly recomputable . It tells us
-   * the version of the state of the entire subtree, including this component
-   * and all descendants.
-   */
-  int stateRevision_;
-
   /*
    * Clones the list of children (and creates a new `shared_ptr` to it) if
    * `childrenAreShared_` flag is `true`.

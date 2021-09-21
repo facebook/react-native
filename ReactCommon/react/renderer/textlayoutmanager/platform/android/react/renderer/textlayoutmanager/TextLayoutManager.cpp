@@ -37,7 +37,7 @@ TextMeasurement TextLayoutManager::measure(
 }
 
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
-    int cacheId,
+    int64_t cacheId,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   const jni::global_ref<jobject> &fabricUIManager =
@@ -64,7 +64,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   auto maximumSize = layoutConstraints.maximumSize;
 
   local_ref<JString> componentName = make_jstring("RCTText");
-  folly::dynamic cacheIdMap;
+  folly::dynamic cacheIdMap = folly::dynamic::object;
   cacheIdMap["cacheId"] = cacheId;
   local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
       ReadableNativeMap::newObjectCxxArgs(cacheIdMap);
@@ -87,6 +87,10 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
       minimumSize.height,
       maximumSize.height,
       attachmentPositions));
+
+  // Clean up allocated ref - it still takes up space in the JNI ref table even
+  // though it's 0 length
+  env->DeleteLocalRef(attachmentPositions);
 
   // TODO: currently we do not support attachments for cached IDs - should we?
   auto attachments = TextMeasurement::Attachments{};
@@ -172,8 +176,10 @@ TextMeasurement TextLayoutManager::doMeasure(
       }
     }
   }
-  // DELETE REF
+
+  // Clean up allocated ref
   env->DeleteLocalRef(attachmentPositions);
+
   return TextMeasurement{size, attachments};
 }
 

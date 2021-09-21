@@ -35,10 +35,8 @@
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
-#import "MainRunLoopEventBeat.h"
 #import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
-#import "RuntimeEventBeat.h"
 
 using namespace facebook::react;
 
@@ -332,6 +330,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetOnDemandViewMounting(YES);
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:optimized_hit_testing_ios")) {
+    RCTExperimentSetOptimizedHitTesting(YES);
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
@@ -354,27 +356,17 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_run_loop_based_event_beat_ios")) {
-    toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
-      auto runLoopObserver =
-          std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-      return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
-    };
+  toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+    auto runLoopObserver =
+        std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+    return std::make_unique<SynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
+  };
 
-    toolbox.asynchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
-      auto runLoopObserver =
-          std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-      return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
-    };
-  } else {
-    toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
-      return std::make_unique<MainRunLoopEventBeat>(ownerBox, runtimeExecutor);
-    };
-
-    toolbox.asynchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
-      return std::make_unique<RuntimeEventBeat>(ownerBox, runtimeExecutor);
-    };
-  }
+  toolbox.asynchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+    auto runLoopObserver =
+        std::make_unique<MainRunLoopObserver const>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
+    return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
+  };
 
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
   scheduler.delegate = self;

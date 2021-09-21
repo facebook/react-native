@@ -49,6 +49,8 @@ RCT_ENUM_CONVERTER(
 
 @interface RCTModalHostViewManager () <RCTModalHostViewInteractor>
 
+@property (nonatomic, copy) dispatch_block_t dismissWaitingBlock;
+
 @end
 
 @implementation RCTModalHostViewManager {
@@ -80,9 +82,16 @@ RCT_EXPORT_MODULE()
   if (_presentationBlock) {
     _presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
+    __weak typeof(self) weakself = self;
     [[modalHostView reactViewController] presentViewController:viewController
                                                       animated:animated
-                                                    completion:completionBlock];
+                                                    completion:^{
+                                                      !completionBlock ?: completionBlock();
+                                                      __strong typeof(weakself) strongself = weakself;
+                                                      !strongself.dismissWaitingBlock
+                                                          ?: strongself.dismissWaitingBlock();
+                                                      strongself.dismissWaitingBlock = nil;
+                                                    }];
   }
 }
 
@@ -98,7 +107,13 @@ RCT_EXPORT_MODULE()
   if (_dismissalBlock) {
     _dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
-    [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+    self.dismissWaitingBlock = ^{
+      [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+    };
+    if (viewController.presentingViewController) {
+      self.dismissWaitingBlock();
+      self.dismissWaitingBlock = nil;
+    }
   }
 }
 

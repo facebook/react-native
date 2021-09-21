@@ -932,7 +932,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      // Fabric: update representation of AttributedString
       if (mEditText.getFabricViewStateManager().hasStateWrapper()) {
         // Fabric: communicate to C++ layer that text has changed
         // We need to call `incrementAndGetEventCounter` here explicitly because this
@@ -1203,6 +1202,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
+    boolean containsMultipleFragments =
+        attributedString.getArray("fragments").toArrayList().size() > 1;
+
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
@@ -1212,6 +1214,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props),
-        attributedString);
+        containsMultipleFragments);
   }
 }

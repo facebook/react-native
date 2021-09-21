@@ -926,10 +926,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   /**
    * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
-   * parameters.
+   * parameters. offsetX and offsetY aren't used in non-Fabric, so they're ignored here.
    */
   public void updateRootLayoutSpecs(
-      final int rootViewTag, final int widthMeasureSpec, final int heightMeasureSpec) {
+      final int rootViewTag,
+      final int widthMeasureSpec,
+      final int heightMeasureSpec,
+      int offsetX,
+      int offsetY) {
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     reactApplicationContext.runOnNativeModulesQueueThread(
         new GuardedRunnable(reactApplicationContext) {

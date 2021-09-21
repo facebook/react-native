@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "10.0", :tvos => "10.0", :osx => "10.14" } # TODO(macOS GH#214)
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
-  s.source_files           = "*.{m,mm}"
+  s.source_files           = "*.{h,m,mm}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTBlob"
   s.pod_target_xcconfig    = {

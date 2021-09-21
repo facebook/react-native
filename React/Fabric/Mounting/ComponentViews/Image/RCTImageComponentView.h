@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTImageResponseDelegate.h>
 #import <React/RCTViewComponentView.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,7 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * UIView class for root <Image> component.
  */
-@interface RCTImageComponentView : RCTViewComponentView
+@interface RCTImageComponentView : RCTViewComponentView <RCTImageResponseDelegate> {
+ @protected
+  UIImageView *_imageView;
+}
 
 @end
 

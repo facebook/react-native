@@ -1139,26 +1139,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 {
 }
 
-- (void)reload
-{
-  if (!_valid) {
-    RCTLogWarn(
-        @"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.",
-        self);
-  }
-  RCTTriggerReloadCommandListeners(@"Unknown from cxx bridge");
-}
-
-- (void)reloadWithReason:(NSString *)reason
-{
-  if (!_valid) {
-    RCTLogWarn(
-        @"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.",
-        self);
-  }
-  RCTTriggerReloadCommandListeners(reason);
-}
-
 - (Class)executorClass
 {
   return _parentBridge.executorClass;
