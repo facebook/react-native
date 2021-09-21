@@ -47,10 +47,22 @@ public class FabricEventEmitter implements RCTModernEventEmitter {
   @Override
   public void receiveEvent(
       int surfaceId, int reactTag, String eventName, @Nullable WritableMap params) {
+    receiveEvent(surfaceId, reactTag, eventName, false, 0, params);
+  }
+
+  @Override
+  public void receiveEvent(
+      int surfaceId,
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      int customCoalesceKey,
+      @Nullable WritableMap params) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "FabricEventEmitter.receiveEvent('" + eventName + "')");
-    mUIManager.receiveEvent(surfaceId, reactTag, eventName, params);
+    mUIManager.receiveEvent(
+        surfaceId, reactTag, eventName, canCoalesceEvent, customCoalesceKey, params);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
@@ -85,7 +97,7 @@ public class FabricEventEmitter implements RCTModernEventEmitter {
         rootNodeID = targetReactTag;
       }
 
-      receiveEvent(targetSurfaceId, rootNodeID, eventTopLevelType, touch);
+      receiveEvent(targetSurfaceId, rootNodeID, eventTopLevelType, false, 0, touch);
     }
   }
 

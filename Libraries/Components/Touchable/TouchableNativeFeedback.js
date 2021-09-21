@@ -183,8 +183,8 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
       onPress: this.props.onPress,
       onPressIn: event => {
         if (Platform.OS === 'android') {
-          this._dispatchPressedStateChange(true);
           this._dispatchHotspotUpdate(event);
+          this._dispatchPressedStateChange(true);
         }
         if (this.props.onPressIn != null) {
           this.props.onPressIn(event);

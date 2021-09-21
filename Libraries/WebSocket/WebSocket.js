@@ -13,6 +13,7 @@ import type {BlobData} from '../Blob/BlobTypes';
 import BlobManager from '../Blob/BlobManager';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import binaryToBase64 from '../Utilities/binaryToBase64';
+import Platform from '../Utilities/Platform';
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeWebSocketModule from './NativeWebSocketModule';
 import WebSocketEvent from './WebSocketEvent';
@@ -131,7 +132,11 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
       protocols = null;
     }
 
-    this._eventEmitter = new NativeEventEmitter(NativeWebSocketModule);
+    this._eventEmitter = new NativeEventEmitter(
+      // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+      // If you want to use the native module on other platforms, please remove this condition and test its behavior
+      Platform.OS !== 'ios' ? null : NativeWebSocketModule,
+    );
     this._socketId = nextWebSocketId++;
     this._registerEvents();
     NativeWebSocketModule.connect(url, protocols, {headers}, this._socketId);

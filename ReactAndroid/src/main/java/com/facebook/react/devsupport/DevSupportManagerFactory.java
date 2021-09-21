@@ -17,14 +17,14 @@ import java.util.Map;
 
 /**
  * A simple factory that creates instances of {@link DevSupportManager} implementations. Uses
- * reflection to create DevSupportManagerImpl if it exists. This allows ProGuard to strip that class
- * and its dependencies in release builds. If the class isn't found, {@link
+ * reflection to create BridgeDevSupportManager if it exists. This allows ProGuard to strip that
+ * class and its dependencies in release builds. If the class isn't found, {@link
  * DisabledDevSupportManager} is returned instead.
  */
 public class DevSupportManagerFactory {
 
   private static final String DEVSUPPORT_IMPL_PACKAGE = "com.facebook.react.devsupport";
-  private static final String DEVSUPPORT_IMPL_CLASS = "DevSupportManagerImpl";
+  private static final String DEVSUPPORT_IMPL_CLASS = "BridgeDevSupportManager";
 
   public static DevSupportManager create(
       Context applicationContext,
@@ -88,7 +88,7 @@ public class DevSupportManagerFactory {
               customPackagerCommandHandlers);
     } catch (Exception e) {
       throw new RuntimeException(
-          "Requested enabled DevSupportManager, but DevSupportManagerImpl class was not found"
+          "Requested enabled DevSupportManager, but BridgeDevSupportManager class was not found"
               + " or could not be created",
           e);
     }

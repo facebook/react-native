@@ -9,6 +9,7 @@
 
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 
@@ -22,7 +23,10 @@ namespace react {
 class BaseTextProps {
  public:
   BaseTextProps() = default;
-  BaseTextProps(const BaseTextProps &sourceProps, const RawProps &rawProps);
+  BaseTextProps(
+      const PropsParserContext &context,
+      const BaseTextProps &sourceProps,
+      const RawProps &rawProps);
 
 #pragma mark - Props
 

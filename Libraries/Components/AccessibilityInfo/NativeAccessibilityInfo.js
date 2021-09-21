@@ -20,6 +20,10 @@ export interface Spec extends TurboModule {
   ) => void;
   +setAccessibilityFocus: (reactTag: number) => void;
   +announceForAccessibility: (announcement: string) => void;
+  +getRecommendedTimeoutMillis?: (
+    mSec: number,
+    onSuccess: (recommendedTimeoutMillis: number) => void,
+  ) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('AccessibilityInfo'): ?Spec);

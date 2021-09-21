@@ -7,8 +7,8 @@
 
 plugins {
     id("com.android.library")
-    id("com.facebook.react.codegen")
-    id("maven")
+    id("com.facebook.react")
+    id("maven-publish")
     id("de.undercouch.download")
 }
 
@@ -18,6 +18,7 @@ import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
 
+def AAR_OUTPUT_URL = "file://${projectDir}/../android"
 // We download various C++ open-source dependencies into downloads.
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
 // After that we build native code from src/main/jni with module path pointing at third-party-ndk.
@@ -55,8 +56,8 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
 
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
     from(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
-    from("src/main/jni/third-party/boost/Android.mk")
-    include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp")
+    from("src/main/jni/third-party/boost")
+    include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp", "asm/**/*.S")
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/boost")
     doLast {
@@ -96,6 +97,51 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     into("$thirdPartyNdkDir/folly")
 }
 
+task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {
+    src("https://github.com/fmtlib/fmt/archive/${FMT_VERSION}.tar.gz")
+    onlyIfNewer(true)
+    overwrite(false)
+    dest(new File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
+}
+
+task prepareFmt(dependsOn: dependenciesPath ? [] : [downloadFmt], type: Copy) {
+    from(dependenciesPath ?: tarTree(downloadFmt.dest))
+    from("src/main/jni/third-party/fmt/Android.mk")
+    include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "Android.mk")
+    eachFile { fname -> fname.path = (fname.path - "fmt-${FMT_VERSION}/") }
+    includeEmptyDirs = false
+    into("$thirdPartyNdkDir/fmt")
+}
+
+task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
+    src("https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable/libevent-${LIBEVENT_VERSION}-stable.tar.gz")
+    onlyIfNewer(true)
+    overwrite(false)
+    dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
+}
+
+task prepareLibevent(dependsOn: dependenciesPath ? [] : [downloadLibevent], type: Copy) {
+    from(dependenciesPath ?: tarTree(downloadLibevent.dest))
+    from("src/main/jni/third-party/libevent/Android.mk")
+    from("src/main/jni/third-party/libevent/event-config.h")
+    from("src/main/jni/third-party/libevent/evconfig-private.h")
+    include(
+        "libevent-${LIBEVENT_VERSION}-stable/*.c",
+        "libevent-${LIBEVENT_VERSION}-stable/*.h",
+        "libevent-${LIBEVENT_VERSION}-stable/include/**/*",
+        "evconfig-private.h",
+        "event-config.h",
+        "Android.mk"
+    )
+    eachFile { fname -> fname.path = (fname.path - "libevent-${LIBEVENT_VERSION}-stable/") }
+    includeEmptyDirs = false
+    into("$thirdPartyNdkDir/libevent")
+
+    doLast {
+        ant.move(file: "$thirdPartyNdkDir/libevent/event-config.h", tofile: "$thirdPartyNdkDir/libevent/include/event2/event-config.h")
+    }
+}
+
 task prepareHermes(dependsOn: createNativeDepsDirectories, type: Copy) {
     def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
     if (!hermesPackagePath) {
@@ -124,6 +170,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
 // executed by automake. This way we can avoid dependencies on make/automake
 task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) {
+    duplicatesStrategy("warn")
     from(dependenciesPath ?: tarTree(downloadGlog.dest))
     from("src/main/jni/third-party/glog/")
     include("glog-${GLOG_VERSION}/src/**/*", "Android.mk", "config.h")
@@ -196,6 +243,8 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadDoubleConversion)
     dependsOn(downloadFolly)
     dependsOn(downloadGlog)
+    dependsOn(downloadFmt)
+    dependsOn(downloadLibevent)
 }
 
 /**
@@ -277,6 +326,14 @@ def reactNativeInspectorProxyPort() {
     return value != null ? value : reactNativeDevServerPort()
 }
 
+def reactNativeArchitectures() {
+    def isDebug = gradle.startParameter.taskRequests.any {
+        it.args.any { it.endsWith("Debug") }
+    }
+    def value = project.getProperties().get("reactNativeDebugArchitectures")
+    return value != null && isDebug ? value : "all"
+}
+
 def getNdkBuildFullPath() {
     def ndkBuildFullPath = findNdkBuildFullPath()
     if (ndkBuildFullPath == null) {
@@ -297,7 +354,7 @@ def getNdkBuildFullPath() {
 }
 
 def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
-    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog, extractAARHeaders, extractJNIFiles)
+    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractAARHeaders, extractJNIFiles)
     dependsOn("generateCodegenArtifactsFromSchema");
 
     inputs.dir("$projectDir/../ReactCommon")
@@ -305,7 +362,9 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
     inputs.dir("src/main/java/com/facebook/react/turbomodule/core/jni")
     inputs.dir("src/main/java/com/facebook/react/modules/blob")
     outputs.dir("$buildDir/react-ndk/all")
-    commandLine(getNdkBuildFullPath(),
+    def commandLineArgs = [
+            getNdkBuildFullPath(),
+            "APP_ABI=${reactNativeArchitectures()}",
             "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),
             "NDK_PROJECT_PATH=null",
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
@@ -317,7 +376,12 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
             "-C", file("src/main/jni/react/jni").absolutePath,
             "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
-    )
+    ]
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        // This flag will suppress "fcntl(): Bad file descriptor" warnings on local builds.
+        commandLineArgs.add("--output-sync=none")
+    }
+    commandLine(commandLineArgs)
 }
 
 def cleanReactNdkLib = tasks.register("cleanReactNdkLib", Exec) {
@@ -377,12 +441,15 @@ task extractJNIFiles {
     }
 }
 
+task installArchives {
+    dependsOn("publishReleasePublicationToNpmRepository")
+}
+
 android {
     compileSdkVersion 30
     ndkVersion ANDROID_NDK_VERSION
-    compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_1_8)
-        targetCompatibility(JavaVersion.VERSION_1_8)
+    if (ANDROID_NDK_PATH != null) {
+        ndkPath ANDROID_NDK_PATH
     }
 
     defaultConfig {
@@ -415,11 +482,7 @@ android {
         }
     }
 
-    tasks.withType(JavaCompile) {
-        compileTask ->
-            compileTask.dependsOn(packageReactNdkLibs)
-    }
-
+    preBuild.dependsOn(packageReactNdkLibs)
     clean.dependsOn(cleanReactNdkLib)
 
     lintOptions {
@@ -439,10 +502,11 @@ android {
 }
 
 dependencies {
-    api("com.facebook.infer.annotation:infer-annotation:0.11.2")
-    api("com.facebook.yoga:proguard-annotations:1.17.0")
+    api("com.facebook.infer.annotation:infer-annotation:0.18.0")
+    api("com.facebook.yoga:proguard-annotations:1.19.0")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
+    api("androidx.autofill:autofill:1.1.0")
     api("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
@@ -451,7 +515,7 @@ dependencies {
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
-    api("com.squareup.okio:okio:1.17.5")
+    api("com.squareup.okio:okio:2.9.0")
     api("com.facebook.fbjni:fbjni-java-only:0.2.2")
     extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
     extractJNI("com.facebook.fbjni:fbjni:0.2.2")
@@ -472,13 +536,61 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
 }
 
-apply(from: "release.gradle")
-
 react {
     // TODO: The library name is chosen for parity with Fabric components & iOS
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
     jsRootDir = file("../Libraries")
-    reactNativeRootDir = file("$projectDir/..")
+    reactRoot = file("$projectDir/..")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                artifactId = POM_ARTIFACT_ID
+                groupId = GROUP
+                version = VERSION_NAME
+
+                pom {
+                    name = POM_NAME
+                    description = "A framework for building native apps with React"
+                    url = "https://github.com/facebook/react-native"
+
+                    developers {
+                        developer {
+                            id = "facebook"
+                            name = "Facebook"
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = "MIT License"
+                            url = "https://github.com/facebook/react-native/blob/HEAD/LICENSE"
+                            distribution = "repo"
+                        }
+                    }
+
+                    scm {
+                        url = "https://github.com/facebook/react-native.git"
+                        connection = "scm:git:https://github.com/facebook/react-native.git"
+                        developerConnection = "scm:git:git@github.com:facebook/react-native.git"
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "npm"
+                url = AAR_OUTPUT_URL
+            }
+        }
+    }
 }

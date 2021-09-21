@@ -13,13 +13,11 @@
 const {OS} = require('../../Utilities/Platform');
 const normalizeColor = require('../normalizeColor');
 
-it('forwards calls to @react-native/normalize-color/base', () => {
-  jest
-    .resetModules()
-    .mock('@react-native/normalize-color/base', () => jest.fn());
+it('forwards calls to @react-native/normalize-color', () => {
+  jest.resetModules().mock('@react-native/normalize-color', () => jest.fn());
 
   expect(require('../normalizeColor')('#abc')).not.toBe(null);
-  expect(require('@react-native/normalize-color/base')).toBeCalled();
+  expect(require('@react-native/normalize-color')).toBeCalled();
 });
 
 describe('iOS', () => {
@@ -40,6 +38,25 @@ describe('iOS', () => {
       const color = DynamicColorIOS({light: 'black', dark: 'white'});
       const normalizedColor = normalizeColor(color);
       const expectedColor = {dynamic: {light: 'black', dark: 'white'}};
+      expect(normalizedColor).toEqual(expectedColor);
+    });
+
+    it('should normalize iOS Dynamic colors with accessible colors', () => {
+      const color = DynamicColorIOS({
+        light: 'black',
+        dark: 'white',
+        highContrastLight: 'red',
+        highContrastDark: 'blue',
+      });
+      const normalizedColor = normalizeColor(color);
+      const expectedColor = {
+        dynamic: {
+          light: 'black',
+          dark: 'white',
+          highContrastLight: 'red',
+          highContrastDark: 'blue',
+        },
+      };
       expect(normalizedColor).toEqual(expectedColor);
     });
 

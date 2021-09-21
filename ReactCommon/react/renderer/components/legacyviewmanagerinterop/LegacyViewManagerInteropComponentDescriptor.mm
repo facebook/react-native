@@ -10,7 +10,6 @@
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
-#include <React/RCTUIManager.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/ManagedObjectWrapper.h>
 #include "LegacyViewManagerInteropState.h"
@@ -95,7 +94,7 @@ ComponentName LegacyViewManagerInteropComponentDescriptor::getComponentName() co
   return std::static_pointer_cast<std::string const>(this->flavor_)->c_str();
 }
 
-void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode::Unshared shadowNode) const
+void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode::Unshared const &shadowNode) const
 {
   ConcreteComponentDescriptor::adopt(shadowNode);
 

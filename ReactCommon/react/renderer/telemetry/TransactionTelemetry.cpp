@@ -14,6 +14,13 @@ namespace react {
 
 thread_local TransactionTelemetry *threadLocalTransactionTelemetry = nullptr;
 
+TransactionTelemetry::TransactionTelemetry()
+    : TransactionTelemetry(telemetryTimePointNow) {}
+
+TransactionTelemetry::TransactionTelemetry(
+    std::function<TelemetryTimePoint()> now)
+    : now_{now} {}
+
 TransactionTelemetry *TransactionTelemetry::threadLocalTelemetry() {
   return threadLocalTransactionTelemetry;
 }
@@ -29,63 +36,63 @@ void TransactionTelemetry::unsetAsThreadLocal() {
 void TransactionTelemetry::willCommit() {
   react_native_assert(commitStartTime_ == kTelemetryUndefinedTimePoint);
   react_native_assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
-  commitStartTime_ = telemetryTimePointNow();
+  commitStartTime_ = now_();
 }
 
 void TransactionTelemetry::didCommit() {
   react_native_assert(commitStartTime_ != kTelemetryUndefinedTimePoint);
   react_native_assert(commitEndTime_ == kTelemetryUndefinedTimePoint);
-  commitEndTime_ = telemetryTimePointNow();
+  commitEndTime_ = now_();
 }
 
 void TransactionTelemetry::willDiff() {
   react_native_assert(diffStartTime_ == kTelemetryUndefinedTimePoint);
   react_native_assert(diffEndTime_ == kTelemetryUndefinedTimePoint);
-  diffStartTime_ = telemetryTimePointNow();
+  diffStartTime_ = now_();
 }
 
 void TransactionTelemetry::didDiff() {
   react_native_assert(diffStartTime_ != kTelemetryUndefinedTimePoint);
   react_native_assert(diffEndTime_ == kTelemetryUndefinedTimePoint);
-  diffEndTime_ = telemetryTimePointNow();
+  diffEndTime_ = now_();
 }
 
 void TransactionTelemetry::willLayout() {
   react_native_assert(layoutStartTime_ == kTelemetryUndefinedTimePoint);
   react_native_assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
-  layoutStartTime_ = telemetryTimePointNow();
+  layoutStartTime_ = now_();
 }
 
 void TransactionTelemetry::willMeasureText() {
   react_native_assert(
       lastTextMeasureStartTime_ == kTelemetryUndefinedTimePoint);
-  lastTextMeasureStartTime_ = telemetryTimePointNow();
+  lastTextMeasureStartTime_ = now_();
 }
 
 void TransactionTelemetry::didMeasureText() {
   numberOfTextMeasurements_++;
   react_native_assert(
       lastTextMeasureStartTime_ != kTelemetryUndefinedTimePoint);
-  textMeasureTime_ += telemetryTimePointNow() - lastTextMeasureStartTime_;
+  textMeasureTime_ += now_() - lastTextMeasureStartTime_;
   lastTextMeasureStartTime_ = kTelemetryUndefinedTimePoint;
 }
 
 void TransactionTelemetry::didLayout() {
   react_native_assert(layoutStartTime_ != kTelemetryUndefinedTimePoint);
   react_native_assert(layoutEndTime_ == kTelemetryUndefinedTimePoint);
-  layoutEndTime_ = telemetryTimePointNow();
+  layoutEndTime_ = now_();
 }
 
 void TransactionTelemetry::willMount() {
   react_native_assert(mountStartTime_ == kTelemetryUndefinedTimePoint);
   react_native_assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
-  mountStartTime_ = telemetryTimePointNow();
+  mountStartTime_ = now_();
 }
 
 void TransactionTelemetry::didMount() {
   react_native_assert(mountStartTime_ != kTelemetryUndefinedTimePoint);
   react_native_assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
-  mountEndTime_ = telemetryTimePointNow();
+  mountEndTime_ = now_();
 }
 
 void TransactionTelemetry::setRevisionNumber(int revisionNumber) {

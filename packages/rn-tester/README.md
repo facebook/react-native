@@ -20,19 +20,22 @@ Both macOS and Xcode are required.
 
 ### Running on Android
 
-You'll need to have all the [prerequisites](https://github.com/facebook/react-native/tree/master/ReactAndroid#prerequisites) (SDK, NDK) for Building React Native installed.
+You'll need to have all the [prerequisites](https://github.com/facebook/react-native/wiki/Building-from-source#prerequisites) (SDK, NDK) for Building React Native installed.
 
 Start an Android emulator.
 
-    cd react-native
-    ./gradlew :packages:rn-tester:android:app:installJscDebug
-    ./scripts/packager.sh
+```sh
+cd react-native
+# In order to use Hermes engine, run `installHermesDebug` instead.
+./gradlew :packages:rn-tester:android:app:installJscDebug
+./scripts/packager.sh
+```
 
 _Note: Building for the first time can take a while._
 
 Open the RNTester app in your emulator.
 If you want to use a physical device, run `adb devices`, then `adb -s <device name> reverse tcp:8081 tcp:8081`.
-See [Running on Device](https://reactnative.dev/docs/running-on-device.html) for additional instructions on using a physical device.
+See [Running on Device](https://reactnative.dev/docs/running-on-device) for additional instructions on using a physical device.
 
 ### Running with Buck
 

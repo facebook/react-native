@@ -8,25 +8,31 @@
  * @format
  */
 
-const DeprecatedTextInputPropTypes = require('../../DeprecatedPropTypes/DeprecatedTextInputPropTypes');
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
-const Text = require('../../Text/Text');
-const TextAncestor = require('../../Text/TextAncestor');
-const TextInputState = require('./TextInputState');
+import * as React from 'react';
 
-const invariant = require('invariant');
-const nullthrows = require('nullthrows');
-const setAndForwardRef = require('../../Utilities/setAndForwardRef');
+import DeprecatedTextInputPropTypes from '../../DeprecatedPropTypes/DeprecatedTextInputPropTypes';
+
+import Platform from '../../Utilities/Platform';
+import StyleSheet, {
+  type TextStyleProp,
+  type ViewStyleProp,
+  type ColorValue,
+} from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import TextAncestor from '../../Text/TextAncestor';
+import TextInputState from './TextInputState';
+import invariant from 'invariant';
+import nullthrows from 'nullthrows';
+import setAndForwardRef from '../../Utilities/setAndForwardRef';
 
 import usePressability from '../../Pressability/usePressability';
 
-import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {
+  SyntheticEvent,
+  ScrollEvent,
+  PressEvent,
+} from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
@@ -140,10 +146,10 @@ export type KeyboardType =
   | 'phone-pad'
   | 'number-pad'
   | 'decimal-pad'
+  | 'url'
   // iOS-only
   | 'ascii-capable'
   | 'numbers-and-punctuation'
-  | 'url'
   | 'name-phone-pad'
   | 'twitter'
   | 'web-search'
@@ -325,19 +331,43 @@ type AndroidProps = $ReadOnly<{|
    *
    * @platform android
    */
-  autoCompleteType?: ?(
+  autoComplete?: ?(
+    | 'birthdate-day'
+    | 'birthdate-full'
+    | 'birthdate-month'
+    | 'birthdate-year'
     | 'cc-csc'
     | 'cc-exp'
+    | 'cc-exp-day'
     | 'cc-exp-month'
     | 'cc-exp-year'
     | 'cc-number'
     | 'email'
+    | 'gender'
     | 'name'
+    | 'name-family'
+    | 'name-given'
+    | 'name-middle'
+    | 'name-middle-initial'
+    | 'name-prefix'
+    | 'name-suffix'
     | 'password'
+    | 'password-new'
+    | 'postal-address'
+    | 'postal-address-country'
+    | 'postal-address-extended'
+    | 'postal-address-extended-postal-code'
+    | 'postal-address-locality'
+    | 'postal-address-region'
     | 'postal-code'
     | 'street-address'
+    | 'sms-otp'
     | 'tel'
+    | 'tel-country-code'
+    | 'tel-national'
+    | 'tel-device'
     | 'username'
+    | 'username-new'
     | 'off'
   ),
 
@@ -495,6 +525,7 @@ export type Props = $ReadOnly<{|
    * - `decimal-pad`
    * - `email-address`
    * - `phone-pad`
+   * - `url`
    *
    * *iOS Only*
    *
@@ -502,7 +533,6 @@ export type Props = $ReadOnly<{|
    *
    * - `ascii-capable`
    * - `numbers-and-punctuation`
-   * - `url`
    * - `name-phone-pad`
    * - `twitter`
    * - `web-search`
@@ -1067,7 +1097,9 @@ function InternalTextInput(props: Props): React.Node {
     () => ({
       onPress: (event: PressEvent) => {
         if (props.editable !== false) {
-          nullthrows(inputRef.current).focus();
+          if (inputRef.current != null) {
+            inputRef.current.focus();
+          }
         }
       },
       onPressIn: props.onPressIn,
@@ -1131,6 +1163,7 @@ function InternalTextInput(props: Props): React.Node {
   } else if (Platform.OS === 'android') {
     const style = [props.style];
     const autoCapitalize = props.autoCapitalize || 'sentences';
+    const placeholder = props.placeholder ?? '';
     let children = props.children;
     const childCount = React.Children.count(children);
     invariant(
@@ -1173,6 +1206,7 @@ function InternalTextInput(props: Props): React.Node {
          * to get fixed */
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
+        placeholder={placeholder}
         selection={selection}
         style={style}
         text={text}

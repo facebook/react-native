@@ -48,11 +48,6 @@ public class ReactSlidingCompleteEvent extends Event<ReactSlidingCompleteEvent> 
   }
 
   @Override
-  public short getCoalescingKey() {
-    return 0;
-  }
-
-  @Override
   public boolean canCoalesce() {
     return false;
   }

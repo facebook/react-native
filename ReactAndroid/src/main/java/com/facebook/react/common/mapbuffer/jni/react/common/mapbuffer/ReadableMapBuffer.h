@@ -8,6 +8,7 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 
 #include <fbjni/ByteBuffer.h>
@@ -31,16 +32,18 @@ class ReadableMapBuffer : public jni::HybridClass<ReadableMapBuffer> {
   ~ReadableMapBuffer();
 
  private:
-  uint8_t *_serializedData = nullptr;
+  uint8_t *serializedData_ = nullptr;
 
-  int _serializedDataSize = 0;
+  int32_t serializedDataSize_ = 0;
 
   friend HybridBase;
 
   explicit ReadableMapBuffer(MapBuffer &&map) {
-    _serializedDataSize = map.getBufferSize();
-    _serializedData = new Byte[_serializedDataSize];
-    map.copy(_serializedData);
+    serializedDataSize_ = map.getBufferSize();
+    react_native_assert(
+        (serializedDataSize_ != 0) && "Error no content in map");
+    serializedData_ = new Byte[serializedDataSize_];
+    map.copy(serializedData_);
   }
 };
 

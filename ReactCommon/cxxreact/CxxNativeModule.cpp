@@ -16,6 +16,8 @@
 #include "MessageQueueThread.h"
 #include "SystraceSection.h"
 
+#include <logger/react_native_log.h>
+
 using facebook::xplat::module::CxxModule;
 namespace facebook {
 namespace react {
@@ -54,6 +56,26 @@ CxxModule::Callback convertCallback(
 
 } // namespace
 
+bool CxxNativeModule::shouldWarnOnUse_ = false;
+
+void CxxNativeModule::setShouldWarnOnUse(bool value) {
+  shouldWarnOnUse_ = value;
+}
+
+void CxxNativeModule::emitWarnIfWarnOnUsage(
+    const std::string &method_name,
+    const std::string &module_name) {
+  if (shouldWarnOnUse_) {
+    std::string message = folly::to<std::string>(
+        "Calling ",
+        method_name,
+        " on Cxx NativeModule (name = \"",
+        module_name,
+        "\").");
+    react_native_log_warn(message.c_str());
+  }
+}
+
 std::string CxxNativeModule::getName() {
   return name_;
 }
@@ -86,6 +108,8 @@ folly::dynamic CxxNativeModule::getConstants() {
   if (!module_) {
     return nullptr;
   }
+
+  emitWarnIfWarnOnUsage("getConstants()", getName());
 
   folly::dynamic constants = folly::dynamic::object();
   for (auto &pair : module_->getConstants()) {
@@ -120,6 +144,8 @@ void CxxNativeModule::invoke(
     throw std::runtime_error(folly::to<std::string>(
         "Method ", method.name, " is synchronous but invoked asynchronously"));
   }
+
+  emitWarnIfWarnOnUsage(method.name, getName());
 
   if (params.size() < method.callbacks) {
     throw std::invalid_argument(folly::to<std::string>(
@@ -203,6 +229,8 @@ MethodCallResult CxxNativeModule::callSerializableNativeHook(
     throw std::runtime_error(folly::to<std::string>(
         "Method ", method.name, " is asynchronous but invoked synchronously"));
   }
+
+  emitWarnIfWarnOnUsage(method.name, getName());
 
   return method.syncFunc(std::move(args));
 }

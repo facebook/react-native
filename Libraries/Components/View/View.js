@@ -10,9 +10,9 @@
 
 import type {ViewProps} from './ViewPropTypes';
 
-const React = require('react');
 import ViewNativeComponent from './ViewNativeComponent';
-const TextAncestor = require('../../Text/TextAncestor');
+import TextAncestor from '../../Text/TextAncestor';
+import * as React from 'react';
 
 export type Props = ViewProps;
 

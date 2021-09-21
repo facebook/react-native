@@ -17,7 +17,7 @@ import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -391,7 +391,7 @@ import java.util.Queue;
     UIManager uiManager =
         UIManagerHelper.getUIManagerForReactTag(mReactApplicationContext, viewTag);
     if (uiManager == null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
               "connectAnimatedNodeToView: Animated node could not be connected to UIManager - uiManager disappeared for tag: "
@@ -535,7 +535,7 @@ import java.util.Queue;
         return;
       }
       UIManager uiManager =
-          UIManagerHelper.getUIManagerForReactTag(mReactApplicationContext, event.getViewTag());
+          UIManagerHelper.getUIManager(mReactApplicationContext, event.getUIManagerType());
       if (uiManager == null) {
         return;
       }
@@ -753,11 +753,11 @@ import java.util.Queue;
       if (mEventListenerInitializedForFabric && cyclesDetected == 0) {
         // TODO T71377544: investigate these SoftExceptions and see if we can remove entirely
         // or fix the root cause
-        ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException(ex));
+        ReactSoftExceptionLogger.logSoftException(TAG, new ReactNoCrashSoftException(ex));
       } else if (mEventListenerInitializedForFabric) {
         // TODO T71377544: investigate these SoftExceptions and see if we can remove entirely
         // or fix the root cause
-        ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException(ex));
+        ReactSoftExceptionLogger.logSoftException(TAG, new ReactNoCrashSoftException(ex));
       } else {
         throw ex;
       }
