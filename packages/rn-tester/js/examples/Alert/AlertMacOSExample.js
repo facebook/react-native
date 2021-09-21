@@ -16,6 +16,8 @@ const {StyleSheet, View, Text, TouchableHighlight, AlertMacOS} = ReactNative;
 
 const {examples: SharedAlertExamples} = require('./AlertExample');
 
+import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+
 exports.framework = 'React';
 exports.title = 'AlertMacOS';
 exports.description = 'macOS alerts';
