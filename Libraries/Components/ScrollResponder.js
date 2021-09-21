@@ -223,6 +223,7 @@ const ScrollResponderMixin = {
     // and a new touch starts with a non-textinput target (in which case the
     // first tap should be sent to the scroll view and dismiss the keyboard,
     // then the second tap goes to the actual interior view)
+    const currentlyFocusedTextInput = TextInputState.currentlyFocusedInput();
     const {keyboardShouldPersistTaps} = this.props;
     const keyboardNeverPersistTaps =
       !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
@@ -239,7 +240,7 @@ const ScrollResponderMixin = {
 
     if (
       keyboardNeverPersistTaps &&
-      this.keyboardWillOpenTo !== null &&
+      currentlyFocusedTextInput != null &&
       e.target != null &&
       !TextInputState.isTextInput(e.target)
     ) {

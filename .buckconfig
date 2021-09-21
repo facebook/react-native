@@ -11,4 +11,4 @@
   jcenter = https://jcenter.bintray.com/
 
 [alias]
-  rntester = //RNTester/android/app:app
+  rntester = //packages/rn-tester/android/app:app

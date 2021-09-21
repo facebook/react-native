@@ -340,8 +340,8 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 
 static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{.left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
-                         .top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
+  return RCTBorderColors{.top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
+                         .left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
                          .bottom = RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
                          .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
 }
