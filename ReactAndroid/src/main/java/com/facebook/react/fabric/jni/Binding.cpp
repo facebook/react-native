@@ -529,7 +529,7 @@ void Binding::installFabricUIManager(
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
   if (runtimeSchedulerHolder) {
-    auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get();
+    auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get().lock();
     if (runtimeScheduler) {
       runtimeScheduler->setEnableYielding(config->getBool(
           "react_native_new_architecture:runtimescheduler_enable_yielding_android"));
