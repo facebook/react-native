@@ -94,8 +94,10 @@ interpolateFloats(float coefficient, float oldValue, float newValue) {
 
 LayoutAnimationKeyFrameManager::LayoutAnimationKeyFrameManager(
     RuntimeExecutor runtimeExecutor,
+    ContextContainer::Shared &contextContainer,
     LayoutAnimationStatusDelegate *delegate)
     : runtimeExecutor_(runtimeExecutor),
+      contextContainer_(contextContainer),
       layoutAnimationStatusDelegate_(delegate),
       now_([]() {
         return std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -228,14 +230,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     LOG(ERROR) << "BEGINNING DONE DISPLAYING ONGOING inflightAnimations_!";
 #endif
 
-    // Stub PropsParserContext used for cloneProps.
-    // This is/should be safe because cloning doesn't actually need to
-    // parse props, and just copies them; therefore there should be no
-    // need to actually use anything in the PropsParserContext.
-    // If this ever changes, the LayoutAnimations API will need to change
-    // to pass in a real PropsParserContext.
-    ContextContainer contextContainer{};
-    PropsParserContext propsParserContext{surfaceId, contextContainer};
+    PropsParserContext propsParserContext{surfaceId, *contextContainer_};
 
     // What to do if we detect a conflict? Get current value and make
     // that the baseline of the next animation. Scale the remaining time
@@ -1131,15 +1126,6 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     return finalView;
   }
 
-  // Stub PropsParserContext used for interpolateProps.
-  // This is/should be safe because interpolating doesn't actually need to
-  // parse props, and just copies them; therefore there should be no
-  // need to actually use anything in the PropsParserContext.
-  // If this ever changes, the LayoutAnimations API will need to change
-  // to pass in a real PropsParserContext.
-  ContextContainer contextContainer{};
-  PropsParserContext propsParserContext{-1, contextContainer};
-
   ComponentDescriptor const &componentDescriptor =
       getComponentDescriptorForShadowView(startingView);
 
@@ -1160,6 +1146,8 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   }
 
   // Animate opacity or scale/transform
+  PropsParserContext propsParserContext{
+      finalView.surfaceId, *contextContainer_};
   mutatedShadowView.props = componentDescriptor.interpolateProps(
       propsParserContext, progress, startingView.props, finalView.props);
   react_native_assert(mutatedShadowView.props != nullptr);
@@ -1202,7 +1190,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     AnimationKeyFrame const &keyframe,
     ShadowViewMutation::List &mutationsList,
     bool interrupted,
-    std::string logPrefix) const {
+    const std::string &logPrefix) const {
   if (skipInvalidatedKeyFrames_ && keyframe.invalidated) {
     return;
   }
