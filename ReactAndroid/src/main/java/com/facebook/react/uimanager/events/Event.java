@@ -224,7 +224,7 @@ public abstract class Event<T extends Event> {
             getEventName(),
             canCoalesce(),
             getCoalescingKey(),
-            getEventData());
+            eventData);
         return;
       }
     }
