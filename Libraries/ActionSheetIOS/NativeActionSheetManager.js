@@ -17,6 +17,8 @@ import type {ProcessedColorValue} from '../StyleSheet/processColor'; // TODO(mac
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
   +showActionSheetWithOptions: (
+    // TODO(macOS GH#774)
+    // eslint-disable-next-line @react-native/codegen/react-native-modules
     options: {|
       +title?: ?string,
       +message?: ?string,
