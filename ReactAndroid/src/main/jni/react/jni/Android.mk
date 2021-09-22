@@ -148,3 +148,7 @@ include $(REACT_SRC_DIR)/jscexecutor/Android.mk
 include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
 include $(REACT_SRC_DIR)/../hermes/instrumentation/Android.mk
 include $(REACT_SRC_DIR)/modules/blob/jni/Android.mk
+
+ifeq ($(USE_CODEGEN),true)
+  include $(REACT_GENERATED_SRC_DIR)/codegen/jni/Android.mk
+endif

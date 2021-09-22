@@ -112,11 +112,6 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)invalidate
-{
-  [self stopObserving];
-}
-
 #pragma mark - App Notification Methods
 
 - (void)handleMemoryWarning

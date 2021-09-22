@@ -90,8 +90,9 @@ function generateSpec(
     files
       .filter(
         f =>
-          f.startsWith(moduleSpecName) &&
-          (f.endsWith('.h') || f.endsWith('.cpp')),
+          f === 'Android.mk' ||
+          (f.startsWith(moduleSpecName) &&
+            (f.endsWith('.h') || f.endsWith('.cpp'))),
       )
       .forEach(f => {
         fs.copyFileSync(

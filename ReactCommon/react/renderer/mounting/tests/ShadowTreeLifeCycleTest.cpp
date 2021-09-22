@@ -12,8 +12,8 @@
 
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
-#include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/Differentiator.h>
+#include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/stubs.h>
 
 #include "Entropy.h"
@@ -105,19 +105,23 @@ static void testShadowNodeTreeLifeCycle(
       auto mutations = calculateShadowViewMutations(
           *currentRootNode, *nextRootNode, useFlattener);
 
-      // If using flattener: make sure that in a single frame, a DELETE for a view is not
-      // followed by a CREATE for the same view.
+      // If using flattener: make sure that in a single frame, a DELETE for a
+      // view is not followed by a CREATE for the same view.
       if (useFlattener) {
         std::vector<int> deletedTags{};
-        for (auto const& mutation : mutations) {
+        for (auto const &mutation : mutations) {
           if (mutation.type == ShadowViewMutation::Type::Delete) {
             deletedTags.push_back(mutation.oldChildShadowView.tag);
           }
         }
-        for (auto const& mutation : mutations) {
+        for (auto const &mutation : mutations) {
           if (mutation.type == ShadowViewMutation::Type::Create) {
-            if (std::find(deletedTags.begin(), deletedTags.end(), mutation.newChildShadowView.tag) != deletedTags.end()) {
-              LOG(ERROR) << "Deleted tag was recreated in mutations list: [" << mutation.newChildShadowView.tag << "]";
+            if (std::find(
+                    deletedTags.begin(),
+                    deletedTags.end(),
+                    mutation.newChildShadowView.tag) != deletedTags.end()) {
+              LOG(ERROR) << "Deleted tag was recreated in mutations list: ["
+                         << mutation.newChildShadowView.tag << "]";
               FAIL();
             }
           }

@@ -220,7 +220,6 @@ dependencies {
 }
 
 react {
-    enableCodegen = System.getenv("USE_CODEGEN") ?: false
     jsRootDir = file("$rootDir/packages/rn-tester")
     reactNativeRootDir = file("$rootDir")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false

@@ -21,6 +21,8 @@ const EXTRA_VALUE_2 = '<extra_value_2>';
 const POINT = '<point>';
 const POINT_TIMESTAMP = 99;
 const POINT_TIMESTAMP_2 = 999;
+const POINT_ANNOTATION_1 = {extra: 'value1'};
+const POINT_ANNOTATION_2 = {extra: 'value2'};
 
 describe('PerformanceLogger', () => {
   beforeEach(() => {
@@ -166,5 +168,25 @@ describe('PerformanceLogger', () => {
     checkLogger(localPerformanceLogger1, true);
     checkLogger(localPerformanceLogger2, true);
     checkLogger(GlobalPerformanceLogger, true);
+  });
+
+  it('records extras for a timespan', () => {
+    let perfLogger = createPerformanceLogger();
+    perfLogger.startTimespan(TIMESPAN_1, POINT_ANNOTATION_1);
+    perfLogger.stopTimespan(TIMESPAN_1, POINT_ANNOTATION_2);
+    expect(perfLogger.getTimespans()[TIMESPAN_1].startExtras).toEqual(
+      POINT_ANNOTATION_1,
+    );
+    expect(perfLogger.getTimespans()[TIMESPAN_1].endExtras).toEqual(
+      POINT_ANNOTATION_2,
+    );
+  });
+
+  it('records extras for a point', () => {
+    let perfLogger = createPerformanceLogger();
+    perfLogger.markPoint(POINT, POINT_TIMESTAMP, POINT_ANNOTATION_1);
+
+    expect(Object.keys(perfLogger.getPointExtras())).toEqual([POINT]);
+    expect(perfLogger.getPointExtras()[POINT]).toEqual(POINT_ANNOTATION_1);
   });
 });

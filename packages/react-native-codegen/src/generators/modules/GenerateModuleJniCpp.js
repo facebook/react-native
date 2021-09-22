@@ -67,6 +67,7 @@ namespace react {
 
 std::shared_ptr<TurboModule> ::_LIBRARY_NAME_::_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
 ::_MODULE_LOOKUP_::
+  return nullptr;
 }
 
 } // namespace react
