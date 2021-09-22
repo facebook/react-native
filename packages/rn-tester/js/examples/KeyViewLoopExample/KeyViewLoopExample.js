@@ -111,6 +111,30 @@ class FocusTrapExample extends React.Component<{}> {
   }
 }
 
+class FocusRingExample extends React.Component<{}> {
+  render() {
+    return (
+      <View>
+        <View style={styles.keyView} focusable={true} enableFocusRing={true}>
+          <Text>Enabled</Text>
+        </View>
+        <View style={styles.keyView} focusable={true} enableFocusRing={false}>
+          <Text>Disabled</Text>
+        </View>
+        <View style={styles.keyView} focusable={true}>
+          <Text>Default</Text>
+        </View>
+        <View style={styles.keyView} focusable={false}>
+          <Text>Not focusable</Text>
+        </View>
+        <View style={styles.keyView} focusable={true} enableFocusRing={true}>
+          <Text>Enabled</Text>
+        </View>
+      </View>
+    );
+  }
+}
+
 var styles = StyleSheet.create({
   textInput: {
     ...Platform.select({
@@ -148,6 +172,12 @@ exports.examples = [
     title: 'Focus Trap Example',
     render: function(): React.Element<any> {
       return <FocusTrapExample />;
+    },
+  },
+  {
+    title: 'Focus Ring Example',
+    render: function(): React.Element<any> {
+      return <FocusRingExample />;
     },
   },
 ];
