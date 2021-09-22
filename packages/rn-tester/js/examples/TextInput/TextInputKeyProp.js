@@ -10,9 +10,8 @@
 
 'use strict';
 
-const React = require('react');
-const {View, TextInput} = require('react-native');
-const {useEffect, useState} = React;
+import React, {useEffect, useState} from 'react';
+import {View, TextInput} from 'react-native';
 
 function TextInputKeyProp() {
   const [startKey, setStartKey] = useState(0);
@@ -37,7 +36,7 @@ function TextInputKeyProp() {
   return <View>{textInputs}</View>;
 }
 
-exports.title = '<TextInputs with key prop>';
+exports.title = 'TextInputs with key prop';
 exports.description =
   'Periodically render large number of TextInputs with key prop without a Runtime Error';
 exports.examples = [
