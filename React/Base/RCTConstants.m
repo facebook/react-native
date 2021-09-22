@@ -26,21 +26,6 @@ void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 }
 
 /*
- * Initial maximum surface size
- */
-static BOOL RCTInitialMaxSizeEnabled = NO;
-
-BOOL RCTGetInitialMaxSizeEnabled()
-{
-  return RCTInitialMaxSizeEnabled;
-}
-
-void RCTSetInitialMaxSizeEnabled(BOOL value)
-{
-  RCTInitialMaxSizeEnabled = value;
-}
-
-/*
  * Remove clipped subviews
  */
 static BOOL RCTRemoveClippedSubviewsEnabled = NO;

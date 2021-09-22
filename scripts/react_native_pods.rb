@@ -160,7 +160,7 @@ def use_react_native_codegen!(spec, options={})
   prefix = options[:react_native_path] ||= "../.."
 
   # Library name (e.g. FBReactNativeSpec)
-  library_name = options[:library_name] ||= "#{spec.name}Spec"
+  library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
 
   # Output dir, relative to podspec that invoked this method
   output_dir = options[:output_dir] ||= "#{library_name}"
@@ -364,5 +364,5 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   #   "Time.h:52:17: error: typedef redefinition with different types"
   # We need to make a patch to RCT-Folly - set `__IPHONE_10_0` to our iOS target + 1.
   # See https://github.com/facebook/flipper/issues/834 for more details.
-  `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_12_0/' Pods/RCT-Folly/folly/portability/Time.h`
+  `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_12_0/' #{installer.sandbox.root}/RCT-Folly/folly/portability/Time.h`
 end

@@ -17,14 +17,15 @@ import com.facebook.react.utils.detectedCliPath
 import com.facebook.react.utils.detectedEntryFile
 import com.facebook.react.utils.detectedHermesCommand
 import java.io.File
+import java.util.*
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 
 private const val REACT_GROUP = "react"
 
 @Suppress("SpreadOperator")
-internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppExtension) {
-  val targetName = variant.name.capitalize()
+internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExtension) {
+  val targetName = variant.name.capitalize(Locale.ROOT)
   val isRelease = variant.isRelease
   val targetPath = variant.dirName
 
@@ -32,17 +33,16 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
   val jsBundleDir = File(buildDir, "generated/assets/react/$targetPath")
   val resourcesDir = File(buildDir, "generated/res/react/$targetPath")
 
-  val jsBundleFile = File(jsBundleDir, config.bundleAssetName)
+  val bundleAssetName = config.bundleAssetName.get()
+  val jsBundleFile = File(jsBundleDir, bundleAssetName)
   val jsSourceMapsDir = File(buildDir, "generated/sourcemaps/react/$targetPath")
   val jsIntermediateSourceMapsDir = File(buildDir, "intermediates/sourcemaps/react/$targetPath")
-  val jsPackagerSourceMapFile =
-      File(jsIntermediateSourceMapsDir, "${config.bundleAssetName}.packager.map")
-  val jsCompilerSourceMapFile =
-      File(jsIntermediateSourceMapsDir, "${config.bundleAssetName}.compiler.map")
-  val jsOutputSourceMapFile = File(jsSourceMapsDir, "${config.bundleAssetName}.map")
+  val jsPackagerSourceMapFile = File(jsIntermediateSourceMapsDir, "${bundleAssetName}.packager.map")
+  val jsCompilerSourceMapFile = File(jsIntermediateSourceMapsDir, "${bundleAssetName}.compiler.map")
+  val jsOutputSourceMapFile = File(jsSourceMapsDir, "${bundleAssetName}.map")
 
   // Additional node and packager commandline arguments
-  val nodeExecutableAndArgs = config.nodeExecutableAndArgs
+  val nodeExecutableAndArgs = config.nodeExecutableAndArgs.get()
   val cliPath = detectedCliPath(project.projectDir, config)
 
   val execCommand = nodeExecutableAndArgs + cliPath
@@ -54,19 +54,21 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
         it.group = REACT_GROUP
         it.description = "create JS bundle and assets for $targetName."
 
-        it.reactRoot = config.reactRoot
+        it.reactRoot = config.reactRoot.get().asFile
         it.sources =
-            fileTree(config.reactRoot) { fileTree -> fileTree.setExcludes(config.inputExcludes) }
+            fileTree(config.reactRoot) { fileTree ->
+              fileTree.setExcludes(config.inputExcludes.get())
+            }
         it.execCommand = execCommand
-        it.bundleCommand = config.bundleCommand
-        it.devEnabled = !(variant.name in config.devDisabledInVariants || isRelease)
+        it.bundleCommand = config.bundleCommand.get()
+        it.devEnabled = !(variant.name in config.devDisabledInVariants.get() || isRelease)
         it.entryFile = detectedEntryFile(config)
 
         val extraArgs = mutableListOf<String>()
 
-        if (config.bundleConfig != null) {
+        if (config.bundleConfig.isPresent) {
           extraArgs.add("--config")
-          extraArgs.add(config.bundleConfig.orEmpty())
+          extraArgs.add(config.bundleConfig.get())
         }
 
         // Hermes doesn't require JS minification.
@@ -75,7 +77,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
           extraArgs.add("false")
         }
 
-        extraArgs.addAll(config.extraPackagerArgs)
+        extraArgs.addAll(config.extraPackagerArgs.get())
 
         it.extraArgs = extraArgs
 
@@ -94,11 +96,12 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
         it.group = REACT_GROUP
         it.description = "bundle hermes resources for $targetName"
 
-        it.reactRoot = config.reactRoot
+        it.reactRoot = config.reactRoot.get().asFile
         it.hermesCommand = detectedHermesCommand(config)
-        it.hermesFlags = if (isRelease) config.hermesFlagsRelease else config.hermesFlagsDebug
+        it.hermesFlags =
+            if (isRelease) config.hermesFlagsRelease.get() else config.hermesFlagsDebug.get()
         it.jsBundleFile = jsBundleFile
-        it.composeSourceMapsCommand = nodeExecutableAndArgs + config.composeSourceMapsPath
+        it.composeSourceMapsCommand = nodeExecutableAndArgs + config.composeSourceMapsPath.get()
         it.jsPackagerSourceMapFile = jsPackagerSourceMapFile
         it.jsCompilerSourceMapFile = jsCompilerSourceMapFile
         it.jsOutputSourceMapFile = jsOutputSourceMapFile
@@ -136,15 +139,15 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
   val mergeAssetsTask = variant.mergeAssetsProvider
   val preBundleTask = tasks.named("build${targetName}PreBundle")
 
-  val resourcesDirConfigValue = config.resourcesDir[variant.name]
-  if (resourcesDirConfigValue != null) {
+  val resourcesDirConfigValue = config.resourcesDir.getting(variant.name)
+  if (resourcesDirConfigValue.isPresent) {
     val currentCopyResTask =
         tasks.register("copy${targetName}BundledResources", Copy::class.java) {
           it.group = "react"
           it.description = "copy bundled resources into custom location for $targetName."
 
           it.from(resourcesDir)
-          it.into(file(resourcesDirConfigValue))
+          it.into(file(resourcesDirConfigValue.get()))
 
           it.dependsOn(bundleTask)
 
@@ -156,7 +159,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
   }
 
   packageTask.configure {
-    if (config.enableVmCleanup) {
+    if (config.enableVmCleanup.get()) {
       it.doFirst { cleanupVMFiles(enableHermes, isRelease, targetPath) }
     }
   }
@@ -168,9 +171,9 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactAppE
 
         it.from(jsBundleDir)
 
-        val jsBundleDirConfigValue = config.jsBundleDir[targetName]
-        if (jsBundleDirConfigValue != null) {
-          it.into(jsBundleDirConfigValue)
+        val jsBundleDirConfigValue = config.jsBundleDir.getting(targetName)
+        if (jsBundleDirConfigValue.isPresent) {
+          it.into(jsBundleDirConfigValue.get())
         } else {
           it.into(mergeAssetsTask.map { mergeFoldersTask -> mergeFoldersTask.outputDir.get() })
         }
@@ -224,17 +227,17 @@ private fun Project.cleanupVMFiles(enableHermes: Boolean, isRelease: Boolean, ta
       }
 }
 
-private fun BaseVariant.checkBundleEnabled(config: ReactAppExtension): Boolean {
-  if (name in config.bundleIn) {
-    return config.bundleIn.getValue(name)
+private fun BaseVariant.checkBundleEnabled(config: ReactExtension): Boolean {
+  if (config.bundleIn.getting(name).isPresent) {
+    return config.bundleIn.getting(name).get()
   }
 
-  if (buildType.name in config.bundleIn) {
-    return config.bundleIn.getValue(buildType.name)
+  if (config.bundleIn.getting(buildType.name).isPresent) {
+    return config.bundleIn.getting(buildType.name).get()
   }
 
   return isRelease
 }
 
 private val BaseVariant.isRelease: Boolean
-  get() = name.toLowerCase().contains("release")
+  get() = name.toLowerCase(Locale.ROOT).contains("release")

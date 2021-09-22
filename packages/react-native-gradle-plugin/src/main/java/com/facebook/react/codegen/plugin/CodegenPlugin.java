@@ -8,25 +8,30 @@
 package com.facebook.react.codegen.plugin;
 
 import com.android.build.gradle.BaseExtension;
+import com.facebook.react.ReactExtension;
 import com.facebook.react.codegen.generator.JavaGenerator;
+import com.facebook.react.tasks.BuildCodegenCLITask;
+import com.facebook.react.tasks.GenerateCodegenSchemaTask;
+import com.facebook.react.utils.GradleUtils;
+import com.facebook.react.utils.PathUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
 import org.gradle.api.GradleException;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.tasks.Exec;
+import org.gradle.api.tasks.TaskProvider;
 
 /**
  * A Gradle plugin to enable react-native-codegen in Gradle environment. See the Gradle API docs for
  * more information: https://docs.gradle.org/6.5.1/javadoc/org/gradle/api/Project.html
  */
-public class CodegenPlugin implements Plugin<Project> {
+public class CodegenPlugin {
 
   public void apply(final Project project) {
-    final CodegenPluginExtension extension =
-        project.getExtensions().create("react", CodegenPluginExtension.class, project);
+    final ReactExtension extension =
+        GradleUtils.createOrGet(project.getExtensions(), "react", ReactExtension.class, project);
 
     // 1. Set up build dir.
     final File generatedSrcDir = new File(project.getBuildDir(), "generated/source/codegen");
@@ -35,43 +40,31 @@ public class CodegenPlugin implements Plugin<Project> {
     // 2. Task: produce schema from JS files.
     String os = System.getProperty("os.name").toLowerCase();
 
-    project
-        .getTasks()
-        .register(
-            "generateCodegenSchemaFromJavaScript",
-            Exec.class,
-            task -> {
-              // This is needed when using codegen from source, not from npm.
-              task.dependsOn(":packages:react-native-codegen:android:buildCodegenCLI");
+    TaskProvider<BuildCodegenCLITask> buildCodegenTask =
+        project
+            .getTasks()
+            .register(
+                "buildCodegenCLI",
+                BuildCodegenCLITask.class,
+                task -> {
+                  task.getCodegenDir().set(extension.getCodegenDir());
+                  String bashWindowsHome = (String) project.findProperty("REACT_WINDOWS_BASH");
+                  task.getBashWindowsHome().set(bashWindowsHome);
+                });
 
-              task.doFirst(
-                  s -> {
-                    generatedSrcDir.delete();
-                    generatedSrcDir.mkdirs();
-                  });
-
-              task.getInputs()
-                  .files(project.fileTree(ImmutableMap.of("dir", extension.codegenDir())));
-              task.getInputs()
-                  .files(
-                      project.fileTree(
-                          ImmutableMap.of(
-                              "dir",
-                              extension.jsRootDir,
-                              "includes",
-                              ImmutableList.of("**/*.js"))));
-              task.getOutputs().file(generatedSchemaFile);
-
-              ImmutableList<String> execCommands =
-                  new ImmutableList.Builder<String>()
-                      .add(os.contains("windows") ? "yarn.cmd" : "yarn")
-                      .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
-                      .add(extension.codegenGenerateSchemaCLI().getAbsolutePath())
-                      .add(generatedSchemaFile.getAbsolutePath())
-                      .add(extension.jsRootDir.getAbsolutePath())
-                      .build();
-              task.commandLine(execCommands);
-            });
+    TaskProvider<GenerateCodegenSchemaTask> generateCodegenSchemaTask =
+        project
+            .getTasks()
+            .register(
+                "generateCodegenSchemaFromJavaScript",
+                GenerateCodegenSchemaTask.class,
+                task -> {
+                  task.getJsRootDir().set(extension.getJsRootDir());
+                  task.getNodeExecutableAndArgs().set(extension.getNodeExecutableAndArgs());
+                  task.getCodegenDir().set(extension.getCodegenDir());
+                  task.getGeneratedSrcDir().set(generatedSrcDir);
+                  task.dependsOn(buildCodegenTask);
+                });
 
     // 3. Task: generate Java code from schema.
     project
@@ -80,32 +73,39 @@ public class CodegenPlugin implements Plugin<Project> {
             "generateCodegenArtifactsFromSchema",
             Exec.class,
             task -> {
-              task.dependsOn("generateCodegenSchemaFromJavaScript");
+              task.dependsOn(generateCodegenSchemaTask);
 
               task.getInputs()
-                  .files(project.fileTree(ImmutableMap.of("dir", extension.codegenDir())));
-              task.getInputs().files(extension.codegenGenerateNativeModuleSpecsCLI());
+                  .files(
+                      project.fileTree(
+                          ImmutableMap.of("dir", extension.getCodegenDir().getAsFile().get())));
+              task.getInputs()
+                  .files(PathUtils.codegenGenerateSchemaCLI(extension).getAbsolutePath());
               task.getInputs().files(generatedSchemaFile);
               task.getOutputs().dir(generatedSrcDir);
 
-              if (extension.useJavaGenerator) {
+              if (extension.getUseJavaGenerator().get()) {
                 task.doLast(
                     s -> {
                       generateJavaFromSchemaWithJavaGenerator(
-                          generatedSchemaFile, extension.codegenJavaPackageName, generatedSrcDir);
+                          generatedSchemaFile,
+                          extension.getCodegenJavaPackageName().get(),
+                          generatedSrcDir);
                     });
               }
 
               ImmutableList<String> execCommands =
                   new ImmutableList.Builder<String>()
                       .add(os.contains("windows") ? "yarn.cmd" : "yarn")
-                      .addAll(ImmutableList.copyOf(extension.nodeExecutableAndArgs))
-                      .add(extension.codegenGenerateNativeModuleSpecsCLI().getAbsolutePath())
+                      .addAll(ImmutableList.copyOf(extension.getNodeExecutableAndArgs().get()))
+                      .add(
+                          PathUtils.codegenGenerateNativeModuleSpecsCLI(extension)
+                              .getAbsolutePath())
                       .add("android")
                       .add(generatedSchemaFile.getAbsolutePath())
                       .add(generatedSrcDir.getAbsolutePath())
-                      .add(extension.libraryName)
-                      .add(extension.codegenJavaPackageName)
+                      .add(extension.getLibraryName().get())
+                      .add(extension.getCodegenJavaPackageName().get())
                       .build();
               task.commandLine(execCommands);
             });

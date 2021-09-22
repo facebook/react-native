@@ -11,10 +11,10 @@ namespace facebook {
 namespace react {
 
 JRuntimeScheduler::JRuntimeScheduler(
-    std::shared_ptr<RuntimeScheduler> const &runtimeScheduler)
+    std::weak_ptr<RuntimeScheduler> runtimeScheduler)
     : runtimeScheduler_(runtimeScheduler) {}
 
-std::shared_ptr<RuntimeScheduler> JRuntimeScheduler::get() {
+std::weak_ptr<RuntimeScheduler> JRuntimeScheduler::get() {
   return runtimeScheduler_;
 }
 

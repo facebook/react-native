@@ -5,10 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:JvmName("PathUtils")
+
 package com.facebook.react.utils
 
-import com.facebook.react.ReactAppExtension
+import com.facebook.react.ReactExtension
 import java.io.File
+import java.util.*
 import org.apache.tools.ant.taskdefs.condition.Os
 
 /**
@@ -18,10 +21,11 @@ import org.apache.tools.ant.taskdefs.condition.Os
  * 3. The `index.android.js` file, if available.
  * 4. Fallback to the `index.js` file.
  *
- * @param config The [ReactAppExtension] configured for this project
+ * @param config The [ReactExtension] configured for this project
  */
-internal fun detectedEntryFile(config: ReactAppExtension): File =
-    detectEntryFile(entryFile = config.entryFile, reactRoot = config.reactRoot)
+internal fun detectedEntryFile(config: ReactExtension): File =
+    detectEntryFile(
+        entryFile = config.entryFile.orNull?.asFile, reactRoot = config.reactRoot.get().asFile)
 
 /**
  * Computes the CLI location for React Native. The Algo follows this order:
@@ -32,12 +36,12 @@ internal fun detectedEntryFile(config: ReactAppExtension): File =
  */
 internal fun detectedCliPath(
     projectDir: File,
-    config: ReactAppExtension,
+    config: ReactExtension,
 ): String =
     detectCliPath(
         projectDir = projectDir,
-        reactRoot = config.reactRoot,
-        preconfiguredCliPath = config.cliPath)
+        reactRoot = config.reactRoot.get().asFile,
+        preconfiguredCliPath = config.cliPath.orNull)
 
 /**
  * Computes the `hermesc` command location. The Algo follows this order:
@@ -46,8 +50,8 @@ internal fun detectedCliPath(
  * substituted with the correct OS arch.
  * 3. Fails otherwise
  */
-internal fun detectedHermesCommand(config: ReactAppExtension): String =
-    detectOSAwareHermesCommand(config.hermesCommand)
+internal fun detectedHermesCommand(config: ReactExtension): String =
+    detectOSAwareHermesCommand(config.hermesCommand.get())
 
 private fun detectEntryFile(entryFile: File?, reactRoot: File): File =
     when {
@@ -112,3 +116,15 @@ private fun getHermesOSBin(): String {
       "OS not recognized. Please set project.react.hermesCommand " +
           "to the path of a working Hermes compiler.")
 }
+
+internal fun projectPathToLibraryName(projectPath: String): String =
+    projectPath
+        .split(':', '-', '_', '.')
+        .joinToString("") { it.capitalize(Locale.ROOT) }
+        .plus("Spec")
+
+fun codegenGenerateSchemaCLI(config: ReactExtension): File =
+    config.codegenDir.file("lib/cli/combine/combine-js-to-schema-cli.js").get().asFile
+
+fun codegenGenerateNativeModuleSpecsCLI(config: ReactExtension): File =
+    config.reactRoot.file("scripts/generate-specs-cli.js").get().asFile

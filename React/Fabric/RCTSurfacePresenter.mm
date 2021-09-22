@@ -259,10 +259,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTSetRemoveClippedSubviewsEnabled(YES);
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_initial_max_size_ios")) {
-    RCTSetInitialMaxSizeEnabled(YES);
-  }
-
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {

@@ -90,7 +90,9 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   NSURL *url = [serverRootWithHostPort(hostPort, scheme) URLByAppendingPathComponent:@"status"];
 
   NSURLSession *session = [NSURLSession sharedSession];
-  NSURLRequest *request = [NSURLRequest requestWithURL:url];
+  NSURLRequest *request = [NSURLRequest requestWithURL:url
+                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                       timeoutInterval:10];
   __block NSURLResponse *response;
   __block NSData *data;
 
