@@ -10,6 +10,9 @@
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
+/*
+ * On-demand view mounting
+ */
 static BOOL RCTExperimentOnDemandViewMounting = NO;
 
 BOOL RCTExperimentGetOnDemandViewMounting()
@@ -22,6 +25,9 @@ void RCTExperimentSetOnDemandViewMounting(BOOL value)
   RCTExperimentOnDemandViewMounting = value;
 }
 
+/*
+ * Sync performance flag
+ */
 static BOOL RCTExperimentSyncPerformanceFlag = NO;
 
 BOOL RCTExperimentGetSyncPerformanceFlag()
@@ -32,4 +38,19 @@ BOOL RCTExperimentGetSyncPerformanceFlag()
 void RCTExperimentSetSyncPerformanceFlag(BOOL value)
 {
   RCTExperimentSyncPerformanceFlag = value;
+}
+
+/*
+ * Optimized hit-testing
+ */
+static BOOL RCTExperimentOptimizedHitTesting = NO;
+
+BOOL RCTExperimentGetOptimizedHitTesting()
+{
+  return RCTExperimentOptimizedHitTesting;
+}
+
+void RCTExperimentSetOptimizedHitTesting(BOOL value)
+{
+  RCTExperimentOptimizedHitTesting = value;
 }

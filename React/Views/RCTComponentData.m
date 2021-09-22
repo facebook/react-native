@@ -63,7 +63,7 @@ static SEL selectorForType(NSString *type)
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
-- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag // TODO(macOS GH#774)
+- (RCTPlatformView *)createViewWithTag:(nullable NSNumber *)tag rootTag:(nullable NSNumber *)rootTag // TODO(macOS GH#774)
 {
   RCTAssertMainQueue();
 

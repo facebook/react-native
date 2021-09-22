@@ -137,6 +137,11 @@ type Props = $ReadOnly<{|
    */
   testOnly_pressed?: ?boolean,
 
+  /**
+   * Duration to wait after press down before calling `onPressIn`.
+   */
+  unstable_pressDelay?: ?number,
+
   // [TODO(macOS GH#774)
   acceptsFirstMouse?: ?boolean,
   enableFocusRing?: ?boolean,
@@ -172,6 +177,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     pressRetentionOffset,
     style,
     testOnly_pressed,
+    unstable_pressDelay,
     ...restProps
   } = props;
 
@@ -191,6 +197,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       pressRectOffset: pressRetentionOffset,
       android_disableSound,
       delayLongPress,
+      delayPressIn: unstable_pressDelay,
       onLongPress,
       onPress,
       onPressIn(event: PressEvent): void {
@@ -225,6 +232,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       onPressOut,
       pressRetentionOffset,
       setPressed,
+      unstable_pressDelay,
     ],
   );
   const eventHandlers = usePressability(config);

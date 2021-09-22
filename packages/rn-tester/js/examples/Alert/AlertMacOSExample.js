@@ -14,18 +14,16 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {StyleSheet, View, Text, TouchableHighlight, AlertMacOS} = ReactNative;
 
-const {SimpleAlertExampleBlock} = require('./AlertExample');
+const {examples: SharedAlertExamples} = require('./AlertExample');
+
+import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
 
 exports.framework = 'React';
 exports.title = 'AlertMacOS';
 exports.description = 'macOS alerts';
-exports.examples = [
-  {
-    title: 'Alerts',
-    render(): React.Node {
-      return <SimpleAlertExampleBlock />;
-    },
-  },
+exports.documentationURL = 'https://reactnative.dev/docs/alert';
+exports.examples = ([
+  ...SharedAlertExamples,
   {
     title: 'Prompt Options',
     render(): React.Element<any> {
@@ -151,7 +149,7 @@ exports.examples = [
       );
     },
   },
-];
+]: RNTesterExampleModuleItem[]);
 
 class PromptOptions extends React.Component<$FlowFixMeProps, any> {
   state: any;

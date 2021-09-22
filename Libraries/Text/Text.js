@@ -99,10 +99,7 @@ class TouchableText extends React.Component<Props, State> {
   touchableHandleActivePressOut: ?() => void;
   touchableHandleLongPress: ?(event: PressEvent) => void;
   touchableHandlePress: ?(event: PressEvent) => void;
-  touchableHandleResponderGrant: ?(
-    event: PressEvent,
-    dispatchID: string,
-  ) => void;
+  touchableHandleResponderGrant: ?(event: PressEvent) => void;
   touchableHandleResponderMove: ?(event: PressEvent) => void;
   touchableHandleResponderRelease: ?(event: PressEvent) => void;
   touchableHandleResponderTerminate: ?(event: PressEvent) => void;
@@ -155,7 +152,13 @@ class TouchableText extends React.Component<Props, State> {
       <TextAncestor.Consumer>
         {hasTextAncestor =>
           hasTextAncestor ? (
-            <RCTVirtualText {...props} ref={props.forwardedRef} />
+            <RCTVirtualText
+              {...props}
+              // This is used on Android to call a nested Text component's press handler from the context menu.
+              // TODO T75145059 Clean this up once Text is migrated off of Touchable
+              onClick={props.onPress}
+              ref={props.forwardedRef}
+            />
           ) : (
             <TextAncestor.Provider value={true}>
               <RCTText {...props} ref={props.forwardedRef} />
@@ -180,10 +183,10 @@ class TouchableText extends React.Component<Props, State> {
         }
         return shouldSetResponder;
       },
-      onResponderGrant: (event: PressEvent, dispatchID: string): void => {
-        nullthrows(this.touchableHandleResponderGrant)(event, dispatchID);
+      onResponderGrant: (event: PressEvent): void => {
+        nullthrows(this.touchableHandleResponderGrant)(event);
         if (this.props.onResponderGrant != null) {
-          this.props.onResponderGrant.call(this, event, dispatchID);
+          this.props.onResponderGrant.call(this, event);
         }
       },
       onResponderMove: (event: PressEvent): void => {

@@ -14,6 +14,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -291,7 +292,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    // No-op since UIManagerModule handles actually laying out children.
+    // No-op in non-Fabric since UIManagerModule handles actually laying out children.
+
+    // In Fabric, update LayoutSpecs just so we update the offsetX and offsetY.
+    if (mWasMeasured && getUIManagerType() == FABRIC) {
+      updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
+    }
   }
 
   @Override
@@ -405,6 +411,20 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     return appProperties != null ? appProperties.getString("surfaceID") : null;
   }
 
+  public static Point getViewportOffset(View v) {
+    int[] locationInWindow = new int[2];
+    v.getLocationInWindow(locationInWindow);
+
+    // we need to subtract visibleWindowCoords - to subtract possible window insets, split
+    // screen or multi window
+    Rect visibleWindowFrame = new Rect();
+    v.getWindowVisibleDisplayFrame(visibleWindowFrame);
+    locationInWindow[0] -= visibleWindowFrame.left;
+    locationInWindow[1] -= visibleWindowFrame.top;
+
+    return new Point(locationInWindow[0], locationInWindow[1]);
+  }
+
   private void updateRootLayoutSpecs(final int widthMeasureSpec, final int heightMeasureSpec) {
     if (mReactInstanceManager == null) {
       FLog.w(TAG, "Unable to update root layout specs for uninitialized ReactInstanceManager");
@@ -418,7 +438,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
       // Ignore calling updateRootLayoutSpecs if UIManager is not properly initialized.
       if (uiManager != null) {
-        uiManager.updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
+        // In Fabric only, get position of view within screen
+        int offsetX = 0;
+        int offsetY = 0;
+        if (getUIManagerType() == FABRIC) {
+          Point viewportOffset = getViewportOffset(this);
+          offsetX = viewportOffset.x;
+          offsetY = viewportOffset.y;
+        }
+
+        uiManager.updateRootLayoutSpecs(
+            getRootViewTag(), widthMeasureSpec, heightMeasureSpec, offsetX, offsetY);
       }
     }
   }

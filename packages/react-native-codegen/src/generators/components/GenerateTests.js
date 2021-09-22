@@ -75,6 +75,7 @@ function getTestCasesForProp(propName, typeAnnotation) {
       propName: propName,
       propValue: typeAnnotation.default != null ? typeAnnotation.default : true,
     });
+    // $FlowFixMe[incompatible-type]
   } else if (typeAnnotation.type === 'IntegerTypeAnnotation') {
     cases.push({
       propName,

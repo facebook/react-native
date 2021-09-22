@@ -72,11 +72,7 @@ class TouchableBounce extends React.Component<Props, State> {
           this.props.onFocus(event);
         }
       },
-      onLongPress: event => {
-        if (this.props.onLongPress != null) {
-          this.props.onLongPress(event);
-        }
-      },
+      onLongPress: this.props.onLongPress,
       onPress: event => {
         const {onPressAnimationComplete, onPressWithCompletion} = this.props;
         const releaseBounciness = this.props.releaseBounciness ?? 10;

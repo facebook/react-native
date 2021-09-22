@@ -9,7 +9,6 @@
 
 #import <React/RCTConversions.h>
 #import <React/RCTImageBlurUtils.h>
-#import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
 #import <react/renderer/components/image/ImageComponentDescriptor.h>
 #import <react/renderer/components/image/ImageEventEmitter.h>
@@ -21,11 +20,10 @@
 
 using namespace facebook::react;
 
-@interface RCTImageComponentView () <RCTImageResponseDelegate>
+@interface RCTImageComponentView ()
 @end
 
 @implementation RCTImageComponentView {
-  UIImageView *_imageView;
   ImageShadowNode::ConcreteStateTeller _stateTeller;
   ImageResponseObserverCoordinator const *_coordinator;
   RCTImageResponseObserverProxy _imageResponseObserverProxy;
@@ -130,7 +128,7 @@ using namespace facebook::react;
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
+- (void)didReceiveImage:(UIImage *)image metadata:(id)metadata fromObserver:(void const *)observer
 {
   if (!_eventEmitter || !_stateTeller.isValid()) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.

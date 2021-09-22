@@ -11,6 +11,7 @@
 #include <react/renderer/imagemanager/ImageResponse.h>
 #include <react/renderer/imagemanager/ImageResponseObserver.h>
 #include <react/renderer/imagemanager/ImageResponseObserverCoordinator.h>
+#include <react/renderer/imagemanager/ImageTelemetry.h>
 #include <react/renderer/imagemanager/primitives.h>
 
 namespace facebook {
@@ -30,6 +31,7 @@ class ImageRequest final {
    */
   ImageRequest(
       const ImageSource &imageSource,
+      std::shared_ptr<const ImageTelemetry> telemetry,
       std::shared_ptr<const ImageInstrumentation> instrumentation);
 
   /*
@@ -50,6 +52,13 @@ class ImageRequest final {
   void setCancelationFunction(std::function<void(void)> cancelationFunction);
 
   /*
+   * Returns the Image Source associated with the request.
+   */
+  const ImageSource getImageSource() const {
+    return imageSource_;
+  }
+
+  /*
    * Returns stored observer coordinator as a shared pointer.
    * Retain this *or* `ImageRequest` to ensure a correct lifetime of the object.
    */
@@ -62,6 +71,12 @@ class ImageRequest final {
    * (e.g. by retaining an `ImageRequest`).
    */
   const ImageResponseObserverCoordinator &getObserverCoordinator() const;
+
+  /*
+   * Returns stored image telemetry object as a shared pointer.
+   * Retain this *or* `ImageRequest` to ensure a correct lifetime of the object.
+   */
+  const std::shared_ptr<const ImageTelemetry> &getSharedTelemetry() const;
 
   /*
    * Returns stored image instrumentation object as a shared pointer.
@@ -82,6 +97,11 @@ class ImageRequest final {
    * Image source associated with the request.
    */
   ImageSource imageSource_;
+
+  /*
+   * Image telemetry associated with the request.
+   */
+  std::shared_ptr<const ImageTelemetry> telemetry_{};
 
   /*
    * Event coordinator associated with the reqest.

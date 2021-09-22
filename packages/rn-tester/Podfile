@@ -91,7 +91,7 @@ def frameworks_pre_install(installer)
   installer.pod_targets.each do |pod|
     if static_frameworks.include?(pod.name)
       def pod.build_type
-        Pod::Target::BuildType.static_library
+        Pod::BuildType.static_library
       end
     end
   end

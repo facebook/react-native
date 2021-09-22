@@ -15,6 +15,8 @@
 @class RCTShadowView;
 @class RCTUIView; // TODO(macOS GH#774)
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface RCTComponentData : NSObject
 
 @property (nonatomic, readonly) Class managerClass;
@@ -23,7 +25,7 @@
 
 - (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
-- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag rootTag:(NSNumber *)rootTag; // TODO(macOS GH#774)
+- (RCTPlatformView *)createViewWithTag:(nullable NSNumber *)tag rootTag:(nullable NSNumber *)rootTag; // TODO(macOS GH#774)
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;
@@ -34,3 +36,5 @@
 - (NSDictionary<NSString *, id> *)viewConfig;
 
 @end
+
+NS_ASSUME_NONNULL_END

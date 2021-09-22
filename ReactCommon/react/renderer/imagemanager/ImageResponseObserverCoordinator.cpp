@@ -24,8 +24,9 @@ void ImageResponseObserverCoordinator::addObserver(
     }
     case ImageResponse::Status::Completed: {
       auto imageData = imageData_;
+      auto imageMetadata = imageMetadata_;
       mutex_.unlock();
-      observer.didReceiveImage(ImageResponse{imageData});
+      observer.didReceiveImage(ImageResponse{imageData, imageMetadata});
       break;
     }
     case ImageResponse::Status::Failed: {
@@ -63,6 +64,7 @@ void ImageResponseObserverCoordinator::nativeImageResponseComplete(
     ImageResponse const &imageResponse) const {
   mutex_.lock();
   imageData_ = imageResponse.getImage();
+  imageMetadata_ = imageResponse.getMetadata();
   assert(status_ == ImageResponse::Status::Loading);
   status_ = ImageResponse::Status::Completed;
   auto observers = observers_;

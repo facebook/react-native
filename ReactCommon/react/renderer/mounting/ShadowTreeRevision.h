@@ -9,6 +9,7 @@
 
 #include <better/optional.h>
 
+#include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/mounting/MountingOverrideDelegate.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
@@ -34,7 +35,7 @@ class ShadowTreeRevision final {
    * telemetry.
    */
   ShadowTreeRevision(
-      ShadowNode::Shared const &rootShadowNode,
+      RootShadowNode::Shared const &rootShadowNode,
       Number number,
       TransactionTelemetry telemetry);
 
@@ -48,8 +49,7 @@ class ShadowTreeRevision final {
    * `MountingOverrideDelegate` only.
    */
  public:
-  ShadowNode const &getRootShadowNode();
-  ShadowNode::Shared getSharedRootShadowNode();
+  RootShadowNode const &getRootShadowNode();
 
   /*
    * Methods from this section are meant to be used by `MountingCoordinator`
@@ -61,7 +61,7 @@ class ShadowTreeRevision final {
   Number getNumber() const;
 
  private:
-  ShadowNode::Shared rootShadowNode_;
+  RootShadowNode::Shared rootShadowNode_;
   Number number_;
   TransactionTelemetry telemetry_;
 };

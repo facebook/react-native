@@ -131,6 +131,11 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
     return;
   }
 
+  // If props event counter is less than what we already have in state, skip it
+  if (getConcreteProps().mostRecentEventCount < state.mostRecentEventCount) {
+    return;
+  }
+
   // Store default TextAttributes in state.
   // In the case where the TextInput is completely empty (no value, no
   // defaultValue, no placeholder, no children) there are therefore no fragments

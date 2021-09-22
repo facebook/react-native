@@ -9,8 +9,13 @@
  */
 
 'use strict';
+
 jest.unmock('../../Utilities/Platform');
+jest.mock('../../Utilities/GlobalPerformanceLogger');
+
 const Platform = require('../../Utilities/Platform');
+const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
+const createPerformanceLogger = require('../../Utilities/createPerformanceLogger');
 let requestId = 1;
 
 function setRequestId(id) {
@@ -74,6 +79,8 @@ describe('XMLHttpRequest', function() {
     xhr.addEventListener('load', handleLoad);
     xhr.addEventListener('loadend', handleLoadEnd);
     xhr.addEventListener('readystatechange', handleReadyStateChange);
+
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -240,5 +247,53 @@ describe('XMLHttpRequest', function() {
     expect(xhr.getAllResponseHeaders()).toBe(
       'Content-Type: text/plain; charset=utf-8\r\n' + 'Content-Length: 32',
     );
+  });
+
+  it('should log to GlobalPerformanceLogger if a custom performance logger is not set', () => {
+    xhr.open('GET', 'blabla');
+    xhr.send();
+
+    expect(GlobalPerformanceLogger.startTimespan).toHaveBeenCalledWith(
+      'network_XMLHttpRequest_blabla',
+    );
+    expect(GlobalPerformanceLogger.stopTimespan).not.toHaveBeenCalled();
+
+    setRequestId(8);
+    xhr.__didReceiveResponse(requestId, 200, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Content-Length': '32',
+    });
+
+    expect(GlobalPerformanceLogger.stopTimespan).toHaveBeenCalledWith(
+      'network_XMLHttpRequest_blabla',
+    );
+  });
+
+  it('should log to a custom performance logger if set', () => {
+    const performanceLogger = createPerformanceLogger();
+    jest.spyOn(performanceLogger, 'startTimespan');
+    jest.spyOn(performanceLogger, 'stopTimespan');
+
+    xhr.setPerformanceLogger(performanceLogger);
+
+    xhr.open('GET', 'blabla');
+    xhr.send();
+
+    expect(performanceLogger.startTimespan).toHaveBeenCalledWith(
+      'network_XMLHttpRequest_blabla',
+    );
+    expect(GlobalPerformanceLogger.startTimespan).not.toHaveBeenCalled();
+    expect(performanceLogger.stopTimespan).not.toHaveBeenCalled();
+
+    setRequestId(9);
+    xhr.__didReceiveResponse(requestId, 200, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Content-Length': '32',
+    });
+
+    expect(performanceLogger.stopTimespan).toHaveBeenCalledWith(
+      'network_XMLHttpRequest_blabla',
+    );
+    expect(GlobalPerformanceLogger.stopTimespan).not.toHaveBeenCalled();
   });
 });

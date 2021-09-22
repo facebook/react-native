@@ -97,7 +97,37 @@ class ConcreteState : public State {
           return std::make_shared<Data const>(
               callback(*std::static_pointer_cast<Data const>(oldData)));
         },
-        failureCallback};
+        failureCallback,
+        false};
+
+    family->dispatchRawState(std::move(stateUpdate), priority);
+  }
+
+  /*
+   * An experimental version of `updateState` function that re-commit the state
+   * update over and over again until it succeeded. To cancel the state update
+   * operation, the state update lambda needs to return `nullptr`.
+   */
+  void updateStateWithAutorepeat(
+      std::function<StateData::Shared(Data const &oldData)> callback,
+      EventPriority priority = EventPriority::AsynchronousBatched) const {
+    auto family = family_.lock();
+
+    if (!family) {
+      // No more nodes of this family exist anymore,
+      // updating state is impossible.
+      return;
+    }
+
+    auto stateUpdate = StateUpdate{
+        family,
+        [=](StateData::Shared const &oldData) -> StateData::Shared {
+          assert(oldData);
+          return callback(*std::static_pointer_cast<Data const>(oldData));
+        },
+        nullptr,
+        true,
+    };
 
     family->dispatchRawState(std::move(stateUpdate), priority);
   }

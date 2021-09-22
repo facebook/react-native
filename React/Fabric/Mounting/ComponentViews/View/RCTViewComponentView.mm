@@ -301,7 +301,13 @@ using namespace facebook::react;
 
   BOOL isPointInside = [self pointInside:point withEvent:event];
 
-  if (self.clipsToBounds && !isPointInside) {
+  BOOL clipsToBounds = self.clipsToBounds;
+
+  if (RCTExperimentGetOptimizedHitTesting()) {
+    clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
+  }
+
+  if (clipsToBounds && !isPointInside) {
     return nil;
   }
 
@@ -340,8 +346,8 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 
 static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{.left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
-                         .top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
+  return RCTBorderColors{.top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
+                         .left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
                          .bottom = RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
                          .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
 }

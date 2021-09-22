@@ -101,6 +101,8 @@ void Binding::startSurfaceWithConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight,
+    jfloat offsetX,
+    jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
@@ -123,6 +125,8 @@ void Binding::startSurfaceWithConstraints(
       Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
 
   LayoutContext context;
+  context.viewportOffset =
+      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};
@@ -178,6 +182,8 @@ void Binding::setConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight,
+    jfloat offsetX,
+    jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::setConstraints");
@@ -194,6 +200,8 @@ void Binding::setConstraints(
       Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
 
   LayoutContext context;
+  context.viewportOffset =
+      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   LayoutConstraints constraints = {};

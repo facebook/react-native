@@ -41,12 +41,14 @@ public abstract class NativePlatformConstantsAndroidSpec extends ReactContextBas
     Map<String, Object> constants = getTypedExportedConstants();
     if (ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD) {
       Set<String> obligatoryFlowConstants = new HashSet<>(Arrays.asList(
+          "Brand",
           "Serial",
           "Fingerprint",
           "uiMode",
           "Version",
           "reactNativeVersion",
           "Model",
+          "Manufacturer",
           "isTesting",
           "Release"
       ));

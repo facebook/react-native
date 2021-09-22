@@ -768,6 +768,10 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "layoutDirection", toString(*textAttributes.layoutDirection));
   }
+  if (textAttributes.accessibilityRole.has_value()) {
+    _textAttributes(
+        "accessibilityRole", toString(*textAttributes.accessibilityRole));
+  }
   return _textAttributes;
 }
 

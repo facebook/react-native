@@ -26,7 +26,10 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
@@ -60,6 +63,8 @@ public class TextLayoutManager {
   private static final String TEXT_BREAK_STRATEGY_KEY = "textBreakStrategy";
   private static final String MAXIMUM_NUMBER_OF_LINES_KEY = "maximumNumberOfLines";
   private static final LruCache<String, Spannable> sSpannableCache =
+      new LruCache<>(spannableCacheSize);
+  private static final LruCache<ReadableNativeMap, Spannable> sSpannableCacheV2 =
       new LruCache<>(spannableCacheSize);
   private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
       new ConcurrentHashMap<>();
@@ -111,7 +116,12 @@ public class TextLayoutManager {
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
-        if (textAttributes.mIsColorSet) {
+        if (ReactAccessibilityDelegate.AccessibilityRole.LINK.equals(
+            textAttributes.mAccessibilityRole)) {
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new ReactClickableSpan(reactTag, textAttributes.mColor)));
+        } else if (textAttributes.mIsColorSet) {
           ops.add(
               new SetSpanOperation(
                   start, end, new ReactForegroundColorSpan(textAttributes.mColor)));
@@ -179,20 +189,40 @@ public class TextLayoutManager {
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     Spannable preparedSpannableText;
-    String attributedStringPayload = attributedString.toString();
-    synchronized (sSpannableCacheLock) {
-      preparedSpannableText = sSpannableCache.get(attributedStringPayload);
-      // TODO: T31905686 implement proper equality of attributedStrings
-      if (preparedSpannableText != null) {
-        return preparedSpannableText;
+    String attributedStringPayload = "";
+
+    boolean cacheByReadableNativeMap =
+        ReactFeatureFlags.enableSpannableCacheByReadableNativeMapEquality;
+    // TODO: T74600554 Cleanup this experiment once positive impact is confirmed in production
+    if (cacheByReadableNativeMap) {
+      synchronized (sSpannableCacheLock) {
+        preparedSpannableText = sSpannableCacheV2.get((ReadableNativeMap) attributedString);
+        if (preparedSpannableText != null) {
+          return preparedSpannableText;
+        }
+      }
+    } else {
+      attributedStringPayload = attributedString.toString();
+      synchronized (sSpannableCacheLock) {
+        preparedSpannableText = sSpannableCache.get(attributedStringPayload);
+        if (preparedSpannableText != null) {
+          return preparedSpannableText;
+        }
       }
     }
 
     preparedSpannableText =
         createSpannableFromAttributedString(
             context, attributedString, reactTextViewManagerCallback);
-    synchronized (sSpannableCacheLock) {
-      sSpannableCache.put(attributedStringPayload, preparedSpannableText);
+
+    if (cacheByReadableNativeMap) {
+      synchronized (sSpannableCacheLock) {
+        sSpannableCacheV2.put((ReadableNativeMap) attributedString, preparedSpannableText);
+      }
+    } else {
+      synchronized (sSpannableCacheLock) {
+        sSpannableCache.put(attributedStringPayload, preparedSpannableText);
+      }
     }
     return preparedSpannableText;
   }
@@ -244,7 +274,7 @@ public class TextLayoutManager {
     if (attributedString.hasKey("cacheId")) {
       int cacheId = attributedString.getInt("cacheId");
       if (sTagToSpannableCache.containsKey(cacheId)) {
-        text = sTagToSpannableCache.get(attributedString.getInt("cacheId"));
+        text = sTagToSpannableCache.get(cacheId);
       } else {
         return 0;
       }
@@ -477,13 +507,13 @@ public class TextLayoutManager {
     protected int start, end;
     protected ReactSpan what;
 
-    SetSpanOperation(int start, int end, ReactSpan what) {
+    public SetSpanOperation(int start, int end, ReactSpan what) {
       this.start = start;
       this.end = end;
       this.what = what;
     }
 
-    public void execute(SpannableStringBuilder sb, int priority) {
+    public void execute(Spannable sb, int priority) {
       // All spans will automatically extend to the right of the text, but not the left - except
       // for spans that start at the beginning of the text.
       int spanFlags = Spannable.SPAN_EXCLUSIVE_INCLUSIVE;

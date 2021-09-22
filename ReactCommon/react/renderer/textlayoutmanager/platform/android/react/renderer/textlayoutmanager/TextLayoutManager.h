@@ -42,7 +42,7 @@ class TextLayoutManager {
    * opaque cache ID.
    */
   TextMeasurement measureCachedSpannableById(
-      int cacheId,
+      int64_t cacheId,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 

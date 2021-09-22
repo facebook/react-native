@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <tuple>
 
 #include <folly/Hash.h>

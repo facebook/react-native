@@ -21,13 +21,18 @@ void ShadowTreeRegistry::add(std::unique_ptr<ShadowTree> &&shadowTree) const {
   registry_.emplace(shadowTree->getSurfaceId(), std::move(shadowTree));
 }
 
-void ShadowTreeRegistry::remove(SurfaceId surfaceId) const {
+std::unique_ptr<ShadowTree> ShadowTreeRegistry::remove(
+    SurfaceId surfaceId) const {
   std::unique_lock<better::shared_mutex> lock(mutex_);
 
   auto iterator = registry_.find(surfaceId);
-  if (iterator != registry_.end()) {
-    registry_.erase(iterator);
+  if (iterator == registry_.end()) {
+    return {};
   }
+
+  auto shadowTree = std::unique_ptr<ShadowTree>(iterator->second.release());
+  registry_.erase(iterator);
+  return shadowTree;
 }
 
 bool ShadowTreeRegistry::visit(

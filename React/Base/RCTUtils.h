@@ -108,6 +108,9 @@ RCT_EXTERN BOOL RCTForceTouchAvailable(void);
 // Create an NSError in the RCTErrorDomain
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 
+// Creates an NSError from given an NSException
+RCT_EXTERN NSError *RCTErrorWithNSException(NSException *exception);
+
 // Convert nil values to NSNull, and vice-versa
 #define RCTNullIfNil(value) ((value) ?: (id)kCFNull)
 #define RCTNilIfNull(value)                           \
