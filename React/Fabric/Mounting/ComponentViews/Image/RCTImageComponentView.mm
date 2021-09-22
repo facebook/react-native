@@ -74,7 +74,7 @@ using namespace facebook::react;
 
   // `tintColor`
   if (oldImageProps.tintColor != newImageProps.tintColor) {
-    _imageView.tintColor = [UIColor colorWithCGColor:newImageProps.tintColor.get()];
+    _imageView.tintColor = RCTUIColorFromSharedColor(newImageProps.tintColor);
   }
 
   [super updateProps:props oldProps:oldProps];

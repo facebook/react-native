@@ -11,7 +11,6 @@
 #include <cstdint>
 
 #include <react/utils/Telemetry.h>
-#include <react/utils/ThreadStorage.h>
 
 namespace facebook {
 namespace react {

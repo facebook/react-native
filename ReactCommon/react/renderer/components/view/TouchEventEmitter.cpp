@@ -68,7 +68,9 @@ void TouchEventEmitter::onTouchStart(TouchEvent const &event) const {
 }
 
 void TouchEventEmitter::onTouchMove(TouchEvent const &event) const {
-  dispatchTouchEvent("touchMove", event, EventPriority::AsynchronousBatched);
+  dispatchUniqueEvent("touchMove", [event](jsi::Runtime &runtime) {
+    return touchEventPayload(runtime, event);
+  });
 }
 
 void TouchEventEmitter::onTouchEnd(TouchEvent const &event) const {

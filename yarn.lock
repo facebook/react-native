@@ -4680,10 +4680,10 @@ hermes-engine-darwin@~0.5.0:
   resolved "https://registry.yarnpkg.com/hermes-engine-darwin/-/hermes-engine-darwin-0.5.1.tgz#697ac45c3aa2ea17a18494c9f8898d984c34c060"
   integrity sha512-+IHmncqIrZfOhUYgmInujJVnTQ5qxjijdKC5ohlHalVj088/H6hnAIGr4nX84HAs1JjLCGLA0xujRfd0WY50wA==
 
-hermes-engine@~0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.6.0.tgz#82c0738b89afb3253dcc4b322888a8bf0f52930b"
-  integrity sha512-WrKfVJ8zsaTz31GHuoX2rJl7AV85Y9bFQkWhqalbObwPusanSsvU+viByDXccUU3khs9CjLBTm0O6DAH3Yls8g==
+hermes-engine@~0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.7.0.tgz#c4a13e09811d7bc975a0662bd2ca7120003d6ef8"
+  integrity sha512-lU9OenFWXXOzYldqn15QvbiD0kDc+uw2arhCOkR+9D+PhrLFcbEqnaXFESgchN77JYEf77KkqXncTZA8aoXw2A==
 
 hosted-git-info@^2.1.4:
   version "2.8.8"

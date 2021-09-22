@@ -171,7 +171,7 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
 {
   auto weakWrapper = CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
   BOOL __block wrapperWasCalled = NO;
-  return ^(NSArray *responses) {
+  RCTResponseSenderBlock callback = ^(NSArray *responses) {
     if (wrapperWasCalled) {
       throw std::runtime_error("callback arg cannot be called more than once");
     }
@@ -194,6 +194,8 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
 
     wrapperWasCalled = YES;
   };
+
+  return [callback copy];
 }
 
 namespace facebook {
@@ -331,11 +333,10 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
   bool wasMethodSync = isMethodSync(returnType);
 
   void (^block)() = ^{
-    if (!weakModule) {
+    id<RCTTurboModule> strongModule = weakModule;
+    if (!strongModule) {
       return;
     }
-
-    id<RCTTurboModule> strongModule = weakModule;
 
     if (wasMethodSync) {
       TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodNameStr.c_str());
@@ -635,10 +636,13 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
             runtime,
             jsInvoker_,
             ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
-              [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
-              [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
-              [retainedObjectsForInvocation addObject:resolveBlock];
-              [retainedObjectsForInvocation addObject:rejectBlock];
+              RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
+              RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
+
+              [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
+              [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
+              [retainedObjectsForInvocation addObject:resolveCopy];
+              [retainedObjectsForInvocation addObject:rejectCopy];
               // The return type becomes void in the ObjC side.
               performMethodInvocation(runtime, VoidKind, methodName, inv, retainedObjectsForInvocation);
             })

@@ -428,11 +428,12 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   auto newChildShadowView = mutation.newChildShadowView;
 
   if (oldChildShadowView.layoutMetrics.contentInsets ==
-      newChildShadowView.layoutMetrics.contentInsets) {
+          newChildShadowView.layoutMetrics.contentInsets &&
+      mutation.type != ShadowViewMutation::Type::Insert) {
     return nullptr;
   }
 
-  static auto updateLayoutInstruction =
+  static auto updatePaddingInstruction =
       jni::findClassStatic(Binding::UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
               "updatePaddingMountItem");
@@ -446,7 +447,7 @@ local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
   int right = round(contentInsets.right * pointScaleFactor);
   int bottom = round(contentInsets.bottom * pointScaleFactor);
 
-  return updateLayoutInstruction(
+  return updatePaddingInstruction(
       javaUIManager, newChildShadowView.tag, left, top, right, bottom);
 }
 

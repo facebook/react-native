@@ -5,11 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <vector>
+
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs.h>
 
@@ -101,6 +104,25 @@ static void testShadowNodeTreeLifeCycle(
       // Calculating mutations.
       auto mutations = calculateShadowViewMutations(
           *currentRootNode, *nextRootNode, useFlattener);
+
+      // If using flattener: make sure that in a single frame, a DELETE for a view is not
+      // followed by a CREATE for the same view.
+      if (useFlattener) {
+        std::vector<int> deletedTags{};
+        for (auto const& mutation : mutations) {
+          if (mutation.type == ShadowViewMutation::Type::Delete) {
+            deletedTags.push_back(mutation.oldChildShadowView.tag);
+          }
+        }
+        for (auto const& mutation : mutations) {
+          if (mutation.type == ShadowViewMutation::Type::Create) {
+            if (std::find(deletedTags.begin(), deletedTags.end(), mutation.newChildShadowView.tag) != deletedTags.end()) {
+              LOG(ERROR) << "Deleted tag was recreated in mutations list: [" << mutation.newChildShadowView.tag << "]";
+              FAIL();
+            }
+          }
+        }
+      }
 
       // Mutating the view tree.
       viewTree.mutate(mutations);

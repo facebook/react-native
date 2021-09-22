@@ -331,8 +331,8 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain().instrumentation().getHeapInfo(includeExpensive);
   }
 
-  void collectGarbage() override {
-    plain().instrumentation().collectGarbage();
+  void collectGarbage(std::string cause) override {
+    plain().instrumentation().collectGarbage(std::move(cause));
   }
 
   void startTrackingHeapObjectStackTraces() override {

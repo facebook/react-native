@@ -101,7 +101,7 @@
     "base64-js": "^1.1.2",
     "event-target-shim": "^5.0.1",
     "fbjs-scripts": "^1.1.0",
-    "hermes-engine": "~0.6.0",
+    "hermes-engine": "~0.7.0",
     "invariant": "^2.2.4",
     "jsc-android": "^245459.0.0",
     "metro-babel-register": "0.63.0",

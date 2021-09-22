@@ -75,6 +75,6 @@ rn_xplat_cxx_library(
     ],
     exported_deps = [
         "//xplat/jsi:jsi",
-        react_native_xplat_target("turbomodule/core:core"),
+        react_native_xplat_target("react/nativemodule/core:core"),
     ],
 )
