@@ -34,7 +34,6 @@ class KeyViewLoopExample extends React.Component<{}> {
               <View
                 style={styles.keyView}
                 focusable={true}
-                enableFocusRing={true}
                 ref={this.firstViewRef}
                 onFocus={() => {
                   this.firstViewRef.current?.setNativeProps({
@@ -46,7 +45,6 @@ class KeyViewLoopExample extends React.Component<{}> {
               <View
                 style={styles.keyView}
                 focusable={true}
-                enableFocusRing={true}
                 ref={this.thirdViewRef}
                 onFocus={() => {
                   this.thirdViewRef.current?.setNativeProps({
@@ -58,7 +56,6 @@ class KeyViewLoopExample extends React.Component<{}> {
               <View
                 style={styles.keyView}
                 focusable={true}
-                enableFocusRing={true}
                 ref={this.secondViewRef}
                 onFocus={() => {
                   this.secondViewRef.current?.setNativeProps({
