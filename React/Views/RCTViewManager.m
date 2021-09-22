@@ -404,7 +404,12 @@ RCT_CUSTOM_VIEW_PROPERTY(focusable, BOOL, RCTView)
     view.focusable = json ? [RCTConvert BOOL:json] : defaultView.focusable;
   }
 }
-RCT_EXPORT_VIEW_PROPERTY(enableFocusRing, BOOL)
+RCT_CUSTOM_VIEW_PROPERTY(enableFocusRing, BOOL, RCTView)
+{
+  if ([view respondsToSelector:@selector(setEnableFocusRing:)]) {
+    view.enableFocusRing = json ? [RCTConvert BOOL:json] : defaultView.enableFocusRing;
+  }
+}
 
 RCT_REMAP_VIEW_PROPERTY(tooltip, toolTip, NSString)
 
