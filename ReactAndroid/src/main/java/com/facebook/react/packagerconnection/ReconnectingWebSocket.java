@@ -66,8 +66,10 @@ public final class ReconnectingWebSocket extends WebSocketListener {
   }
 
   public void connect() {
-    if (mClosed) {
-      throw new IllegalStateException("Can't connect closed client");
+    synchronized (this) {
+      if (mClosed) {
+        throw new IllegalStateException("Can't connect closed client");
+      }
     }
 
     Request request = new Request.Builder().url(mUrl).build();
@@ -82,8 +84,10 @@ public final class ReconnectingWebSocket extends WebSocketListener {
   }
 
   private void reconnect() {
-    if (mClosed) {
-      throw new IllegalStateException("Can't reconnect closed client");
+    synchronized (this) {
+      if (mClosed) {
+        throw new IllegalStateException("Can't reconnect closed client");
+      }
     }
 
     if (!mSuppressConnectionErrors) {
@@ -102,8 +106,10 @@ public final class ReconnectingWebSocket extends WebSocketListener {
   }
 
   public void closeQuietly() {
-    mClosed = true;
-    closeWebSocketQuietly();
+    synchronized (this) {
+      mClosed = true;
+      closeWebSocketQuietly();
+    }
     mMessageCallback = null;
 
     if (mConnectionCallback != null) {
