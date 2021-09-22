@@ -32,7 +32,6 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "11.0" }
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
-  s.library                = "stdc++"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
 
