@@ -47,6 +47,15 @@ class TextLayoutManager {
       LayoutConstraints layoutConstraints) const;
 
   /*
+   * Measures lines of `attributedString` using native text rendering
+   * infrastructure.
+   */
+  LinesMeasurements measureLines(
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      Size size) const;
+
+  /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
    * Is used on a native views layer to delegate text rendering to the manager.
    */

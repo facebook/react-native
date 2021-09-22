@@ -27,6 +27,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
@@ -257,51 +258,19 @@ public class TextLayoutManager {
     return sb;
   }
 
-  public static long measureText(
-      Context context,
-      ReadableMap attributedString,
-      ReadableMap paragraphAttributes,
+  private static Layout createLayout(
+      Spannable text,
+      BoringLayout.Metrics boring,
       float width,
       YogaMeasureMode widthYogaMeasureMode,
-      float height,
-      YogaMeasureMode heightYogaMeasureMode,
-      ReactTextViewManagerCallback reactTextViewManagerCallback,
-      @Nullable float[] attachmentsPositions) {
-
-    // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
-    TextPaint textPaint = sTextPaintInstance;
-    Spannable text;
-    if (attributedString.hasKey("cacheId")) {
-      int cacheId = attributedString.getInt("cacheId");
-      if (sTagToSpannableCache.containsKey(cacheId)) {
-        text = sTagToSpannableCache.get(cacheId);
-      } else {
-        return 0;
-      }
-    } else {
-      text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
-    }
-
-    int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TEXT_BREAK_STRATEGY_KEY));
-    boolean includeFontPadding =
-        paragraphAttributes.hasKey(INCLUDE_FONT_PADDING_KEY)
-            ? paragraphAttributes.getBoolean(INCLUDE_FONT_PADDING_KEY)
-            : DEFAULT_INCLUDE_FONT_PADDING;
-
-    if (text == null) {
-      throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
-    }
-
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
-    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
-
-    // technically, width should never be negative, but there is currently a bug in
-    boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
-
+      boolean includeFontPadding,
+      int textBreakStrategy) {
     Layout layout;
     int spanLength = text.length();
+    boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
+    TextPaint textPaint = sTextPaintInstance;
+    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
+
     if (boring == null
         && (unconstrainedWidth
             || (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
@@ -367,6 +336,55 @@ public class TextLayoutManager {
                 .build();
       }
     }
+    return layout;
+  }
+
+  public static long measureText(
+      Context context,
+      ReadableMap attributedString,
+      ReadableMap paragraphAttributes,
+      float width,
+      YogaMeasureMode widthYogaMeasureMode,
+      float height,
+      YogaMeasureMode heightYogaMeasureMode,
+      ReactTextViewManagerCallback reactTextViewManagerCallback,
+      @Nullable float[] attachmentsPositions) {
+
+    // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
+    TextPaint textPaint = sTextPaintInstance;
+    Spannable text;
+    if (attributedString.hasKey("cacheId")) {
+      int cacheId = attributedString.getInt("cacheId");
+      if (sTagToSpannableCache.containsKey(cacheId)) {
+        text = sTagToSpannableCache.get(cacheId);
+      } else {
+        return 0;
+      }
+    } else {
+      text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    }
+
+    int textBreakStrategy =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(TEXT_BREAK_STRATEGY_KEY));
+    boolean includeFontPadding =
+        paragraphAttributes.hasKey(INCLUDE_FONT_PADDING_KEY)
+            ? paragraphAttributes.getBoolean(INCLUDE_FONT_PADDING_KEY)
+            : DEFAULT_INCLUDE_FONT_PADDING;
+
+    if (text == null) {
+      throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
+    }
+
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
+    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
+
+    // technically, width should never be negative, but there is currently a bug in
+    boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
+
+    Layout layout =
+        createLayout(
+            text, boring, width, widthYogaMeasureMode, includeFontPadding, textBreakStrategy);
 
     int maximumNumberOfLines =
         paragraphAttributes.hasKey(MAXIMUM_NUMBER_OF_LINES_KEY)
@@ -408,9 +426,9 @@ public class TextLayoutManager {
     // follows a similar logic than used in pre-fabric (see ReactTextView.onLayout method).
     int attachmentIndex = 0;
     int lastAttachmentFoundInSpan;
-    for (int i = 0; i < spanLength; i = lastAttachmentFoundInSpan) {
+    for (int i = 0; i < text.length(); i = lastAttachmentFoundInSpan) {
       lastAttachmentFoundInSpan =
-          text.nextSpanTransition(i, spanLength, TextInlineViewPlaceholderSpan.class);
+          text.nextSpanTransition(i, text.length(), TextInlineViewPlaceholderSpan.class);
       TextInlineViewPlaceholderSpan[] placeholders =
           text.getSpans(i, lastAttachmentFoundInSpan, TextInlineViewPlaceholderSpan.class);
       for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
@@ -432,7 +450,7 @@ public class TextLayoutManager {
           // There's a bug on Samsung devices where calling getPrimaryHorizontal on
           // the last offset in the layout will result in an endless loop. Work around
           // this bug by avoiding getPrimaryHorizontal in that case.
-          if (start == spanLength - 1) {
+          if (start == text.length() - 1) {
             placeholderLeftPosition =
                 isRtlParagraph
                     // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
@@ -500,6 +518,29 @@ public class TextLayoutManager {
     }
 
     return YogaMeasureOutput.make(widthInSP, heightInSP);
+  }
+
+  public static WritableArray measureLines(
+      @NonNull Context context,
+      ReadableMap attributedString,
+      ReadableMap paragraphAttributes,
+      float width) {
+    TextPaint textPaint = sTextPaintInstance;
+    Spannable text = getOrCreateSpannableForText(context, attributedString, null);
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
+
+    int textBreakStrategy =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(TEXT_BREAK_STRATEGY_KEY));
+    boolean includeFontPadding =
+        paragraphAttributes.hasKey(INCLUDE_FONT_PADDING_KEY)
+            ? paragraphAttributes.getBoolean(INCLUDE_FONT_PADDING_KEY)
+            : DEFAULT_INCLUDE_FONT_PADDING;
+
+    Layout layout =
+        createLayout(
+            text, boring, width, YogaMeasureMode.EXACTLY, includeFontPadding, textBreakStrategy);
+    return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
   }
 
   // TODO T31905686: This class should be private
