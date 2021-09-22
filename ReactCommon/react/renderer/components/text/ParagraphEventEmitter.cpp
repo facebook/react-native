@@ -38,12 +38,17 @@ static jsi::Value linesMeasurementsPayload(
 
 void ParagraphEventEmitter::onTextLayout(
     LinesMeasurements const &linesMeasurements) const {
-  dispatchEvent(
-      "textLayout",
-      [linesMeasurements](jsi::Runtime &runtime) {
-        return linesMeasurementsPayload(runtime, linesMeasurements);
-      },
-      EventPriority::AsynchronousBatched);
+  {
+    std::lock_guard<std::mutex> guard(linesMeasurementsMutex_);
+    if (linesMeasurementsMetrics_ == linesMeasurements) {
+      return;
+    }
+    linesMeasurementsMetrics_ = linesMeasurements;
+  }
+
+  dispatchEvent("textLayout", [linesMeasurements](jsi::Runtime &runtime) {
+    return linesMeasurementsPayload(runtime, linesMeasurements);
+  });
 }
 
 } // namespace react

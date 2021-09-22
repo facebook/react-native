@@ -49,13 +49,13 @@ Pod::Spec.new do |s|
     ss.dependency "glog"
 
     ss.subspec "core" do |sss|
-      sss.source_files = "react/nativemodule/core/*.{cpp,h}",
-                         "react/nativemodule/core/platform/ios/*.{mm,cpp,h}"
+      sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}",
+                         "react/nativemodule/core/platform/ios/**/*.{mm,cpp,h}"
     end
 
     ss.subspec "samples" do |sss|
       sss.source_files = "react/nativemodule/samples/*.{cpp,h}",
-                         "react/nativemodule/samples/platform/ios/*.{mm,cpp,h}"
+                         "react/nativemodule/samples/platform/ios/**/*.{mm,cpp,h}"
       sss.dependency "ReactCommon/turbomodule/core", version
     end
   end
