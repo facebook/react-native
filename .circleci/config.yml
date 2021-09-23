@@ -552,6 +552,32 @@ jobs:
           path: ./reports/junit
 
   # -------------------------
+  #    JOBS: Test Android Template
+  # -------------------------
+  test_android_template:
+    executor: reactnativeandroid
+    steps:
+      - checkout
+      - run_yarn
+
+      - run:
+          name: Setup the Android Template
+          command: |
+            cd template
+            sed -i 's/1000\.0\.0/file\:\.\./g' package.json
+            npm install
+            # react-native-community/cli is needed as the Android template is referencing a .gradle file inside it.
+            npm i @react-native-community/cli
+
+      - run:
+          name: Bundle the latest version of ReactAndroid
+          command: ./gradlew :ReactAndroid:publishReleasePublicationToNpmRepository
+
+      - run:
+          name: Build the template application
+          command: cd template/android/ && ./gradlew assembleDebug
+
+  # -------------------------
   #    JOBS: Test Docker
   # -------------------------
   test_docker_android:
@@ -735,6 +761,10 @@ workflows:
               ignore: gh-pages
       - test_android:
           run_disabled_tests: false
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_android_template:
           filters:
             branches:
               ignore: gh-pages
