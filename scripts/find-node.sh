@@ -37,3 +37,10 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
     eval "$(anyenv init -)"
   fi
 fi
+
+# Set up asdf-vm if present
+if [[ -f "$HOME/.asdf/asdf.sh" ]]; then
+  . "$HOME/.asdf/asdf.sh"
+elif [[ -x "$(command -v brew)" && -f "$(brew --prefix asdf)/asdf.sh" ]]; then
+  . "$(brew --prefix asdf)/asdf.sh"
+fi
