@@ -117,6 +117,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
 {
+  RCTAssert(componentViewClass, @"RCTComponentViewFactory: Provided `componentViewClass` is `nil`.");
   std::unique_lock<better::shared_mutex> lock(_mutex);
 
   auto componentDescriptorProvider = [componentViewClass componentDescriptorProvider];

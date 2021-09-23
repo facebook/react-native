@@ -54,12 +54,12 @@ describe('PerformanceLogger', () => {
       perfLogger.startTimespan(TIMESPAN_1);
       perfLogger.close();
       let timespan = perfLogger.getTimespans()[TIMESPAN_1];
-      expect(timespan.endTime).toBeUndefined();
-      expect(timespan.totalTime).toBeUndefined();
+      expect(timespan?.endTime).toBeUndefined();
+      expect(timespan?.totalTime).toBeUndefined();
       perfLogger.stopTimespan(TIMESPAN_1);
       timespan = perfLogger.getTimespans()[TIMESPAN_1];
-      expect(timespan.endTime).toBeUndefined();
-      expect(timespan.totalTime).toBeUndefined();
+      expect(timespan?.endTime).toBeUndefined();
+      expect(timespan?.totalTime).toBeUndefined();
     });
   });
 
@@ -208,10 +208,10 @@ describe('PerformanceLogger', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.startTimespan(TIMESPAN_1, POINT_ANNOTATION_1);
     perfLogger.stopTimespan(TIMESPAN_1, POINT_ANNOTATION_2);
-    expect(perfLogger.getTimespans()[TIMESPAN_1].startExtras).toEqual(
+    expect(perfLogger.getTimespans()[TIMESPAN_1]?.startExtras).toEqual(
       POINT_ANNOTATION_1,
     );
-    expect(perfLogger.getTimespans()[TIMESPAN_1].endExtras).toEqual(
+    expect(perfLogger.getTimespans()[TIMESPAN_1]?.endExtras).toEqual(
       POINT_ANNOTATION_2,
     );
   });
