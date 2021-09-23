@@ -7,7 +7,8 @@
 
 plugins {
     id("com.android.application")
-    id("com.facebook.react")
+    id("com.facebook.react.codegen")
+    id("com.facebook.react.app")
 }
 
 /**
@@ -75,9 +76,8 @@ plugins {
  * ]
  */
 
-react {
-    applyAppPlugin = true
-    cliPath = "../../../../cli.js"
+reactApp {
+    cliPath = "$rootDir/cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
     reactRoot = rootDir
@@ -85,10 +85,6 @@ react {
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
     enableHermesForVariant { def v -> v.name.contains("hermes") }
-
-    // Codegen Configs
-    jsRootDir = file("$rootDir/packages/rn-tester")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
 
 project.ext.react = [
@@ -253,6 +249,12 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
 }
 
+react {
+    jsRootDir = file("$rootDir/packages/rn-tester")
+    reactNativeRootDir = file("$rootDir")
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+}
+
 if (enableCodegen) {
     // TODO: Move all this logic to CodegenPlugin.java.
     def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
@@ -286,7 +288,6 @@ if (enableCodegen) {
     def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
         dependsOn(":ReactAndroid:packageReactNdkLibs")
-        dependsOn("generateCodegenSchemaFromJavaScript")
         from("$reactAndroidBuildDir/react-ndk/exported")
         into("$buildDir/react-ndk/exported")
     }

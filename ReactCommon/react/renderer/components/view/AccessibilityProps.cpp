@@ -49,12 +49,6 @@ AccessibilityProps::AccessibilityProps(
           "accessibilityHint",
           sourceProps.accessibilityHint,
           "")),
-      accessibilityValue(convertRawProp(
-          context,
-          rawProps,
-          "accessibilityValue",
-          sourceProps.accessibilityValue,
-          {})),
       accessibilityActions(convertRawProp(
           context,
           rawProps,

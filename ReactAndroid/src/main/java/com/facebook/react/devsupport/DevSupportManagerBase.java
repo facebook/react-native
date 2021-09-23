@@ -345,21 +345,16 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           @Override
           public void run() {
             Activity context = mReactInstanceDevHelper.getCurrentActivity();
-            if (context != null && !context.isFinishing() && currentActivity != context) {
+            if (mRedBoxDialog == null || context != currentActivity) {
+              if (context == null || context.isFinishing()) {
+                FLog.e(
+                    ReactConstants.TAG,
+                    "Unable to launch redbox because react activity "
+                        + "is not available, here is the error that redbox would've displayed: "
+                        + message);
+                return;
+              }
               currentActivity = context;
-              // Create a new RedBox when currentActivity get updated
-              mRedBoxDialog =
-                  new RedBoxDialog(currentActivity, DevSupportManagerBase.this, mRedBoxHandler);
-            }
-            if (currentActivity == null || currentActivity.isFinishing()) {
-              FLog.e(
-                  ReactConstants.TAG,
-                  "Unable to launch redbox because react activity "
-                      + "is not available, here is the error that redbox would've displayed: "
-                      + message);
-              return;
-            }
-            if (mRedBoxDialog == null) {
               mRedBoxDialog =
                   new RedBoxDialog(currentActivity, DevSupportManagerBase.this, mRedBoxHandler);
             }

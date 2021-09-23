@@ -320,40 +320,40 @@ export function checkWarningFilter(format: string): WarningInfo {
   return warningFilter(format);
 }
 
-export function getIgnorePatterns(): $ReadOnlyArray<IgnorePattern> {
-  return Array.from(ignorePatterns);
-}
-
 export function addIgnorePatterns(
   patterns: $ReadOnlyArray<IgnorePattern>,
 ): void {
-  const existingSize = ignorePatterns.size;
   // The same pattern may be added multiple times, but adding a new pattern
   // can be expensive so let's find only the ones that are new.
-  patterns.forEach((pattern: IgnorePattern) => {
+  const newPatterns = patterns.filter((pattern: IgnorePattern) => {
     if (pattern instanceof RegExp) {
-      for (const existingPattern of ignorePatterns) {
+      for (const existingPattern of ignorePatterns.entries()) {
         if (
           existingPattern instanceof RegExp &&
           existingPattern.toString() === pattern.toString()
         ) {
-          return;
+          return false;
         }
       }
-      ignorePatterns.add(pattern);
+      return true;
     }
-    ignorePatterns.add(pattern);
+    return !ignorePatterns.has(pattern);
   });
-  if (ignorePatterns.size === existingSize) {
+
+  if (newPatterns.length === 0) {
     return;
   }
-  // We need to recheck all of the existing logs.
-  // This allows adding an ignore pattern anywhere in the codebase.
-  // Without this, if you ignore a pattern after the a log is created,
-  // then we would keep showing the log.
-  logs = new Set(
-    Array.from(logs).filter(log => !isMessageIgnored(log.message.content)),
-  );
+  for (const pattern of newPatterns) {
+    ignorePatterns.add(pattern);
+
+    // We need to recheck all of the existing logs.
+    // This allows adding an ignore pattern anywhere in the codebase.
+    // Without this, if you ignore a pattern after the a log is created,
+    // then we would keep showing the log.
+    logs = new Set(
+      Array.from(logs).filter(log => !isMessageIgnored(log.message.content)),
+    );
+  }
   handleUpdate();
 }
 

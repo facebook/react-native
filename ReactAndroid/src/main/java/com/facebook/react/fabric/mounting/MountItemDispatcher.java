@@ -13,7 +13,6 @@ import static com.facebook.react.fabric.FabricUIManager.ENABLE_FABRIC_LOGS;
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 
 import android.os.SystemClock;
-import android.view.View;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -275,16 +274,9 @@ public class MountItemDispatcher {
           executeOrEnqueue(mountItem);
         } catch (Throwable e) {
           // If there's an exception, we want to log diagnostics in prod and rethrow.
-          FLog.e(TAG, "dispatchMountItems: caught exception, displaying mount state", e);
+          FLog.e(TAG, "dispatchMountItems: caught exception, displaying all MountItems", e);
           for (MountItem m : mountItemsToDispatch) {
             printMountItem(m, "dispatchMountItems: mountItem");
-          }
-          if (mountItem.getSurfaceId() != View.NO_ID) {
-            SurfaceMountingManager surfaceManager =
-                mMountingManager.getSurfaceManager(mountItem.getSurfaceId());
-            if (surfaceManager != null) {
-              surfaceManager.printSurfaceState();
-            }
           }
 
           if (ReactIgnorableMountingException.isIgnorable(e)) {

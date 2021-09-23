@@ -11,7 +11,7 @@
 'use strict';
 
 let registerModule;
-if (global.RN$Bridgeless === true && global.RN$registerCallableModule) {
+if (global.RN$Bridgeless && global.RN$registerCallableModule) {
   registerModule = global.RN$registerCallableModule;
 } else {
   const BatchedBridge = require('../BatchedBridge/BatchedBridge');

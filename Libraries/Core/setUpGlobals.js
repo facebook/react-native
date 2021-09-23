@@ -19,12 +19,10 @@ if (global.GLOBAL === undefined) {
 }
 
 if (global.window === undefined) {
-  // $FlowFixMe[cannot-write]
   global.window = global;
 }
 
 if (global.self === undefined) {
-  // $FlowFixMe[cannot-write]
   global.self = global;
 }
 

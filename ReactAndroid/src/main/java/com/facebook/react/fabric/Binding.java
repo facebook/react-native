@@ -9,13 +9,11 @@ package com.facebook.react.fabric;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.RuntimeExecutor;
-import com.facebook.react.bridge.RuntimeScheduler;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -39,7 +37,6 @@ public class Binding {
 
   private native void installFabricUIManager(
       RuntimeExecutor runtimeExecutor,
-      RuntimeScheduler runtimeScheduler,
       Object uiManager,
       EventBeatManager eventBeatManager,
       MessageQueueThread jsMessageQueueThread,
@@ -86,7 +83,6 @@ public class Binding {
 
   public void register(
       @NonNull RuntimeExecutor runtimeExecutor,
-      @Nullable RuntimeScheduler runtimeScheduler,
       @NonNull FabricUIManager fabricUIManager,
       @NonNull EventBeatManager eventBeatManager,
       @NonNull MessageQueueThread jsMessageQueueThread,
@@ -95,7 +91,6 @@ public class Binding {
     fabricUIManager.setBinding(this);
     installFabricUIManager(
         runtimeExecutor,
-        runtimeScheduler,
         fabricUIManager,
         eventBeatManager,
         jsMessageQueueThread,

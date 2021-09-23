@@ -133,15 +133,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [self.scrollViewDelegateSplitter removeAllDelegates];
 }
 
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-
-  if (_subviewClippingEnabled) {
-    [self _remountChildren];
-  }
-}
-
 - (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
 {
   return ((RCTEnhancedScrollView *)_scrollView).delegateSplitter;

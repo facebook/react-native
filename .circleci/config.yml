@@ -58,6 +58,14 @@ executors:
 #        COMMANDS
 # -------------------------
 commands:
+  restore_cache_checkout:
+    parameters:
+      checkout_type:
+        type: string
+        default: node
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}-<< parameters.checkout_type >>
 
   setup_artifacts:
     steps:
@@ -206,6 +214,22 @@ commands:
 #          JOBS
 # -------------------------
 jobs:
+  setup:
+    parameters:
+      executor:
+        type: executor
+        default: nodelts
+      checkout_type:
+        type: string
+        default: node
+    executor: << parameters.executor >>
+    steps:
+      - checkout
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}-<< parameters.checkout_type >>
+          paths:
+            - ~/react-native
+
   # -------------------------
   #     JOBS: Analyze PR
   # -------------------------
@@ -215,7 +239,8 @@ jobs:
   analyze_pr:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - restore_cache_checkout:
+          checkout_type: android
       - run_yarn
 
       - install_github_bot_deps
@@ -245,7 +270,8 @@ jobs:
   analyze_code:
     executor: reactnativeandroid
     steps:
-      - checkout
+      - restore_cache_checkout:
+          checkout_type: android
       - setup_artifacts
       - run_yarn
 
@@ -297,7 +323,8 @@ jobs:
         default: false
     executor: << parameters.executor >>
     steps:
-      - checkout
+      - restore_cache_checkout:
+          checkout_type: node
       - setup_artifacts
       - run_yarn
       - run:
@@ -349,7 +376,8 @@ jobs:
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
-      - checkout
+      - restore_cache_checkout:
+          checkout_type: ios
       - setup_artifacts
       - run_yarn
 
@@ -404,7 +432,7 @@ jobs:
           steps:
             - run:
                 name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && bundle exec pod install --verbose
+                command: cd packages/rn-tester && USE_FABRIC=1 bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -457,7 +485,8 @@ jobs:
         type: boolean
         default: false
     steps:
-      - checkout
+      - restore_cache_checkout:
+          checkout_type: android
       - setup_artifacts
       - run_yarn
 
@@ -554,22 +583,19 @@ jobs:
   # -------------------------
   #    JOBS: Test Docker
   # -------------------------
-  test_docker_android:
+  test_docker:
     machine: true
     steps:
       - checkout
       - run:
-          name: Configure Node
+          name: Build Docker container for Android RNTester App
           command: |
             source ~/.bashrc
             nvm i node
+            npm i -g yarn
             echo y | npx envinfo@latest
-      - run:
-          name: Pulls down the React Native Community Android Docker image
-          command: npm run docker-setup-android
-      - run:
-          name: Builds the Docker image with a compiled instance of the test app
-          command: npm run docker-build-android
+            yarn run docker-setup-android
+            yarn run docker-build-android
 
   # -------------------------
   #    JOBS: Windows
@@ -668,7 +694,8 @@ jobs:
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
-      - checkout
+      - restore_cache_checkout:
+          checkout_type: node
       - setup_artifacts
       - run_yarn
       - run:
@@ -697,7 +724,8 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-      - checkout
+      - restore_cache_checkout:
+          checkout_type: android
       - run_yarn
       - install_buck_tooling
       - download_buck_dependencies
@@ -728,56 +756,78 @@ workflows:
 
   tests:
     jobs:
+      - setup:
+          name: setup_js
+          filters:
+            branches:
+              ignore: gh-pages
+      - setup:
+          name: setup_ios
+          checkout_type: ios
+          executor: reactnativeios
+          filters:
+            branches:
+              ignore: gh-pages
+      - setup:
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
+          filters:
+            branches:
+              ignore: gh-pages
       - test_js:
           run_disabled_tests: false
-          filters:
-            branches:
-              ignore: gh-pages
+          requires:
+            - setup_js
       - test_android:
           run_disabled_tests: false
-          filters:
-            branches:
-              ignore: gh-pages
+          requires:
+            - setup_android
       - test_ios:
           name: test_ios_unit_jsc
           run_unit_tests: true
-          filters:
-            branches:
-              ignore: gh-pages
+          requires:
+            - setup_ios
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_unit_frameworks_jsc
       #     use_frameworks: true
       #     run_unit_tests: true
+      #     requires:
+      #       - setup_ios
       - test_ios:
           name: test_ios_unit_hermes
           use_hermes: true
           run_unit_tests: true
-          filters:
-            branches:
-              ignore: gh-pages
+          requires:
+            - setup_ios
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_unit_frameworks_hermes
       #     use_hermes: true
       #     use_frameworks: true
       #     run_unit_tests: true
+      #     requires:
+      #       - setup_ios
       # DISABLED: Detox tests need to be fixed
       # - test_ios:
       #     name: test_ios_detox
       #     run_detox_tests: true
+      #     requires:
+      #       - setup_ios
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_detox_frameworks
       #     use_frameworks: true
       #     run_detox_tests: true
+      #     requires:
+      #       - setup_ios
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
-          filters:
-            branches:
-              ignore: gh-pages
-      - test_docker_android:
+          requires:
+            - setup_js
+      - test_docker:
           filters:
             branches:
               ignore: gh-pages
@@ -789,7 +839,21 @@ workflows:
 
   releases:
     jobs:
+      - setup:
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
+          filters:
+            # Both of the following conditions must be included!
+            # Ignore any commit on any branch by default.
+            branches:
+              ignore: /.*/
+            # Only act on version tags.
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
       - publish_npm_package:
+          requires:
+            - setup_android
           filters:
             # Both of the following conditions must be included!
             # Ignore any commit on any branch by default.
@@ -801,24 +865,34 @@ workflows:
 
   analysis:
     jobs:
+      - setup:
+          name: setup_js
+
+      - setup:
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
+
       # Run lints on every commit other than those to the gh-pages branch
       - analyze_code:
+          requires:
+            - setup_android
           filters:
             branches:
               ignore: gh-pages
 
       # Run code checks on PRs from forks
       - analyze_pr:
+          requires:
+            - setup_android
           filters:
             branches:
               only: /^pull\/.*$/
 
       # Gather coverage
       - js_coverage:
-          filters:
-            branches:
-              ignore: gh-pages
-
+          requires:
+            - setup_js
   nightly:
     triggers:
       - schedule:
@@ -830,5 +904,12 @@ workflows:
     jobs:
       - nightly_job
 
+      - setup:
+          name: setup_android
+          checkout_type: android
+          executor: reactnativeandroid
+
       - publish_npm_package:
           publish_npm_args: --nightly
+          requires:
+            - setup_android

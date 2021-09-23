@@ -71,7 +71,7 @@ const MatrixMath = {
    * This create a perspective projection towards negative z
    * Clipping the z range of [-near, -far]
    *
-   * @param fovInRadians - field of view in radians
+   * @param fovInRadians - field of view in randians
    */
   createPerspective: function(fovInRadians, aspect, near, far) {
     const h = 1 / Math.tan(fovInRadians / 2);

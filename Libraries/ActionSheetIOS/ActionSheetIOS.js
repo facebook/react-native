@@ -47,7 +47,6 @@ const ActionSheetIOS = {
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
-      +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
       +disabledButtonIndices?: Array<number>,
     |},
@@ -60,12 +59,7 @@ const ActionSheetIOS = {
     invariant(typeof callback === 'function', 'Must provide a valid callback');
     invariant(RCTActionSheetManager, "ActionSheetManager doesn't exist");
 
-    const {
-      tintColor,
-      cancelButtonTintColor,
-      destructiveButtonIndex,
-      ...remainingOptions
-    } = options;
+    const {tintColor, destructiveButtonIndex, ...remainingOptions} = options;
     let destructiveButtonIndices = null;
 
     if (Array.isArray(destructiveButtonIndex)) {
@@ -75,21 +69,14 @@ const ActionSheetIOS = {
     }
 
     const processedTintColor = processColor(tintColor);
-    const processedCancelButtonTintColor = processColor(cancelButtonTintColor);
     invariant(
       processedTintColor == null || typeof processedTintColor === 'number',
       'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions tintColor',
-    );
-    invariant(
-      processedCancelButtonTintColor == null ||
-        typeof processedCancelButtonTintColor === 'number',
-      'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions cancelButtonTintColor',
     );
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
         tintColor: processedTintColor,
-        cancelButtonTintColor: processedCancelButtonTintColor,
         destructiveButtonIndices,
       },
       callback,

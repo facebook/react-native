@@ -16,8 +16,8 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(call find-node-module,$(LOCAL_PATH),hermes-engine)/android/include
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
-LOCAL_STATIC_LIBRARIES := libjsireact
-LOCAL_SHARED_LIBRARIES := libhermes libjsi
+LOCAL_STATIC_LIBRARIES := libjsi libjsireact
+LOCAL_SHARED_LIBRARIES := libhermes
 
 include $(BUILD_SHARED_LIBRARY)
 
@@ -31,7 +31,7 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(call find-node-module,$(LOCAL_PATH),hermes-engine)/android/include
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
-LOCAL_STATIC_LIBRARIES := libjsireact libhermes-inspector
-LOCAL_SHARED_LIBRARIES := libhermes libjsi
+LOCAL_STATIC_LIBRARIES := libjsi libjsireact libhermes-inspector
+LOCAL_SHARED_LIBRARIES := libhermes
 
 include $(BUILD_SHARED_LIBRARY)

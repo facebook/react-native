@@ -20,7 +20,6 @@ EXPORTED_HEADERS = [
     "ReadableNativeArray.h",
     "ReadableNativeMap.h",
     "JRuntimeExecutor.h",
-    "JRuntimeScheduler.h",
     "WritableNativeArray.h",
     "WritableNativeMap.h",
 ]
@@ -68,7 +67,6 @@ rn_xplat_cxx_library(
         react_native_xplat_target("cxxreact:module"),
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
-        react_native_xplat_target("react/renderer/runtimescheduler:runtimescheduler"),
         react_native_xplat_target("logger:logger"),
         react_native_xplat_dep("jsi:jsi"),
         FBJNI_TARGET,

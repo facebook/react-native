@@ -11,7 +11,6 @@
 #include <memory>
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
@@ -80,6 +79,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   ShadowNode::Unshared cloneShadowNode(
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment) const override {
+    react_native_assert(
+        dynamic_cast<ConcreteShadowNode const *>(&sourceShadowNode) &&
+        "Provided `sourceShadowNode` has an incompatible type.");
+
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
 
     adopt(shadowNode);
@@ -89,6 +92,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   void appendChild(
       const ShadowNode::Shared &parentShadowNode,
       const ShadowNode::Shared &childShadowNode) const override {
+    react_native_assert(
+        dynamic_cast<ConcreteShadowNode const *>(parentShadowNode.get()) &&
+        "Provided `parentShadowNode` has an incompatible type.");
+
     auto concreteParentShadowNode =
         std::static_pointer_cast<const ShadowNodeT>(parentShadowNode);
     auto concreteNonConstParentShadowNode =
@@ -100,6 +107,11 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       const PropsParserContext &context,
       const SharedProps &props,
       const RawProps &rawProps) const override {
+    react_native_assert(
+        !props ||
+        dynamic_cast<ConcreteProps const *>(props.get()) &&
+            "Provided `props` has an incompatible type.");
+
     // Optimization:
     // Quite often nodes are constructed with default/empty props: the base
     // `props` object is `null` (there no base because it's not cloning) and the
@@ -114,28 +126,21 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return ShadowNodeT::Props(context, rawProps, props);
   };
 
-  SharedProps interpolateProps(
+  virtual SharedProps interpolateProps(
       const PropsParserContext &context,
       float animationProgress,
       const SharedProps &props,
       const SharedProps &newProps) const override {
+    // By default, this does nothing.
 #ifdef ANDROID
     // On Android only, the merged props should have the same RawProps as the
     // final props struct
-    SharedProps interpolatedPropsShared =
-        (newProps != nullptr ? cloneProps(context, newProps, newProps->rawProps)
-                             : cloneProps(context, newProps, {}));
-#else
-    SharedProps interpolatedPropsShared = cloneProps(context, newProps, {});
+    if (newProps != nullptr) {
+      return cloneProps(context, newProps, newProps->rawProps);
+    }
 #endif
 
-    if (ConcreteShadowNode::BaseTraits().check(
-            ShadowNodeTraits::Trait::ViewKind)) {
-      interpolateViewProps(
-          animationProgress, props, newProps, interpolatedPropsShared);
-    }
-
-    return interpolatedPropsShared;
+    return cloneProps(context, newProps, {});
   };
 
   virtual State::Shared createInitialState(

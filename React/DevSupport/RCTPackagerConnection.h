@@ -59,9 +59,6 @@ typedef void (^RCTConnectedHandler)(void);
 /** Disconnects and removes all handlers. */
 - (void)stop;
 
-/** Reconnect with given packager server. */
-- (void)reconnect:(NSString *)packagerServerHostPort;
-
 /**
  * Historically no distinction was made between notification and request
  * handlers. If you use this method, it will be registered as *both* a

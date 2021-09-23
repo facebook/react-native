@@ -22,7 +22,7 @@ class MountingCoordinator;
 class MountingOverrideDelegate {
  public:
   virtual bool shouldOverridePullTransaction() const = 0;
-  virtual ~MountingOverrideDelegate() = default;
+  virtual ~MountingOverrideDelegate(){};
 
   /**
    * Delegates that override this method are responsible for:

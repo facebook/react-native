@@ -51,14 +51,13 @@ RCT_MULTI_ENUM_CONVERTER(
       @"menu" : @(UIAccessibilityTraitNone),
       @"menubar" : @(UIAccessibilityTraitNone),
       @"menuitem" : @(UIAccessibilityTraitNone),
-      @"progressbar" : @(UIAccessibilityTraitUpdatesFrequently),
+      @"progressbar" : @(UIAccessibilityTraitNone),
       @"radio" : @(UIAccessibilityTraitNone),
       @"radiogroup" : @(UIAccessibilityTraitNone),
       @"scrollbar" : @(UIAccessibilityTraitNone),
       @"spinbutton" : @(UIAccessibilityTraitNone),
       @"switch" : @(SwitchAccessibilityTrait),
       @"tab" : @(UIAccessibilityTraitNone),
-      @"tabbar" : @(UIAccessibilityTraitTabBar),
       @"tablist" : @(UIAccessibilityTraitNone),
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),
@@ -172,8 +171,7 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
   const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton |
       UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage |
       UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable |
-      UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | UIAccessibilityTraitTabBar |
-      UIAccessibilityTraitUpdatesFrequently | SwitchAccessibilityTrait;
+      UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | SwitchAccessibilityTrait;
   view.reactAccessibilityElement.accessibilityTraits =
       view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask;
   UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;

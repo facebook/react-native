@@ -41,7 +41,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
   /**
    * Allocate 16-bytes for the values that have to be preserved across the call
    * to the actual function, since the stack has to be in the exact initial
-   * state. During its lifetime we use it to store the initial value of the
+   * state. During its lifetimewe use it to store the initial value of the
    * callee saved registers we use to point the memory, the actual address of
    * the implementation and the caller address.
    */
@@ -119,7 +119,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
   // restore the stack pointer
   add sp, sp, #0x20
 
-  // jump to the caller, without a link
+  // jump to the calleer, without a link
   br lr
 
 #endif

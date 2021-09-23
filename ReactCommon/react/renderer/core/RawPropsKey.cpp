@@ -51,18 +51,10 @@ RawPropsKey::operator std::string() const noexcept {
   return std::string{buffer, length};
 }
 
-static bool areFieldsEqual(char const *lhs, char const *rhs) {
-  if (lhs == nullptr || rhs == nullptr) {
-    return lhs == rhs;
-  }
-  return std::string(lhs) == std::string(rhs);
-}
-
 bool operator==(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept {
   // Note: We check the name first.
-  return areFieldsEqual(lhs.name, rhs.name) &&
-      areFieldsEqual(lhs.prefix, rhs.prefix) &&
-      areFieldsEqual(lhs.suffix, rhs.suffix);
+  return lhs.name == rhs.name && lhs.prefix == rhs.prefix &&
+      lhs.suffix == rhs.suffix;
 }
 
 bool operator!=(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept {

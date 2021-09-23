@@ -51,7 +51,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
   auto entropy = seed == 0 ? Entropy() : Entropy(seed);
 
   auto eventDispatcher = EventDispatcher::Shared{};
-  auto contextContainer = std::make_shared<ContextContainer const>();
+  auto contextContainer = std::make_shared<ContextContainer>();
   auto componentDescriptorParameters =
       ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
   auto viewComponentDescriptor =
@@ -77,8 +77,8 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
       concreteComponentDescriptorProvider<ViewComponentDescriptor>());
 
   // Create Animation Driver
-  auto animationDriver = std::make_shared<LayoutAnimationDriver>(
-      runtimeExecutor, contextContainer, nullptr);
+  auto animationDriver =
+      std::make_shared<LayoutAnimationDriver>(runtimeExecutor, nullptr);
   animationDriver->setComponentDescriptorRegistry(componentDescriptorRegistry);
 
   // Mock animation timers

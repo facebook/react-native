@@ -70,12 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
 /**
- * Flag indicating if subview clipping is enabled for the view.
- * If subview clipping is enabled, subviews that are outside of the viewport may be removed from the view hierachy.
- */
-@property (nonatomic, readonly) BOOL removeClippedSubviews;
-
-/**
  * Enforcing `call super` semantic for overridden methods from `RCTComponentViewProtocol`.
  * The methods update the instance variables.
  */

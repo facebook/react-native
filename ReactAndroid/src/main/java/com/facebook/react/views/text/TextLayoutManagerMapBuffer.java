@@ -61,7 +61,6 @@ public class TextLayoutManagerMapBuffer {
   public static final short PA_KEY_TEXT_BREAK_STRATEGY = 2;
   public static final short PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
   public static final short PA_KEY_INCLUDE_FONT_PADDING = 4;
-  public static final short PA_KEY_HYPHENATION_FREQUENCY = 5;
 
   private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
 
@@ -265,8 +264,7 @@ public class TextLayoutManagerMapBuffer {
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       boolean includeFontPadding,
-      int textBreakStrategy,
-      int hyphenationFrequency) {
+      int textBreakStrategy) {
     Layout layout;
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
@@ -297,7 +295,7 @@ public class TextLayoutManagerMapBuffer {
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
                 .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(hyphenationFrequency)
+                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
                 .build();
       }
 
@@ -340,7 +338,7 @@ public class TextLayoutManagerMapBuffer {
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
                 .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(hyphenationFrequency);
+                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
           builder.setUseLineSpacingFromFallbacks(true);
@@ -393,9 +391,6 @@ public class TextLayoutManagerMapBuffer {
         paragraphAttributes.hasKey(PA_KEY_INCLUDE_FONT_PADDING)
             ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
             : DEFAULT_INCLUDE_FONT_PADDING;
-    int hyphenationFrequency =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
 
     if (text == null) {
       throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
@@ -409,13 +404,7 @@ public class TextLayoutManagerMapBuffer {
 
     Layout layout =
         createLayout(
-            text,
-            boring,
-            width,
-            widthYogaMeasureMode,
-            includeFontPadding,
-            textBreakStrategy,
-            hyphenationFrequency);
+            text, boring, width, widthYogaMeasureMode, includeFontPadding, textBreakStrategy);
 
     int maximumNumberOfLines =
         paragraphAttributes.hasKey(PA_KEY_MAX_NUMBER_OF_LINES)
@@ -572,19 +561,10 @@ public class TextLayoutManagerMapBuffer {
         paragraphAttributes.hasKey(PA_KEY_INCLUDE_FONT_PADDING)
             ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
             : DEFAULT_INCLUDE_FONT_PADDING;
-    int hyphenationFrequency =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
 
     Layout layout =
         createLayout(
-            text,
-            boring,
-            width,
-            YogaMeasureMode.EXACTLY,
-            includeFontPadding,
-            textBreakStrategy,
-            hyphenationFrequency);
+            text, boring, width, YogaMeasureMode.EXACTLY, includeFontPadding, textBreakStrategy);
     return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
   }
 

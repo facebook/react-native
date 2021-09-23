@@ -29,8 +29,6 @@ using namespace facebook::react;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
-@synthesize removeClippedSubviews = _removeClippedSubviews;
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -331,25 +329,11 @@ using namespace facebook::react;
 
   // `accessibilityIgnoresInvertColors`
   if (oldViewProps.accessibilityIgnoresInvertColors != newViewProps.accessibilityIgnoresInvertColors) {
-    self.accessibilityIgnoresInvertColors = newViewProps.accessibilityIgnoresInvertColors;
-  }
-
-  // `accessibilityValue`
-  if (oldViewProps.accessibilityValue != newViewProps.accessibilityValue) {
-    if (newViewProps.accessibilityValue.text.hasValue()) {
-      self.accessibilityElement.accessibilityValue =
-          RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityValue.text.value());
-    } else if (
-        newViewProps.accessibilityValue.now.hasValue() && newViewProps.accessibilityValue.min.hasValue() &&
-        newViewProps.accessibilityValue.max.hasValue()) {
-      CGFloat val = (CGFloat)(newViewProps.accessibilityValue.now.value()) /
-          (newViewProps.accessibilityValue.max.value() - newViewProps.accessibilityValue.min.value());
-      self.accessibilityElement.accessibilityValue =
-          [NSNumberFormatter localizedStringFromNumber:@(val) numberStyle:NSNumberFormatterPercentStyle];
-      ;
-    } else {
-      self.accessibilityElement.accessibilityValue = nil;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+    if (@available(iOS 11.0, *)) {
+      self.accessibilityIgnoresInvertColors = newViewProps.accessibilityIgnoresInvertColors;
     }
+#endif
   }
 
   // `testId`

@@ -29,7 +29,7 @@ if (global?.HermesInternal?.hasPromise?.()) {
     if (typeof HermesPromise !== 'function') {
       console.error('HermesPromise does not exist');
     }
-    global.HermesInternal?.enablePromiseRejectionTracker?.(
+    global.HermesInternal.enablePromiseRejectionTracker(
       require('../promiseRejectionTrackingOptions').default,
     );
   }

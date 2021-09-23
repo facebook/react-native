@@ -638,16 +638,6 @@ describe('Animated tests', () => {
       handler({bar: 'ignoreBar'}, {state: {baz: 'ignoreBaz', foo: 42}});
       expect(value.__getValue()).toBe(42);
     });
-
-    it('should validate AnimatedValueXY mappings', () => {
-      const value = new Animated.ValueXY({x: 0, y: 0});
-      const handler = Animated.event([{state: value}], {
-        useNativeDriver: false,
-      });
-      handler({state: {x: 1, y: 2}});
-      expect(value.__getValue()).toMatchObject({x: 1, y: 2});
-    });
-
     it('should call listeners', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
@@ -660,7 +650,6 @@ describe('Animated tests', () => {
       expect(listener.mock.calls.length).toBe(1);
       expect(listener).toBeCalledWith({foo: 42});
     });
-
     it('should call forked event listeners, with Animated.event() listener', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
@@ -677,7 +666,6 @@ describe('Animated tests', () => {
       expect(listener2.mock.calls.length).toBe(1);
       expect(listener2).toBeCalledWith({foo: 42});
     });
-
     it('should call forked event listeners, with js listener', () => {
       const listener = jest.fn();
       const listener2 = jest.fn();
@@ -688,7 +676,6 @@ describe('Animated tests', () => {
       expect(listener2.mock.calls.length).toBe(1);
       expect(listener2).toBeCalledWith({foo: 42});
     });
-
     it('should call forked event listeners, with undefined listener', () => {
       const listener = undefined;
       const listener2 = jest.fn();

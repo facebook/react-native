@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/renderer/core/ReactPrimitives.h>
 #include <react/utils/ContextContainer.h>
 
 namespace facebook {
@@ -21,8 +20,8 @@ struct PropsParserContext {
   PropsParserContext(const PropsParserContext &) = delete;
   PropsParserContext &operator=(const PropsParserContext &) = delete;
 
-  SurfaceId const surfaceId;
-  ContextContainer const &contextContainer;
+  int surfaceId; // TODO: use SurfaceId type
+  const ContextContainer &contextContainer;
 };
 
 } // namespace react

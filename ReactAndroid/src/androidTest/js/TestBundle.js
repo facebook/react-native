@@ -20,7 +20,9 @@ require('./TestJSLocaleModule');
 require('./TestJSToJavaParametersModule');
 require('./TestJavaToJSReturnValuesModule');
 require('./UIManagerTestModule');
+
 require('./CatalystRootViewTestModule');
+require('./DatePickerDialogTestModule');
 require('./MeasureLayoutTestModule');
 require('./ScrollViewTestModule');
 require('./ShareTestModule');
@@ -40,6 +42,11 @@ const apps = [
     appKey: 'CatalystRootViewTestApp',
     component: () =>
       require('./CatalystRootViewTestModule').CatalystRootViewTestApp,
+  },
+  {
+    appKey: 'DatePickerDialogTestApp',
+    component: () =>
+      require('./DatePickerDialogTestModule').DatePickerDialogTestApp,
   },
   {
     appKey: 'JSResponderTestApp',

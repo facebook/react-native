@@ -8,6 +8,8 @@
 #pragma once
 
 #include <folly/dynamic.h>
+#include <react/renderer/core/RawProps.h>
+#include <react/renderer/core/RawValue.h>
 #include <memory>
 #include <string>
 

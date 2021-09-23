@@ -15,7 +15,7 @@ NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProvider
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
 
-#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
+#if RCT_DEV_MENU
 static BOOL kRCTAllowPackagerAccess = YES;
 void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed)
 {
@@ -90,9 +90,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   NSURL *url = [serverRootWithHostPort(hostPort, scheme) URLByAppendingPathComponent:@"status"];
 
   NSURLSession *session = [NSURLSession sharedSession];
-  NSURLRequest *request = [NSURLRequest requestWithURL:url
-                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                       timeoutInterval:10];
+  NSURLRequest *request = [NSURLRequest requestWithURL:url];
   __block NSURLResponse *response;
   __block NSData *data;
 
@@ -152,7 +150,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
 
 - (NSString *)packagerServerHostPort
 {
-#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
+#if RCT_DEV_MENU
   if (!kRCTAllowPackagerAccess) {
     RCTLogInfo(@"Packager server access is disabled in this environment");
     return nil;

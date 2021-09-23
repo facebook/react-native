@@ -201,7 +201,11 @@
 
 - (NSInteger)bottomSafeViewHeight
 {
-  return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
+  if (@available(iOS 11.0, *)) {
+    return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
+  } else {
+    return 0;
+  }
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)

@@ -61,7 +61,9 @@ using namespace facebook::react;
 
     [_surfacePresenter registerSurface:self];
 
-    [self setMinimumSize:CGSizeZero maximumSize:RCTViewportSize()];
+    if (RCTGetInitialMaxSizeEnabled()) {
+      [self setMinimumSize:CGSizeZero maximumSize:RCTViewportSize()];
+    }
 
     [self _updateLayoutContext];
 

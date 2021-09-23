@@ -81,7 +81,7 @@ public class JavaTimerManager {
       }
 
       if (mTimersToCall != null) {
-        mJavaScriptTimerExecutor.callTimers(mTimersToCall);
+        mJavaScriptTimerManager.callTimers(mTimersToCall);
         mTimersToCall = null;
       }
 
@@ -139,7 +139,7 @@ public class JavaTimerManager {
       }
 
       if (sendIdleEvents) {
-        mJavaScriptTimerExecutor.callIdleCallbacks(absoluteFrameStartTime);
+        mJavaScriptTimerManager.callIdleCallbacks(absoluteFrameStartTime);
       }
 
       mCurrentIdleCallbackRunnable = null;
@@ -151,7 +151,7 @@ public class JavaTimerManager {
   }
 
   private final ReactApplicationContext mReactApplicationContext;
-  private final JavaScriptTimerExecutor mJavaScriptTimerExecutor;
+  private final JavaScriptTimerManager mJavaScriptTimerManager;
   private final ReactChoreographer mReactChoreographer;
   private final DevSupportManager mDevSupportManager;
   private final Object mTimerGuard = new Object();
@@ -169,11 +169,11 @@ public class JavaTimerManager {
 
   public JavaTimerManager(
       ReactApplicationContext reactContext,
-      JavaScriptTimerExecutor javaScriptTimerManager,
+      JavaScriptTimerManager javaScriptTimerManager,
       ReactChoreographer reactChoreographer,
       DevSupportManager devSupportManager) {
     mReactApplicationContext = reactContext;
-    mJavaScriptTimerExecutor = javaScriptTimerManager;
+    mJavaScriptTimerManager = javaScriptTimerManager;
     mReactChoreographer = reactChoreographer;
     mDevSupportManager = devSupportManager;
 
@@ -327,7 +327,7 @@ public class JavaTimerManager {
     if (mDevSupportManager.getDevSupportEnabled()) {
       long driftTime = Math.abs(remoteTime - deviceTime);
       if (driftTime > 60000) {
-        mJavaScriptTimerExecutor.emitTimeDriftWarning(
+        mJavaScriptTimerManager.emitTimeDriftWarning(
             "Debugger and device times have drifted by more than 60s. Please correct this by "
                 + "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
       }
@@ -338,7 +338,7 @@ public class JavaTimerManager {
     if (duration == 0 && !repeat) {
       WritableArray timerToCall = Arguments.createArray();
       timerToCall.pushInt(callbackID);
-      mJavaScriptTimerExecutor.callTimers(timerToCall);
+      mJavaScriptTimerManager.callTimers(timerToCall);
       return;
     }
 

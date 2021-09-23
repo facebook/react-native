@@ -174,7 +174,7 @@ public abstract class Event<T extends Event> {
     WritableMap eventData = getEventData();
     if (eventData == null) {
       throw new IllegalViewOperationException(
-          "Event: you must return a valid, non-null value from `getEventData`, or override `dispatch` and `dispatchModern`. Event: "
+          "Event: you must return a valid, non-null value from `getEventData`, or override `dispatch` and `disatchModern`. Event: "
               + getEventName());
     }
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
@@ -224,7 +224,7 @@ public abstract class Event<T extends Event> {
             getEventName(),
             canCoalesce(),
             getCoalescingKey(),
-            eventData);
+            getEventData());
         return;
       }
     }

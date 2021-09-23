@@ -93,41 +93,6 @@ class ActionSheetTintExample extends React.Component<
   };
 }
 
-class ActionSheetCancelButtonTintExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
-  state = {
-    clicked: 'none',
-  };
-
-  render() {
-    return (
-      <View>
-        <Text onPress={this.showActionSheet} style={style.button}>
-          Click to show the ActionSheet
-        </Text>
-        <Text>Clicked button: {this.state.clicked}</Text>
-      </View>
-    );
-  }
-
-  showActionSheet = () => {
-    ActionSheetIOS.showActionSheetWithOptions(
-      {
-        options: BUTTONS,
-        cancelButtonIndex: CANCEL_INDEX,
-        destructiveButtonIndex: DESTRUCTIVE_INDEX,
-        tintColor: 'green',
-        cancelButtonTintColor: 'brown',
-      },
-      buttonIndex => {
-        this.setState({clicked: BUTTONS[buttonIndex]});
-      },
-    );
-  };
-}
-
 class ActionSheetAnchorExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
@@ -375,12 +340,6 @@ exports.examples = [
     title: 'Show Action Sheet with tinted buttons',
     render(): React.Element<any> {
       return <ActionSheetTintExample />;
-    },
-  },
-  {
-    title: 'Show Action Sheet with cancel tinted button',
-    render(): React.Element<any> {
-      return <ActionSheetCancelButtonTintExample />;
     },
   },
   {

@@ -14,8 +14,7 @@
 #include <memory>
 #include <queue>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RuntimeScheduler final {
  public:
@@ -101,5 +100,4 @@ class RuntimeScheduler final {
   mutable bool isPerformingWork_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

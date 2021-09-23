@@ -112,7 +112,9 @@ async function reportSizeStats(stats, replacePattern) {
     createOrUpdateComment(comment, replacePattern);
   }
 
-  await datastore.terminateStore(store);
+  // Documentation says that we don't need to call `terminate()` but the script
+  // will just hang around until the connection times out if we don't.
+  store.terminate();
 }
 
 /**
@@ -144,10 +146,10 @@ function android_getApkSize(engine, arch) {
  * Reports app bundle size.
  * @param {string} target
  */
-async function report(target) {
+function report(target) {
   switch (target) {
     case 'android':
-      await reportSizeStats(
+      reportSizeStats(
         {
           'android-hermes-arm64-v8a': android_getApkSize('hermes', 'arm64-v8a'),
           'android-hermes-armeabi-v7a': android_getApkSize(
@@ -166,7 +168,7 @@ async function report(target) {
       break;
 
     case 'ios':
-      await reportSizeStats(
+      reportSizeStats(
         {
           'ios-universal': getFileSize(
             'packages/rn-tester/build/Build/Products/Release-iphonesimulator/RNTester.app/RNTester',
@@ -179,14 +181,10 @@ async function report(target) {
     default: {
       const path = require('path');
       console.log(`Syntax: ${path.basename(process.argv[1])} [android | ios]`);
-      process.exitCode = 2;
       break;
     }
   }
 }
 
 const {[2]: target} = process.argv;
-report(target).catch(error => {
-  console.error(error);
-  process.exitCode = 1;
-});
+report(target);

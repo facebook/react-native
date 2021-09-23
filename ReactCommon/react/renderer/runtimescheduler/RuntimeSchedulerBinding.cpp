@@ -10,11 +10,11 @@
 #include "primitives.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <chrono>
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::shared_ptr<RuntimeSchedulerBinding>
 RuntimeSchedulerBinding::createAndInstallIfNeeded(
@@ -167,5 +167,4 @@ jsi::Value RuntimeSchedulerBinding::get(
   return jsi::Value::undefined();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

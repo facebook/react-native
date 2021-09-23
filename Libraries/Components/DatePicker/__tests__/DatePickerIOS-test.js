@@ -32,18 +32,4 @@ describe('DatePickerIOS', () => {
       },
     );
   });
-  it('should render DatePicker with the datetime mode if no mode is passed inside the props', () => {
-    ReactNativeTestTools.expectRendersMatchingSnapshot(
-      'DatePickerIOS',
-      () => (
-        <DatePickerIOS
-          date={new Date(1555883690956)}
-          onDateChange={jest.fn()}
-        />
-      ),
-      () => {
-        jest.dontMock('../DatePickerIOS');
-      },
-    );
-  });
 });

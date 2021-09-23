@@ -12,7 +12,6 @@ import DeprecatedImagePropType from '../DeprecatedPropTypes/DeprecatedImagePropT
 import * as React from 'react';
 import StyleSheet from '../StyleSheet/StyleSheet';
 
-import ImageInjection from './ImageInjection';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import resolveAssetSource from './resolveAssetSource';
@@ -169,11 +168,6 @@ Image = React.forwardRef<
   ImagePropsType,
   React.ElementRef<typeof ImageViewNativeComponent>,
 >(Image);
-
-if (ImageInjection.unstable_createImageComponent != null) {
-  Image = ImageInjection.unstable_createImageComponent(Image);
-}
-
 Image.displayName = 'Image';
 
 /**

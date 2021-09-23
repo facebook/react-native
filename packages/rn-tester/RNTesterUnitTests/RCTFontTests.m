@@ -20,7 +20,7 @@
 // will be different objects, but the same font, so this macro now explicitly
 // checks that fontName (which includes the style) and pointSize are equal.
 #define RCTAssertEqualFonts(font1, font2) { \
-  XCTAssertEqualObjects(font1.fontName, font2.fontName); \
+  XCTAssertTrue([font1.fontName isEqualToString:font2.fontName]); \
   XCTAssertEqual(font1.pointSize,font2.pointSize); \
 }
 

@@ -186,6 +186,9 @@ inline YogaLayoutableShadowNode const &
 traitCast<YogaLayoutableShadowNode const &>(ShadowNode const &shadowNode) {
   bool castable =
       shadowNode.getTraits().check(ShadowNodeTraits::Trait::YogaLayoutableKind);
+  react_native_assert(
+      castable ==
+      (dynamic_cast<YogaLayoutableShadowNode const *>(&shadowNode) != nullptr));
   react_native_assert(castable);
   (void)castable;
   return static_cast<YogaLayoutableShadowNode const &>(shadowNode);
@@ -199,6 +202,9 @@ traitCast<YogaLayoutableShadowNode const *>(ShadowNode const *shadowNode) {
   }
   bool castable = shadowNode->getTraits().check(
       ShadowNodeTraits::Trait::YogaLayoutableKind);
+  react_native_assert(
+      castable ==
+      (dynamic_cast<YogaLayoutableShadowNode const *>(shadowNode) != nullptr));
   if (!castable) {
     return nullptr;
   }

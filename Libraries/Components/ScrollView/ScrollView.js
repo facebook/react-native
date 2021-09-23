@@ -1178,6 +1178,11 @@ class ScrollView extends React.Component<Props, State> {
         );
       }
     }
+    if (Platform.OS === 'android') {
+      if (this.props.keyboardDismissMode === 'on-drag' && this._isTouching) {
+        dismissKeyboard();
+      }
+    }
     this._observedScrollSinceBecomingResponder = true;
     this.props.onScroll && this.props.onScroll(e);
   };
@@ -1294,14 +1299,6 @@ class ScrollView extends React.Component<Props, State> {
    */
   _handleScrollBeginDrag: (e: ScrollEvent) => void = (e: ScrollEvent) => {
     FrameRateLogger.beginScroll(); // TODO: track all scrolls after implementing onScrollEndAnimation
-
-    if (
-      Platform.OS === 'android' &&
-      this.props.keyboardDismissMode === 'on-drag'
-    ) {
-      dismissKeyboard();
-    }
-
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
 

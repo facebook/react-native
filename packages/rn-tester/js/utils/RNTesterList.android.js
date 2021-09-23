@@ -24,10 +24,24 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/Button/ButtonExample'),
   },
   {
-    key: 'FlatListExampleIndex',
-    module: require('../examples/FlatList/FlatListExampleIndex').default,
+    key: 'FlatListExample',
     category: 'ListView',
-    supportsTVOS: true,
+    module: require('../examples/FlatList/FlatListExample'),
+  },
+  {
+    key: 'FlatList-withSeparators',
+    module: require('../examples/FlatList/FlatList-withSeparators'),
+    category: 'ListView',
+  },
+  {
+    key: 'FlatList-onViewableItemsChanged',
+    module: require('../examples/FlatList/FlatList-onViewableItemsChanged'),
+    category: 'ListView',
+  },
+  {
+    key: 'FlatList-onEndReached',
+    module: require('../examples/FlatList/FlatList-onEndReached'),
+    category: 'ListView',
   },
   {
     key: 'ImageExample',
@@ -46,6 +60,11 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'ModalExample',
     category: 'UI',
     module: require('../examples/Modal/ModalExample'),
+  },
+  {
+    key: 'MultiColumnExample',
+    category: 'ListView',
+    module: require('../examples/MultiColumn/MultiColumnExample'),
   },
   {
     key: 'NewAppScreenExample',

@@ -7,37 +7,38 @@
 
 package com.facebook.react.tasks
 
-import com.facebook.react.utils.recreateDir
-import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
+import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.TaskAction
 
-abstract class BundleJsAndAssetsTask : Exec() {
-
-  @get:Internal lateinit var reactRoot: File
+open class BundleJsAndAssetsTask : DefaultTask() {
+  internal lateinit var reactRoot: File
 
   @get:InputFiles
   @Suppress("UNUSED") // used to invalidate caches
-  lateinit var sources: FileTree
+  internal lateinit var sources: FileTree
+  @get:Input internal lateinit var execCommand: List<String>
+  @get:Input internal lateinit var bundleCommand: String
+  @get:Input internal var devEnabled: Boolean = true
+  @get:Input internal lateinit var entryFile: File
+  @get:Input internal var extraArgs: List<String> = emptyList()
 
-  @get:Input lateinit var execCommand: List<String>
-  @get:Input lateinit var bundleCommand: String
-  @get:Input var devEnabled: Boolean = true
-  @get:InputFile lateinit var entryFile: File
-  @get:Input var extraArgs: List<String> = emptyList()
+  @get:OutputDirectory internal lateinit var jsBundleDir: File
+  @get:OutputFile internal lateinit var jsBundleFile: File
+  @get:OutputDirectory internal lateinit var resourcesDir: File
+  @get:OutputDirectory internal lateinit var jsIntermediateSourceMapsDir: File
+  @get:OutputDirectory internal lateinit var jsSourceMapsDir: File
+  @get:OutputFile internal lateinit var jsSourceMapsFile: File
 
-  @get:OutputDirectory lateinit var jsBundleDir: File
-  @get:OutputFile lateinit var jsBundleFile: File
-  @get:OutputDirectory lateinit var resourcesDir: File
-  @get:OutputDirectory lateinit var jsIntermediateSourceMapsDir: File
-  @get:OutputDirectory lateinit var jsSourceMapsDir: File
-  @get:OutputFile lateinit var jsSourceMapsFile: File
-
-  override fun exec() {
+  @TaskAction
+  fun run() {
     cleanOutputDirectories()
-    configureBundleCommand()
-    super.exec()
+    executeBundleCommand()
   }
 
   private fun cleanOutputDirectories() {
@@ -47,27 +48,33 @@ abstract class BundleJsAndAssetsTask : Exec() {
     jsSourceMapsDir.recreateDir()
   }
 
-  private fun configureBundleCommand() {
-    workingDir(reactRoot)
+  private fun executeBundleCommand() {
+    project.exec {
+      workingDir(reactRoot)
 
-    @Suppress("SpreadOperator")
-    commandLine(
-        windowsAwareCommandLine(
-            *execCommand.toTypedArray(),
-            bundleCommand,
-            "--platform",
-            "android",
-            "--dev",
-            devEnabled,
-            "--reset-cache",
-            "--entry-file",
-            entryFile,
-            "--bundle-output",
-            jsBundleFile,
-            "--assets-dest",
-            resourcesDir,
-            "--sourcemap-output",
-            jsSourceMapsFile,
-            *extraArgs.toTypedArray()))
+      @Suppress("SpreadOperator")
+      windowsAwareCommandLine(
+          *execCommand.toTypedArray(),
+          bundleCommand,
+          "--platform",
+          "android",
+          "--dev",
+          devEnabled,
+          "--reset-cache",
+          "--entry-file",
+          entryFile,
+          "--bundle-output",
+          jsBundleFile,
+          "--assets-dest",
+          resourcesDir,
+          "--sourcemap-output",
+          jsSourceMapsFile,
+          *extraArgs.toTypedArray())
+    }
+  }
+
+  private fun File.recreateDir() {
+    deleteRecursively()
+    mkdirs()
   }
 }

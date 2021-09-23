@@ -15,9 +15,9 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/ReactCommon/*.cpp) $(wildcard $(LOCA
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/platform/android/
 
-LOCAL_SHARED_LIBRARIES := libfbjni libfolly_json libreactnativejni libreact_debug libjsi
+LOCAL_SHARED_LIBRARIES := libfbjni libfolly_json libreactnativejni libreact_debug
 
-LOCAL_STATIC_LIBRARIES :=  libreactperflogger
+LOCAL_STATIC_LIBRARIES := libjsi libreactperflogger
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"

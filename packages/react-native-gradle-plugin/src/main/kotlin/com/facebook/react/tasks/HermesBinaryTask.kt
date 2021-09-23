@@ -7,26 +7,22 @@
 
 package com.facebook.react.tasks
 
-import com.facebook.react.utils.moveTo
-import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 open class HermesBinaryTask : DefaultTask() {
-
-  @get:Internal internal lateinit var reactRoot: File
+  internal lateinit var reactRoot: File
 
   @get:Input internal lateinit var hermesCommand: String
   @get:Input internal var hermesFlags: List<String> = emptyList()
   @get:InputFile internal lateinit var jsBundleFile: File
 
   @get:Input internal lateinit var composeSourceMapsCommand: List<String>
-  @get:InputFile internal lateinit var jsPackagerSourceMapFile: File
+  @get:Input internal lateinit var jsPackagerSourceMapFile: File
 
   @get:OutputFile internal lateinit var jsCompilerSourceMapFile: File
   @get:OutputFile internal lateinit var jsOutputSourceMapFile: File
@@ -47,29 +43,32 @@ open class HermesBinaryTask : DefaultTask() {
   private fun emitHermesBinary(outputFile: File) {
     project.exec {
       @Suppress("SpreadOperator")
-      it.commandLine(
-          windowsAwareCommandLine(
-              hermesCommand,
-              "-emit-binary",
-              "-out",
-              outputFile,
-              jsBundleFile,
-              *hermesFlags.toTypedArray()))
+      windowsAwareCommandLine(
+          hermesCommand,
+          "-emit-binary",
+          "-out",
+          outputFile,
+          jsBundleFile,
+          *hermesFlags.toTypedArray())
     }
   }
 
   private fun composeSourceMaps() {
     project.exec {
-      it.workingDir(reactRoot)
+      workingDir(reactRoot)
 
       @Suppress("SpreadOperator")
-      it.commandLine(
-          windowsAwareCommandLine(
-              *composeSourceMapsCommand.toTypedArray(),
-              jsPackagerSourceMapFile,
-              jsCompilerSourceMapFile,
-              "-o",
-              jsOutputSourceMapFile))
+      windowsAwareCommandLine(
+          *composeSourceMapsCommand.toTypedArray(),
+          jsPackagerSourceMapFile,
+          jsCompilerSourceMapFile,
+          "-o",
+          jsOutputSourceMapFile)
     }
+  }
+
+  private fun File.moveTo(destination: File) {
+    copyTo(destination, overwrite = true)
+    delete()
   }
 }

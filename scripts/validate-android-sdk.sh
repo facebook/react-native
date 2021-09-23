@@ -28,7 +28,7 @@ fi
 if [ ! -e "$ANDROID_HOME/tools/emulator" ]; then
   echo "Error: could not find an emulator at \$ANDROID_HOME/tools/emulator."
   echo "Specifically, $ANDROID_HOME/tools/emulator does not exist."
-  echo "This indicates something is broken with your Android SDK install."
+  echo "This indicates something is borked with your Android SDK install."
   echo "One possibility is that you have \$ANDROID_HOME set to the wrong value."
   echo "If that seems correct, you might want to try reinstalling the Android SDK."
   echo "See https://reactnative.dev/docs/getting-started.html for instructions."
@@ -46,7 +46,7 @@ fi
 
 if [ -z `which adb` ]; then
   echo "Error: could not find 'adb'. Specifically, 'which adb' was empty."
-  echo "This indicates something is broken with your Android SDK install."
+  echo "This indicates something is borked with your Android SDK install."
   echo "The most likely problem is that you are not adding \$ANDROID_HOME/platform-tools to your \$PATH."
   echo "If all else fails, try reinstalling the Android SDK."
   echo "See https://reactnative.dev/docs/getting-started.html for instructions."

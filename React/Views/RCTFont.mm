@@ -11,16 +11,18 @@
 
 #import <CoreText/CoreText.h>
 
+#import <mutex>
+
 typedef CGFloat RCTFontWeight;
 static RCTFontWeight weightOfFont(UIFont *font)
 {
-  static NSArray<NSString *> *weightSuffixes;
-  static NSArray<NSNumber *> *fontWeights;
+  static NSArray *fontNames;
+  static NSArray *fontWeights;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     // We use two arrays instead of one map because
     // the order is important for suffix matching.
-    weightSuffixes = @[
+    fontNames = @[
       @"normal",
       @"ultralight",
       @"thin",
@@ -52,29 +54,28 @@ static RCTFontWeight weightOfFont(UIFont *font)
     ];
   });
 
-  NSString *fontName = font.fontName;
-  NSInteger i = 0;
-  for (NSString *suffix in weightSuffixes) {
-    // CFStringFind is much faster than any variant of rangeOfString: because it does not use a locale.
-    auto options = kCFCompareCaseInsensitive | kCFCompareAnchored | kCFCompareBackwards;
-    if (CFStringFind((CFStringRef)fontName, (CFStringRef)suffix, options).location != kCFNotFound) {
-      return (RCTFontWeight)fontWeights[i].doubleValue;
+  for (NSInteger i = 0; i < 0 || i < (unsigned)fontNames.count; i++) {
+    if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
+      return (RCTFontWeight)[fontWeights[i] doubleValue];
     }
-    i++;
   }
 
-  auto traits = (__bridge_transfer NSDictionary *)CTFontCopyTraits((CTFontRef)font);
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
   return (RCTFontWeight)[traits[UIFontWeightTrait] doubleValue];
 }
 
 static BOOL isItalicFont(UIFont *font)
 {
-  return (CTFontGetSymbolicTraits((CTFontRef)font) & kCTFontTraitItalic) != 0;
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+  UIFontDescriptorSymbolicTraits symbolicTraits = [traits[UIFontSymbolicTrait] unsignedIntValue];
+  return (symbolicTraits & UIFontDescriptorTraitItalic) != 0;
 }
 
 static BOOL isCondensedFont(UIFont *font)
 {
-  return (CTFontGetSymbolicTraits((CTFontRef)font) & kCTFontTraitCondensed) != 0;
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+  UIFontDescriptorSymbolicTraits symbolicTraits = [traits[UIFontSymbolicTrait] unsignedIntValue];
+  return (symbolicTraits & UIFontDescriptorTraitCondensed) != 0;
 }
 
 static RCTFontHandler defaultFontHandler;
@@ -129,16 +130,18 @@ static NSString *FontWeightDescriptionFromUIFontWeight(UIFontWeight fontWeight)
 
 static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
 {
-  static NSCache<NSValue *, UIFont *> *fontCache = [NSCache new];
+  static NSCache *fontCache;
+  static std::mutex *fontCacheMutex = new std::mutex;
 
-  struct __attribute__((__packed__)) CacheKey {
-    CGFloat size;
-    RCTFontWeight weight;
-  };
-
-  CacheKey key{size, weight};
-  NSValue *cacheKey = [[NSValue alloc] initWithBytes:&key objCType:@encode(CacheKey)];
-  UIFont *font = [fontCache objectForKey:cacheKey];
+  NSString *cacheKey = [NSString stringWithFormat:@"%.1f/%.2f", size, weight];
+  UIFont *font;
+  {
+    std::lock_guard<std::mutex> lock(*fontCacheMutex);
+    if (!fontCache) {
+      fontCache = [NSCache new];
+    }
+    font = [fontCache objectForKey:cacheKey];
+  }
 
   if (!font) {
     if (defaultFontHandler) {
@@ -148,34 +151,13 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
       font = [UIFont systemFontOfSize:size weight:weight];
     }
 
-    [fontCache setObject:font forKey:cacheKey];
+    {
+      std::lock_guard<std::mutex> lock(*fontCacheMutex);
+      [fontCache setObject:font forKey:cacheKey];
+    }
   }
 
   return font;
-}
-
-// Caching wrapper around expensive +[UIFont fontNamesForFamilyName:]
-static NSArray<NSString *> *fontNamesForFamilyName(NSString *familyName)
-{
-  static NSCache<NSString *, NSArray<NSString *> *> *cache;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    cache = [NSCache new];
-    [NSNotificationCenter.defaultCenter
-        addObserverForName:(NSNotificationName)kCTFontManagerRegisteredFontsChangedNotification
-                    object:nil
-                     queue:nil
-                usingBlock:^(NSNotification *) {
-                  [cache removeAllObjects];
-                }];
-  });
-
-  auto names = [cache objectForKey:familyName];
-  if (!names) {
-    names = [UIFont fontNamesForFamilyName:familyName] ?: [NSArray new];
-    [cache setObject:names forKey:familyName];
-  }
-  return names;
 }
 
 @implementation RCTConvert (RCTFont)
@@ -333,7 +315,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // Gracefully handle being given a font name rather than font family, for
   // example: "Helvetica Light Oblique" rather than just "Helvetica".
-  if (!didFindFont && fontNamesForFamilyName(familyName).count == 0) {
+  if (!didFindFont && [UIFont fontNamesForFamilyName:familyName].count == 0) {
     font = [UIFont fontWithName:familyName size:fontSize];
     if (font) {
       // It's actually a font name, not a font family name,
@@ -357,8 +339,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // Get the closest font that matches the given weight for the fontFamily
   CGFloat closestWeight = INFINITY;
-  NSArray<NSString *> *names = fontNamesForFamilyName(familyName);
-  for (NSString *name in names) {
+  for (NSString *name in [UIFont fontNamesForFamilyName:familyName]) {
     UIFont *match = [UIFont fontWithName:name size:fontSize];
     if (isItalic == isItalicFont(match) && isCondensed == isCondensedFont(match)) {
       CGFloat testWeight = weightOfFont(match);
@@ -371,8 +352,11 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // If we still don't have a match at least return the first font in the fontFamily
   // This is to support built-in font Zapfino and other custom single font families like Impact
-  if (!font && names.count > 0) {
-    font = [UIFont fontWithName:names[0] size:fontSize];
+  if (!font) {
+    NSArray *names = [UIFont fontNamesForFamilyName:familyName];
+    if (names.count > 0) {
+      font = [UIFont fontWithName:names[0] size:fontSize];
+    }
   }
 
   // Apply font variants to font object

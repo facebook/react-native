@@ -3,18 +3,15 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-folly_release_version = '2021.06.28.00'
-
 Pod::Spec.new do |spec|
   spec.name = 'RCT-Folly'
-  # Patched to v2 to address https://github.com/react-native-community/releases/issues/251
-  spec.version = folly_release_version + '-v2'
+  spec.version = '2021.06.28.00'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
   spec.authors = 'Facebook'
   spec.source = { :git => 'https://github.com/facebook/folly.git',
-                  :tag => "v#{folly_release_version}" }
+                  :tag => "v#{spec.version}" }
   spec.module_name = 'folly'
   spec.header_mappings_dir = '.'
   spec.dependency 'boost'
@@ -72,7 +69,7 @@ Pod::Spec.new do |spec|
                         'folly/net/*.h',
                         'folly/net/detail/*.h',
                         'folly/portability/*.h'
-  spec.libraries           = "stdc++", "c++abi" # NOTE Apple-only: Keep c++abi here due to https://github.com/react-native-community/releases/issues/251
+  spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include/\"" }

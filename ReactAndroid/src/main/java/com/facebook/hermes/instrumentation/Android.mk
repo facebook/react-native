@@ -18,8 +18,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(call find-no
 
 LOCAL_CPP_FEATURES := exceptions
 
-LOCAL_STATIC_LIBRARIES := libjsireact
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libreactnativejni libhermes libjsi
+LOCAL_STATIC_LIBRARIES := libjsireact libjsi
+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libfbjni libreactnativejni libhermes
 
 include $(BUILD_SHARED_LIBRARY)
 

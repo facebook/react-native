@@ -89,7 +89,6 @@ using namespace facebook::react;
     }
     _didMoveToWindow = YES;
   }
-  [self _restoreTextSelection];
 }
 
 #pragma mark - RCTViewComponentView overrides
@@ -526,27 +525,13 @@ using namespace facebook::react;
   return AttributedString::Range{(int)start, (int)(end - start)};
 }
 
-- (void)_restoreTextSelection
-{
-  const auto selection = std::dynamic_pointer_cast<TextInputProps const>(_props)->selection.get_pointer();
-  if (selection == nullptr) {
-    return;
-  }
-  auto start = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                                   offset:selection->start];
-  auto end = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument offset:selection->end];
-  auto range = [_backedTextInputView textRangeFromPosition:start toPosition:end];
-  [_backedTextInputView setSelectedTextRange:range notifyDelegate:YES];
-}
-
 - (void)_setAttributedString:(NSAttributedString *)attributedString
 {
-  if ([self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
-    return;
-  }
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
-  _backedTextInputView.attributedText = attributedString;
+  if (![self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
+    _backedTextInputView.attributedText = attributedString;
+  }
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
     NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
@@ -558,7 +543,6 @@ using namespace facebook::react;
     [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                                 notifyDelegate:YES];
   }
-  [self _restoreTextSelection];
   _lastStringStateWasUpdatedWith = attributedString;
 }
 

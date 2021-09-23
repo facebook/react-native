@@ -10,12 +10,10 @@
 
 'use strict';
 
-import Image from './Image';
-import * as React from 'react';
-import StyleSheet from '../StyleSheet/StyleSheet';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import View from '../Components/View/View';
-import type {ImageBackgroundProps} from './ImageProps';
+const Image = require('./Image');
+const React = require('react');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const View = require('../Components/View/View');
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -41,7 +39,7 @@ import type {ImageBackgroundProps} from './ImageProps';
  * AppRegistry.registerComponent('DisplayAnImageBackground', () => DisplayAnImageBackground);
  * ```
  */
-class ImageBackground extends React.Component<ImageBackgroundProps> {
+class ImageBackground extends React.Component<$FlowFixMeProps> {
   setNativeProps(props: Object) {
     // Work-around flow
     const viewRef = this._viewRef;
@@ -58,7 +56,7 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
 
   render(): React.Node {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
-    const flattenedStyle = flattenStyle(style);
+
     return (
       <View
         accessibilityIgnoresInvertColors={true}
@@ -76,8 +74,8 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
               // So, we have to proxy/reapply these styles explicitly for actual <Image> component.
               // This workaround should be removed after implementing proper support of
               // intrinsic content size of the <Image>.
-              width: flattenedStyle?.width,
-              height: flattenedStyle?.height,
+              width: style?.width,
+              height: style?.height,
             },
             imageStyle,
           ]}

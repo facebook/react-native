@@ -7,6 +7,7 @@
 
 buildscript {
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
     }
@@ -30,6 +31,7 @@ allprojects {
             // All of Detox's artifacts are provided via the npm module
             url = uri("$rootDir/node_modules/detox/Detox-android")
         }
+        mavenLocal()
         google()
         mavenCentral()
     }

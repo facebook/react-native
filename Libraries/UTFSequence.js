@@ -16,7 +16,7 @@ const deepFreezeAndThrowOnMutationInDev = require('./Utilities/deepFreezeAndThro
  * A collection of Unicode sequences for various characters and emoji.
  *
  *  - More explicit than using the sequences directly in code.
- *  - Source code should be limited to ASCII.
+ *  - Source code should be limitted to ASCII.
  *  - Less chance of typos.
  */
 const UTFSequence: {|

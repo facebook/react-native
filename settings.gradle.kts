@@ -8,6 +8,7 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        mavenLocal()
         google()
     }
 }
@@ -19,11 +20,5 @@ include(
 )
 
 // Include this to enable codegen Gradle plugin.
+includeBuild("packages/react-native-codegen/android")
 includeBuild("packages/react-native-gradle-plugin/")
-
-// Include this to build the Android template as well and make sure is not broken.
-if (File("template/node_modules/").exists()) {
-    includeBuild("template/android/") {
-        name = "template-android"
-    }
-}

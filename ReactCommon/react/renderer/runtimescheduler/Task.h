@@ -12,8 +12,7 @@
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/SchedulerPriority.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RuntimeScheduler;
 class TaskPriorityComparer;
@@ -44,5 +43,4 @@ class TaskPriorityComparer {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

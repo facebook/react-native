@@ -156,14 +156,6 @@ LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_COMMON_DIR)/react/renderer/components/view
 include $(PREBUILT_SHARED_LIBRARY)
 
-# jsi
-include $(CLEAR_VARS)
-LOCAL_MODULE := jsi
-LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libjsi.so
-LOCAL_EXPORT_C_INCLUDES := \
-  $(REACT_COMMON_DIR)/jsi
-include $(PREBUILT_SHARED_LIBRARY)
-
 # react_codegen_rncore
 include $(CLEAR_VARS)
 LOCAL_MODULE := react_codegen_rncore

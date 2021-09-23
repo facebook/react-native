@@ -26,10 +26,25 @@ const Components: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
   {
-    key: 'FlatListExampleIndex',
-    module: require('../examples/FlatList/FlatListExampleIndex').default,
+    key: 'FlatListExample',
+    module: require('../examples/FlatList/FlatListExample'),
     category: 'ListView',
     supportsTVOS: true,
+  },
+  {
+    key: 'FlatList-withSeparators',
+    module: require('../examples/FlatList/FlatList-withSeparators'),
+    category: 'ListView',
+  },
+  {
+    key: 'FlatList-onViewableItemsChanged',
+    module: require('../examples/FlatList/FlatList-onViewableItemsChanged'),
+    category: 'ListView',
+  },
+  {
+    key: 'FlatList-onEndReached',
+    module: require('../examples/FlatList/FlatList-onEndReached'),
+    category: 'ListView',
   },
   {
     key: 'ImageExample',
@@ -59,6 +74,11 @@ const Components: Array<RNTesterModuleInfo> = [
   {
     key: 'ModalExample',
     module: require('../examples/Modal/ModalExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'MultiColumnExample',
+    module: require('../examples/MultiColumn/MultiColumnExample'),
     supportsTVOS: true,
   },
   {

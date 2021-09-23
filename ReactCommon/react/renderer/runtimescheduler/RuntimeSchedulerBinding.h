@@ -10,8 +10,7 @@
 #include <jsi/jsi.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Exposes RuntimeScheduler to JavaScript realm.
@@ -40,5 +39,4 @@ class RuntimeSchedulerBinding : public jsi::HostObject {
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

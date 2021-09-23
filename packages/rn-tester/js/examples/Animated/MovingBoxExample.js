@@ -78,7 +78,7 @@ function MovingBoxView({useNativeDriver}: {useNativeDriver: boolean}) {
   };
   return (
     <View style={styles.container}>
-      <View testID="moving-view-track" style={styles.boxContainer}>
+      <View style={styles.boxContainer}>
         {boxVisible ? (
           <Animated.View
             testID="moving-view"

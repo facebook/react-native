@@ -21,8 +21,6 @@ const androidScaleSuffix = {
   '4': 'xxxhdpi',
 };
 
-const ANDROID_BASE_DENSITY = 160;
-
 /**
  * FIXME: using number to represent discrete scale numbers is fragile in essence because of
  * floating point numbers imprecision.
@@ -31,11 +29,7 @@ function getAndroidAssetSuffix(scale: number): string {
   if (scale.toString() in androidScaleSuffix) {
     return androidScaleSuffix[scale.toString()];
   }
-  // NOTE: Android Gradle Plugin does not fully support the nnndpi format.
-  // See https://issuetracker.google.com/issues/72884435
-  if (Number.isFinite(scale) && scale > 0) {
-    return Math.round(scale * ANDROID_BASE_DENSITY) + 'dpi';
-  }
+
   throw new Error('no such scale ' + scale.toString());
 }
 

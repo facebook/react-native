@@ -1,6 +1,6 @@
 {
   "name": "@react-native-community/eslint-config",
-  "version": "3.0.1",
+  "version": "3.0.0",
   "description": "ESLint config for React Native",
   "main": "index.js",
   "license": "MIT",
@@ -26,11 +26,9 @@
     "prettier": "^2.0.2"
   },
   "peerDependencies": {
-    "eslint": ">=7",
-    "prettier": ">=2"
+    "eslint": ">=7"
   },
   "devDependencies": {
-    "eslint": "7.12.0",
-    "prettier": "^2.3.2"
+    "eslint": "7.12.0"
   }
 }

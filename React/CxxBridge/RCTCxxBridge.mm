@@ -244,11 +244,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
 
-- (RCTModuleRegistry *)moduleRegistry
-{
-  return _objCModuleRegistry;
-}
-
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
   _turboModuleRegistry = turboModuleRegistry;
@@ -290,18 +285,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   if ([bridgeModule respondsToSelector:@selector(setCallableJSModules:)]) {
     bridgeModule.callableJSModules = _callableJSModules;
-  }
-
-  /**
-   * Attach the RCTModuleRegistry to this TurboModule, which allows this TurboModule
-   * to require other TurboModules/NativeModules.
-   *
-   * Usage: In the TurboModule @implementation, include:
-   *   `@synthesize moduleRegistry = _moduleRegistry`
-   */
-
-  if ([bridgeModule respondsToSelector:@selector(setModuleRegistry:)]) {
-    bridgeModule.moduleRegistry = _objCModuleRegistry;
   }
 }
 
@@ -1130,7 +1113,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   [self.devSettings setupHMRClientWithBundleURL:self.bundleURL];
 }
 
-#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
+#if RCT_DEV_MENU
 - (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
                              onError:(RCTLoadAndExecuteErrorBlock)onError
                           onComplete:(dispatch_block_t)onComplete

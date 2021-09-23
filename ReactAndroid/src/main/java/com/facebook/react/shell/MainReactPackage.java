@@ -23,6 +23,7 @@ import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
+import com.facebook.react.modules.datepicker.DatePickerDialogModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
@@ -71,6 +72,7 @@ import java.util.Map;
       FileReaderModule.class,
       AsyncStorageModule.class,
       ClipboardModule.class,
+      DatePickerDialogModule.class,
       DialogModule.class,
       FrescoModule.class,
       I18nManagerModule.class,
@@ -115,6 +117,8 @@ public class MainReactPackage extends TurboReactPackage {
         return new AsyncStorageModule(context);
       case ClipboardModule.NAME:
         return new ClipboardModule(context);
+      case DatePickerDialogModule.FRAGMENT_TAG:
+        return new DatePickerDialogModule(context);
       case DialogModule.NAME:
         return new DialogModule(context);
       case FrescoModule.NAME:
@@ -195,6 +199,7 @@ public class MainReactPackage extends TurboReactPackage {
             FileReaderModule.class,
             AsyncStorageModule.class,
             ClipboardModule.class,
+            DatePickerDialogModule.class,
             DialogModule.class,
             FrescoModule.class,
             I18nManagerModule.class,
