@@ -7,7 +7,7 @@
 
 plugins {
     id("com.android.library")
-    id("com.facebook.react.codegen")
+    id("com.facebook.react")
     id("maven-publish")
     id("de.undercouch.download")
 }
@@ -56,7 +56,6 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
 
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
     from(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
-    from("src/main/jni/third-party/boost/Android.mk")
     from("src/main/jni/third-party/boost")
     include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp", "asm/**/*.S")
     includeEmptyDirs = false
@@ -171,6 +170,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
 // executed by automake. This way we can avoid dependencies on make/automake
 task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) {
+    duplicatesStrategy("warn")
     from(dependenciesPath ?: tarTree(downloadGlog.dest))
     from("src/main/jni/third-party/glog/")
     include("glog-${GLOG_VERSION}/src/**/*", "Android.mk", "config.h")
@@ -362,7 +362,8 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
     inputs.dir("src/main/java/com/facebook/react/turbomodule/core/jni")
     inputs.dir("src/main/java/com/facebook/react/modules/blob")
     outputs.dir("$buildDir/react-ndk/all")
-    commandLine(getNdkBuildFullPath(),
+    def commandLineArgs = [
+            getNdkBuildFullPath(),
             "APP_ABI=${reactNativeArchitectures()}",
             "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),
             "NDK_PROJECT_PATH=null",
@@ -375,7 +376,12 @@ def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
             "-C", file("src/main/jni/react/jni").absolutePath,
             "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
-    )
+    ]
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        // This flag will suppress "fcntl(): Bad file descriptor" warnings on local builds.
+        commandLineArgs.add("--output-sync=none")
+    }
+    commandLine(commandLineArgs)
 }
 
 def cleanReactNdkLib = tasks.register("cleanReactNdkLib", Exec) {
@@ -535,7 +541,7 @@ react {
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
     jsRootDir = file("../Libraries")
-    reactNativeRootDir = file("$projectDir/..")
+    reactRoot = file("$projectDir/..")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
 

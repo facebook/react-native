@@ -17,7 +17,7 @@ public class HermesExecutorFactory implements JavaScriptExecutorFactory {
   private final RuntimeConfig mConfig;
 
   public HermesExecutorFactory() {
-    this(new RuntimeConfig(1024));
+    this(null);
   }
 
   public HermesExecutorFactory(RuntimeConfig config) {

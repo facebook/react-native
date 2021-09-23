@@ -102,7 +102,7 @@ rn_xplat_cxx_library(
 yarn_workspace(
     name = "yarn-workspace",
     srcs = glob(
-        ["**/*.js"],
+        ["src/**/*.js"],
         exclude = [
             "**/__fixtures__/**",
             "**/__flowtests__/**",

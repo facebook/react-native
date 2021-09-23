@@ -34,7 +34,7 @@ class UIManager;
  * ensure the logical consistency of some methods (e.g. calling `stop` for
  * non-running surface will crash).
  */
-class SurfaceHandler final {
+class SurfaceHandler {
  public:
   /*
    * Represents a status of the `SurfaceHandler` instance.
@@ -62,7 +62,7 @@ class SurfaceHandler final {
    * Can be constructed anytime with a `moduleName` and a `surfaceId`.
    */
   SurfaceHandler(std::string const &moduleName, SurfaceId surfaceId) noexcept;
-  ~SurfaceHandler() noexcept;
+  virtual ~SurfaceHandler() noexcept;
 
   /*
    * Movable-only.
@@ -95,10 +95,10 @@ class SurfaceHandler final {
   void stop() const noexcept;
 
   /*
-   * Sets (and gets) the runnnig mode.
+   * Sets (and gets) the running mode.
    * The running mode can be changed anytime (even for `Unregistered` surface).
    */
-  void setDisplayMode(DisplayMode displayMode) const noexcept;
+  virtual void setDisplayMode(DisplayMode displayMode) const noexcept;
   DisplayMode getDisplayMode() const noexcept;
 
 #pragma mark - Accessors

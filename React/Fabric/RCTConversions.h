@@ -141,6 +141,9 @@ inline UIAccessibilityTraits RCTUIAccessibilityTraitsFromAccessibilityTraits(
   if ((accessibilityTraits & AccessibilityTraits::Switch) != AccessibilityTraits::None) {
     result |= AccessibilityTraitSwitch;
   }
+  if ((accessibilityTraits & AccessibilityTraits::TabBar) != AccessibilityTraits::None) {
+    result |= UIAccessibilityTraitTabBar;
+  }
   return result;
 };
 

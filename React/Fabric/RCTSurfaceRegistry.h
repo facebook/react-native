@@ -17,7 +17,7 @@ typedef void (^RCTSurfaceEnumeratorBlock)(NSEnumerator<RCTFabricSurface *> *enum
 
 /**
  * Registry of Surfaces.
- * Incapsulates storing Surface objects and querying them by root tag.
+ * Encapsulates storing Surface objects and querying them by root tag.
  * All methods of the registry are thread-safe.
  * The registry stores Surface objects as weak references.
  */

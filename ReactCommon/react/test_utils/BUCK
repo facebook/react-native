@@ -51,4 +51,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("better:better"),
         react_native_xplat_target("react/debug:debug"),
     ],
+    exported_deps = [
+        "//xplat/third-party/gmock:gmock",
+    ],
 )

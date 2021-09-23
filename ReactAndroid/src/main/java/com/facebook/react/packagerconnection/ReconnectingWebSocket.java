@@ -41,6 +41,7 @@ public final class ReconnectingWebSocket extends WebSocketListener {
 
   private final String mUrl;
   private final Handler mHandler;
+  private final OkHttpClient mOkHttpClient;
   private boolean mClosed = false;
   private boolean mSuppressConnectionErrors;
   private @Nullable WebSocket mWebSocket;
@@ -56,22 +57,23 @@ public final class ReconnectingWebSocket extends WebSocketListener {
     mMessageCallback = messageCallback;
     mConnectionCallback = connectionCallback;
     mHandler = new Handler(Looper.getMainLooper());
-  }
-
-  public void connect() {
-    if (mClosed) {
-      throw new IllegalStateException("Can't connect closed client");
-    }
-
-    OkHttpClient httpClient =
+    mOkHttpClient =
         new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
             .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
             .build();
+  }
+
+  public void connect() {
+    synchronized (this) {
+      if (mClosed) {
+        throw new IllegalStateException("Can't connect closed client");
+      }
+    }
 
     Request request = new Request.Builder().url(mUrl).build();
-    httpClient.newWebSocket(request, this);
+    mOkHttpClient.newWebSocket(request, this);
   }
 
   private synchronized void delayedReconnect() {
@@ -82,8 +84,10 @@ public final class ReconnectingWebSocket extends WebSocketListener {
   }
 
   private void reconnect() {
-    if (mClosed) {
-      throw new IllegalStateException("Can't reconnect closed client");
+    synchronized (this) {
+      if (mClosed) {
+        throw new IllegalStateException("Can't reconnect closed client");
+      }
     }
 
     if (!mSuppressConnectionErrors) {
@@ -102,8 +106,10 @@ public final class ReconnectingWebSocket extends WebSocketListener {
   }
 
   public void closeQuietly() {
-    mClosed = true;
-    closeWebSocketQuietly();
+    synchronized (this) {
+      mClosed = true;
+      closeWebSocketQuietly();
+    }
     mMessageCallback = null;
 
     if (mConnectionCallback != null) {

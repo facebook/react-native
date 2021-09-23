@@ -11,6 +11,7 @@
 #include <react/renderer/core/ConcreteState.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
 

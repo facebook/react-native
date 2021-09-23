@@ -247,6 +247,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTInvalidating.h": RCTBASE_PATH + "RCTInvalidating.h",
     "React/RCTJSScriptLoaderModule.h": RCTBASE_PATH + "RCTJSScriptLoaderModule.h",
     "React/RCTJSStackFrame.h": RCTBASE_PATH + "RCTJSStackFrame.h",
+    "React/RCTJSThread.h": RCTBASE_PATH + "RCTJSThread.h",
     "React/RCTJavaScriptExecutor.h": RCTBASE_PATH + "RCTJavaScriptExecutor.h",
     "React/RCTJavaScriptLoader.h": RCTBASE_PATH + "RCTJavaScriptLoader.h",
     "React/RCTKeyCommands.h": RCTBASE_PATH + "RCTKeyCommands.h",
@@ -376,6 +377,7 @@ rn_xplat_cxx_library2(
         "$SDKROOT/System/Library/Frameworks/CFNetwork.framework",
         "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
         "$SDKROOT/System/Library/Frameworks/CoreLocation.framework",
+        "$SDKROOT/System/Library/Frameworks/CoreText.framework",
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
         "$SDKROOT/System/Library/Frameworks/MapKit.framework",
         "$SDKROOT/System/Library/Frameworks/QuartzCore.framework",
@@ -686,7 +688,6 @@ rn_library(
         ],
     ),
     labels = ["supermodule:xplat/default/public.react_native.core"],
-    skip_processors = True,  # Don't anticipate routes or fbicon here
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/js:node_modules__abort_19controller",

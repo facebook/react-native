@@ -7,17 +7,9 @@
 
 #pragma once
 
-#include <react/renderer/core/EventTarget.h>
-#include <react/renderer/debug/flags.h>
-#include <react/renderer/mounting/Differentiator.h>
-#include <react/renderer/mounting/MountingCoordinator.h>
-#include <react/renderer/mounting/MountingOverrideDelegate.h>
-#include <react/renderer/mounting/MountingTransaction.h>
-#include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
-
-#include <folly/dynamic.h>
-
-#include "LayoutAnimationKeyFrameManager.h"
+#include <react/renderer/animations/LayoutAnimationKeyFrameManager.h>
+#include <react/renderer/core/ReactPrimitives.h>
+#include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {
@@ -26,10 +18,12 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
  public:
   LayoutAnimationDriver(
       RuntimeExecutor runtimeExecutor,
+      ContextContainer::Shared &contextContainer,
       LayoutAnimationStatusDelegate *delegate)
-      : LayoutAnimationKeyFrameManager(runtimeExecutor, delegate) {}
-
-  virtual ~LayoutAnimationDriver() {}
+      : LayoutAnimationKeyFrameManager(
+            runtimeExecutor,
+            contextContainer,
+            delegate) {}
 
  protected:
   virtual void animationMutationsForFrame(

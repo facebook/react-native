@@ -26,7 +26,7 @@ def detectEntryFile(config) {
  */
 def detectCliPath(config) {
     if (config.cliPath) {
-        return config.cliPath
+        return "${projectDir}/${config.cliPath}"
     }
     if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
         return "${projectDir}/../../node_modules/react-native/cli.js"
@@ -284,18 +284,24 @@ afterEvaluate {
                 into(file(config."jsBundleDir${targetName}"))
             } else {
                 into ("$buildDir/intermediates")
-                into ("assets/${targetPath}") {
-                    from(jsBundleDir)
-                }
+                if (isAndroidLibrary) {
+                    into ("library_assets/${variant.name}/out") {
+                        from(jsBundleDir)
+                    }
+                } else {
+                    into ("assets/${targetPath}") {
+                        from(jsBundleDir)
+                    }
 
-                // Workaround for Android Gradle Plugin 3.2+ new asset directory
-                into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
-                    from(jsBundleDir)
-                }
+                    // Workaround for Android Gradle Plugin 3.2+ new asset directory
+                    into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
+                        from(jsBundleDir)
+                    }
 
-                // Workaround for Android Gradle Plugin 3.4+ new asset directory
-                into ("merged_assets/${variant.name}/out") {
-                    from(jsBundleDir)
+                    // Workaround for Android Gradle Plugin 3.4+ new asset directory
+                    into ("merged_assets/${variant.name}/out") {
+                        from(jsBundleDir)
+                    }
                 }
             }
 
@@ -303,6 +309,7 @@ afterEvaluate {
             dependsOn(variant.mergeAssetsProvider.get())
 
             enabled(currentBundleTask.enabled)
+            dependsOn(currentBundleTask)
         }
 
         // mergeResources task runs before the bundle file is copied to the intermediate asset directory from Android plugin 4.1+.
@@ -352,8 +359,7 @@ afterEvaluate {
         }
 
         if (enableVmCleanup) {
-            def task = tasks.findByName("package${targetName}")
-            task.doFirst(vmSelectionAction)
+            packageTask.doFirst(vmSelectionAction)
         }
     }
 }
