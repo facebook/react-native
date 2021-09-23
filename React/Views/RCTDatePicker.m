@@ -29,6 +29,12 @@
     self.action = @selector(didChange);
 #endif // ]TODO(macOS GH#774)
     _reactMinuteInterval = 1;
+
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+    if (@available(iOS 14, *)) {
+      self.preferredDatePickerStyle = UIDatePickerStyleWheels;
+    }
+#endif // ]TODO(macOS GH#774)
   }
   return self;
 }

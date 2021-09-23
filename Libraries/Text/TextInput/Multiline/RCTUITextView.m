@@ -73,6 +73,15 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
   return self;
 }
 
+- (void)setDelegate:(id<UITextViewDelegate>)delegate {
+  // Delegate is set inside `[RCTBackedTextViewDelegateAdapter initWithTextView]` and
+  // it cannot be changed from outside.
+  if (super.delegate) {
+    return;
+  }
+  [super setDelegate:delegate];
+}
+
 #pragma mark - Accessibility
 
 - (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement

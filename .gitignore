@@ -28,6 +28,7 @@ project.xcworkspace/*
 /build/
 /packages/react-native-codegen/android/build/
 /packages/react-native-codegen/android/gradlePlugin-build/gradlePlugin/build
+/packages/rn-tester/android/app/.cxx/
 /packages/rn-tester/android/app/build/
 /packages/rn-tester/android/app/gradle/
 /packages/rn-tester/android/app/gradlew

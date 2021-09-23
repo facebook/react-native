@@ -37,6 +37,17 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
   return self;
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  UIView *result = [super hitTest:point withEvent:event];
+
+  if (result == _adapter.paperView) {
+    return self;
+  }
+
+  return result;
+}
+
 + (NSMutableSet<NSString *> *)supportedViewManagers
 {
   static NSMutableSet<NSString *> *supported = [NSMutableSet setWithObjects:@"Picker",

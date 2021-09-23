@@ -28,6 +28,40 @@ describe('PerformanceLogger', () => {
   beforeEach(() => {
     GlobalPerformanceLogger.clear();
   });
+  describe('close() ', () => {
+    let perfLogger;
+    beforeEach(() => {
+      perfLogger = createPerformanceLogger();
+    });
+
+    it('does not markPoint', () => {
+      perfLogger.close();
+      perfLogger.markPoint(POINT, POINT_TIMESTAMP);
+      expect(perfLogger.getPoints()).toEqual({});
+    });
+    it('does not startTimespan', () => {
+      perfLogger.close();
+      perfLogger.startTimespan(TIMESPAN_1);
+      expect(perfLogger.getTimespans()).toEqual({});
+    });
+    it('does not setExtra', () => {
+      perfLogger.close();
+      perfLogger.setExtra('extra', 'an extra value');
+      expect(perfLogger.getTimespans()).toEqual({});
+    });
+
+    it('does not stopTimespan', () => {
+      perfLogger.startTimespan(TIMESPAN_1);
+      perfLogger.close();
+      let timespan = perfLogger.getTimespans()[TIMESPAN_1];
+      expect(timespan.endTime).toBeUndefined();
+      expect(timespan.totalTime).toBeUndefined();
+      perfLogger.stopTimespan(TIMESPAN_1);
+      timespan = perfLogger.getTimespans()[TIMESPAN_1];
+      expect(timespan.endTime).toBeUndefined();
+      expect(timespan.totalTime).toBeUndefined();
+    });
+  });
 
   it('starts & stops a timespan', () => {
     let perfLogger = createPerformanceLogger();
