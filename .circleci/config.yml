@@ -734,6 +734,13 @@ jobs:
           git config --global user.name "npm Deployment Script"
           echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
+      - when:
+          condition:
+            equal: [ --dry-run, << parameters.publish_npm_args >> ]
+          steps:
+            - store_artifacts:
+                path: ~/react-native/react-native-1000.0.0.tgz
+                destination: build
 
   # -------------------------
   #    JOBS: Nightly
@@ -820,6 +827,7 @@ workflows:
   releases:
     jobs:
       - publish_npm_package:
+          name: build_npm_package
           filters:
             # Both of the following conditions must be included!
             # Ignore any commit on any branch by default.
@@ -828,6 +836,15 @@ workflows:
             # Only act on version tags.
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+      - publish_npm_package:
+          # Build a release package on every untagged commit, but do not publish to npm.
+          publish_npm_args: --dry-run
+          filters:
+            branches:
+              only:
+                - main
+            tags:
+              ignore: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
   analysis:
     jobs:
