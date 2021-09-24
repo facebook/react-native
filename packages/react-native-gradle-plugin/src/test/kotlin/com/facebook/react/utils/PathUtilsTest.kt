@@ -5,10 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.tests
+package com.facebook.react.utils
 
 import com.facebook.react.TestReactExtension
-import com.facebook.react.utils.*
 import java.io.File
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
