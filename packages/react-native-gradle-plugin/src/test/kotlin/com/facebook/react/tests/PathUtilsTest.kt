@@ -142,30 +142,4 @@ class PathUtilsTest {
   fun projectPathToLibraryName_withDotsAndUnderscores() {
     assertEquals("SampleAndroidAppSpec", projectPathToLibraryName("sample_android.app"))
   }
-
-  @Test
-  fun codegenGenerateSchemaCLI_worksCorrectly() {
-    val extension = TestReactExtension(ProjectBuilder.builder().build())
-    extension.codegenDir.set(tempFolder.root)
-    val expected =
-        File(tempFolder.root, "lib/cli/combine/combine-js-to-schema-cli.js").apply {
-          parentFile.mkdirs()
-          createNewFile()
-        }
-
-    assertEquals(expected, codegenGenerateSchemaCLI(extension))
-  }
-
-  @Test
-  fun codegenGenerateNativeModuleSpecsCLI_worksCorrectly() {
-    val extension = TestReactExtension(ProjectBuilder.builder().build())
-    extension.reactRoot.set(tempFolder.root)
-    val expected =
-        File(tempFolder.root, "scripts/generate-specs-cli.js").apply {
-          parentFile.mkdirs()
-          createNewFile()
-        }
-
-    assertEquals(expected, codegenGenerateNativeModuleSpecsCLI(extension))
-  }
 }

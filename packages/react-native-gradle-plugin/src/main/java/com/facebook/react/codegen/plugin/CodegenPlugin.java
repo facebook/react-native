@@ -9,18 +9,13 @@ package com.facebook.react.codegen.plugin;
 
 import com.android.build.gradle.BaseExtension;
 import com.facebook.react.ReactExtension;
-import com.facebook.react.codegen.generator.JavaGenerator;
 import com.facebook.react.tasks.BuildCodegenCLITask;
+import com.facebook.react.tasks.GenerateCodegenArtifactsTask;
 import com.facebook.react.tasks.GenerateCodegenSchemaTask;
 import com.facebook.react.utils.GradleUtils;
-import com.facebook.react.utils.PathUtils;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import java.io.File;
-import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.tasks.Exec;
 import org.gradle.api.tasks.TaskProvider;
 
 /**
@@ -35,10 +30,6 @@ public class CodegenPlugin {
 
     // 1. Set up build dir.
     final File generatedSrcDir = new File(project.getBuildDir(), "generated/source/codegen");
-    final File generatedSchemaFile = new File(generatedSrcDir, "schema.json");
-
-    // 2. Task: produce schema from JS files.
-    String os = System.getProperty("os.name").toLowerCase();
 
     TaskProvider<BuildCodegenCLITask> buildCodegenTask =
         project
@@ -52,6 +43,7 @@ public class CodegenPlugin {
                   task.getBashWindowsHome().set(bashWindowsHome);
                 });
 
+    // 2. Task: produce schema from JS files.
     TaskProvider<GenerateCodegenSchemaTask> generateCodegenSchemaTask =
         project
             .getTasks()
@@ -67,48 +59,23 @@ public class CodegenPlugin {
                 });
 
     // 3. Task: generate Java code from schema.
-    project
-        .getTasks()
-        .register(
-            "generateCodegenArtifactsFromSchema",
-            Exec.class,
-            task -> {
-              task.dependsOn(generateCodegenSchemaTask);
-
-              task.getInputs()
-                  .files(
-                      project.fileTree(
-                          ImmutableMap.of("dir", extension.getCodegenDir().getAsFile().get())));
-              task.getInputs()
-                  .files(PathUtils.codegenGenerateSchemaCLI(extension).getAbsolutePath());
-              task.getInputs().files(generatedSchemaFile);
-              task.getOutputs().dir(generatedSrcDir);
-
-              if (extension.getUseJavaGenerator().get()) {
-                task.doLast(
-                    s -> {
-                      generateJavaFromSchemaWithJavaGenerator(
-                          generatedSchemaFile,
-                          extension.getCodegenJavaPackageName().get(),
-                          generatedSrcDir);
-                    });
-              }
-
-              ImmutableList<String> execCommands =
-                  new ImmutableList.Builder<String>()
-                      .add(os.contains("windows") ? "yarn.cmd" : "yarn")
-                      .addAll(ImmutableList.copyOf(extension.getNodeExecutableAndArgs().get()))
-                      .add(
-                          PathUtils.codegenGenerateNativeModuleSpecsCLI(extension)
-                              .getAbsolutePath())
-                      .add("android")
-                      .add(generatedSchemaFile.getAbsolutePath())
-                      .add(generatedSrcDir.getAbsolutePath())
-                      .add(extension.getLibraryName().get())
-                      .add(extension.getCodegenJavaPackageName().get())
-                      .build();
-              task.commandLine(execCommands);
-            });
+    TaskProvider<GenerateCodegenArtifactsTask> generateCodegenArtifactsTask =
+        project
+            .getTasks()
+            .register(
+                "generateCodegenArtifactsFromSchema",
+                GenerateCodegenArtifactsTask.class,
+                task -> {
+                  task.dependsOn(generateCodegenSchemaTask);
+                  task.getReactRoot().set(extension.getReactRoot());
+                  task.getJsRootDir().set(extension.getJsRootDir());
+                  task.getNodeExecutableAndArgs().set(extension.getNodeExecutableAndArgs());
+                  task.getCodegenDir().set(extension.getCodegenDir());
+                  task.getUseJavaGenerator().set(extension.getUseJavaGenerator());
+                  task.getCodegenJavaPackageName().set(extension.getCodegenJavaPackageName());
+                  task.getLibraryName().set(extension.getLibraryName());
+                  task.getGeneratedSrcDir().set(generatedSrcDir);
+                });
 
     // 4. Add dependencies & generated sources to the project.
     // Note: This last step needs to happen after the project has been evaluated.
@@ -118,7 +85,7 @@ public class CodegenPlugin {
           // This will invoke the codegen before compiling the entire project.
           Task preBuild = project.getTasks().findByName("preBuild");
           if (preBuild != null) {
-            preBuild.dependsOn("generateCodegenArtifactsFromSchema");
+            preBuild.dependsOn(generateCodegenArtifactsTask);
           }
 
           /**
@@ -137,17 +104,5 @@ public class CodegenPlugin {
               .getJava()
               .srcDir(new File(generatedSrcDir, "java"));
         });
-  }
-
-  // Use Java-based generator implementation to produce the source files, instead of using the
-  // JS-based generator.
-  private void generateJavaFromSchemaWithJavaGenerator(
-      final File schemaFile, final String javaPackageName, final File outputDir) {
-    final JavaGenerator generator = new JavaGenerator(schemaFile, javaPackageName, outputDir);
-    try {
-      generator.build();
-    } catch (final Exception ex) {
-      throw new GradleException("Failed to generate Java from schema.", ex);
-    }
   }
 }
