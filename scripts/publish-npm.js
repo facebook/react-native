@@ -53,18 +53,26 @@
 require('shelljs/global');
 const yargs = require('yargs');
 
-let argv = yargs.option('n', {
-  alias: 'nightly',
-  type: 'boolean',
-  default: false,
-}).argv;
+let argv = yargs
+  .option('n', {
+    alias: 'nightly',
+    type: 'boolean',
+    default: false,
+  })
+  .option('d', {
+    alias: 'dry-run',
+    type: 'boolean',
+    default: false,
+  }).argv;
 
 const nightlyBuild = argv.nightly;
+const dryRunBuild = argv.dryRun;
+const buildFromMain = nightlyBuild || dryRunBuild;
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
 
 let branchVersion = 0;
-if (nightlyBuild) {
+if (buildFromMain) {
   branchVersion = 0;
 } else {
   if (!buildTag) {
@@ -98,7 +106,7 @@ const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
   // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2']
   .map(version => version.slice('refs/tags/'.length));
 
-if (!nightlyBuild && tagsWithVersion.length === 0) {
+if (!buildFromMain && tagsWithVersion.length === 0) {
   echo(
     'Error: Cannot find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit',
   );
@@ -106,7 +114,7 @@ if (!nightlyBuild && tagsWithVersion.length === 0) {
 }
 let releaseVersion;
 
-if (nightlyBuild) {
+if (buildFromMain) {
   releaseVersion = `0.0.0-${currentCommit.slice(0, 9)}`;
 
   // Bump version number in various files (package.json, gradle.properties etc)
@@ -153,22 +161,32 @@ artifacts.forEach(name => {
   }
 });
 
-// if version contains -rc, tag as prerelease
-const tagFlag = nightlyBuild
-  ? '--tag nightly'
-  : releaseVersion.indexOf('-rc') === -1
-  ? ''
-  : '--tag next';
-
-// use otp from envvars if available
-const otpFlag = otp ? `--otp ${otp}` : '';
-
-if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
-  echo('Failed to publish package to npm');
-  exit(1);
+if (dryRunBuild) {
+  echo('Skipping `npm publish` because --dry-run is set.');
+  if (exec('mkdir -p build && npm pack --pack-destination build').code) {
+    echo('Failed to build release package.');
+    exit(1);
+  } else {
+    echo('The release was built successfully.');
+    exit(0);
+  }
 } else {
-  echo(`Published to npm ${releaseVersion}`);
-  exit(0);
-}
+  // if version contains -rc, tag as prerelease
+  const tagFlag = nightlyBuild
+    ? '--tag nightly'
+    : releaseVersion.indexOf('-rc') === -1
+    ? ''
+    : '--tag next';
 
+  // use otp from envvars if available
+  const otpFlag = otp ? `--otp ${otp}` : '';
+
+  if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
+    echo('Failed to publish package to npm');
+    exit(1);
+  } else {
+    echo(`Published to npm ${releaseVersion}`);
+    exit(0);
+  }
+}
 /*eslint-enable no-undef */
