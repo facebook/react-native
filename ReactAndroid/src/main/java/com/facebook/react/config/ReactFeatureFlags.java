@@ -95,4 +95,6 @@ public class ReactFeatureFlags {
   public static boolean enableLockFreeEventDispatcher = false;
 
   public static boolean enableAggressiveEventEmitterCleanup = false;
+
+  public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 }
