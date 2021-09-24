@@ -55,7 +55,6 @@ class FocusEventExample extends React.Component<{}, State> {
           Platform.OS === 'macos' ? (
             <View
               focusable={true}
-              enableFocusRing={true}
               onFocus={() => {
                 this.setState(prevState => ({
                   eventStream: prevState.eventStream + '\nView Focus',
@@ -193,7 +192,6 @@ class FocusEventExample extends React.Component<{}, State> {
                 }}>
                 <View
                   focusable={true}
-                  enableFocusRing={true}
                   onFocus={() => {
                     this.setState(prevState => ({
                       eventStream:

@@ -88,11 +88,6 @@
 	return _selectable;
 }
 
-- (BOOL)enableFocusRing
-{
-  return _selectable;
-}
-
 - (void)drawFocusRingMask {
   if ([self enableFocusRing]) {
     NSRectFill([self bounds]);

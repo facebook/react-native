@@ -236,7 +236,7 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
   if (self != nil) {
     self.wantsLayer = YES;
     self->_userInteractionEnabled = YES;
-
+    self->_enableFocusRing = YES;
   }
   return self;
 }
