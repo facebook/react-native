@@ -13,12 +13,14 @@ import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import {RootTagContext, createRootTag} from './RootTag';
+import type {RootTag} from './RootTag';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|
   children?: React.Node,
   fabric?: boolean,
-  rootTag: number,
+  useConcurrentRoot?: boolean,
+  rootTag: number | RootTag,
   initialProps?: {...},
   showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
@@ -129,12 +131,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-if (__DEV__) {
-  if (!global.__RCTProfileIsProfiling) {
-    const LogBox = require('../LogBox/LogBox');
-    LogBox.install();
-  }
-}
 
 module.exports = AppContainer;

@@ -14,7 +14,7 @@ import com.facebook.react.devsupport.interfaces.ErrorType;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 
 /**
- * Interface used by {@link DevSupportManagerImpl} to allow interception on any redboxes during
+ * Interface used by {@link BridgeDevSupportManager} to allow interception on any redboxes during
  * development and handling the information from the redbox. The implementation should be passed by
  * setRedBoxHandler in ReactInstanceManager.
  */

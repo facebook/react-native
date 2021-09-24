@@ -61,6 +61,17 @@ function _flush(rootNode: AnimatedValue): void {
 }
 
 /**
+ * Some operations are executed only on batch end, which is _mostly_ scheduled when
+ * Animated component props change. For some of the changes which require immediate execution
+ * (e.g. setValue), we create a separate batch in case none is scheduled.
+ */
+function _executeAsAnimatedBatch(id: string, operation: () => void) {
+  NativeAnimatedAPI.setWaitingForIdentifier(id);
+  operation();
+  NativeAnimatedAPI.unsetWaitingForIdentifier(id);
+}
+
+/**
  * Standard value for driving animations.  One `Animated.Value` can drive
  * multiple properties in a synchronized fashion, but can only be driven by one
  * mechanism at a time.  Using a new mechanism (e.g. starting a new animation,
@@ -115,7 +126,9 @@ class AnimatedValue extends AnimatedWithChildren {
       !this.__isNative /* don't perform a flush for natively driven values */,
     );
     if (this.__isNative) {
-      NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value);
+      _executeAsAnimatedBatch(this.__getNativeTag().toString(), () => {
+        NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value);
+      });
     }
   }
 
@@ -183,6 +196,12 @@ class AnimatedValue extends AnimatedWithChildren {
   resetAnimation(callback?: ?(value: number) => void): void {
     this.stopAnimation(callback);
     this._value = this._startingValue;
+    if (this.__isNative) {
+      NativeAnimatedAPI.setAnimatedNodeValue(
+        this.__getNativeTag(),
+        this._startingValue,
+      );
+    }
   }
 
   _onAnimatedValueUpdateReceived(value: number): void {

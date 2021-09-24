@@ -33,7 +33,8 @@ class TouchEventEmitter : public EventEmitter {
   void dispatchTouchEvent(
       std::string const &type,
       TouchEvent const &event,
-      EventPriority const &priority) const;
+      EventPriority priority,
+      RawEvent::Category category) const;
 };
 
 } // namespace react

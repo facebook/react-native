@@ -10,7 +10,6 @@ package com.facebook.react.common.mapbuffer;
 import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Iterator;
@@ -23,7 +22,7 @@ import java.util.Iterator;
 public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEntry> {
 
   static {
-    SoLoader.loadLibrary("mapbufferjni");
+    ReadableMapBufferSoLoader.staticInit();
   }
 
   // Value used to verify if the data is serialized with LittleEndian order.

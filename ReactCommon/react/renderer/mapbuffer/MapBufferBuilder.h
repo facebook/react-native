@@ -20,7 +20,7 @@ namespace react {
 constexpr uint16_t INITIAL_KEY_VALUE_SIZE = 108;
 
 // Default initial size for _dynamicDataValues array
-constexpr int INITIAL_DYNAMIC_DATA_SIZE = 200;
+constexpr int32_t INITIAL_DYNAMIC_DATA_SIZE = 200;
 
 /**
  * MapBufferBuilder is a builder class for MapBuffer
@@ -31,9 +31,9 @@ class MapBufferBuilder {
 
   void ensureKeyValueSpace();
 
-  void ensureDynamicDataSpace(int size);
+  void ensureDynamicDataSpace(int32_t size);
 
-  void storeKeyValue(Key key, uint8_t *value, int valueSize);
+  void storeKeyValue(Key key, uint8_t *value, int32_t valueSize);
 
   // Array of [key,value] map entries:
   // - Key is represented in 2 bytes
@@ -47,19 +47,19 @@ class MapBufferBuilder {
 
   // Relative offset on the _keyValues array.
   // This represents the first byte that can be written in _keyValues array
-  int keyValuesOffset_ = 0;
+  int32_t keyValuesOffset_ = 0;
 
   // This array contains data for dynamic values in the MapBuffer.
   // A dynamic value is a String or another MapBuffer.
   uint8_t *dynamicDataValues_ = nullptr;
 
   // Amount of bytes allocated on _dynamicDataValues
-  int dynamicDataSize_ = 0;
+  int32_t dynamicDataSize_ = 0;
 
   // Relative offset on the _dynamicDataValues array.
   // This represents the first byte that can be written in _dynamicDataValues
   // array
-  int dynamicDataOffset_ = 0;
+  int32_t dynamicDataOffset_ = 0;
 
   // Minimmum key to store in the MapBuffer (this is used to guarantee
   // consistency)
@@ -74,7 +74,7 @@ class MapBufferBuilder {
 
   static MapBuffer EMPTY();
 
-  void putInt(Key key, int value);
+  void putInt(Key key, int32_t value);
 
   void putBool(Key key, bool value);
 

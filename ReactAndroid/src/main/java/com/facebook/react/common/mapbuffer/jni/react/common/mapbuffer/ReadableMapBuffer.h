@@ -34,7 +34,7 @@ class ReadableMapBuffer : public jni::HybridClass<ReadableMapBuffer> {
  private:
   uint8_t *serializedData_ = nullptr;
 
-  int serializedDataSize_ = 0;
+  int32_t serializedDataSize_ = 0;
 
   friend HybridBase;
 

@@ -17,7 +17,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
@@ -118,7 +118,6 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private boolean mBatchingControlledByJS = false; // TODO T71377544: delete
   private volatile long mCurrentFrameNumber; // TODO T71377544: delete
   private volatile long mCurrentBatchNumber;
-  private volatile boolean mIsInBatch = false;
 
   private boolean mInitializedForFabric = false;
   private boolean mInitializedForNonFabric = false;
@@ -174,7 +173,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   private void addOperation(UIThreadOperation operation) {
-    operation.setBatchNumber(mIsInBatch ? mCurrentBatchNumber : -1);
+    operation.setBatchNumber(mCurrentBatchNumber);
     mOperations.add(operation);
   }
 
@@ -184,7 +183,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   private void addPreOperation(UIThreadOperation operation) {
-    operation.setBatchNumber(mIsInBatch ? mCurrentBatchNumber : -1);
+    operation.setBatchNumber(mCurrentBatchNumber);
     mPreOperations.add(operation);
   }
 
@@ -366,7 +365,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     if (nodesManager != null) {
       nodesManager.initializeEventListenerForUIManagerType(mUIManagerType);
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           NAME,
           new RuntimeException(
               "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"));
@@ -427,14 +426,12 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   @Override
   public void startOperationBatch() {
     mBatchingControlledByJS = true;
-    mIsInBatch = true;
     mCurrentBatchNumber++;
   }
 
   @Override
   public void finishOperationBatch() {
     mBatchingControlledByJS = true;
-    mIsInBatch = false;
     mCurrentBatchNumber++;
   }
 

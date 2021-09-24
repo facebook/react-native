@@ -59,6 +59,7 @@ class SharedColor {
   Color color_;
 };
 
+bool isColorMeaningful(SharedColor const &color) noexcept;
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
 

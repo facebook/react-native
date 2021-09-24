@@ -43,18 +43,22 @@ RCT_EXPORT_METHOD(show)
       if (!strongSelf) {
         return;
       }
-      if (!strongSelf->_view) {
-        if (self->_bridge) {
-          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds bridge:self->_bridge];
-        } else {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:strongSelf, @"logbox", nil];
-          [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateLogBoxSurface"
-                                                              object:nil
-                                                            userInfo:userInfo];
-          return;
-        }
+
+      if (strongSelf->_view) {
+        [strongSelf->_view show];
+        return;
       }
-      [strongSelf->_view show];
+
+      if (strongSelf->_bridge) {
+        if (strongSelf->_bridge.valid) {
+          strongSelf->_view = [[RCTLogBoxView alloc] initWithFrame:[UIScreen mainScreen].bounds
+                                                            bridge:strongSelf->_bridge];
+          [strongSelf->_view show];
+        }
+      } else {
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:strongSelf, @"logbox", nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateLogBoxSurface" object:nil userInfo:userInfo];
+      }
     });
   }
 }

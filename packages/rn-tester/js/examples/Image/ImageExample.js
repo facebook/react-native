@@ -32,6 +32,58 @@ type ImageSource = $ReadOnly<{|
   uri: string,
 |}>;
 
+type BlobImageState = {|
+  objectURL: ?string,
+|};
+
+type BlobImageProps = $ReadOnly<{|
+  url: string,
+|}>;
+
+class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
+  state = {
+    objectURL: null,
+  };
+
+  UNSAFE_componentWillMount() {
+    (async () => {
+      const result = await fetch(this.props.url);
+      const blob = await result.blob();
+      const objectURL = URL.createObjectURL(blob);
+      this.setState({objectURL});
+    })();
+  }
+
+  render() {
+    return this.state.objectURL !== null ? (
+      <Image source={{uri: this.state.objectURL}} style={styles.base} />
+    ) : (
+      <Text>Object URL not created yet</Text>
+    );
+  }
+}
+
+type BlobImageExampleState = {||};
+
+type BlobImageExampleProps = $ReadOnly<{|
+  urls: string[],
+|}>;
+
+class BlobImageExample extends React.Component<
+  BlobImageExampleProps,
+  BlobImageExampleState,
+> {
+  render() {
+    return (
+      <View style={styles.horizontal}>
+        {this.props.urls.map(url => (
+          <BlobImage key={url} url={url} />
+        ))}
+      </View>
+    );
+  }
+}
+
 type NetworkImageCallbackExampleState = {|
   events: Array<string>,
   startLoadPrefetched: boolean,
@@ -606,6 +658,21 @@ exports.examples = [
       '"http", then it will be downloaded from the network.': string),
     render: function(): React.Node {
       return <Image source={fullImage} style={styles.base} />;
+    },
+  },
+  {
+    title: 'Plain Blob Image',
+    description: ('If the `source` prop `uri` property is an object URL, ' +
+      'then it will be resolved using `BlobProvider` (Android) or `RCTBlobManager` (iOS).': string),
+    render: function(): React.Node {
+      return (
+        <BlobImageExample
+          urls={[
+            'https://www.facebook.com/favicon.ico',
+            'https://www.facebook.com/ads/pics/successstories.png',
+          ]}
+        />
+      );
     },
   },
   {

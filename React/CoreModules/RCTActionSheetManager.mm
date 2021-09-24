@@ -94,6 +94,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   UIViewController *controller = RCTPresentedViewController();
   NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
+  UIColor *cancelButtonTintColor =
+      [RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];
 
   if (controller == nil) {
     RCTLogError(
@@ -105,6 +107,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
           @"destructiveButtonIndices" : destructiveButtonIndices,
           @"anchor" : anchor,
           @"tintColor" : tintColor,
+          @"cancelButtonTintColor" : cancelButtonTintColor,
           @"disabledButtonIndices" : disabledButtonIndices,
         });
     return;
@@ -122,20 +125,26 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
                                                                     preferredStyle:UIAlertControllerStyleActionSheet];
 
   NSInteger index = 0;
+  bool isCancelButtonIndex = false;
   for (NSString *option in buttons) {
     UIAlertActionStyle style = UIAlertActionStyleDefault;
     if ([destructiveButtonIndices containsObject:@(index)]) {
       style = UIAlertActionStyleDestructive;
     } else if (index == cancelButtonIndex) {
       style = UIAlertActionStyleCancel;
+      isCancelButtonIndex = true;
     }
 
     NSInteger localIndex = index;
-    [alertController addAction:[UIAlertAction actionWithTitle:option
-                                                        style:style
-                                                      handler:^(__unused UIAlertAction *action) {
-                                                        callback(@[ @(localIndex) ]);
-                                                      }]];
+    UIAlertAction *actionButton = [UIAlertAction actionWithTitle:option
+                                                           style:style
+                                                         handler:^(__unused UIAlertAction *action) {
+                                                           callback(@[ @(localIndex) ]);
+                                                         }];
+    if (isCancelButtonIndex) {
+      [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
+    }
+    [alertController addAction:actionButton];
 
     index++;
   }

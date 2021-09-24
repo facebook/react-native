@@ -22,6 +22,8 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
+import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -45,6 +47,8 @@ public class ReactInstanceManagerBuilder {
   private @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private @Nullable Application mApplication;
   private boolean mUseDeveloperSupport;
+  private @Nullable DevSupportManagerFactory mDevSupportManagerFactory;
+  private boolean mRequireActivity;
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable UIImplementationProvider mUIImplementationProvider;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
@@ -172,6 +176,26 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
+   * Set the custom {@link DevSupportManagerFactory}. If not set, will use {@link
+   * DefaultDevSupportManagerFactory}.
+   */
+  public ReactInstanceManagerBuilder setDevSupportManagerFactory(
+      final DevSupportManagerFactory devSupportManagerFactory) {
+    mDevSupportManagerFactory = devSupportManagerFactory;
+    return this;
+  }
+
+  /**
+   * When {@code false}, indicates that correct usage of React Native will NOT involve an Activity.
+   * For the vast majority of Android apps in the ecosystem, this will not need to change. Unless
+   * you really know what you're doing, you should probably not change this!
+   */
+  public ReactInstanceManagerBuilder setRequireActivity(boolean requireActivity) {
+    mRequireActivity = requireActivity;
+    return this;
+  }
+
+  /**
    * Sets the initial lifecycle state of the host. For example, if the host is already resumed at
    * creation time, we wouldn't expect an onResume call until we get an onPause call.
    */
@@ -283,6 +307,10 @@ public class ReactInstanceManagerBuilder {
         mJSMainModulePath,
         mPackages,
         mUseDeveloperSupport,
+        mDevSupportManagerFactory == null
+            ? new DefaultDevSupportManagerFactory()
+            : mDevSupportManagerFactory,
+        mRequireActivity,
         mBridgeIdleDebugListener,
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mUIImplementationProvider,

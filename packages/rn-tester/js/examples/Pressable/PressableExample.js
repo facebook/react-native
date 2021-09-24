@@ -11,6 +11,7 @@
 import * as React from 'react';
 import {
   Animated,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -310,6 +311,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'blue',
   },
+  image: {
+    height: 100,
+    width: 100,
+  },
 });
 
 exports.displayName = (undefined: ?string);
@@ -425,6 +430,22 @@ exports.examples = [
               </Text>
             </View>
           </Pressable>
+
+          <View style={{alignItems: 'center'}}>
+            <Pressable
+              android_ripple={{
+                borderless: false,
+                foreground: true,
+              }}>
+              <Image
+                source={{
+                  uri: 'https://www.facebook.com/ads/pics/successstories.png',
+                }}
+                style={styles.image}
+              />
+            </Pressable>
+            <Text>use foreground</Text>
+          </View>
         </View>
       );
     },

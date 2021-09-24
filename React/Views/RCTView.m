@@ -276,12 +276,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
     if (bundle) {
       NSURL *url = [bundle URLForResource:@"Localizable" withExtension:@"strings"];
-      if (@available(iOS 11.0, *)) {
-        rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url error:nil];
-      } else {
-        // Fallback on earlier versions
-        rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url];
-      }
+      rolesAndStatesDescription = [NSDictionary dictionaryWithContentsOfURL:url error:nil];
     }
     if (rolesAndStatesDescription == nil) {
       // Falling back to hardcoded English list.
@@ -490,7 +485,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   while (view) {
     UIViewController *controller = view.reactViewController;
     if (controller) {
-      return (UIEdgeInsets){controller.topLayoutGuide.length, 0, controller.bottomLayoutGuide.length, 0};
+      return controller.view.safeAreaInsets;
     }
     view = view.superview;
   }
@@ -729,28 +724,28 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   const BOOL isRTL = _reactLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
 
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
-    const CGColorRef borderStartColor = _borderStartColor ?: _borderLeftColor;
-    const CGColorRef borderEndColor = _borderEndColor ?: _borderRightColor;
+    UIColor *borderStartColor = _borderStartColor ?: _borderLeftColor;
+    UIColor *borderEndColor = _borderEndColor ?: _borderRightColor;
 
-    const CGColorRef directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor;
-    const CGColorRef directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor;
+    UIColor *directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor;
+    UIColor *directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor;
 
     return (RCTBorderColors){
-        _borderTopColor ?: _borderColor,
-        directionAwareBorderLeftColor ?: _borderColor,
-        _borderBottomColor ?: _borderColor,
-        directionAwareBorderRightColor ?: _borderColor,
+        (_borderTopColor ?: _borderColor).CGColor,
+        (directionAwareBorderLeftColor ?: _borderColor).CGColor,
+        (_borderBottomColor ?: _borderColor).CGColor,
+        (directionAwareBorderRightColor ?: _borderColor).CGColor,
     };
   }
 
-  const CGColorRef directionAwareBorderLeftColor = isRTL ? _borderEndColor : _borderStartColor;
-  const CGColorRef directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor;
+  UIColor *directionAwareBorderLeftColor = isRTL ? _borderEndColor : _borderStartColor;
+  UIColor *directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor;
 
   return (RCTBorderColors){
-      _borderTopColor ?: _borderColor,
-      directionAwareBorderLeftColor ?: _borderLeftColor ?: _borderColor,
-      _borderBottomColor ?: _borderColor,
-      directionAwareBorderRightColor ?: _borderRightColor ?: _borderColor,
+    (_borderTopColor ?: _borderColor).CGColor,
+    (directionAwareBorderLeftColor ?: _borderLeftColor ?: _borderColor).CGColor,
+    (_borderBottomColor ?: _borderColor).CGColor,
+    (directionAwareBorderRightColor ?: _borderRightColor ?: _borderColor).CGColor,
   };
 }
 
@@ -902,19 +897,18 @@ static void RCTUpdateShadowPathForView(RCTView *view)
 
 #pragma mark Border Color
 
-#define setBorderColor(side)                                \
-  -(void)setBorder##side##Color : (CGColorRef)color         \
-  {                                                         \
-    if (CGColorEqualToColor(_border##side##Color, color)) { \
-      return;                                               \
-    }                                                       \
-    CGColorRelease(_border##side##Color);                   \
-    _border##side##Color = CGColorRetain(color);            \
-    [self.layer setNeedsDisplay];                           \
+#define setBorderColor(side)                       \
+  -(void)setBorder##side##Color : (UIColor *)color \
+  {                                                \
+    if ([_border##side##Color isEqual:color]) {    \
+      return;                                      \
+    }                                              \
+    _border##side##Color = color;                  \
+    [self.layer setNeedsDisplay];                  \
   }
 
 setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom) setBorderColor(Left)
-        setBorderColor(Start) setBorderColor(End)
+    setBorderColor(Start) setBorderColor(End)
 
 #pragma mark - Border Width
 
@@ -928,8 +922,8 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     [self.layer setNeedsDisplay];                \
   }
 
-            setBorderWidth() setBorderWidth(Top) setBorderWidth(Right) setBorderWidth(Bottom) setBorderWidth(Left)
-                setBorderWidth(Start) setBorderWidth(End)
+        setBorderWidth() setBorderWidth(Top) setBorderWidth(Right) setBorderWidth(Bottom) setBorderWidth(Left)
+            setBorderWidth(Start) setBorderWidth(End)
 
 #pragma mark - Border Radius
 
@@ -943,9 +937,9 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     [self.layer setNeedsDisplay];                  \
   }
 
-                    setBorderRadius() setBorderRadius(TopLeft) setBorderRadius(TopRight) setBorderRadius(TopStart)
-                        setBorderRadius(TopEnd) setBorderRadius(BottomLeft) setBorderRadius(BottomRight)
-                            setBorderRadius(BottomStart) setBorderRadius(BottomEnd)
+                setBorderRadius() setBorderRadius(TopLeft) setBorderRadius(TopRight) setBorderRadius(TopStart)
+                    setBorderRadius(TopEnd) setBorderRadius(BottomLeft) setBorderRadius(BottomRight)
+                        setBorderRadius(BottomStart) setBorderRadius(BottomEnd)
 
 #pragma mark - Border Style
 
@@ -959,17 +953,6 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     [self.layer setNeedsDisplay];                       \
   }
 
-                                setBorderStyle()
+                            setBorderStyle()
 
-    - (void)dealloc
-{
-  CGColorRelease(_borderColor);
-  CGColorRelease(_borderTopColor);
-  CGColorRelease(_borderRightColor);
-  CGColorRelease(_borderBottomColor);
-  CGColorRelease(_borderLeftColor);
-  CGColorRelease(_borderStartColor);
-  CGColorRelease(_borderEndColor);
-}
-
-@end
+                                @end

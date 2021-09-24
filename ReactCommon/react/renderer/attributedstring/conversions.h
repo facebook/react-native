@@ -16,6 +16,7 @@
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/attributedstring/primitives.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/core/propsConversions.h>
@@ -52,7 +53,10 @@ inline std::string toString(const EllipsizeMode &ellipsisMode) {
   return "tail";
 }
 
-inline void fromRawValue(const RawValue &value, EllipsizeMode &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    EllipsizeMode &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -92,10 +96,13 @@ inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
 
   LOG(ERROR) << "Unsupported TextBreakStrategy value";
   react_native_assert(false);
-  return "simple";
+  return "highQuality";
 }
 
-inline void fromRawValue(const RawValue &value, TextBreakStrategy &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    TextBreakStrategy &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -109,17 +116,20 @@ inline void fromRawValue(const RawValue &value, TextBreakStrategy &result) {
       // sane default
       LOG(ERROR) << "Unsupported TextBreakStrategy value: " << string;
       react_native_assert(false);
-      result = TextBreakStrategy::Simple;
+      result = TextBreakStrategy::HighQuality;
     }
     return;
   }
 
   LOG(ERROR) << "Unsupported TextBreakStrategy type";
   react_native_assert(false);
-  result = TextBreakStrategy::Simple;
+  result = TextBreakStrategy::HighQuality;
 }
 
-inline void fromRawValue(const RawValue &value, FontWeight &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    FontWeight &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -165,7 +175,10 @@ inline std::string toString(const FontWeight &fontWeight) {
   return folly::to<std::string>((int)fontWeight);
 }
 
-inline void fromRawValue(const RawValue &value, FontStyle &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    FontStyle &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -206,7 +219,10 @@ inline std::string toString(const FontStyle &fontStyle) {
   return "normal";
 }
 
-inline void fromRawValue(const RawValue &value, FontVariant &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    FontVariant &result) {
   react_native_assert(value.hasType<std::vector<std::string>>());
   result = FontVariant::Default;
   if (value.hasType<std::vector<std::string>>()) {
@@ -260,7 +276,62 @@ inline std::string toString(const FontVariant &fontVariant) {
   return result;
 }
 
-inline void fromRawValue(const RawValue &value, TextAlignment &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    TextTransform &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = TextTransform::None;
+    } else if (string == "uppercase") {
+      result = TextTransform::Uppercase;
+    } else if (string == "lowercase") {
+      result = TextTransform::Lowercase;
+    } else if (string == "capitalize") {
+      result = TextTransform::Capitalize;
+    } else if (string == "unset") {
+      result = TextTransform::Unset;
+    } else {
+      LOG(ERROR) << "Unsupported TextTransform value: " << string;
+      react_native_assert(false);
+      // sane default for prod
+      result = TextTransform::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported TextTransform type";
+  react_native_assert(false);
+  // sane default for prod
+  result = TextTransform::None;
+}
+
+inline std::string toString(const TextTransform &textTransform) {
+  switch (textTransform) {
+    case TextTransform::None:
+      return "none";
+    case TextTransform::Uppercase:
+      return "uppercase";
+    case TextTransform::Lowercase:
+      return "lowercase";
+    case TextTransform::Capitalize:
+      return "capitalize";
+    case TextTransform::Unset:
+      return "unset";
+  }
+
+  LOG(ERROR) << "Unsupported TextTransform value";
+  react_native_assert(false);
+  // sane default for prod
+  return "none";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    TextAlignment &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -307,7 +378,10 @@ inline std::string toString(const TextAlignment &textAlignment) {
   return "auto";
 }
 
-inline void fromRawValue(const RawValue &value, WritingDirection &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    WritingDirection &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -347,6 +421,7 @@ inline std::string toString(const WritingDirection &writingDirection) {
 }
 
 inline void fromRawValue(
+    const PropsParserContext &context,
     const RawValue &value,
     TextDecorationLineType &result) {
   react_native_assert(value.hasType<std::string>());
@@ -398,6 +473,7 @@ inline std::string toString(
 }
 
 inline void fromRawValue(
+    const PropsParserContext &context,
     const RawValue &value,
     TextDecorationLineStyle &result) {
   react_native_assert(value.hasType<std::string>());
@@ -441,6 +517,7 @@ inline std::string toString(
 }
 
 inline void fromRawValue(
+    const PropsParserContext &context,
     const RawValue &value,
     TextDecorationLinePattern &result) {
   react_native_assert(value.hasType<std::string>());
@@ -541,6 +618,8 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
       return "switch";
     case AccessibilityRole::Tab:
       return "tab";
+    case AccessibilityRole::TabBar:
+      return "tabbar";
     case AccessibilityRole::Tablist:
       return "tablist";
     case AccessibilityRole::Timer:
@@ -555,7 +634,10 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
   return "none";
 }
 
-inline void fromRawValue(const RawValue &value, AccessibilityRole &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    AccessibilityRole &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
@@ -607,6 +689,8 @@ inline void fromRawValue(const RawValue &value, AccessibilityRole &result) {
       result = AccessibilityRole::Switch;
     } else if (string == "tab") {
       result = AccessibilityRole::Tab;
+    } else if (string == "tabbar") {
+      result = AccessibilityRole::TabBar;
     } else if (string == "tablist") {
       result = AccessibilityRole::Tablist;
     } else if (string == "timer") {
@@ -628,52 +712,109 @@ inline void fromRawValue(const RawValue &value, AccessibilityRole &result) {
   result = AccessibilityRole::None;
 }
 
+inline std::string toString(const HyphenationFrequency &hyphenationFrequency) {
+  switch (hyphenationFrequency) {
+    case HyphenationFrequency::None:
+      return "none";
+    case HyphenationFrequency::Normal:
+      return "normal";
+    case HyphenationFrequency::Full:
+      return "full";
+  }
+
+  LOG(ERROR) << "Unsupported HyphenationFrequency value";
+  react_native_assert(false);
+  return "none";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    HyphenationFrequency &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = HyphenationFrequency::None;
+    } else if (string == "normal") {
+      result = HyphenationFrequency::Normal;
+    } else if (string == "full") {
+      result = HyphenationFrequency::Full;
+    } else {
+      // sane default
+      LOG(ERROR) << "Unsupported HyphenationFrequency value: " << string;
+      react_native_assert(false);
+      result = HyphenationFrequency::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported HyphenationFrequency type";
+  react_native_assert(false);
+  result = HyphenationFrequency::None;
+}
+
 inline ParagraphAttributes convertRawProp(
+    const PropsParserContext &context,
     RawProps const &rawProps,
     ParagraphAttributes const &sourceParagraphAttributes,
     ParagraphAttributes const &defaultParagraphAttributes) {
   auto paragraphAttributes = ParagraphAttributes{};
 
   paragraphAttributes.maximumNumberOfLines = convertRawProp(
+      context,
       rawProps,
       "numberOfLines",
       sourceParagraphAttributes.maximumNumberOfLines,
       defaultParagraphAttributes.maximumNumberOfLines);
   paragraphAttributes.ellipsizeMode = convertRawProp(
+      context,
       rawProps,
       "ellipsizeMode",
       sourceParagraphAttributes.ellipsizeMode,
       defaultParagraphAttributes.ellipsizeMode);
   paragraphAttributes.textBreakStrategy = convertRawProp(
+      context,
       rawProps,
       "textBreakStrategy",
       sourceParagraphAttributes.textBreakStrategy,
       defaultParagraphAttributes.textBreakStrategy);
   paragraphAttributes.adjustsFontSizeToFit = convertRawProp(
+      context,
       rawProps,
       "adjustsFontSizeToFit",
       sourceParagraphAttributes.adjustsFontSizeToFit,
       defaultParagraphAttributes.adjustsFontSizeToFit);
   paragraphAttributes.minimumFontSize = convertRawProp(
+      context,
       rawProps,
       "minimumFontSize",
       sourceParagraphAttributes.minimumFontSize,
       defaultParagraphAttributes.minimumFontSize);
   paragraphAttributes.maximumFontSize = convertRawProp(
+      context,
       rawProps,
       "maximumFontSize",
       sourceParagraphAttributes.maximumFontSize,
       defaultParagraphAttributes.maximumFontSize);
   paragraphAttributes.includeFontPadding = convertRawProp(
+      context,
       rawProps,
       "includeFontPadding",
       sourceParagraphAttributes.includeFontPadding,
       defaultParagraphAttributes.includeFontPadding);
+  paragraphAttributes.android_hyphenationFrequency = convertRawProp(
+      context,
+      rawProps,
+      "android_hyphenationFrequency",
+      sourceParagraphAttributes.android_hyphenationFrequency,
+      defaultParagraphAttributes.android_hyphenationFrequency);
 
   return paragraphAttributes;
 }
 
 inline void fromRawValue(
+    const PropsParserContext &context,
     RawValue const &value,
     AttributedString::Range &result) {
   auto map = (better::map<std::string, int>)value;
@@ -703,6 +844,9 @@ inline folly::dynamic toDynamic(
   values("textBreakStrategy", toString(paragraphAttributes.textBreakStrategy));
   values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
   values("includeFontPadding", paragraphAttributes.includeFontPadding);
+  values(
+      "android_hyphenationFrequency",
+      toString(paragraphAttributes.android_hyphenationFrequency));
 
   return values;
 }
@@ -764,6 +908,9 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   }
   if (!std::isnan(textAttributes.letterSpacing)) {
     _textAttributes("letterSpacing", textAttributes.letterSpacing);
+  }
+  if (textAttributes.textTransform.hasValue()) {
+    _textAttributes("textTransform", toString(*textAttributes.textTransform));
   }
   if (!std::isnan(textAttributes.lineHeight)) {
     _textAttributes("lineHeight", textAttributes.lineHeight);
@@ -897,6 +1044,7 @@ constexpr static Key PA_KEY_ELLIPSIZE_MODE = 1;
 constexpr static Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
 constexpr static Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
 constexpr static Key PA_KEY_INCLUDE_FONT_PADDING = 4;
+constexpr static Key PA_KEY_HYPHENATION_FREQUENCY = 5;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
   auto builder = MapBufferBuilder();
@@ -911,6 +1059,9 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
       PA_KEY_ADJUST_FONT_SIZE_TO_FIT, paragraphAttributes.adjustsFontSizeToFit);
   builder.putBool(
       PA_KEY_INCLUDE_FONT_PADDING, paragraphAttributes.includeFontPadding);
+  builder.putString(
+      PA_KEY_HYPHENATION_FREQUENCY,
+      toString(paragraphAttributes.android_hyphenationFrequency));
 
   return builder.build();
 }

@@ -33,7 +33,7 @@ MapBufferBuilder::MapBufferBuilder(uint16_t initialSize) {
 }
 
 void MapBufferBuilder::ensureKeyValueSpace() {
-  int oldKeyValuesSize = keyValuesSize_;
+  int32_t oldKeyValuesSize = keyValuesSize_;
   react_native_assert(
       (keyValuesSize_ < std::numeric_limits<uint16_t>::max() / 2) &&
       "Error trying to assign a value beyond the capacity of uint16_t: ");
@@ -45,7 +45,10 @@ void MapBufferBuilder::ensureKeyValueSpace() {
   delete[] oldKeyValues;
 }
 
-void MapBufferBuilder::storeKeyValue(Key key, uint8_t *value, int valueSize) {
+void MapBufferBuilder::storeKeyValue(
+    Key key,
+    uint8_t *value,
+    int32_t valueSize) {
   if (key < minKeyToStore_) {
     LOG(ERROR) << "Error: key out of order - key: " << key;
     abort();
@@ -58,10 +61,10 @@ void MapBufferBuilder::storeKeyValue(Key key, uint8_t *value, int valueSize) {
 
   // TODO T83483191: header.count points to the next index
   // TODO T83483191: add test to verify storage of sparse keys
-  int keyOffset = getKeyOffset(_header.count);
-  int valueOffset = keyOffset + KEY_SIZE;
+  int32_t keyOffset = getKeyOffset(_header.count);
+  int32_t valueOffset = keyOffset + KEY_SIZE;
 
-  int nextKeyValueOffset = keyOffset + BUCKET_SIZE;
+  int32_t nextKeyValueOffset = keyOffset + BUCKET_SIZE;
   if (nextKeyValueOffset >= keyValuesSize_) {
     ensureKeyValueSpace();
   }
@@ -89,12 +92,12 @@ void MapBufferBuilder::putNull(Key key) {
   putInt(key, NULL_VALUE);
 }
 
-void MapBufferBuilder::putInt(Key key, int value) {
+void MapBufferBuilder::putInt(Key key, int32_t value) {
   uint8_t *bytePointer = reinterpret_cast<uint8_t *>(&(value));
   storeKeyValue(key, bytePointer, INT_SIZE);
 }
 
-void MapBufferBuilder::ensureDynamicDataSpace(int size) {
+void MapBufferBuilder::ensureDynamicDataSpace(int32_t size) {
   if (dynamicDataValues_ == nullptr) {
     dynamicDataSize_ = size;
     dynamicDataValues_ = new Byte[dynamicDataSize_];
@@ -103,14 +106,14 @@ void MapBufferBuilder::ensureDynamicDataSpace(int size) {
   }
 
   if (dynamicDataOffset_ + size >= dynamicDataSize_) {
-    int oldDynamicDataSize = dynamicDataSize_;
+    int32_t oldDynamicDataSize = dynamicDataSize_;
     react_native_assert(
-        (dynamicDataSize_ < std::numeric_limits<int>::max() / 2) &&
+        (dynamicDataSize_ < std::numeric_limits<int32_t>::max() / 2) &&
         "Error: trying to assign a value beyond the capacity of int");
     dynamicDataSize_ *= dynamicDataSize_;
 
     react_native_assert(
-        (dynamicDataSize_ < std::numeric_limits<int>::max() - size) &&
+        (dynamicDataSize_ < std::numeric_limits<int32_t>::max() - size) &&
         "Error: trying to assign a value beyond the capacity of int");
 
     // sum size to ensure that the size always fit into newDynamicDataValues
@@ -124,15 +127,15 @@ void MapBufferBuilder::ensureDynamicDataSpace(int size) {
 }
 
 void MapBufferBuilder::putString(Key key, std::string value) {
-  int strLength = value.length();
+  int32_t strLength = static_cast<int32_t>(value.length());
   const char *cstring = getCstring(&value);
 
   // format [lenght of string (int)] + [Array of Characters in the string]
-  int sizeOfLength = INT_SIZE;
-  // TODO T83483191: review if map.getBufferSize() should be an int or long
+  int32_t sizeOfLength = INT_SIZE;
+  // TODO T83483191: review if map.getBufferSize() should be an int32_t or long
   // instead of an int16 (because strings can be longer than int16);
 
-  int sizeOfDynamicData = sizeOfLength + strLength;
+  int32_t sizeOfDynamicData = sizeOfLength + strLength;
   ensureDynamicDataSpace(sizeOfDynamicData);
   memcpy(dynamicDataValues_ + dynamicDataOffset_, &strLength, sizeOfLength);
   memcpy(
@@ -147,10 +150,10 @@ void MapBufferBuilder::putString(Key key, std::string value) {
 }
 
 void MapBufferBuilder::putMapBuffer(Key key, MapBuffer &map) {
-  int mapBufferSize = map.getBufferSize();
+  int32_t mapBufferSize = map.getBufferSize();
 
   // format [lenght of buffer (int)] + [bytes of MapBuffer]
-  int sizeOfDynamicData = mapBufferSize + INT_SIZE;
+  int32_t sizeOfDynamicData = mapBufferSize + INT_SIZE;
 
   // format [Array of bytes of the mapBuffer]
   ensureDynamicDataSpace(sizeOfDynamicData);
@@ -171,7 +174,7 @@ MapBuffer MapBufferBuilder::build() {
       "Error when building mapbuffer with invalid datastructures.");
 
   // Create buffer: [header] + [key, values] + [dynamic data]
-  int bufferSize = keyValuesOffset_ + dynamicDataOffset_;
+  int32_t bufferSize = keyValuesOffset_ + dynamicDataOffset_;
 
   _header.bufferSize = bufferSize;
 

@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -60,6 +60,14 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
   }
 
   @Override
+  public void receiveEvent(
+      int surfaceId, int targetTag, String eventName, @Nullable WritableMap event) {
+    // The two additional params here, `canCoalesceEvent` and `customCoalesceKey`, have no
+    // meaning outside of Fabric.
+    receiveEvent(surfaceId, targetTag, eventName, false, 0, event);
+  }
+
+  @Override
   public void receiveTouches(
       String eventName, WritableArray touches, WritableArray changedIndices) {
     Assertions.assertCondition(touches.size() > 0);
@@ -71,7 +79,7 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
     } else if (uiManagerType == UIManagerType.DEFAULT && getEventEmitter(reactTag) != null) {
       mRCTEventEmitter.receiveTouches(eventName, touches, changedIndices);
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
               "Cannot find EventEmitter for receivedTouches: ReactTag["
@@ -92,7 +100,7 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
       if (mReactContext.hasActiveReactInstance()) {
         mRCTEventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
       } else {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG,
             new ReactNoCrashSoftException(
                 "Cannot get RCTEventEmitter from Context for reactTag: "
@@ -107,14 +115,20 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
 
   @Override
   public void receiveEvent(
-      int surfaceId, int targetReactTag, String eventName, @Nullable WritableMap event) {
+      int surfaceId,
+      int targetReactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      int customCoalesceKey,
+      @Nullable WritableMap event) {
     @UIManagerType int uiManagerType = ViewUtil.getUIManagerType(targetReactTag);
     if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
-      mFabricEventEmitter.receiveEvent(surfaceId, targetReactTag, eventName, event);
+      mFabricEventEmitter.receiveEvent(
+          surfaceId, targetReactTag, eventName, canCoalesceEvent, customCoalesceKey, event);
     } else if (uiManagerType == UIManagerType.DEFAULT && getEventEmitter(targetReactTag) != null) {
       mRCTEventEmitter.receiveEvent(targetReactTag, eventName, event);
     } else {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new ReactNoCrashSoftException(
               "Cannot find EventEmitter for receiveEvent: SurfaceId["

@@ -19,15 +19,14 @@ const DisplayMode: {[string]: DisplayModeType} = Object.freeze({
 });
 
 export function coerceDisplayMode(value: ?number): DisplayModeType {
-  if (value == null || value === undefined) {
-    return DisplayMode.VISIBLE;
-  }
   switch (value) {
     case DisplayMode.SUSPENDED:
+      return DisplayMode.SUSPENDED;
     case DisplayMode.HIDDEN:
-      return value;
+      return DisplayMode.HIDDEN;
+    default:
+      return DisplayMode.VISIBLE;
   }
-  return DisplayMode.VISIBLE;
 }
 
 export default DisplayMode;

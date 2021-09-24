@@ -95,7 +95,7 @@ public class ReactTextViewManager
       return null;
     }
 
-    if (ReactFeatureFlags.mapBufferSerializationEnabled) {
+    if (ReactFeatureFlags.isMapBufferSerializationEnabled()) {
       ReadableMapBuffer stateMapBuffer = stateWrapper.getStatDataMapBuffer();
       if (stateMapBuffer != null) {
         return getReactTextUpdate(view, props, stateMapBuffer);

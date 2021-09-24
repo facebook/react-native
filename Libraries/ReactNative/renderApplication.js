@@ -13,6 +13,7 @@ import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
 import type {DisplayModeType} from './DisplayMode';
+import getCachedComponentWithDebugName from './getCachedComponentWithDebugName';
 const React = require('react');
 
 const invariant = require('invariant');
@@ -24,13 +25,14 @@ function renderApplication<Props: Object>(
   RootComponent: React.ComponentType<Props>,
   initialProps: Props,
   rootTag: any,
-  WrapperComponent?: ?React.ComponentType<*>,
+  WrapperComponent?: ?React.ComponentType<any>,
   fabric?: boolean,
   showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
   isLogBox?: boolean,
   debugName?: string,
   displayMode?: ?DisplayModeType,
+  useConcurrentRoot?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
@@ -51,8 +53,9 @@ function renderApplication<Props: Object>(
   );
 
   if (__DEV__ && debugName) {
-    const RootComponentWithMeaningfulName = ({children}) => children;
-    RootComponentWithMeaningfulName.displayName = `${debugName}(RootComponent)`;
+    const RootComponentWithMeaningfulName = getCachedComponentWithDebugName(
+      `${debugName}(RootComponent)`,
+    );
     renderable = (
       <RootComponentWithMeaningfulName>
         {renderable}
@@ -62,9 +65,13 @@ function renderApplication<Props: Object>(
 
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
-
   if (fabric) {
-    require('../Renderer/shims/ReactFabric').render(renderable, rootTag);
+    require('../Renderer/shims/ReactFabric').render(
+      renderable,
+      rootTag,
+      null,
+      useConcurrentRoot,
+    );
   } else {
     require('../Renderer/shims/ReactNative').render(renderable, rootTag);
   }

@@ -63,6 +63,7 @@ public class ReactContext extends ContextWrapper {
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private @Nullable NativeModuleCallExceptionHandler mExceptionHandlerWrapper;
   private @Nullable WeakReference<Activity> mCurrentActivity;
+  private boolean mIsInitialized = false;
 
   public ReactContext(Context base) {
     super(base);
@@ -77,7 +78,7 @@ public class ReactContext extends ContextWrapper {
       throw new IllegalStateException("ReactContext has been already initialized");
     }
     if (mDestroyed) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException("Cannot initialize ReactContext after it has been destroyed."));
     }
@@ -88,11 +89,8 @@ public class ReactContext extends ContextWrapper {
     initializeMessageQueueThreads(queueConfig);
   }
 
-  /**
-   * Initialize message queue threads using a ReactQueueConfiguration. TODO (janzer) T43898341 Make
-   * this package instead of public
-   */
-  public void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
+  /** Initialize message queue threads using a ReactQueueConfiguration. */
+  public synchronized void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
     if (mUiMessageQueueThread != null
         || mNativeModulesMessageQueueThread != null
         || mJSMessageQueueThread != null) {
@@ -101,6 +99,18 @@ public class ReactContext extends ContextWrapper {
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
+
+    /** TODO(T85807990): Fail fast if any of the threads is null. */
+    if (mUiMessageQueueThread == null) {
+      throw new IllegalStateException("UI thread is null");
+    }
+    if (mNativeModulesMessageQueueThread == null) {
+      throw new IllegalStateException("NativeModules thread is null");
+    }
+    if (mJSMessageQueueThread == null) {
+      throw new IllegalStateException("JavaScript thread is null");
+    }
+    mIsInitialized = true;
   }
 
   public void resetPerfStats() {
@@ -352,10 +362,20 @@ public class ReactContext extends ContextWrapper {
   }
 
   public void assertOnNativeModulesQueueThread() {
+    /** TODO(T85807990): Fail fast if the ReactContext isn't initialized */
+    if (!mIsInitialized) {
+      throw new IllegalStateException(
+          "Tried to call assertOnNativeModulesQueueThread() on an uninitialized ReactContext");
+    }
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread();
   }
 
   public void assertOnNativeModulesQueueThread(String message) {
+    /** TODO(T85807990): Fail fast if the ReactContext isn't initialized */
+    if (!mIsInitialized) {
+      throw new IllegalStateException(
+          "Tried to call assertOnNativeModulesQueueThread(message) on an uninitialized ReactContext");
+    }
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread(message);
   }
 

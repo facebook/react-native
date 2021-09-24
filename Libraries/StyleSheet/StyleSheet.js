@@ -12,7 +12,6 @@
 
 const PixelRatio = require('../Utilities/PixelRatio');
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-const StyleSheetValidation = require('./StyleSheetValidation');
 
 const flatten = require('./flattenStyle');
 
@@ -339,9 +338,9 @@ module.exports = {
     let value;
 
     if (ReactNativeStyleAttributes[property] === true) {
-      value = {};
+      value = {process};
     } else if (typeof ReactNativeStyleAttributes[property] === 'object') {
-      value = ReactNativeStyleAttributes[property];
+      value = {...ReactNativeStyleAttributes[property], process};
     } else {
       console.error(`${property} is not a valid style attribute`);
       return;
@@ -351,7 +350,7 @@ module.exports = {
       console.warn(`Overwriting ${property} style attribute preprocessor`);
     }
 
-    ReactNativeStyleAttributes[property] = {...value, process};
+    ReactNativeStyleAttributes[property] = value;
   },
 
   /**
@@ -363,7 +362,6 @@ module.exports = {
     // return value as a number (even though it was opaque).
     if (__DEV__) {
       for (const key in obj) {
-        StyleSheetValidation.validateStyle(key, obj);
         if (obj[key]) {
           Object.freeze(obj[key]);
         }
