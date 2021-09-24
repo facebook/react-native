@@ -334,7 +334,7 @@ CGFloat RCTFontSizeMultiplier()
 
 CGSize RCTScreenSize()
 {
-  // FIXME: this caches the bounds at app start, whatever those were, and then
+  // FIXME: this caches whatever the bounds were when it was first called, and then
   // doesn't update when the device is rotated. We need to find another thread-
   // safe way to get the screen size.
 
