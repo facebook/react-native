@@ -12,5 +12,5 @@
 module.exports = () => [
   require.resolve('./console.js'),
   require.resolve('./error-guard.js'),
-  require.resolve('./Object.es7.js'),
+  require.resolve('./Object.es8.js'),
 ];

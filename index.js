@@ -23,8 +23,6 @@ import typeof InputAccessoryView from './Libraries/Components/TextInput/InputAcc
 import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/KeyboardAvoidingView';
 import typeof MaskedViewIOS from './Libraries/Components/MaskedView/MaskedViewIOS';
 import typeof Modal from './Libraries/Modal/Modal';
-import typeof Picker from './Libraries/Components/Picker/Picker';
-import typeof PickerIOS from './Libraries/Components/Picker/PickerIOS';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof ProgressViewIOS from './Libraries/Components/ProgressViewIOS/ProgressViewIOS';
@@ -57,7 +55,6 @@ import typeof AppState from './Libraries/AppState/AppState';
 import typeof AsyncStorage from './Libraries/Storage/AsyncStorage';
 import typeof BackHandler from './Libraries/Utilities/BackHandler';
 import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
-import typeof DatePickerAndroid from './Libraries/Components/DatePickerAndroid/DatePickerAndroid';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
@@ -79,7 +76,6 @@ import typeof PixelRatio from './Libraries/Utilities/PixelRatio';
 import typeof PushNotificationIOS from './Libraries/PushNotificationIOS/PushNotificationIOS';
 import typeof Settings from './Libraries/Settings/Settings';
 import typeof Share from './Libraries/Share/Share';
-import typeof StatusBarIOS from './Libraries/Components/StatusBar/StatusBarIOS';
 import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
 import typeof Systrace from './Libraries/Performance/Systrace';
 import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
@@ -153,7 +149,8 @@ module.exports = {
     return require('./Libraries/Components/TextInput/InputAccessoryView');
   },
   get KeyboardAvoidingView(): KeyboardAvoidingView {
-    return require('./Libraries/Components/Keyboard/KeyboardAvoidingView');
+    return require('./Libraries/Components/Keyboard/KeyboardAvoidingView')
+      .default;
   },
   get MaskedViewIOS(): MaskedViewIOS {
     warnOnce(
@@ -166,25 +163,6 @@ module.exports = {
   },
   get Modal(): Modal {
     return require('./Libraries/Modal/Modal');
-  },
-  get Picker(): Picker {
-    warnOnce(
-      'picker-moved',
-      'Picker has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
-        'See https://github.com/react-native-picker/picker',
-    );
-    return require('./Libraries/Components/Picker/Picker');
-  },
-  // $FlowFixMe[value-as-type]
-  get PickerIOS(): PickerIOS {
-    warnOnce(
-      'pickerios-moved',
-      'PickerIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
-        'See https://github.com/react-native-picker/picker',
-    );
-    return require('./Libraries/Components/Picker/PickerIOS');
   },
   get Pressable(): Pressable {
     return require('./Libraries/Components/Pressable/Pressable').default;
@@ -318,15 +296,6 @@ module.exports = {
     );
     return require('./Libraries/Components/Clipboard/Clipboard');
   },
-  get DatePickerAndroid(): DatePickerAndroid {
-    warnOnce(
-      'DatePickerAndroid-merged',
-      'DatePickerAndroid has been merged with DatePickerIOS and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-datetimepicker/datetimepicker',
-    );
-    return require('./Libraries/Components/DatePickerAndroid/DatePickerAndroid');
-  },
   get DeviceInfo(): DeviceInfo {
     return require('./Libraries/Utilities/DeviceInfo');
   },
@@ -403,13 +372,6 @@ module.exports = {
   },
   get Share(): Share {
     return require('./Libraries/Share/Share');
-  },
-  get StatusBarIOS(): StatusBarIOS {
-    warnOnce(
-      'StatusBarIOS-merged',
-      'StatusBarIOS has been merged with StatusBar and will be removed in a future release. Use StatusBar for mutating the status bar',
-    );
-    return require('./Libraries/Components/StatusBar/StatusBarIOS');
   },
   get StyleSheet(): StyleSheet {
     return require('./Libraries/StyleSheet/StyleSheet');
@@ -694,6 +656,69 @@ if (__DEV__) {
         'CheckBox has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/checkbox' instead of 'react-native'. " +
           'See https://github.com/react-native-checkbox/react-native-checkbox',
+      );
+    },
+  });
+
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access StatusBarIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access StatusBarIOS. */
+  Object.defineProperty(module.exports, 'StatusBarIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'StatusBarIOS has been removed from React Native. ' +
+          'Has been merged with StatusBar. ' +
+          'See https://reactnative.dev/docs/statusbar',
+      );
+    },
+  });
+
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access PickerIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access PickerIOS. */
+  Object.defineProperty(module.exports, 'PickerIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'PickerIOS has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
+          'See https://github.com/react-native-picker/picker',
+      );
+    },
+  });
+
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access Picker. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access Picker. */
+  Object.defineProperty(module.exports, 'Picker', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'Picker has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-picker/picker' instead of 'react-native'. " +
+          'See https://github.com/react-native-picker/picker',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access DatePickerAndroid. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access DatePickerAndroid. */
+  Object.defineProperty(module.exports, 'DatePickerAndroid', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'DatePickerAndroid has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+          'See https://github.com/react-native-datetimepicker/datetimepicker',
       );
     },
   });

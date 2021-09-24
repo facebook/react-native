@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <memory>
 #include <string>
 
 #include <fbjni/fbjni.h>
@@ -17,6 +16,8 @@
 
 namespace facebook {
 namespace react {
+
+using namespace facebook::jni;
 
 ComponentNameResolverManager::ComponentNameResolverManager(
     jni::alias_ref<ComponentNameResolverManager::javaobject> jThis,

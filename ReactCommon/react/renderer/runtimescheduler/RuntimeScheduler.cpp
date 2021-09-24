@@ -7,7 +7,8 @@
 
 #include "RuntimeScheduler.h"
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 #pragma mark - Public
 
@@ -41,7 +42,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
   taskQueue_.push(task);
 
-  if (!isCallbackScheduled_) {
+  if (!isCallbackScheduled_ && !isPerformingWork_) {
     isCallbackScheduled_ = true;
     runtimeExecutor_([this](jsi::Runtime &runtime) {
       isCallbackScheduled_ = false;
@@ -52,19 +53,19 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
   return task;
 }
 
-bool RuntimeScheduler::getShouldYield() const {
+bool RuntimeScheduler::getShouldYield() const noexcept {
   return shouldYield_;
 }
 
-void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) {
+void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) noexcept {
   task->callback.reset();
 }
 
-SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const {
+SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const noexcept {
   return currentPriority_;
 }
 
-RuntimeSchedulerTimePoint RuntimeScheduler::now() const {
+RuntimeSchedulerTimePoint RuntimeScheduler::now() const noexcept {
   return now_();
 }
 
@@ -87,6 +88,7 @@ void RuntimeScheduler::executeNowOnTheSameThread(
 
 void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
   auto previousPriority = currentPriority_;
+  isPerformingWork_ = true;
   while (!taskQueue_.empty()) {
     auto topPriorityTask = taskQueue_.top();
     auto now = now_();
@@ -103,10 +105,14 @@ void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
       topPriorityTask->callback =
           result.getObject(runtime).getFunction(runtime);
     } else {
-      taskQueue_.pop();
+      if (taskQueue_.top() == topPriorityTask) {
+        taskQueue_.pop();
+      }
     }
   }
   currentPriority_ = previousPriority;
+  isPerformingWork_ = false;
 }
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

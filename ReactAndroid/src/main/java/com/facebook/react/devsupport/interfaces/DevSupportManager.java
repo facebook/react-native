@@ -17,7 +17,7 @@ import java.io.File;
 
 /**
  * Interface for accessing and interacting with development features. In dev mode, use the
- * implementation {@link DevSupportManagerImpl}. In production mode, use the dummy implementation
+ * implementation {@link BridgeDevSupportManager}. In production mode, use the dummy implementation
  * {@link DisabledDevSupportManager}.
  */
 public interface DevSupportManager extends NativeModuleCallExceptionHandler {

@@ -40,6 +40,7 @@ import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactOverflowView;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
@@ -49,7 +50,9 @@ import java.util.List;
 
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
 public class ReactHorizontalScrollView extends HorizontalScrollView
-    implements ReactClippingViewGroup, FabricViewStateManager.HasFabricViewStateManager {
+    implements ReactClippingViewGroup,
+        FabricViewStateManager.HasFabricViewStateManager,
+        ReactOverflowView {
 
   private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
   private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
@@ -246,6 +249,11 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Override
+  public @Nullable String getOverflow() {
+    return mOverflow;
+  }
+
+  @Override
   protected void onDraw(Canvas canvas) {
     if (DEBUG_MODE) {
       FLog.i(TAG, "onDraw[%d]", getId());
@@ -416,6 +424,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       if (mRemoveClippedSubviews) {
         updateClippingRect();
       }
+
+      // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
+      // when JS processes the scroll event, the C++ ShadowNode representation will have a
+      // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
+      // the error as much as possible.
+      updateStateOnScroll();
 
       ReactScrollViewHelper.emitScrollEvent(
           this,

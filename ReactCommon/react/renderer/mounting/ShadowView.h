@@ -43,6 +43,7 @@ struct ShadowView final {
   ComponentHandle componentHandle{};
   SurfaceId surfaceId{};
   Tag tag{};
+  ShadowNodeTraits traits{};
   Props::Shared props{};
   EventEmitter::Shared eventEmitter{};
   LayoutMetrics layoutMetrics{EmptyLayoutMetrics};

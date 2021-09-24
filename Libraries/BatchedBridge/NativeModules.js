@@ -101,6 +101,8 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
   if (type === 'promise') {
     fn = function promiseMethodWrapper(...args: Array<mixed>) {
       // In case we reject, capture a useful stack trace here.
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for
+       * this parameters */
       const enqueueingFrameError: ExtendedError = new Error();
       return new Promise((resolve, reject) => {
         BatchedBridge.enqueueNativeCall(
@@ -166,6 +168,8 @@ function updateErrorWithErrorData(
   errorData: {message: string, ...},
   error: ExtendedError,
 ): ExtendedError {
+  /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+   * parameters */
   return Object.assign(error, errorData || {});
 }
 

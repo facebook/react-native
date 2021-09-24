@@ -39,8 +39,10 @@ export type AccessibilityRole =
   | 'spinbutton'
   | 'switch'
   | 'tab'
+  | 'tabbar'
   | 'tablist'
   | 'timer'
+  | 'list'
   | 'toolbar';
 
 // the info associated with an accessibility action

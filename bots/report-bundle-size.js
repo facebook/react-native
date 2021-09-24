@@ -25,7 +25,7 @@ const datastore = require('./datastore');
 const {createOrUpdateComment} = require('./make-comment');
 
 /**
- * Generates and submits a comment. If this is run on master branch, data is
+ * Generates and submits a comment. If this is run on main branch, data is
  * committed to the store instead.
  * @param {{
       'android-hermes-arm64-v8a'?: number;
@@ -47,7 +47,7 @@ async function reportSizeStats(stats, replacePattern) {
   );
   const collection = datastore.getBinarySizesCollection(store);
 
-  if (GITHUB_REF === 'master') {
+  if (GITHUB_REF === 'main') {
     // Ensure we only store numbers greater than zero.
     const validatedStats = Object.keys(stats).reduce((validated, key) => {
       const value = stats[key];
@@ -112,9 +112,7 @@ async function reportSizeStats(stats, replacePattern) {
     createOrUpdateComment(comment, replacePattern);
   }
 
-  // Documentation says that we don't need to call `terminate()` but the script
-  // will just hang around until the connection times out if we don't.
-  store.terminate();
+  await datastore.terminateStore(store);
 }
 
 /**
@@ -146,10 +144,10 @@ function android_getApkSize(engine, arch) {
  * Reports app bundle size.
  * @param {string} target
  */
-function report(target) {
+async function report(target) {
   switch (target) {
     case 'android':
-      reportSizeStats(
+      await reportSizeStats(
         {
           'android-hermes-arm64-v8a': android_getApkSize('hermes', 'arm64-v8a'),
           'android-hermes-armeabi-v7a': android_getApkSize(
@@ -168,7 +166,7 @@ function report(target) {
       break;
 
     case 'ios':
-      reportSizeStats(
+      await reportSizeStats(
         {
           'ios-universal': getFileSize(
             'packages/rn-tester/build/Build/Products/Release-iphonesimulator/RNTester.app/RNTester',
@@ -181,10 +179,14 @@ function report(target) {
     default: {
       const path = require('path');
       console.log(`Syntax: ${path.basename(process.argv[1])} [android | ios]`);
+      process.exitCode = 2;
       break;
     }
   }
 }
 
 const {[2]: target} = process.argv;
-report(target);
+report(target).catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

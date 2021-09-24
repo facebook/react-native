@@ -10,6 +10,7 @@
 #import <mutex>
 
 #import <React/RCTAssert.h>
+#import <React/RCTConstants.h>
 #import <React/RCTConversions.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTI18nUtil.h>
@@ -59,6 +60,8 @@ using namespace facebook::react;
     _surfaceHandler->setProps(convertIdToFollyDynamic(initialProperties));
 
     [_surfacePresenter registerSurface:self];
+
+    [self setMinimumSize:CGSizeZero maximumSize:RCTViewportSize()];
 
     [self _updateLayoutContext];
 

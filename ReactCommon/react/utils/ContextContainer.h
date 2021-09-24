@@ -45,10 +45,6 @@ class ContextContainer final {
     std::unique_lock<better::shared_mutex> lock(mutex_);
 
     instances_.insert({key, std::make_shared<T>(instance)});
-
-#ifdef REACT_NATIVE_DEBUG
-    typeNames_.insert({key, typeid(T).name()});
-#endif
   }
 
   /*
@@ -59,10 +55,6 @@ class ContextContainer final {
     std::unique_lock<better::shared_mutex> lock(mutex_);
 
     instances_.erase(key);
-
-#ifdef REACT_NATIVE_DEBUG
-    typeNames_.erase(key);
-#endif
   }
 
   /*
@@ -76,11 +68,6 @@ class ContextContainer final {
     for (auto const &pair : contextContainer.instances_) {
       instances_.erase(pair.first);
       instances_.insert(pair);
-#ifdef REACT_NATIVE_DEBUG
-      typeNames_.erase(pair.first);
-      typeNames_.insert(
-          {pair.first, contextContainer.typeNames_.at(pair.first)});
-#endif
     }
   }
 
@@ -96,11 +83,6 @@ class ContextContainer final {
     react_native_assert(
         instances_.find(key) != instances_.end() &&
         "ContextContainer doesn't have an instance for given key.");
-#ifdef REACT_NATIVE_DEBUG
-    react_native_assert(
-        typeNames_.at(key) == typeid(T).name() &&
-        "ContextContainer stores an instance of different type for given key.");
-#endif
     return *std::static_pointer_cast<T>(instances_.at(key));
   }
 
@@ -118,12 +100,6 @@ class ContextContainer final {
       return {};
     }
 
-#ifdef REACT_NATIVE_DEBUG
-    react_native_assert(
-        typeNames_.at(key) == typeid(T).name() &&
-        "ContextContainer stores an instance of different type for given key.");
-#endif
-
     return *std::static_pointer_cast<T>(iterator->second);
   }
 
@@ -131,9 +107,6 @@ class ContextContainer final {
   mutable better::shared_mutex mutex_;
   // Protected by mutex_`.
   mutable better::map<std::string, std::shared_ptr<void>> instances_;
-#ifdef REACT_NATIVE_DEBUG
-  mutable better::map<std::string, std::string> typeNames_;
-#endif
 };
 
 } // namespace react

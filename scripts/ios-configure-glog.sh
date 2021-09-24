@@ -28,6 +28,10 @@ if [ -h "test-driver" ]; then
     rm test-driver
 fi
 
+# Manually disable gflags include to fix issue https://github.com/facebook/react-native/issues/28446
+sed -i '' 's/\@ac_cv_have_libgflags\@/0/' src/glog/logging.h.in
+sed -i '' 's/HAVE_LIB_GFLAGS/HAVE_LIB_GFLAGS_DISABLED/' src/config.h.in
+
 ./configure --host arm-apple-darwin
 
 cat << EOF >> src/config.h

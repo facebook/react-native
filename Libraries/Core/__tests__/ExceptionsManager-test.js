@@ -370,6 +370,15 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException).toHaveBeenCalled();
     });
 
+    test('does not log "warn"-type errors', () => {
+      const error = new Error('This is a warning.');
+      error.type = 'warn';
+
+      console.error(error);
+
+      expect(nativeReportException).not.toHaveBeenCalled();
+    });
+
     test('reportErrorsAsExceptions = false', () => {
       console.reportErrorsAsExceptions = false;
       const message = 'Some error happened';
@@ -469,6 +478,15 @@ describe('ExceptionsManager', () => {
       expect(getLineFromFrame(exceptionData.stack[0])).toBe(
         "const error = new Error('Some error happened');",
       );
+    });
+
+    test('logs fatal "warn"-type errors', () => {
+      const error = new Error('This is a fatal... warning?');
+      error.type = 'warn';
+
+      ExceptionsManager.handleException(error, true);
+
+      expect(nativeReportException).toHaveBeenCalled();
     });
   });
 

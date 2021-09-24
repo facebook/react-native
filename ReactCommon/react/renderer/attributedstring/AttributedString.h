@@ -11,7 +11,6 @@
 #include <memory>
 
 #include <folly/Hash.h>
-#include <folly/Optional.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/core/Sealable.h>
 #include <react/renderer/core/ShadowNode.h>

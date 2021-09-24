@@ -26,9 +26,16 @@
 #include <fb/log.h>
 #include <fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+
+#include <logger/react_native_log.h>
 
 #include "CxxModuleWrapper.h"
 #include "JNativeRunnable.h"
+#include "JReactCxxErrorHandler.h"
+#include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
@@ -92,6 +99,10 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
+void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
+  CxxNativeModule::setShouldWarnOnUse(true);
+}
+
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
@@ -127,9 +138,37 @@ void CatalystInstanceImpl::registerNatives() {
           CatalystInstanceImpl::handleMemoryPressure),
       makeNativeMethod(
           "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
+      makeNativeMethod(
+          "getRuntimeScheduler", CatalystInstanceImpl::getRuntimeScheduler),
+      makeNativeMethod(
+          "installRuntimeScheduler",
+          CatalystInstanceImpl::installRuntimeScheduler),
+      makeNativeMethod(
+          "warnOnLegacyNativeModuleSystemUse",
+          CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
   });
 
   JNativeRunnable::registerNatives();
+}
+
+void log(ReactNativeLogLevel level, const char *message) {
+  switch (level) {
+    case ReactNativeLogLevelInfo:
+      LOG(INFO) << message;
+      break;
+    case ReactNativeLogLevelWarning:
+      LOG(WARNING) << message;
+      JReactSoftExceptionLogger::logNoThrowSoftExceptionWithMessage(
+          "react_native_log#warning", message);
+      break;
+    case ReactNativeLogLevelError:
+      LOG(ERROR) << message;
+      JReactCxxErrorHandler::handleError(message);
+      break;
+    case ReactNativeLogLevelFatal:
+      LOG(FATAL) << message;
+      break;
+  }
 }
 
 void CatalystInstanceImpl::initializeBridge(
@@ -142,6 +181,8 @@ void CatalystInstanceImpl::initializeBridge(
         javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
         cxxModules) {
+  set_react_native_logfunc(&log);
+
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be
   // called once");
@@ -346,12 +387,32 @@ CatalystInstanceImpl::getNativeCallInvokerHolder() {
 }
 
 jni::alias_ref<JRuntimeExecutor::javaobject>
-CatalystInstanceImpl::getRuntimeExecutor(bool shouldFlush) {
+CatalystInstanceImpl::getRuntimeExecutor() {
   if (!runtimeExecutor_) {
-    runtimeExecutor_ = jni::make_global(JRuntimeExecutor::newObjectCxxArgs(
-        instance_->getRuntimeExecutor(shouldFlush)));
+    runtimeExecutor_ = jni::make_global(
+        JRuntimeExecutor::newObjectCxxArgs(instance_->getRuntimeExecutor()));
   }
   return runtimeExecutor_;
+}
+
+jni::alias_ref<JRuntimeScheduler::javaobject>
+CatalystInstanceImpl::getRuntimeScheduler() {
+  return runtimeScheduler_;
+}
+
+void CatalystInstanceImpl::installRuntimeScheduler() {
+  if (!runtimeScheduler_) {
+    auto runtimeExecutor = instance_->getRuntimeExecutor();
+    auto runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
+
+    runtimeScheduler_ =
+        jni::make_global(JRuntimeScheduler::newObjectCxxArgs(runtimeScheduler));
+
+    runtimeExecutor([runtimeScheduler](jsi::Runtime &runtime) {
+      RuntimeSchedulerBinding::createAndInstallIfNeeded(
+          runtime, runtimeScheduler);
+    });
+  }
 }
 
 } // namespace react

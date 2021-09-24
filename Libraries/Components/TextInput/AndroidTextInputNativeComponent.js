@@ -23,7 +23,6 @@ import type {
   ViewStyleProp,
   ColorValue,
 } from '../../StyleSheet/StyleSheet';
-import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
@@ -37,10 +36,10 @@ export type KeyboardType =
   | 'phone-pad'
   | 'number-pad'
   | 'decimal-pad'
+  | 'url'
   // iOS-only
   | 'ascii-capable'
   | 'numbers-and-punctuation'
-  | 'url'
   | 'name-phone-pad'
   | 'twitter'
   | 'web-search'
@@ -97,7 +96,7 @@ export type NativeProps = $ReadOnly<{|
    *
    * @platform android
    */
-  autoCompleteType?: WithDefault<
+  autoComplete?: WithDefault<
     | 'cc-csc'
     | 'cc-exp'
     | 'cc-exp-month'
@@ -244,6 +243,7 @@ export type NativeProps = $ReadOnly<{|
    * - `decimal-pad`
    * - `email-address`
    * - `phone-pad`
+   * - `url`
    *
    * *Android Only*
    *
@@ -414,7 +414,7 @@ export type NativeProps = $ReadOnly<{|
   /**
    * The string that will be rendered before text input has been entered.
    */
-  placeholder?: ?string,
+  placeholder?: ?Stringish,
 
   /**
    * The text color of the placeholder string.

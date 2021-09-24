@@ -10,17 +10,17 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
-
-#include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/mounting/stubs.h>
 
+#include <react/renderer/mounting/stubs.h>
 #include <react/test_utils/Entropy.h>
 #include <react/test_utils/MockClock.h>
 #include <react/test_utils/shadowTreeGeneration.h>
@@ -51,7 +51,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
   auto entropy = seed == 0 ? Entropy() : Entropy(seed);
 
   auto eventDispatcher = EventDispatcher::Shared{};
-  auto contextContainer = std::make_shared<ContextContainer>();
+  auto contextContainer = std::make_shared<ContextContainer const>();
   auto componentDescriptorParameters =
       ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
   auto viewComponentDescriptor =
@@ -60,6 +60,8 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
       RootComponentDescriptor(componentDescriptorParameters);
   auto noopEventEmitter =
       std::make_shared<ViewEventEmitter const>(nullptr, -1, eventDispatcher);
+
+  PropsParserContext parserContext{-1, *contextContainer};
 
   // Create a RuntimeExecutor
   RuntimeExecutor runtimeExecutor =
@@ -73,12 +75,10 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
           componentDescriptorParameters);
   providerRegistry->add(
       concreteComponentDescriptorProvider<ViewComponentDescriptor>());
-  providerRegistry->add(
-      concreteComponentDescriptorProvider<RootComponentDescriptor>());
 
   // Create Animation Driver
-  auto animationDriver =
-      std::make_shared<LayoutAnimationDriver>(runtimeExecutor, nullptr);
+  auto animationDriver = std::make_shared<LayoutAnimationDriver>(
+      runtimeExecutor, contextContainer, nullptr);
   animationDriver->setComponentDescriptorRegistry(componentDescriptorRegistry);
 
   // Mock animation timers
@@ -108,6 +108,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
+        parserContext,
         LayoutConstraints{
             Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
@@ -126,7 +127,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
     // Building an initial view hierarchy.
     auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
     viewTree.mutate(
-        calculateShadowViewMutations(*emptyRootNode, *currentRootNode, true));
+        calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 
     for (int j = 0; j < stages; j++) {
       auto nextRootNode = currentRootNode;
@@ -153,12 +154,19 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
       // Calculating mutations.
       auto originalMutations =
-          calculateShadowViewMutations(*currentRootNode, *nextRootNode, true);
+          calculateShadowViewMutations(*currentRootNode, *nextRootNode);
 
       // If tree randomization produced no changes in the form of mutations,
       // don't bother trying to animate because this violates a bunch of our
       // assumptions in this test
       if (originalMutations.size() == 0) {
+        continue;
+      }
+
+      // If we only mutated the root... also don't bother
+      if (originalMutations.size() == 1 &&
+          (originalMutations[0].oldChildShadowView.tag == 1 ||
+           originalMutations[0].newChildShadowView.tag == 1)) {
         continue;
       }
 

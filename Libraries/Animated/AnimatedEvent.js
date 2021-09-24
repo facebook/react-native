@@ -11,6 +11,7 @@
 'use strict';
 
 const AnimatedValue = require('./nodes/AnimatedValue');
+const AnimatedValueXY = require('./nodes/AnimatedValueXY');
 const NativeAnimatedHelper = require('./NativeAnimatedHelper');
 const ReactNative = require('../Renderer/shims/ReactNative');
 
@@ -18,7 +19,10 @@ const invariant = require('invariant');
 
 const {shouldUseNativeDriver} = require('./NativeAnimatedHelper');
 
-export type Mapping = {[key: string]: Mapping, ...} | AnimatedValue;
+export type Mapping =
+  | {[key: string]: Mapping, ...}
+  | AnimatedValue
+  | AnimatedValueXY;
 export type EventConfig = {
   listener?: ?Function,
   useNativeDriver: boolean,
@@ -41,6 +45,9 @@ function attachNativeEvent(
         nativeEventPath: path,
         animatedValueTag: value.__getNativeTag(),
       });
+    } else if (value instanceof AnimatedValueXY) {
+      traverse(value.x, path.concat('x'));
+      traverse(value.y, path.concat('y'));
     } else if (typeof value === 'object') {
       for (const key in value) {
         traverse(value[key], path.concat(key));
@@ -92,6 +99,13 @@ function validateMapping(argMapping, args) {
           key +
           ', should be number but got ' +
           typeof recEvt,
+      );
+      return;
+    }
+    if (recMapping instanceof AnimatedValueXY) {
+      invariant(
+        typeof recEvt.x === 'number' && typeof recEvt.y === 'number',
+        'Bad mapping of event key ' + key + ', should be XY but got ' + recEvt,
       );
       return;
     }
@@ -204,22 +218,27 @@ class AnimatedEvent {
         validatedMapping = true;
       }
 
-      const traverse = (recMapping, recEvt, key) => {
+      const traverse = (recMapping, recEvt) => {
         if (recMapping instanceof AnimatedValue) {
           if (typeof recEvt === 'number') {
             recMapping.setValue(recEvt);
+          }
+        } else if (recMapping instanceof AnimatedValueXY) {
+          if (typeof recEvt === 'object') {
+            traverse(recMapping.x, recEvt.x);
+            traverse(recMapping.y, recEvt.y);
           }
         } else if (typeof recMapping === 'object') {
           for (const mappingKey in recMapping) {
             /* $FlowFixMe[prop-missing] (>=0.120.0) This comment suppresses an
              * error found when Flow v0.120 was deployed. To see the error,
              * delete this comment and run Flow. */
-            traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
+            traverse(recMapping[mappingKey], recEvt[mappingKey]);
           }
         }
       };
       this._argMapping.forEach((mapping, idx) => {
-        traverse(mapping, args[idx], 'arg' + idx);
+        traverse(mapping, args[idx]);
       });
 
       this._callListeners(...args);

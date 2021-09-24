@@ -19,6 +19,7 @@ import * as React from 'react';
 type Props = $ReadOnly<{|
   children?: React.Node,
   fabric?: boolean,
+  useConcurrentRoot?: boolean,
   rootTag: number | RootTag,
   initialProps?: {...},
   showArchitectureIndicator?: boolean,

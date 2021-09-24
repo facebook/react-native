@@ -36,6 +36,7 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
         const animation = Animated.loop(
           Animated.timing(animated, {
             duration: 2000,
+            // $FlowFixMe[method-unbinding]
             easing: Easing.linear,
             toValue: 1,
             useNativeDriver: true,

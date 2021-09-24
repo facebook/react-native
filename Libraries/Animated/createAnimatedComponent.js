@@ -10,6 +10,8 @@
 
 'use strict';
 
+import * as createAnimatedComponentInjection from './createAnimatedComponentInjection';
+
 const View = require('../Components/View/View');
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
@@ -298,4 +300,6 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   });
 }
 
-module.exports = createAnimatedComponent;
+// $FlowIgnore[incompatible-cast] - Will be compatible after refactors.
+module.exports = (createAnimatedComponentInjection.recordAndRetrieve() ??
+  createAnimatedComponent: typeof createAnimatedComponent);

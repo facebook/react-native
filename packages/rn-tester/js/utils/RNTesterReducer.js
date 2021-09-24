@@ -13,9 +13,10 @@ import type {RNTesterState, ComponentList} from '../types/RNTesterTypes';
 export const RNTesterActionsType = {
   INIT_FROM_STORAGE: 'INIT_FROM_STORAGE',
   NAVBAR_PRESS: 'NAVBAR_PRESS',
-  EXAMPLE_CARD_PRESS: 'EXAMPLE_CARD_PRESS',
   BOOKMARK_PRESS: 'BOOKMARK_PRESS',
   BACK_BUTTON_PRESS: 'BACK_BUTTON_PRESS',
+  MODULE_CARD_PRESS: 'MODULE_CARD_PRESS',
+  EXAMPLE_CARD_PRESS: 'EXAMPLE_CARD_PRESS',
 };
 
 const getUpdatedBookmarks = ({
@@ -76,18 +77,27 @@ export const RNTesterReducer = (
     case RNTesterActionsType.NAVBAR_PRESS:
       return {
         ...state,
-        openExample: null,
+        activeModuleKey: null,
+        activeModuleTitle: null,
+        activeModuleExampleKey: null,
         screen: action.data.screen,
       };
-    case RNTesterActionsType.EXAMPLE_CARD_PRESS:
+    case RNTesterActionsType.MODULE_CARD_PRESS:
       return {
         ...state,
-        openExample: action.data.key,
+        activeModuleKey: action.data.key,
+        activeModuleTitle: action.data.title,
+        activeModuleExampleKey: null,
         recentlyUsed: getUpdatedRecentlyUsed({
           exampleType: action.data.exampleType,
           key: action.data.key,
           recentlyUsed: state.recentlyUsed,
         }),
+      };
+    case RNTesterActionsType.EXAMPLE_CARD_PRESS:
+      return {
+        ...state,
+        activeModuleExampleKey: action.data.key,
       };
     case RNTesterActionsType.BOOKMARK_PRESS:
       return {
@@ -99,9 +109,14 @@ export const RNTesterReducer = (
         }),
       };
     case RNTesterActionsType.BACK_BUTTON_PRESS:
+      // Go back to module or list
       return {
         ...state,
-        openExample: null,
+        activeModuleExampleKey: null,
+        activeModuleKey:
+          state.activeModuleExampleKey != null ? state.activeModuleKey : null,
+        activeModuleTitle:
+          state.activeModuleExampleKey != null ? state.activeModuleTitle : null,
       };
     default:
       throw new Error(`Invalid action type ${action.type}`);

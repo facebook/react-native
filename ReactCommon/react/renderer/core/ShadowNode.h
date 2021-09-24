@@ -240,5 +240,9 @@ ShadowNodeReferenceT traitCast(ShadowNode const &shadowNode);
 template <typename ShadowNodePointerT>
 ShadowNodePointerT traitCast(ShadowNode const *shadowNode);
 
+template <typename ShadowNodePointerT>
+std::shared_ptr<ShadowNodePointerT const> traitCast(
+    std::shared_ptr<ShadowNode const> shadowNode);
+
 } // namespace react
 } // namespace facebook

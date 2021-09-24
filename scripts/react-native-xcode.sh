@@ -81,7 +81,7 @@ fi
 
 # Find path to Node
 # shellcheck source=/dev/null
-source "$RN_DIR/scripts/find-node.sh"
+source "$REACT_NATIVE_DIR/scripts/find-node.sh"
 
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
@@ -127,6 +127,10 @@ case "$PLATFORM_NAME" in
     BUNDLE_PLATFORM="ios"
     ;;
 esac
+
+if [ "${IS_MACCATALYST}" = "YES" ]; then
+  BUNDLE_PLATFORM="ios"
+fi
 
 EMIT_SOURCEMAP=
 if [[ ! -z "$SOURCEMAP_FILE" ]]; then

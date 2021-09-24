@@ -43,8 +43,6 @@ struct SchedulerToolbox final {
    */
   RuntimeExecutor runtimeExecutor;
 
-  std::shared_ptr<RuntimeScheduler> runtimeScheduler;
-
   /*
    * Represent connections with a platform-specific UI run loops.
    */

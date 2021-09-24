@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.uimanager.StateWrapper;
@@ -26,6 +27,7 @@ public class PreAllocateViewMountItem implements MountItem {
   private final int mReactTag;
   private final @Nullable ReadableMap mProps;
   private final @Nullable StateWrapper mStateWrapper;
+  private final @Nullable EventEmitterWrapper mEventEmitterWrapper;
   private final boolean mIsLayoutable;
 
   public PreAllocateViewMountItem(
@@ -34,11 +36,13 @@ public class PreAllocateViewMountItem implements MountItem {
       @NonNull String component,
       @Nullable ReadableMap props,
       @NonNull StateWrapper stateWrapper,
+      @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     mComponent = component;
     mSurfaceId = surfaceId;
     mProps = props;
     mStateWrapper = stateWrapper;
+    mEventEmitterWrapper = eventEmitterWrapper;
     mReactTag = reactTag;
     mIsLayoutable = isLayoutable;
   }
@@ -58,7 +62,7 @@ public class PreAllocateViewMountItem implements MountItem {
       return;
     }
     surfaceMountingManager.preallocateView(
-        mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
+        mComponent, mReactTag, mProps, mStateWrapper, mEventEmitterWrapper, mIsLayoutable);
   }
 
   @Override
