@@ -291,7 +291,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                           };
 
       #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-        if (@available(iOS 11.0, tvOS 11.0, *)) {
+        if (@available(iOS 11.0, *)) {
           NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
                                                                   @"password": UITextContentTypePassword};
 
@@ -303,7 +303,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       #endif
 
       #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
-        if (@available(iOS 12.0, tvOS 12.0, *)) {
+        if (@available(iOS 12.0, *)) {
           NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
                                                                   @"oneTimeCode": UITextContentTypeOneTimeCode};
 
@@ -644,7 +644,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)setCustomInputAccessoryViewWithNativeID:(NSString *)nativeID
 {
-  #if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
+  #if !TARGET_OS_OSX // TODO(macOS GH#774)
   __weak RCTBaseTextInputView *weakSelf = self;
   [_bridge.uiManager rootViewForReactTag:self.reactTag withCompletion:^(UIView *rootView) {
     RCTBaseTextInputView *strongSelf = weakSelf;
@@ -657,12 +657,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       }
     }
   }];
-  #endif /* !TARGET_OS_TV && !TARGET_OS_OSX TODO(macOS GH#774) */
+  #endif /* !TARGET_OS_OSX TODO(macOS GH#774) */
 }
 
 - (void)setDefaultInputAccessoryView
 {
-  #if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
+  #if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
   UIKeyboardType keyboardType = textInputView.keyboardType;
 
@@ -701,7 +701,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     textInputView.inputAccessoryView = nil;
   }
   [self reloadInputViewsIfNecessary];
-  #endif /* !TARGET_OS_TV && !TARGET_OS_OSX TODO(macOS GH#774) */
+  #endif /* !TARGET_OS_OSX TODO(macOS GH#774) */
 }
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)

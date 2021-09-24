@@ -64,9 +64,9 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
     // on screen.
     self.textContainer.lineFragmentPadding = 1;
 #endif
-#if !TARGET_OS_OSX && !TARGET_OS_TV // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
     self.scrollsToTop = NO;
-#endif
+#endif // TODO(macOS GH#774)
     self.scrollEnabled = YES;
   }
 

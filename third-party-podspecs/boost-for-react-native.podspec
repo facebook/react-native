@@ -11,7 +11,7 @@ Pod::Spec.new do |spec|
 
   # Pinning to the same version as React.podspec.
   # TODO: Move this osx addition back upstream to https://github.com/react-native-community/boost-for-react-native
-  spec.platforms = { :ios => '8.0', :tvos => '9.2', :osx => "10.14" }
+  spec.platforms = { :ios => '8.0', :osx => "10.14" }
   spec.requires_arc = false
 
   spec.module_name = 'boost'

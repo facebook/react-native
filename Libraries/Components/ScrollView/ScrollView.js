@@ -1315,13 +1315,12 @@ class ScrollView extends React.Component<Props, State> {
     if (refreshControl) {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.
-        // tvOS lacks native support for RefreshControl, so don't include it in that case
         return (
           /* $FlowFixMe(>=0.117.0 site=react_native_fb) This comment suppresses
            * an error found when Flow v0.117 was deployed. To see the error,
            * delete this comment and run Flow. */
           <ScrollViewClass {...props} ref={this._setNativeRef}>
-            {Platform.isTV ? null : refreshControl}
+            {refreshControl}
             {contentContainer}
           </ScrollViewClass>
         );

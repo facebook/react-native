@@ -105,9 +105,6 @@ rn_apple_library(
             name = "LogBox",
             native_class_func = "RCTLogBoxCls",
         ) + react_module_plugin_providers(
-            name = "TVNavigationEventEmitter",
-            native_class_func = "RCTTVNavigationEventEmitterCls",
-        ) + react_module_plugin_providers(
             name = "WebSocketExecutor",
             native_class_func = "RCTWebSocketExecutorCls",
         ) + react_module_plugin_providers(

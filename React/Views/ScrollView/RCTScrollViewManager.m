@@ -80,11 +80,9 @@ RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismis
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(maximumZoomScale, CGFloat) // TODO(macOS GH#774)
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(minimumZoomScale, CGFloat) // TODO(macOS GH#774)
 RCT_EXPORT_VIEW_PROPERTY(scrollEnabled, BOOL)
-#if !TARGET_OS_TV
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(pagingEnabled, BOOL) // TODO(macOS GH#774)
 RCT_REMAP_NOT_OSX_VIEW_PROPERTY(pinchGestureEnabled, scrollView.pinchGestureEnabled, BOOL) // TODO(macOS GH#774)
 RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(scrollsToTop, BOOL) // TODO(macOS GH#774)
-#endif
 RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(scrollEventThrottle, NSTimeInterval)

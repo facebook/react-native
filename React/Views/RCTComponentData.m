@@ -70,10 +70,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   RCTPlatformView *view = [self.manager view]; // TODO(macOS GH#774)
   view.reactTag = tag;
   view.rootTag = rootTag;
-#if !TARGET_OS_OSX && !TARGET_OS_TV // TODO(macOS GH#774)
-  view.multipleTouchEnabled = YES;
-#endif
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
+  view.multipleTouchEnabled = YES;
   view.userInteractionEnabled = YES; // required for touch handling
   view.layer.allowsGroupOpacity = YES; // required for touch handling
 #endif // TODO(macOS GH#774)

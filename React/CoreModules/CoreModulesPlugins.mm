@@ -44,7 +44,6 @@ Class RCTCoreModulesClassProvider(const char *name) {
 #if !TARGET_OS_OSX // TODO(macOS) = Do we need these?
     {"LogBox", RCTLogBoxCls},
 #endif // TODO(macOS)
-    {"TVNavigationEventEmitter", RCTTVNavigationEventEmitterCls},
     {"WebSocketExecutor", RCTWebSocketExecutorCls},
     {"WebSocketModule", RCTWebSocketModuleCls},
     {"DevLoadingView", RCTDevLoadingViewCls},

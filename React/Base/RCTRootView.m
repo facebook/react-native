@@ -30,11 +30,6 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
-#if TARGET_OS_TV
-#import "RCTTVNavigationEventEmitter.h"
-#import "RCTTVRemoteHandler.h"
-#endif
-
 #if __has_include("RCTDevMenu.h") // [TODO(OSS Candidate ISS#2710739)
 #import "RCTDevMenu.h"
 #endif // ]TODO(OSS Candidate ISS#2710739)
@@ -109,13 +104,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                                  name:RCTContentDidAppearNotification
                                                object:self];
 
-#if TARGET_OS_TV
-    self.tvRemoteHandler = [RCTTVRemoteHandler new];
-    for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
-      [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
-    }
-#endif
-
     [self showLoadingView];
 
     // Immediately schedule the application to be started.
@@ -140,16 +128,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
-
-#if TARGET_OS_TV
-- (UIView *)preferredFocusedView
-{
-  if (self.reactPreferredFocusedView) {
-    return self.reactPreferredFocusedView;
-  }
-  return [super preferredFocusedView];
-}
-#endif
 
 #pragma mark - passThroughTouches
 

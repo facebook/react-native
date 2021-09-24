@@ -25,7 +25,7 @@ using namespace facebook::react;
 @end
 
 @implementation RCTDeviceInfo {
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
   UIInterfaceOrientation _currentInterfaceOrientation;
   NSDictionary *_currentInterfaceDimensions;
 #endif
@@ -54,9 +54,7 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
-#endif // TODO(macOS GH#774)
-  
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
+
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -75,8 +73,7 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTUserInterfaceStyleDidChangeNotification
                                              object:nil];
-
-#endif
+#endif // TODO(macOS GH#774)
 }
 
 static BOOL RCTIsIPhoneX()
@@ -174,7 +171,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
   });
 }
 
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 
 - (void)interfaceOrientationDidChange
 {
@@ -223,8 +220,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 
   _currentInterfaceDimensions = nextInterfaceDimensions;
 }
-
-#endif // TARGET_OS_TV
+#endif // TODO(macOS GH#774)
 
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
 {

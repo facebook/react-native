@@ -77,7 +77,7 @@ static NSString *RCTGetStorageDirectory()
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
-    // iOS and tvOS to use Caches folder.
+    // iOS to use Caches folder.
     // Don't use NSDocumentsDirectory otherwise the RCTAsyncLocalStorage_V1 will appear in apps that
     // expose the User's Documents folder such as Microsoft Office apps.
     storageDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
@@ -251,10 +251,6 @@ RCT_EXPORT_MODULE()
 - (NSDictionary *)_ensureSetup
 {
   RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
-
-#if TARGET_OS_TV
-  RCTLogWarn(@"Persistent storage is not supported on tvOS, your data may be removed at any point.");
-#endif
 
   NSError *error = nil;
   if (!RCTHasCreatedStorageDirectory) {

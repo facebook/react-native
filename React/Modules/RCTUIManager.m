@@ -189,14 +189,10 @@ RCT_EXPORT_MODULE()
                                                object:[self->_bridge moduleForName:@"AccessibilityManager"
                                                              lazilyLoadIfNecessary:YES]];
   });
-#endif // TODO(macOS GH#774)
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(namedOrientationDidChange)
                                                name:UIDeviceOrientationDidChangeNotification
                                              object:nil];
-#endif
-#if !TARGET_OS_OSX // TODO(macOS GH#774)
   [RCTLayoutAnimation initializeStatics];
 #endif // TODO(macOS GH#774)
 }
@@ -225,7 +221,7 @@ RCT_EXPORT_MODULE()
 }
 #endif // TODO(macOS GH#774)
 
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 // Names and coordinate system from html5 spec:
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen.orientation
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen.lockOrientation
@@ -277,7 +273,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   [_bridge.eventDispatcher sendDeviceEventWithName:@"namedOrientationDidChange" body:orientationEvent];
 #pragma clang diagnostic pop
 }
-#endif
+#endif // TODO(macOS GH#774)
 
 - (dispatch_queue_t)methodQueue
 {
