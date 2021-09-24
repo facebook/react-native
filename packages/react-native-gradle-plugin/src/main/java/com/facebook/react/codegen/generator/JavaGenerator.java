@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * generator is isolated to a single schema, and a single Java package output.
  */
 public final class JavaGenerator {
-  public static String LICENSE_HEADER =
+  public static final String LICENSE_HEADER =
       "/*\n"
           + " * Copyright (c) Facebook, Inc. and its affiliates.\n"
           + " *\n"

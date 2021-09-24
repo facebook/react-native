@@ -76,7 +76,6 @@ class ReactAppPlugin : Plugin<Project> {
             "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
           it.dependsOn(generateCodegenSchemaTask)
           it.reactRoot.set(extension.reactRoot)
-          it.jsRootDir.set(extension.jsRootDir)
           it.nodeExecutableAndArgs.set(extension.nodeExecutableAndArgs)
           it.codegenDir.set(extension.codegenDir)
           it.useJavaGenerator.set(extension.useJavaGenerator)

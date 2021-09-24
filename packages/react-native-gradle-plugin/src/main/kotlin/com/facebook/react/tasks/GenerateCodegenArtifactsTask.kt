@@ -22,8 +22,6 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
 
   @get:Internal abstract val reactRoot: DirectoryProperty
 
-  @get:Internal abstract val jsRootDir: DirectoryProperty
-
   @get:Internal abstract val codegenDir: DirectoryProperty
 
   @get:Internal abstract val generatedSrcDir: DirectoryProperty
@@ -48,17 +46,11 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   @get:OutputDirectory val generatedJniFiles: Provider<Directory> = generatedSrcDir.dir("jni")
 
   override fun exec() {
-    commandLine(
-        windowsAwareYarn(
-            *nodeExecutableAndArgs.get().toTypedArray(),
-            reactRoot.file("scripts/generate-specs-cli.js").get().asFile.absolutePath,
-            "android",
-            generatedSchemaFile.get().asFile.absolutePath,
-            generatedSrcDir.get().asFile.absolutePath,
-            libraryName.get(),
-            codegenJavaPackageName.get()))
+    setupCommandLine()
     super.exec()
+  }
 
+  internal fun setupCommandLine() {
     if (useJavaGenerator.getOrElse(false)) {
       // Use Java-based generator implementation to produce the source files,
       // instead of using the JS-based generator.
@@ -71,6 +63,17 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
       } catch (e: Exception) {
         throw GradleException("Failed to generate Java from schema.", e)
       }
+      commandLine("echo", "Used JavaGenerator to generate files instead of generate-specs-cli.js")
+    } else {
+      commandLine(
+          windowsAwareYarn(
+              *nodeExecutableAndArgs.get().toTypedArray(),
+              reactRoot.file("scripts/generate-specs-cli.js").get().asFile.absolutePath,
+              "android",
+              generatedSchemaFile.get().asFile.absolutePath,
+              generatedSrcDir.get().asFile.absolutePath,
+              libraryName.get(),
+              codegenJavaPackageName.get()))
     }
   }
 }
