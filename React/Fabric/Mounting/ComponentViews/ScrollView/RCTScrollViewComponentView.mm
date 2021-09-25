@@ -498,15 +498,14 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   visibleFrame.size.width *= scale;
   visibleFrame.size.height *= scale;
 
+#ifndef NDEBUG
+  NSMutableArray<UIView<RCTComponentViewProtocol> *> *expectedSubviews = [NSMutableArray new];
+#endif
+
   NSInteger mountedIndex = 0;
   for (UIView *componentView in _childComponentViews) {
     BOOL shouldBeMounted = YES;
     BOOL isMounted = componentView.superview != nil;
-
-    // If a view is mounted, it must be mounted exactly at `mountedIndex` position.
-    RCTAssert(
-        !isMounted || [_containerView.subviews objectAtIndex:mountedIndex] == componentView,
-        @"Attempt to unmount improperly mounted component view.");
 
     // It's simpler and faster to not mess with views that are not `RCTViewComponentView` subclasses.
     if ([componentView isKindOfClass:[RCTViewComponentView class]]) {
@@ -529,7 +528,24 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
     if (shouldBeMounted) {
       mountedIndex++;
     }
+
+#ifndef NDEBUG
+    if (shouldBeMounted) {
+      [expectedSubviews addObject:componentView];
+    }
+#endif
   }
+
+#ifndef NDEBUG
+  RCTAssert(
+      _containerView.subviews.count == expectedSubviews.count,
+      @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
+  for (NSInteger i = 0; i < expectedSubviews.count; i++) {
+    RCTAssert(
+        [_containerView.subviews objectAtIndex:i] == [expectedSubviews objectAtIndex:i],
+        @"-[RCTScrollViewComponentView _remountChildren]: Inconsistency detected.");
+  }
+#endif
 }
 
 #pragma mark - RCTScrollableProtocol

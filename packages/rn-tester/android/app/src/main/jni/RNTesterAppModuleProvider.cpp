@@ -9,12 +9,18 @@
 
 #include <PackagesRnTesterAndroidAppSpec.h>
 #include <ReactAndroidSpec.h>
+#include <ReactCommon/SampleTurboModuleSpec.h>
 
 namespace facebook {
 namespace react {
 
 std::shared_ptr<TurboModule> RNTesterAppModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
   auto module = PackagesRnTesterAndroidAppSpec_ModuleProvider(moduleName, params);
+  if (module != nullptr) {
+    return module;
+  }
+
+  module = SampleTurboModuleSpec_ModuleProvider(moduleName, params);
   if (module != nullptr) {
     return module;
   }

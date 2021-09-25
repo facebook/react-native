@@ -2,7 +2,8 @@
 
 exports[`GenerateModuleH can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "NativeModules.h" => "/**
+  "NativeModules.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -38,7 +39,8 @@ virtual void getArrays(jsi::Runtime &rt, const jsi::Object &options) = 0;
 
 exports[`GenerateModuleH can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "NativeModules.h" => "/**
+  "NativeModules.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -71,7 +73,8 @@ public:
 
 exports[`GenerateModuleH can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "NativeModules.h" => "/**
+  "NativeModules.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -105,7 +108,8 @@ virtual void cropImage(jsi::Runtime &rt, const jsi::Object &cropData) = 0;
 
 exports[`GenerateModuleH can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "NativeModules.h" => "/**
+  "NativeModules.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -163,7 +167,8 @@ virtual void dismissRedbox(jsi::Runtime &rt) = 0;
 
 exports[`GenerateModuleH can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "NativeModules.h" => "/**
+  "NativeModules.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -206,7 +211,8 @@ virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
 
 exports[`GenerateModuleH can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "NativeModules.h" => "/**
+  "NativeModules.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -249,7 +255,8 @@ virtual void voidFunc(jsi::Runtime &rt) = 0;
 
 exports[`GenerateModuleH can generate fixture TWO_MODULES_SAME_FILE 1`] = `
 Map {
-  "NativeModules.h" => "/**
+  "NativeModules.h" => "
+/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the

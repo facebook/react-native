@@ -6,7 +6,8 @@
   "homepage": "https://github.com/facebook/react-native/tree/master/packages/rn-tester",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git"
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/rn-tester"
   },
   "dependencies": {
     "invariant": "^2.2.4",

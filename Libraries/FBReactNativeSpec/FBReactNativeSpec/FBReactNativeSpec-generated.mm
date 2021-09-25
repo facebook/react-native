@@ -1610,46 +1610,72 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeImageStore_SpecAddImageFromBase64ErrorCallbackError)
-+ (RCTManagedPointer *)JS_NativeImageStore_SpecAddImageFromBase64ErrorCallbackError:(id)json
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeImageStoreAndroidSpecJSI_getBase64ForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getBase64ForTag", @selector(getBase64ForTag:successCallback:errorCallback:), args, count);
+    }
+
+
+    NativeImageStoreAndroidSpecJSI::NativeImageStoreAndroidSpecJSI(const ObjCTurboModule::InitParams &params)
+      : ObjCTurboModule(params) {
+        
+        methodMap_["getBase64ForTag"] = MethodMetadata {3, __hostFunction_NativeImageStoreAndroidSpecJSI_getBase64ForTag};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+@implementation RCTCxxConvert (NativeImageStoreIOS_SpecGetBase64ForTagErrorCallbackError)
++ (RCTManagedPointer *)JS_NativeImageStoreIOS_SpecGetBase64ForTagErrorCallbackError:(id)json
 {
-  return facebook::react::managedPointer<JS::NativeImageStore::SpecAddImageFromBase64ErrorCallbackError>(json);
+  return facebook::react::managedPointer<JS::NativeImageStoreIOS::SpecGetBase64ForTagErrorCallbackError>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeImageStoreIOS_SpecAddImageFromBase64ErrorCallbackError)
++ (RCTManagedPointer *)JS_NativeImageStoreIOS_SpecAddImageFromBase64ErrorCallbackError:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeImageStoreIOS::SpecAddImageFromBase64ErrorCallbackError>(json);
 }
 @end
 namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_getBase64ForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_getBase64ForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getBase64ForTag", @selector(getBase64ForTag:successCallback:errorCallback:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_hasImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_hasImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "hasImageForTag", @selector(hasImageForTag:callback:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_removeImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_removeImageForTag(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "removeImageForTag", @selector(removeImageForTag:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageStoreSpecJSI_addImageFromBase64(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageStoreIOSSpecJSI_addImageFromBase64(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "addImageFromBase64", @selector(addImageFromBase64:successCallback:errorCallback:), args, count);
     }
 
 
-    NativeImageStoreSpecJSI::NativeImageStoreSpecJSI(const ObjCTurboModule::InitParams &params)
+    NativeImageStoreIOSSpecJSI::NativeImageStoreIOSSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
-        methodMap_["getBase64ForTag"] = MethodMetadata {3, __hostFunction_NativeImageStoreSpecJSI_getBase64ForTag};
+        methodMap_["getBase64ForTag"] = MethodMetadata {3, __hostFunction_NativeImageStoreIOSSpecJSI_getBase64ForTag};
         
         
-        methodMap_["hasImageForTag"] = MethodMetadata {2, __hostFunction_NativeImageStoreSpecJSI_hasImageForTag};
+        methodMap_["hasImageForTag"] = MethodMetadata {2, __hostFunction_NativeImageStoreIOSSpecJSI_hasImageForTag};
         
         
-        methodMap_["removeImageForTag"] = MethodMetadata {1, __hostFunction_NativeImageStoreSpecJSI_removeImageForTag};
+        methodMap_["removeImageForTag"] = MethodMetadata {1, __hostFunction_NativeImageStoreIOSSpecJSI_removeImageForTag};
         
         
-        methodMap_["addImageFromBase64"] = MethodMetadata {3, __hostFunction_NativeImageStoreSpecJSI_addImageFromBase64};
+        methodMap_["addImageFromBase64"] = MethodMetadata {3, __hostFunction_NativeImageStoreIOSSpecJSI_addImageFromBase64};
         
         
 

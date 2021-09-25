@@ -5,7 +5,8 @@
   "homepage": "https://github.com/facebook/react-native/tree/master/packages/react-native-codegen",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git"
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/react-native-codegen"
   },
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/plugin-proposal-optional-chaining": "^7.0.0",

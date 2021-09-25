@@ -862,19 +862,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   return nil;
 }
 
-- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest
-{
-  if (!loaderRequest) {
-    return;
-  }
-
-  // This delegate method is Fabric-only
-  id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:loaderRequest.imageURL];
-  if ([loadHandler respondsToSelector:@selector(trackURLImageContentDidSetForRequest:)]) {
-    [(id<RCTImageURLLoaderWithAttribution>)loadHandler trackURLImageContentDidSetForRequest:loaderRequest];
-  }
-}
-
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView // TODO(macOS GH#774)
 {
   if (!loaderRequest || !imageView) {

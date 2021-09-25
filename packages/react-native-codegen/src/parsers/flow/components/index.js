@@ -167,7 +167,7 @@ function getCommandProperties(commandTypeName, types, commandOptions) {
 }
 
 // $FlowFixMe there's no flowtype for AST
-function processComponent(ast, types): ComponentSchemaBuilderConfig {
+function buildComponentSchema(ast, types): ComponentSchemaBuilderConfig {
   const {
     componentName,
     propsTypeName,
@@ -205,5 +205,5 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
 }
 
 module.exports = {
-  processComponent,
+  buildComponentSchema,
 };

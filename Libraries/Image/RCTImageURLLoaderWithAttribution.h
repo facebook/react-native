@@ -62,11 +62,6 @@ struct ImageURLLoaderAttribution {
 #endif
 
 /**
- * Image instrumentation - notify that the image content (UIImage) has been set on the native view.
- */
-- (void)trackURLImageContentDidSetForRequest:(RCTImageURLLoaderRequest *)loaderRequest;
-
-/**
  * Image instrumentation - start tracking the on-screen visibility of the native image view.
  */
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView; // TODO(macOS GH#774)

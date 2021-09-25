@@ -1,13 +1,15 @@
 load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "react_native_dep", "react_native_target", "react_native_xplat_target", "rn_android_library", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
     name = "samples",
-    srcs = glob(["*.cpp"]),
+    srcs = glob(
+        ["ReactCommon/**/*.cpp"],
+    ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
-            ("", "*.h"),
+            ("ReactCommon", "*.h"),
         ],
         prefix = "ReactCommon",
     ),
@@ -19,10 +21,11 @@ rn_xplat_cxx_library(
     ],
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
+        FBJNI_TARGET,
     ],
     fbandroid_exported_headers = subdir_glob(
         [
-            ("platform/android", "*.h"),
+            ("platform/android/ReactCommon", "*.h"),
         ],
         prefix = "ReactCommon",
     ),
@@ -76,5 +79,26 @@ rn_xplat_cxx_library(
     exported_deps = [
         "//xplat/jsi:jsi",
         react_native_xplat_target("react/nativemodule/core:core"),
+    ],
+)
+
+rn_android_library(
+    name = "impl",
+    srcs = glob(["platform/android/*.java"]),
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "//fbandroid/java/com/facebook/debug/log:log",
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_dep("third-party/java/jsr-330:jsr-330"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
+        ":samples",
+    ],
+    exported_deps = [
+        react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
     ],
 )

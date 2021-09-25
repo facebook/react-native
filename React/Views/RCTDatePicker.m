@@ -14,11 +14,11 @@
 #import "UIView+React.h"
 
 #ifndef __IPHONE_14_0
-  #define __IPHONE_14_0 140000
+#define __IPHONE_14_0 140000
 #endif // __IPHONE_14_0
 
 #ifndef RCT_IOS_14_0_SDK_OR_LATER
-  #define RCT_IOS_14_0_SDK_OR_LATER (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0)
+#define RCT_IOS_14_0_SDK_OR_LATER (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0)
 #endif // RCT_IOS_14_0_SDK_OR_LATER
 
 @interface RCTDatePicker ()

@@ -50,7 +50,7 @@ def rn_codegen_modules(
 
     rn_xplat_cxx_library(
         name = "generated_objcpp_modules-{}".format(name),
-        header_namespace = native_module_spec_name,
+        header_namespace = "",
         apple_sdks = (IOS),
         compiler_flags = [
             "-fexceptions",
@@ -61,8 +61,7 @@ def rn_codegen_modules(
         fbobjc_compiler_flags = get_apple_compiler_flags(),
         fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
         ios_exported_headers = {
-            "{}.h".format(native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
-            "{}-generated.mm".format(native_module_spec_name): ":{}".format(generate_module_mm_name),
+            "{}/{}.h".format(native_module_spec_name, native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
         },
         ios_headers = [
             ":{}".format(generate_module_hobjcpp_name),

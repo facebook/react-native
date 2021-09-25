@@ -223,6 +223,7 @@ public class ReactScrollView extends ScrollView
     int scrollToY =
         pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
     reactScrollTo(scrollToX, scrollToY);
+    ReactScrollViewHelper.emitLayoutEvent(this);
   }
 
   @Override

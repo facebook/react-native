@@ -30,6 +30,7 @@ fi
 
 ./configure --host arm-apple-darwin
 
+cat << EOF >> src/config.h
 /* Add in so we have Apple Target Conditionals */
 #ifdef __APPLE__
 #include <TargetConditionals.h>

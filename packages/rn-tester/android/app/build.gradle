@@ -184,31 +184,12 @@ android {
             proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
-}
-
-if (enableCodegen) {
-    def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
-    android {
-        defaultConfig {
-            externalNativeBuild {
-                ndkBuild {
-                    abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
-                    arguments "APP_PLATFORM=android-16",
-                            "APP_STL=c++_shared",
-                            "NDK_TOOLCHAIN_VERSION=clang",
-                            // The following paths assume building React Native from source.
-                            "GENERATED_SRC_DIR=$buildDir/generated/source",
-                            "REACT_ANDROID_DIR=$reactAndroidProjectDir"
-                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
-                    cppFlags "-std=c++1y"
-                    targets "rntester_appmodules"
-                }
-            }
-        }
-        externalNativeBuild {
-            ndkBuild {
-                path "$projectDir/src/main/jni/Android.mk"
-            }
+    sourceSets.main {
+        java {
+            // SampleTurboModule.
+            srcDirs += [
+                "$rootDir/ReactCommon/react/nativemodule/samples/platform/android",
+            ]
         }
     }
 }
@@ -257,4 +238,60 @@ react {
     jsRootDir = file("$rootDir/packages/rn-tester")
     reactNativeRootDir = file("$rootDir")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+}
+
+if (enableCodegen) {
+    // TODO: Move all this logic to CodegenPlugin.java.
+    def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
+    def reactAndroidBuildDir = project(':ReactAndroid').buildDir;
+
+    android {
+        defaultConfig {
+            externalNativeBuild {
+                ndkBuild {
+                    abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
+                    arguments "APP_PLATFORM=android-16",
+                            "APP_STL=c++_shared",
+                            "NDK_TOOLCHAIN_VERSION=clang",
+                            // The following paths assume building React Native from source.
+                            "GENERATED_SRC_DIR=$buildDir/generated/source",
+                            "PROJECT_BUILD_DIR=$buildDir",
+                            "REACT_ANDROID_DIR=$reactAndroidProjectDir"
+                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
+                    cppFlags "-std=c++1y"
+                    targets "rntester_appmodules"
+                }
+            }
+        }
+        externalNativeBuild {
+            ndkBuild {
+                path "$projectDir/src/main/jni/Android.mk"
+            }
+        }
+    }
+
+    def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
+        // TODO: handle extracting .so from prebuilt :ReactAndroid.
+        dependsOn(":ReactAndroid:packageReactNdkLibs")
+        from("$reactAndroidBuildDir/react-ndk/exported")
+        into("$buildDir/react-ndk/exported")
+    }
+
+    def cleanProjectNdkBuild = tasks.register("cleanProjectNdkBuild", Exec) {
+        ignoreExitValue(true)
+        tasks.forEach {
+            t ->
+                if (t.name.startsWith("externalNativeBuildClean")) {
+                    dependsOn(t);
+                }
+        }
+        // This .cxx folder may cause stale ndkBuild configuration.
+        // See https://stackoverflow.com/a/58288851.
+        commandLine("rm", "-rf", "$projectDir/.cxx")
+    }
+
+    afterEvaluate {
+        preBuild.dependsOn(packageReactNdkLibs)
+        clean.dependsOn(cleanProjectNdkBuild)
+    }
 }

@@ -24,7 +24,7 @@ REACT_ANDROID_SRC_DIR := $(REACT_ANDROID_DIR)/src/main
 REACT_COMMON_DIR := $(REACT_ANDROID_DIR)/../ReactCommon
 REACT_GENERATED_SRC_DIR := $(REACT_ANDROID_BUILD_DIR)/generated/source
 # Note: this only have .so, not .a
-REACT_NDK_EXPORT_DIR := $(REACT_ANDROID_BUILD_DIR)/react-ndk/exported
+REACT_NDK_EXPORT_DIR := $(PROJECT_BUILD_DIR)/react-ndk/exported
 
 # fb
 include $(CLEAR_VARS)

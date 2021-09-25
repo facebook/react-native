@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/renderer/imagemanager/ImageInstrumentation.h>
 #include <react/renderer/imagemanager/ImageResponse.h>
 #include <react/renderer/imagemanager/ImageResponseObserver.h>
 #include <react/renderer/imagemanager/ImageResponseObserverCoordinator.h>
@@ -31,8 +30,7 @@ class ImageRequest final {
    */
   ImageRequest(
       const ImageSource &imageSource,
-      std::shared_ptr<const ImageTelemetry> telemetry,
-      std::shared_ptr<const ImageInstrumentation> instrumentation);
+      std::shared_ptr<const ImageTelemetry> telemetry);
 
   /*
    * The move constructor.
@@ -78,20 +76,6 @@ class ImageRequest final {
    */
   const std::shared_ptr<const ImageTelemetry> &getSharedTelemetry() const;
 
-  /*
-   * Returns stored image instrumentation object as a shared pointer.
-   * Retain this *or* `ImageRequest` to ensure a correct lifetime of the object.
-   */
-  const std::shared_ptr<const ImageInstrumentation>
-      &getSharedImageInstrumentation() const;
-
-  /*
-   * Returns the image instrumentation object specific to this request.
-   * Use this if a correct lifetime of the object is ensured in some other way
-   * (e.g. by retaining an `ImageRequest`).
-   */
-  const ImageInstrumentation &getImageInstrumentation() const;
-
  private:
   /*
    * Image source associated with the request.
@@ -107,11 +91,6 @@ class ImageRequest final {
    * Event coordinator associated with the reqest.
    */
   std::shared_ptr<const ImageResponseObserverCoordinator> coordinator_{};
-
-  /*
-   * Image instrumentation specific to the request.
-   */
-  std::shared_ptr<const ImageInstrumentation> instrumentation_;
 
   /*
    * Function we can call to cancel image request (see destructor).
