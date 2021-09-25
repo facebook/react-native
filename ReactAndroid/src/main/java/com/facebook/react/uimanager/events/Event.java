@@ -56,8 +56,16 @@ public abstract class Event<T extends Event> {
     init(-1, viewTag);
   }
 
-  /** This method needs to be called before event is sent to event dispatcher. */
   protected void init(int surfaceId, int viewTag) {
+    init(surfaceId, viewTag, SystemClock.uptimeMillis());
+  }
+
+  /**
+   * This method needs to be called before event is sent to event dispatcher. Event timestamps can
+   * optionally be dated/backdated to a custom time: for example, touch events should be dated with
+   * the system event time.
+   */
+  protected void init(int surfaceId, int viewTag, long timestampMs) {
     mSurfaceId = surfaceId;
     mViewTag = viewTag;
 
@@ -73,7 +81,7 @@ public abstract class Event<T extends Event> {
     // At some point it would be great to pass the SurfaceContext here instead.
     mUIManagerType = (surfaceId == -1 ? UIManagerType.DEFAULT : UIManagerType.FABRIC);
 
-    mTimestampMs = SystemClock.uptimeMillis();
+    mTimestampMs = timestampMs;
     mInitialized = true;
   }
 
