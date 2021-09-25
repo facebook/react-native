@@ -134,6 +134,9 @@ delete packageJson.private;
 // Copy dependencies over from repo-config/package.json
 const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
 packageJson.devDependencies = {...packageJson.devDependencies, ...repoConfigJson.dependencies};
+// Make react-native-codegen a direct dependency of react-native
+delete packageJson.devDependencies['react-native-codegen'];
+packageJson.dependencies = {...packageJson.dependencies, 'react-native-codegen': repoConfigJson.dependencies['react-native-codegen']};
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // Change ReactAndroid/gradle.properties
