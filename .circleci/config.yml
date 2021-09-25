@@ -738,8 +738,14 @@ jobs:
           condition:
             equal: [ --dry-run, << parameters.publish_npm_args >> ]
           steps:
+            - run:
+                name: Build release package as a job artifact
+                command: |
+                  mkdir -p build
+                  FILENAME=$(npm pack)
+                  mv $FILENAME build/
             - store_artifacts:
-                path: ~/react-native/react-native-1000.0.0.tgz
+                path: ~/react-native/build/
                 destination: build
 
   # -------------------------

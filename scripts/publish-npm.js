@@ -163,30 +163,24 @@ artifacts.forEach(name => {
 
 if (dryRunBuild) {
   echo('Skipping `npm publish` because --dry-run is set.');
-  if (exec('mkdir -p build && npm pack --pack-destination build').code) {
-    echo('Failed to build release package.');
-    exit(1);
-  } else {
-    echo('The release was built successfully.');
-    exit(0);
-  }
+  exit(0);
+}
+
+// if version contains -rc, tag as prerelease
+const tagFlag = nightlyBuild
+  ? '--tag nightly'
+  : releaseVersion.indexOf('-rc') === -1
+  ? ''
+  : '--tag next';
+
+// use otp from envvars if available
+const otpFlag = otp ? `--otp ${otp}` : '';
+
+if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
+  echo('Failed to publish package to npm');
+  exit(1);
 } else {
-  // if version contains -rc, tag as prerelease
-  const tagFlag = nightlyBuild
-    ? '--tag nightly'
-    : releaseVersion.indexOf('-rc') === -1
-    ? ''
-    : '--tag next';
-
-  // use otp from envvars if available
-  const otpFlag = otp ? `--otp ${otp}` : '';
-
-  if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
-    echo('Failed to publish package to npm');
-    exit(1);
-  } else {
-    echo(`Published to npm ${releaseVersion}`);
-    exit(0);
-  }
+  echo(`Published to npm ${releaseVersion}`);
+  exit(0);
 }
 /*eslint-enable no-undef */
