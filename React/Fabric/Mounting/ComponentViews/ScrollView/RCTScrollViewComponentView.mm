@@ -133,15 +133,6 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
   [self.scrollViewDelegateSplitter removeAllDelegates];
 }
 
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-
-  if (_subviewClippingEnabled) {
-    [self _remountChildren];
-  }
-}
-
 - (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
 {
   return ((RCTEnhancedScrollView *)_scrollView).delegateSplitter;
@@ -610,6 +601,11 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 }
 
 #pragma mark - Child views mounting
+
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+{
+  // Do nothing. ScrollView manages its subview clipping individually in `_remountChildren`.
+}
 
 - (void)_remountChildrenIfNeeded
 {
