@@ -16,7 +16,7 @@ that has been fixed in 0.64. We have two options:
 Upgrading a version often takes half a day, so if it's a small patch, it's 
 often easier to just release.
 
-1. Checkout `master`
+1. Checkout your version branch (0.62.2-wanderlog)
 2. Download the patch by:
    - Getting the link to the commit on GitHub (e.g., https://github.com/facebook/react-native/commit/123423c2a9258c9af25ca9bffe1f10c42a176bf3)
    - Adding `.patch` to it (e.g., https://github.com/facebook/react-native/commit/123423c2a9258c9af25ca9bffe1f10c42a176bf3.patch)
@@ -37,16 +37,16 @@ See https://gitlab.com/travelchime/itineraries/-/blob/master/mobile/PATCHING_REA
 
 See https://gitlab.com/travelchime/itineraries/-/blob/master/mobile/PATCHING_REACT_NATIVE.md
 
-### 4. Rebasing on master
+### 4. Rebasing on main
 
 - Check `WanderlogPatches.md`:
   - Run:
     ```sh
-    git checkout master
+    git checkout main
     git pull
     git remote add upstream git@github.com:facebook/react-native.git
-    git fetch upstream master
-    git rebase -i upstream/master
+    git fetch upstream main
+    git rebase -i upstream/main
     ```
   - For patches that have Pull Requests that have now been merged into 
     upstream, you can omit/DROP them

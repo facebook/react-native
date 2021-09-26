@@ -1,7 +1,7 @@
 # Wanderlog-specific patches
 
 If you add a non-backport patch, add it here. It's useful when we want to 
-rebase on upstream's `master`
+rebase on upstream's `main`
 
 - Unset certain environment variables so NVM doesn't conflict
   - Summary: fixes a build process issue with `find-node.sh` script
@@ -39,3 +39,6 @@ rebase on upstream's `master`
   - Summary: RNTester didn't build properly for testing
   - Pull request: None
   - Other relevant links: https://github.com/facebook/react-native/issues/28298
+- Fix VirtualizedList jumping on Android keyboard open with wrong getItemLayout
+  - Summary: Our list was jumping when the keyboard opened, so we made Android lists ignore keyboard openings.
+  - Pull request: https://github.com/facebook/react-native/pull/32268
