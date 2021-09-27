@@ -1,6 +1,6 @@
 --- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\jni\\react\\jni\\CatalystInstanceImpl.cpp"	2020-10-27 20:26:17.024172000 -0700
 +++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\jni\\react\\jni\\CatalystInstanceImpl.cpp"	2020-10-13 21:50:14.117742800 -0700
-@@ -101,6 +101,7 @@
+@@ -95,6 +95,7 @@
  void CatalystInstanceImpl::registerNatives() {
    registerHybrid({
        makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
@@ -8,7 +8,7 @@
        makeNativeMethod(
            "initializeBridge", CatalystInstanceImpl::initializeBridge),
        makeNativeMethod(
-@@ -133,26 +134,39 @@
+@@ -127,26 +128,39 @@
            CatalystInstanceImpl::handleMemoryPressure),
        makeNativeMethod(
            "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),           
@@ -56,7 +56,7 @@
  
    // This used to be:
    //
-@@ -171,12 +185,13 @@
+@@ -165,12 +179,13 @@
    // don't need jsModuleDescriptions any more, all the way up and down the
    // stack.
  
@@ -75,7 +75,7 @@
    instance_->initializeBridge(
        std::make_unique<JInstanceCallback>(callback, moduleMessageQueue_),
        jseh->getExecutorFactory(),
-@@ -286,6 +301,10 @@
+@@ -280,6 +295,10 @@
    instance_->handleMemoryPressure(pressureLevel);
  }
  
