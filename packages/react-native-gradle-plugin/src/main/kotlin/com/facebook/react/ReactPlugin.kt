@@ -19,7 +19,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-class ReactAppPlugin : Plugin<Project> {
+class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
     applyAppPlugin(project, extension)
