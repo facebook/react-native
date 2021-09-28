@@ -117,6 +117,15 @@ let releaseVersion;
 if (buildFromMain) {
   releaseVersion = `0.0.0-${currentCommit.slice(0, 9)}`;
 
+  if (nightlyBuild) {
+    releaseVersion += '-';
+    // 2021-09-28T05:38:40.669Z -> 20210928-0538
+    releaseVersion += new Date()
+      .toISOString()
+      .slice(0, -8)
+      .replace(/[-:]/g, '')
+      .replace(/[T]/g, '-');
+  }
   // Bump version number in various files (package.json, gradle.properties etc)
   if (
     exec(`node scripts/bump-oss-version.js --nightly ${releaseVersion}`).code

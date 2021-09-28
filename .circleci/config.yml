@@ -833,7 +833,6 @@ workflows:
   releases:
     jobs:
       - publish_npm_package:
-          name: build_npm_package
           filters:
             # Both of the following conditions must be included!
             # Ignore any commit on any branch by default.
@@ -844,6 +843,7 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
       - publish_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
+          name: build_commit_package
           publish_npm_args: --dry-run
           filters:
             branches:
