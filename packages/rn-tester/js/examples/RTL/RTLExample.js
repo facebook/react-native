@@ -21,6 +21,7 @@ const {
   Platform,
   StyleSheet,
   Text,
+  TextInput,
   TouchableWithoutFeedback,
   Switch,
   View,
@@ -81,6 +82,18 @@ const TextAlignmentExample = withRTLState(({isRTL, setRTL, ...props}) => {
             '\u05D4\u05E9\u05E4\u05D4 \u05D1\u05DC\u05D9 ' +
             '\u05D9\u05D9\u05E9\u05D5\u05E8 \u05D8\u05E7\u05E1\u05D8'}
         </Text>
+      </View>
+    </View>
+  );
+});
+
+const TextInputExample = withRTLState(({isRTL, setRTL, ...props}) => {
+  return (
+    <View>
+      <RTLToggler setRTL={setRTL} isRTL={isRTL} />
+      <View style={directionStyle(isRTL)}>
+        <Text style={props.style}>LRT or RTL TextInput.</Text>
+        <TextInput style={props.style} />
       </View>
     </View>
   );
@@ -680,6 +693,13 @@ exports.examples = [
           style={[styles.fontSizeSmall, styles.textAlignRight]}
         />
       );
+    },
+  },
+  {
+    title: "Using textAlign: 'right' for TextInput",
+    description: ('Flip TextInput direction to RTL': string),
+    render: function(): React.Element<any> {
+      return <TextInputExample style={[styles.textAlignRight]} />;
     },
   },
   {

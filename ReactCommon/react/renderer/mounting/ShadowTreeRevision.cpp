@@ -6,29 +6,3 @@
  */
 
 #include "ShadowTreeRevision.h"
-
-namespace facebook {
-namespace react {
-
-using Number = ShadowTreeRevision::Number;
-
-ShadowTreeRevision::ShadowTreeRevision(
-    RootShadowNode::Shared const &rootShadowNode,
-    Number number,
-    TransactionTelemetry telemetry)
-    : rootShadowNode_(rootShadowNode), number_(number), telemetry_(telemetry) {}
-
-TransactionTelemetry const &ShadowTreeRevision::getTelemetry() const {
-  return telemetry_;
-}
-
-RootShadowNode const &ShadowTreeRevision::getRootShadowNode() {
-  return *rootShadowNode_;
-}
-
-Number ShadowTreeRevision::getNumber() const {
-  return number_;
-}
-
-} // namespace react
-} // namespace facebook

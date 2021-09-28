@@ -12,10 +12,8 @@
 
 @implementation RCTModalHostViewController {
   CGRect _lastViewFrame;
-#if !TARGET_OS_TV
   UIStatusBarStyle _preferredStatusBarStyle;
   BOOL _preferredStatusBarHidden;
-#endif
 }
 
 - (instancetype)init
@@ -31,10 +29,8 @@
   }
 #endif
 
-#if !TARGET_OS_TV
   _preferredStatusBarStyle = [RCTSharedApplication() statusBarStyle];
   _preferredStatusBarHidden = [RCTSharedApplication() isStatusBarHidden];
-#endif
 
   return self;
 }
@@ -49,7 +45,6 @@
   }
 }
 
-#if !TARGET_OS_TV
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
   return _preferredStatusBarStyle;
@@ -78,6 +73,5 @@
   return _supportedInterfaceOrientations;
 }
 #endif // RCT_DEV
-#endif // !TARGET_OS_TV
 
 @end

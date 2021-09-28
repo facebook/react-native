@@ -85,6 +85,7 @@ project.ext.react = [
     hermesCommand: "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc",
     enableHermesForVariant: { def v -> v.name.contains("hermes") },
     jsRootDir: "$rootDir/RNTester",
+    enableCodegen: (System.getenv('USE_CODEGEN') ?: '0').toBoolean(),
     enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean(),
 ]
 
@@ -105,6 +106,11 @@ def enableSeparateBuildPerCPUArchitecture = true
  * Run Proguard to shrink the Java bytecode in release builds.
  */
 def enableProguardInReleaseBuilds = true
+
+/**
+ * Build and enable codegen-related output in RN Tester app.
+ */
+def enableCodegen = project.ext.react.enableCodegen
 
 /**
  * Build and enable Fabric in RN Tester app.
@@ -148,6 +154,7 @@ android {
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField("boolean", "ENABLE_FABRIC", "$enableFabric")
+        buildConfigField("boolean", "ENABLE_TURBOMODULE", "$enableCodegen") // If using codegen, assume using TurboModule
     }
     signingConfigs {
         release {
@@ -175,6 +182,14 @@ android {
             signingConfig signingConfigs.release
             // Detox-specific additions to pro-guard
             proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
+        }
+    }
+    sourceSets.main {
+        java {
+            // SampleTurboModule.
+            srcDirs += [
+                "$rootDir/ReactCommon/react/nativemodule/samples/platform/android",
+            ]
         }
     }
 }
@@ -220,8 +235,63 @@ dependencies {
 }
 
 react {
-    enableCodegen = System.getenv("USE_CODEGEN") ?: false
     jsRootDir = file("$rootDir/packages/rn-tester")
     reactNativeRootDir = file("$rootDir")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+}
+
+if (enableCodegen) {
+    // TODO: Move all this logic to CodegenPlugin.java.
+    def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
+    def reactAndroidBuildDir = project(':ReactAndroid').buildDir;
+
+    android {
+        defaultConfig {
+            externalNativeBuild {
+                ndkBuild {
+                    abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
+                    arguments "APP_PLATFORM=android-16",
+                            "APP_STL=c++_shared",
+                            "NDK_TOOLCHAIN_VERSION=clang",
+                            // The following paths assume building React Native from source.
+                            "GENERATED_SRC_DIR=$buildDir/generated/source",
+                            "PROJECT_BUILD_DIR=$buildDir",
+                            "REACT_ANDROID_DIR=$reactAndroidProjectDir"
+                    cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
+                    cppFlags "-std=c++1y"
+                    targets "rntester_appmodules"
+                }
+            }
+        }
+        externalNativeBuild {
+            ndkBuild {
+                path "$projectDir/src/main/jni/Android.mk"
+            }
+        }
+    }
+
+    def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
+        // TODO: handle extracting .so from prebuilt :ReactAndroid.
+        dependsOn(":ReactAndroid:packageReactNdkLibs")
+        from("$reactAndroidBuildDir/react-ndk/exported")
+        into("$buildDir/react-ndk/exported")
+    }
+
+    def cleanProjectNdkBuild = tasks.register("cleanProjectNdkBuild", Exec) {
+        ignoreExitValue(true)
+        tasks.forEach {
+            t ->
+                if (t.name.startsWith("externalNativeBuildClean")) {
+                    dependsOn(t);
+                }
+        }
+        // This .cxx folder may cause stale ndkBuild configuration.
+        // See https://stackoverflow.com/a/58288851.
+        commandLine("rm", "-rf", "$projectDir/.cxx")
+    }
+
+    afterEvaluate {
+        preBuild.dependsOn(packageReactNdkLibs)
+        clean.dependsOn(cleanProjectNdkBuild)
+    }
 }

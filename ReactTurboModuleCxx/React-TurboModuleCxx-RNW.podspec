@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://github.com/microsoft/react-native-windows"
   s.license                = package["license"]
   s.author                 = "Microsoft Corporation"
-  s.platforms              = { :ios => "10.0", :tvos => "10.0", :osx => "10.14" }
+  s.platforms              = { :ios => "10.0", :osx => "10.14" }
   s.compiler_flags         = folly_compiler_flags
   s.source                 = { :git => 'https://github.com/microsoft/react-native-windows.git',
                                :commit => "d9077991441889ddaa18a8af6a2cc8514ca7714d" }

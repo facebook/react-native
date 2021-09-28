@@ -12,7 +12,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.6.4")
+        classpath("com.android.tools.build:gradle:4.0.1")
         classpath("de.undercouch:gradle-download-task:4.0.2")
 
         // NOTE: Do not place your application dependencies here; they belong

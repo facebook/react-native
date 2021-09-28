@@ -1,0 +1,1366 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Module SampleTurboModule: Detected a type of Array, without type parameters."`;
+
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Module SampleTurboModule: Detected a type of Array, without type parameters."`;
+
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Only methods are supported as module properties. Found BooleanTypeAnnotation in sampleBool"`;
+
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Module SampleTurboModule: Detected a type of Promise, without type parameters."`;
+
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT 1`] = `"Module SampleTurboModule: Detected a type of $ReadOnly, with 0 type parameters specified. Expected exactly 1."`;
+
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_UNNAMED_PARAMS 1`] = `"Module SampleTurboModule: Detected a FunctionTypeAnnotation with an unnamed param. Please name all params."`;
+
+exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"File contains declarations of more than one module: Spec, Spec2. Please declare exactly one module in this file."`;
+
+exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `"File neither contains a module declaration, nor a component declaration. For module declarations, please make sure your file has an InterfaceDeclaration extending TurboModule. For component declarations, please make sure your file has a default export calling the codegenNativeComponent<Props>(...) macro."`;
+
+exports[`RN Codegen Flow Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {
+            "ObjectAlias": Object {
+              "nullable": false,
+              "properties": Array [
+                Object {
+                  "name": "x",
+                  "optional": false,
+                  "typeAnnotation": Object {
+                    "nullable": false,
+                    "type": "NumberTypeAnnotation",
+                  },
+                },
+                Object {
+                  "name": "y",
+                  "optional": false,
+                  "typeAnnotation": Object {
+                    "nullable": false,
+                    "type": "NumberTypeAnnotation",
+                  },
+                },
+                Object {
+                  "name": "label",
+                  "optional": false,
+                  "typeAnnotation": Object {
+                    "nullable": false,
+                    "type": "StringTypeAnnotation",
+                  },
+                },
+                Object {
+                  "name": "truthy",
+                  "optional": false,
+                  "typeAnnotation": Object {
+                    "nullable": false,
+                    "type": "BooleanTypeAnnotation",
+                  },
+                },
+              ],
+              "type": "ObjectTypeAnnotation",
+            },
+          },
+          "properties": Array [
+            Object {
+              "name": "getNumber",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "type": "NumberTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getVoid",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getArray",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "a",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "nullable": false,
+                        "type": "NumberTypeAnnotation",
+                      },
+                      "nullable": false,
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "properties": Array [
+                    Object {
+                      "name": "a",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "type": "NumberTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getStringFromAlias",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "a",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "ObjectAlias",
+                      "nullable": false,
+                      "type": "TypeAliasTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "StringTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getArray",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "nullable": false,
+                        "type": "StringTypeAnnotation",
+                      },
+                      "nullable": false,
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "elementType": Object {
+                    "nullable": false,
+                    "type": "StringTypeAnnotation",
+                  },
+                  "nullable": false,
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getArray",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_ARRAY 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getArray",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "nullable": false,
+                        "type": "StringTypeAnnotation",
+                      },
+                      "nullable": false,
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "elementType": Object {
+                    "nullable": false,
+                    "type": "StringTypeAnnotation",
+                  },
+                  "nullable": false,
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getArray",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "nullable": false,
+                        "type": "StringTypeAnnotation",
+                      },
+                      "nullable": false,
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "elementType": Object {
+                    "nullable": false,
+                    "type": "StringTypeAnnotation",
+                  },
+                  "nullable": false,
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PARAM_TYPES 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "passBool",
+              "optional": true,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "type": "BooleanTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "passNumber",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "type": "NumberTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "passString",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "passStringish",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getValueWithCallback",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "callback",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "params": Array [
+                        Object {
+                          "name": "value",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "nullable": false,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                        Object {
+                          "name": "arr",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "elementType": Object {
+                              "elementType": Object {
+                                "nullable": false,
+                                "type": "StringTypeAnnotation",
+                              },
+                              "nullable": false,
+                              "type": "ArrayTypeAnnotation",
+                            },
+                            "nullable": false,
+                            "type": "ArrayTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "returnTypeAnnotation": Object {
+                        "nullable": false,
+                        "type": "VoidTypeAnnotation",
+                      },
+                      "type": "FunctionTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_ARRAY 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getArray",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "elementType": Object {
+                          "elementType": Object {
+                            "elementType": Object {
+                              "elementType": Object {
+                                "nullable": false,
+                                "type": "StringTypeAnnotation",
+                              },
+                              "nullable": false,
+                              "type": "ArrayTypeAnnotation",
+                            },
+                            "nullable": false,
+                            "type": "ArrayTypeAnnotation",
+                          },
+                          "nullable": false,
+                          "type": "ArrayTypeAnnotation",
+                        },
+                        "nullable": false,
+                        "type": "ArrayTypeAnnotation",
+                      },
+                      "nullable": false,
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "elementType": Object {
+                    "elementType": Object {
+                      "elementType": Object {
+                        "nullable": false,
+                        "type": "StringTypeAnnotation",
+                      },
+                      "nullable": false,
+                      "type": "ArrayTypeAnnotation",
+                    },
+                    "nullable": false,
+                    "type": "ArrayTypeAnnotation",
+                  },
+                  "nullable": false,
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_OBJECTS 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getObject",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "properties": Array [
+                        Object {
+                          "name": "const1",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "nullable": false,
+                            "properties": Array [
+                              Object {
+                                "name": "const1",
+                                "optional": false,
+                                "typeAnnotation": Object {
+                                  "nullable": false,
+                                  "type": "BooleanTypeAnnotation",
+                                },
+                              },
+                            ],
+                            "type": "ObjectTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "properties": Array [
+                    Object {
+                      "name": "const1",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "properties": Array [
+                          Object {
+                            "name": "const1",
+                            "optional": false,
+                            "typeAnnotation": Object {
+                              "nullable": false,
+                              "type": "BooleanTypeAnnotation",
+                            },
+                          },
+                        ],
+                        "type": "ObjectTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getReadOnlyObject",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "properties": Array [
+                        Object {
+                          "name": "const1",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "nullable": false,
+                            "properties": Array [
+                              Object {
+                                "name": "const1",
+                                "optional": false,
+                                "typeAnnotation": Object {
+                                  "nullable": false,
+                                  "type": "BooleanTypeAnnotation",
+                                },
+                              },
+                            ],
+                            "type": "ObjectTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "properties": Array [
+                    Object {
+                      "name": "const1",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "properties": Array [
+                          Object {
+                            "name": "const1",
+                            "optional": false,
+                            "typeAnnotation": Object {
+                              "nullable": false,
+                              "type": "BooleanTypeAnnotation",
+                            },
+                          },
+                        ],
+                        "type": "ObjectTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getObject2",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "properties": Array [
+                        Object {
+                          "name": "a",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "nullable": false,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "GenericObjectTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getObjectInArray",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "properties": Array [
+                        Object {
+                          "name": "const1",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "nullable": false,
+                            "properties": Array [
+                              Object {
+                                "name": "const1",
+                                "optional": false,
+                                "typeAnnotation": Object {
+                                  "nullable": false,
+                                  "type": "BooleanTypeAnnotation",
+                                },
+                              },
+                            ],
+                            "type": "ObjectTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "elementType": Object {
+                    "nullable": false,
+                    "properties": Array [
+                      Object {
+                        "name": "const1",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "nullable": false,
+                          "properties": Array [
+                            Object {
+                              "name": "const1",
+                              "optional": false,
+                              "typeAnnotation": Object {
+                                "nullable": false,
+                                "type": "BooleanTypeAnnotation",
+                              },
+                            },
+                          ],
+                          "type": "ObjectTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "nullable": false,
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getConstants",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "properties": Array [
+                    Object {
+                      "name": "isTesting",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "type": "BooleanTypeAnnotation",
+                      },
+                    },
+                    Object {
+                      "name": "reactNativeVersion",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "properties": Array [
+                          Object {
+                            "name": "major",
+                            "optional": false,
+                            "typeAnnotation": Object {
+                              "nullable": false,
+                              "type": "NumberTypeAnnotation",
+                            },
+                          },
+                          Object {
+                            "name": "minor",
+                            "optional": false,
+                            "typeAnnotation": Object {
+                              "nullable": false,
+                              "type": "NumberTypeAnnotation",
+                            },
+                          },
+                          Object {
+                            "name": "patch",
+                            "optional": true,
+                            "typeAnnotation": Object {
+                              "nullable": false,
+                              "type": "NumberTypeAnnotation",
+                            },
+                          },
+                          Object {
+                            "name": "prerelease",
+                            "optional": false,
+                            "typeAnnotation": Object {
+                              "nullable": true,
+                              "type": "NumberTypeAnnotation",
+                            },
+                          },
+                        ],
+                        "type": "ObjectTypeAnnotation",
+                      },
+                    },
+                    Object {
+                      "name": "forceTouchAvailable",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "type": "BooleanTypeAnnotation",
+                      },
+                    },
+                    Object {
+                      "name": "osVersion",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                    Object {
+                      "name": "systemName",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                    Object {
+                      "name": "interfaceIdiom",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AND_INT32 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getInt",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "type": "Int32TypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "Int32TypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getFloat",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "type": "FloatTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "FloatTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_ALIASES 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {
+            "Bar": Object {
+              "nullable": false,
+              "properties": Array [
+                Object {
+                  "name": "z",
+                  "optional": false,
+                  "typeAnnotation": Object {
+                    "nullable": false,
+                    "type": "NumberTypeAnnotation",
+                  },
+                },
+              ],
+              "type": "ObjectTypeAnnotation",
+            },
+            "Foo": Object {
+              "nullable": false,
+              "properties": Array [
+                Object {
+                  "name": "bar1",
+                  "optional": false,
+                  "typeAnnotation": Object {
+                    "name": "Bar",
+                    "nullable": false,
+                    "type": "TypeAliasTypeAnnotation",
+                  },
+                },
+                Object {
+                  "name": "bar2",
+                  "optional": false,
+                  "typeAnnotation": Object {
+                    "name": "Bar",
+                    "nullable": false,
+                    "type": "TypeAliasTypeAnnotation",
+                  },
+                },
+              ],
+              "type": "ObjectTypeAnnotation",
+            },
+          },
+          "properties": Array [
+            Object {
+              "name": "foo1",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "x",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "Foo",
+                      "nullable": false,
+                      "type": "TypeAliasTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "name": "Foo",
+                  "nullable": false,
+                  "type": "TypeAliasTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "foo2",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "x",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "Foo",
+                      "nullable": false,
+                      "type": "TypeAliasTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE_PARAM 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "voidFunc",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": true,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {
+            "DisplayMetricsAndroid": Object {
+              "nullable": false,
+              "properties": Array [
+                Object {
+                  "name": "width",
+                  "optional": false,
+                  "typeAnnotation": Object {
+                    "nullable": false,
+                    "type": "NumberTypeAnnotation",
+                  },
+                },
+              ],
+              "type": "ObjectTypeAnnotation",
+            },
+          },
+          "properties": Array [
+            Object {
+              "name": "getConstants",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "properties": Array [
+                    Object {
+                      "name": "Dimensions",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "properties": Array [
+                          Object {
+                            "name": "windowPhysicalPixels",
+                            "optional": false,
+                            "typeAnnotation": Object {
+                              "name": "DisplayMetricsAndroid",
+                              "nullable": false,
+                              "type": "TypeAliasTypeAnnotation",
+                            },
+                          },
+                        ],
+                        "type": "ObjectTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getConstants2",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "properties": Array [
+                    Object {
+                      "name": "Dimensions",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "nullable": false,
+                        "properties": Array [
+                          Object {
+                            "name": "windowPhysicalPixels",
+                            "optional": false,
+                            "typeAnnotation": Object {
+                              "name": "DisplayMetricsAndroid",
+                              "nullable": false,
+                              "type": "TypeAliasTypeAnnotation",
+                            },
+                          },
+                        ],
+                        "type": "ObjectTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getValueWithPromise",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "PromiseTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getValueWithPromiseDefinedSomewhereElse",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "PromiseTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getValueWithPromiseObjDefinedSomewhereElse",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "PromiseTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getRootTag",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "rootTag",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "RootTag",
+                      "nullable": false,
+                      "type": "ReservedFunctionValueTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "name": "RootTag",
+                  "nullable": false,
+                  "type": "ReservedFunctionValueTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_OBJECT 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "aliases": Object {},
+          "properties": Array [
+            Object {
+              "name": "getObject",
+              "optional": false,
+              "typeAnnotation": Object {
+                "nullable": false,
+                "params": Array [
+                  Object {
+                    "name": "o",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "nullable": false,
+                      "type": "GenericObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "nullable": false,
+                  "type": "GenericObjectTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;

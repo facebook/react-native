@@ -26,6 +26,7 @@ export interface Spec extends TurboModule {
   +getString: (arg: string) => string;
   +getArray: (arg: Array<any>) => Array<any>;
   +getObject: (arg: Object) => Object;
+  // eslint-disable-next-line @react-native/codegen/react-native-modules
   +getRootTag: (arg: RootTag) => RootTag;
   +getValue: (x: number, y: string, z: Object) => Object;
   +getValueWithCallback: (callback: (value: string) => void) => void;

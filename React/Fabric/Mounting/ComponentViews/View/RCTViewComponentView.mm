@@ -7,10 +7,12 @@
 
 #import "RCTViewComponentView.h"
 
+#import <CoreGraphics/CoreGraphics.h>
+#import <objc/runtime.h>
+
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTConversions.h>
-#import <objc/runtime.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
@@ -118,7 +120,7 @@ using namespace facebook::react;
 
   // `shadowColor`
   if (oldViewProps.shadowColor != newViewProps.shadowColor) {
-    CGColorRef shadowColor = RCTCGColorRefFromSharedColor(newViewProps.shadowColor);
+    CGColorRef shadowColor = RCTCreateCGColorRefFromSharedColor(newViewProps.shadowColor);
     self.layer.shadowColor = shadowColor;
     CGColorRelease(shadowColor);
     needsInvalidateLayer = YES;
@@ -344,12 +346,20 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
                         .bottomRight = (CGFloat)borderRadii.bottomRight};
 }
 
-static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
+static RCTBorderColors RCTCreateRCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{.top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
-                         .left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
-                         .bottom = RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
-                         .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
+  return RCTBorderColors{.top = RCTCreateCGColorRefFromSharedColor(borderColors.top),
+                         .left = RCTCreateCGColorRefFromSharedColor(borderColors.left),
+                         .bottom = RCTCreateCGColorRefFromSharedColor(borderColors.bottom),
+                         .right = RCTCreateCGColorRefFromSharedColor(borderColors.right)};
+}
+
+static void RCTReleaseRCTBorderColors(RCTBorderColors borderColors)
+{
+  CGColorRelease(borderColors.top);
+  CGColorRelease(borderColors.left);
+  CGColorRelease(borderColors.bottom);
+  CGColorRelease(borderColors.right);
 }
 
 static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
@@ -412,7 +422,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     }
 
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
-    CGColorRef borderColor = RCTCGColorRefFromSharedColor(borderMetrics.borderColors.left);
+    CGColorRef borderColor = RCTCreateCGColorRefFromSharedColor(borderMetrics.borderColors.left);
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
@@ -431,14 +441,18 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderColor = nil;
     layer.cornerRadius = 0;
 
+    RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
+
     UIImage *image = RCTGetBorderImage(
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
         layer.bounds.size,
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
-        RCTBorderColorsFromBorderColors(borderMetrics.borderColors),
+        borderColors,
         _backgroundColor.CGColor,
         self.clipsToBounds);
+
+    RCTReleaseRCTBorderColors(borderColors);
 
     if (image == nil) {
       _borderLayer.contents = nil;
@@ -554,6 +568,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 }
 
 #pragma mark - Accessibility Events
+
+- (BOOL)shouldGroupAccessibilityChildren
+{
+  return YES;
+}
 
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {

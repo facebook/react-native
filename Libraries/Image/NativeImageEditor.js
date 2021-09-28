@@ -42,6 +42,7 @@ export interface Spec extends TurboModule {
   +getConstants: () => {||};
   +cropImage: (
     uri: string,
+    // eslint-disable-next-line @react-native/codegen/react-native-modules
     cropData: Options,
     successCallback: (uri: string) => void,
     errorCallback: (error: string) => void,

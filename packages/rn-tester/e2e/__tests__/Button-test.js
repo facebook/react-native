@@ -23,36 +23,75 @@ describe('Button', () => {
     );
   });
 
-  it('Simple button should be tappable', async () => {
-    await openExampleWithTitle('Simple Button');
-    await element(by.id('simple_button')).tap();
-    await expect(element(by.text('Simple has been pressed!'))).toBeVisible();
+  it('Default Styling button should be tappable', async () => {
+    await openExampleWithTitle('Default Styling');
+    await element(by.id('button_default_styling')).tap();
+    await expect(
+      element(by.text('Your application has been submitted!')),
+    ).toBeVisible();
     await element(by.text('OK')).tap();
   });
 
-  it('Adjusted color button should be tappable', async () => {
-    await openExampleWithTitle('Adjusted color');
-    await element(by.id('purple_button')).tap();
-    await expect(element(by.text('Purple has been pressed!'))).toBeVisible();
+  it('Red color button should be tappable', async () => {
+    await openExampleWithTitle('Color');
+    await element(by.id('cancel_button')).tap();
+    await expect(
+      element(by.text('Your application has been cancelled!')),
+    ).toBeVisible();
     await element(by.text('OK')).tap();
   });
 
   it("Two buttons with JustifyContent:'space-between' should be tappable", async () => {
-    await openExampleWithTitle('Fit to text layout');
-    await element(by.id('left_button')).tap();
-    await expect(element(by.text('Left has been pressed!'))).toBeVisible();
+    await openExampleWithTitle('Two Buttons');
+    await element(by.id('two_cancel_button')).tap();
+    await expect(
+      element(by.text('Your application has been cancelled!')),
+    ).toBeVisible();
     await element(by.text('OK')).tap();
 
-    await element(by.id('right_button')).tap();
-    await expect(element(by.text('Right has been pressed!'))).toBeVisible();
+    await element(by.id('two_submit_button')).tap();
+    await expect(
+      element(by.text('Your application has been submitted!')),
+    ).toBeVisible();
+    await element(by.text('OK')).tap();
+  });
+
+  it("Three buttons with JustifyContent:'space-between' should be tappable", async () => {
+    await openExampleWithTitle('Three Buttons');
+    await element(by.id('three_cancel_button')).tap();
+    await expect(
+      element(by.text('Your application has been cancelled!')),
+    ).toBeVisible();
+    await element(by.text('OK')).tap();
+
+    await openExampleWithTitle('Three Buttons');
+    await element(by.id('three_save_button')).tap();
+    await expect(
+      element(by.text('Your application has been saved!')),
+    ).toBeVisible();
+    await element(by.text('OK')).tap();
+
+    await element(by.id('three_submit_button')).tap();
+    await expect(
+      element(by.text('Your application has been submitted!')),
+    ).toBeVisible();
     await element(by.text('OK')).tap();
   });
 
   it('Disabled button should not interact', async () => {
-    await openExampleWithTitle('Disabled Button');
+    await openExampleWithTitle('Disabled');
     await element(by.id('disabled_button')).tap();
     await expect(
-      element(by.text('Disabled has been pressed!')),
+      element(by.text('Your application has been submitted!')),
     ).toBeNotVisible();
+  });
+
+  it('AccessibilityLabel button should be tappable', async () => {
+    await openExampleWithTitle('AccessibilityLabel');
+    await element(by.id('accessibilityLabel_button')).tap();
+    await expect(
+      element(by.text('Your application has been submitted!')),
+    ).toBeVisible();
+    await element(by.text('OK')).tap();
   });
 });

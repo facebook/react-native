@@ -23,7 +23,7 @@ RCT_EXPORT_MODULE()
 
 - (void)startObserving
 {
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
@@ -37,8 +37,7 @@ RCT_EXPORT_MODULE()
   ADD_KEYBOARD_HANDLER(UIKeyboardDidChangeFrameNotification, keyboardDidChangeFrame);
 
 #undef ADD_KEYBOARD_HANDLER
-
-#endif
+#endif // TODO(macOS GH#774)
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -114,7 +113,7 @@ static NSString *RCTAnimationNameForCurve(UIViewAnimationCurve curve)
 
 static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
 {
-#if TARGET_OS_TV || TARGET_OS_OSX // TODO(macOS GH#774)
+#if TARGET_OS_OSX // TODO(macOS GH#774)
   return @{};
 #else
   NSDictionary *userInfo = notification.userInfo;
@@ -132,7 +131,7 @@ static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
     @"easing" : RCTAnimationNameForCurve(curve),
     @"isEventFromThisApp" : isLocalUserInfoKey == 1 ? @YES : @NO,
   };
-#endif
+#endif // TODO(macOS GH#774)
 }
 
 Class RCTKeyboardObserverCls(void)

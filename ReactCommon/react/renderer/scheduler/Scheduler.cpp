@@ -110,11 +110,17 @@ Scheduler::Scheduler(
       "react_fabric:enable_reparenting_detection_android");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_android");
+  uiManager_->experimentEnableStateUpdateWithAutorepeat =
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_state_update_with_autorepeat_android");
 #else
   enableReparentingDetection_ = reactNativeConfig_->getBool(
       "react_fabric:enable_reparenting_detection_ios");
   removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
       "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
+  uiManager_->experimentEnableStateUpdateWithAutorepeat =
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_state_update_with_autorepeat_ios");
 #endif
 }
 
@@ -220,9 +226,9 @@ void Scheduler::renderTemplateToSurface(
     uiManager_->getShadowTreeRegistry().visit(
         surfaceId, [=](const ShadowTree &shadowTree) {
           return shadowTree.tryCommit(
-              [&](RootShadowNode::Shared const &oldRootShadowNode) {
+              [&](RootShadowNode const &oldRootShadowNode) {
                 return std::make_shared<RootShadowNode>(
-                    *oldRootShadowNode,
+                    oldRootShadowNode,
                     ShadowNodeFragment{
                         /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                         /* .children = */
@@ -272,19 +278,16 @@ Size Scheduler::measureSurface(
     const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::measureSurface");
 
-  Size size;
+  auto currentRootShadowNode = RootShadowNode::Shared{};
   uiManager_->getShadowTreeRegistry().visit(
       surfaceId, [&](const ShadowTree &shadowTree) {
-        shadowTree.tryCommit(
-            [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              auto rootShadowNode =
-                  oldRootShadowNode->clone(layoutConstraints, layoutContext);
-              rootShadowNode->layoutIfNeeded();
-              size = rootShadowNode->getLayoutMetrics().frame.size;
-              return nullptr;
-            });
+        currentRootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
       });
-  return size;
+
+  auto rootShadowNode =
+      currentRootShadowNode->clone(layoutConstraints, layoutContext);
+  rootShadowNode->layoutIfNeeded();
+  return rootShadowNode->getLayoutMetrics().frame.size;
 }
 
 MountingCoordinator::Shared Scheduler::findMountingCoordinator(
@@ -305,8 +308,8 @@ void Scheduler::constraintSurfaceLayout(
 
   uiManager_->getShadowTreeRegistry().visit(
       surfaceId, [&](ShadowTree const &shadowTree) {
-        shadowTree.commit([&](RootShadowNode::Shared const &oldRootShadowNode) {
-          return oldRootShadowNode->clone(layoutConstraints, layoutContext);
+        shadowTree.commit([&](RootShadowNode const &oldRootShadowNode) {
+          return oldRootShadowNode.clone(layoutConstraints, layoutContext);
         });
       });
 }

@@ -16,7 +16,6 @@
 #import <react/renderer/imagemanager/ImageResponse.h>
 #import <react/renderer/imagemanager/ImageResponseObserver.h>
 
-#import "RCTImageInstrumentationProxy.h"
 #import "RCTImagePrimitivesConversions.h"
 
 using namespace facebook::react;
@@ -41,10 +40,9 @@ using namespace facebook::react;
 {
   SystraceSection s("RCTImageManager::requestImage");
 
-  auto imageInstrumentation = std::make_shared<RCTImageInstrumentationProxy>(_imageLoader);
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
   telemetry->willRequestUrl();
-  auto imageRequest = ImageRequest(imageSource, telemetry, imageInstrumentation);
+  auto imageRequest = ImageRequest(imageSource, telemetry);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
@@ -108,10 +106,6 @@ using namespace facebook::react;
                                     completionBlock:completionBlock];
     RCTImageLoaderCancellationBlock cancelationBlock = loaderRequest.cancellationBlock;
     sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
-
-    if (imageInstrumentation) {
-      imageInstrumentation->setImageURLLoaderRequest(loaderRequest);
-    }
   });
 
   return imageRequest;

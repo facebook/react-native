@@ -78,7 +78,7 @@
   // Does nothing
 }
 
-- (void)dealloc
+- (void)invalidate
 {
   if (_listenerCount > 0) {
     [self stopObserving];

@@ -92,12 +92,6 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
-CatalystInstanceImpl::~CatalystInstanceImpl() {
-  if (moduleMessageQueue_ != NULL) {
-    moduleMessageQueue_->quitSynchronous();
-  }
-}
-
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),

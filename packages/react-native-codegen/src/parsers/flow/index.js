@@ -15,15 +15,20 @@ import type {SchemaType} from '../../CodegenSchema.js';
 const flowParser = require('flow-parser');
 const fs = require('fs');
 const path = require('path');
-const {buildModuleSchema} = require('./modules/schema');
-const {buildComponentSchema} = require('./components/schema');
-const {processComponent} = require('./components');
-const {processModule} = require('./modules');
+const {buildComponentSchema} = require('./components');
+const {wrapComponentSchema} = require('./components/schema');
+const {buildModuleSchema} = require('./modules');
+const {wrapModuleSchema} = require('./modules/schema');
 
-function getTypes(ast) {
+import type {TypeDeclarationMap} from './utils';
+
+function getTypes(ast): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration') {
-      if (node.declaration && node.declaration.type !== 'VariableDeclaration') {
+    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
+      if (
+        node.declaration.type === 'TypeAlias' ||
+        node.declaration.type === 'InterfaceDeclaration'
+      ) {
         types[node.declaration.id.name] = node.declaration;
       }
     } else if (
@@ -36,63 +41,84 @@ function getTypes(ast) {
   }, {});
 }
 
-function getConfigType(ast, types): 'module' | 'component' {
+function isComponent(ast) {
   const defaultExports = ast.body.filter(
     node => node.type === 'ExportDefaultDeclaration',
   );
 
-  let isComponent = false;
-
-  if (defaultExports.length > 0) {
-    let declaration = defaultExports[0].declaration;
-    // codegenNativeComponent can be nested inside a cast
-    // expression so we need to go one level deeper
-    if (declaration.type === 'TypeCastExpression') {
-      declaration = declaration.expression;
-    }
-
-    isComponent =
-      declaration &&
-      declaration.callee &&
-      declaration.callee.name === 'codegenNativeComponent';
+  if (defaultExports.length === 0) {
+    return false;
   }
 
-  const typesExtendingTurboModule = Object.keys(types)
-    .map(typeName => types[typeName])
-    .filter(
-      type =>
-        type.extends &&
-        type.extends[0] &&
-        type.extends[0].id.name === 'TurboModule',
-    );
+  let declaration = defaultExports[0].declaration;
+  // codegenNativeComponent can be nested inside a cast
+  // expression so we need to go one level deeper
+  if (declaration.type === 'TypeCastExpression') {
+    declaration = declaration.expression;
+  }
 
-  if (typesExtendingTurboModule.length > 1) {
+  if (declaration.type !== 'CallExpression') {
+    return false;
+  }
+
+  return (
+    declaration.callee.type === 'Identifier' &&
+    declaration.callee.name === 'codegenNativeComponent'
+  );
+}
+
+function isModule(types: TypeDeclarationMap) {
+  const declaredModuleNames: Array<string> = Object.keys(types).filter(
+    (typeName: string) => {
+      const declaration = types[typeName];
+      return (
+        declaration.type === 'InterfaceDeclaration' &&
+        declaration.extends.length === 1 &&
+        declaration.extends[0].type === 'InterfaceExtends' &&
+        declaration.extends[0].id.name === 'TurboModule'
+      );
+    },
+  );
+
+  if (declaredModuleNames.length === 0) {
+    return false;
+  }
+
+  if (declaredModuleNames.length > 1) {
     throw new Error(
-      'Found two types extending "TurboModule" is one file. Split them into separated files.',
+      'File contains declarations of more than one module: ' +
+        declaredModuleNames.join(', ') +
+        '. Please declare exactly one module in this file.',
     );
   }
 
-  const isModule = typesExtendingTurboModule.length === 1;
+  return true;
+}
 
-  if (isModule && isComponent) {
+function getConfigType(ast, types: TypeDeclarationMap): 'module' | 'component' {
+  const isConfigAComponent = isComponent(ast);
+  const isConfigAModule = isModule(types);
+
+  if (isConfigAModule && isConfigAComponent) {
     throw new Error(
       'Found type extending "TurboModule" and exported "codegenNativeComponent" declaration in one file. Split them into separated files.',
     );
   }
 
-  if (isModule) {
+  if (isConfigAModule) {
     return 'module';
-  } else if (isComponent) {
+  } else if (isConfigAComponent) {
     return 'component';
   } else {
     throw new Error(
-      `Default export for module specified incorrectly. It should containts
-    either type extending "TurboModule" or "codegenNativeComponent".`,
+      'File neither contains a module declaration, nor a component declaration. ' +
+        'For module declarations, please make sure your file has an InterfaceDeclaration extending TurboModule. ' +
+        'For component declarations, please make sure your file has a default export calling the codegenNativeComponent<Props>(...) macro.',
     );
   }
 }
 
-function buildSchema(contents: string, filename: ?string): ?SchemaType {
+function buildSchema(contents: string, filename: ?string): SchemaType {
   const ast = flowParser.parse(contents);
 
   const types = getTypes(ast);
@@ -100,30 +126,30 @@ function buildSchema(contents: string, filename: ?string): ?SchemaType {
   const configType = getConfigType(ast, types);
 
   if (configType === 'component') {
-    return buildComponentSchema(processComponent(ast, types));
+    return wrapComponentSchema(buildComponentSchema(ast, types));
   } else {
     if (filename === undefined || filename === null) {
       throw new Error('Filepath expected while parasing a module');
     }
     const moduleName = path.basename(filename).slice(6, -3);
-    return buildModuleSchema(processModule(types), moduleName);
+    return wrapModuleSchema(buildModuleSchema(moduleName, types), moduleName);
   }
 }
 
-function parseFile(filename: string): ?SchemaType {
+function parseFile(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
   return buildSchema(contents, filename);
 }
 
-function parseModuleFixture(filename: string): ?SchemaType {
+function parseModuleFixture(filename: string): SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
   return buildSchema(contents, 'path/NativeSampleTurboModule.js');
 }
 
-function parseString(contents: string): ?SchemaType {
-  return buildSchema(contents);
+function parseString(contents: string, filename: ?string): SchemaType {
+  return buildSchema(contents, filename);
 }
 
 module.exports = {

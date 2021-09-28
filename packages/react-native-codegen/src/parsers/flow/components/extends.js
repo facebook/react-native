@@ -11,9 +11,9 @@
 'use strict';
 
 import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
-import type {TypeMap} from '../utils.js';
+import type {TypeDeclarationMap} from '../utils.js';
 
-function extendsForProp(prop: PropsAST, types: TypeMap) {
+function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
   if (!prop.argument) {
     console.log('null', prop);
   }
@@ -38,7 +38,7 @@ function extendsForProp(prop: PropsAST, types: TypeMap) {
 
 function removeKnownExtends(
   typeDefinition: $ReadOnlyArray<PropsAST>,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): $ReadOnlyArray<PropsAST> {
   return typeDefinition.filter(
     prop =>
@@ -52,7 +52,7 @@ type PropsAST = Object;
 
 function getExtendsProps(
   typeDefinition: $ReadOnlyArray<PropsAST>,
-  types: TypeMap,
+  types: TypeDeclarationMap,
 ): $ReadOnlyArray<ExtendsPropsShape> {
   return typeDefinition
     .filter(prop => prop.type === 'ObjectTypeSpreadProperty')

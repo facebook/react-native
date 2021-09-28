@@ -70,7 +70,6 @@ rn_xplat_cxx_library(
     ios_exported_headers = subdir_glob(
         [
             ("", "*.h"),
-            ("platform/ios", "RCTImageInstrumentationProxy.h"),
             ("platform/ios", "RCTImagePrimitivesConversions.h"),
         ],
         prefix = "react/renderer/imagemanager",

@@ -1530,9 +1530,45 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeImageStoreAndroidSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)getBase64ForTag:(NSString *)uri
+        successCallback:(RCTResponseSenderBlock)successCallback
+          errorCallback:(RCTResponseSenderBlock)errorCallback;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'ImageStoreAndroid'
+     */
+
+    class JSI_EXPORT NativeImageStoreAndroidSpecJSI : public ObjCTurboModule {
+    public:
+      NativeImageStoreAndroidSpecJSI(const ObjCTurboModule::InitParams &params);
+
+    };
+  } // namespace react
+} // namespace facebook
 
 namespace JS {
-  namespace NativeImageStore {
+  namespace NativeImageStoreIOS {
+    struct SpecGetBase64ForTagErrorCallbackError {
+      NSString *message() const;
+
+      SpecGetBase64ForTagErrorCallbackError(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImageStoreIOS_SpecGetBase64ForTagErrorCallbackError)
++ (RCTManagedPointer *)JS_NativeImageStoreIOS_SpecGetBase64ForTagErrorCallbackError:(id)json;
+@end
+
+namespace JS {
+  namespace NativeImageStoreIOS {
     struct SpecAddImageFromBase64ErrorCallbackError {
       NSString *message() const;
 
@@ -1543,10 +1579,10 @@ namespace JS {
   }
 }
 
-@interface RCTCxxConvert (NativeImageStore_SpecAddImageFromBase64ErrorCallbackError)
-+ (RCTManagedPointer *)JS_NativeImageStore_SpecAddImageFromBase64ErrorCallbackError:(id)json;
+@interface RCTCxxConvert (NativeImageStoreIOS_SpecAddImageFromBase64ErrorCallbackError)
++ (RCTManagedPointer *)JS_NativeImageStoreIOS_SpecAddImageFromBase64ErrorCallbackError:(id)json;
 @end
-@protocol NativeImageStoreSpec <RCTBridgeModule, RCTTurboModule>
+@protocol NativeImageStoreIOSSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getBase64ForTag:(NSString *)uri
         successCallback:(RCTResponseSenderBlock)successCallback
@@ -1562,12 +1598,12 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ImageStore'
+     * ObjC++ class for module 'ImageStoreIOS'
      */
 
-    class JSI_EXPORT NativeImageStoreSpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT NativeImageStoreIOSSpecJSI : public ObjCTurboModule {
     public:
-      NativeImageStoreSpecJSI(const ObjCTurboModule::InitParams &params);
+      NativeImageStoreIOSSpecJSI(const ObjCTurboModule::InitParams &params);
 
     };
   } // namespace react
@@ -3315,7 +3351,12 @@ inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showVideos() c
   id const p = _v[@"showVideos"];
   return RCTBridgingToBool(p);
 }
-inline NSString *JS::NativeImageStore::SpecAddImageFromBase64ErrorCallbackError::message() const
+inline NSString *JS::NativeImageStoreIOS::SpecGetBase64ForTagErrorCallbackError::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeImageStoreIOS::SpecAddImageFromBase64ErrorCallbackError::message() const
 {
   id const p = _v[@"message"];
   return RCTBridgingToString(p);

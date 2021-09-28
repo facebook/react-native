@@ -40,7 +40,6 @@
   [_touchHandler attachToView:self.view];
 }
 
-#if !TARGET_OS_TV
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
   return [RCTSharedApplication() statusBarStyle];
@@ -55,20 +54,6 @@
 - (BOOL)prefersStatusBarHidden
 {
   return [RCTSharedApplication() isStatusBarHidden];
-}
-
-- (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)())completion
-{
-  UIView *snapshot = [self.view snapshotViewAfterScreenUpdates:NO];
-  [self.view addSubview:snapshot];
-
-  [super dismissViewControllerAnimated:flag
-                            completion:^{
-                              [snapshot removeFromSuperview];
-                              if (completion) {
-                                completion();
-                              }
-                            }];
 }
 
 #if RCT_DEV
@@ -89,6 +74,5 @@
   return _supportedInterfaceOrientations;
 }
 #endif // RCT_DEV
-#endif // !TARGET_OS_TV
 
 @end

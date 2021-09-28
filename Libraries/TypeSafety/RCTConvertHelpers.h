@@ -49,6 +49,7 @@ NSArray *RCTConvertOptionalVecToArray(const folly::Optional<ContainerT> &vec)
 bool RCTBridgingToBool(id value);
 folly::Optional<bool> RCTBridgingToOptionalBool(id value);
 NSString *RCTBridgingToString(id value);
+NSString *RCTBridgingToOptionalString(id value);
 folly::Optional<double> RCTBridgingToOptionalDouble(id value);
 double RCTBridgingToDouble(id value);
 NSArray *RCTBridgingToArray(id value);

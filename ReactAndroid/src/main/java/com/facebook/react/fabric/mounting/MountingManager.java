@@ -63,9 +63,9 @@ public class MountingManager {
     mViewManagerRegistry = viewManagerRegistry;
   }
 
-  private static void logViewHierarchy(ViewGroup parent) {
+  private static void logViewHierarchy(ViewGroup parent, boolean recurse) {
     int parentTag = parent.getId();
-    FLog.e(TAG, "  <ViewGroup tag=" + parentTag + ">");
+    FLog.e(TAG, "  <ViewGroup tag=" + parentTag + " class=" + parent.getClass().toString() + ">");
     for (int i = 0; i < parent.getChildCount(); i++) {
       FLog.e(
           TAG,
@@ -73,11 +73,24 @@ public class MountingManager {
               + i
               + " tag="
               + parent.getChildAt(i).getId()
-              + " toString="
-              + parent.getChildAt(i).toString()
+              + " class="
+              + parent.getChildAt(i).getClass().toString()
               + ">");
     }
     FLog.e(TAG, "  </ViewGroup tag=" + parentTag + ">");
+
+    if (recurse) {
+      FLog.e(TAG, "Displaying Ancestors:");
+      ViewParent ancestor = parent.getParent();
+      while (ancestor != null) {
+        ViewGroup ancestorViewGroup = (ancestor instanceof ViewGroup ? (ViewGroup) ancestor : null);
+        int ancestorId = ancestorViewGroup == null ? View.NO_ID : ancestorViewGroup.getId();
+        FLog.e(
+            TAG,
+            "<ViewParent tag=" + ancestorId + " class=" + ancestor.getClass().toString() + ">");
+        ancestor = ancestor.getParent();
+      }
+    }
   }
 
   /**
@@ -218,7 +231,7 @@ public class MountingManager {
     // Display children before inserting
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {
       FLog.e(TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
-      logViewHierarchy(parentView);
+      logViewHierarchy(parentView, false);
     }
 
     try {
@@ -243,7 +256,7 @@ public class MountingManager {
             public void run() {
               FLog.e(
                   TAG, "addViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " AFTER");
-              logViewHierarchy(parentView);
+              logViewHierarchy(parentView, false);
             }
           });
     }
@@ -359,7 +372,7 @@ public class MountingManager {
     if (SHOW_CHANGED_VIEW_HIERARCHIES) {
       // Display children before deleting any
       FLog.e(TAG, "removeViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " BEFORE");
-      logViewHierarchy(parentView);
+      logViewHierarchy(parentView, false);
     }
 
     ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(viewState);
@@ -398,8 +411,9 @@ public class MountingManager {
         return;
       }
 
+      logViewHierarchy(parentView, true);
       throw new IllegalStateException(
-          "Tried to delete view ["
+          "Tried to remove view ["
               + tag
               + "] of parent ["
               + parentTag
@@ -431,6 +445,8 @@ public class MountingManager {
       // enough that we shouldn't try to change this invariant, without a lot of thought.
       int childCount = viewGroupManager.getChildCount(parentView);
 
+      logViewHierarchy(parentView, true);
+
       throw new IllegalStateException(
           "Cannot remove child at index "
               + index
@@ -451,7 +467,7 @@ public class MountingManager {
               FLog.e(
                   TAG,
                   "removeViewAt: [" + tag + "] -> [" + parentTag + "] idx: " + index + " AFTER");
-              logViewHierarchy(parentView);
+              logViewHierarchy(parentView, false);
             }
           });
     }
@@ -577,12 +593,20 @@ public class MountingManager {
       return;
     }
 
-    View view = viewState.mView;
+    // To delete we simply remove the tag from the registry.
+    // In the past we called dropView here, but we want to rely on either
+    // (1) the correct set of MountInstructions being sent to the platform
+    // and/or (2) dropView being called by stopSurface.
+    // If Views are orphaned at this stage and leaked, it's a problem in
+    // the differ or LayoutAnimations, not MountingManager.
+    // Additionally, as documented in `dropView`, we cannot always trust a
+    // view's children to be up-to-date.
+    mTagToViewState.remove(reactTag);
 
-    if (view != null) {
-      dropView(view, false);
-    } else {
-      mTagToViewState.remove(reactTag);
+    // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
+    ViewManager viewManager = viewState.mViewManager;
+    if (!viewState.mIsRoot && viewManager != null) {
+      viewManager.onDropViewInstance(viewState.mView);
     }
   }
 

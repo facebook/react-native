@@ -12,115 +12,96 @@
 
 const React = require('react');
 
-const {
-  StyleSheet,
-  View,
-  Text,
-  TouchableHighlight,
-  Share,
-} = require('react-native');
+const {StyleSheet, View, Text, Button, Share} = require('react-native');
 
-type Props = $ReadOnly<{||}>;
-type State = {|result: string|};
+const shareMessage = () => {
+  Share.share({
+    message: ('Our top priority for React Native is to match the expectations people have for each platform. This is why React Native renders to platform primitives. We value native look-and-feel over cross-platform consistency.' +
+      'For example, the TextInput in React Native renders to a UITextField on iOS. This ensures that integration with password managers and keyboard controls work out of the box. By using platform primitives, React Native apps are also able to stay up-to-date with design and behavior changes from new releases of Android and iOS.': string),
+  });
+};
 
-class ShareMessageExample extends React.Component<Props, State> {
-  _shareMessage: Function;
-  _shareText: Function;
-  _showResult: Function;
+const shareText = () => {
+  Share.share(
+    {
+      title: 'Massive Scale',
+      message: ('Hundreds of screens in the Facebook app are implemented with React Native. The Facebook app is used by billions of people on a huge range of devices. This is why we invest in the most challenging problems at scale.' +
+        'Deploying React Native in our apps lets us identify problems that we wouldn’t see at a smaller scale. For example, Facebook focuses on improving performance across a broad spectrum of devices from the newest iPhone to many older generations of Android devices. This focus informs our architecture projects such as Hermes, Fabric, and TurboModules.': string),
+      url: 'https://reactnative.dev/blog/2020/07/17/react-native-principles',
+    },
+    {
+      subject: 'MUST READ: Massive Scale',
+      dialogTitle: 'Share React Native Blog',
+      excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
+      tintColor: 'blue',
+    },
+  );
+};
 
-  constructor(props) {
-    super(props);
+const ShareMessageWithoutTitle = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Native Experience</Text>
+      <Text>
+        Our top priority for React Native is to match the expectations people
+        have for each platform. This is why React Native renders to platform
+        primitives. We value native look-and-feel over cross-platform
+        consistency. For example, the TextInput in React Native renders to a
+        UITextField on iOS. This ensures that integration with password managers
+        and keyboard controls work out of the box. By using platform primitives,
+        React Native apps are also able to stay up-to-date with design and
+        behavior changes from new releases of Android and iOS.
+      </Text>
+      <Button title="SHARE" onPress={shareMessage} />
+    </View>
+  );
+};
 
-    this._shareMessage = this._shareMessage.bind(this);
-    this._shareText = this._shareText.bind(this);
-    this._showResult = this._showResult.bind(this);
-
-    this.state = {
-      result: '',
-    };
-  }
-
-  render() {
-    return (
-      <View>
-        <TouchableHighlight style={styles.wrapper} onPress={this._shareMessage}>
-          <View style={styles.button}>
-            <Text>Click to share message</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.wrapper} onPress={this._shareText}>
-          <View style={styles.button}>
-            <Text>Click to share message, URL and title</Text>
-          </View>
-        </TouchableHighlight>
-        <Text>{this.state.result}</Text>
-      </View>
-    );
-  }
-
-  _shareMessage() {
-    Share.share({
-      message:
-        'React Native | A framework for building native apps using React',
-    })
-      .then(this._showResult)
-      .catch(error => this.setState({result: 'error: ' + error.message}));
-  }
-
-  _shareText() {
-    Share.share(
-      {
-        message: 'A framework for building native apps using React',
-        url: 'https://reactnative.dev/',
-        title: 'React Native',
-      },
-      {
-        subject: 'A subject to go in the email heading',
-        dialogTitle: 'Share React Native website',
-        excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
-        tintColor: 'green',
-      },
-    )
-      .then(this._showResult)
-      .catch(error => this.setState({result: 'error: ' + error.message}));
-  }
-
-  _showResult(result) {
-    if (result.action === Share.sharedAction) {
-      if (result.activityType) {
-        this.setState({
-          result: 'shared with an activityType: ' + result.activityType,
-        });
-      } else {
-        this.setState({result: 'shared'});
-      }
-    } else if (result.action === Share.dismissedAction) {
-      this.setState({result: 'dismissed'});
-    }
-  }
-}
+const ShareMessageWithTitle = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Massive Scale</Text>
+      <Text>
+        Hundreds of screens in the Facebook app are implemented with React
+        Native. The Facebook app is used by billions of people on a huge range
+        of devices. This is why we invest in the most challenging problems at
+        scale. Deploying React Native in our apps lets us identify problems that
+        we wouldn’t see at a smaller scale. For example, Facebook focuses on
+        improving performance across a broad spectrum of devices from the newest
+        iPhone to many older generations of Android devices. This focus informs
+        our architecture projects such as Hermes, Fabric, and TurboModules.
+      </Text>
+      <Button title="SHARE" onPress={shareText} />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-  wrapper: {
-    borderRadius: 5,
-    marginBottom: 5,
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  button: {
-    backgroundColor: '#eeeeee',
-    padding: 10,
+  title: {
+    fontSize: 30,
+    margin: 10,
+    textAlign: 'center',
   },
 });
 
-exports.framework = 'React';
 exports.title = 'Share';
-exports.category = 'Basic';
-exports.documentationURL = 'https://reactnative.dev/docs/share';
 exports.description = 'Share data with other Apps.';
 exports.examples = [
   {
-    title: 'Share Text Content',
+    title: 'Share message',
     render(): React.Node {
-      return <ShareMessageExample />;
+      return <ShareMessageWithoutTitle />;
+    },
+  },
+  {
+    title: 'Share message, URL (iOS) and title (Android)',
+    render(): React.Node {
+      return <ShareMessageWithTitle />;
     },
   },
 ];

@@ -97,7 +97,7 @@ Instrumentation& Runtime::instrumentation() {
       return std::unordered_map<std::string, int64_t>{};
     }
 
-    void collectGarbage() override {}
+    void collectGarbage(std::string) override {}
 
     void startTrackingHeapObjectStackTraces() override {}
     void stopTrackingHeapObjectStackTraces() override {}

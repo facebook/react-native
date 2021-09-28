@@ -51,7 +51,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("cxxreact:bridge"),
     ],
     exported_deps = ([
-        react_native_xplat_target("turbomodule/core:core"),
+        react_native_xplat_target("react/nativemodule/core:core"),
     ]) + ([
         "//xplat/jsi:jsi",
     ]) if not IS_OSS_BUILD else [],

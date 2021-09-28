@@ -20,10 +20,8 @@ RCT_ENUM_CONVERTER(
     UIModalPresentationStyle,
     (@{
       @"fullScreen" : @(UIModalPresentationFullScreen),
-#if !TARGET_OS_TV
       @"pageSheet" : @(UIModalPresentationPageSheet),
       @"formSheet" : @(UIModalPresentationFormSheet),
-#endif
       @"overFullScreen" : @(UIModalPresentationOverFullScreen),
     }),
     UIModalPresentationFullScreen,
@@ -137,9 +135,5 @@ RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(identifier, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)
-
-#if TARGET_OS_TV
-RCT_EXPORT_VIEW_PROPERTY(onRequestClose, RCTDirectEventBlock)
-#endif
 
 @end

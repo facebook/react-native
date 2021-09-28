@@ -37,7 +37,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
-  ~CatalystInstanceImpl() override;
 
   static void registerNatives();
 

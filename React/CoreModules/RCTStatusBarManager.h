@@ -12,10 +12,10 @@
 
 @interface RCTConvert (UIStatusBar)
 
-#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS GH#774)
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
 + (UIStatusBarStyle)UIStatusBarStyle:(id)json;
 + (UIStatusBarAnimation)UIStatusBarAnimation:(id)json;
-#endif
+#endif // TODO(macOS GH#774)
 
 @end
 

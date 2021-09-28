@@ -224,7 +224,8 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
           style={mergedStyle}
           ref={this._setComponentRef}
           nativeID={
-            this._isFabric() ? 'animatedComponent' : undefined
+            props.nativeID ??
+            (this._isFabric() ? 'animatedComponent' : undefined)
           } /* TODO: T68258846. */
           // The native driver updates views directly through the UI thread so we
           // have to make sure the view doesn't get optimized away because it cannot

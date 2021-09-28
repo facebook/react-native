@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://github.com/microsoft/react-native-macos"
   s.license                = package["license"]
   s.author                 = "Microsoft Corporation"
-  s.platforms              = { :ios => "10.0", :tvos => "10.0", :osx => "10.14" }
+  s.platforms              = { :ios => "10.0", :osx => "10.14" }
   s.compiler_flags         = folly_compiler_flags
   s.source                 = source
 

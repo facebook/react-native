@@ -1,0 +1,12 @@
+{
+  "name": "@react-native/eslint-plugin-codegen",
+  "version": "0.0.1",
+  "description": "ESLint rules to validate NativeModule and Component Specs",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/eslint-plugin-codegen"
+  },
+  "license": "MIT"
+}

@@ -41,7 +41,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
-  s.platforms              = { :ios => "10.0", :tvos => "10.0", :osx => "10.14" } # TODO(macOS GH#774)
+  s.platforms              = { :ios => "10.0", :osx => "10.14" } # TODO(macOS GH#774)
   s.source                 = source
   s.resource_bundle        = { "AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
@@ -60,10 +60,9 @@ Pod::Spec.new do |s|
                                 "React/Inspector/**/*",
                                 "React/Tests/**/*",
                                 "React/CxxBridge/HermesExecutorFactory.*" # TODO(macOS GH#214)
-    ss.ios.exclude_files      = "React/**/RCTTV*.*",
 
     # [TODO(macOS GH#774)
-                                "**/macOS/*"
+    ss.ios.exclude_files      = "**/macOS/*"
     ss.osx.exclude_files      = "React/Modules/RCTRedBoxExtraDataViewController.{h,m}",
                                 "React/Modules/RCTAccessibilityManager.m",
                                 "React/Profiler/{RCTFPSGraph,RCTPerfMonitor}.*",
@@ -74,13 +73,6 @@ Pod::Spec.new do |s|
                                 "React/Views/RefreshControl/*",
                                 "React/Views/SafeAreaView/*"
     # ]TODO(macOS GH#774)
-
-    ss.tvos.exclude_files     = "React/Modules/RCTClipboard*",
-                                "React/Views/RCTDatePicker*",
-                                "React/Views/RCTPicker*",
-                                "React/Views/RCTRefreshControl*",
-                                "React/Views/RCTSlider*",
-                                "React/Views/RCTSwitch*",
     ss.private_header_files   = "React/Cxx*/*.h"
   end
 

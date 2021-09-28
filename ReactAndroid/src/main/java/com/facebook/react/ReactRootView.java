@@ -382,8 +382,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
       mReactInstanceManager.createReactContextInBackground();
 
-      attachToReactInstanceManager();
-
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }

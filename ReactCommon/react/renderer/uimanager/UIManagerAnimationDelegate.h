@@ -26,8 +26,8 @@ class UIManagerAnimationDelegate {
   virtual void uiManagerDidConfigureNextLayoutAnimation(
       jsi::Runtime &runtime,
       RawValue const &config,
-      const jsi::Value &successCallback,
-      const jsi::Value &failureCallback) const = 0;
+      jsi::Value const &successCallback,
+      jsi::Value const &failureCallback) const = 0;
 
   /**
    * Set ComponentDescriptor registry.

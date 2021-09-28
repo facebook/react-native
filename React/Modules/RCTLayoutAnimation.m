@@ -61,7 +61,6 @@ static NSString *CAMediaTimingFunctionNameFromRCTAnimationType(RCTAnimationType 
 // `UIKeyboardWillChangeFrameNotification`s.
 + (void)initializeStatics
 {
-#if !TARGET_OS_TV
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -69,15 +68,12 @@ static NSString *CAMediaTimingFunctionNameFromRCTAnimationType(RCTAnimationType 
                                                  name:UIKeyboardWillChangeFrameNotification
                                                object:nil];
   });
-#endif
 }
 
 + (void)keyboardWillChangeFrame:(NSNotification *)notification
 {
-#if !TARGET_OS_TV
   NSDictionary *userInfo = notification.userInfo;
   _currentKeyboardAnimationCurve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
-#endif
 }
 #endif // TODO(macOS GH#774)
 
