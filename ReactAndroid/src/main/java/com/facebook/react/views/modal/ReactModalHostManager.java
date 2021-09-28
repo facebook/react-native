@@ -101,6 +101,9 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   public void setPresentationStyle(ReactModalHostView view, @Nullable String value) {}
 
   @Override
+  public void setInteractiveDismissEnabled(ReactModalHostView view, boolean value) {}
+
+  @Override
   public void setAnimated(ReactModalHostView view, boolean value) {}
 
   @Override
