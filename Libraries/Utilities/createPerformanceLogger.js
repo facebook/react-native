@@ -16,7 +16,7 @@ const infoLog = require('./infoLog');
 const performanceNow: () => number =
   global.nativeQPLTimestamp ?? global.performance.now.bind(global.performance);
 
-type Timespan = {
+export type Timespan = {
   startTime: number,
   endTime?: number,
   totalTime?: number,
@@ -25,9 +25,9 @@ type Timespan = {
 };
 
 // Extra values should be serializable primitives
-type ExtraValue = number | string | boolean;
+export type ExtraValue = number | string | boolean;
 
-type Extras = {[key: string]: ExtraValue};
+export type Extras = {[key: string]: ExtraValue};
 
 export interface IPerformanceLogger {
   addTimespan(
@@ -37,14 +37,15 @@ export interface IPerformanceLogger {
     startExtras?: Extras,
     endExtras?: Extras,
   ): void;
+  append(logger: IPerformanceLogger): void;
   clear(): void;
   clearCompleted(): void;
   close(): void;
   currentTimestamp(): number;
-  getExtras(): {[key: string]: ?ExtraValue, ...};
-  getPoints(): {[key: string]: ?number, ...};
-  getPointExtras(): {[key: string]: ?Extras, ...};
-  getTimespans(): {[key: string]: ?Timespan, ...};
+  getExtras(): $ReadOnly<{[key: string]: ?ExtraValue, ...}>;
+  getPoints(): $ReadOnly<{[key: string]: ?number, ...}>;
+  getPointExtras(): $ReadOnly<{[key: string]: ?Extras, ...}>;
+  getTimespans(): $ReadOnly<{[key: string]: ?Timespan, ...}>;
   hasTimespan(key: string): boolean;
   isClosed(): boolean;
   logEverything(): void;
@@ -95,6 +96,19 @@ class PerformanceLogger implements IPerformanceLogger {
       totalTime: endTime - (startTime || 0),
       startExtras,
       endExtras,
+    };
+  }
+
+  append(performanceLogger: IPerformanceLogger) {
+    this._timespans = {
+      ...performanceLogger.getTimespans(),
+      ...this._timespans,
+    };
+    this._extras = {...performanceLogger.getExtras(), ...this._extras};
+    this._points = {...performanceLogger.getPoints(), ...this._points};
+    this._pointExtras = {
+      ...performanceLogger.getPointExtras(),
+      ...this._pointExtras,
     };
   }
 

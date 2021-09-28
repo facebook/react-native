@@ -173,39 +173,39 @@ class Switch extends React.Component<Props> {
           ref={this._handleSwitchNativeComponentRef}
         />
       );
-    }
-
-    const platformProps = {
-      disabled,
-      onTintColor: trackColorForTrue,
-      style: StyleSheet.compose(
-        {height: 31, width: 51},
-        StyleSheet.compose(
-          style,
-          ios_backgroundColor == null
-            ? null
-            : {
-                backgroundColor: ios_backgroundColor,
-                borderRadius: 16,
-              },
+    } else {
+      const platformProps = {
+        disabled,
+        onTintColor: trackColorForTrue,
+        style: StyleSheet.compose(
+          {height: 31, width: 51},
+          StyleSheet.compose(
+            style,
+            ios_backgroundColor == null
+              ? null
+              : {
+                  backgroundColor: ios_backgroundColor,
+                  borderRadius: 16,
+                },
+          ),
         ),
-      ),
-      thumbTintColor: thumbColor,
-      tintColor: trackColorForFalse,
-      value: value === true,
-    };
+        thumbTintColor: thumbColor,
+        tintColor: trackColorForFalse,
+        value: value === true,
+      };
 
-    return (
-      <SwitchNativeComponent
-        {...props}
-        {...platformProps}
-        accessibilityRole={props.accessibilityRole ?? 'switch'}
-        onChange={this._handleChange}
-        onResponderTerminationRequest={returnsFalse}
-        onStartShouldSetResponder={returnsTrue}
-        ref={this._handleSwitchNativeComponentRef}
-      />
-    );
+      return (
+        <SwitchNativeComponent
+          {...props}
+          {...platformProps}
+          accessibilityRole={props.accessibilityRole ?? 'switch'}
+          onChange={this._handleChange}
+          onResponderTerminationRequest={returnsFalse}
+          onStartShouldSetResponder={returnsTrue}
+          ref={this._handleSwitchNativeComponentRef}
+        />
+      );
+    }
   }
 
   componentDidUpdate() {

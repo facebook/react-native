@@ -14,7 +14,6 @@
 const FlowParser = require('../../index.js');
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const failureFixtures = require('../__test_fixtures__/failures.js');
-const util = require('util');
 jest.mock('fs', () => ({
   readFileSync: filename => fixtures[filename] || failureFixtures[filename],
 }));
@@ -25,10 +24,10 @@ describe('RN Codegen Flow Parser', () => {
     .forEach(fixtureName => {
       it(`can generate fixture ${fixtureName}`, () => {
         const schema = FlowParser.parseModuleFixture(fixtureName);
-        const serializedSchema = util.inspect(schema, {
-          showHidden: false,
-          depth: null,
-        });
+        const serializedSchema = JSON.stringify(schema, null, 2).replace(
+          /"/g,
+          "'",
+        );
 
         expect(serializedSchema).toMatchSnapshot();
       });

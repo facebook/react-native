@@ -30,8 +30,7 @@ const StructTemplate = ({
   moduleName: string,
   structName: string,
   structProperties: string,
-|}>) => `
-namespace JS {
+|}>) => `namespace JS {
   namespace Native${moduleName} {
     struct ${structName} {
       ${structProperties}
@@ -45,8 +44,7 @@ namespace JS {
 
 @interface RCTCxxConvert (Native${moduleName}_${structName})
 + (RCTManagedPointer *)JS_Native${moduleName}_${structName}:(id)json;
-@end
-`;
+@end`;
 
 const MethodTemplate = ({
   returnType,
@@ -60,13 +58,11 @@ const MethodTemplate = ({
   moduleName: string,
   structName: string,
   propertyName: string,
-|}>) => `
-inline ${returnType}JS::Native${moduleName}::${structName}::${propertyName}() const
+|}>) => `inline ${returnType}JS::Native${moduleName}::${structName}::${propertyName}() const
 {
   id const p = _v[@"${propertyName}"];
   return ${returnValue};
-}
-`;
+}`;
 
 function toObjCType(
   moduleName: string,
@@ -195,8 +191,8 @@ function toObjCValue(
       );
 
       return !isRequired
-        ? `(p == nil ? folly::none : folly::make_optional(${namespacedStructName}(p)))`
-        : `${namespacedStructName}(p)`;
+        ? `(${value} == nil ? folly::none : folly::make_optional(${namespacedStructName}(${value})))`
+        : `${namespacedStructName}(${value})`;
     default:
       (typeAnnotation.type: empty);
       throw new Error(

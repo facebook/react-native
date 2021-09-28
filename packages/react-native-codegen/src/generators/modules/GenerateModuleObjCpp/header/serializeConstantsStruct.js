@@ -30,8 +30,7 @@ const StructTemplate = ({
   moduleName: string,
   structName: string,
   builderInputProps: string,
-|}>) => `
-namespace JS {
+|}>) => `namespace JS {
   namespace Native${moduleName} {
     struct ${structName} {
 
@@ -67,8 +66,7 @@ const MethodTemplate = ({
   moduleName: string,
   structName: string,
   properties: string,
-|}>) => `
-inline JS::Native${moduleName}::${structName}::Builder::Builder(const Input i) : _factory(^{
+|}>) => `inline JS::Native${moduleName}::${structName}::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
 ${properties}
   return d;

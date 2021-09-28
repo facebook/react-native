@@ -12,7 +12,7 @@
 
 const AUTO_INSTANCE_KEY = -1;
 
-type FlowId = {
+export type FlowId = {
   markerId: number,
   instanceKey: number,
 };

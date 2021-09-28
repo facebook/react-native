@@ -31,6 +31,7 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static auto const defaultProps = std::make_shared<ViewProps const>();
     _props = defaultProps;
+    self.multipleTouchEnabled = YES;
   }
   return self;
 }

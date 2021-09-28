@@ -22,8 +22,7 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
-const moduleTemplate = `
-class JSI_EXPORT Native::_MODULE_NAME_::CxxSpecJSI : public TurboModule {
+const moduleTemplate = `class JSI_EXPORT Native::_MODULE_NAME_::CxxSpecJSI : public TurboModule {
 protected:
   Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -32,8 +31,7 @@ public:
 
 };`;
 
-const template = `
-/**
+const template = `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the

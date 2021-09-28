@@ -24,8 +24,7 @@ const ModuleTemplate = ({
   moduleName: string,
   structs: $ReadOnlyArray<Struct>,
   methodSerializationOutputs: $ReadOnlyArray<MethodSerializationOutput>,
-|}>) => `
-${structs
+|}>) => `${structs
   .map(struct =>
     RCTCxxConvertCategoryTemplate({moduleName, structName: struct.name}),
   )
@@ -57,8 +56,7 @@ namespace facebook {
           .join('\n' + ' '.repeat(8))}
     }
   } // namespace react
-} // namespace facebook
-`;
+} // namespace facebook`;
 
 const RCTCxxConvertCategoryTemplate = ({
   moduleName,
@@ -66,14 +64,12 @@ const RCTCxxConvertCategoryTemplate = ({
 }: $ReadOnly<{|
   moduleName: string,
   structName: string,
-|}>) => `
-@implementation RCTCxxConvert (Native${moduleName}_${structName})
+|}>) => `@implementation RCTCxxConvert (Native${moduleName}_${structName})
 + (RCTManagedPointer *)JS_Native${moduleName}_${structName}:(id)json
 {
   return facebook::react::managedPointer<JS::Native${moduleName}::${structName}>(json);
 }
-@end
-`;
+@end`;
 
 const InlineHostFunctionTemplate = ({
   moduleName,
@@ -88,8 +84,7 @@ const InlineHostFunctionTemplate = ({
 |}>) => `
     static facebook::jsi::Value __hostFunction_Native${moduleName}SpecJSI_${methodName}(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ${returnJSType}, "${methodName}", ${selector}, args, count);
-    }
-`;
+    }`;
 
 const MethodMapEntryTemplate = ({
   moduleName,
@@ -107,8 +102,7 @@ const MethodMapEntryTemplate = ({
           .map(({paramIndex, structName}) => {
             return `setMethodArgConversionSelector(@"${methodName}", ${paramIndex}, @"JS_Native${moduleName}_${structName}:");`;
           })
-          .join('\n' + ' '.repeat(8))}
-`;
+          .join('\n' + ' '.repeat(8))}`;
 
 function serializeModuleSource(
   moduleName: string,
