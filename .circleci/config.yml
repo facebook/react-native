@@ -710,12 +710,11 @@ jobs:
   # -------------------------
   #      JOBS: Releases
   # -------------------------
-  # Publishes a new version onto npm
-  publish_npm_package:
+  build_npm_package:
     parameters:
       publish_npm_args:
         type: string
-        default: --nonightly
+        default: --dry-run
     executor: reactnativeandroid
     steps:
       - run:
@@ -728,11 +727,18 @@ jobs:
       - install_buck_tooling
       - download_buck_dependencies
       - download_gradle_dependencies
-      - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-      - run: |
-          git config --global user.email "react-native-bot@users.noreply.github.com"
-          git config --global user.name "npm Deployment Script"
-          echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
+      # Only tagged releases and nightlies should be able to publish to npm
+      - when:
+          condition:
+            or:
+              - equal: [ --release, << parameters.publish_npm_args >> ]
+              - equal: [ --nightly, << parameters.publish_npm_args >> ]
+          steps:
+            - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+            - run: |
+                git config --global user.email "react-native-bot@users.noreply.github.com"
+                git config --global user.name "npm Deployment Script"
+                echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
       - when:
           condition:
@@ -832,7 +838,9 @@ workflows:
 
   releases:
     jobs:
-      - publish_npm_package:
+      - build_npm_package:
+          name: build_and_publish_npm_package
+          publish_npm_args: --release
           filters:
             # Both of the following conditions must be included!
             # Ignore any commit on any branch by default.
@@ -841,14 +849,14 @@ workflows:
             # Only act on version tags.
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
-      - publish_npm_package:
+      - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
-          name: build_commit_package
           publish_npm_args: --dry-run
           filters:
             branches:
               only:
                 - main
+                - /^pull\/.*$/
             tags:
               ignore: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
@@ -883,5 +891,5 @@ workflows:
     jobs:
       - nightly_job
 
-      - publish_npm_package:
+      - build_npm_package:
           publish_npm_args: --nightly
