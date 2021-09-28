@@ -15,7 +15,7 @@ RUNBUNDLE=1
 if [["$RUNBUNDLE" == "1"]]; then
   SCRIPT=$DIR/../bundle/bundle.js
 else then
-# Make sure to npm install.
+# Make sure to yarn install.
   SCRIPT=$DIR/../dist/index.js
 )
 

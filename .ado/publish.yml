@@ -48,9 +48,9 @@ jobs:
         condition: and(ne(variables['Build.SourceBranchName'], 'master'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
 
       - task: CmdLine@2
-        displayName: npm install
+        displayName: yarn install
         inputs:
-          script: npm install
+          script: yarn install --frozen-lockfile
 
       - task: CmdLine@2
         displayName: Bump stable package version

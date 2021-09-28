@@ -22,7 +22,7 @@ steps:
     inputs:
       script: |
         cd packages/react-native-macos-init
-        yarn install
+        yarn install --frozen-lockfile
 
   - task: CmdLine@2
     displayName: yarn build (local react-native-macos-init)
