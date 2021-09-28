@@ -213,7 +213,12 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
   preBundleTask.dependsOn(currentAssetsCopyTask)
 }
 
-private fun Project.cleanupVMFiles(libDir: String, targetVariant: Regex, enableHermes: Boolean, isRelease: Boolean) {
+private fun Project.cleanupVMFiles(
+    libDir: String,
+    targetVariant: Regex,
+    enableHermes: Boolean,
+    isRelease: Boolean
+) {
   // Delete the VM related libraries that this build doesn't need.
   // The application can manage this manually by setting 'enableVmCleanup: false'
   //
