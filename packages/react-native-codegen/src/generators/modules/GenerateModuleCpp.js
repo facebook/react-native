@@ -18,6 +18,7 @@ import type {
 
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
+const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -79,7 +80,8 @@ function traverseArg(
   function wrap(suffix) {
     return `args[${index}]${suffix}`;
   }
-  const {typeAnnotation} = arg;
+  const {typeAnnotation: nullableTypeAnnotation} = arg;
+  const [typeAnnotation] = unwrapNullable(nullableTypeAnnotation);
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -129,11 +131,12 @@ function traverseProperty(
   property: NativeModulePropertySchema,
   resolveAlias: AliasResolver,
 ): string {
+  const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
   const propertyTemplate =
-    property.typeAnnotation.returnTypeAnnotation.type === 'VoidTypeAnnotation'
+    propertyTypeAnnotation.returnTypeAnnotation.type === 'VoidTypeAnnotation'
       ? voidPropertyTemplate
       : nonvoidPropertyTemplate;
-  const traversedArgs = property.typeAnnotation.params
+  const traversedArgs = propertyTypeAnnotation.params
     .map((p, i) => traverseArg(p, i, resolveAlias))
     .join(', ');
   return propertyTemplate
@@ -161,10 +164,16 @@ module.exports = {
           .replace(
             '::_PROPERTIES_MAP_::',
             properties
-              .map(({name: propertyName, typeAnnotation: {params}}) =>
-                proprertyDefTemplate
-                  .replace(/::_PROPERTY_NAME_::/g, propertyName)
-                  .replace(/::_ARGS_COUNT_::/g, params.length.toString()),
+              .map(
+                ({
+                  name: propertyName,
+                  typeAnnotation: nullableTypeAnnotation,
+                }) => {
+                  const [{params}] = unwrapNullable(nullableTypeAnnotation);
+                  return proprertyDefTemplate
+                    .replace(/::_PROPERTY_NAME_::/g, propertyName)
+                    .replace(/::_ARGS_COUNT_::/g, params.length.toString());
+                },
               )
               .join('\n'),
           )

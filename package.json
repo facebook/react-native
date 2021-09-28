@@ -88,9 +88,9 @@
     "react": "16.13.1"
   },
   "dependencies": {
-    "@react-native-community/cli": "^4.10.0",
-    "@react-native-community/cli-platform-android": "^4.10.0",
-    "@react-native-community/cli-platform-ios": "^4.10.0",
+    "@react-native-community/cli": "^4.13.0",
+    "@react-native-community/cli-platform-android": "^4.13.0",
+    "@react-native-community/cli-platform-ios": "^4.13.0",
     "@react-native/assets": "1.0.0",
     "@react-native/normalize-color": "1.0.0",
     "@react-native/polyfills": "1.0.0",

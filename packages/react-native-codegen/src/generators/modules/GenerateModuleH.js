@@ -10,10 +10,15 @@
 
 'use strict';
 
-import type {SchemaType, NativeModuleTypeAnnotation} from '../../CodegenSchema';
+import type {
+  Nullable,
+  SchemaType,
+  NativeModuleTypeAnnotation,
+} from '../../CodegenSchema';
 
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
+const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -50,10 +55,11 @@ namespace react {
 `;
 
 function translatePrimitiveJSTypeToCpp(
-  typeAnnotation: NativeModuleTypeAnnotation,
+  nullableTypeAnnotation: Nullable<NativeModuleTypeAnnotation>,
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
 ) {
+  const [typeAnnotation] = unwrapNullable(nullableTypeAnnotation);
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
@@ -116,7 +122,8 @@ module.exports = {
 
         const traversedProperties = properties
           .map(prop => {
-            const traversedArgs = prop.typeAnnotation.params
+            const [propTypeAnnotation] = unwrapNullable(prop.typeAnnotation);
+            const traversedArgs = propTypeAnnotation.params
               .map(param => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(
                   param.typeAnnotation,
@@ -137,7 +144,7 @@ module.exports = {
               .replace(
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToCpp(
-                  prop.typeAnnotation.returnTypeAnnotation,
+                  propTypeAnnotation.returnTypeAnnotation,
                   typeName =>
                     `Unsupported return type for ${prop.name}. Found: ${typeName}`,
                   resolveAlias,

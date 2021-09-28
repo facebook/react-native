@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  Nullable,
   SchemaType,
   NativeModulePropertySchema,
   NativeModuleMethodParamSchema,
@@ -19,6 +20,7 @@ import type {
 
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
+const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -53,8 +55,9 @@ function translateFunctionParamToJavaType(
   resolveAlias: AliasResolver,
   imports: Set<string>,
 ): string {
-  const {optional, typeAnnotation} = param;
-  const isRequired = !optional && !typeAnnotation.nullable;
+  const {optional, typeAnnotation: nullableTypeAnnotation} = param;
+  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const isRequired = !optional && !nullable;
 
   function wrapIntoNullableIfNeeded(generatedType: string) {
     if (!isRequired) {
@@ -114,12 +117,14 @@ function translateFunctionParamToJavaType(
 }
 
 function translateFunctionReturnTypeToJavaType(
-  returnTypeAnnotation: NativeModuleReturnTypeAnnotation,
+  nullableReturnTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
   imports: Set<string>,
 ): string {
-  const {nullable} = returnTypeAnnotation;
+  const [returnTypeAnnotation, nullable] = unwrapNullable(
+    nullableReturnTypeAnnotation,
+  );
 
   function wrapIntoNullableIfNeeded(generatedType: string) {
     if (nullable) {
@@ -179,14 +184,16 @@ function buildGetConstantsMethod(
   method: NativeModulePropertySchema,
   imports: Set<string>,
 ): string {
+  const [methodTypeAnnotation] = unwrapNullable(method.typeAnnotation);
   if (
-    method.typeAnnotation.returnTypeAnnotation.type === 'ObjectTypeAnnotation'
+    methodTypeAnnotation.returnTypeAnnotation.type === 'ObjectTypeAnnotation'
   ) {
     const requiredProps = [];
     const optionalProps = [];
     const rawProperties =
-      method.typeAnnotation.returnTypeAnnotation.properties || [];
+      methodTypeAnnotation.returnTypeAnnotation.properties || [];
     rawProperties.forEach(p => {
+      // TODO(T76712813): Should we push to optionalProps if the constant is nullable?
       if (p.optional) {
         optionalProps.push(p.name);
       } else {
@@ -281,23 +288,25 @@ module.exports = {
           return buildGetConstantsMethod(method, imports);
         }
 
+        const [methodTypeAnnotation] = unwrapNullable(method.typeAnnotation);
+
         // Handle return type
         const translatedReturnType = translateFunctionReturnTypeToJavaType(
-          method.typeAnnotation.returnTypeAnnotation,
+          methodTypeAnnotation.returnTypeAnnotation,
           typeName =>
             `Unsupported return type for method ${method.name}. Found: ${typeName}`,
           resolveAlias,
           imports,
         );
         const returningPromise =
-          method.typeAnnotation.returnTypeAnnotation.type ===
+          methodTypeAnnotation.returnTypeAnnotation.type ===
           'PromiseTypeAnnotation';
         const isSyncMethod =
-          method.typeAnnotation.returnTypeAnnotation.type !==
+          methodTypeAnnotation.returnTypeAnnotation.type !==
             'VoidTypeAnnotation' && !returningPromise;
 
         // Handle method args
-        const traversedArgs = method.typeAnnotation.params.map(param => {
+        const traversedArgs = methodTypeAnnotation.params.map(param => {
           const translatedParam = translateFunctionParamToJavaType(
             param,
             typeName =>
