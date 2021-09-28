@@ -159,7 +159,10 @@ struct PointerHasher {
   std::unordered_map<__unsafe_unretained UITouch *, ActiveTouch, PointerHasher<__unsafe_unretained UITouch *>>
       _activeTouches;
 
-  UIView *_rootComponentView;
+  /*
+   * We hold the view weakly to prevent a retain cycle.
+   */
+  __weak UIView *_rootComponentView;
   IdentifierPool<11> _identifierPool;
 }
 

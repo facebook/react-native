@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (facebook::react::SharedProps)props;
 
+- (void)setPropKeysManagedByAnimated:(nullable NSSet<NSString *> *)propKeys;
+
 @end
 
 NS_ASSUME_NONNULL_END

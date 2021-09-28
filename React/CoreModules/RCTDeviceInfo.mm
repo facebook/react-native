@@ -106,6 +106,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
   RCTAssertMainQueue();
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
+  RCTAssert(bridge, @"Bridge must not be `nil`.");
   RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
 #else // [TODO(macOS GH#774)
   RCTDimensions dimensions = RCTGetDimensions(rootView);
