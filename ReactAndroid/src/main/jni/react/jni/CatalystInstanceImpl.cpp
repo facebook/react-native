@@ -29,6 +29,7 @@
 #include <glog/logging.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 
 #include <logger/react_native_log.h>
 
@@ -92,12 +93,21 @@ class JInstanceCallback : public InstanceCallback {
 } // namespace
 
 jni::local_ref<CatalystInstanceImpl::jhybriddata>
-CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
-  return makeCxxInstance();
+CatalystInstanceImpl::initHybrid(
+    jni::alias_ref<jclass>,
+    bool enableRuntimeScheduler,
+    bool enableRuntimeSchedulerInTurboModule) {
+  return makeCxxInstance(
+      enableRuntimeScheduler, enableRuntimeSchedulerInTurboModule);
 }
 
-CatalystInstanceImpl::CatalystInstanceImpl()
-    : instance_(std::make_unique<Instance>()) {}
+CatalystInstanceImpl::CatalystInstanceImpl(
+    bool enableRuntimeScheduler,
+    bool enableRuntimeSchedulerInTurboModule)
+    : instance_(std::make_unique<Instance>()),
+      enableRuntimeScheduler_(enableRuntimeScheduler),
+      enableRuntimeSchedulerInTurboModule_(
+          enableRuntimeScheduler && enableRuntimeSchedulerInTurboModule) {}
 
 void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
   CxxNativeModule::setShouldWarnOnUse(true);
@@ -140,9 +150,6 @@ void CatalystInstanceImpl::registerNatives() {
           "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
       makeNativeMethod(
           "getRuntimeScheduler", CatalystInstanceImpl::getRuntimeScheduler),
-      makeNativeMethod(
-          "installRuntimeScheduler",
-          CatalystInstanceImpl::installRuntimeScheduler),
       makeNativeMethod(
           "warnOnLegacyNativeModuleSystemUse",
           CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
@@ -347,10 +354,18 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!jsCallInvokerHolder_) {
-    jsCallInvokerHolder_ = jni::make_global(
-        CallInvokerHolder::newObjectCxxArgs(instance_->getJSCallInvoker()));
+    if (enableRuntimeSchedulerInTurboModule_) {
+      auto runtimeScheduler = getRuntimeScheduler();
+      auto runtimeSchedulerCallInvoker =
+          std::make_shared<RuntimeSchedulerCallInvoker>(
+              runtimeScheduler->cthis()->get());
+      jsCallInvokerHolder_ = jni::make_global(
+          CallInvokerHolder::newObjectCxxArgs(runtimeSchedulerCallInvoker));
+    } else {
+      jsCallInvokerHolder_ = jni::make_global(
+          CallInvokerHolder::newObjectCxxArgs(instance_->getJSCallInvoker()));
+    }
   }
-
   return jsCallInvokerHolder_;
 }
 
@@ -397,11 +412,7 @@ CatalystInstanceImpl::getRuntimeExecutor() {
 
 jni::alias_ref<JRuntimeScheduler::javaobject>
 CatalystInstanceImpl::getRuntimeScheduler() {
-  return runtimeScheduler_;
-}
-
-void CatalystInstanceImpl::installRuntimeScheduler() {
-  if (!runtimeScheduler_) {
+  if (enableRuntimeScheduler_ && !runtimeScheduler_) {
     auto runtimeExecutor = instance_->getRuntimeExecutor();
     auto runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
 
@@ -413,6 +424,8 @@ void CatalystInstanceImpl::installRuntimeScheduler() {
           runtime, runtimeScheduler);
     });
   }
+
+  return runtimeScheduler_;
 }
 
 } // namespace react

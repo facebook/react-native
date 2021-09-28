@@ -10,7 +10,8 @@
 #include <ReactCommon/CallInvoker.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 /*
  * Exposes RuntimeScheduler to native modules. All calls invonked on JavaScript
@@ -31,4 +32,5 @@ class RuntimeSchedulerCallInvoker : public CallInvoker {
   std::weak_ptr<RuntimeScheduler> runtimeScheduler_;
 };
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

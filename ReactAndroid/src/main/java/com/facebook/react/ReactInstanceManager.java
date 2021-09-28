@@ -1368,10 +1368,6 @@ public class ReactInstanceManager {
       }
     }
 
-    if (ReactFeatureFlags.enableRuntimeScheduler) {
-      catalystInstance.installRuntimeScheduler();
-    }
-
     if (mJSIModulePackage != null) {
       catalystInstance.addJSIModules(
           mJSIModulePackage.getJSIModules(
