@@ -15,6 +15,8 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.SurfaceDelegate;
+import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -71,6 +73,7 @@ public abstract class ReactNativeHost {
             .setUseDeveloperSupport(getUseDeveloperSupport())
             .setDevSupportManagerFactory(getDevSupportManagerFactory())
             .setRequireActivity(getShouldRequireActivity())
+            .setSurfaceDelegateFactory(getSurfaceDelegateFactory())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
             .setUIImplementationProvider(getUIImplementationProvider())
@@ -130,6 +133,21 @@ public abstract class ReactNativeHost {
   /** Returns whether or not to treat it as normal if Activity is null. */
   public boolean getShouldRequireActivity() {
     return true;
+  }
+
+  /**
+   * Return the {@link SurfaceDelegateFactory} used by NativeModules to get access to a {@link
+   * SurfaceDelegate} to interact with a surface. By default in the mobile platform the {@link
+   * SurfaceDelegate} it returns is null, and the NativeModule needs to implement its own {@link
+   * SurfaceDelegate} to decide how it would interact with its own container surface.
+   */
+  public SurfaceDelegateFactory getSurfaceDelegateFactory() {
+    return new SurfaceDelegateFactory() {
+      @Override
+      public @Nullable SurfaceDelegate createSurfaceDelegate(String moduleName) {
+        return null;
+      }
+    };
   }
 
   /**

@@ -41,6 +41,8 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.DebugServerException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
+import com.facebook.react.common.SurfaceDelegate;
+import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -118,6 +120,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
 
   private @Nullable Activity currentActivity;
+  private @Nullable final SurfaceDelegateFactory mSurfaceDelegateFactory;
 
   public DevSupportManagerBase(
       Context applicationContext,
@@ -127,7 +130,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       @Nullable RedBoxHandler redBoxHandler,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
-      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers) {
+      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory) {
     mReactInstanceDevHelper = reactInstanceDevHelper;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
@@ -202,7 +206,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
     mRedBoxHandler = redBoxHandler;
     mDevLoadingViewController = new DevLoadingViewController(reactInstanceDevHelper);
-  }
+    mSurfaceDelegateFactory = surfaceDelegateFactory;
+  };
 
   protected abstract String getUniqueTag();
 
@@ -1203,5 +1208,19 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   public void setPackagerLocationCustomizer(
       DevSupportManager.PackagerLocationCustomizer packagerLocationCustomizer) {
     mPackagerLocationCustomizer = packagerLocationCustomizer;
+  }
+
+  @Override
+  public @Nullable Activity getCurrentActivity() {
+    return mReactInstanceDevHelper.getCurrentActivity();
+  }
+
+  @Override
+  public @Nullable SurfaceDelegate createSurfaceDelegate(String moduleName) {
+    if (mSurfaceDelegateFactory == null) {
+      return null;
+    }
+
+    return mSurfaceDelegateFactory.createSurfaceDelegate(moduleName);
   }
 }

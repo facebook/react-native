@@ -9,6 +9,7 @@ package com.facebook.react.devsupport;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.packagerconnection.RequestHandler;
@@ -41,6 +42,7 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
         null,
         null,
         minNumShakes,
+        null,
         null);
   }
 
@@ -53,7 +55,8 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
       @Nullable RedBoxHandler redBoxHandler,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
-      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers) {
+      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory) {
     if (!enableOnCreate) {
       return new DisabledDevSupportManager();
     }
@@ -76,7 +79,8 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
               RedBoxHandler.class,
               DevBundleDownloadListener.class,
               int.class,
-              Map.class);
+              Map.class,
+              SurfaceDelegateFactory.class);
       return (DevSupportManager)
           constructor.newInstance(
               applicationContext,
@@ -86,7 +90,8 @@ public class DefaultDevSupportManagerFactory implements DevSupportManagerFactory
               redBoxHandler,
               devBundleDownloadListener,
               minNumShakes,
-              customPackagerCommandHandlers);
+              customPackagerCommandHandlers,
+              surfaceDelegateFactory);
     } catch (Exception e) {
       throw new RuntimeException(
           "Requested enabled DevSupportManager, but BridgeDevSupportManager class was not found"

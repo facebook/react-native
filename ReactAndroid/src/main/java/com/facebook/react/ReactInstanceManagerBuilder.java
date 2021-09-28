@@ -22,6 +22,7 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.RedBoxHandler;
@@ -63,6 +64,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JSIModulePackage mJSIModulesPackage;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
+  private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -196,6 +198,20 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
+   * When the {@link SurfaceDelegateFactory} is provided, it will be used for native modules to get
+   * a {@link SurfaceDelegate} to interact with the platform specific surface that they that needs
+   * to be rendered in. For mobile platform this is default to be null so that these modules will
+   * need to provide a default surface delegate. One example of such native module is LogBoxModule,
+   * which is rendered in mobile platform with LogBoxDialog, while in VR platform with custom layer
+   * provided by runtime.
+   */
+  public ReactInstanceManagerBuilder setSurfaceDelegateFactory(
+      @Nullable final SurfaceDelegateFactory surfaceDelegateFactory) {
+    mSurfaceDelegateFactory = surfaceDelegateFactory;
+    return this;
+  }
+
+  /**
    * Sets the initial lifecycle state of the host. For example, if the host is already resumed at
    * creation time, we wouldn't expect an onResume call until we get an onPause call.
    */
@@ -322,7 +338,8 @@ public class ReactInstanceManagerBuilder {
         mMinTimeLeftInFrameForNonBatchedOperationMs,
         mJSIModulesPackage,
         mCustomPackagerCommandHandlers,
-        mTMMDelegateBuilder);
+        mTMMDelegateBuilder,
+        mSurfaceDelegateFactory);
   }
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
