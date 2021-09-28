@@ -45,6 +45,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     _modalViewController.boundsDidChangeBlock = ^(CGRect newBounds) {
       [weakSelf notifyForBoundsChange:newBounds];
     };
+
+    [self setInteractiveDismissEnabled:NO];
   }
 
   return self;
@@ -68,6 +70,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   if (_onRequestClose != nil) {
     _onRequestClose(nil);
   }
+}
+
+- (void)presentationControllerDidDismiss:(UIPresentationController *)controller
+{
+  _isPresented = NO;
+  [_delegate modalHostViewWasDismissedInteractively:self];
 }
 
 - (void)notifyForOrientationChange
@@ -203,6 +211,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 
   _modalViewController.modalPresentationStyle =
       transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
+}
+
+- (void)setInteractiveDismissEnabled:(BOOL)interactiveDismissEnabled
+{
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    _modalViewController.modalInPresentation = !interactiveDismissEnabled;
+  }
+#endif
 }
 
 - (UIInterfaceOrientationMask)supportedOrientationsMask

@@ -42,6 +42,10 @@ function ModalPresentation() {
   const [presentationStyle, setPresentationStyle] = React.useState(
     'fullScreen',
   );
+  const [
+    interactiveDismissEnabled,
+    setInteractiveDismissEnabled,
+  ] = React.useState(false);
   const [supportedOrientationKey, setSupportedOrientationKey] = React.useState(
     'Portrait',
   );
@@ -76,6 +80,7 @@ function ModalPresentation() {
       <Modal
         animationType={animationType}
         presentationStyle={presentationStyle}
+        interactiveDismissEnabled={interactiveDismissEnabled}
         transparent={transparent}
         hardwareAccelerated={hardwareAccelerated}
         statusBarTranslucent={statusBarTranslucent}
@@ -158,6 +163,15 @@ function ModalPresentation() {
                   />
                 ))}
               </View>
+            </View>
+          ) : null}
+          {Platform.OS === 'ios' ? (
+            <View style={styles.inlineBlock}>
+              <Text style={styles.title}>Interactive Dismiss Enabled</Text>
+              <Switch
+                value={interactiveDismissEnabled}
+                onValueChange={setInteractiveDismissEnabled}
+              />
             </View>
           ) : null}
           <View style={styles.block}>

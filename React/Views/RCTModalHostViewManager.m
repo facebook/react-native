@@ -89,14 +89,19 @@ RCT_EXPORT_MODULE()
                     animated:(BOOL)animated
 {
   dispatch_block_t completionBlock = ^{
-    if (modalHostView.identifier) {
-      [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
-    }
+    [self modalHostViewWasDismissedInteractively:modalHostView];
   };
   if (_dismissalBlock) {
     _dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
     [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+  }
+}
+
+- (void)modalHostViewWasDismissedInteractively:(RCTModalHostView *)modalHostView
+{
+  if (modalHostView.identifier) {
+    [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
   }
 }
 
@@ -122,6 +127,7 @@ RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(onOrientationChange, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(visible, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onRequestClose, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(interactiveDismissEnabled, BOOL)
 
 // Fabric only
 RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)

@@ -24,6 +24,8 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 @property (nonatomic, assign) BOOL visible;
+@property (nonatomic, assign) BOOL interactiveDismissEnabled;
+@property (nonatomic, copy) RCTDirectEventBlock onRequestClose;
 
 @property (nonatomic, copy) NSNumber *identifier;
 
@@ -47,5 +49,6 @@
 - (void)dismissModalHostView:(RCTModalHostView *)modalHostView
           withViewController:(RCTModalHostViewController *)viewController
                     animated:(BOOL)animated;
+- (void)modalHostViewWasDismissedInteractively:(RCTModalHostView *)modalHostView;
 
 @end

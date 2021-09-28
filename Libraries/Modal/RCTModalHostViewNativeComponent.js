@@ -43,6 +43,14 @@ type NativeProps = $ReadOnly<{|
   >,
 
   /**
+   * Enables interactive dismissal on with certain values of
+   * presentationStyle (mainly `pageSheet`)
+   *
+   * See https://reactnative.dev/docs/modal.html#interactivedismissenabled
+   */
+  interactiveDismissEnabled?: WithDefault<boolean, false>,
+
+  /**
    * The `transparent` prop determines whether your modal will fill the
    * entire view.
    *

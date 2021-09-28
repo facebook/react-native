@@ -80,6 +80,15 @@ export type Props = $ReadOnly<{|
   ),
 
   /**
+   * Enables interactive dismissal on with certain values of
+   * presentationStyle (mainly `pageSheet`). If `true`, `onDismiss` must be
+   * defined, and calling `onDismiss` must set `visible` to `false`.
+   *
+   * See https://reactnative.dev/docs/modal.html#interactivedismissenabled
+   */
+  interactiveDismissEnabled?: ?boolean,
+
+  /**
    * The `transparent` prop determines whether your modal will fill the
    * entire view.
    *
@@ -248,6 +257,7 @@ class Modal extends React.Component<Props> {
       <RCTModalHostView
         animationType={animationType}
         presentationStyle={presentationStyle}
+        interactiveDismissEnabled={this.props.interactiveDismissEnabled}
         transparent={this.props.transparent}
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
