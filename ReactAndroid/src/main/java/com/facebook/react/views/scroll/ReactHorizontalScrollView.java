@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.scroll;
 
+import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_DISABLED;
+
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -94,6 +96,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private @Nullable List<Integer> mSnapOffsets;
   private boolean mSnapToStart = true;
   private boolean mSnapToEnd = true;
+  private int mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
   private ReactViewBackgroundManager mReactBackgroundManager;
   private boolean mPagedArrowScrolling = false;
   private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
@@ -237,6 +240,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public void setSnapToEnd(boolean snapToEnd) {
     mSnapToEnd = snapToEnd;
+  }
+
+  public void setSnapToAlignment(int snapToAlignment) {
+    mSnapToAlignment = snapToAlignment;
   }
 
   public void flashScrollIndicators() {
