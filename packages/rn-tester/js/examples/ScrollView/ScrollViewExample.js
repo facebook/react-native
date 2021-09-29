@@ -23,7 +23,7 @@ const {
 
 const nullthrows = require('nullthrows');
 
-import type {ViewStyleProp} from '../../../../../Libraries/StyleSheet/StyleSheet';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
 exports.title = 'ScrollView';

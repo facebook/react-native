@@ -11,7 +11,7 @@
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConstants.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTUIKit.h> // TODO(macOS GH#774)
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
@@ -32,6 +32,7 @@ using namespace facebook::react;
 }
 
 @synthesize bridge = _bridge;
+@synthesize turboModuleRegistry = _turboModuleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -62,7 +63,7 @@ RCT_EXPORT_MODULE()
                                                name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
 
-  _currentInterfaceDimensions = RCTExportedDimensions(_bridge);
+  _currentInterfaceDimensions = RCTExportedDimensions(_bridge, _turboModuleRegistry);
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
@@ -98,7 +99,7 @@ static BOOL RCTIsIPhoneX()
 }
 
 #if !TARGET_OS_OSX // [TODO(macOS GH#774)
-NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
+static NSDictionary *RCTExportedDimensions(RCTBridge *bridge, id<RCTTurboModuleRegistry> turboModuleRegistry)
 #else
 NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 #endif // ]TODO(macOS GH#774)
@@ -106,7 +107,15 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
   RCTAssertMainQueue();
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
-  RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
+  RCTDimensions dimensions;
+  if (bridge) {
+    dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier ?: 1.0);
+  } else if (turboModuleRegistry) {
+    dimensions = RCTGetDimensions(
+        ((RCTAccessibilityManager *)[turboModuleRegistry moduleForName:"RCTAccessibilityManager"]).multiplier ?: 1.0);
+  } else {
+    RCTAssert(false, @"Bridge or TurboModuleRegistry must be set to properly init dimensions.");
+  }
 #else // [TODO(macOS GH#774)
   RCTDimensions dimensions = RCTGetDimensions(rootView);
 #endif // ]TODO(macOS GH#774)
@@ -139,7 +148,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
   RCTUnsafeExecuteOnMainQueueSync(^{
     constants = @{
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
-      @"Dimensions" : RCTExportedDimensions(self->_bridge),
+      @"Dimensions" : RCTExportedDimensions(self->_bridge, self->_turboModuleRegistry),
 #else // [TODO(macOS GH#774)
       @"Dimensions": RCTExportedDimensions(nil),
 #endif // ]TODO(macOS GH#774)
@@ -163,9 +172,9 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
-    body:RCTExportedDimensions(bridge)];
+                                               body:RCTExportedDimensions(bridge, self->_turboModuleRegistry)];
 #else // [TODO(macOS GH#774)
-    body:RCTExportedDimensions(nil)];
+                                               body:RCTExportedDimensions(nil)];
 #endif // ]TODO(macOS GH#774)
 #pragma clang diagnostic pop
   });
@@ -192,7 +201,8 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
        !UIInterfaceOrientationIsLandscape(nextOrientation))) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions" body:RCTExportedDimensions(_bridge)];
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
+                                                body:RCTExportedDimensions(_bridge, _turboModuleRegistry)];
 #pragma clang diagnostic pop
   }
 
@@ -209,7 +219,7 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 
 - (void)_interfaceFrameDidChange
 {
-  NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_bridge);
+  NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_bridge, _turboModuleRegistry);
 
   if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions])) {
 #pragma clang diagnostic push

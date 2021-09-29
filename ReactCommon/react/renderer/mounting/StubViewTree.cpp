@@ -116,9 +116,13 @@ void StubViewTree::mutate(
             parentStubView->children[mutation.index]->tag == childStubView->tag;
         STUB_VIEW_LOG({
           std::string strChildList = "";
+          int i = 0;
           for (auto const &child : parentStubView->children) {
+            strChildList.append(std::to_string(i));
+            strChildList.append(":");
             strChildList.append(std::to_string(child->tag));
             strChildList.append(", ");
+            i++;
           }
           LOG(ERROR) << "StubView: BEFORE REMOVE: Children of " << parentTag
                      << ": " << strChildList;

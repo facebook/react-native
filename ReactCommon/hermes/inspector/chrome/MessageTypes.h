@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<0563169b47d73a70d7540528f28d1d13>>
+// @generated SignedSource<<7383ffe2d956ba3aef8262dbee2f3427>>
 
 #pragma once
 
@@ -71,6 +71,8 @@ using UnserializableValue = std::string;
 
 namespace heapProfiler {
 struct AddHeapSnapshotChunkNotification;
+struct HeapStatsUpdateNotification;
+struct LastSeenObjectIdNotification;
 struct ReportHeapSnapshotProgressNotification;
 struct StartTrackingHeapObjectsRequest;
 struct StopTrackingHeapObjectsRequest;
@@ -605,6 +607,23 @@ struct heapProfiler::AddHeapSnapshotChunkNotification : public Notification {
   folly::dynamic toDynamic() const override;
 
   std::string chunk;
+};
+
+struct heapProfiler::HeapStatsUpdateNotification : public Notification {
+  HeapStatsUpdateNotification();
+  explicit HeapStatsUpdateNotification(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  std::vector<int> statsUpdate;
+};
+
+struct heapProfiler::LastSeenObjectIdNotification : public Notification {
+  LastSeenObjectIdNotification();
+  explicit LastSeenObjectIdNotification(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  int lastSeenObjectId{};
+  double timestamp{};
 };
 
 struct heapProfiler::ReportHeapSnapshotProgressNotification

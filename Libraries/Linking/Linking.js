@@ -106,8 +106,9 @@ class Linking extends NativeEventEmitter {
   ): Promise<void> {
     if (Platform.OS === 'android') {
       return NativeLinking.sendIntent(action, extras);
+    } else {
+      return new Promise((resolve, reject) => reject(new Error('Unsupported')));
     }
-    return new Promise((resolve, reject) => reject(new Error('Unsupported')));
   }
 
   _validateURL(url: string) {

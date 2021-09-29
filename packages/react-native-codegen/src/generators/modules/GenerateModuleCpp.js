@@ -18,6 +18,7 @@ import type {
 
 import type {AliasResolver} from './Utils';
 const {createAliasResolver, getModules} = require('./Utils');
+const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -27,13 +28,11 @@ const propertyHeaderTemplate =
 const propertyCastTemplate =
   'static_cast<Native::_MODULE_NAME_::CxxSpecJSI *>(&turboModule)->::_PROPERTY_NAME_::(rt::_ARGS_::);';
 
-const nonvoidPropertyTemplate = `
-${propertyHeaderTemplate}
+const nonvoidPropertyTemplate = `${propertyHeaderTemplate}
   return ${propertyCastTemplate}
 }`.trim();
 
-const voidPropertyTemplate = `
-${propertyHeaderTemplate}
+const voidPropertyTemplate = `${propertyHeaderTemplate}
   ${propertyCastTemplate}
   return jsi::Value::undefined();
 }`;
@@ -41,16 +40,14 @@ ${propertyHeaderTemplate}
 const proprertyDefTemplate =
   '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_Native::_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::};';
 
-const moduleTemplate = `
-::_MODULE_PROPERTIES_::
+const moduleTemplate = `::_MODULE_PROPERTIES_::
 
 Native::_MODULE_NAME_::CxxSpecJSI::Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule("::_MODULE_NAME_::", jsInvoker) {
 ::_PROPERTIES_MAP_::
 }`.trim();
 
-const template = `
-/**
+const template = `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -79,7 +76,8 @@ function traverseArg(
   function wrap(suffix) {
     return `args[${index}]${suffix}`;
   }
-  const {typeAnnotation} = arg;
+  const {typeAnnotation: nullableTypeAnnotation} = arg;
+  const [typeAnnotation] = unwrapNullable(nullableTypeAnnotation);
 
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -129,11 +127,12 @@ function traverseProperty(
   property: NativeModulePropertySchema,
   resolveAlias: AliasResolver,
 ): string {
+  const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
   const propertyTemplate =
-    property.typeAnnotation.returnTypeAnnotation.type === 'VoidTypeAnnotation'
+    propertyTypeAnnotation.returnTypeAnnotation.type === 'VoidTypeAnnotation'
       ? voidPropertyTemplate
       : nonvoidPropertyTemplate;
-  const traversedArgs = property.typeAnnotation.params
+  const traversedArgs = propertyTypeAnnotation.params
     .map((p, i) => traverseArg(p, i, resolveAlias))
     .join(', ');
   return propertyTemplate
@@ -161,10 +160,16 @@ module.exports = {
           .replace(
             '::_PROPERTIES_MAP_::',
             properties
-              .map(({name: propertyName, typeAnnotation: {params}}) =>
-                proprertyDefTemplate
-                  .replace(/::_PROPERTY_NAME_::/g, propertyName)
-                  .replace(/::_ARGS_COUNT_::/g, params.length.toString()),
+              .map(
+                ({
+                  name: propertyName,
+                  typeAnnotation: nullableTypeAnnotation,
+                }) => {
+                  const [{params}] = unwrapNullable(nullableTypeAnnotation);
+                  return proprertyDefTemplate
+                    .replace(/::_PROPERTY_NAME_::/g, propertyName)
+                    .replace(/::_ARGS_COUNT_::/g, params.length.toString());
+                },
               )
               .join('\n'),
           )

@@ -40,6 +40,18 @@ void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled)
   imagePerfInstrumentationEnabled = enabled;
 }
 
+static BOOL (^getImagePerfInstrumentationForFabricEnabled)() = (^BOOL () {
+  return NO;
+});
+
+BOOL RCTGetImageLoadingPerfInstrumentationForFabricEnabled() {
+  return getImagePerfInstrumentationForFabricEnabled();
+}
+
+void RCTSetImageLoadingPerfInstrumentationForFabricEnabledBlock(BOOL (^getMobileConfigEnabled)()) {
+  getImagePerfInstrumentationForFabricEnabled = getMobileConfigEnabled;
+}
+
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
   CGFloat imageScale = 1.0;

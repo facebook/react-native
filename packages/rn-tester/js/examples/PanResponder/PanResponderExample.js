@@ -17,8 +17,8 @@ const RNTesterPage = require('../../components/RNTesterPage');
 import type {
   PanResponderInstance,
   GestureState,
-} from '../../../../../Libraries/Interaction/PanResponder';
-import type {PressEvent} from '../../../../../Libraries/Types/CoreEventTypes';
+} from 'react-native/Libraries/Interaction/PanResponder';
+import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 type CircleStyles = {
   backgroundColor?: string,

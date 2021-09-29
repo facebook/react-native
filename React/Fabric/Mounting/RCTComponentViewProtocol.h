@@ -116,6 +116,8 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  */
 - (facebook::react::SharedProps)props;
 
+- (void)setPropKeysManagedByAnimated:(nullable NSSet<NSString *> *)propKeys;
+
 @end
 
 NS_ASSUME_NONNULL_END

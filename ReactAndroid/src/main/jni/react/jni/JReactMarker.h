@@ -24,9 +24,17 @@ class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {
  private:
   static void logMarker(const std::string &marker);
   static void logMarker(const std::string &marker, const std::string &tag);
+  static void logMarker(
+      const std::string &marker,
+      const std::string &tag,
+      const int instanceKey);
   static void logPerfMarker(
       const ReactMarker::ReactMarkerId markerId,
       const char *tag);
+  static void logPerfMarkerWithInstanceKey(
+      const ReactMarker::ReactMarkerId markerId,
+      const char *tag,
+      const int instanceKey);
 };
 
 } // namespace react

@@ -10,7 +10,6 @@
 #import <React/RCTUIManager.h>
 #import "RCTBridge.h"
 #import "RCTDatePicker.h"
-#import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)

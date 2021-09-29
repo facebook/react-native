@@ -20,7 +20,7 @@
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTDevSettings.h" // TODO(macOS GH#774)
-#import "RCTEventDispatcher.h"
+#import "RCTEventDispatcherProtocol.h"
 #import "RCTLayoutAnimation.h"
 #import "RCTLayoutAnimationGroup.h"
 #import "RCTLog.h"

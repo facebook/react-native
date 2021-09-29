@@ -14,6 +14,7 @@ namespace react {
 
 namespace BridgeNativeModulePerfLogger {
 void enableLogging(std::unique_ptr<NativeModulePerfLogger> &&logger);
+void disableLogging();
 
 void moduleDataCreateStart(const char *moduleName, int32_t id);
 void moduleDataCreateEnd(const char *moduleName, int32_t id);

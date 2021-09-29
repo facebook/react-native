@@ -335,8 +335,13 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().collectGarbage(std::move(cause));
   }
 
-  void startTrackingHeapObjectStackTraces() override {
-    plain().instrumentation().startTrackingHeapObjectStackTraces();
+  void startTrackingHeapObjectStackTraces(
+      std::function<void(
+          uint64_t,
+          std::chrono::microseconds,
+          std::vector<HeapStatsUpdate>)> callback) override {
+    plain().instrumentation().startTrackingHeapObjectStackTraces(
+        std::move(callback));
   }
 
   void stopTrackingHeapObjectStackTraces() override {

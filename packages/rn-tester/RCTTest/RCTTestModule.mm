@@ -8,7 +8,7 @@
 #import "RCTTestModule.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 #import <ReactCommon/RCTTurboModule.h>

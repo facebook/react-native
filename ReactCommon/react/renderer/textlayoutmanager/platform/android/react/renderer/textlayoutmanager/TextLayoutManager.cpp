@@ -92,6 +92,13 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   // though it's 0 length
   env->DeleteLocalRef(attachmentPositions);
 
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentName.reset();
+  attributedStringRM.reset();
+  attributedStringRNM.reset();
+  paragraphAttributesRM.reset();
+  paragraphAttributesRNM.reset();
+
   // TODO: currently we do not support attachments for cached IDs - should we?
   auto attachments = TextMeasurement::Attachments{};
 
@@ -138,6 +145,12 @@ LinesMeasurements TextLayoutManager::measureLines(
   for (auto const &data : dynamicArray) {
     lineMeasurements.push_back(LineMeasurement(data));
   }
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  attributedStringRM.reset();
+  attributedStringRNM.reset();
+  paragraphAttributesRM.reset();
+  paragraphAttributesRNM.reset();
 
   return lineMeasurements;
 }
@@ -222,7 +235,16 @@ TextMeasurement TextLayoutManager::doMeasure(
   }
 
   // Clean up allocated ref
+  env->ReleaseFloatArrayElements(
+      attachmentPositions, attachmentData, JNI_ABORT);
   env->DeleteLocalRef(attachmentPositions);
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentName.reset();
+  attributedStringRM.reset();
+  attributedStringRNM.reset();
+  paragraphAttributesRM.reset();
+  paragraphAttributesRNM.reset();
 
   return TextMeasurement{size, attachments};
 }

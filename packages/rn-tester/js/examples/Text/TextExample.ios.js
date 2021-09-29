@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const TextAncestor = require('../../../../../Libraries/Text/TextAncestor');
+const TextAncestor = require('react-native/Libraries/Text/TextAncestor');
 const TextInlineView = require('../../components/TextInlineView');
 const TextLegend = require('../../components/TextLegend');
 

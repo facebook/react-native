@@ -397,12 +397,10 @@ void LayoutAnimationKeyFrameManager::
     adjustImmediateMutationIndicesForDelayedMutations(
         SurfaceId surfaceId,
         ShadowViewMutation &mutation,
-        ConsecutiveAdjustmentMetadata &consecutiveAdjustmentMetadata,
         bool skipLastAnimation,
         bool lastAnimationOnly) const {
   bool isRemoveMutation = mutation.type == ShadowViewMutation::Type::Remove;
-  bool isInsertMutation = mutation.type == ShadowViewMutation::Type::Insert;
-  assert(isRemoveMutation || isInsertMutation);
+  assert(isRemoveMutation || mutation.type == ShadowViewMutation::Type::Insert);
 
   // TODO: turn all of this into a lambda and share code?
   if (mutatedViewIsVirtual(mutation)) {
@@ -415,26 +413,6 @@ void LayoutAnimationKeyFrameManager::
   PrintMutationInstruction(
       "[IndexAdjustment] Calling adjustImmediateMutationIndicesForDelayedMutations for:",
       mutation);
-
-  // When adjusting INSERTs, we want to batch adjacent inserts so they're all
-  // adjacent to each other in the resulting view. For instance, if we're
-  // processing INSERTS into positions 2,3,4,5,6, etc, it is possible that
-  // delayed mutations would otherwise cause the inserts to be adjusted to
-  // positions 2, 4, 6, 8... etc, creating a striping effect. We want to prevent
-  // that.
-  if (isInsertMutation &&
-      mutation.parentShadowView.tag ==
-          consecutiveAdjustmentMetadata.lastAdjustedParent &&
-      mutation.index == (consecutiveAdjustmentMetadata.lastIndexOriginal + 1)) {
-    PrintMutationInstruction(
-        std::string(
-            "[IndexAdjustment] adjustImmediateMutationIndicesForDelayedMutations: Adjusting consecutive INSERT mutation by ") +
-            std::to_string(consecutiveAdjustmentMetadata.lastAdjustedDelta),
-        mutation);
-    consecutiveAdjustmentMetadata.lastIndexOriginal = mutation.index;
-    mutation.index += consecutiveAdjustmentMetadata.lastAdjustedDelta;
-    return;
-  }
 
   // First, collect all final mutations that could impact this immediate
   // mutation.
@@ -502,11 +480,6 @@ void LayoutAnimationKeyFrameManager::
   // bottom of adjustDelayedMutationIndicesForMutation for further explanation.
   bool changed = true;
   int adjustedDelta = 0;
-  if (isInsertMutation) {
-    consecutiveAdjustmentMetadata.lastAdjustedParent =
-        mutation.parentShadowView.tag;
-    consecutiveAdjustmentMetadata.lastIndexOriginal = mutation.index;
-  }
   while (changed) {
     changed = false;
     candidateMutations.erase(
@@ -514,7 +487,10 @@ void LayoutAnimationKeyFrameManager::
             candidateMutations.begin(),
             candidateMutations.end(),
             [&](ShadowViewMutation *candidateMutation) {
-              bool indexConflicts = candidateMutation->index <= mutation.index;
+              bool indexConflicts =
+                  (candidateMutation->index < mutation.index ||
+                   (isRemoveMutation &&
+                    candidateMutation->index == mutation.index));
               if (indexConflicts) {
                 mutation.index++;
                 adjustedDelta++;
@@ -528,11 +504,6 @@ void LayoutAnimationKeyFrameManager::
               return false;
             }),
         candidateMutations.end());
-  }
-  if (isInsertMutation) {
-    consecutiveAdjustmentMetadata.lastAdjustedDelta = adjustedDelta;
-  } else {
-    consecutiveAdjustmentMetadata.lastAdjustedParent = -1;
   }
 }
 
@@ -1248,7 +1219,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // adjusted based on [Delayed], no dependency on [FinalConflicting],
       // [FrameDelayed] [Delayed] -> assumes [FinalConflicting],
       // [ImmediateMutations] not executed yet
-      ConsecutiveAdjustmentMetadata consecutiveAdjustmentMetadata{};
 
       // Adjust [Delayed] based on [FinalConflicting]
       // Knowledge Graph:
@@ -1288,7 +1258,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
             // all `mutation`s here come from the last animation, so we can't
             // adjust a batch against itself.
             adjustImmediateMutationIndicesForDelayedMutations(
-                surfaceId, mutation, consecutiveAdjustmentMetadata, true);
+                surfaceId, mutation, true);
           }
         }
       }
@@ -1301,10 +1271,24 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // [FinalConflicting] -> is adjusted based on [Delayed], no dependency on
       // [FinalConflicting], [FrameDelayed] [Delayed] -> adjusted for
       // [FinalConflicting]; assumes [ImmediateExecutions] not executed yet
+      //
+      // THEN,
+      // Adjust [Delayed] based on [ImmediateExecutions] and [FinalConflicting]
+      // Knowledge Graph:
+      // [ImmediateExecutions] -> adjusted for [FrameDelayed], [Delayed];
+      // assumes [FinalConflicting] already executed [FrameDelayed] -> adjusted
+      // for [Delayed]; assumes [FinalConflicting] already executed
+      // [FinalConflicting] -> is adjusted based on [Delayed], no dependency on
+      // [FinalConflicting], [FrameDelayed] [Delayed] -> adjusted for
+      // [FinalConflicting], [ImmediateExecutions]
+      //
+      // We do these in the same loop because each immediate execution is
+      // impacted by each delayed mutation, and also can impact each delayed
+      // mutation, and these effects compound.
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
-      LOG(ERROR) << "Adjust [ImmediateExecutions] based on [Delayed]";
+      LOG(ERROR)
+          << "Adjust each [ImmediateExecution] based on [Delayed] and [Delayed] based on each [ImmediateExecution]";
 #endif
-      consecutiveAdjustmentMetadata = ConsecutiveAdjustmentMetadata{};
       for (auto &mutation : immediateMutations) {
         // Note: when adjusting [ImmediateExecutions] based on [FrameDelayed],
         // we need only adjust Inserts. Since inserts are executed
@@ -1316,26 +1300,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           adjustImmediateMutationIndicesForDelayedMutations(
               surfaceId,
               mutation,
-              consecutiveAdjustmentMetadata,
               mutation.type == ShadowViewMutation::Type::Remove);
-        }
-      }
-
-      // Adjust [Delayed] based on [ImmediateExecutions] and [FinalConflicting]
-      // Knowledge Graph:
-      // [ImmediateExecutions] -> adjusted for [FrameDelayed], [Delayed];
-      // assumes [FinalConflicting] already executed [FrameDelayed] -> adjusted
-      // for [Delayed]; assumes [FinalConflicting] already executed
-      // [FinalConflicting] -> is adjusted based on [Delayed], no dependency on
-      // [FinalConflicting], [FrameDelayed] [Delayed] -> adjusted for
-      // [FinalConflicting], [ImmediateExecutions]
-#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
-      LOG(ERROR)
-          << "Adjust [Delayed] based on [ImmediateExecutions] and [FinalConflicting]";
-#endif
-      for (auto &mutation : immediateMutations) {
-        if (mutation.type == ShadowViewMutation::Type::Insert ||
-            mutation.type == ShadowViewMutation::Type::Remove) {
           // Here we need to adjust both Delayed and FrameDelayed mutations.
           // Delayed Removes can be impacted by non-delayed Inserts from the
           // same frame.
@@ -1401,24 +1366,13 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // or later.
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
       LOG(ERROR)
-          << "No Animation: Adjust mutations based on remaining delayed mutations";
+          << "No Animation: Adjust mutations based on remaining delayed mutations / adjust delayed, based on each";
 #endif
-      ConsecutiveAdjustmentMetadata consecutiveAdjustmentMetadata{};
       for (auto &mutation : mutations) {
         if (mutation.type == ShadowViewMutation::Type::Remove ||
             mutation.type == ShadowViewMutation::Type::Insert) {
           adjustImmediateMutationIndicesForDelayedMutations(
-              surfaceId, mutation, consecutiveAdjustmentMetadata);
-        }
-      }
-
-#ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
-      LOG(ERROR)
-          << "No Animation: Adjust delayed mutations based on all immediate mutations";
-#endif
-      for (auto &mutation : mutations) {
-        if (mutation.type == ShadowViewMutation::Type::Remove ||
-            mutation.type == ShadowViewMutation::Type::Insert) {
+              surfaceId, mutation);
           adjustDelayedMutationIndicesForMutation(surfaceId, mutation);
         }
       }

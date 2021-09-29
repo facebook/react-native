@@ -12,7 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-import Platform from '../../../../../Libraries/Utilities/Platform';
+import Platform from 'react-native/Libraries/Utilities/Platform';
 const {
   ColorWithSystemEffectMacOS, // TODO(macOS GH#750)
   DynamicColorIOS,
@@ -118,6 +118,8 @@ function PlatformColorsExample() {
         {label: 'systemGray4', color: PlatformColor('systemGray4')},
         {label: 'systemGray5', color: PlatformColor('systemGray5')},
         {label: 'systemGray6', color: PlatformColor('systemGray6')},
+        // Transparent Color
+        {label: 'clear', color: PlatformColor('clear')},
       ];
     } else if (Platform.OS === 'android') {
       colors = [

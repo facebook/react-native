@@ -11,7 +11,6 @@
 #import <QuartzCore/QuartzCore.h>
 #endif // ]TODO(macOS GH#774)
 
-#import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 
 @implementation RCTSwitch
