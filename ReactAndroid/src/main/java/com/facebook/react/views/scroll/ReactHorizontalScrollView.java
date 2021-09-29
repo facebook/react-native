@@ -960,37 +960,45 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         }
       }
     } else if (mSnapToAlignment != SNAP_ALIGNMENT_DISABLED) {
-      ViewGroup contentView = (ViewGroup) getContentView();
-      for (int i = 1; i < contentView.getChildCount(); i++) {
-        View item = contentView.getChildAt(i);
-        int itemStartOffset;
-        switch (mSnapToAlignment) {
-          case SNAP_ALIGNMENT_CENTER:
-            itemStartOffset = item.getLeft() - (width - item.getWidth()) / 2;
-            break;
-          case SNAP_ALIGNMENT_START:
-            itemStartOffset = item.getLeft();
-            break;
-          case SNAP_ALIGNMENT_END:
-            itemStartOffset = item.getLeft() - (width - item.getWidth());
-            break;
-          default:
-            throw new IllegalStateException("Invalid SnapToAlignment value: " + mSnapToAlignment);
-        }
-        if (itemStartOffset <= targetOffset) {
-          if (targetOffset - itemStartOffset < targetOffset - smallerOffset) {
-            smallerOffset = itemStartOffset;
+      if (mSnapInterval > 0) {
+        double ratio = (double) targetOffset / mSnapInterval;
+        smallerOffset =
+            Math.max(
+                getItemStartOffset(
+                    mSnapToAlignment,
+                    (int) (Math.floor(ratio) * mSnapInterval),
+                    mSnapInterval,
+                    width),
+                0);
+        largerOffset =
+            Math.min(
+                getItemStartOffset(
+                    mSnapToAlignment,
+                    (int) (Math.ceil(ratio) * mSnapInterval),
+                    mSnapInterval,
+                    width),
+                maximumOffset);
+      } else {
+        ViewGroup contentView = (ViewGroup) getContentView();
+        for (int i = 1; i < contentView.getChildCount(); i++) {
+          View item = contentView.getChildAt(i);
+          int itemStartOffset =
+              getItemStartOffset(mSnapToAlignment, item.getLeft(), item.getWidth(), width);
+          if (itemStartOffset <= targetOffset) {
+            if (targetOffset - itemStartOffset < targetOffset - smallerOffset) {
+              smallerOffset = itemStartOffset;
+            }
           }
-        }
 
-        if (itemStartOffset >= targetOffset) {
-          if (itemStartOffset - targetOffset < largerOffset - targetOffset) {
-            largerOffset = itemStartOffset;
+          if (itemStartOffset >= targetOffset) {
+            if (itemStartOffset - targetOffset < largerOffset - targetOffset) {
+              largerOffset = itemStartOffset;
+            }
           }
         }
       }
     } else {
-      double interval = (double) getSnapInterval();
+      double interval = getSnapInterval();
       double ratio = (double) targetOffset / interval;
       smallerOffset = (int) (Math.floor(ratio) * interval);
       largerOffset = Math.min((int) (Math.ceil(ratio) * interval), maximumOffset);
@@ -1071,6 +1079,25 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     } else {
       reactSmoothScrollTo(targetOffset, getScrollY());
     }
+  }
+
+  private int getItemStartOffset(
+      int snapToAlignment, int itemStartPosition, int itemWidth, int viewPortWidth) {
+    int itemStartOffset;
+    switch (snapToAlignment) {
+      case SNAP_ALIGNMENT_CENTER:
+        itemStartOffset = itemStartPosition - (viewPortWidth - itemWidth) / 2;
+        break;
+      case SNAP_ALIGNMENT_START:
+        itemStartOffset = itemStartPosition;
+        break;
+      case SNAP_ALIGNMENT_END:
+        itemStartOffset = itemStartPosition - (viewPortWidth - itemWidth);
+        break;
+      default:
+        throw new IllegalStateException("Invalid SnapToAlignment value: " + mSnapToAlignment);
+    }
+    return itemStartOffset;
   }
 
   private void smoothScrollToNextPage(int direction) {
