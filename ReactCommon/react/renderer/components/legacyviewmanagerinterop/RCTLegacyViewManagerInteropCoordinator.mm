@@ -9,6 +9,7 @@
 #include <React/RCTBridge+Private.h>
 #include <React/RCTBridgeMethod.h>
 #include <React/RCTComponentData.h>
+#include <React/RCTEventDispatcherProtocol.h>
 #include <React/RCTFollyConvert.h>
 #include <React/RCTModuleData.h>
 #include <React/RCTUIManager.h>

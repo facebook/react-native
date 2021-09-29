@@ -11,7 +11,6 @@
 #import "RCTBridge.h"
 #import "RCTConvert+Transform.h"
 #import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 #import "RCTSinglelineTextInputView.h" // TODO(macOS GH#768)

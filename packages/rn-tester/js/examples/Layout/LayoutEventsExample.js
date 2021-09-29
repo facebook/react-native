@@ -23,7 +23,7 @@ const {
 import type {
   ViewLayout,
   ViewLayoutEvent,
-} from '../../../../../Libraries/Components/View/ViewPropTypes';
+} from 'react-native/Libraries/Components/View/ViewPropTypes';
 
 type Props = $ReadOnly<{||}>;
 type State = {

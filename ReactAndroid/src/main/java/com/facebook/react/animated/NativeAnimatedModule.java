@@ -17,6 +17,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
@@ -34,6 +35,7 @@ import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Module that exposes interface for creating and managing animated nodes on the "native" side.
@@ -111,7 +113,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   private final ConcurrentLinkedQueue<UIThreadOperation> mPreOperations =
       new ConcurrentLinkedQueue<>();
 
-  private @Nullable NativeAnimatedNodesManager mNodesManager;
+  private final AtomicReference<NativeAnimatedNodesManager> mNodesManager = new AtomicReference<>();
 
   private boolean mBatchingControlledByJS = false; // TODO T71377544: delete
   private volatile long mCurrentFrameNumber; // TODO T71377544: delete
@@ -223,6 +225,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     executeAllOperations(mOperations, batchNumber);
   }
 
+  @UiThread
   private void executeAllOperations(Queue<UIThreadOperation> operationQueue, long maxBatchNumber) {
     NativeAnimatedNodesManager nodesManager = getNodesManager();
     while (true) {
@@ -315,15 +318,15 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
    */
   @Nullable
   private NativeAnimatedNodesManager getNodesManager() {
-    if (mNodesManager == null) {
+    if (mNodesManager.get() == null) {
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
       if (reactApplicationContext != null) {
-        mNodesManager = new NativeAnimatedNodesManager(reactApplicationContext);
+        mNodesManager.compareAndSet(null, new NativeAnimatedNodesManager(reactApplicationContext));
       }
     }
 
-    return mNodesManager;
+    return mNodesManager.get();
   }
 
   private void clearFrameCallback() {
@@ -340,7 +343,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @VisibleForTesting
   public void setNodesManager(NativeAnimatedNodesManager nodesManager) {
-    mNodesManager = nodesManager;
+    mNodesManager.set(nodesManager);
   }
 
   /**
@@ -358,8 +361,14 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       mNumNonFabricAnimations++;
     }
 
-    if (mNodesManager != null) {
-      mNodesManager.initializeEventListenerForUIManagerType(mUIManagerType);
+    NativeAnimatedNodesManager nodesManager = getNodesManager();
+    if (nodesManager != null) {
+      nodesManager.initializeEventListenerForUIManagerType(mUIManagerType);
+    } else {
+      ReactSoftException.logSoftException(
+          NAME,
+          new RuntimeException(
+              "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"));
     }
 
     // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't yet

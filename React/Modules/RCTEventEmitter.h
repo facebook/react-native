@@ -16,6 +16,8 @@
 
 @property (nonatomic, weak) RCTBridge * _Nullable bridge; // TODO(macOS GH#774)
 
+- (instancetype)initWithDisabledObservation;
+
 /**
  * Override this method to return an array of supported event names. Attempting
  * to observe or send an event that isn't included in this list will result in

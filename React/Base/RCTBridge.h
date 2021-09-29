@@ -15,7 +15,6 @@
 
 @class JSValue;
 @class RCTBridge;
-@class RCTEventDispatcher;
 @class RCTPerformanceLogger;
 
 /**

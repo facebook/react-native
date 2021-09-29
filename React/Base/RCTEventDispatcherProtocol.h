@@ -10,15 +10,6 @@
 #import <React/RCTBridge.h>
 #import <React/RCTJSInvokerModule.h>
 
-typedef NS_ENUM(NSInteger, RCTTextEventType) {
-  RCTTextEventTypeFocus,
-  RCTTextEventTypeBlur,
-  RCTTextEventTypeChange,
-  RCTTextEventTypeSubmit,
-  RCTTextEventTypeEnd,
-  RCTTextEventTypeKeyPress
-};
-
 /**
  * The threshold at which text inputs will start warning that the JS thread
  * has fallen behind (resulting in poor input performance, missed keys, etc.)
@@ -31,6 +22,15 @@ RCT_EXTERN const NSInteger RCTTextUpdateLagWarningThreshold;
  * but that's an implementation detail that may change in future).
  */
 RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
+
+typedef NS_ENUM(NSInteger, RCTTextEventType) {
+  RCTTextEventTypeFocus,
+  RCTTextEventTypeBlur,
+  RCTTextEventTypeChange,
+  RCTTextEventTypeSubmit,
+  RCTTextEventTypeEnd,
+  RCTTextEventTypeKeyPress
+};
 
 @protocol RCTEvent <NSObject>
 @required
@@ -80,7 +80,7 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
  * provides some convenience methods for generating event calls.
  */
-@interface RCTEventDispatcher : NSObject <RCTBridgeModule, RCTJSDispatcherModule, RCTJSInvokerModule>
+@protocol RCTEventDispatcherProtocol <RCTBridgeModule, RCTJSDispatcherModule, RCTJSInvokerModule>
 
 /**
  * Deprecated, do not use.
@@ -123,6 +123,6 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @interface RCTBridge (RCTEventDispatcher)
 
-- (RCTEventDispatcher *)eventDispatcher;
+- (id<RCTEventDispatcherProtocol>)eventDispatcher;
 
 @end

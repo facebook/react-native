@@ -10,6 +10,7 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTPlatformDisplayLink.h> // TODO(macOS GH#774)
 #import <React/RCTSurfacePresenterStub.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 @protocol RCTValueAnimatedNodeObserver;
 

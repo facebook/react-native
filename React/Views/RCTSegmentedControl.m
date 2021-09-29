@@ -8,7 +8,6 @@
 #import "RCTSegmentedControl.h"
 
 #import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #import "UIView+React.h"
 #import "RCTUIKit.h" // TODO(macOS GH#774)
 
