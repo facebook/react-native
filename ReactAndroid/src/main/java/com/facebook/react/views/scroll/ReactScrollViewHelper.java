@@ -40,7 +40,7 @@ public class ReactScrollViewHelper {
   }
 
   // Support global native listeners for scroll events
-  private static Set<ScrollListener> sScrollListeners =
+  private static final Set<ScrollListener> sScrollListeners =
       Collections.newSetFromMap(new WeakHashMap<ScrollListener, Boolean>());
 
   // If all else fails, this is the hardcoded value in OverScroller.java, in AOSP.
