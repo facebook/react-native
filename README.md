@@ -63,7 +63,7 @@ specific information, like API docs and blog updates live. We are bootstrapping 
 ### Examples
 
 - Using the CLI in the [Getting Started](https://microsoft.github.io/react-native-windows/docs/rnm-getting-started) guide will set you up with a sample React Native for macOS app that you can begin editing right away.
-- If you're looking for sample code, just browse the [RNTester folder](https://github.com/microsoft/react-native-macos/tree/master/RNTester) for examples
+- If you're looking for sample code, just browse the [RNTester folder](https://github.com/microsoft/react-native-macos/tree/master/packages/rn-tester) for examples
 
 ## License
 

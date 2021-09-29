@@ -6,7 +6,7 @@ chmod -R +r .
 
 mono ./nuget-bin/nuget.exe restore ./ReactAndroid/packages.config -PackagesDirectory ./ReactAndroid/packages/ -Verbosity Detailed -NonInteractive
 
-npm install
+yarn install --frozen-lockfile
 
 chmod +x .ado/setup_droid_deps.sh && .ado/setup_droid_deps.sh
 

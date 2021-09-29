@@ -26,9 +26,9 @@ steps:
       script: node .ado/renamePackageForOffice.js
 
   - task: CmdLine@2
-    displayName: npm install
+    displayName: yarn install
     inputs:
-      script: npm install
+      script: yarn install --frozen-lockfile
 
   - task: CmdLine@2
     displayName: Bump canary package version

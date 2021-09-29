@@ -12,8 +12,8 @@ rm -rf node_modules
 
 # Begin VSTO build agent tasks
 
-# npm install
-npm install
+# yarn install
+yarn install
 
 # Setup packager and WebSocket test server
 . ./scripts/vsto-test-setup.sh
