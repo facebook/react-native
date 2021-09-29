@@ -7,7 +7,10 @@
 
 package com.facebook.react.views.scroll;
 
+import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_CENTER;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_DISABLED;
+import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_END;
+import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_START;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -641,6 +644,10 @@ public class ReactScrollView extends ScrollView
     return scroller.getFinalY();
   }
 
+  private View getContentView() {
+    return getChildAt(0);
+  }
+
   /**
    * This will smooth scroll us to the nearest snap offset point It currently just looks at where
    * the content is and slides to the nearest point. It is intended to be run after we are done
@@ -697,7 +704,7 @@ public class ReactScrollView extends ScrollView
     }
 
     // pagingEnabled only allows snapping one interval at a time
-    if (mSnapInterval == 0 && mSnapOffsets == null) {
+    if (mSnapInterval == 0 && mSnapOffsets == null && mSnapToAlignment == SNAP_ALIGNMENT_DISABLED) {
       smoothScrollAndSnap(velocityY);
       return;
     }
@@ -731,6 +738,37 @@ public class ReactScrollView extends ScrollView
         if (offset >= targetOffset) {
           if (offset - targetOffset < largerOffset - targetOffset) {
             largerOffset = offset;
+          }
+        }
+      }
+
+    } else if (mSnapToAlignment != SNAP_ALIGNMENT_DISABLED) {
+      ViewGroup contentView = (ViewGroup) getContentView();
+      for (int i = 1; i < contentView.getChildCount(); i++) {
+        View item = contentView.getChildAt(i);
+        int itemStartOffset;
+        switch (mSnapToAlignment) {
+          case SNAP_ALIGNMENT_CENTER:
+            itemStartOffset = item.getTop() - (height - item.getHeight()) / 2;
+            break;
+          case SNAP_ALIGNMENT_START:
+            itemStartOffset = item.getTop();
+            break;
+          case SNAP_ALIGNMENT_END:
+            itemStartOffset = item.getTop() - (height - item.getHeight());
+            break;
+          default:
+            throw new IllegalStateException("Invalid SnapToAlignment value: " + mSnapToAlignment);
+        }
+        if (itemStartOffset <= targetOffset) {
+          if (targetOffset - itemStartOffset < targetOffset - smallerOffset) {
+            smallerOffset = itemStartOffset;
+          }
+        }
+
+        if (itemStartOffset >= targetOffset) {
+          if (itemStartOffset - targetOffset < largerOffset - targetOffset) {
+            largerOffset = itemStartOffset;
           }
         }
       }

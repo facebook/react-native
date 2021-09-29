@@ -975,7 +975,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
             itemStartOffset = item.getLeft() - (width - item.getWidth());
             break;
           default:
-            throw new IllegalStateException("");
+            throw new IllegalStateException("Invalid SnapToAlignment value: " + mSnapToAlignment);
         }
         if (itemStartOffset <= targetOffset) {
           if (targetOffset - itemStartOffset < targetOffset - smallerOffset) {
