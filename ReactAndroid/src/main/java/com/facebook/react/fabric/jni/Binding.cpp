@@ -508,6 +508,9 @@ void Binding::installFabricUIManager(
   enableFabricLogs_ =
       config->getBool("react_fabric:enabled_android_fabric_logs");
 
+  disableRevisionCheckForPreallocation_ =
+      config->getBool("react_fabric:disable_revision_check_for_preallocation");
+
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
                  << this << ").";
@@ -1242,11 +1245,13 @@ void Binding::schedulerDidCloneShadowNode(
   // 1. The revision is exactly 1
   // 2. At revision 0 (the old node), View Preallocation would have been skipped
 
-  if (newShadowNode.getProps()->revision != 1) {
-    return;
-  }
-  if (oldShadowNode.getProps()->revision != 0) {
-    return;
+  if (!disableRevisionCheckForPreallocation_) {
+    if (newShadowNode.getProps()->revision != 1) {
+      return;
+    }
+    if (oldShadowNode.getProps()->revision != 0) {
+      return;
+    }
   }
 
   // If the new node is concrete and the old wasn't, we can preallocate

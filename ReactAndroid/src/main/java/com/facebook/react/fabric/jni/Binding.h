@@ -201,6 +201,7 @@ class Binding : public jni::HybridClass<Binding>,
   bool disablePreallocateViews_{false};
   bool enableFabricLogs_{false};
   bool enableEarlyEventEmitterUpdate_{false};
+  bool disableRevisionCheckForPreallocation_{false};
 };
 
 } // namespace react
