@@ -7,7 +7,10 @@
 
 package com.facebook.react.views.scroll;
 
+import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_CENTER;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_DISABLED;
+import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_END;
+import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_START;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -23,6 +26,7 @@ import android.view.FocusFinder;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
@@ -912,7 +916,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     // pagingEnabled only allows snapping one interval at a time
-    if (mSnapInterval == 0 && mSnapOffsets == null) {
+    if (mSnapInterval == 0 && mSnapOffsets == null && mSnapToAlignment == SNAP_ALIGNMENT_DISABLED) {
       smoothScrollAndSnap(velocityX);
       return;
     }
@@ -952,6 +956,36 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         if (offset >= targetOffset) {
           if (offset - targetOffset < largerOffset - targetOffset) {
             largerOffset = offset;
+          }
+        }
+      }
+    } else if (mSnapToAlignment != SNAP_ALIGNMENT_DISABLED) {
+      ViewGroup contentView = (ViewGroup) getContentView();
+      for (int i = 1; i < contentView.getChildCount(); i++) {
+        View item = contentView.getChildAt(i);
+        int itemStartOffset;
+        switch (mSnapToAlignment) {
+          case SNAP_ALIGNMENT_CENTER:
+            itemStartOffset = item.getLeft() - (width - item.getWidth()) / 2;
+            break;
+          case SNAP_ALIGNMENT_START:
+            itemStartOffset = item.getLeft();
+            break;
+          case SNAP_ALIGNMENT_END:
+            itemStartOffset = item.getLeft() - (width - item.getWidth());
+            break;
+          default:
+            throw new IllegalStateException("");
+        }
+        if (itemStartOffset <= targetOffset) {
+          if (targetOffset - itemStartOffset < targetOffset - smallerOffset) {
+            smallerOffset = itemStartOffset;
+          }
+        }
+
+        if (itemStartOffset >= targetOffset) {
+          if (itemStartOffset - targetOffset < largerOffset - targetOffset) {
+            largerOffset = itemStartOffset;
           }
         }
       }
