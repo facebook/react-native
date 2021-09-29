@@ -857,6 +857,7 @@ workflows:
               only:
                 - main
                 - /^pull\/.*$/
+                - /^(\d+)\.(\d+)-stable$/
             tags:
               ignore: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
