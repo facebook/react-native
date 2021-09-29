@@ -127,20 +127,49 @@ def exclude_architectures(installer)
     .uniq{ |p| p.path }
     .push(installer.pods_project)
 
-  arm_value = `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i
-
   # Hermes does not support `i386` architecture
   excluded_archs_default = has_pod(installer, 'hermes-engine') ? "i386" : ""
 
   projects.each do |project|
     project.build_configurations.each do |config|
-      if arm_value == 1 then
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
-      else
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64 " + excluded_archs_default
-      end
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
     end
 
+    project.save()
+  end
+end
+
+def fix_library_search_paths(installer)
+  def fix_config(config)
+    lib_search_paths = config.build_settings["LIBRARY_SEARCH_PATHS"]
+    if lib_search_paths
+      if lib_search_paths.include?("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)") || lib_search_paths.include?("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
+        # since the libraries there are only built for x86_64 and i386.
+        lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
+        lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        if !(lib_search_paths.include?("$(SDKROOT)/usr/lib/swift") || lib_search_paths.include?("\"$(SDKROOT)/usr/lib/swift\""))
+          # however, $(SDKROOT)/usr/lib/swift is required, at least if user is not running CocoaPods 1.11
+          lib_search_paths.insert(0, "$(SDKROOT)/usr/lib/swift")
+        end
+      end
+    end
+  end
+
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      fix_config(config)
+    end
+    project.native_targets.each do |target|
+      target.build_configurations.each do |config|
+        fix_config(config)
+      end
+    end
     project.save()
   end
 end
@@ -151,6 +180,7 @@ def react_native_post_install(installer)
   end
 
   exclude_architectures(installer)
+  fix_library_search_paths(installer)
 end
 
 def use_react_native_codegen!(spec, options={})
@@ -337,32 +367,8 @@ end
 # See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
 # Actual fix was authored by https://github.com/mikehardy.
 # New app template will call this for now until the underlying issue is resolved.
+#
+# It's not needed anymore and will be removed later
 def __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  # Apple Silicon builds require a library path tweak for Swift library discovery to resolve Swift-related "symbol not found".
-  # Note: this was fixed via https://github.com/facebook/react-native/commit/eb938863063f5535735af2be4e706f70647e5b90
-  # Keeping this logic here but commented out for future reference.
-  #
-  # installer.aggregate_targets.each do |aggregate_target|
-  #   aggregate_target.user_project.native_targets.each do |target|
-  #     target.build_configurations.each do |config|
-  #       config.build_settings['LIBRARY_SEARCH_PATHS'] = ['$(SDKROOT)/usr/lib/swift', '$(inherited)']
-  #     end
-  #   end
-  #   aggregate_target.user_project.save
-  # end
-
-  # Flipper podspecs are still targeting an older iOS deployment target, and may cause an error like:
-  #   "error: thread-local storage is not supported for the current target"
-  # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
-      end
-  end
-
-  # But... doing so caused another issue in Flipper:
-  #   "Time.h:52:17: error: typedef redefinition with different types"
-  # We need to make a patch to RCT-Folly - set `__IPHONE_10_0` to our iOS target + 1.
-  # See https://github.com/facebook/flipper/issues/834 for more details.
-  `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_12_0/' #{installer.sandbox.root}/RCT-Folly/folly/portability/Time.h`
+  puts "__apply_Xcode_12_5_M1_post_install_workaround() is not needed anymore"
 end
