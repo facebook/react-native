@@ -18,21 +18,21 @@
  *
  * To cut a branch (and release RC):
  * - Developer: `git checkout -b 0.XY-stable`
- * - Developer: `./scripts/bump-oss-version.js v0.XY.0-rc.0`
+ * - Developer: `./scripts/bump-oss-version.js -v v0.XY.0-rc.0`
  * - CI: test and deploy to npm (run this script) with version `0.XY.0-rc.0`
  *   with tag "next"
  *
  * To update RC release:
  * - Developer: `git checkout 0.XY-stable`
  * - Developer: cherry-pick whatever changes needed
- * - Developer: `./scripts/bump-oss-version.js v0.XY.0-rc.1`
+ * - Developer: `./scripts/bump-oss-version.js -v v0.XY.0-rc.1`
  * - CI: test and deploy to npm (run this script) with version `0.XY.0-rc.1`
  *   with tag "next"
  *
  * To publish a release:
  * - Developer: `git checkout 0.XY-stable`
  * - Developer: cherry-pick whatever changes needed
- * - Developer: `./scripts/bump-oss-version.js v0.XY.0`
+ * - Developer: `./scripts/bump-oss-version.js -v v0.XY.0`
  * - CI: test and deploy to npm (run this script) with version `0.XY.0`
  *   and no tag ("latest" is implied by npm)
  *
@@ -111,7 +111,9 @@ if (nightlyBuild) {
 
   // Bump version number in various files (package.json, gradle.properties etc)
   if (
-    exec(`node scripts/bump-oss-version.js --nightly ${releaseVersion}`).code
+    exec(
+      `node scripts/bump-oss-version.js --nightly --to-version ${releaseVersion}`,
+    ).code
   ) {
     echo('Failed to bump version number');
     exit(1);

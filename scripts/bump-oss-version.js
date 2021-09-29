@@ -29,17 +29,24 @@ let argv = yargs
     alias: 'nightly',
     type: 'boolean',
     default: false,
+  })
+  .option('v', {
+    alias: 'to-version',
+    type: 'string',
   }).argv;
 
 const nightlyBuild = argv.nightly;
+const version = argv.toVersion;
 
-let version, branch;
-if (nightlyBuild) {
-  const currentCommit = exec('git rev-parse HEAD', {
-    silent: true,
-  }).stdout.trim();
-  version = `0.0.0-${currentCommit.slice(0, 9)}`;
-} else {
+if (!version) {
+  echo(
+    'You must specify a version using -v',
+  );
+  exit(1);
+}
+
+let branch;
+if (!nightlyBuild) {
   // Check we are in release branch, e.g. 0.33-stable
   branch = exec('git symbolic-ref --short HEAD', {
     silent: true,
@@ -55,10 +62,9 @@ if (nightlyBuild) {
 
   // - check that argument version matches branch
   // e.g. 0.33.1 or 0.33.0-rc4
-  version = argv._[0];
-  if (!version || version.indexOf(versionMajor) !== 0) {
+  if (version.indexOf(versionMajor) !== 0) {
     echo(
-      `You must pass a tag like 0.${versionMajor}.[X]-rc[Y] to bump a version`,
+      `You must specify a version tag like 0.${versionMajor}.[X]-rc[Y] to bump a version`,
     );
     exit(1);
   }
@@ -175,7 +181,7 @@ if (!nightlyBuild) {
     exit(1);
   }
 
-  // Update Podfile.lock only on release builds, not nightly.
+  // Update Podfile.lock only on release builds, not nightlies.
   // Nightly builds don't need it as the main branch will already be up-to-date.
   echo('Updating RNTester Podfile.lock...');
   if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
