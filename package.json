@@ -48,7 +48,8 @@
     "scripts/react-native-xcode.sh",
     "template.config.js",
     "template",
-    "third-party-podspecs"
+    "third-party-podspecs",
+    "android"
   ],
   "scripts": {
     "start": "react-native start",
