@@ -41,8 +41,8 @@ lint() {
   if [ "${SUBSPEC:-}" ]; then
     local SUBSPEC_OPT="--subspec=$SUBSPEC"
   fi
-  pod lib lint $SUBSPEC_OPT $POD_LINT_OPT
-  pod lib lint $SUBSPEC_OPT $POD_LINT_OPT --use-libraries
+  bundle exec pod lib lint $SUBSPEC_OPT $POD_LINT_OPT
+  bundle exec pod lib lint $SUBSPEC_OPT $POD_LINT_OPT --use-libraries
 }
 
 # Push the spec in arg `$1`, which is expected to be in the cwd, to the `SPEC_REPO` in JSON format.
@@ -52,7 +52,7 @@ push() {
   local SPEC_DIR="$SPEC_REPO_DIR/$POD_NAME/$(version $SPEC_NAME)"
   local SPEC_PATH="$SPEC_DIR/$SPEC_NAME.json"
   mkdir -p $SPEC_DIR
-  env INSTALL_YOGA_WITHOUT_PATH_OPTION=1 INSTALL_YOGA_FROM_LOCATION="$ROOT" pod ipc spec $SPEC_NAME > $SPEC_PATH
+  env INSTALL_YOGA_WITHOUT_PATH_OPTION=1 INSTALL_YOGA_FROM_LOCATION="$ROOT" bundle exec pod ipc spec $SPEC_NAME > $SPEC_PATH
 }
 
 # Perform linting and publishing of podspec in cwd.

@@ -96,7 +96,7 @@ fi
 
 if [[ $USE_HERMES == true && ! -f "$HERMES_CLI_PATH" ]]; then
   echo "error: USE_HERMES is set to true but the hermesc binary could not be " \
-       "found at ${HERMES_CLI_PATH}. Perhaps you need to run pod install or otherwise " \
+       "found at ${HERMES_CLI_PATH}. Perhaps you need to run 'bundle exec pod install' or otherwise " \
        "point the HERMES_CLI_PATH variable to your custom location." >&2
   exit 2
 fi
