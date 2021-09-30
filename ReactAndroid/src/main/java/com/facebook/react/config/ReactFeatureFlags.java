@@ -99,4 +99,6 @@ public class ReactFeatureFlags {
   public static boolean enableAggressiveEventEmitterCleanup = false;
 
   public static boolean insertZReorderBarriersOnViewGroupChildren = true;
+
+  public static boolean enableScrollViewSnapToAlignmentProp = true;
 }
