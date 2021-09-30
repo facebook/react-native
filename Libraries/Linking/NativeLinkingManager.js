@@ -12,7 +12,6 @@
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-import Platform from '../Utilities/Platform';
 
 export interface Spec extends TurboModule {
   // Common interface
@@ -21,21 +20,9 @@ export interface Spec extends TurboModule {
   +openURL: (url: string) => Promise<void>;
   +openSettings: () => Promise<void>;
 
-  // Android only
-  +sendIntent: (
-    action: string,
-    extras: ?Array<{
-      key: string,
-      value: string | number | boolean, // TODO(T67672788): Union types are not type safe
-      ...
-    }>,
-  ) => Promise<void>;
-
   // Events
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
 }
 
-export default ((Platform.OS === 'android'
-  ? TurboModuleRegistry.getEnforcing<Spec>('IntentAndroid')
-  : TurboModuleRegistry.getEnforcing<Spec>('LinkingManager')): Spec);
+export default (TurboModuleRegistry.get<Spec>('LinkingManager'): ?Spec);

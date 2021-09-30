@@ -634,24 +634,6 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "setNativeProps") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        2,
-        [uiManager](
-            jsi::Runtime & runtime,
-            jsi::Value const &thisValue,
-            jsi::Value const *arguments,
-            size_t count) noexcept->jsi::Value {
-          uiManager->setNativeProps(
-              *shadowNodeFromValue(runtime, arguments[0]),
-              RawProps(runtime, arguments[1]));
-
-          return jsi::Value::undefined();
-        });
-  }
-
   if (methodName == "configureNextLayoutAnimation") {
     return jsi::Function::createFromHostFunction(
         runtime,

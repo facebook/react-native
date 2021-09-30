@@ -397,6 +397,7 @@ function buildPropertySchema(
 
 function buildModuleSchema(
   moduleName: string,
+  moduleNames: $ReadOnlyArray<string>,
   types: TypeDeclarationMap,
 ): NativeModuleSchema {
   const moduleInterfaceNames = (Object.keys(
@@ -418,6 +419,11 @@ function buildModuleSchema(
 
   const [moduleInterfaceName] = moduleInterfaceNames;
 
+  invariant(
+    moduleInterfaceNames[0] === 'Spec',
+    "Nativemodule interface must be called 'Spec'",
+  );
+
   const declaration = types[moduleInterfaceName];
   return (declaration.body.properties: $ReadOnlyArray<$FlowFixMe>)
     .filter(property => property.type === 'ObjectTypeProperty')
@@ -436,11 +442,20 @@ function buildModuleSchema(
     .reduce(
       (moduleSchema: NativeModuleSchema, {aliasMap, propertySchema}) => {
         return {
+          type: 'NativeModule',
           aliases: {...moduleSchema.aliases, ...aliasMap},
-          properties: [...moduleSchema.properties, propertySchema],
+          spec: {
+            properties: [...moduleSchema.spec.properties, propertySchema],
+          },
+          moduleNames: moduleSchema.moduleNames,
         };
       },
-      {aliases: {}, properties: []},
+      {
+        type: 'NativeModule',
+        aliases: {},
+        spec: {properties: []},
+        moduleNames: moduleNames,
+      },
     );
 }
 

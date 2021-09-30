@@ -16,6 +16,8 @@ import type {
   NativeModulePropertySchema,
   NativeModuleMethodParamSchema,
   NativeModuleReturnTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
+  NativeModuleParamTypeAnnotation,
 } from '../../CodegenSchema';
 
 import type {AliasResolver} from './Utils';
@@ -56,7 +58,10 @@ function translateFunctionParamToJavaType(
   imports: Set<string>,
 ): string {
   const {optional, typeAnnotation: nullableTypeAnnotation} = param;
-  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const [
+    typeAnnotation,
+    nullable,
+  ] = unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
   const isRequired = !optional && !nullable;
 
   function wrapIntoNullableIfNeeded(generatedType: string) {
@@ -122,7 +127,10 @@ function translateFunctionReturnTypeToJavaType(
   resolveAlias: AliasResolver,
   imports: Set<string>,
 ): string {
-  const [returnTypeAnnotation, nullable] = unwrapNullable(
+  const [
+    returnTypeAnnotation,
+    nullable,
+  ] = unwrapNullable<NativeModuleReturnTypeAnnotation>(
     nullableReturnTypeAnnotation,
   );
 
@@ -184,7 +192,9 @@ function buildGetConstantsMethod(
   method: NativeModulePropertySchema,
   imports: Set<string>,
 ): string {
-  const [methodTypeAnnotation] = unwrapNullable(method.typeAnnotation);
+  const [
+    methodTypeAnnotation,
+  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(method.typeAnnotation);
   if (
     methodTypeAnnotation.returnTypeAnnotation.type === 'ObjectTypeAnnotation'
   ) {
@@ -269,10 +279,13 @@ module.exports = {
     const packageName = 'com.facebook.fbreact.specs.beta';
     const nativeModules = getModules(schema);
 
-    Object.keys(nativeModules).forEach(name => {
-      const {aliases, properties} = nativeModules[name];
+    Object.keys(nativeModules).forEach(codegenModuleName => {
+      const {
+        aliases,
+        spec: {properties},
+      } = nativeModules[codegenModuleName];
       const resolveAlias = createAliasResolver(aliases);
-      const className = `Native${name}Spec`;
+      const className = `${codegenModuleName}Spec`;
 
       const imports: Set<string> = new Set([
         // Always required.
@@ -288,7 +301,11 @@ module.exports = {
           return buildGetConstantsMethod(method, imports);
         }
 
-        const [methodTypeAnnotation] = unwrapNullable(method.typeAnnotation);
+        const [
+          methodTypeAnnotation,
+        ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+          method.typeAnnotation,
+        );
 
         // Handle return type
         const translatedReturnType = translateFunctionReturnTypeToJavaType(

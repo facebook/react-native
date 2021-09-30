@@ -186,7 +186,7 @@ static NSDictionary *RCTDeleteStorageDirectory()
 
 #pragma mark - RCTAsyncLocalStorage
 
-@interface RCTAsyncLocalStorage () <NativeAsyncStorageSpec>
+@interface RCTAsyncLocalStorage () <NativeAsyncLocalStorageSpec>
 @end
 
 @implementation RCTAsyncLocalStorage {
@@ -479,7 +479,7 @@ RCT_EXPORT_METHOD(getAllKeys : (RCTResponseSenderBlock)callback)
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeAsyncStorageSpecJSI>(params);
+  return std::make_shared<facebook::react::NativeAsyncLocalStorageSpecJSI>(params);
 }
 
 @end

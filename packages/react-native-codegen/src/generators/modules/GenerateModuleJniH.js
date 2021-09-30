@@ -16,12 +16,12 @@ type FilesOutput = Map<string, string>;
 
 const {getModules} = require('./Utils');
 
-const moduleTemplate = `/**
- * JNI C++ class for module '::_MODULE_NAME_::'
+const moduleSpecTemplate = `/**
+ * JNI C++ class for module '::_CODEGEN_MODULE_NAME_::'
  */
-class JSI_EXPORT Native::_MODULE_NAME_::SpecJSI : public JavaTurboModule {
+class JSI_EXPORT ::_CODEGEN_MODULE_NAME_::SpecJSI : public JavaTurboModule {
 public:
-  Native::_MODULE_NAME_::SpecJSI(const JavaTurboModule::InitParams &params);
+  ::_CODEGEN_MODULE_NAME_::SpecJSI(const JavaTurboModule::InitParams &params);
 };
 `;
 
@@ -89,7 +89,12 @@ module.exports = {
   ): FilesOutput {
     const nativeModules = getModules(schema);
     const modules = Object.keys(nativeModules)
-      .map(name => moduleTemplate.replace(/::_MODULE_NAME_::/g, name))
+      .map(codegenModuleName =>
+        moduleSpecTemplate.replace(
+          /::_CODEGEN_MODULE_NAME_::/g,
+          codegenModuleName,
+        ),
+      )
       .join('\n');
 
     const fileName = `${moduleSpecName}.h`;

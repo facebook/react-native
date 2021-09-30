@@ -16,6 +16,8 @@ import type {
   NativeModulePropertySchema,
   NativeModuleMethodParamSchema,
   NativeModuleReturnTypeAnnotation,
+  NativeModuleParamTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
 } from '../../CodegenSchema';
 
 import type {AliasResolver} from './Utils';
@@ -25,7 +27,7 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 type FilesOutput = Map<string, string>;
 
 const propertyHeaderTemplate =
-  'static facebook::jsi::Value __hostFunction_Native::_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {';
+  'static facebook::jsi::Value __hostFunction_::_CODEGEN_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {';
 
 const propertyCastTemplate =
   'static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, ::_KIND_::, "::_PROPERTY_NAME_::", "::_SIGNATURE_::", args, count);';
@@ -36,18 +38,18 @@ ${propertyHeaderTemplate}
 }`;
 
 const propertyDefTemplate =
-  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_Native::_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::};';
+  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_::_CODEGEN_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::};';
 
 const moduleTemplate = `
 ::_TURBOMODULE_METHOD_INVOKERS_::
 
-Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(const JavaTurboModule::InitParams &params)
+::_CODEGEN_MODULE_NAME_::SpecJSI::::_CODEGEN_MODULE_NAME_::SpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
 ::_PROPERTIES_MAP_::
 }`.trim();
 
-const oneModuleLookupTemplate = `  if (moduleName == "::_MODULE_NAME_::") {
-    return std::make_shared<Native::_MODULE_NAME_::SpecJSI>(params);
+const oneModuleLookupTemplate = `  if (moduleName == "::_NATIVE_MODULE_NAME_::") {
+    return std::make_shared<::_CODEGEN_MODULE_NAME_::SpecJSI>(params);
   }`;
 
 const template = `
@@ -80,7 +82,9 @@ function translateReturnTypeToKind(
   nullableTypeAnnotation: Nullable<NativeModuleReturnTypeAnnotation>,
   resolveAlias: AliasResolver,
 ): string {
-  const [typeAnnotation] = unwrapNullable(nullableTypeAnnotation);
+  const [typeAnnotation] = unwrapNullable<NativeModuleReturnTypeAnnotation>(
+    nullableTypeAnnotation,
+  );
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
@@ -132,7 +136,10 @@ function translateParamTypeToJniType(
   resolveAlias: AliasResolver,
 ): string {
   const {optional, typeAnnotation: nullableTypeAnnotation} = param;
-  const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
+  const [
+    typeAnnotation,
+    nullable,
+  ] = unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
   const isRequired = !optional && !nullable;
 
   let realTypeAnnotation = typeAnnotation;
@@ -236,7 +243,9 @@ function translateMethodTypeToJniSignature(
   resolveAlias: AliasResolver,
 ): string {
   const {name, typeAnnotation} = property;
-  let [{returnTypeAnnotation, params}] = unwrapNullable(typeAnnotation);
+  let [
+    {returnTypeAnnotation, params},
+  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(typeAnnotation);
 
   params = [...params];
   let processedReturnTypeAnnotation = returnTypeAnnotation;
@@ -272,7 +281,11 @@ function translateMethodForImplementation(
   property: NativeModulePropertySchema,
   resolveAlias: AliasResolver,
 ): string {
-  const [propertyTypeAnnotation] = unwrapNullable(property.typeAnnotation);
+  const [
+    propertyTypeAnnotation,
+  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+    property.typeAnnotation,
+  );
   const {returnTypeAnnotation} = propertyTypeAnnotation;
 
   const numberOfParams =
@@ -321,8 +334,11 @@ module.exports = {
     const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
-      .map(name => {
-        const {aliases, properties} = nativeModules[name];
+      .map(codegenModuleName => {
+        const {
+          aliases,
+          spec: {properties},
+        } = nativeModules[codegenModuleName];
         const resolveAlias = createAliasResolver(aliases);
 
         const translatedMethods = properties
@@ -336,7 +352,9 @@ module.exports = {
             '::_PROPERTIES_MAP_::',
             properties
               .map(({name: propertyName, typeAnnotation}) => {
-                const [{returnTypeAnnotation, params}] = unwrapNullable(
+                const [
+                  {returnTypeAnnotation, params},
+                ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
                   typeAnnotation,
                 );
 
@@ -351,13 +369,20 @@ module.exports = {
               })
               .join('\n'),
           )
-          .replace(/::_MODULE_NAME_::/g, name);
+          .replace(/::_CODEGEN_MODULE_NAME_::/g, codegenModuleName);
       })
       .join('\n');
 
     const moduleLookup = Object.keys(nativeModules)
-      .map(name => {
-        return oneModuleLookupTemplate.replace(/::_MODULE_NAME_::/g, name);
+      .map(codegenModuleName => {
+        const {moduleNames} = nativeModules[codegenModuleName];
+        return moduleNames
+          .map(nativeModuleName =>
+            oneModuleLookupTemplate
+              .replace(/::_NATIVE_MODULE_NAME_::/g, nativeModuleName)
+              .replace(/::_CODEGEN_MODULE_NAME_::/g, codegenModuleName),
+          )
+          .join('\n');
       })
       .join('\n');
 

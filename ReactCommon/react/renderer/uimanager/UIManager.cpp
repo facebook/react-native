@@ -162,31 +162,6 @@ ShadowNode::Shared UIManager::findNodeAtPoint(
       getNewestCloneOfShadowNode(*node), point);
 }
 
-void UIManager::setNativeProps(
-    ShadowNode const &shadowNode,
-    RawProps const &rawProps) const {
-  SystraceSection s("UIManager::setNativeProps");
-
-  auto &componentDescriptor = shadowNode.getComponentDescriptor();
-  auto props = componentDescriptor.cloneProps(shadowNode.getProps(), rawProps);
-
-  shadowTreeRegistry_.visit(
-      shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        shadowTree.tryCommit(
-            [&](RootShadowNode const &oldRootShadowNode) {
-              return std::static_pointer_cast<RootShadowNode>(
-                  oldRootShadowNode.cloneTree(
-                      shadowNode.getFamily(),
-                      [&](ShadowNode const &oldShadowNode) {
-                        return oldShadowNode.clone({
-                            /* .props = */ props,
-                        });
-                      }));
-            },
-            true);
-      });
-}
-
 LayoutMetrics UIManager::getRelativeLayoutMetrics(
     ShadowNode const &shadowNode,
     ShadowNode const *ancestorShadowNode,

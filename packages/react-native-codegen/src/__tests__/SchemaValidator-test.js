@@ -30,6 +30,7 @@ describe('SchemaValidator', () => {
     const fixture: SchemaType = {
       modules: {
         Module1: {
+          type: 'Component',
           components: {
             Component1: {
               extendsProps: [
@@ -45,6 +46,7 @@ describe('SchemaValidator', () => {
           },
         },
         Module2: {
+          type: 'Component',
           components: {
             Component1: {
               extendsProps: [

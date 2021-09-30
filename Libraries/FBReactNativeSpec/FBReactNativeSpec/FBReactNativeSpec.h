@@ -37,7 +37,7 @@
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'AccessibilityInfo'
+     * ObjC++ class for module 'NativeAccessibilityInfo'
      */
     class JSI_EXPORT NativeAccessibilityInfoSpecJSI : public ObjCTurboModule {
     public:
@@ -93,7 +93,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'AccessibilityManager'
+     * ObjC++ class for module 'NativeAccessibilityManager'
      */
     class JSI_EXPORT NativeAccessibilityManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -156,7 +156,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ActionSheetManager'
+     * ObjC++ class for module 'NativeActionSheetManager'
      */
     class JSI_EXPORT NativeActionSheetManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -200,7 +200,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'AlertManager'
+     * ObjC++ class for module 'NativeAlertManager'
      */
     class JSI_EXPORT NativeAlertManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -268,7 +268,7 @@ saveValueCallback:(RCTResponseSenderBlock)saveValueCallback;
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'AnimatedModule'
+     * ObjC++ class for module 'NativeAnimatedModule'
      */
     class JSI_EXPORT NativeAnimatedModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -336,7 +336,7 @@ saveValueCallback:(RCTResponseSenderBlock)saveValueCallback;
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'AnimatedTurboModule'
+     * ObjC++ class for module 'NativeAnimatedTurboModule'
      */
     class JSI_EXPORT NativeAnimatedTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -354,7 +354,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'AnimationsDebugModule'
+     * ObjC++ class for module 'NativeAnimationsDebugModule'
      */
     class JSI_EXPORT NativeAnimationsDebugModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -402,7 +402,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'AppState'
+     * ObjC++ class for module 'NativeAppState'
      */
     class JSI_EXPORT NativeAppStateSpecJSI : public ObjCTurboModule {
     public:
@@ -421,7 +421,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'Appearance'
+     * ObjC++ class for module 'NativeAppearance'
      */
     class JSI_EXPORT NativeAppearanceSpecJSI : public ObjCTurboModule {
     public:
@@ -430,7 +430,7 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-@protocol NativeAsyncStorageSpec <RCTBridgeModule, RCTTurboModule>
+@protocol NativeAsyncLocalStorageSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)multiGet:(NSArray *)keys
         callback:(RCTResponseSenderBlock)callback;
@@ -447,11 +447,37 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'AsyncStorage'
+     * ObjC++ class for module 'NativeAsyncLocalStorage'
      */
-    class JSI_EXPORT NativeAsyncStorageSpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT NativeAsyncLocalStorageSpecJSI : public ObjCTurboModule {
     public:
-      NativeAsyncStorageSpecJSI(const ObjCTurboModule::InitParams &params);
+      NativeAsyncLocalStorageSpecJSI(const ObjCTurboModule::InitParams &params);
+    };
+  } // namespace react
+} // namespace facebook
+
+@protocol NativeAsyncSQLiteDBStorageSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)multiGet:(NSArray *)keys
+        callback:(RCTResponseSenderBlock)callback;
+- (void)multiSet:(NSArray *)kvPairs
+        callback:(RCTResponseSenderBlock)callback;
+- (void)multiMerge:(NSArray *)kvPairs
+          callback:(RCTResponseSenderBlock)callback;
+- (void)multiRemove:(NSArray *)keys
+           callback:(RCTResponseSenderBlock)callback;
+- (void)clear:(RCTResponseSenderBlock)callback;
+- (void)getAllKeys:(RCTResponseSenderBlock)callback;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'NativeAsyncSQLiteDBStorage'
+     */
+    class JSI_EXPORT NativeAsyncSQLiteDBStorageSpecJSI : public ObjCTurboModule {
+    public:
+      NativeAsyncSQLiteDBStorageSpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook
@@ -500,7 +526,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'BlobModule'
+     * ObjC++ class for module 'NativeBlobModule'
      */
     class JSI_EXPORT NativeBlobModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -520,7 +546,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'BugReporting'
+     * ObjC++ class for module 'NativeBugReporting'
      */
     class JSI_EXPORT NativeBugReportingSpecJSI : public ObjCTurboModule {
     public:
@@ -539,7 +565,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'Clipboard'
+     * ObjC++ class for module 'NativeClipboard'
      */
     class JSI_EXPORT NativeClipboardSpecJSI : public ObjCTurboModule {
     public:
@@ -558,7 +584,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'DatePickerAndroid'
+     * ObjC++ class for module 'NativeDatePickerAndroid'
      */
     class JSI_EXPORT NativeDatePickerAndroidSpecJSI : public ObjCTurboModule {
     public:
@@ -578,7 +604,7 @@ withBackgroundColor:(NSNumber *)withBackgroundColor;
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'DevLoadingView'
+     * ObjC++ class for module 'NativeDevLoadingView'
      */
     class JSI_EXPORT NativeDevLoadingViewSpecJSI : public ObjCTurboModule {
     public:
@@ -599,7 +625,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'DevMenu'
+     * ObjC++ class for module 'NativeDevMenu'
      */
     class JSI_EXPORT NativeDevMenuSpecJSI : public ObjCTurboModule {
     public:
@@ -627,7 +653,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'DevSettings'
+     * ObjC++ class for module 'NativeDevSettings'
      */
     class JSI_EXPORT NativeDevSettingsSpecJSI : public ObjCTurboModule {
     public:
@@ -646,7 +672,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'DevSplitBundleLoader'
+     * ObjC++ class for module 'NativeDevSplitBundleLoader'
      */
     class JSI_EXPORT NativeDevSplitBundleLoaderSpecJSI : public ObjCTurboModule {
     public:
@@ -663,7 +689,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'DeviceEventManager'
+     * ObjC++ class for module 'NativeDeviceEventManager'
      */
     class JSI_EXPORT NativeDeviceEventManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -799,7 +825,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'DeviceInfo'
+     * ObjC++ class for module 'NativeDeviceInfo'
      */
     class JSI_EXPORT NativeDeviceInfoSpecJSI : public ObjCTurboModule {
     public:
@@ -871,7 +897,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'DialogManagerAndroid'
+     * ObjC++ class for module 'NativeDialogManagerAndroid'
      */
     class JSI_EXPORT NativeDialogManagerAndroidSpecJSI : public ObjCTurboModule {
     public:
@@ -938,7 +964,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ExceptionsManager'
+     * ObjC++ class for module 'NativeExceptionsManager'
      */
     class JSI_EXPORT NativeExceptionsManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -961,7 +987,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'FileReaderModule'
+     * ObjC++ class for module 'NativeFileReaderModule'
      */
     class JSI_EXPORT NativeFileReaderModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -996,7 +1022,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'FrameRateLogger'
+     * ObjC++ class for module 'NativeFrameRateLogger'
      */
     class JSI_EXPORT NativeFrameRateLoggerSpecJSI : public ObjCTurboModule {
     public:
@@ -1016,7 +1042,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'HeadlessJsTaskSupport'
+     * ObjC++ class for module 'NativeHeadlessJsTaskSupport'
      */
     class JSI_EXPORT NativeHeadlessJsTaskSupportSpecJSI : public ObjCTurboModule {
     public:
@@ -1064,7 +1090,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'I18nManager'
+     * ObjC++ class for module 'NativeI18nManager'
      */
     class JSI_EXPORT NativeI18nManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -1150,7 +1176,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ImageEditor'
+     * ObjC++ class for module 'NativeImageEditor'
      */
     class JSI_EXPORT NativeImageEditorSpecJSI : public ObjCTurboModule {
     public:
@@ -1181,7 +1207,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ImageLoaderAndroid'
+     * ObjC++ class for module 'NativeImageLoaderAndroid'
      */
     class JSI_EXPORT NativeImageLoaderAndroidSpecJSI : public ObjCTurboModule {
     public:
@@ -1210,7 +1236,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ImageLoaderIOS'
+     * ObjC++ class for module 'NativeImageLoaderIOS'
      */
     class JSI_EXPORT NativeImageLoaderIOSSpecJSI : public ObjCTurboModule {
     public:
@@ -1267,7 +1293,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ImagePickerIOS'
+     * ObjC++ class for module 'NativeImagePickerIOS'
      */
     class JSI_EXPORT NativeImagePickerIOSSpecJSI : public ObjCTurboModule {
     public:
@@ -1286,7 +1312,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ImageStoreAndroid'
+     * ObjC++ class for module 'NativeImageStoreAndroid'
      */
     class JSI_EXPORT NativeImageStoreAndroidSpecJSI : public ObjCTurboModule {
     public:
@@ -1311,11 +1337,41 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ImageStoreIOS'
+     * ObjC++ class for module 'NativeImageStoreIOS'
      */
     class JSI_EXPORT NativeImageStoreIOSSpecJSI : public ObjCTurboModule {
     public:
       NativeImageStoreIOSSpecJSI(const ObjCTurboModule::InitParams &params);
+    };
+  } // namespace react
+} // namespace facebook
+
+@protocol NativeIntentAndroidSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)getInitialURL:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject;
+- (void)canOpenURL:(NSString *)url
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+- (void)openURL:(NSString *)url
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject;
+- (void)openSettings:(RCTPromiseResolveBlock)resolve
+              reject:(RCTPromiseRejectBlock)reject;
+- (void)sendIntent:(NSString *)action
+            extras:(NSArray * _Nullable)extras
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'NativeIntentAndroid'
+     */
+    class JSI_EXPORT NativeIntentAndroidSpecJSI : public ObjCTurboModule {
+    public:
+      NativeIntentAndroidSpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook
@@ -1329,7 +1385,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'JSCHeapCapture'
+     * ObjC++ class for module 'NativeJSCHeapCapture'
      */
     class JSI_EXPORT NativeJSCHeapCaptureSpecJSI : public ObjCTurboModule {
     public:
@@ -1348,7 +1404,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'JSCSamplingProfiler'
+     * ObjC++ class for module 'NativeJSCSamplingProfiler'
      */
     class JSI_EXPORT NativeJSCSamplingProfilerSpecJSI : public ObjCTurboModule {
     public:
@@ -1396,7 +1452,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'JSDevSupport'
+     * ObjC++ class for module 'NativeJSDevSupport'
      */
     class JSI_EXPORT NativeJSDevSupportSpecJSI : public ObjCTurboModule {
     public:
@@ -1414,7 +1470,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'KeyboardObserver'
+     * ObjC++ class for module 'NativeKeyboardObserver'
      */
     class JSI_EXPORT NativeKeyboardObserverSpecJSI : public ObjCTurboModule {
     public:
@@ -1423,7 +1479,7 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-@protocol NativeLinkingSpec <RCTBridgeModule, RCTTurboModule>
+@protocol NativeLinkingManagerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getInitialURL:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject;
@@ -1435,10 +1491,6 @@ namespace facebook {
          reject:(RCTPromiseRejectBlock)reject;
 - (void)openSettings:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject;
-- (void)sendIntent:(NSString *)action
-            extras:(NSArray * _Nullable)extras
-           resolve:(RCTPromiseResolveBlock)resolve
-            reject:(RCTPromiseRejectBlock)reject;
 - (void)addListener:(NSString *)eventName;
 - (void)removeListeners:(double)count;
 
@@ -1446,11 +1498,11 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'Linking'
+     * ObjC++ class for module 'NativeLinkingManager'
      */
-    class JSI_EXPORT NativeLinkingSpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT NativeLinkingManagerSpecJSI : public ObjCTurboModule {
     public:
-      NativeLinkingSpecJSI(const ObjCTurboModule::InitParams &params);
+      NativeLinkingManagerSpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook
@@ -1464,7 +1516,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'LogBox'
+     * ObjC++ class for module 'NativeLogBox'
      */
     class JSI_EXPORT NativeLogBoxSpecJSI : public ObjCTurboModule {
     public:
@@ -1482,7 +1534,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ModalManager'
+     * ObjC++ class for module 'NativeModalManager'
      */
     class JSI_EXPORT NativeModalManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -1511,7 +1563,7 @@ useIncrementalUpdates:(BOOL)useIncrementalUpdates
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'NetworkingAndroid'
+     * ObjC++ class for module 'NativeNetworkingAndroid'
      */
     class JSI_EXPORT NativeNetworkingAndroidSpecJSI : public ObjCTurboModule {
     public:
@@ -1554,7 +1606,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'NetworkingIOS'
+     * ObjC++ class for module 'NativeNetworkingIOS'
      */
     class JSI_EXPORT NativeNetworkingIOSSpecJSI : public ObjCTurboModule {
     public:
@@ -1582,7 +1634,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'PermissionsAndroid'
+     * ObjC++ class for module 'NativePermissionsAndroid'
      */
     class JSI_EXPORT NativePermissionsAndroidSpecJSI : public ObjCTurboModule {
     public:
@@ -1667,7 +1719,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'PlatformConstantsAndroid'
+     * ObjC++ class for module 'NativePlatformConstantsAndroid'
      */
     class JSI_EXPORT NativePlatformConstantsAndroidSpecJSI : public ObjCTurboModule {
     public:
@@ -1746,7 +1798,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'PlatformConstantsIOS'
+     * ObjC++ class for module 'NativePlatformConstantsIOS'
      */
     class JSI_EXPORT NativePlatformConstantsIOSSpecJSI : public ObjCTurboModule {
     public:
@@ -1822,7 +1874,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'PushNotificationManagerIOS'
+     * ObjC++ class for module 'NativePushNotificationManagerIOS'
      */
     class JSI_EXPORT NativePushNotificationManagerIOSSpecJSI : public ObjCTurboModule {
     public:
@@ -1841,7 +1893,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'RedBox'
+     * ObjC++ class for module 'NativeRedBox'
      */
     class JSI_EXPORT NativeRedBoxSpecJSI : public ObjCTurboModule {
     public:
@@ -1863,7 +1915,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SegmentFetcher'
+     * ObjC++ class for module 'NativeSegmentFetcher'
      */
     class JSI_EXPORT NativeSegmentFetcherSpecJSI : public ObjCTurboModule {
     public:
@@ -1909,7 +1961,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SettingsManager'
+     * ObjC++ class for module 'NativeSettingsManager'
      */
     class JSI_EXPORT NativeSettingsManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -1944,7 +1996,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ShareModule'
+     * ObjC++ class for module 'NativeShareModule'
      */
     class JSI_EXPORT NativeShareModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -1961,7 +2013,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SoundManager'
+     * ObjC++ class for module 'NativeSoundManager'
      */
     class JSI_EXPORT NativeSoundManagerSpecJSI : public ObjCTurboModule {
     public:
@@ -2005,7 +2057,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SourceCode'
+     * ObjC++ class for module 'NativeSourceCode'
      */
     class JSI_EXPORT NativeSourceCodeSpecJSI : public ObjCTurboModule {
     public:
@@ -2055,7 +2107,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'StatusBarManagerAndroid'
+     * ObjC++ class for module 'NativeStatusBarManagerAndroid'
      */
     class JSI_EXPORT NativeStatusBarManagerAndroidSpecJSI : public ObjCTurboModule {
     public:
@@ -2108,29 +2160,11 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'StatusBarManagerIOS'
+     * ObjC++ class for module 'NativeStatusBarManagerIOS'
      */
     class JSI_EXPORT NativeStatusBarManagerIOSSpecJSI : public ObjCTurboModule {
     public:
       NativeStatusBarManagerIOSSpecJSI(const ObjCTurboModule::InitParams &params);
-    };
-  } // namespace react
-} // namespace facebook
-
-@protocol NativeTVNavigationEventEmitterSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)addListener:(NSString *)eventName;
-- (void)removeListeners:(double)count;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'TVNavigationEventEmitter'
-     */
-    class JSI_EXPORT NativeTVNavigationEventEmitterSpecJSI : public ObjCTurboModule {
-    public:
-      NativeTVNavigationEventEmitterSpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook
@@ -2148,7 +2182,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'Timing'
+     * ObjC++ class for module 'NativeTiming'
      */
     class JSI_EXPORT NativeTimingSpecJSI : public ObjCTurboModule {
     public:
@@ -2206,7 +2240,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ToastAndroid'
+     * ObjC++ class for module 'NativeToastAndroid'
      */
     class JSI_EXPORT NativeToastAndroidSpecJSI : public ObjCTurboModule {
     public:
@@ -2226,7 +2260,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'Vibration'
+     * ObjC++ class for module 'NativeVibration'
      */
     class JSI_EXPORT NativeVibrationSpecJSI : public ObjCTurboModule {
     public:
@@ -2270,7 +2304,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'WebSocketModule'
+     * ObjC++ class for module 'NativeWebSocketModule'
      */
     class JSI_EXPORT NativeWebSocketModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -2501,6 +2535,7 @@ inline JS::NativeAppState::Constants::Builder::Builder(const Input i) : _factory
 inline JS::NativeAppState::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+
 
 
 inline JS::NativeBlobModule::Constants::Builder::Builder(const Input i) : _factory(^{
@@ -2801,6 +2836,7 @@ inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showVideos() c
 
 
 
+
 inline JS::NativeJSDevSupport::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto ERROR_CODE_EXCEPTION = i.ERROR_CODE_EXCEPTION.get();
@@ -3049,7 +3085,6 @@ inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(const Input i)
 inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-
 
 inline JS::NativeToastAndroid::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];

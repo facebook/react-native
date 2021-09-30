@@ -19,6 +19,7 @@ const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
 const {wrapModuleSchema} = require('./modules/schema');
+const invariant = require('invariant');
 
 import type {TypeDeclarationMap} from './utils';
 
@@ -118,6 +119,26 @@ function getConfigType(ast, types: TypeDeclarationMap): 'module' | 'component' {
   }
 }
 
+const withSpace = (...args) => args.join('\\s*');
+/**
+ * Parse the TurboModuleRegistry.get(Enforcing)? call using RegExp.
+ * Why? This call can appear anywhere in the NativeModule spec. Currently,
+ * there is no good way of traversing the AST to find the MemberExpression
+ * responsible for the call.
+ */
+const TURBO_MODULE_REGISTRY_REQUIRE_REGEX_STRING = withSpace(
+  'TurboModuleRegistry',
+  '\\.',
+  'get(Enforcing)?',
+  '<',
+  'Spec',
+  '>',
+  '\\(',
+  '[\'"](?<nativeModuleName>[A-Za-z$_0-9]+)[\'"]',
+  ',?',
+  '\\)',
+);
+
 function buildSchema(contents: string, filename: ?string): SchemaType {
   const ast = flowParser.parse(contents);
 
@@ -131,8 +152,37 @@ function buildSchema(contents: string, filename: ?string): SchemaType {
     if (filename === undefined || filename === null) {
       throw new Error('Filepath expected while parasing a module');
     }
-    const moduleName = path.basename(filename).slice(6, -3);
-    return wrapModuleSchema(buildModuleSchema(moduleName, types), moduleName);
+    const moduleName = path.basename(filename).replace(/\.js$/, '');
+
+    const regex = new RegExp(TURBO_MODULE_REGISTRY_REQUIRE_REGEX_STRING, 'g');
+    let match = regex.exec(contents);
+
+    const errorHeader = `Error while parsing Module '${moduleName}'`;
+
+    if (match == null) {
+      throw new Error(
+        `${errorHeader}: No call to TurboModuleRegistry.get<Spec>('...') detected.`,
+      );
+    }
+
+    const moduleRequires = [];
+    while (match != null) {
+      const resultGroups = match.groups;
+      invariant(
+        resultGroups != null,
+        `Couldn't parse TurboModuleRegistry.(get|getEnforcing)<Spec> call in module '${moduleName}'.`,
+      );
+
+      if (!moduleRequires.includes(resultGroups.nativeModuleName)) {
+        moduleRequires.push(resultGroups.nativeModuleName);
+      }
+      match = regex.exec(contents);
+    }
+
+    return wrapModuleSchema(
+      buildModuleSchema(moduleName, moduleRequires, types),
+      moduleName,
+    );
   }
 }
 

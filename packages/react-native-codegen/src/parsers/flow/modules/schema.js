@@ -13,19 +13,12 @@
 import type {SchemaType, NativeModuleSchema} from '../../../CodegenSchema.js';
 
 function wrapModuleSchema(
-  {aliases, properties}: NativeModuleSchema,
+  nativeModuleSchema: NativeModuleSchema,
   moduleName: string,
 ): SchemaType {
   return {
     modules: {
-      [`Native${moduleName}`]: {
-        nativeModules: {
-          [moduleName]: {
-            aliases,
-            properties,
-          },
-        },
-      },
+      [moduleName]: nativeModuleSchema,
     },
   };
 }

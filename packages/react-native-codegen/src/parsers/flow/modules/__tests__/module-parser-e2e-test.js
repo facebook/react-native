@@ -46,7 +46,7 @@ const RESERVED_FUNCTION_VALUE_TYPE_NAME: $ReadOnlyArray<ReservedFunctionValueTyp
   'RootTag',
 ];
 
-const MODULE_NAME = 'Foo';
+const MODULE_NAME = 'NativeFoo';
 
 const TYPE_ALIAS_DECLARATIONS = `
 type Animal = {|
@@ -155,9 +155,10 @@ describe('Flow Module Parser', () => {
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
 
-        expect(module.properties[0]).not.toBe(null);
-        const param = unwrapNullable(module.properties[0].typeAnnotation)[0]
-          .params[0];
+        expect(module.spec.properties[0]).not.toBe(null);
+        const param = unwrapNullable(
+          module.spec.properties[0].typeAnnotation,
+        )[0].params[0];
         expect(param).not.toBe(null);
         expect(param.name).toBe(paramName);
         expect(param.optional).toBe(optional);
@@ -380,9 +381,10 @@ describe('Flow Module Parser', () => {
               export default TurboModuleRegistry.get<Spec>('Foo');
             `);
 
-            expect(module.properties[0]).not.toBe(null);
-            const param = unwrapNullable(module.properties[0].typeAnnotation)[0]
-              .params[0];
+            expect(module.spec.properties[0]).not.toBe(null);
+            const param = unwrapNullable(
+              module.spec.properties[0].typeAnnotation,
+            )[0].params[0];
             expect(param.name).toBe('arg');
             expect(param.optional).toBe(optional);
 
@@ -732,12 +734,12 @@ describe('Flow Module Parser', () => {
         export default TurboModuleRegistry.get<Spec>('Foo');
       `);
 
-      expect(module.properties[0]).not.toBe(null);
+      expect(module.spec.properties[0]).not.toBe(null);
 
       const [
         functionTypeAnnotation,
         isFunctionTypeAnnotationNullable,
-      ] = unwrapNullable(module.properties[0].typeAnnotation);
+      ] = unwrapNullable(module.spec.properties[0].typeAnnotation);
       expect(isFunctionTypeAnnotationNullable).toBe(false);
 
       const [
@@ -770,11 +772,11 @@ describe('Flow Module Parser', () => {
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
 
-        expect(module.properties[0]).not.toBe(null);
+        expect(module.spec.properties[0]).not.toBe(null);
         const [
           functionTypeAnnotation,
           isFunctionTypeAnnotationNullable,
-        ] = unwrapNullable(module.properties[0].typeAnnotation);
+        ] = unwrapNullable(module.spec.properties[0].typeAnnotation);
         expect(isFunctionTypeAnnotationNullable).toBe(false);
 
         const [
@@ -1303,11 +1305,11 @@ describe('Flow Module Parser', () => {
 });
 
 function parseModule(source) {
-  const schema = parseString(source, `Native${MODULE_NAME}.js`);
-  const {nativeModules} = schema.modules.NativeFoo;
+  const schema = parseString(source, `${MODULE_NAME}.js`);
+  const module = schema.modules.NativeFoo;
   invariant(
-    nativeModules,
+    module.type === 'NativeModule',
     "'nativeModules' in Spec NativeFoo shouldn't be null",
   );
-  return nativeModules.Foo;
+  return module;
 }

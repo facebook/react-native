@@ -67,25 +67,19 @@ public final class SchemaJsonParser {
               entry -> {
                 final String jsModuleName = entry.getKey();
                 final JsonObject jsModule = entry.getValue().getAsJsonObject();
-                final JsonObject nativeModules = jsModule.getAsJsonObject("nativeModules");
-                if (nativeModules == null) {
-                  // TODO: Handle components-related sections.
+                final String jsModuleType = jsModule.get("type").getAsString();
+
+                if (!"NativeModule".equals(jsModuleType)) {
                   return;
                 }
 
-                nativeModules
-                    .entrySet()
-                    .forEach(
-                        e -> {
-                          final Type parsedType =
-                              parseNativeModule(
-                                  // TODO (T71955395): NativeModule spec type name does not
-                                  // exist in the schema. For now assume it's "Spec".
-                                  // The final type name will be the output class name.
-                                  TypeId.of(jsModuleName, "Native" + e.getKey() + "Spec"),
-                                  e.getValue().getAsJsonObject());
-                          mTypeData.addType(parsedType);
-                        });
+                final Type parsedType =
+                    parseNativeModule(
+                        // TODO (T71955395): NativeModule spec type name does not
+                        // exist in the schema. For now assume it's "Spec".
+                        // The final type name will be the output class name.
+                        TypeId.of(jsModuleName, jsModuleName + "Spec"), jsModule);
+                mTypeData.addType(parsedType);
               });
     }
 
@@ -162,7 +156,7 @@ public final class SchemaJsonParser {
 
   private NativeModuleType parseNativeModule(final TypeId typeId, final JsonObject json) {
     final JsonObject aliases = json.getAsJsonObject("aliases");
-    final JsonArray properties = json.getAsJsonArray("properties");
+    final JsonArray properties = json.getAsJsonObject("spec").getAsJsonArray("properties");
 
     final ImmutableList<Type> collectedAliases =
         ImmutableList.copyOf(

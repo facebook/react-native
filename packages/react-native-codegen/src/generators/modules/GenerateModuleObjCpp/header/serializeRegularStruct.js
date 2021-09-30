@@ -23,15 +23,15 @@ import type {StructSerilizationOutput} from './serializeStruct';
 const {unwrapNullable} = require('../../../../parsers/flow/modules/utils');
 
 const StructTemplate = ({
-  moduleName,
+  codegenModuleName,
   structName,
   structProperties,
 }: $ReadOnly<{|
-  moduleName: string,
+  codegenModuleName: string,
   structName: string,
   structProperties: string,
 |}>) => `namespace JS {
-  namespace Native${moduleName} {
+  namespace ${codegenModuleName} {
     struct ${structName} {
       ${structProperties}
 
@@ -42,30 +42,30 @@ const StructTemplate = ({
   }
 }
 
-@interface RCTCxxConvert (Native${moduleName}_${structName})
-+ (RCTManagedPointer *)JS_Native${moduleName}_${structName}:(id)json;
+@interface RCTCxxConvert (${codegenModuleName}_${structName})
++ (RCTManagedPointer *)JS_${codegenModuleName}_${structName}:(id)json;
 @end`;
 
 const MethodTemplate = ({
   returnType,
   returnValue,
-  moduleName,
+  codegenModuleName,
   structName,
   propertyName,
 }: $ReadOnly<{|
   returnType: string,
   returnValue: string,
-  moduleName: string,
+  codegenModuleName: string,
   structName: string,
   propertyName: string,
-|}>) => `inline ${returnType}JS::Native${moduleName}::${structName}::${propertyName}() const
+|}>) => `inline ${returnType}JS::${codegenModuleName}::${structName}::${propertyName}() const
 {
   id const p = _v[@"${propertyName}"];
   return ${returnValue};
 }`;
 
 function toObjCType(
-  moduleName: string,
+  codegenModuleName: string,
   nullableTypeAnnotation: Nullable<StructTypeAnnotation>,
   isOptional: boolean = false,
 ): string {
@@ -104,14 +104,14 @@ function toObjCType(
       }
       return wrapFollyOptional(
         `facebook::react::LazyVector<${toObjCType(
-          moduleName,
+          codegenModuleName,
           typeAnnotation.elementType,
         )}>`,
       );
     case 'TypeAliasTypeAnnotation':
       const structName = capitalize(typeAnnotation.name);
       const namespacedStructName = getNamespacedStructName(
-        moduleName,
+        codegenModuleName,
         structName,
       );
       return wrapFollyOptional(namespacedStructName);
@@ -124,7 +124,7 @@ function toObjCType(
 }
 
 function toObjCValue(
-  moduleName: string,
+  codegenModuleName: string,
   nullableTypeAnnotation: Nullable<StructTypeAnnotation>,
   value: string,
   depth: number,
@@ -171,9 +171,9 @@ function toObjCValue(
       }
 
       const localVarName = `itemValue_${depth}`;
-      const elementObjCType = toObjCType(moduleName, elementType);
+      const elementObjCType = toObjCType(codegenModuleName, elementType);
       const elementObjCValue = toObjCValue(
-        moduleName,
+        codegenModuleName,
         elementType,
         localVarName,
         depth + 1,
@@ -186,7 +186,7 @@ function toObjCValue(
     case 'TypeAliasTypeAnnotation':
       const structName = capitalize(typeAnnotation.name);
       const namespacedStructName = getNamespacedStructName(
-        moduleName,
+        codegenModuleName,
         structName,
       );
 
@@ -202,17 +202,21 @@ function toObjCValue(
 }
 
 function serializeRegularStruct(
-  moduleName: string,
+  codegenModuleName: string,
   struct: RegularStruct,
 ): StructSerilizationOutput {
   const declaration = StructTemplate({
-    moduleName: moduleName,
+    codegenModuleName: codegenModuleName,
     structName: struct.name,
     structProperties: struct.properties
       .map(property => {
         const {typeAnnotation, optional} = property;
         const propName = getSafePropertyName(property);
-        const returnType = toObjCType(moduleName, typeAnnotation, optional);
+        const returnType = toObjCType(
+          codegenModuleName,
+          typeAnnotation,
+          optional,
+        );
 
         const padding = ' '.repeat(returnType.endsWith('*') ? 0 : 1);
         return `${returnType}${padding}${propName}() const;`;
@@ -224,9 +228,13 @@ function serializeRegularStruct(
     .map<string>(property => {
       const {typeAnnotation, optional} = property;
       const propName = getSafePropertyName(property);
-      const returnType = toObjCType(moduleName, typeAnnotation, optional);
+      const returnType = toObjCType(
+        codegenModuleName,
+        typeAnnotation,
+        optional,
+      );
       const returnValue = toObjCValue(
-        moduleName,
+        codegenModuleName,
         typeAnnotation,
         'p',
         0,
@@ -235,7 +243,7 @@ function serializeRegularStruct(
 
       const padding = ' '.repeat(returnType.endsWith('*') ? 0 : 1);
       return MethodTemplate({
-        moduleName,
+        codegenModuleName,
         structName: struct.name,
         returnType: returnType + padding,
         returnValue: returnValue,
