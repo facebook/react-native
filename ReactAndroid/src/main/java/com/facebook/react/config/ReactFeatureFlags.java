@@ -101,4 +101,6 @@ public class ReactFeatureFlags {
   public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 
   public static boolean enableScrollViewSnapToAlignmentProp = true;
+
+  public static boolean useDispatchUniqueForCoalescableEvents = false;
 }
