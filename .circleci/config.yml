@@ -585,7 +585,8 @@ jobs:
   #    JOBS: Test Docker
   # -------------------------
   test_docker_android:
-    machine: true
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - checkout
       - run:
@@ -762,7 +763,8 @@ jobs:
   #    JOBS: Nightly
   # -------------------------
   nightly_job:
-    machine: true
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - run:
           name: Nightly
