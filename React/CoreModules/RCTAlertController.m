@@ -35,9 +35,7 @@
 
 - (void)hide
 {
-  [_alertWindow resignKeyWindow];
   [_alertWindow setHidden: YES];
-  _alertWindow.rootViewController = nil;
   _alertWindow = nil;
 }
 
