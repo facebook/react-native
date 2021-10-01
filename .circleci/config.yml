@@ -380,7 +380,7 @@ jobs:
 
       - run:
           name: Configure Watchman
-          command: touch .watchmanconfig
+          command: echo "{}" > .watchmanconfig
 
       - when:
           condition: << parameters.use_frameworks >>
