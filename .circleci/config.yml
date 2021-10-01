@@ -223,7 +223,12 @@ jobs:
       # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
           name: Install additional GitHub bot dependencies
+          # TEMP: Added workaround from https://github.com/nodesource/distributions/issues/1266#issuecomment-932583579
           command: |
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            apt update && apt install -y shellcheck jq
+            apt-get install openssl ca-certificates
+            update-ca-certificates
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             apt update && apt install -y shellcheck jq
 
