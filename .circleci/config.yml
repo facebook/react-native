@@ -363,7 +363,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@12/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@14/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - with_brew_cache_span:
@@ -380,7 +380,7 @@ jobs:
           name: Configure Node
           # Sourcing find-node.sh will ensure nvm is set up.
           # It also helps future invocation of find-node.sh prevent permission issue with nvm.sh.
-          command: source scripts/find-node.sh && nvm install 12 && nvm alias default 12
+          command: source scripts/find-node.sh && nvm install 14 && nvm alias default 14
 
       - run:
           name: Configure Watchman
