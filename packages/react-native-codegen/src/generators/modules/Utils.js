@@ -33,14 +33,14 @@ function createAliasResolver(aliasMap: NativeModuleAliasMap): AliasResolver {
 
 function getModules(
   schema: SchemaType,
-): $ReadOnly<{|[moduleName: string]: NativeModuleSchema|}> {
+): $ReadOnly<{|[hasteModuleName: string]: NativeModuleSchema|}> {
   return Object.keys(schema.modules).reduce<{|[string]: NativeModuleSchema|}>(
-    (modules, moduleName: string) => {
-      const module = schema.modules[moduleName];
+    (modules, hasteModuleName: string) => {
+      const module = schema.modules[hasteModuleName];
       if (module == null || module.type === 'Component') {
         return modules;
       }
-      modules[moduleName] = module;
+      modules[hasteModuleName] = module;
       return modules;
     },
     {},

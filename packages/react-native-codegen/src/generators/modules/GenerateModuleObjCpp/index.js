@@ -23,15 +23,15 @@ const {serializeModuleSource} = require('./source/serializeModule');
 type FilesOutput = Map<string, string>;
 
 const ModuleDeclarationTemplate = ({
-  codegenModuleName,
+  hasteModuleName,
   structDeclarations,
   protocolMethods,
 }: $ReadOnly<{|
-  codegenModuleName: string,
+  hasteModuleName: string,
   structDeclarations: string,
   protocolMethods: string,
 |}>) => `${structDeclarations}
-@protocol ${codegenModuleName}Spec <RCTBridgeModule, RCTTurboModule>
+@protocol ${hasteModuleName}Spec <RCTBridgeModule, RCTTurboModule>
 
 ${protocolMethods}
 
@@ -39,11 +39,11 @@ ${protocolMethods}
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module '${codegenModuleName}'
+     * ObjC++ class for module '${hasteModuleName}'
      */
-    class JSI_EXPORT ${codegenModuleName}SpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT ${hasteModuleName}SpecJSI : public ObjCTurboModule {
     public:
-      ${codegenModuleName}SpecJSI(const ObjCTurboModule::InitParams &params);
+      ${hasteModuleName}SpecJSI(const ObjCTurboModule::InitParams &params);
     };
   } // namespace react
 } // namespace facebook`;
@@ -121,12 +121,16 @@ module.exports = {
     const structInlineMethods: Array<string> = [];
     const moduleImplementations: Array<string> = [];
 
-    const codegenModuleNames: Array<string> = Object.keys(nativeModules).sort();
-    for (const codegenModuleName of codegenModuleNames) {
+    const hasteModuleNames: Array<string> = Object.keys(nativeModules).sort();
+    for (const hasteModuleName of hasteModuleNames) {
       const {
         aliases,
+        excludedPlatforms,
         spec: {properties},
-      } = nativeModules[codegenModuleName];
+      } = nativeModules[hasteModuleName];
+      if (excludedPlatforms != null && excludedPlatforms.includes('iOS')) {
+        continue;
+      }
       const resolveAlias = createAliasResolver(aliases);
       const structCollector = new StructCollector();
 
@@ -134,7 +138,7 @@ module.exports = {
       const serializeProperty = property => {
         methodSerializations.push(
           ...serializeMethod(
-            codegenModuleName,
+            hasteModuleName,
             property,
             structCollector,
             resolveAlias,
@@ -158,17 +162,14 @@ module.exports = {
       const methodStrs = [];
 
       for (const struct of generatedStructs) {
-        const {methods, declaration} = serializeStruct(
-          codegenModuleName,
-          struct,
-        );
+        const {methods, declaration} = serializeStruct(hasteModuleName, struct);
         structStrs.push(declaration);
         methodStrs.push(methods);
       }
 
       moduleDeclarations.push(
         ModuleDeclarationTemplate({
-          codegenModuleName: codegenModuleName,
+          hasteModuleName: hasteModuleName,
           structDeclarations: structStrs.join('\n'),
           protocolMethods: methodSerializations
             .map(({protocolMethod}) => protocolMethod)
@@ -180,7 +181,7 @@ module.exports = {
 
       moduleImplementations.push(
         serializeModuleSource(
-          codegenModuleName,
+          hasteModuleName,
           generatedStructs,
           methodSerializations.filter(
             ({selector}) => selector !== '@selector(constantsToExport)',

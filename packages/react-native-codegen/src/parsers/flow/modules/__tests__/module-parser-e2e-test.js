@@ -15,14 +15,15 @@ import type {
   NativeModuleSchema,
   NativeModuleParamTypeAnnotation,
 } from '../../../../CodegenSchema';
+
 const {parseString} = require('../../index.js');
 const {unwrapNullable} = require('../utils');
 const {
-  FlowGenericNotTypeParameterizedParserError,
-  UnrecognizedFlowTypeAnnotationParserError,
-  UnrecognizedFlowGenericParserError,
-  UnnamedFunctionTypeAnnotationParamError,
-} = require('../errors.js');
+  UnsupportedFlowGenericParserError,
+  UnsupportedFlowTypeAnnotationParserError,
+  UnnamedFunctionParamParserError,
+  IncorrectlyParameterizedFlowGenericParserError,
+} = require('../errors');
 const invariant = require('invariant');
 
 type PrimitiveTypeAnnotationType =
@@ -87,12 +88,7 @@ describe('Flow Module Parser', () => {
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
 
-      expect(parser).toThrow(
-        new UnrecognizedFlowTypeAnnotationParserError(
-          MODULE_NAME,
-          'AnyTypeAnnotation',
-        ),
-      );
+      expect(parser).toThrow(UnsupportedFlowTypeAnnotationParserError);
     });
 
     it('should fail parsing when a function param type is unamed', () => {
@@ -106,9 +102,7 @@ describe('Flow Module Parser', () => {
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
 
-      expect(parser).toThrow(
-        new UnnamedFunctionTypeAnnotationParamError(MODULE_NAME),
-      );
+      expect(parser).toThrow(UnnamedFunctionParamParserError);
     });
 
     [
@@ -182,7 +176,7 @@ describe('Flow Module Parser', () => {
         () => {
           it(`should not parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Function'`, () => {
             expect(() => parseParamType('arg', 'Function')).toThrow(
-              new UnrecognizedFlowGenericParserError(MODULE_NAME, 'Function'),
+              UnsupportedFlowGenericParserError,
             );
           });
 
@@ -224,10 +218,7 @@ describe('Flow Module Parser', () => {
           describe('Array Types', () => {
             it(`should not parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Array'`, () => {
               expect(() => parseParamType('arg', 'Array')).toThrow(
-                new FlowGenericNotTypeParameterizedParserError(
-                  MODULE_NAME,
-                  'Array',
-                ),
+                IncorrectlyParameterizedFlowGenericParserError,
               );
             });
 
@@ -537,12 +528,7 @@ describe('Flow Module Parser', () => {
                   it(`should not parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Array`, () => {
                     expect(() =>
                       parseParamTypeObjectLiteralProp('prop', 'Array'),
-                    ).toThrow(
-                      new FlowGenericNotTypeParameterizedParserError(
-                        MODULE_NAME,
-                        'Array',
-                      ),
-                    );
+                    ).toThrow(IncorrectlyParameterizedFlowGenericParserError);
                   });
 
                   function parseArrayElementType(
@@ -829,10 +815,7 @@ describe('Flow Module Parser', () => {
           describe('Array Types', () => {
             it(`should not parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Array'`, () => {
               expect(() => parseReturnType('Array')).toThrow(
-                new FlowGenericNotTypeParameterizedParserError(
-                  MODULE_NAME,
-                  'Array',
-                ),
+                IncorrectlyParameterizedFlowGenericParserError,
               );
             });
 
@@ -947,7 +930,7 @@ describe('Flow Module Parser', () => {
 
           it(`should not parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Function'`, () => {
             expect(() => parseReturnType('Function')).toThrow(
-              new UnrecognizedFlowGenericParserError(MODULE_NAME, 'Function'),
+              UnsupportedFlowGenericParserError,
             );
           });
 
@@ -1113,12 +1096,7 @@ describe('Flow Module Parser', () => {
                     it(`should not parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Array`, () => {
                       expect(() =>
                         parseObjectLiteralReturnTypeProp('prop', 'Array'),
-                      ).toThrow(
-                        new FlowGenericNotTypeParameterizedParserError(
-                          MODULE_NAME,
-                          'Array',
-                        ),
-                      );
+                      ).toThrow(IncorrectlyParameterizedFlowGenericParserError);
                     });
 
                     function parseArrayElementType(

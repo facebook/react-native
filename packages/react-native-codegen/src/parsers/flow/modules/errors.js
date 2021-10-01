@@ -11,102 +11,195 @@
 'use strict';
 
 const invariant = require('invariant');
+const {ParserError} = require('../errors');
 
-class UnrecognizedFlowTypeAnnotationParserError extends Error {
+class MisnamedModuleFlowInterfaceParserError extends ParserError {
+  constructor(hasteModuleName: string, id: $FlowFixMe) {
+    super(
+      hasteModuleName,
+      id,
+      `All Flow interfaces extending TurboModule must be called 'Spec'. Please rename Flow interface '${id.name}' to 'Spec'.`,
+    );
+  }
+}
+
+class ModuleFlowInterfaceNotParserError extends ParserError {
+  constructor(hasteModuleName: string, ast: $FlowFixMe) {
+    super(
+      hasteModuleName,
+      ast,
+      `Module ${hasteModuleName}: No Flow interfaces extending TurboModule were detected in this NativeModule spec.`,
+    );
+  }
+}
+
+class UnsupportedModulePropertyParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    propertyValue: $FlowFixMe,
+    propertyName: string,
+    invalidPropertyValueType: string,
+  ) {
+    super(
+      hasteModuleName,
+      propertyValue,
+      `Flow interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's. Property '${propertyName}' refers to a '${invalidPropertyValueType}'.`,
+    );
+  }
+}
+
+class UnsupportedFlowTypeAnnotationParserError extends ParserError {
   +typeAnnotationType: string;
-  constructor(moduleName: string, typeAnnotationType: string) {
+  constructor(hasteModuleName: string, typeAnnotation: $FlowFixMe) {
     super(
-      `Module ${moduleName}: Detected unsupported type annotation of type '${typeAnnotationType}'`,
+      hasteModuleName,
+      typeAnnotation,
+      `Flow type annotation '${typeAnnotation.type}' is unsupported in NativeModule specs.`,
     );
 
-    // assign the error class name in your custom error (as a shortcut)
-    this.name = this.constructor.name;
-
-    // capturing the stack trace keeps the reference to your error class
-    Error.captureStackTrace(this, this.constructor);
-    this.typeAnnotationType = typeAnnotationType;
+    this.typeAnnotationType = typeAnnotation.type;
   }
 }
 
-class UnrecognizedFlowGenericParserError extends Error {
+class UnsupportedFlowGenericParserError extends ParserError {
   +genericName: string;
-  constructor(moduleName: string, genericName: string) {
+  constructor(hasteModuleName: string, genericTypeAnnotation: $FlowFixMe) {
+    const genericName = genericTypeAnnotation.id.name;
     super(
-      `Module ${moduleName}: Detected unsupported generic type '${genericName}'`,
+      hasteModuleName,
+      genericTypeAnnotation,
+      `Unrecognized generic type '${genericName}' in NativeModule spec.`,
     );
 
-    // assign the error class name in your custom error (as a shortcut)
-    this.name = this.constructor.name;
-
-    // capturing the stack trace keeps the reference to your error class
-    Error.captureStackTrace(this, this.constructor);
     this.genericName = genericName;
   }
 }
 
-class FlowGenericNotTypeParameterizedParserError extends Error {
-  +genericName: string;
-  constructor(moduleName: string, genericName: string) {
-    super(
-      `Module ${moduleName}: Detected a type of ${genericName}, without type parameters.`,
-    );
-
-    // assign the error class name in your custom error (as a shortcut)
-    this.name = this.constructor.name;
-
-    // capturing the stack trace keeps the reference to your error class
-    Error.captureStackTrace(this, this.constructor);
-    this.genericName = genericName;
-  }
-}
-
-class FlowGenericTypeParameterCountMismatchParserError extends Error {
+class IncorrectlyParameterizedFlowGenericParserError extends ParserError {
   +genericName: string;
   +numTypeParameters: number;
 
-  constructor(
-    moduleName: string,
-    genericName: string,
-    numTypeParameters: number,
-    expectedNumTypeParameters: number,
-  ) {
+  constructor(hasteModuleName: string, genericTypeAnnotation: $FlowFixMe) {
+    if (genericTypeAnnotation.typeParameters == null) {
+      super(
+        hasteModuleName,
+        genericTypeAnnotation,
+        `Generic '${genericTypeAnnotation.id.name}' must have type parameters.`,
+      );
+      return;
+    }
+
+    if (
+      genericTypeAnnotation.typeParameters.type ===
+        'TypeParameterInstantiation' &&
+      genericTypeAnnotation.typeParameters.params.length !== 1
+    ) {
+      super(
+        hasteModuleName,
+        genericTypeAnnotation.typeParameters,
+        `Generic '${genericTypeAnnotation.id.name}' must have exactly one type parameter.`,
+      );
+      return;
+    }
+
     invariant(
-      numTypeParameters !== expectedNumTypeParameters,
-      `FlowGenericNotTypeParameterizedWithExactlyOneTypeParserError can only be created with numTypeParameters != ${expectedNumTypeParameters}`,
+      false,
+      "Couldn't create IncorrectlyParameterizedFlowGenericParserError",
     );
-
-    super(
-      `Module ${moduleName}: Detected a type of ${genericName}, with ${numTypeParameters} type parameters specified. Expected exactly ${expectedNumTypeParameters}.`,
-    );
-
-    // assign the error class name in your custom error (as a shortcut)
-    this.name = this.constructor.name;
-
-    // capturing the stack trace keeps the reference to your error class
-    Error.captureStackTrace(this, this.constructor);
-    this.genericName = genericName;
-    this.numTypeParameters = numTypeParameters;
   }
 }
 
-class UnnamedFunctionTypeAnnotationParamError extends Error {
-  constructor(moduleName: string) {
+/**
+ * Array parsing errors
+ */
+
+class UnsupportedArrayElementTypeAnnotationParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    arrayElementTypeAST: $FlowFixMe,
+    arrayType: 'Array' | '$ReadOnlyArray',
+    invalidArrayElementType: string,
+  ) {
     super(
-      `Module ${moduleName}: Detected a FunctionTypeAnnotation with an unnamed param. Please name all params.`,
+      hasteModuleName,
+      arrayElementTypeAST,
+      `${arrayType} element types cannot be '${invalidArrayElementType}'.`,
     );
+  }
+}
 
-    // assign the error class name in your custom error (as a shortcut)
-    this.name = this.constructor.name;
+/**
+ * Object parsing errors
+ */
 
-    // capturing the stack trace keeps the reference to your error class
-    Error.captureStackTrace(this, this.constructor);
+class UnsupportedObjectPropertyTypeAnnotationParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    propertyValueAST: $FlowFixMe,
+    propertyName: string,
+    invalidPropertyValueType: string,
+  ) {
+    super(
+      hasteModuleName,
+      propertyValueAST,
+      `Object property '${propertyName}' cannot have type '${invalidPropertyValueType}'.`,
+    );
+  }
+}
+
+/**
+ * Function parsing errors
+ */
+
+class UnnamedFunctionParamParserError extends ParserError {
+  constructor(functionParam: $FlowFixMe, hasteModuleName: string) {
+    super(
+      hasteModuleName,
+      functionParam,
+      'All function parameters must be named.',
+    );
+  }
+}
+
+class UnsupportedFunctionParamTypeAnnotationParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    flowParamTypeAnnotation: $FlowFixMe,
+    paramName: string,
+    invalidParamType: string,
+  ) {
+    super(
+      hasteModuleName,
+      flowParamTypeAnnotation,
+      `Function parameter '${paramName}' cannot have type '${invalidParamType}'.`,
+    );
+  }
+}
+
+class UnsupportedFunctionReturnTypeAnnotationParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    flowReturnTypeAnnotation: $FlowFixMe,
+    invalidReturnType: string,
+  ) {
+    super(
+      hasteModuleName,
+      flowReturnTypeAnnotation,
+      `Function return cannot have type '${invalidReturnType}'.`,
+    );
   }
 }
 
 module.exports = {
-  FlowGenericNotTypeParameterizedParserError,
-  FlowGenericTypeParameterCountMismatchParserError,
-  UnrecognizedFlowTypeAnnotationParserError,
-  UnrecognizedFlowGenericParserError,
-  UnnamedFunctionTypeAnnotationParamError,
+  IncorrectlyParameterizedFlowGenericParserError,
+  MisnamedModuleFlowInterfaceParserError,
+  ModuleFlowInterfaceNotParserError,
+  UnnamedFunctionParamParserError,
+  UnsupportedArrayElementTypeAnnotationParserError,
+  UnsupportedFlowGenericParserError,
+  UnsupportedFlowTypeAnnotationParserError,
+  UnsupportedFunctionParamTypeAnnotationParserError,
+  UnsupportedFunctionReturnTypeAnnotationParserError,
+  UnsupportedModulePropertyParserError,
+  UnsupportedObjectPropertyTypeAnnotationParserError,
 };

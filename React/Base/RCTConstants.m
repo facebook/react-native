@@ -54,3 +54,18 @@ void RCTExperimentSetOptimizedHitTesting(BOOL value)
 {
   RCTExperimentOptimizedHitTesting = value;
 }
+
+/*
+ * Preemptive View Allocation
+ */
+static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
+
+BOOL RCTExperimentGetPreemptiveViewAllocationDisabled()
+{
+  return RCTExperimentPreemptiveViewAllocationDisabled;
+}
+
+void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
+{
+  RCTExperimentPreemptiveViewAllocationDisabled = value;
+}

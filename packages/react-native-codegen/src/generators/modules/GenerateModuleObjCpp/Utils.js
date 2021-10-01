@@ -23,10 +23,10 @@ function getSafePropertyName(property: StructProperty): string {
 }
 
 function getNamespacedStructName(
-  codegenModuleName: string,
+  hasteModuleName: string,
   structName: string,
 ): string {
-  return `JS::${codegenModuleName}::${structName}`;
+  return `JS::${hasteModuleName}::${structName}`;
 }
 
 module.exports = {

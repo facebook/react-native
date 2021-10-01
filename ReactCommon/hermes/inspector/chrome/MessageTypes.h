@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<7383ffe2d956ba3aef8262dbee2f3427>>
+// @generated SignedSource<<e3e5526b8e266b560b9dc9e42cc0d6c5>>
 
 #pragma once
 
@@ -71,6 +71,7 @@ using UnserializableValue = std::string;
 
 namespace heapProfiler {
 struct AddHeapSnapshotChunkNotification;
+struct CollectGarbageRequest;
 struct HeapStatsUpdateNotification;
 struct LastSeenObjectIdNotification;
 struct ReportHeapSnapshotProgressNotification;
@@ -99,6 +100,7 @@ struct RequestHandler {
   virtual void handle(const debugger::StepIntoRequest &req) = 0;
   virtual void handle(const debugger::StepOutRequest &req) = 0;
   virtual void handle(const debugger::StepOverRequest &req) = 0;
+  virtual void handle(const heapProfiler::CollectGarbageRequest &req) = 0;
   virtual void handle(
       const heapProfiler::StartTrackingHeapObjectsRequest &req) = 0;
   virtual void handle(
@@ -127,6 +129,7 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const debugger::StepIntoRequest &req) override {}
   void handle(const debugger::StepOutRequest &req) override {}
   void handle(const debugger::StepOverRequest &req) override {}
+  void handle(const heapProfiler::CollectGarbageRequest &req) override {}
   void handle(
       const heapProfiler::StartTrackingHeapObjectsRequest &req) override {}
   void handle(
@@ -408,6 +411,14 @@ struct debugger::StepOutRequest : public Request {
 struct debugger::StepOverRequest : public Request {
   StepOverRequest();
   explicit StepOverRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+};
+
+struct heapProfiler::CollectGarbageRequest : public Request {
+  CollectGarbageRequest();
+  explicit CollectGarbageRequest(const folly::dynamic &obj);
 
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;

@@ -26,7 +26,18 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
-const moduleTemplate = `
+const FileTemplate = ({
+  packageName,
+  className,
+  methods,
+  imports,
+}: $ReadOnly<{|
+  packageName: string,
+  className: string,
+  methods: string,
+  imports: string,
+|}>) => {
+  return `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -38,18 +49,19 @@ const moduleTemplate = `
  * @nolint
  */
 
-package ::_PACKAGENAME_::;
+package ${packageName};
 
-::_IMPORTS_::
+${imports}
 
-public abstract class ::_CLASSNAME_:: extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
-  public ::_CLASSNAME_::(ReactApplicationContext reactContext) {
+public abstract class ${className} extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public ${className}(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
-::_METHODS_::
+${methods}
 }
 `;
+};
 
 function translateFunctionParamToJavaType(
   param: NativeModuleMethodParamSchema,
@@ -203,8 +215,7 @@ function buildGetConstantsMethod(
     const rawProperties =
       methodTypeAnnotation.returnTypeAnnotation.properties || [];
     rawProperties.forEach(p => {
-      // TODO(T76712813): Should we push to optionalProps if the constant is nullable?
-      if (p.optional) {
+      if (p.optional || p.typeAnnotation.type === 'NullableTypeAnnotation') {
         optionalProps.push(p.name);
       } else {
         requiredProps.push(p.name);
@@ -279,13 +290,17 @@ module.exports = {
     const packageName = 'com.facebook.fbreact.specs.beta';
     const nativeModules = getModules(schema);
 
-    Object.keys(nativeModules).forEach(codegenModuleName => {
+    Object.keys(nativeModules).forEach(hasteModuleName => {
       const {
         aliases,
+        excludedPlatforms,
         spec: {properties},
-      } = nativeModules[codegenModuleName];
+      } = nativeModules[hasteModuleName];
+      if (excludedPlatforms != null && excludedPlatforms.includes('android')) {
+        return;
+      }
       const resolveAlias = createAliasResolver(aliases);
-      const className = `${codegenModuleName}Spec`;
+      const className = `${hasteModuleName}Spec`;
 
       const imports: Set<string> = new Set([
         // Always required.
@@ -351,17 +366,15 @@ module.exports = {
 
       files.set(
         `${className}.java`,
-        moduleTemplate
-          .replace(
-            /::_IMPORTS_::/g,
-            Array.from(imports)
-              .sort()
-              .map(p => `import ${p};`)
-              .join('\n'),
-          )
-          .replace(/::_PACKAGENAME_::/g, packageName)
-          .replace(/::_CLASSNAME_::/g, className)
-          .replace(/::_METHODS_::/g, methods.filter(m => !!m).join('\n\n')),
+        FileTemplate({
+          packageName,
+          className,
+          methods: methods.filter(Boolean).join('\n\n'),
+          imports: Array.from(imports)
+            .sort()
+            .map(p => `import ${p};`)
+            .join('\n'),
+        }),
       );
     });
 

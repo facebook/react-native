@@ -228,14 +228,6 @@ public:
 };
 
 /**
- * JNI C++ class for module 'NativeImagePickerIOS'
- */
-class JSI_EXPORT NativeImagePickerIOSSpecJSI : public JavaTurboModule {
-public:
-  NativeImagePickerIOSSpecJSI(const JavaTurboModule::InitParams &params);
-};
-
-/**
  * JNI C++ class for module 'NativeExceptionsManager'
  */
 class JSI_EXPORT NativeExceptionsManagerSpecJSI : public JavaTurboModule {

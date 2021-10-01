@@ -23,7 +23,7 @@ using namespace facebook::react;
   UIColor *_backgroundColor;
   CALayer *_borderLayer;
   BOOL _needsInvalidateLayer;
-  NSSet<NSString *> *_propKeysManagedByAnimated;
+  NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -85,11 +85,6 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<ViewComponentDescriptor>();
 }
 
-- (void)setPropKeysManagedByAnimated:(nullable NSSet<NSString *> *)propKeys
-{
-  _propKeysManagedByAnimated = propKeys;
-}
-
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
 #ifndef NS_BLOCK_ASSERTIONS
@@ -109,7 +104,8 @@ using namespace facebook::react;
   BOOL needsInvalidateLayer = NO;
 
   // `opacity`
-  if (oldViewProps.opacity != newViewProps.opacity && ![_propKeysManagedByAnimated containsObject:@"opacity"]) {
+  if (oldViewProps.opacity != newViewProps.opacity &&
+      ![_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"opacity"]) {
     self.layer.opacity = (CGFloat)newViewProps.opacity;
     needsInvalidateLayer = YES;
   }
@@ -168,7 +164,8 @@ using namespace facebook::react;
   }
 
   // `transform`
-  if (oldViewProps.transform != newViewProps.transform && ![_propKeysManagedByAnimated containsObject:@"transform"]) {
+  if (oldViewProps.transform != newViewProps.transform &&
+      ![_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
     self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
   }
@@ -296,15 +293,25 @@ using namespace facebook::react;
 
   // If view was managed by animated, its props need to align with UIView's properties.
   auto const &props = *std::static_pointer_cast<ViewProps const>(_props);
-  if ([_propKeysManagedByAnimated containsObject:@"transform"]) {
+  if ([_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
     self.layer.transform = RCTCATransform3DFromTransformMatrix(props.transform);
   }
-  if ([_propKeysManagedByAnimated containsObject:@"opacity"]) {
+  if ([_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"opacity"]) {
     self.layer.opacity = (CGFloat)props.opacity;
   }
 
-  _propKeysManagedByAnimated = nil;
+  _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   _eventEmitter.reset();
+}
+
+- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
+{
+  _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = props;
+}
+
+- (NSSet<NSString *> *_Nullable)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
 - (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event

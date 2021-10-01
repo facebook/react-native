@@ -28,3 +28,9 @@ RCT_EXTERN void RCTExperimentSetSyncPerformanceFlag(BOOL value);
  */
 RCT_EXTERN BOOL RCTExperimentGetOptimizedHitTesting(void);
 RCT_EXTERN void RCTExperimentSetOptimizedHitTesting(BOOL value);
+
+/*
+ * Preemptive View Allocation
+ */
+RCT_EXTERN BOOL RCTExperimentGetPreemptiveViewAllocationDisabled(void);
+RCT_EXTERN void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value);

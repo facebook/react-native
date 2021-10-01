@@ -132,9 +132,14 @@ using namespace facebook::react;
   return nullptr;
 }
 
-- (void)setPropKeysManagedByAnimated:(nullable NSSet<NSString *> *)propKeys
+- (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(nullable NSSet<NSString *> *)propKeys
 {
   // Default implementation does nothing.
+}
+
+- (nullable NSSet<NSString *> *)propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return nil;
 }
 
 @end

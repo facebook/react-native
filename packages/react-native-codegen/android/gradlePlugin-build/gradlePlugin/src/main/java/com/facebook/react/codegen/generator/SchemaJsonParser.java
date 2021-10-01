@@ -73,6 +73,16 @@ public final class SchemaJsonParser {
                   return;
                 }
 
+                if (jsModule.has("excludedPlatforms")) {
+                  final JsonArray excludedPlatforms = jsModule.getAsJsonArray("excludedPlatforms");
+                  for (JsonElement p : excludedPlatforms) {
+                    if (p.getAsString().equals("android")) {
+                      // This module is not for Android.
+                      return;
+                    }
+                  }
+                }
+
                 final Type parsedType =
                     parseNativeModule(
                         // TODO (T71955395): NativeModule spec type name does not

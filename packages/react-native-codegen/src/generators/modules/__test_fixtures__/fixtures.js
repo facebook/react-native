@@ -1191,6 +1191,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
         ],
       },
       moduleNames: ['ImagePickerIOS'],
+      excludedPlatforms: ['android'],
     },
     NativeExceptionsManager: {
       type: 'NativeModule',
