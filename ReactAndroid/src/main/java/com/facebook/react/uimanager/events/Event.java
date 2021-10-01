@@ -188,7 +188,6 @@ public abstract class Event<T extends Event> {
    * old-style dispatch function. For Event classes that need to do something different, this method
    * can always be overridden entirely, but it is not recommended.
    */
-  @Deprecated
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     if (getSurfaceId() != -1) {
       WritableMap eventData = getEventData();
