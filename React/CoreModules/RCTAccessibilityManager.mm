@@ -6,6 +6,7 @@
  */
 
 #import "RCTAccessibilityManager.h"
+#import "RCTAccessibilityManager+Internal.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
@@ -183,9 +184,14 @@ RCT_EXPORT_MODULE()
 
 - (void)voiceVoiceOverStatusDidChange:(__unused NSNotification *)notification
 {
-  BOOL newIsVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
-  if (_isVoiceOverEnabled != newIsVoiceOverEnabled) {
-    _isVoiceOverEnabled = newIsVoiceOverEnabled;
+  BOOL isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
+  [self _setIsVoiceOverEnabled:isVoiceOverEnabled];
+}
+
+- (void)_setIsVoiceOverEnabled:(BOOL)isVoiceOverEnabled
+{
+  if (_isVoiceOverEnabled != isVoiceOverEnabled) {
+    _isVoiceOverEnabled = isVoiceOverEnabled;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"screenReaderChanged"
@@ -348,6 +354,15 @@ RCT_EXPORT_METHOD(getCurrentVoiceOverState
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return std::make_shared<facebook::react::NativeAccessibilityManagerSpecJSI>(params);
+}
+
+#pragma mark - Internal
+
+void RCTAccessibilityManagerSetIsVoiceOverEnabled(
+    RCTAccessibilityManager *accessibilityManager,
+    BOOL isVoiceOverEnabled)
+{
+  [accessibilityManager _setIsVoiceOverEnabled:isVoiceOverEnabled];
 }
 
 @end
