@@ -13,8 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 RCT_EXTERN_C_BEGIN
 
-// Only to be used for testing and internal tooling. Do not use this in production.
-void RCTAccessibilityManagerSetIsVoiceOverEnabled(RCTAccessibilityManager *accessibiltyManager, BOOL isVoiceOverEnabled);
+// Only to be used for testing and internal tooling. Do not use this in
+// production.
+void RCTAccessibilityManagerSetIsVoiceOverEnabled(
+    RCTAccessibilityManager *accessibiltyManager,
+    BOOL isVoiceOverEnabled);
 
 RCT_EXTERN_C_END
 
