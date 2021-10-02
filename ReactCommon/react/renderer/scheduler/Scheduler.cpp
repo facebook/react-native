@@ -187,7 +187,7 @@ void Scheduler::registerSurface(
 }
 
 InspectorData Scheduler::getInspectorDataForInstance(
-    SharedEventEmitter eventEmitter) const noexcept {
+    EventEmitter const &eventEmitter) const noexcept {
   return executeSynchronouslyOnSameThread_CAN_DEADLOCK<InspectorData>(
       runtimeExecutor_, [=](jsi::Runtime &runtime) -> InspectorData {
         auto uiManagerBinding = UIManagerBinding::getBinding(runtime);

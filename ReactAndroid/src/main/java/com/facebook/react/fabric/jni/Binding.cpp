@@ -244,7 +244,7 @@ Binding::getInspectorDataForInstance(
 
   EventEmitterWrapper *cEventEmitter = cthis(eventEmitterWrapper);
   InspectorData data =
-      scheduler->getInspectorDataForInstance(cEventEmitter->eventEmitter);
+      scheduler->getInspectorDataForInstance(*cEventEmitter->eventEmitter);
 
   folly::dynamic result = folly::dynamic::object;
   result["fileName"] = data.fileName;
