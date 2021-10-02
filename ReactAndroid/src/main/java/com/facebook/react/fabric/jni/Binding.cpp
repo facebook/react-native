@@ -243,8 +243,9 @@ Binding::getInspectorDataForInstance(
   }
 
   EventEmitterWrapper *cEventEmitter = cthis(eventEmitterWrapper);
-  InspectorData data =
-      scheduler->getInspectorDataForInstance(*cEventEmitter->eventEmitter);
+  InspectorData data = scheduler->getInspectorDataForInstance(
+      enableEventEmitterRawPointer_ ? *cEventEmitter->eventEmitterPointer
+                                    : *cEventEmitter->eventEmitter);
 
   folly::dynamic result = folly::dynamic::object;
   result["fileName"] = data.fileName;
@@ -510,6 +511,9 @@ void Binding::installFabricUIManager(
 
   disableRevisionCheckForPreallocation_ =
       config->getBool("react_fabric:disable_revision_check_for_preallocation");
+
+  enableEventEmitterRawPointer_ =
+      config->getBool("react_fabric:enable_event_emitter_wrapper_raw_pointer");
 
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
@@ -920,8 +924,11 @@ void Binding::schedulerDidFinishTransaction(
           mountItem.newChildShadowView.eventEmitter;
       auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
-
+      if (enableEventEmitterRawPointer_) {
+        cEventEmitter->eventEmitterPointer = eventEmitter.get();
+      } else {
+        cEventEmitter->eventEmitter = eventEmitter;
+      }
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = isLayoutable;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
@@ -1071,7 +1078,11 @@ void Binding::schedulerDidFinishTransaction(
       // Do not hold a reference to javaEventEmitter from the C++ side.
       auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
+      if (enableEventEmitterRawPointer_) {
+        cEventEmitter->eventEmitterPointer = eventEmitter.get();
+      } else {
+        cEventEmitter->eventEmitter = eventEmitter;
+      }
 
       (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
     }
@@ -1198,7 +1209,11 @@ void Binding::preallocateShadowView(
     if (eventEmitter != nullptr) {
       javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
+      if (enableEventEmitterRawPointer_) {
+        cEventEmitter->eventEmitterPointer = eventEmitter.get();
+      } else {
+        cEventEmitter->eventEmitter = eventEmitter;
+      }
     }
   }
 
