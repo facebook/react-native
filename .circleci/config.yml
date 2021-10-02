@@ -65,6 +65,16 @@ commands:
           name: Initial Setup
           command: mkdir -p ./reports/{buck,build,junit,outputs}
 
+  setup_ruby:
+    steps:
+      - restore_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path vendor/bundle --clean
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
   run_yarn:
     steps:
       - restore_cache:
@@ -356,6 +366,7 @@ jobs:
     steps:
       - checkout
       - setup_artifacts
+      - setup_ruby
       - run_yarn
 
       - run: |
@@ -407,7 +418,7 @@ jobs:
 
       - run:
           name: Setup the CocoaPods environment
-          command: pod setup
+          command: bundle exec pod setup
 
       - with_rntester_pods_cache_span:
           steps:

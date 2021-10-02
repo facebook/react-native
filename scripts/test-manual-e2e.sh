@@ -71,7 +71,7 @@ read -r -n 1
 success "About to test iOS JSC... "
 success "Installing CocoaPods dependencies..."
 rm -rf packages/rn-tester/Pods
-(cd packages/rn-tester && pod install)
+(cd packages/rn-tester && bundle exec pod install)
 
 info "Press any key to open the workspace in Xcode, then build and test manually."
 info ""
@@ -85,7 +85,7 @@ read -r -n 1
 success "About to test iOS Hermes... "
 success "Installing CocoaPods dependencies..."
 rm -rf packages/rn-tester/Pods
-(cd packages/rn-tester && USE_HERMES=1 pod install)
+(cd packages/rn-tester && USE_HERMES=1 bundle exec pod install)
 
 info "Press any key to open the workspace in Xcode, then build and test manually."
 info ""
