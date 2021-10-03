@@ -32,6 +32,7 @@ rn_robolectric_test(
         react_native_target("java/com/facebook/react/modules/common:common"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/debug:debug"),
+        react_native_target("java/com/facebook/react/modules/deviceinfo:deviceinfo"),
         react_native_target("java/com/facebook/react/modules/dialog:dialog"),
         react_native_target("java/com/facebook/react/modules/network:network"),
         react_native_target("java/com/facebook/react/modules/share:share"),

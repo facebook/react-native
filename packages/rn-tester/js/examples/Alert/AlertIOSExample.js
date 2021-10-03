@@ -21,7 +21,7 @@ const {
 
 const {examples: SharedAlertExamples} = require('./AlertExample');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 type Props = $ReadOnly<{||}>;
 type State = {|promptValue: ?string|};
@@ -205,4 +205,4 @@ exports.examples = ([
       );
     },
   },
-]: RNTesterExampleModuleItem[]);
+]: Array<RNTesterModuleExample>);

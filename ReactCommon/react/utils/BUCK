@@ -58,6 +58,7 @@ rn_xplat_cxx_library(
     tests = [],
     visibility = ["PUBLIC"],
     deps = [
+        "//third-party/glog:glog",
         "//xplat/folly:container_evicting_cache_map",
         "//xplat/folly:headers_only",
         "//xplat/folly:memory",

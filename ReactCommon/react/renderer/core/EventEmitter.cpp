@@ -52,10 +52,15 @@ EventEmitter::EventEmitter(
 void EventEmitter::dispatchEvent(
     const std::string &type,
     const folly::dynamic &payload,
-    EventPriority priority) const {
-  dispatchEvent(type, [payload](jsi::Runtime &runtime) {
-    return valueFromDynamic(runtime, payload);
-  });
+    EventPriority priority,
+    RawEvent::Category category) const {
+  dispatchEvent(
+      type,
+      [payload](jsi::Runtime &runtime) {
+        return valueFromDynamic(runtime, payload);
+      },
+      priority,
+      category);
 }
 
 void EventEmitter::dispatchUniqueEvent(

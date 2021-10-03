@@ -152,6 +152,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("microprofiler:microprofiler"),
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
+        react_native_xplat_target("logger:logger"),
         "//third-party/glog:glog",
         "//xplat/folly:optional",
     ],

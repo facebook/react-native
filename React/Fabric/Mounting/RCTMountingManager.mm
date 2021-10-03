@@ -10,6 +10,7 @@
 #import <better/map.h>
 
 #import <React/RCTAssert.h>
+#import <React/RCTComponent.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
@@ -25,6 +26,18 @@
 #import "RCTMountingTransactionObserverCoordinator.h"
 
 using namespace facebook::react;
+
+static SurfaceId RCTSurfaceIdForView(UIView *view)
+{
+  do {
+    if (RCTIsReactRootView(@(view.tag))) {
+      return view.tag;
+    }
+    view = view.superview;
+  } while (view != nil);
+
+  return -1;
+}
 
 static void RCTPerformMountInstructions(
     ShadowViewMutationList const &mutations,
@@ -136,6 +149,7 @@ static void RCTPerformMountInstructions(
   RCTMountingTransactionObserverCoordinator _observerCoordinator;
   BOOL _transactionInFlight;
   BOOL _followUpTransactionRequired;
+  ContextContainer::Shared _contextContainer;
 }
 
 - (instancetype)init
@@ -145,6 +159,11 @@ static void RCTPerformMountInstructions(
   }
 
   return self;
+}
+
+- (void)setContextContainer:(ContextContainer::Shared)contextContainer
+{
+  _contextContainer = contextContainer;
 }
 
 - (void)attachSurfaceToView:(UIView *)view surfaceId:(SurfaceId)surfaceId
@@ -276,8 +295,10 @@ static void RCTPerformMountInstructions(
 {
   RCTAssertMainQueue();
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
+  SurfaceId surfaceId = RCTSurfaceIdForView(componentView);
   SharedProps oldProps = [componentView props];
-  SharedProps newProps = componentDescriptor.cloneProps(oldProps, RawProps(convertIdToFollyDynamic(props)));
+  SharedProps newProps = componentDescriptor.cloneProps(
+      PropsParserContext{surfaceId, *_contextContainer.get()}, oldProps, RawProps(convertIdToFollyDynamic(props)));
 
   NSSet<NSString *> *propKeys = componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN ?: [NSSet new];
   propKeys = [propKeys setByAddingObjectsFromArray:props.allKeys];
@@ -290,11 +311,9 @@ static void RCTPerformMountInstructions(
   if (props[@"transform"] &&
       !CATransform3DEqualToTransform(
           RCTCATransform3DFromTransformMatrix(newViewProps.transform), componentView.layer.transform)) {
-    RCTLogWarn(@"transform was not applied during [RCTViewComponentView updateProps:oldProps:]");
     componentView.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
   }
   if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
-    RCTLogWarn(@"opacity was not applied during [RCTViewComponentView updateProps:oldProps:]");
     componentView.layer.opacity = newViewProps.opacity;
   }
 }

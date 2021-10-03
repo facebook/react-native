@@ -81,6 +81,8 @@ typedef NS_ENUM(NSInteger, RCTTextEventType) {
  */
 @protocol RCTEventDispatcherProtocol <RCTBridgeModule, RCTJSDispatcherModule>
 
+- (void)sendViewEventWithName:(NSString *)name reactTag:(NSNumber *)reactTag;
+
 /**
  * Deprecated, do not use.
  */

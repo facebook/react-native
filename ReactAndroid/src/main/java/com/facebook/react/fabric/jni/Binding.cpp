@@ -233,6 +233,34 @@ std::shared_ptr<Scheduler> Binding::getScheduler() {
   return scheduler_;
 }
 
+jni::local_ref<ReadableNativeMap::jhybridobject>
+Binding::getInspectorDataForInstance(
+    jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper) {
+  std::shared_ptr<Scheduler> scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::startSurface: scheduler disappeared";
+    return ReadableNativeMap::newObjectCxxArgs(folly::dynamic::object());
+  }
+
+  EventEmitterWrapper *cEventEmitter = cthis(eventEmitterWrapper);
+  InspectorData data = scheduler->getInspectorDataForInstance(
+      enableEventEmitterRawPointer_ ? *cEventEmitter->eventEmitterPointer
+                                    : *cEventEmitter->eventEmitter);
+
+  folly::dynamic result = folly::dynamic::object;
+  result["fileName"] = data.fileName;
+  result["lineNumber"] = data.lineNumber;
+  result["columnNumber"] = data.columnNumber;
+  result["selectedIndex"] = data.selectedIndex;
+  result["props"] = data.props;
+  auto hierarchy = folly::dynamic::array();
+  for (auto hierarchyItem : data.hierarchy) {
+    hierarchy.push_back(hierarchyItem);
+  }
+  result["hierarchy"] = hierarchy;
+  return ReadableNativeMap::newObjectCxxArgs(result);
+}
+
 void Binding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
@@ -249,6 +277,7 @@ void Binding::startSurface(
   layoutContext.pointScaleFactor = pointScaleFactor_;
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
+  surfaceHandler.setContextContainer(scheduler->getContextContainer());
   surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout({}, layoutContext);
 
@@ -260,7 +289,9 @@ void Binding::startSurface(
       animationDriver_);
 
   {
+    SystraceSection s2("FabricUIManagerBinding::startSurface::surfaceId::lock");
     std::unique_lock<better::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    SystraceSection s3("FabricUIManagerBinding::startSurface::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
@@ -308,6 +339,7 @@ void Binding::startSurfaceWithConstraints(
       isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
+  surfaceHandler.setContextContainer(scheduler_->getContextContainer());
   surfaceHandler.setProps(initialProps->consume());
   surfaceHandler.constraintLayout(constraints, context);
 
@@ -319,7 +351,11 @@ void Binding::startSurfaceWithConstraints(
       animationDriver_);
 
   {
+    SystraceSection s2(
+        "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId::lock");
     std::unique_lock<better::shared_mutex> lock(surfaceHandlerRegistryMutex_);
+    SystraceSection s3(
+        "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 }
@@ -459,6 +495,7 @@ bool isMapBufferSerializationEnabled() {
 
 void Binding::installFabricUIManager(
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
+    jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
@@ -471,6 +508,12 @@ void Binding::installFabricUIManager(
 
   enableFabricLogs_ =
       config->getBool("react_fabric:enabled_android_fabric_logs");
+
+  disableRevisionCheckForPreallocation_ =
+      config->getBool("react_fabric:disable_revision_check_for_preallocation");
+
+  enableEventEmitterRawPointer_ =
+      config->getBool("react_fabric:enable_event_emitter_wrapper_raw_pointer");
 
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
@@ -492,6 +535,19 @@ void Binding::installFabricUIManager(
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
+
+  if (runtimeSchedulerHolder) {
+    auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get().lock();
+    if (runtimeScheduler) {
+      runtimeScheduler->setEnableYielding(config->getBool(
+          "react_native_new_architecture:runtimescheduler_enable_yielding_android"));
+      runtimeExecutor =
+          [runtimeScheduler](
+              std::function<void(jsi::Runtime & runtime)> &&callback) {
+            runtimeScheduler->scheduleWork(std::move(callback));
+          };
+    }
+  }
 
   auto enableV2AsynchronousEventBeat =
       config->getBool("react_fabric:enable_asynchronous_event_beat_v2_android");
@@ -540,9 +596,6 @@ void Binding::installFabricUIManager(
   disablePreallocateViews_ = reactNativeConfig_->getBool(
       "react_fabric:disabled_view_preallocation_android");
 
-  disableVirtualNodePreallocation_ = reactNativeConfig_->getBool(
-      "react_fabric:disable_virtual_node_preallocation");
-
   enableEarlyEventEmitterUpdate_ = reactNativeConfig_->getBool(
       "react_fabric:enable_early_event_emitter_update");
 
@@ -559,8 +612,8 @@ void Binding::installFabricUIManager(
     toolbox.backgroundExecutor = backgroundExecutor_->get();
   }
 
-  animationDriver_ =
-      std::make_shared<LayoutAnimationDriver>(runtimeExecutor, this);
+  animationDriver_ = std::make_shared<LayoutAnimationDriver>(
+      runtimeExecutor, contextContainer, this);
   scheduler_ = std::make_shared<Scheduler>(
       toolbox, (animationDriver_ ? animationDriver_.get() : nullptr), this);
 }
@@ -871,8 +924,11 @@ void Binding::schedulerDidFinishTransaction(
           mountItem.newChildShadowView.eventEmitter;
       auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
-
+      if (enableEventEmitterRawPointer_) {
+        cEventEmitter->eventEmitterPointer = eventEmitter.get();
+      } else {
+        cEventEmitter->eventEmitter = eventEmitter;
+      }
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = isLayoutable;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
@@ -1022,7 +1078,11 @@ void Binding::schedulerDidFinishTransaction(
       // Do not hold a reference to javaEventEmitter from the C++ side.
       auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
+      if (enableEventEmitterRawPointer_) {
+        cEventEmitter->eventEmitterPointer = eventEmitter.get();
+      } else {
+        cEventEmitter->eventEmitter = eventEmitter;
+      }
 
       (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
     }
@@ -1149,7 +1209,11 @@ void Binding::preallocateShadowView(
     if (eventEmitter != nullptr) {
       javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
       EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
+      if (enableEventEmitterRawPointer_) {
+        cEventEmitter->eventEmitterPointer = eventEmitter.get();
+      } else {
+        cEventEmitter->eventEmitter = eventEmitter;
+      }
     }
   }
 
@@ -1177,8 +1241,7 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
 
   auto shadowView = ShadowView(shadowNode);
 
-  if (disableVirtualNodePreallocation_ &&
-      !shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
+  if (!shadowView.traits.check(ShadowNodeTraits::Trait::FormsView)) {
     return;
   }
 
@@ -1191,20 +1254,19 @@ void Binding::schedulerDidCloneShadowNode(
     const ShadowNode &newShadowNode) {
   // This is only necessary if view preallocation was skipped during
   // createShadowNode
-  if (!disableVirtualNodePreallocation_) {
-    return;
-  }
 
   // We may need to PreAllocate a ShadowNode at this point if this is the
   // earliest point it is possible to do so:
   // 1. The revision is exactly 1
   // 2. At revision 0 (the old node), View Preallocation would have been skipped
 
-  if (newShadowNode.getProps()->revision != 1) {
-    return;
-  }
-  if (oldShadowNode.getProps()->revision != 0) {
-    return;
+  if (!disableRevisionCheckForPreallocation_) {
+    if (newShadowNode.getProps()->revision != 1) {
+      return;
+    }
+    if (oldShadowNode.getProps()->revision != 0) {
+      return;
+    }
   }
 
   // If the new node is concrete and the old wasn't, we can preallocate
@@ -1308,6 +1370,8 @@ void Binding::registerNatives() {
       makeNativeMethod(
           "installFabricUIManager", Binding::installFabricUIManager),
       makeNativeMethod("startSurface", Binding::startSurface),
+      makeNativeMethod(
+          "getInspectorDataForInstance", Binding::getInspectorDataForInstance),
       makeNativeMethod(
           "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
       makeNativeMethod(

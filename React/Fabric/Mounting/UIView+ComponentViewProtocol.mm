@@ -156,4 +156,16 @@ using namespace facebook::react;
   return nil;
 }
 
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+{
+  clipRect = [clipView convertRect:clipRect toView:self];
+
+  // Normal views don't support unmounting, so all
+  // this does is forward message to our subviews,
+  // in case any of those do support it
+  for (UIView *subview in self.subviews) {
+    [subview updateClippedSubviewsWithClipRect:clipRect relativeToView:self];
+  }
+}
+
 @end

@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {Switch, Text, View} = require('react-native');
+const {Switch, Text, View, Platform} = require('react-native');
 
 type OnOffIndicatorProps = $ReadOnly<{|on: boolean, testID: string|}>;
 function OnOffIndicator({on, testID}: OnOffIndicatorProps) {
@@ -212,6 +212,38 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
+class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
+  state = {
+    iosBackgroundColor: '#ffa500',
+  };
+
+  render() {
+    return (
+      <View>
+        <Switch
+          disabled
+          ios_backgroundColor={this.state.iosBackgroundColor}
+          style={{marginBottom: 20}}
+        />
+        <Text>
+          The background color can be seen either when the switch value is false
+          or when the switch is disabled (and the switch is translucent).{' '}
+        </Text>
+      </View>
+    );
+  }
+}
+
+class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
+  render() {
+    return (
+      <View>
+        <Switch onChange={() => alert('OnChange Called')} />
+      </View>
+    );
+  }
+}
+
 exports.title = 'Switch';
 exports.documentationURL = 'https://reactnative.dev/docs/switch';
 exports.category = 'UI';
@@ -253,4 +285,19 @@ exports.examples = [
       return <ColorSwitchExample />;
     },
   },
+  {
+    title: 'OnChange receives the change event as an argument',
+    render(): React.Element<any> {
+      return <OnChangeExample />;
+    },
+  },
 ];
+
+if (Platform.OS === 'ios') {
+  exports.examples.push({
+    title: '[iOS Only] Custom background colors can be set',
+    render(): React.Element<any> {
+      return <IOSBackgroundColEx />;
+    },
+  });
+}

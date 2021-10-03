@@ -12,10 +12,11 @@
 
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/mounting/stubs.h>
 
+#include <react/renderer/mounting/stubs.h>
 #include <react/test_utils/Entropy.h>
 #include <react/test_utils/shadowTreeGeneration.h>
 
@@ -44,6 +45,8 @@ static void testShadowNodeTreeLifeCycle(
   auto noopEventEmitter =
       std::make_shared<ViewEventEmitter const>(nullptr, -1, eventDispatcher);
 
+  PropsParserContext parserContext{-1, *contextContainer};
+
   auto allNodes = std::vector<ShadowNode::Shared>{};
 
   for (int i = 0; i < repeats; i++) {
@@ -61,6 +64,7 @@ static void testShadowNodeTreeLifeCycle(
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
+        parserContext,
         LayoutConstraints{
             Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
         LayoutContext{});
@@ -191,6 +195,8 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
   auto noopEventEmitter =
       std::make_shared<ViewEventEmitter const>(nullptr, -1, eventDispatcher);
 
+  PropsParserContext parserContext{-1, *contextContainer};
+
   auto allNodes = std::vector<ShadowNode::Shared>{};
 
   for (int i = 0; i < repeats; i++) {
@@ -208,6 +214,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
+        parserContext,
         LayoutConstraints{
             Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
         LayoutContext{});

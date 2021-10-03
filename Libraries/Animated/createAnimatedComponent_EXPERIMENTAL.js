@@ -10,6 +10,7 @@
 
 import useAnimatedProps from './useAnimatedProps';
 import useMergeRefs from '../Utilities/useMergeRefs';
+import StyleSheet from '../StyleSheet/StyleSheet';
 import * as React from 'react';
 
 /**
@@ -25,6 +26,23 @@ export default function createAnimatedComponent<TProps: {...}, TInstance>(
     );
     const ref = useMergeRefs<TInstance | null>(callbackRef, forwardedRef);
 
-    return <Component {...reducedProps} ref={ref} />;
+    // Some components require explicit passthrough values for animation
+    // to work properly. For example, if an animated component is
+    // transformed and Pressable, onPress will not work after transform
+    // without these passthrough values.
+    // $FlowFixMe[prop-missing]
+    const {passthroughAnimatedPropExplicitValues, style} = reducedProps;
+    const {style: passthroughStyle, ...passthroughProps} =
+      passthroughAnimatedPropExplicitValues ?? {};
+    const mergedStyle = StyleSheet.compose(style, passthroughStyle);
+
+    return (
+      <Component
+        {...reducedProps}
+        {...passthroughProps}
+        style={mergedStyle}
+        ref={ref}
+      />
+    );
   });
 }

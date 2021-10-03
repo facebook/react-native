@@ -6,6 +6,10 @@
 
 set -e
 
+# remove global prefix if it's already set
+# the running shell process will choose a node binary and a global package directory breaks version managers
+unset PREFIX
+
 # Support Homebrew on M1
 HOMEBREW_M1_BIN=/opt/homebrew/bin
 if [[ -d $HOMEBREW_M1_BIN && ! $PATH =~ $HOMEBREW_M1_BIN ]]; then
@@ -36,4 +40,13 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
   if [[ "$(anyenv envs | grep -c ndenv )" -eq 1 ]]; then
     eval "$(anyenv init -)"
   fi
+fi
+
+# Set up asdf-vm if present
+if [[ -f "$HOME/.asdf/asdf.sh" ]]; then
+  # shellcheck source=/dev/null
+  . "$HOME/.asdf/asdf.sh"
+elif [[ -x "$(command -v brew)" && -f "$(brew --prefix asdf)/asdf.sh" ]]; then
+  # shellcheck source=/dev/null
+  . "$(brew --prefix asdf)/asdf.sh"
 fi

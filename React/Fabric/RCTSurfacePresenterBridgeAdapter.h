@@ -34,7 +34,7 @@ facebook::react::RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
 
 /*
  * Controls a stored instance of the Bridge. A consumer can re-set the stored Bridge using that method; the class is
- * responsible to coordinate this change with a SurfacePresetner accordingly.
+ * responsible to coordinate this change with a SurfacePresenter accordingly.
  */
 @property (nonatomic, weak) RCTBridge *bridge;
 

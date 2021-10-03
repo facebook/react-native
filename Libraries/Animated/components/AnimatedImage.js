@@ -15,9 +15,9 @@ const createAnimatedComponent = require('../createAnimatedComponent');
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-module.exports = (createAnimatedComponent((Image: $FlowFixMe), {
-  collapsable: false,
-}): AnimatedComponentType<
+module.exports = (createAnimatedComponent(
+  (Image: $FlowFixMe),
+): AnimatedComponentType<
   React.ElementConfig<typeof Image>,
   React.ElementRef<typeof Image>,
 >);

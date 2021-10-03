@@ -13,6 +13,7 @@ rn_android_library(
         react_native_dep("third-party/android/androidx:fragment"),
         react_native_dep("third-party/android/androidx:legacy-support-core-ui"),
         react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
+        react_native_dep("third-party/android/androidx:autofill"),
     ],
     visibility = [
         "PUBLIC",
@@ -48,7 +49,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/config:config"),
         react_native_target("java/com/facebook/react/turbomodule/core:core"),
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
-        react_native_target("java/com/facebook/react/runtimescheduler:runtimescheduler"),
     ],
     exported_deps = [
         react_native_target("java/com/facebook/react/modules/core:core"),

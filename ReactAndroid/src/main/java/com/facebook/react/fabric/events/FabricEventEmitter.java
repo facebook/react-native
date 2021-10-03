@@ -10,8 +10,6 @@ package com.facebook.react.fabric.events;
 import static com.facebook.react.uimanager.events.TouchesHelper.CHANGED_TOUCHES_KEY;
 import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_KEY;
 import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_SURFACE_KEY;
-import static com.facebook.react.uimanager.events.TouchesHelper.TOP_TOUCH_CANCEL_KEY;
-import static com.facebook.react.uimanager.events.TouchesHelper.TOP_TOUCH_END_KEY;
 import static com.facebook.react.uimanager.events.TouchesHelper.TOUCHES_KEY;
 
 import android.util.Pair;
@@ -25,6 +23,7 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.events.RCTModernEventEmitter;
+import com.facebook.react.uimanager.events.TouchEventType;
 import com.facebook.systrace.Systrace;
 import java.util.HashSet;
 import java.util.Set;
@@ -71,15 +70,23 @@ public class FabricEventEmitter implements RCTModernEventEmitter {
       @NonNull String eventTopLevelType,
       @NonNull WritableArray touches,
       @NonNull WritableArray changedIndices) {
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "FabricEventEmitter.receiveTouches('" + eventTopLevelType + "')");
+
+    boolean isPointerEndEvent =
+        TouchEventType.END.getJsName().equalsIgnoreCase(eventTopLevelType)
+            || TouchEventType.CANCEL.getJsName().equalsIgnoreCase(eventTopLevelType);
+
     Pair<WritableArray, WritableArray> result =
-        TOP_TOUCH_END_KEY.equalsIgnoreCase(eventTopLevelType)
-                || TOP_TOUCH_CANCEL_KEY.equalsIgnoreCase(eventTopLevelType)
+        isPointerEndEvent
             ? removeTouchesAtIndices(touches, changedIndices)
             : touchSubsequence(touches, changedIndices);
 
     WritableArray changedTouches = result.first;
     touches = result.second;
 
+    int eventCategory = getTouchCategory(eventTopLevelType);
     for (int jj = 0; jj < changedTouches.size(); jj++) {
       WritableMap touch = getWritableMap(changedTouches.getMap(jj));
       // Touch objects can fulfill the role of `DOM` `Event` objects if we set
@@ -97,8 +104,11 @@ public class FabricEventEmitter implements RCTModernEventEmitter {
         rootNodeID = targetReactTag;
       }
 
-      receiveEvent(targetSurfaceId, rootNodeID, eventTopLevelType, false, 0, touch);
+      mUIManager.receiveEvent(
+          targetSurfaceId, rootNodeID, eventTopLevelType, false, 0, touch, eventCategory);
     }
+
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   /** TODO T31905686 optimize this to avoid copying arrays */
@@ -173,5 +183,20 @@ public class FabricEventEmitter implements RCTModernEventEmitter {
     WritableNativeMap map = new WritableNativeMap();
     map.merge(readableMap);
     return map;
+  }
+
+  @EventCategoryDef
+  private static int getTouchCategory(String touchEventType) {
+    int category = EventCategoryDef.UNSPECIFIED;
+    if (TouchEventType.MOVE.getJsName().equals(touchEventType)) {
+      category = EventCategoryDef.CONTINUOUS;
+    } else if (TouchEventType.START.getJsName().equals(touchEventType)) {
+      category = EventCategoryDef.CONTINUOUS_START;
+    } else if (TouchEventType.END.getJsName().equals(touchEventType)
+        || TouchEventType.CANCEL.getJsName().equals(touchEventType)) {
+      category = EventCategoryDef.CONTINUOUS_END;
+    }
+
+    return category;
   }
 }

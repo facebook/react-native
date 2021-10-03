@@ -106,10 +106,6 @@ void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
   uiManager_ = uiManager;
 }
 
-void UIManagerBinding::setEnableAsyncMeasure(bool enable) {
-  enableAsyncMeasure_ = enable;
-}
-
 static jsi::Value callMethodOfModule(
     jsi::Runtime &runtime,
     std::string const &moduleName,
@@ -133,12 +129,40 @@ static jsi::Value callMethodOfModule(
   return jsi::Value::undefined();
 }
 
+jsi::Value UIManagerBinding::getInspectorDataForInstance(
+    jsi::Runtime &runtime,
+    EventEmitter const &eventEmitter) const {
+  auto eventTarget = eventEmitter.eventTarget_;
+  EventEmitter::DispatchMutex().lock();
+
+  if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge") ||
+      !eventTarget) {
+    return jsi::Value::undefined();
+  }
+
+  eventTarget->retain(runtime);
+  auto instanceHandle = eventTarget->getInstanceHandle(runtime);
+  eventTarget->release(runtime);
+  EventEmitter::DispatchMutex().unlock();
+
+  if (instanceHandle.isUndefined()) {
+    return jsi::Value::undefined();
+  }
+
+  return callMethodOfModule(
+      runtime,
+      "ReactFabric",
+      "getInspectorDataForInstance",
+      {std::move(instanceHandle)});
+}
+
 void UIManagerBinding::startSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
     std::string const &moduleName,
     folly::dynamic const &initalProps,
     DisplayMode displayMode) const {
+  SystraceSection s("UIManagerBinding::startSurface");
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
@@ -172,6 +196,7 @@ void UIManagerBinding::setSurfaceProps(
     std::string const &moduleName,
     folly::dynamic const &initalProps,
     DisplayMode displayMode) const {
+  SystraceSection s("UIManagerBinding::setSurfaceProps");
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
@@ -271,6 +296,7 @@ jsi::Value UIManagerBinding::get(
     jsi::Runtime &runtime,
     jsi::PropNameID const &name) {
   auto methodName = name.utf8(runtime);
+  SystraceSection s("UIManagerBinding::get", "name", methodName);
 
   // Convert shared_ptr<UIManager> to a raw ptr
   // Why? Because:
@@ -639,44 +665,33 @@ jsi::Value UIManagerBinding::get(
         runtime,
         name,
         4,
-        [this, uiManager](
+        [uiManager](
             jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
-          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
-          auto ancestorShadowNode = shadowNodeFromValue(runtime, arguments[1]);
-          auto onFail = std::make_shared<jsi::Function>(
-              arguments[2].getObject(runtime).getFunction(runtime));
-          auto onSuccess = std::make_shared<jsi::Function>(
-              arguments[3].getObject(runtime).getFunction(runtime));
-          executeMeasure(
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]),
+              shadowNodeFromValue(runtime, arguments[1]).get(),
+              {/* .includeTransform = */ false});
+
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            auto onFailFunction =
+                arguments[2].getObject(runtime).getFunction(runtime);
+            onFailFunction.call(runtime);
+            return jsi::Value::undefined();
+          }
+
+          auto onSuccessFunction =
+              arguments[3].getObject(runtime).getFunction(runtime);
+          auto frame = layoutMetrics.frame;
+
+          onSuccessFunction.call(
               runtime,
-              [uiManager,
-               shadowNode = std::move(shadowNode),
-               ancestorShadowNode = std::move(ancestorShadowNode),
-               onFail = std::move(onFail),
-               onSuccess =
-                   std::move(onSuccess)](jsi::Runtime &runtime) noexcept {
-                auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-                    *shadowNode,
-                    ancestorShadowNode.get(),
-                    {/* .includeTransform = */ false});
-
-                if (layoutMetrics == EmptyLayoutMetrics) {
-                  onFail->call(runtime);
-                  return;
-                }
-
-                auto frame = layoutMetrics.frame;
-
-                onSuccess->call(
-                    runtime,
-                    {jsi::Value{runtime, (double)frame.origin.x},
-                     jsi::Value{runtime, (double)frame.origin.y},
-                     jsi::Value{runtime, (double)frame.size.width},
-                     jsi::Value{runtime, (double)frame.size.height}});
-              });
+              {jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y},
+               jsi::Value{runtime, (double)frame.size.width},
+               jsi::Value{runtime, (double)frame.size.height}});
           return jsi::Value::undefined();
         });
   }
@@ -686,45 +701,39 @@ jsi::Value UIManagerBinding::get(
         runtime,
         name,
         2,
-        [this, uiManager](
+        [uiManager](
             jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
-          auto onSuccess = std::make_shared<jsi::Function>(
-              arguments[1].getObject(runtime).getFunction(runtime));
-          executeMeasure(
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNode, nullptr, {/* .includeTransform = */ true});
+          auto onSuccessFunction =
+              arguments[1].getObject(runtime).getFunction(runtime);
+
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            onSuccessFunction.call(runtime, {0, 0, 0, 0, 0, 0});
+            return jsi::Value::undefined();
+          }
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+
+          auto layoutableShadowNode = traitCast<LayoutableShadowNode const *>(
+              newestCloneOfShadowNode.get());
+          Point originRelativeToParent = layoutableShadowNode
+              ? layoutableShadowNode->getLayoutMetrics().frame.origin
+              : Point();
+
+          auto frame = layoutMetrics.frame;
+          onSuccessFunction.call(
               runtime,
-              [uiManager,
-               shadowNode = shadowNodeFromValue(runtime, arguments[0]),
-               onSuccess = std::move(onSuccess)](jsi::Runtime &runtime) {
-                auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-                    *shadowNode, nullptr, {/* .includeTransform = */ true});
-
-                if (layoutMetrics == EmptyLayoutMetrics) {
-                  onSuccess->call(runtime, {0, 0, 0, 0, 0, 0});
-                  return;
-                }
-                auto newestCloneOfShadowNode =
-                    uiManager->getNewestCloneOfShadowNode(*shadowNode);
-
-                auto layoutableShadowNode =
-                    traitCast<LayoutableShadowNode const *>(
-                        newestCloneOfShadowNode.get());
-                Point originRelativeToParent = layoutableShadowNode
-                    ? layoutableShadowNode->getLayoutMetrics().frame.origin
-                    : Point();
-
-                auto frame = layoutMetrics.frame;
-                onSuccess->call(
-                    runtime,
-                    {jsi::Value{runtime, (double)originRelativeToParent.x},
-                     jsi::Value{runtime, (double)originRelativeToParent.y},
-                     jsi::Value{runtime, (double)frame.size.width},
-                     jsi::Value{runtime, (double)frame.size.height},
-                     jsi::Value{runtime, (double)frame.origin.x},
-                     jsi::Value{runtime, (double)frame.origin.y}});
-              });
+              {jsi::Value{runtime, (double)originRelativeToParent.x},
+               jsi::Value{runtime, (double)originRelativeToParent.y},
+               jsi::Value{runtime, (double)frame.size.width},
+               jsi::Value{runtime, (double)frame.size.height},
+               jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y}});
           return jsi::Value::undefined();
         });
   }
@@ -734,38 +743,32 @@ jsi::Value UIManagerBinding::get(
         runtime,
         name,
         2,
-        [this, uiManager](
+        [uiManager](
             jsi::Runtime &runtime,
             jsi::Value const &thisValue,
             jsi::Value const *arguments,
             size_t count) noexcept -> jsi::Value {
-          auto onSuccess = std::make_shared<jsi::Function>(
-              arguments[1].getObject(runtime).getFunction(runtime));
-          executeMeasure(
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]),
+              nullptr,
+              {/* .includeTransform = */ true,
+               /* includeViewportOffset = */ true});
+
+          auto onSuccessFunction =
+              arguments[1].getObject(runtime).getFunction(runtime);
+
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            onSuccessFunction.call(runtime, {0, 0, 0, 0});
+            return jsi::Value::undefined();
+          }
+
+          auto frame = layoutMetrics.frame;
+          onSuccessFunction.call(
               runtime,
-              [uiManager,
-               shadowNode = shadowNodeFromValue(runtime, arguments[0]),
-               onSuccess =
-                   std::move(onSuccess)](jsi::Runtime &runtime) noexcept {
-                auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-                    *shadowNode,
-                    nullptr,
-                    {/* .includeTransform = */ true,
-                     /* includeViewportOffset = */ true});
-
-                if (layoutMetrics == EmptyLayoutMetrics) {
-                  onSuccess->call(runtime, {0, 0, 0, 0});
-                  return;
-                }
-
-                auto frame = layoutMetrics.frame;
-                onSuccess->call(
-                    runtime,
-                    {jsi::Value{runtime, (double)frame.origin.x},
-                     jsi::Value{runtime, (double)frame.origin.y},
-                     jsi::Value{runtime, (double)frame.size.width},
-                     jsi::Value{runtime, (double)frame.size.height}});
-              });
+              {jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y},
+               jsi::Value{runtime, (double)frame.size.width},
+               jsi::Value{runtime, (double)frame.size.height}});
           return jsi::Value::undefined();
         });
   }
@@ -831,16 +834,6 @@ jsi::Value UIManagerBinding::get(
   }
 
   return jsi::Value::undefined();
-}
-
-void UIManagerBinding::executeMeasure(
-    jsi::Runtime &runtime,
-    std::function<void(jsi::Runtime &)> &&callback) const noexcept {
-  if (enableAsyncMeasure_) {
-    runtimeExecutor_(std::move(callback));
-  } else {
-    callback(runtime);
-  }
 }
 
 } // namespace facebook::react

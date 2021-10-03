@@ -296,16 +296,23 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
   }
 }
 
+static dispatch_once_t onceTokenScreenScale;
+static CGFloat screenScale;
+
+void RCTComputeScreenScale()
+{
+  dispatch_once(&onceTokenScreenScale, ^{
+    screenScale = [UIScreen mainScreen].scale;
+  });
+}
+
 CGFloat RCTScreenScale()
 {
-  static dispatch_once_t onceToken;
-  static CGFloat scale;
-
-  RCTUnsafeExecuteOnMainQueueOnceSync(&onceToken, ^{
-    scale = [UIScreen mainScreen].scale;
+  RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
+    screenScale = [UIScreen mainScreen].scale;
   });
 
-  return scale;
+  return screenScale;
 }
 
 CGFloat RCTFontSizeMultiplier()
@@ -334,7 +341,7 @@ CGFloat RCTFontSizeMultiplier()
 
 CGSize RCTScreenSize()
 {
-  // FIXME: this caches the bounds at app start, whatever those were, and then
+  // FIXME: this caches whatever the bounds were when it was first called, and then
   // doesn't update when the device is rotated. We need to find another thread-
   // safe way to get the screen size.
 

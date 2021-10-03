@@ -32,6 +32,58 @@ type ImageSource = $ReadOnly<{|
   uri: string,
 |}>;
 
+type BlobImageState = {|
+  objectURL: ?string,
+|};
+
+type BlobImageProps = $ReadOnly<{|
+  url: string,
+|}>;
+
+class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
+  state = {
+    objectURL: null,
+  };
+
+  UNSAFE_componentWillMount() {
+    (async () => {
+      const result = await fetch(this.props.url);
+      const blob = await result.blob();
+      const objectURL = URL.createObjectURL(blob);
+      this.setState({objectURL});
+    })();
+  }
+
+  render() {
+    return this.state.objectURL !== null ? (
+      <Image source={{uri: this.state.objectURL}} style={styles.base} />
+    ) : (
+      <Text>Object URL not created yet</Text>
+    );
+  }
+}
+
+type BlobImageExampleState = {||};
+
+type BlobImageExampleProps = $ReadOnly<{|
+  urls: string[],
+|}>;
+
+class BlobImageExample extends React.Component<
+  BlobImageExampleProps,
+  BlobImageExampleState,
+> {
+  render() {
+    return (
+      <View style={styles.horizontal}>
+        {this.props.urls.map(url => (
+          <BlobImage key={url} url={url} />
+        ))}
+      </View>
+    );
+  }
+}
+
 type NetworkImageCallbackExampleState = {|
   events: Array<string>,
   startLoadPrefetched: boolean,
@@ -533,7 +585,7 @@ class OnPartialLoadExample extends React.Component<
   }
 }
 
-const fullImage = {
+const fullImage: ImageSource = {
   uri: 'https://www.facebook.com/ads/pics/successstories.png',
 };
 const smallImage = {
@@ -609,6 +661,21 @@ exports.examples = [
     },
   },
   {
+    title: 'Plain Blob Image',
+    description: ('If the `source` prop `uri` property is an object URL, ' +
+      'then it will be resolved using `BlobProvider` (Android) or `RCTBlobManager` (iOS).': string),
+    render: function(): React.Node {
+      return (
+        <BlobImageExample
+          urls={[
+            'https://www.facebook.com/favicon.ico',
+            'https://www.facebook.com/ads/pics/successstories.png',
+          ]}
+        />
+      );
+    },
+  },
+  {
     title: 'Plain Static Image',
     description: ('Static assets should be placed in the source code tree, and ' +
       'required in the same way as JavaScript modules.': string),
@@ -680,7 +747,9 @@ exports.examples = [
         <Image
           defaultSource={require('../../assets/bunny.png')}
           source={{
-            uri: 'https://origami.design/public/images/bird-logo.png',
+            // Note: Use a large image and bust cache so we can in fact
+            // visualize the `defaultSource` image.
+            uri: fullImage.uri + '?cacheBust=notinCache' + Date.now(),
           }}
           style={styles.base}
         />
