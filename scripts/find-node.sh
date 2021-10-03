@@ -6,6 +6,16 @@
 
 set -e
 
+# remove global prefix if it's already set
+# the running shell process will choose a node binary and a global package directory breaks version managers
+unset PREFIX
+
+# Support Homebrew on M1
+HOMEBREW_M1_BIN=/opt/homebrew/bin
+if [[ -d $HOMEBREW_M1_BIN && ! $PATH =~ $HOMEBREW_M1_BIN ]]; then
+  export PATH="$HOMEBREW_M1_BIN:$PATH"
+fi
+
 # Define NVM_DIR and source the nvm.sh setup script
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 
@@ -32,9 +42,17 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
   fi
 fi
 
+# Set up asdf-vm if present
+if [[ -f "$HOME/.asdf/asdf.sh" ]]; then
+  # shellcheck source=/dev/null
+  . "$HOME/.asdf/asdf.sh"
+elif [[ -x "$(command -v brew)" && -f "$(brew --prefix asdf)/asdf.sh" ]]; then
+  # shellcheck source=/dev/null
+  . "$(brew --prefix asdf)/asdf.sh"
+fi
+
 # Set up the fnm node version manager if present
 if [[ -x "$HOME/.fnm/fnm" ]]; then
   eval "$("$HOME/.fnm/fnm" env)"
 elif [[ -x "$(command -v brew)" && -x "$(brew --prefix fnm)/fnm" ]]; then
   eval "$("$(brew --prefix fnm)/fnm" env)"
-fi

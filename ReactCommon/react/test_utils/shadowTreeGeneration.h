@@ -13,6 +13,7 @@
 #include <memory>
 #include <random>
 
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs.h>
 
@@ -120,8 +121,12 @@ static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
     Entropy const &entropy,
     ShadowNode const &shadowNode) {
   auto oldProps = shadowNode.getProps();
+
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   auto newProps = shadowNode.getComponentDescriptor().cloneProps(
-      oldProps, RawProps(folly::dynamic::object()));
+      parserContext, oldProps, RawProps(folly::dynamic::object()));
 
   auto &viewProps =
       const_cast<ViewProps &>(static_cast<ViewProps const &>(*newProps));
@@ -175,9 +180,12 @@ static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
 static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
     Entropy const &entropy,
     ShadowNode const &shadowNode) {
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   auto oldProps = shadowNode.getProps();
   auto newProps = shadowNode.getComponentDescriptor().cloneProps(
-      oldProps, RawProps(folly::dynamic::object()));
+      parserContext, oldProps, RawProps(folly::dynamic::object()));
 
   auto &viewProps =
       const_cast<ViewProps &>(static_cast<ViewProps const &>(*newProps));
@@ -231,9 +239,12 @@ static inline ShadowNode::Unshared messWithYogaStyles(
     }
   }
 
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   auto oldProps = shadowNode.getProps();
   auto newProps = shadowNode.getComponentDescriptor().cloneProps(
-      oldProps, RawProps(dynamic));
+      parserContext, oldProps, RawProps(dynamic));
   return shadowNode.clone({newProps});
 }
 
@@ -263,8 +274,11 @@ static inline void alterShadowTree(
 
 static SharedViewProps generateDefaultProps(
     ComponentDescriptor const &componentDescriptor) {
+  ContextContainer contextContainer{};
+  PropsParserContext parserContext{-1, contextContainer};
+
   return std::static_pointer_cast<ViewProps const>(
-      componentDescriptor.cloneProps(nullptr, RawProps{}));
+      componentDescriptor.cloneProps(parserContext, nullptr, RawProps{}));
 }
 
 static inline ShadowNode::Shared generateShadowNodeTree(

@@ -18,12 +18,6 @@ import com.facebook.proguard.annotations.DoNotStripAny;
  */
 @DoNotStripAny
 public class ReactFeatureFlags {
-
-  /** An interface used to compute flags on demand. */
-  public interface FlagProvider {
-    boolean get();
-  }
-
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
@@ -32,48 +26,59 @@ public class ReactFeatureFlags {
   public static volatile boolean useTurboModules = false;
 
   /**
-   * Should application use the new TM callback manager in Cxx? This is assumed to be a sane
-   * default, but it's new. We will delete once (1) we know it's safe to ship and (2) we have
-   * quantified impact.
+   * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
+   * use Fabric instead of the legacy renderer.
    */
-  public static volatile boolean useTurboModulesRAIICallbackManager = false;
+  public static volatile boolean enableFabricRenderer = false;
+
+  /**
+   * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
+   * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
+   * is used.
+   */
+  public static volatile boolean warnOnLegacyNativeModuleSystemUse = false;
 
   /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
   public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
 
+  /**
+   * Experiment:
+   *
+   * <p>Bridge and Bridgeless mode can run concurrently. This means that there can be two
+   * TurboModule systems alive at the same time.
+   *
+   * <p>The TurboModule system stores all JS callbacks in a global LongLivedObjectCollection. This
+   * collection is cleared when the JS VM is torn down. Implication: Tearing down the bridge JSVM
+   * invalidates the bridgeless JSVM's callbacks, and vice versa.
+   *
+   * <p>useGlobalCallbackCleanupScopeUsingRetainJSCallback => Use a retainJSCallbacks lambda to
+   * store jsi::Functions into the global LongLivedObjectCollection
+   *
+   * <p>useTurboModuleManagerCallbackCleanupScope => Use a retainJSCallbacks labmda to store
+   * jsi::Functions into a LongLivedObjectCollection owned by the TurboModuleManager
+   */
+  public static boolean useGlobalCallbackCleanupScopeUsingRetainJSCallback = false;
+
+  public static boolean useTurboModuleManagerCallbackCleanupScope = false;
+
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
-
-  /**
-   * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
-   * remove this when bug is fixed
-   */
-  public static boolean enableTransitionLayoutOnlyViewCleanup = false;
 
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
 
-  /** Feature flag to configure eager initialization classes of Fabric */
-  public static boolean eagerInitializeFabricClasses = false;
-
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
+
+  public static boolean enableRuntimeScheduler = false;
+
+  public static boolean enableRuntimeSchedulerInTurboModule = false;
 
   /** Enables a more aggressive cleanup during destruction of ReactContext */
   public static boolean enableReactContextCleanupFix = false;
 
-  /** Enables JS Responder in Fabric */
-  public static boolean enableJSResponder = false;
-
   /** Feature flag to configure eager initialization of MapBuffer So file */
   public static boolean enableEagerInitializeMapBufferSoFile = false;
-
-  /** Should the RuntimeExecutor call JSIExecutor::flush()? */
-  private static FlagProvider enableRuntimeExecutorFlushingProvider = null;
-
-  public static void setEnableRuntimeExecutorFlushingFlagProvider(FlagProvider provider) {
-    enableRuntimeExecutorFlushingProvider = provider;
-  }
 
   private static boolean mapBufferSerializationEnabled = false;
 
@@ -86,29 +91,16 @@ public class ReactFeatureFlags {
     return mapBufferSerializationEnabled;
   }
 
-  public static boolean enableRuntimeExecutorFlushing() {
-    if (enableRuntimeExecutorFlushingProvider != null) {
-      return enableRuntimeExecutorFlushingProvider.get();
-    }
-
-    return false;
-  }
-
   /** Enables Fabric for LogBox */
   public static boolean enableFabricInLogBox = false;
 
   public static boolean enableLockFreeEventDispatcher = false;
 
-  //
-  // ScrollView C++ UpdateState vs onScroll race fixes
-  //
+  public static boolean enableAggressiveEventEmitterCleanup = false;
 
-  /* Enables a "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter */
-  public static boolean enableScrollViewStateEventRaceFix = false;
+  public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 
-  /* Enables another "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter. Races a StateUpdate with every onScroll event. */
-  public static boolean enableScrollViewStateEventAlwaysRace = false;
+  public static boolean enableScrollViewSnapToAlignmentProp = true;
 
-  /* Configure a min scroll delta for UpdateState to be called while still actively scrolling. */
-  public static int scrollViewUpdateStateMinScrollDelta = 0;
+  public static boolean useDispatchUniqueForCoalescableEvents = false;
 }

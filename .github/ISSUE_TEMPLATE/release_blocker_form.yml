@@ -1,0 +1,38 @@
+name: Release Candidate Blocker
+description: File an issue against the current release candidate.
+labels: ["Needs: Triage :mag:", "pre-release"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please use this form to file an issue against the current release candidate. See current releases [here](https://github.com/facebook/react-native/releases).
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What release candidate version does this appear on? Please refer to [release candidate versions](https://github.com/facebook/react-native/releases).
+      placeholder: ex. 0.66.0-rc.2
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: Build Target(s)
+      description: What target(s) are encountering this issue?
+      placeholder: iOS simulator in release flavor
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Developer Environment
+      description: Please list relevant versions of system, tooling. Ex. OS, processor, Xcode, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Issue and Reproduction Steps
+      description: Please describe the issue and list out commands run to reproduce.
+    validations:
+      required: true

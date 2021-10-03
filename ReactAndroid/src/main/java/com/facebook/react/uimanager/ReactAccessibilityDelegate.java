@@ -26,7 +26,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -107,6 +107,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     TAB,
     TABLIST,
     TIMER,
+    LIST,
     TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
@@ -135,6 +136,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
           return "android.widget.SpinButton";
         case SWITCH:
           return "android.widget.Switch";
+        case LIST:
+          return "android.widget.AbsListView";
         case NONE:
         case LINK:
         case SUMMARY:
@@ -316,7 +319,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
                   });
         }
       } else {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG, new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
       }
 
@@ -385,18 +388,14 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         spannable.setSpan(new URLSpan(""), 0, spannable.length(), 0);
         nodeInfo.setText(spannable);
       }
-    } else if (role.equals(AccessibilityRole.SEARCH)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.search_description));
     } else if (role.equals(AccessibilityRole.IMAGE)) {
       nodeInfo.setRoleDescription(context.getString(R.string.image_description));
     } else if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
       nodeInfo.setRoleDescription(context.getString(R.string.imagebutton_description));
       nodeInfo.setClickable(true);
     } else if (role.equals(AccessibilityRole.BUTTON)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.button_description));
       nodeInfo.setClickable(true);
     } else if (role.equals(AccessibilityRole.TOGGLEBUTTON)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.toggle_button_description));
       nodeInfo.setClickable(true);
       nodeInfo.setCheckable(true);
     } else if (role.equals(AccessibilityRole.SUMMARY)) {

@@ -10,15 +10,18 @@
 #include <fbjni/fbjni.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/JRuntimeExecutor.h>
+#include <react/jni/JRuntimeScheduler.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/animations/LayoutAnimationDriver.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
+
 #include <memory>
 #include <mutex>
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
+#include "EventEmitterWrapper.h"
 #include "JBackgroundExecutor.h"
 #include "SurfaceHandlerBinding.h"
 
@@ -96,10 +99,14 @@ class Binding : public jni::HybridClass<Binding>,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 
+  jni::local_ref<ReadableNativeMap::jhybridobject> getInspectorDataForInstance(
+      jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper);
+
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
   void installFabricUIManager(
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
+      jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
       jni::alias_ref<jobject> javaUIManager,
       EventBeatManager *eventBeatManager,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
@@ -135,9 +142,18 @@ class Binding : public jni::HybridClass<Binding>,
   void schedulerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
 
+  void preallocateShadowView(
+      const SurfaceId surfaceId,
+      const ShadowView &shadowView);
+
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ShadowView &shadowView) override;
+      const ShadowNode &shadowNode) override;
+
+  void schedulerDidCloneShadowNode(
+      SurfaceId surfaceId,
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) override;
 
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
@@ -183,8 +199,10 @@ class Binding : public jni::HybridClass<Binding>,
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
   bool disablePreallocateViews_{false};
-  bool disableVirtualNodePreallocation_{false};
   bool enableFabricLogs_{false};
+  bool enableEarlyEventEmitterUpdate_{false};
+  bool disableRevisionCheckForPreallocation_{false};
+  bool enableEventEmitterRawPointer_{false};
 };
 
 } // namespace react

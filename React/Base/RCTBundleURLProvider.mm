@@ -15,14 +15,14 @@ NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProvider
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
 
-#if RCT_DEV_MENU
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
 static BOOL kRCTAllowPackagerAccess = YES;
 void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed)
 {
   kRCTAllowPackagerAccess = allowed;
 }
 #endif
-
+static NSString *const kRCTPackagerSchemeKey = @"RCT_packager_scheme";
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
@@ -65,23 +65,34 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
   [self settingsUpdated];
 }
 
-static NSURL *serverRootWithHostPort(NSString *hostPort)
+static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
 {
-  if ([hostPort rangeOfString:@":"].location != NSNotFound) {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/", hostPort]];
+  if (![scheme length]) {
+    scheme = @"http";
   }
-  return [NSURL
-      URLWithString:[NSString
-                        stringWithFormat:@"http://%@:%lu/", hostPort, (unsigned long)kRCTBundleURLProviderDefaultPort]];
+  if ([hostPort rangeOfString:@":"].location != NSNotFound) {
+    return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@/", scheme, hostPort]];
+  }
+  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%lu/",
+                                                         scheme,
+                                                         hostPort,
+                                                         (unsigned long)kRCTBundleURLProviderDefaultPort]];
 }
 
 #if RCT_DEV_MENU
 + (BOOL)isPackagerRunning:(NSString *)hostPort
 {
-  NSURL *url = [serverRootWithHostPort(hostPort) URLByAppendingPathComponent:@"status"];
+  return [RCTBundleURLProvider isPackagerRunning:hostPort scheme:nil];
+}
+
++ (BOOL)isPackagerRunning:(NSString *)hostPort scheme:(NSString *)scheme
+{
+  NSURL *url = [serverRootWithHostPort(hostPort, scheme) URLByAppendingPathComponent:@"status"];
 
   NSURLSession *session = [NSURLSession sharedSession];
-  NSURLRequest *request = [NSURLRequest requestWithURL:url];
+  NSURLRequest *request = [NSURLRequest requestWithURL:url
+                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                       timeoutInterval:10];
   __block NSURLResponse *response;
   __block NSData *data;
 
@@ -120,6 +131,11 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 {
   return false;
 }
+
++ (BOOL)isPackagerRunning:(NSString *)hostPort scheme:(NSString *)scheme
+{
+  return false;
+}
 #endif
 
 - (NSString *)packagerServerHost
@@ -136,7 +152,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 
 - (NSString *)packagerServerHostPort
 {
-#if RCT_DEV_MENU
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
   if (!kRCTAllowPackagerAccess) {
     RCTLogInfo(@"Packager server access is disabled in this environment");
     return nil;
@@ -144,7 +160,8 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 #endif
   NSString *location = [self jsLocation];
 #if RCT_DEV_MENU
-  if ([location length] && ![RCTBundleURLProvider isPackagerRunning:location]) {
+  NSString *scheme = [self packagerScheme];
+  if ([location length] && ![RCTBundleURLProvider isPackagerRunning:location scheme:scheme]) {
     location = nil;
   }
 #endif
@@ -168,8 +185,11 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   } else {
     return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
                                              packagerHost:packagerServerHostPort
+                                           packagerScheme:[self packagerScheme]
                                                 enableDev:[self enableDev]
-                                       enableMinification:[self enableMinification]];
+                                       enableMinification:[self enableMinification]
+                                              modulesOnly:NO
+                                                runModule:YES];
   }
 }
 
@@ -177,6 +197,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 {
   return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
                                            packagerHost:[self packagerServerHostPort]
+                                         packagerScheme:[self packagerScheme]
                                               enableDev:[self enableDev]
                                      enableMinification:[self enableMinification]
                                             modulesOnly:YES
@@ -211,13 +232,17 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
                         offlineBundle:(NSBundle *)offlineBundle
 {
   NSString *packagerServerHostPort = [self packagerServerHostPort];
+  NSString *packagerServerScheme = [self packagerScheme];
   if (!packagerServerHostPort) {
     // Serve offline bundle (local file)
     NSBundle *bundle = offlineBundle ?: [NSBundle mainBundle];
     return [bundle URLForResource:name withExtension:extension];
   }
   NSString *path = [NSString stringWithFormat:@"/%@/%@.%@", root, name, extension];
-  return [[self class] resourceURLForResourcePath:path packagerHost:packagerServerHostPort query:nil];
+  return [[self class] resourceURLForResourcePath:path
+                                     packagerHost:packagerServerHostPort
+                                           scheme:packagerServerScheme
+                                            query:nil];
 }
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
@@ -236,6 +261,23 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                        packagerHost:(NSString *)packagerHost
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification
+                        modulesOnly:(BOOL)modulesOnly
+                          runModule:(BOOL)runModule
+{
+  return [[self class] jsBundleURLForBundleRoot:bundleRoot
+                                   packagerHost:packagerHost
+                                 packagerScheme:nil
+                                      enableDev:enableDev
+                             enableMinification:enableMinification
+                                    modulesOnly:modulesOnly
+                                      runModule:runModule];
+}
+
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                     packagerScheme:(NSString *)scheme
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
                         modulesOnly:(BOOL)modulesOnly
@@ -260,12 +302,20 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   if (bundleID) {
     query = [NSString stringWithFormat:@"%@&app=%@", query, bundleID];
   }
-  return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost query:query];
+  return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost scheme:scheme query:query];
 }
 
 + (NSURL *)resourceURLForResourcePath:(NSString *)path packagerHost:(NSString *)packagerHost query:(NSString *)query
 {
-  NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHostPort(packagerHost)
+  return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost scheme:nil query:query];
+}
+
++ (NSURL *)resourceURLForResourcePath:(NSString *)path
+                         packagerHost:(NSString *)packagerHost
+                               scheme:(NSString *)scheme
+                                query:(NSString *)query
+{
+  NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHostPort(packagerHost, scheme)
                                            resolvingAgainstBaseURL:NO];
   components.path = path;
   if (query != nil) {
@@ -296,6 +346,15 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   return [[NSUserDefaults standardUserDefaults] stringForKey:kRCTJsLocationKey];
 }
 
+- (NSString *)packagerScheme
+{
+  NSString *packagerScheme = [[NSUserDefaults standardUserDefaults] stringForKey:kRCTPackagerSchemeKey];
+  if (![packagerScheme length]) {
+    return @"http";
+  }
+  return packagerScheme;
+}
+
 - (void)setEnableDev:(BOOL)enableDev
 {
   [self updateValue:@(enableDev) forKey:kRCTEnableDevKey];
@@ -309,6 +368,11 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
 - (void)setEnableMinification:(BOOL)enableMinification
 {
   [self updateValue:@(enableMinification) forKey:kRCTEnableMinificationKey];
+}
+
+- (void)setPackagerScheme:(NSString *)packagerScheme
+{
+  [self updateValue:packagerScheme forKey:kRCTPackagerSchemeKey];
 }
 
 + (instancetype)sharedSettings

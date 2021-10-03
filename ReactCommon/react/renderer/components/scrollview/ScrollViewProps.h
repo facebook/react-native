@@ -9,6 +9,7 @@
 
 #include <react/renderer/components/scrollview/primitives.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
@@ -17,7 +18,10 @@ namespace react {
 class ScrollViewProps final : public ViewProps {
  public:
   ScrollViewProps() = default;
-  ScrollViewProps(ScrollViewProps const &sourceProps, RawProps const &rawProps);
+  ScrollViewProps(
+      const PropsParserContext &context,
+      ScrollViewProps const &sourceProps,
+      RawProps const &rawProps);
 
 #pragma mark - Props
 
@@ -28,6 +32,7 @@ class ScrollViewProps final : public ViewProps {
   bool canCancelContentTouches{true};
   bool centerContent{};
   bool automaticallyAdjustContentInsets{};
+  bool automaticallyAdjustsScrollIndicatorInsets{true};
   Float decelerationRate{0.998f};
   bool directionalLockEnabled{};
   ScrollViewIndicatorStyle indicatorStyle{};

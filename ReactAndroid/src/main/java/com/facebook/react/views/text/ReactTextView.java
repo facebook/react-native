@@ -56,6 +56,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mAdjustsFontSizeToFit = false;
   private int mLinkifyMaskType = 0;
   private boolean mNotifyOnInlineViewLayout;
+  private boolean mTextIsSelectable = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -124,6 +125,17 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
+    if (layout == null) {
+      // Text layout is calculated during pre-draw phase, so in some cases it can be empty during
+      // layout phase, which usually happens before drawing.
+      // The text layout is created by private {@link assumeLayout} method, which we can try to
+      // invoke directly through reflection or indirectly through some methods that compute it
+      // (e.g. {@link getExtendedPaddingTop}).
+      // It is safer, however, to just early return here, as next measure/layout passes are way more
+      // likely to have the text layout computed.
+      return;
+    }
+
     TextInlineViewPlaceholderSpan[] placeholders =
         text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
     ArrayList inlineViewInfoArray =
@@ -359,7 +371,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         for (int i = 0; i < spans.length; i++) {
           int spanStart = spannedText.getSpanStart(spans[i]);
           int spanEnd = spannedText.getSpanEnd(spans[i]);
-          if (spanEnd > index && (spanEnd - spanStart) <= targetSpanTextLength) {
+          if (spanEnd >= index && (spanEnd - spanStart) <= targetSpanTextLength) {
             target = spans[i].getReactTag();
             targetSpanTextLength = (spanEnd - spanStart);
           }
@@ -423,8 +435,15 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   }
 
   @Override
+  public void setTextIsSelectable(boolean selectable) {
+    mTextIsSelectable = selectable;
+    super.setTextIsSelectable(selectable);
+  }
+
+  @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
+    setTextIsSelectable(mTextIsSelectable);
     if (mContainsImages && getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);

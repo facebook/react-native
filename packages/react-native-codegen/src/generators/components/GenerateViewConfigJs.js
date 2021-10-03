@@ -177,7 +177,7 @@ function buildViewConfig(
         switch (extendProps.knownTypeName) {
           case 'ReactNativeCoreViewProps':
             imports.add(
-              "const NativeComponentRegistry = require('NativeComponentRegistry');",
+              "const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');",
             );
 
             return;

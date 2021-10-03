@@ -16,7 +16,7 @@ namespace facebook::react {
 
 class UIManagerAnimationDelegate {
  public:
-  virtual ~UIManagerAnimationDelegate(){};
+  virtual ~UIManagerAnimationDelegate() = default;
 
   /*
    * Configure a LayoutAnimation.

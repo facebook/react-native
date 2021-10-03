@@ -11,6 +11,7 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 
 namespace facebook {
@@ -18,8 +19,11 @@ namespace react {
 
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
     ComponentDescriptorParameters const &parameters,
-    ComponentDescriptorProviderRegistry const &providerRegistry)
-    : parameters_(parameters), providerRegistry_(providerRegistry) {}
+    ComponentDescriptorProviderRegistry const &providerRegistry,
+    ContextContainer::Shared contextContainer)
+    : parameters_(parameters),
+      providerRegistry_(providerRegistry),
+      contextContainer_(contextContainer) {}
 
 void ComponentDescriptorRegistry::add(
     ComponentDescriptorProvider componentDescriptorProvider) const {
@@ -60,9 +64,9 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 
   auto it = _registryByName.find(unifiedComponentName);
   if (it == _registryByName.end()) {
-    mutex_.unlock_shared();
+    lock.unlock();
     providerRegistry_.request(unifiedComponentName.c_str());
-    mutex_.lock_shared();
+    lock.lock();
 
     it = _registryByName.find(unifiedComponentName);
 
@@ -132,8 +136,10 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
   auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
   auto family =
       componentDescriptor.createFamily(fragment, std::move(eventTarget));
-  auto const props =
-      componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
+  auto const props = componentDescriptor.cloneProps(
+      PropsParserContext{surfaceId, *contextContainer_.get()},
+      nullptr,
+      RawProps(propsDynamic));
   auto const state =
       componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
 

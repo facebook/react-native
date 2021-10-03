@@ -664,7 +664,7 @@ class AccessibilityActionsExample extends React.Component<{}> {
           </View>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Button with custom accessibility actions">
+        <RNTesterBlock title="TouchableWithoutFeedback with custom accessibility actions">
           <TouchableWithoutFeedback
             accessible={true}
             accessibilityActions={[
@@ -691,6 +691,49 @@ class AccessibilityActionsExample extends React.Component<{}> {
               <Text>Click me</Text>
             </View>
           </TouchableWithoutFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Button with accessibility actions">
+          <Button
+            accessible={true}
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessiblity action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}
+            onPress={() => Alert.alert('Button has been pressed!')}
+            title="Button with accessiblity action"
+          />
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Text with custom accessibility actions">
+          <Text
+            accessible={true}
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessiblity action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}>
+            Text
+          </Text>
         </RNTesterBlock>
       </View>
     );
@@ -981,6 +1024,72 @@ class EnabledExample extends React.Component<
   }
 }
 
+class DisplayOptionsStatusExample extends React.Component<{}> {
+  render(): React.Node {
+    const isAndroid = Platform.OS === 'android';
+    return (
+      <View>
+        <DisplayOptionStatusExample
+          optionName={'Reduce Motion'}
+          optionChecker={AccessibilityInfo.isReduceMotionEnabled}
+          notification={'reduceMotionChanged'}
+        />
+        <DisplayOptionStatusExample
+          optionName={'Screen Reader'}
+          optionChecker={AccessibilityInfo.isScreenReaderEnabled}
+          notification={'reduceMotionChanged'}
+        />
+        {isAndroid ? null : (
+          <>
+            <DisplayOptionStatusExample
+              optionName={'Bold Text'}
+              optionChecker={AccessibilityInfo.isBoldTextEnabled}
+              notification={'boldTextChanged'}
+            />
+            <DisplayOptionStatusExample
+              optionName={'Grayscale'}
+              optionChecker={AccessibilityInfo.isGrayscaleEnabled}
+              notification={'grayscaleChanged'}
+            />
+            <DisplayOptionStatusExample
+              optionName={'Invert Colors'}
+              optionChecker={AccessibilityInfo.isInvertColorsEnabled}
+              notification={'invertColorsChanged'}
+            />
+            <DisplayOptionStatusExample
+              optionName={'Reduce Transparency'}
+              optionChecker={AccessibilityInfo.isReduceTransparencyEnabled}
+              notification={'reduceTransparencyChanged'}
+            />
+          </>
+        )}
+      </View>
+    );
+  }
+}
+
+function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
+  const [statusEnabled, setStatusEnabled] = React.useState(false);
+  React.useEffect(() => {
+    AccessibilityInfo.addEventListener(notification, setStatusEnabled);
+    optionChecker().then(isEnabled => {
+      setStatusEnabled(isEnabled);
+    });
+    return function cleanup() {
+      AccessibilityInfo.removeEventListener(notification, setStatusEnabled);
+    };
+  }, [optionChecker, notification]);
+  return (
+    <View>
+      <Text>
+        {optionName}
+        {' is '}
+        {statusEnabled ? 'enabled' : 'disabled'}.
+      </Text>
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -1013,6 +1122,12 @@ exports.examples = [
     title: 'Fake Slider Example',
     render(): React.Element<typeof FakeSliderExample> {
       return <FakeSliderExample />;
+    },
+  },
+  {
+    title: 'Check if the display options are enabled',
+    render(): React.Element<typeof DisplayOptionsStatusExample> {
+      return <DisplayOptionsStatusExample />;
     },
   },
   {

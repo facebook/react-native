@@ -52,7 +52,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class LockFreeEventDispatcherImpl implements EventDispatcher, LifecycleEventListener {
 
-  private final boolean DEBUG_MODE = true && ReactBuildConfig.DEBUG;
+  private final boolean DEBUG_MODE = ReactBuildConfig.DEBUG;
   private final String TAG = LockFreeEventDispatcherImpl.class.getSimpleName();
 
   private final ReactApplicationContext mReactContext;
@@ -77,7 +77,7 @@ public class LockFreeEventDispatcherImpl implements EventDispatcher, LifecycleEv
     Assertions.assertNotNull(mReactEventEmitter);
 
     if (DEBUG_MODE) {
-      FLog.d(TAG, "dispatchEvent: " + event.toString());
+      FLog.v(TAG, "dispatchEvent: " + event.toString());
     }
 
     for (EventDispatcherListener listener : mListeners) {

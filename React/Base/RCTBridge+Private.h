@@ -7,6 +7,7 @@
 
 #import <React/RCTBridge.h>
 
+@class RCTModuleRegistry;
 @class RCTModuleData;
 @protocol RCTJavaScriptExecutor;
 
@@ -61,6 +62,13 @@ RCT_EXTERN void RCTRegisterModule(Class);
  * Used by RCTDevMenu to override the `hot` param of the current bundleURL.
  */
 @property (nonatomic, strong, readwrite) NSURL *bundleURL;
+
+/**
+ * An object that allows one to require NativeModules/TurboModules.
+ * RCTModuleRegistry is implemented in bridgeless mode and bridge mode.
+ * Used by RCTRootView.
+ */
+@property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
 
 @end
 

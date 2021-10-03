@@ -24,7 +24,7 @@ import invariant from 'invariant';
 
 // TODO T69437152 @petetheheat - Delete this fork when Fabric ships to 100%.
 const NativeAnimatedModule =
-  Platform.OS === 'ios' && global.RN$Bridgeless
+  Platform.OS === 'ios' && global.RN$Bridgeless === true
     ? NativeAnimatedTurboModule
     : NativeAnimatedNonTurboModule;
 
@@ -47,9 +47,9 @@ const API = {
     saveValueCallback: (value: number) => void,
   ): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
-    if (NativeAnimatedModule.getValue) {
+    API.queueOperation(() => {
       NativeAnimatedModule.getValue(tag, saveValueCallback);
-    }
+    });
   },
   setWaitingForIdentifier: function(id: string): void {
     waitingForQueuedOperations.add(id);
@@ -355,7 +355,7 @@ function shouldUseNativeDriver(
           'animated module is missing. Falling back to JS-based animation. To ' +
           'resolve this, add `RCTAnimation` module to this app, or remove ' +
           '`useNativeDriver`. ' +
-          'Make sure to run `pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md',
+          'Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md',
       );
       _warnedMissingNativeAnimated = true;
     }

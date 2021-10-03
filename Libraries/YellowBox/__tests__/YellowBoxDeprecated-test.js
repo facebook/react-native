@@ -25,6 +25,7 @@ describe('YellowBox', () => {
       .mockImplementation(() => {});
     YellowBox.ignoreWarnings(['foo']);
 
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     expect(LogBox.ignoreLogs).toBeCalledWith(['foo']);
     expect(consoleWarn).toBeCalledWith(
       'YellowBox has been replaced with LogBox. Please call LogBox.ignoreLogs() instead.',
@@ -38,6 +39,7 @@ describe('YellowBox', () => {
       .mockImplementation(() => {});
     YellowBox.install();
 
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     expect(LogBox.install).toBeCalled();
     expect(consoleWarn).toBeCalledWith(
       'YellowBox has been replaced with LogBox. Please call LogBox.install() instead.',
@@ -51,6 +53,7 @@ describe('YellowBox', () => {
       .mockImplementation(() => {});
     YellowBox.uninstall();
 
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     expect(LogBox.uninstall).toBeCalled();
     expect(consoleWarn).toBeCalledWith(
       'YellowBox has been replaced with LogBox. Please call LogBox.uninstall() instead.',

@@ -8,14 +8,14 @@
  * @format
  */
 
-const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');
-const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('../StyleSheet/StyleSheet');
+import DeprecatedImagePropType from '../DeprecatedPropTypes/DeprecatedImagePropType';
+import * as React from 'react';
+import StyleSheet from '../StyleSheet/StyleSheet';
 
-const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const resolveAssetSource = require('./resolveAssetSource');
+import ImageInjection from './ImageInjection';
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import resolveAssetSource from './resolveAssetSource';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
@@ -169,6 +169,11 @@ Image = React.forwardRef<
   ImagePropsType,
   React.ElementRef<typeof ImageViewNativeComponent>,
 >(Image);
+
+if (ImageInjection.unstable_createImageComponent != null) {
+  Image = ImageInjection.unstable_createImageComponent(Image);
+}
+
 Image.displayName = 'Image';
 
 /**

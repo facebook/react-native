@@ -8,7 +8,7 @@
 package com.facebook.react.fabric.mounting.mountitems;
 
 import androidx.annotation.NonNull;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.fabric.mounting.MountingManager;
 
@@ -38,7 +38,7 @@ public class SendAccessibilityEvent implements MountItem {
       // due to race conditions (like the view disappearing after the event is
       // queued and before it executes), we log a soft exception and continue along.
       // Other categories of errors will still cause a hard crash.
-      ReactSoftException.logSoftException(TAG, e);
+      ReactSoftExceptionLogger.logSoftException(TAG, e);
     }
   }
 

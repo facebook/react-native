@@ -400,9 +400,11 @@ RCT_EXPORT_METHOD(show)
   UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone
       ? UIAlertControllerStyleActionSheet
       : UIAlertControllerStyleAlert;
-  _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native Debug Menu"
-                                                     message:description
-                                              preferredStyle:style];
+
+  NSString *debugMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
+  NSString *debugMenuTitle = [NSString stringWithFormat:@"React Native Debug Menu (%@)", debugMenuType];
+
+  _actionSheet = [UIAlertController alertControllerWithTitle:debugMenuTitle message:description preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
   for (RCTDevMenuItem *item in items) {
