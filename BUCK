@@ -215,6 +215,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTAutoInsetsProtocol.h": RCTVIEWS_PATH + "RCTAutoInsetsProtocol.h",
     "React/RCTBorderDrawing.h": RCTVIEWS_PATH + "RCTBorderDrawing.h",
     "React/RCTBorderStyle.h": RCTVIEWS_PATH + "RCTBorderStyle.h",
+    "React/RCTBorderCurve.h": RCTVIEWS_PATH + "RCTBorderCurve.h",
     "React/RCTBridge+Private.h": RCTBASE_PATH + "RCTBridge+Private.h",
     "React/RCTBridge.h": RCTBASE_PATH + "RCTBridge.h",
     "React/RCTBridgeDelegate.h": RCTBASE_PATH + "RCTBridgeDelegate.h",

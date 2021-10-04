@@ -97,10 +97,10 @@ exports.examples = [
                 padding: 8,
                 marginTop: 12,
                 backgroundColor: '#527FE4',
-                cornerSmoothing: true,
+                borderCurve: 'continuous',
               }}>
               <Text style={{fontSize: 16, color: 'white'}}>
-                View with corner smoothing on the border radius
+                View with continuous border curve
               </Text>
             </View>
           )}

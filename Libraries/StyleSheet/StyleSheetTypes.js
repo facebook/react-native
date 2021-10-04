@@ -559,6 +559,7 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
+  borderCurve?: 'circular' | 'continuous',
   borderBottomColor?: ____ColorValue_Internal,
   borderEndColor?: ____ColorValue_Internal,
   borderLeftColor?: ____ColorValue_Internal,
@@ -582,7 +583,6 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
   borderRightWidth?: number | AnimatedNode,
   borderStartWidth?: number | AnimatedNode,
   borderTopWidth?: number | AnimatedNode,
-  cornerSmoothing?: boolean,
   opacity?: number | AnimatedNode,
   elevation?: number,
 |}>;

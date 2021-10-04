@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTBorderStyle.h>
+#import <React/RCTBorderCurve.h>
 #import <React/RCTComponent.h>
 #import <React/RCTPointerEvents.h>
 #import <React/RCTView.h>
@@ -80,9 +81,9 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, assign) CGFloat borderBottomEndRadius;
 
 /**
- * Corner smoothing
+ * Border curve
  */ 
-@property (nonatomic, assign) BOOL cornerSmoothing;
+@property (nonatomic, assign) RCTBorderCurve borderCurve;
 
 /**
  * Border colors (actually retained).
