@@ -194,9 +194,9 @@ function Pressable(props: Props, forwardedRef): React.Node {
     ...restProps,
     ...android_rippleConfig?.viewProps,
     acceptsFirstMouse: acceptsFirstMouse !== false && !disabled, // [TODO(macOS GH#774)
-    enableFocusRing: enableFocusRing !== false && !disabled, // ]TODO(macOS GH#774)
+    enableFocusRing: enableFocusRing !== false && !disabled,
     accessible: accessible !== false,
-    focusable: focusable !== false,
+    focusable: focusable !== false && !disabled, // ]TODO(macOS GH#774)
     hitSlop,
   };
 

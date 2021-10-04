@@ -519,7 +519,7 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: ab353d41aea8aae2ea6daaf813e67496642f3d7d
-  glog: b0ffa5c7cbb8a2c455ee70cc920fe61694d43248
+  glog: 0dc7efada961c0793012970b60faebbd58b0decb
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RCT-Folly: 2f2111690f1e23490285c059ca53be22fe6d6bee
   RCTRequired: 892b1fc61efc4f66a92b9c6ca85e2522e051f0e2
