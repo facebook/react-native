@@ -263,10 +263,15 @@ RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)
 RCT_CUSTOM_VIEW_PROPERTY(borderCurve, RCTBorderCurve, RCTView)
 {
   if (@available(iOS 13.0, *)) {
-    if ([RCTConvert RCTBorderCurve:json] == RCTBorderCurveContinuous) {
-      view.layer.cornerCurve = kCACornerCurveContinuous;
-    } else {
-      view.layer.cornerCurve = kCACornerCurveCircular;
+    switch ([RCTConvert RCTBorderCurve:json]) {
+      case RCTBorderCurveContinuous:
+        view.layer.cornerCurve = kCACornerCurveContinuous;
+        break;
+      case RCTBorderCurveCircular:
+        view.layer.cornerCurve = kCACornerCurveCircular;
+        break;
+      default:
+        view.layer.cornerCurve = kCACornerCurveCircular;
     }
   }
 }
