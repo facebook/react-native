@@ -786,6 +786,7 @@ public class ReactViewGroup extends ViewGroup
           }
           break;
         case ViewProps.HIDDEN:
+        case ViewProps.SCROLL:
           float left = 0f;
           float top = 0f;
           float right = getWidth();
