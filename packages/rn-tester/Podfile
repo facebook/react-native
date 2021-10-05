@@ -97,13 +97,13 @@ def frameworks_pre_install(installer)
   end
 end
 
-def codegen_pre_install(installer)
-  system("../../scripts/generate-native-modules-specs.sh")
-end
-
 pre_install do |installer|
   frameworks_pre_install(installer) if ENV['USE_FRAMEWORKS'] == '1'
-  codegen_pre_install(installer) if ENV['USE_CODEGEN'] == '1'
+  if ENV['USE_CODEGEN'] != '0'
+    prefix_path = "../.."
+    codegen_path = "../../packages/react-native-codegen"
+    codegen_pre_install(installer, {path:prefix_path, codegen_path:codegen_path})
+  end
 end
 
 post_install do |installer|

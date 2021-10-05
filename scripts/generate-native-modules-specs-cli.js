@@ -9,7 +9,16 @@
 
 'use strict';
 
-const RNCodegen = require('../packages/react-native-codegen/lib/generators/RNCodegen.js');
+let RNCodegen;
+try {
+  RNCodegen = require('react-native-codegen/lib/generators/RNCodegen.js');
+} catch (e) {
+  RNCodegen = require('../packages/react-native-codegen/lib/generators/RNCodegen.js');
+  if (!RNCodegen) {
+    throw 'RNCodegen not found.';
+  }
+}
+
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const os = require('os');

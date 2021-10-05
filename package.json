@@ -39,6 +39,7 @@
     "rn-get-polyfills.js",
     "scripts/compose-source-maps.js",
     "scripts/fixmacscripts.sh",
+    "scripts/generate-native-modules-specs-cli.js",
     "scripts/ios-configure-glog.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",

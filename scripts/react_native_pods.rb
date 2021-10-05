@@ -112,3 +112,17 @@ def flipper_post_install(installer)
     end
   end
 end
+
+# Pre Install processing for Native Modules
+def codegen_pre_install(installer, options={})
+  prefix = options[:path] ||= "../node_modules/react-native"
+  codegen_path = options[:codegen_path] ||= "../node_modules/react-native-codegen"
+
+  Dir.mktmpdir do |dir|
+    native_module_spec_name = "FBReactNativeSpec"
+    schema_file = dir + "/schema-#{native_module_spec_name}.json"
+    srcs_dir = "#{prefix}/Libraries"
+    schema_generated = system("node #{codegen_path}/lib/cli/combine/combine-js-to-schema-cli.js #{schema_file} #{srcs_dir}")
+    specs_generated = system("node #{prefix}/scripts/generate-native-modules-specs-cli.js ios #{schema_file} #{srcs_dir}/#{native_module_spec_name}/#{native_module_spec_name}")
+  end
+end
