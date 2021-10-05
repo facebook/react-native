@@ -182,6 +182,8 @@ static UIColor *defaultPlaceholderColor()
   _textWasPasted = YES;
 }
 
+// Excluding this for iOS 14 and above.
+// This fixes multiline textinput "jerking" when trying to move cursor.
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED < 140000
 - (void)setContentOffset:(CGPoint)contentOffset animated:(__unused BOOL)animated
 {
