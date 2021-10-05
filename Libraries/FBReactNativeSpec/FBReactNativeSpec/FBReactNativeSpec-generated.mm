@@ -67,6 +67,10 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getCurrentGrayscaleState", @selector(getCurrentGrayscaleState:onError:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentHighContrastState(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getCurrentHighContrastState", @selector(getCurrentHighContrastState:onError:), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentInvertColorsState(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getCurrentInvertColorsState", @selector(getCurrentInvertColorsState:onError:), args, count);
     }
@@ -102,6 +106,9 @@ namespace facebook {
         
         
         methodMap_["getCurrentGrayscaleState"] = MethodMetadata {2, __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentGrayscaleState};
+        
+        
+        methodMap_["getCurrentHighContrastState"] = MethodMetadata {2, __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentHighContrastState};
         
         
         methodMap_["getCurrentInvertColorsState"] = MethodMetadata {2, __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentInvertColorsState};
@@ -161,10 +168,10 @@ namespace facebook {
     }
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeAlertManager_Args)
-+ (RCTManagedPointer *)JS_NativeAlertManager_Args:(id)json
+@implementation RCTCxxConvert (NativeAlertManager_NativeArgs)
++ (RCTManagedPointer *)JS_NativeAlertManager_NativeArgs:(id)json
 {
-  return facebook::react::managedPointer<JS::NativeAlertManager::Args>(json);
+  return facebook::react::managedPointer<JS::NativeAlertManager::NativeArgs>(json);
 }
 @end
 namespace facebook {
@@ -178,7 +185,7 @@ namespace facebook {
       : ObjCTurboModule(params) {
         
         methodMap_["alertWithArgs"] = MethodMetadata {2, __hostFunction_NativeAlertManagerSpecJSI_alertWithArgs};
-        setMethodArgConversionSelector(@"alertWithArgs", 0, @"JS_NativeAlertManager_Args:");
+        setMethodArgConversionSelector(@"alertWithArgs", 0, @"JS_NativeAlertManager_NativeArgs:");
     }
   } // namespace react
 } // namespace facebook
@@ -936,6 +943,10 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setIsShakeToShowDevMenuEnabled", @selector(setIsShakeToShowDevMenuEnabled:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeDevSettingsSpecJSI_setIsSecondaryClickToShowDevMenuEnabled(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setIsSecondaryClickToShowDevMenuEnabled", @selector(setIsSecondaryClickToShowDevMenuEnabled:), args, count);
+    }
+
     NativeDevSettingsSpecJSI::NativeDevSettingsSpecJSI(const ObjCTurboModule::InitParams &params)
       : ObjCTurboModule(params) {
         
@@ -970,6 +981,9 @@ namespace facebook {
         
         
         methodMap_["setIsShakeToShowDevMenuEnabled"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setIsShakeToShowDevMenuEnabled};
+        
+        
+        methodMap_["setIsSecondaryClickToShowDevMenuEnabled"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setIsSecondaryClickToShowDevMenuEnabled};
         
     }
   } // namespace react
@@ -1620,6 +1634,22 @@ namespace facebook {
       : ObjCTurboModule(params) {
         
         methodMap_["getConstants"] = MethodMetadata {0, __hostFunction_NativePlatformConstantsIOSSpecJSI_getConstants};
+        
+    }
+  } // namespace react
+} // namespace facebook
+
+namespace facebook {
+  namespace react {
+    
+    static facebook::jsi::Value __hostFunction_NativePlatformConstantsMacOSSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, "getConstants", @selector(getConstants), args, count);
+    }
+
+    NativePlatformConstantsMacOSSpecJSI::NativePlatformConstantsMacOSSpecJSI(const ObjCTurboModule::InitParams &params)
+      : ObjCTurboModule(params) {
+        
+        methodMap_["getConstants"] = MethodMetadata {0, __hostFunction_NativePlatformConstantsMacOSSpecJSI_getConstants};
         
     }
   } // namespace react

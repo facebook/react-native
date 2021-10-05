@@ -77,6 +77,8 @@ namespace JS {
                         onError:(RCTResponseSenderBlock)onError;
 - (void)getCurrentGrayscaleState:(RCTResponseSenderBlock)onSuccess
                          onError:(RCTResponseSenderBlock)onError;
+- (void)getCurrentHighContrastState:(RCTResponseSenderBlock)onSuccess
+                            onError:(RCTResponseSenderBlock)onError;
 - (void)getCurrentInvertColorsState:(RCTResponseSenderBlock)onSuccess
                             onError:(RCTResponseSenderBlock)onError;
 - (void)getCurrentReduceMotionState:(RCTResponseSenderBlock)onSuccess
@@ -166,7 +168,7 @@ namespace facebook {
 } // namespace facebook
 namespace JS {
   namespace NativeAlertManager {
-    struct Args {
+    struct NativeArgs {
       NSString *title() const;
       NSString *message() const;
       folly::Optional<facebook::react::LazyVector<id<NSObject> >> buttons() const;
@@ -175,25 +177,23 @@ namespace JS {
       NSString *cancelButtonKey() const;
       NSString *destructiveButtonKey() const;
       NSString *keyboardType() const;
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-      bool critical() const;
-      bool modal() const;
-     folly::Optional<facebook::react::LazyVector<id<NSObject>>> defaultInputs() const;
-#endif // ]TODO(macOS GH#774)b
+      folly::Optional<facebook::react::LazyVector<id<NSObject> >> defaultInputs() const;
+      folly::Optional<bool> modal() const;
+      folly::Optional<bool> critical() const;
 
-      Args(NSDictionary *const v) : _v(v) {}
+      NativeArgs(NSDictionary *const v) : _v(v) {}
     private:
       NSDictionary *_v;
     };
   }
 }
 
-@interface RCTCxxConvert (NativeAlertManager_Args)
-+ (RCTManagedPointer *)JS_NativeAlertManager_Args:(id)json;
+@interface RCTCxxConvert (NativeAlertManager_NativeArgs)
++ (RCTManagedPointer *)JS_NativeAlertManager_NativeArgs:(id)json;
 @end
 @protocol NativeAlertManagerSpec <RCTBridgeModule, RCTTurboModule>
 
-- (void)alertWithArgs:(JS::NativeAlertManager::Args &)args
+- (void)alertWithArgs:(JS::NativeAlertManager::NativeArgs &)args
              callback:(RCTResponseSenderBlock)callback;
 
 @end
@@ -1494,6 +1494,83 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 namespace JS {
+  namespace NativePlatformConstantsMacOS {
+    struct ConstantsReactNativeVersion {
+
+      struct Builder {
+        struct Input {
+          RCTRequired<double> major;
+          RCTRequired<double> minor;
+          RCTRequired<double> patch;
+          RCTRequired<folly::Optional<double>> prerelease;
+        };
+
+        /** Initialize with a set of values */
+        Builder(const Input i);
+        /** Initialize with an existing ConstantsReactNativeVersion */
+        Builder(ConstantsReactNativeVersion i);
+        /** Builds the object. Generally used only by the infrastructure. */
+        NSDictionary *buildUnsafeRawValue() const { return _factory(); };
+      private:
+        NSDictionary *(^_factory)(void);
+      };
+
+      static ConstantsReactNativeVersion fromUnsafeRawValue(NSDictionary *const v) { return {v}; }
+      NSDictionary *unsafeRawValue() const { return _v; }
+    private:
+      ConstantsReactNativeVersion(NSDictionary *const v) : _v(v) {}
+      NSDictionary *_v;
+    };
+  }
+}
+namespace JS {
+  namespace NativePlatformConstantsMacOS {
+    struct Constants {
+
+      struct Builder {
+        struct Input {
+          RCTRequired<bool> isTesting;
+          RCTRequired<JS::NativePlatformConstantsMacOS::ConstantsReactNativeVersion::Builder> reactNativeVersion;
+          RCTRequired<NSString *> osVersion;
+          RCTRequired<NSString *> systemName;
+        };
+
+        /** Initialize with a set of values */
+        Builder(const Input i);
+        /** Initialize with an existing Constants */
+        Builder(Constants i);
+        /** Builds the object. Generally used only by the infrastructure. */
+        NSDictionary *buildUnsafeRawValue() const { return _factory(); };
+      private:
+        NSDictionary *(^_factory)(void);
+      };
+
+      static Constants fromUnsafeRawValue(NSDictionary *const v) { return {v}; }
+      NSDictionary *unsafeRawValue() const { return _v; }
+    private:
+      Constants(NSDictionary *const v) : _v(v) {}
+      NSDictionary *_v;
+    };
+  }
+}
+@protocol NativePlatformConstantsMacOSSpec <RCTBridgeModule, RCTTurboModule>
+
+- (facebook::react::ModuleConstants<JS::NativePlatformConstantsMacOS::Constants::Builder>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativePlatformConstantsMacOS::Constants::Builder>)getConstants;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'NativePlatformConstantsMacOS'
+     */
+    class JSI_EXPORT NativePlatformConstantsMacOSSpecJSI : public ObjCTurboModule {
+    public:
+      NativePlatformConstantsMacOSSpecJSI(const ObjCTurboModule::InitParams &params);
+    };
+  } // namespace react
+} // namespace facebook
+namespace JS {
   namespace NativePushNotificationManagerIOS {
     struct SpecRequestPermissionsPermission {
       bool alert() const;
@@ -2027,63 +2104,61 @@ inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptio
   id const p = _v[@"userInterfaceStyle"];
   return RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::title() const
+inline NSString *JS::NativeAlertManager::NativeArgs::title() const
 {
   id const p = _v[@"title"];
   return RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::message() const
+inline NSString *JS::NativeAlertManager::NativeArgs::message() const
 {
   id const p = _v[@"message"];
   return RCTBridgingToOptionalString(p);
 }
-inline folly::Optional<facebook::react::LazyVector<id<NSObject> >> JS::NativeAlertManager::Args::buttons() const
+inline folly::Optional<facebook::react::LazyVector<id<NSObject> >> JS::NativeAlertManager::NativeArgs::buttons() const
 {
   id const p = _v[@"buttons"];
   return RCTBridgingToOptionalVec(p, ^id<NSObject> (id itemValue_0) { return itemValue_0; });
 }
-inline NSString *JS::NativeAlertManager::Args::type() const
+inline NSString *JS::NativeAlertManager::NativeArgs::type() const
 {
   id const p = _v[@"type"];
   return RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::defaultValue() const
+inline NSString *JS::NativeAlertManager::NativeArgs::defaultValue() const
 {
   id const p = _v[@"defaultValue"];
   return RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::cancelButtonKey() const
+inline NSString *JS::NativeAlertManager::NativeArgs::cancelButtonKey() const
 {
   id const p = _v[@"cancelButtonKey"];
   return RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::destructiveButtonKey() const
+inline NSString *JS::NativeAlertManager::NativeArgs::destructiveButtonKey() const
 {
   id const p = _v[@"destructiveButtonKey"];
   return RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::keyboardType() const
+inline NSString *JS::NativeAlertManager::NativeArgs::keyboardType() const
 {
   id const p = _v[@"keyboardType"];
   return RCTBridgingToOptionalString(p);
 }
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-inline bool JS::NativeAlertManager::Args::critical() const
-{
-  id const p = _v[@"critical"];
-  return RCTBridgingToBool(p);
-}
-inline bool JS::NativeAlertManager::Args::modal() const
-{
-  id const p = _v[@"modal"];
-  return RCTBridgingToBool(p);
-}
-inline folly::Optional<facebook::react::LazyVector<id<NSObject>>> JS::NativeAlertManager::Args::defaultInputs() const
+inline folly::Optional<facebook::react::LazyVector<id<NSObject> >> JS::NativeAlertManager::NativeArgs::defaultInputs() const
 {
   id const p = _v[@"defaultInputs"];
-  return RCTBridgingToOptionalVec(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; });
+  return RCTBridgingToOptionalVec(p, ^id<NSObject> (id itemValue_0) { return itemValue_0; });
 }
-#endif // ]TODO(macOS GH#774)
+inline folly::Optional<bool> JS::NativeAlertManager::NativeArgs::modal() const
+{
+  id const p = _v[@"modal"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline folly::Optional<bool> JS::NativeAlertManager::NativeArgs::critical() const
+{
+  id const p = _v[@"critical"];
+  return RCTBridgingToOptionalBool(p);
+}
 inline facebook::react::LazyVector<NSString *> JS::NativeAnimatedModule::EventMapping::nativeEventPath() const
 {
   id const p = _v[@"nativeEventPath"];
@@ -2447,6 +2522,36 @@ inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(const Input i
   return d;
 }) {}
 inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(Constants i) : _factory(^{
+  return i.unsafeRawValue();
+}) {}
+inline JS::NativePlatformConstantsMacOS::ConstantsReactNativeVersion::Builder::Builder(const Input i) : _factory(^{
+  NSMutableDictionary *d = [NSMutableDictionary new];
+  auto major = i.major.get();
+  d[@"major"] = @(major);
+  auto minor = i.minor.get();
+  d[@"minor"] = @(minor);
+  auto patch = i.patch.get();
+  d[@"patch"] = @(patch);
+  auto prerelease = i.prerelease.get();
+  d[@"prerelease"] = prerelease.hasValue() ? @((double)prerelease.value()) : nil;
+  return d;
+}) {}
+inline JS::NativePlatformConstantsMacOS::ConstantsReactNativeVersion::Builder::Builder(ConstantsReactNativeVersion i) : _factory(^{
+  return i.unsafeRawValue();
+}) {}
+inline JS::NativePlatformConstantsMacOS::Constants::Builder::Builder(const Input i) : _factory(^{
+  NSMutableDictionary *d = [NSMutableDictionary new];
+  auto isTesting = i.isTesting.get();
+  d[@"isTesting"] = @(isTesting);
+  auto reactNativeVersion = i.reactNativeVersion.get();
+  d[@"reactNativeVersion"] = reactNativeVersion.buildUnsafeRawValue();
+  auto osVersion = i.osVersion.get();
+  d[@"osVersion"] = osVersion;
+  auto systemName = i.systemName.get();
+  d[@"systemName"] = systemName;
+  return d;
+}) {}
+inline JS::NativePlatformConstantsMacOS::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
 inline bool JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::alert() const

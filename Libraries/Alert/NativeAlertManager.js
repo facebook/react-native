@@ -30,10 +30,27 @@ export type Args = {|
   // ]TODO(macOS GH#774)
 |};
 
+// TODO(macOS GH#774): stand-in for Args to make codegen happy
+type NativeArgs = {|
+  title?: string,
+  message?: string,
+  buttons?: Array<Object>, // TODO(T67565166): have a better type
+  type?: string,
+  defaultValue?: string,
+  cancelButtonKey?: string,
+  destructiveButtonKey?: string,
+  keyboardType?: string,
+  // [TODO(macOS GH#774)
+  defaultInputs?: Array<Object>,
+  modal?: ?boolean,
+  critical?: ?boolean,
+  // ]TODO(macOS GH#774)
+|};
+
 export interface Spec extends TurboModule {
   +alertWithArgs: (
     // eslint-disable-next-line @react-native/codegen/react-native-modules
-    args: Args,
+    args: NativeArgs, // TODO(macOS GH#774): Args -> NativeArgs
     callback: (id: number, value: string) => void,
   ) => void;
 }
