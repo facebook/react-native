@@ -11,6 +11,7 @@ load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "APPLE",
     "YOGA_APPLE_TARGET",
+    "js_glob",
     "make_resource_glob",
     "react_module_plugin_providers",
     "rn_apple_library",
@@ -43,13 +44,13 @@ yarn_workspace(
 
 rn_library(
     name = "rn-tester",
-    srcs = glob(
+    srcs = js_glob(
         [
-            "js/**/*",
-            "NativeModuleExample/**/*",
-            "RCTTest/**/*",
+            "js",
+            "NativeModuleExample",
+            "RCTTest",
         ],
-        exclude = [
+        excludes = [
             "**/__*__/**",
             "**/*.md",
             "js/examples/WebSocket/http_test_server.js",

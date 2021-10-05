@@ -17,9 +17,10 @@ else
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.06.28.00'
+folly_version = '2021.06.28.00-v2'
 folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
+react_native_path = ".."
 
 Pod::Spec.new do |s|
   s.name                   = "React-Fabric"
@@ -341,4 +342,12 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/utils"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
+
+  use_react_native_codegen!(s, {
+    :react_native_path => react_native_path,
+    :js_srcs_dir => "#{react_native_path}/Libraries",
+    :library_name => "rncore",
+    :library_type => "components",
+    :output_dir => "#{react_native_path}/ReactCommon",
+  })
 end

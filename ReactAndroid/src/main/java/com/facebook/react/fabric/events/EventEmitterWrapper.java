@@ -36,7 +36,8 @@ public class EventEmitterWrapper {
     mHybridData = initHybrid();
   }
 
-  private native void invokeEvent(@NonNull String eventName, @NonNull NativeMap params);
+  private native void invokeEvent(
+      @NonNull String eventName, @NonNull NativeMap params, @EventCategoryDef int category);
 
   private native void invokeUniqueEvent(
       @NonNull String eventName, @NonNull NativeMap params, int customCoalesceKey);
@@ -47,12 +48,15 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public synchronized void invoke(@NonNull String eventName, @Nullable WritableMap params) {
+  public synchronized void invoke(
+      @NonNull String eventName,
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory) {
     if (!isValid()) {
       return;
     }
     NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
-    invokeEvent(eventName, payload);
+    invokeEvent(eventName, payload, eventCategory);
   }
 
   /**

@@ -39,13 +39,8 @@ export type AnimatedComponentType<
   Instance,
 >;
 
-type AnimatedComponentOptions = {
-  collapsable?: boolean,
-};
-
 function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
   Component: React.AbstractComponent<Props, Instance>,
-  options?: AnimatedComponentOptions,
 ): AnimatedComponentType<Props, Instance> {
   invariant(
     typeof Component !== 'function' ||
@@ -210,39 +205,13 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
         this.props.passthroughAnimatedPropExplicitValues || {};
       const mergedStyle = {...style, ...passthruStyle};
 
-      // On Fabric, we always want to ensure the container Animated View is *not*
-      // flattened.
-      // Because we do not get a host component ref immediately and thus cannot
-      // do a proper Fabric vs non-Fabric detection immediately, we default to assuming
-      // that Fabric *is* enabled until we know otherwise.
-      // Thus, in Fabric, this view will never be flattened. In non-Fabric, the view will
-      // not be flattened during the initial render but may be flattened in the second render
-      // and onwards.
-      const forceNativeIdFabric =
-        (this._component == null &&
-          (options?.collapsable === false || props.collapsable !== true)) ||
-        this._isFabric();
-
-      const forceNativeId =
-        props.collapsable ??
-        (this._propsAnimated.__isNative ||
-          forceNativeIdFabric ||
-          options?.collapsable === false);
-      // The native driver updates views directly through the UI thread so we
-      // have to make sure the view doesn't get optimized away because it cannot
-      // go through the NativeViewHierarchyManager since it operates on the shadow
-      // thread. TODO: T68258846
-      const collapsableProps = forceNativeId
-        ? {
-            nativeID: props.nativeID ?? 'animatedComponent',
-            collapsable: false,
-          }
-        : {};
+      // Force `collapsable` to be false so that native view is not flattened.
+      // Flattened views cannot be accurately referenced by a native driver.
       return (
         <Component
           {...props}
           {...passthruProps}
-          {...collapsableProps}
+          collapsable={false}
           style={mergedStyle}
           ref={this._setComponentRef}
         />

@@ -183,10 +183,12 @@ const styles = StyleSheet.create({
   },
   border15: {
     borderWidth: 10,
-    borderColor: PlatformColor(
-      'systemGray4',
-      '@android:color/holo_orange_dark',
-    ),
+    borderColor: Platform.select({
+      ios: PlatformColor('systemGray4'),
+      android: PlatformColor('@android:color/holo_orange_dark'),
+      windows: PlatformColor('SystemAccentColorDark1'),
+      default: 'black',
+    }),
   },
   border16: {
     borderWidth: 10,

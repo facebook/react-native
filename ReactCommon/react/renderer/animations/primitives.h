@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/renderer/animations/LayoutAnimationCallbackWrapper.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>

@@ -910,10 +910,6 @@ public class SurfaceMountingManager {
     // We treat this as a perf problem and not a logical error. View Preallocation or unexpected
     // changes to Differ or C++ Binding could cause some redundant Create instructions.
     if (getNullableViewState(reactTag) != null) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new IllegalStateException(
-              "Cannot Preallocate view with tag [" + reactTag + "], already exists."));
       return;
     }
 

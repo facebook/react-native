@@ -131,8 +131,8 @@ static jsi::Value callMethodOfModule(
 
 jsi::Value UIManagerBinding::getInspectorDataForInstance(
     jsi::Runtime &runtime,
-    SharedEventEmitter eventEmitter) const {
-  auto eventTarget = eventEmitter->eventTarget_;
+    EventEmitter const &eventEmitter) const {
+  auto eventTarget = eventEmitter.eventTarget_;
   EventEmitter::DispatchMutex().lock();
 
   if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge") ||

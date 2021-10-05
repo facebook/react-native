@@ -12,9 +12,11 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 
+#include <logger/react_native_log.h>
 #include <react/renderer/animations/conversions.h>
 #include <react/renderer/animations/utils.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/LayoutMetrics.h>
@@ -92,8 +94,10 @@ interpolateFloats(float coefficient, float oldValue, float newValue) {
 
 LayoutAnimationKeyFrameManager::LayoutAnimationKeyFrameManager(
     RuntimeExecutor runtimeExecutor,
+    ContextContainer::Shared &contextContainer,
     LayoutAnimationStatusDelegate *delegate)
     : runtimeExecutor_(runtimeExecutor),
+      contextContainer_(contextContainer),
       layoutAnimationStatusDelegate_(delegate),
       now_([]() {
         return std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -174,6 +178,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     MountingTransaction::Number transactionNumber,
     TransactionTelemetry const &telemetry,
     ShadowViewMutationList mutations) const {
+  simulateImagePropsMemoryAccess(mutations);
   // Current time in milliseconds
   uint64_t now = now_();
 
@@ -225,14 +230,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     LOG(ERROR) << "BEGINNING DONE DISPLAYING ONGOING inflightAnimations_!";
 #endif
 
-    // Stub PropsParserContext used for cloneProps.
-    // This is/should be safe because cloning doesn't actually need to
-    // parse props, and just copies them; therefore there should be no
-    // need to actually use anything in the PropsParserContext.
-    // If this ever changes, the LayoutAnimations API will need to change
-    // to pass in a real PropsParserContext.
-    ContextContainer contextContainer{};
-    PropsParserContext propsParserContext{surfaceId, contextContainer};
+    PropsParserContext propsParserContext{surfaceId, *contextContainer_};
 
     // What to do if we detect a conflict? Get current value and make
     // that the baseline of the next animation. Scale the remaining time
@@ -303,7 +301,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // "immediate mutations". The corresponding "insert" will also be executed
       // immediately and animated as an update.
       std::vector<AnimationKeyFrame> keyFramesToAnimate;
-      std::vector<AnimationKeyFrame> movesToAnimate;
       auto const layoutAnimationConfig = animation.layoutAnimationConfig;
       for (auto const &mutation : mutations) {
         ShadowView baselineShadowView =
@@ -369,16 +366,6 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         bool haveConfiguration =
             mutationConfig.animationType != AnimationType::None;
 
-        if (wasInsertedTagRemoved && haveConfiguration) {
-          movesToAnimate.push_back(AnimationKeyFrame{
-              {},
-              AnimationConfigurationType::Update,
-              mutation.newChildShadowView.tag,
-              mutation.parentShadowView,
-              movedIt->second.oldChildShadowView,
-              mutation.newChildShadowView});
-        }
-
         // Creates and inserts should also be executed immediately.
         // Mutations that would otherwise be animated, but have no
         // configuration, are also executed immediately.
@@ -441,12 +428,11 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 // that is being referenced by the REMOVE mutation.
                 if (keyframe.type == AnimationConfigurationType::Update &&
                     mutation.oldChildShadowView.tag > 0) {
-                  executeMutationImmediately = ShadowViewMutation{
-                      mutation.type,
-                      mutation.parentShadowView,
-                      keyframe.viewPrev,
-                      {},
-                      mutation.index};
+                  executeMutationImmediately =
+                      ShadowViewMutation::RemoveMutation(
+                          mutation.parentShadowView,
+                          keyframe.viewPrev,
+                          mutation.index);
                 }
               }
             }
@@ -524,14 +510,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 mutation);
 
             keyFrame = AnimationKeyFrame{
-                {},
-                AnimationConfigurationType::Create,
-                tag,
-                parent,
-                viewStart,
-                viewFinal,
-                baselineShadowView,
-                0};
+                /* .finalMutationsForKeyFrame = */ {},
+                /* .type = */ AnimationConfigurationType::Create,
+                /* .tag = */ tag,
+                /* .parentView = */ parent,
+                /* .viewStart = */ viewStart,
+                /* .viewEnd = */ viewFinal,
+                /* .viewPrev = */ baselineShadowView,
+                /* .initialProgress = */ 0};
           } else if (mutation.type == ShadowViewMutation::Type::Delete) {
 // This is just for assertion purposes.
 // The NDEBUG check here is to satisfy the compiler in certain environments
@@ -562,14 +548,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                 mutation);
 
             keyFrame = AnimationKeyFrame{
-                {mutation},
-                AnimationConfigurationType::Update,
-                tag,
-                parent,
-                viewStart,
-                viewFinal,
-                baselineShadowView,
-                0};
+                /* .finalMutationsForKeyFrame = */ {mutation},
+                /* .type = */ AnimationConfigurationType::Update,
+                /* .tag = */ tag,
+                /* .parentView = */ parent,
+                /* .viewStart = */ viewStart,
+                /* .viewEnd = */ viewFinal,
+                /* .viewPrev = */ baselineShadowView,
+                /* .initialProgress = */ 0};
           } else {
             // This should just be "Remove" instructions that are not animated
             // (either this is a "move", or there's a corresponding "Delete"
@@ -650,14 +636,14 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                   mutation);
 
               keyFrame = AnimationKeyFrame{
-                  {mutation, deleteMutation},
-                  AnimationConfigurationType::Delete,
-                  tag,
-                  parent,
-                  viewStart,
-                  viewFinal,
-                  baselineShadowView,
-                  0};
+                  /* .finalMutationsForKeyFrame */ {mutation, deleteMutation},
+                  /* .type */ AnimationConfigurationType::Delete,
+                  /* .tag */ tag,
+                  /* .parentView */ parent,
+                  /* .viewStart */ viewStart,
+                  /* .viewEnd */ viewFinal,
+                  /* .viewPrev */ baselineShadowView,
+                  /* .initialProgress */ 0};
             } else {
               PrintMutationInstruction(
                   "Executing Remove Immediately, due to reordering operation",
@@ -796,7 +782,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         // don't want to queue up any final UPDATE mutations here.
         bool shouldGenerateSyntheticMutations =
             keyFrame.generateFinalSyntheticMutations;
-        bool numFinalMutations = keyFrame.finalMutationsForKeyFrame.size();
+        auto numFinalMutations = keyFrame.finalMutationsForKeyFrame.size();
         bool onlyMutationIsUpdate =
             (numFinalMutations == 1 &&
              keyFrame.finalMutationsForKeyFrame[0].type ==
@@ -1069,6 +1055,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     }
   }
 
+  simulateImagePropsMemoryAccess(mutations);
+
   return MountingTransaction{
       surfaceId, transactionNumber, std::move(mutations), telemetry};
 }
@@ -1093,77 +1081,36 @@ void LayoutAnimationKeyFrameManager::enableSkipInvalidatedKeyFrames() {
   skipInvalidatedKeyFrames_ = true;
 }
 
+void LayoutAnimationKeyFrameManager::enableCrashOnMissingComponentDescriptor() {
+  crashOnMissingComponentDescriptor_ = true;
+}
+
+void LayoutAnimationKeyFrameManager::enableSimulateImagePropsMemoryAccess() {
+  simulateImagePropsMemoryAccess_ = true;
+}
+
 #pragma mark - Protected
 
 bool LayoutAnimationKeyFrameManager::hasComponentDescriptorForShadowView(
     ShadowView const &shadowView) const {
-  return componentDescriptorRegistry_->hasComponentDescriptorAt(
-      shadowView.componentHandle);
+  auto hasComponentDescriptor =
+      componentDescriptorRegistry_->hasComponentDescriptorAt(
+          shadowView.componentHandle);
+
+  if (crashOnMissingComponentDescriptor_ && !hasComponentDescriptor) {
+    LOG(FATAL) << "Component descriptor with handle: "
+               << shadowView.componentHandle
+               << " doesn't exist. The component name: "
+               << shadowView.componentName;
+  }
+
+  return hasComponentDescriptor;
 }
 
 ComponentDescriptor const &
 LayoutAnimationKeyFrameManager::getComponentDescriptorForShadowView(
     ShadowView const &shadowView) const {
   return componentDescriptorRegistry_->at(shadowView.componentHandle);
-}
-
-std::pair<double, double>
-LayoutAnimationKeyFrameManager::calculateAnimationProgress(
-    uint64_t now,
-    const LayoutAnimation &animation,
-    const AnimationConfig &mutationConfig) const {
-  if (mutationConfig.animationType == AnimationType::None) {
-    return {1, 1};
-  }
-
-  uint64_t startTime = animation.startTime;
-  uint64_t delay = mutationConfig.delay;
-  uint64_t endTime = startTime + delay + mutationConfig.duration;
-
-  static const float PI = 3.14159265358979323846;
-
-  if (now >= endTime) {
-    return {1, 1};
-  }
-  if (now < startTime + delay) {
-    return {0, 0};
-  }
-
-  double linearTimeProgression = 1 -
-      (double)(endTime - delay - now) / (double)(endTime - animation.startTime);
-
-  if (mutationConfig.animationType == AnimationType::Linear) {
-    return {linearTimeProgression, linearTimeProgression};
-  } else if (mutationConfig.animationType == AnimationType::EaseIn) {
-    // This is an accelerator-style interpolator.
-    // In the future, this parameter (2.0) could be adjusted. This has been the
-    // default for Classic RN forever.
-    return {linearTimeProgression, pow(linearTimeProgression, 2.0)};
-  } else if (mutationConfig.animationType == AnimationType::EaseOut) {
-    // This is an decelerator-style interpolator.
-    // In the future, this parameter (2.0) could be adjusted. This has been the
-    // default for Classic RN forever.
-    return {linearTimeProgression, 1.0 - pow(1 - linearTimeProgression, 2.0)};
-  } else if (mutationConfig.animationType == AnimationType::EaseInEaseOut) {
-    // This is a combination of accelerate+decelerate.
-    // The animation starts and ends slowly, and speeds up in the middle.
-    return {
-        linearTimeProgression,
-        cos((linearTimeProgression + 1.0) * PI) / 2 + 0.5};
-  } else if (mutationConfig.animationType == AnimationType::Spring) {
-    // Using mSpringDamping in this equation is not really the exact
-    // mathematical springDamping, but a good approximation We need to replace
-    // this equation with the right Factor that accounts for damping and
-    // friction
-    double damping = mutationConfig.springDamping;
-    return {
-        linearTimeProgression,
-        (1 +
-         pow(2, -10 * linearTimeProgression) *
-             sin((linearTimeProgression - damping / 4) * PI * 2 / damping))};
-  } else {
-    return {linearTimeProgression, linearTimeProgression};
-  }
 }
 
 ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
@@ -1178,15 +1125,6 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     react_native_assert(false);
     return finalView;
   }
-
-  // Stub PropsParserContext used for interpolateProps.
-  // This is/should be safe because interpolating doesn't actually need to
-  // parse props, and just copies them; therefore there should be no
-  // need to actually use anything in the PropsParserContext.
-  // If this ever changes, the LayoutAnimations API will need to change
-  // to pass in a real PropsParserContext.
-  ContextContainer contextContainer{};
-  PropsParserContext propsParserContext{-1, contextContainer};
 
   ComponentDescriptor const &componentDescriptor =
       getComponentDescriptorForShadowView(startingView);
@@ -1208,6 +1146,8 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   }
 
   // Animate opacity or scale/transform
+  PropsParserContext propsParserContext{
+      finalView.surfaceId, *contextContainer_};
   mutatedShadowView.props = componentDescriptor.interpolateProps(
       propsParserContext, progress, startingView.props, finalView.props);
   react_native_assert(mutatedShadowView.props != nullptr);
@@ -1250,7 +1190,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     AnimationKeyFrame const &keyframe,
     ShadowViewMutation::List &mutationsList,
     bool interrupted,
-    std::string logPrefix) const {
+    const std::string &logPrefix) const {
   if (skipInvalidatedKeyFrames_ && keyframe.invalidated) {
     return;
   }
@@ -1263,18 +1203,31 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           logPrefix + ": Queuing up Final Mutation:", finalMutation);
       // Copy so that if something else mutates the inflight animations,
       // it won't change this mutation after this point.
-      auto mutation = ShadowViewMutation{
-          finalMutation.type,
-          finalMutation.parentShadowView,
-          prev,
-          finalMutation.newChildShadowView,
-          finalMutation.index};
-      react_native_assert(mutation.oldChildShadowView.tag > 0);
-      react_native_assert(
-          mutation.newChildShadowView.tag > 0 ||
-          finalMutation.type == ShadowViewMutation::Remove ||
-          finalMutation.type == ShadowViewMutation::Delete);
-      mutationsList.push_back(mutation);
+      switch (finalMutation.type) {
+          // For CREATE/INSERT this will contain CREATE, INSERT in that order.
+          // For REMOVE/DELETE, same.
+        case ShadowViewMutation::Type::Create:
+          mutationsList.push_back(ShadowViewMutation::CreateMutation(
+              finalMutation.newChildShadowView));
+          break;
+        case ShadowViewMutation::Type::Delete:
+          mutationsList.push_back(ShadowViewMutation::DeleteMutation(prev));
+          break;
+        case ShadowViewMutation::Type::Insert:
+          mutationsList.push_back(ShadowViewMutation::InsertMutation(
+              finalMutation.parentShadowView,
+              finalMutation.newChildShadowView,
+              finalMutation.index));
+          break;
+        case ShadowViewMutation::Type::Remove:
+          mutationsList.push_back(ShadowViewMutation::RemoveMutation(
+              finalMutation.parentShadowView, prev, finalMutation.index));
+          break;
+        case ShadowViewMutation::Type::Update:
+          mutationsList.push_back(ShadowViewMutation::UpdateMutation(
+              prev, finalMutation.newChildShadowView));
+          break;
+      }
       if (finalMutation.newChildShadowView.tag > 0) {
         prev = finalMutation.newChildShadowView;
       }
@@ -1316,19 +1269,15 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
           generatedMutation);
       mutationsList.push_back(generatedMutation);
     } else {
-      auto mutation = ShadowViewMutation{
-          ShadowViewMutation::Type::Update,
-          keyframe.parentView,
-          keyframe.viewPrev,
-          keyframe.viewEnd,
-          -1};
+      auto mutation = ShadowViewMutation::UpdateMutation(
+          keyframe.viewPrev, keyframe.viewEnd);
       PrintMutationInstruction(
           logPrefix +
               "Animation Complete: Queuing up Final Synthetic Mutation:",
           mutation);
       react_native_assert(mutation.oldChildShadowView.tag > 0);
       react_native_assert(mutation.newChildShadowView.tag > 0);
-      mutationsList.push_back(mutation);
+      mutationsList.push_back(std::move(mutation));
     }
   }
 }
@@ -1689,6 +1638,41 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
       } else {
         it++;
       }
+    }
+  }
+}
+
+void LayoutAnimationKeyFrameManager::simulateImagePropsMemoryAccess(
+    ShadowViewMutationList const &mutations) const {
+  if (!simulateImagePropsMemoryAccess_) {
+    return;
+  }
+  for (auto const &mutation : mutations) {
+    if (mutation.type != ShadowViewMutation::Type::Insert) {
+      continue;
+    }
+    if (strcmp(mutation.newChildShadowView.componentName, "Image") == 0) {
+      auto const &imageProps = *std::static_pointer_cast<ImageProps const>(
+          mutation.newChildShadowView.props);
+      int temp = 0;
+      switch (imageProps.resizeMode) {
+        case ImageResizeMode::Cover:
+          temp = 1;
+          break;
+        case ImageResizeMode::Contain:
+          temp = 2;
+          break;
+        case ImageResizeMode::Stretch:
+          temp = 3;
+          break;
+        case ImageResizeMode::Center:
+          temp = 4;
+          break;
+        case ImageResizeMode::Repeat:
+          temp = 5;
+          break;
+      }
+      (void)temp;
     }
   }
 }

@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.utils.moveTo
 import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
 import org.gradle.api.DefaultTask
@@ -70,10 +71,5 @@ open class HermesBinaryTask : DefaultTask() {
               "-o",
               jsOutputSourceMapFile))
     }
-  }
-
-  private fun File.moveTo(destination: File) {
-    copyTo(destination, overwrite = true)
-    delete()
   }
 }

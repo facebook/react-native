@@ -56,9 +56,9 @@ Run:
 git checkout -b <version_you_are_releasing>-stable
 # e.g. git checkout -b 0.57-stable
 
-./scripts/bump-oss-version.js <exact_version_you_are_releasing>
-# e.g. ./scripts/bump-oss-version.js 0.57.0-rc.0
-#  or  ./scripts/bump-oss-version.js 0.58.0
+./scripts/bump-oss-version.js -v <exact_version_you_are_releasing>
+# e.g. ./scripts/bump-oss-version.js -v 0.57.0-rc.0
+#  or  ./scripts/bump-oss-version.js -v 0.58.0
 ```
 
 Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.57.0-rc.0`) and tag `next` meaning that this version will not be installed for users by default.
@@ -147,8 +147,8 @@ Go through the same process as earlier to test the release:
 If everything worked, run the following to bump the version number:
 
 ```bash
-./scripts/bump-oss-version.js <exact_version_you_are_releasing>
-# e.g. ./scripts/bump-oss-version.js 0.57.0-rc.1
+./scripts/bump-oss-version.js -v <exact_version_you_are_releasing>
+# e.g. ./scripts/bump-oss-version.js -v 0.57.0-rc.1
 ```
 
 Again, Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.57.0-rc.1`).
@@ -191,8 +191,8 @@ It's **important** to test everything again: you don't want to cut a release wit
 If everything worked:
 
 ```bash
-./scripts/bump-oss-version.js <exact_version_you_are_releasing>
-# e.g. ./scripts/bump-oss-version.js 0.57.0
+./scripts/bump-oss-version.js -v <exact_version_you_are_releasing>
+# e.g. ./scripts/bump-oss-version.js -v 0.57.0
 ```
 
 As with the release candidate, Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.57.0`).

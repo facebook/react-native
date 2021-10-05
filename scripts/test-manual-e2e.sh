@@ -71,7 +71,7 @@ read -r -n 1
 success "About to test iOS JSC... "
 success "Installing CocoaPods dependencies..."
 rm -rf packages/rn-tester/Pods
-(cd packages/rn-tester && pod install)
+(cd packages/rn-tester && bundle exec pod install)
 
 info "Press any key to open the workspace in Xcode, then build and test manually."
 info ""
@@ -85,7 +85,7 @@ read -r -n 1
 success "About to test iOS Hermes... "
 success "Installing CocoaPods dependencies..."
 rm -rf packages/rn-tester/Pods
-(cd packages/rn-tester && USE_HERMES=1 pod install)
+(cd packages/rn-tester && USE_HERMES=1 bundle exec pod install)
 
 info "Press any key to open the workspace in Xcode, then build and test manually."
 info ""
@@ -103,8 +103,11 @@ lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
 
 npm pack
 
-PACKAGE=$(pwd)/react-native-$PACKAGE_VERSION.tgz
+TIMESTAMP=$(date +%s)
+PACKAGE=$(pwd)/react-native-$PACKAGE_VERSION-$TIMESTAMP.tgz
 success "Package bundled ($PACKAGE)"
+
+mv "$(pwd)/react-native-$PACKAGE_VERSION.tgz" "$PACKAGE"
 
 node scripts/set-rn-template-version.js "file:$PACKAGE"
 success "React Native version changed in the template"
@@ -116,7 +119,7 @@ rm -rf "$project_name"
 node "$repo_root/cli.js" init "$project_name" --template "$repo_root"
 
 info "Double checking the versions in package.json are correct:"
-grep "\"react-native\": \".*react-native-$PACKAGE_VERSION.tgz\"" "/tmp/${project_name}/package.json" || error "Incorrect version number in /tmp/${project_name}/package.json"
+grep "\"react-native\": \".*react-native-$PACKAGE_VERSION-$TIMESTAMP.tgz\"" "/tmp/${project_name}/package.json" || error "Incorrect version number in /tmp/${project_name}/package.json"
 grep -E "com.facebook.react:react-native:\\+" "${project_name}/android/app/build.gradle" || error "Dependency in /tmp/${project_name}/android/app/build.gradle must be com.facebook.react:react-native:+"
 
 success "New sample project generated at /tmp/${project_name}"

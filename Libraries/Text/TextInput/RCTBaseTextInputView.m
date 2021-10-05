@@ -242,19 +242,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                           @"streetAddressLine2": UITextContentTypeStreetAddressLine2,
                           @"sublocality": UITextContentTypeSublocality,
                           @"telephoneNumber": UITextContentTypeTelephoneNumber,
+                          @"username": UITextContentTypeUsername,
+                          @"password": UITextContentTypePassword,
                           };
-
-      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-        if (@available(iOS 11.0, *)) {
-          NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
-                                                                  @"password": UITextContentTypePassword};
-
-          NSMutableDictionary<NSString *, NSString *> * iOS11baseMap = [contentTypeMap mutableCopy];
-          [iOS11baseMap addEntriesFromDictionary:iOS11extras];
-
-          contentTypeMap = [iOS11baseMap copy];
-        }
-      #endif
 
       #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
         if (@available(iOS 12.0, *)) {
