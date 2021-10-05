@@ -184,6 +184,7 @@ static UIColor *defaultPlaceholderColor()
 
 // Excluding this for iOS 14 and above.
 // This fixes multiline textinput "jerking" when trying to move cursor.
+// See https://github.com/facebook/react-native/issues/30748 for more context.
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED < 140000
 - (void)setContentOffset:(CGPoint)contentOffset animated:(__unused BOOL)animated
 {
