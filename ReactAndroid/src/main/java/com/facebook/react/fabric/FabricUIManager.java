@@ -628,6 +628,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           public int getSurfaceId() {
             return View.NO_ID;
           }
+
+          @Override
+          public String toString() {
+            String propsString =
+                IS_DEVELOPMENT_ENVIRONMENT
+                    ? (props != null ? props.toHashMap().toString() : "<null>")
+                    : "<hidden>";
+            return String.format("SYNC UPDATE PROPS [%d]: %s", reactTag, propsString);
+          }
         };
 
     // If the reactTag exists, we assume that it might at the end of the next
@@ -1016,6 +1025,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           public int getSurfaceId() {
             return surfaceId;
           }
+
+          @Override
+          public String toString() {
+            return String.format("SET_JS_RESPONDER [%d] [surface:%d]", reactTag, surfaceId);
+          }
         });
   }
 
@@ -1034,6 +1048,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           @Override
           public int getSurfaceId() {
             return View.NO_ID;
+          }
+
+          @Override
+          public String toString() {
+            return "CLEAR_JS_RESPONDER";
           }
         });
   }
