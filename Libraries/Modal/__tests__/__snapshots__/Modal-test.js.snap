@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`<Modal /> should not render its children when mocked with visible=false 1`] = `
+<Modal
+  hardwareAccelerated={false}
+  visible={false}
+>
+  <View />
+</Modal>
+`;
+
 exports[`<Modal /> should render as <Modal> when mocked 1`] = `
 <Modal
   hardwareAccelerated={false}
@@ -13,7 +22,7 @@ exports[`<Modal /> should render as <RCTModalHostView> when not mocked 1`] = `
 <RCTModalHostView
   animationType="none"
   hardwareAccelerated={false}
-  identifier={1}
+  identifier={2}
   onDismiss={[Function]}
   onStartShouldSetResponder={[Function]}
   presentationStyle="fullScreen"
