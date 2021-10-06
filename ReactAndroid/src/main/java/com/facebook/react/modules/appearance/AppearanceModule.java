@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.appearance;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import androidx.annotation.Nullable;
@@ -74,7 +75,15 @@ public class AppearanceModule extends NativeAppearanceSpec {
 
   @Override
   public String getColorScheme() {
-    mColorScheme = colorSchemeForCurrentConfiguration(getReactApplicationContext());
+    // Attempt to use the Activity context first in order to get the most up to date
+    // scheme. This covers the scenario when AppCompatDelegate.setDefaultNightMode()
+    // is called directly (which can occur in Brownfield apps for example).
+    Activity activity = getCurrentActivity();
+
+    mColorScheme =
+        colorSchemeForCurrentConfiguration(
+            activity != null ? activity : getReactApplicationContext());
+
     return mColorScheme;
   }
 
