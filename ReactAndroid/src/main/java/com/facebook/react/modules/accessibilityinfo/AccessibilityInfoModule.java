@@ -79,10 +79,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     mContentResolver = getReactApplicationContext().getContentResolver();
     mTouchExplorationEnabled = mAccessibilityManager.isTouchExplorationEnabled();
     mReduceMotionEnabled = this.getIsReduceMotionEnabledValue();
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
-    }
+    mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
   }
 
   @Override
@@ -142,10 +139,8 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     mAccessibilityManager.addTouchExplorationStateChangeListener(
         mTouchExplorationStateChangeListener);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      Uri transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE);
-      mContentResolver.registerContentObserver(transitionUri, false, animationScaleObserver);
-    }
+    Uri transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE);
+    mContentResolver.registerContentObserver(transitionUri, false, animationScaleObserver);
 
     updateAndSendTouchExplorationChangeEvent(mAccessibilityManager.isTouchExplorationEnabled());
     updateAndSendReduceMotionChangeEvent();

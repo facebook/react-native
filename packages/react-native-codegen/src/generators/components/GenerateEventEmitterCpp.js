@@ -168,6 +168,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {

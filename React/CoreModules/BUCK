@@ -130,7 +130,7 @@ rn_apple_library(
     exported_deps = [
         "//xplat/js:RCTLinkingApple",
         "//xplat/js:RCTPushNotificationApple",
+        "//xplat/js:generated_objcpp_modules-react-nativeApple",
         "//xplat/js/react-native-github:ReactInternalApple",
-        "//xplat/js/react-native-github/Libraries/FBReactNativeSpec:FBReactNativeSpecApple",
     ],
 )

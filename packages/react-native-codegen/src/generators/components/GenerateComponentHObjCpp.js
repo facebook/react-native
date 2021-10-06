@@ -325,6 +325,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const fileName = 'RCTComponentViewHelpers.h';
 

@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleJavaSpec can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "
+  "java/com/facebook/fbreact/specs/NativeSampleTurboModuleSpec.java" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -14,7 +14,7 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -49,7 +49,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "
+  "java/com/facebook/fbreact/specs/NativeSampleTurboModuleSpec.java" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -61,7 +61,7 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -82,7 +82,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "AliasTurboModuleSpec.java" => "
+  "java/com/facebook/fbreact/specs/AliasTurboModuleSpec.java" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -94,7 +94,7 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -117,7 +117,7 @@ public abstract class AliasTurboModuleSpec extends ReactContextBaseJavaModule im
 
 exports[`GenerateModuleJavaSpec can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "NativeCameraRollManagerSpec.java" => "
+  "java/com/facebook/fbreact/specs/NativeCameraRollManagerSpec.java" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -129,7 +129,7 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -155,7 +155,7 @@ public abstract class NativeCameraRollManagerSpec extends ReactContextBaseJavaMo
   public abstract void deletePhotos(ReadableArray assets, Promise promise);
 }
 ",
-  "NativeExceptionsManagerSpec.java" => "
+  "java/com/facebook/fbreact/specs/NativeExceptionsManagerSpec.java" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -167,7 +167,7 @@ public abstract class NativeCameraRollManagerSpec extends ReactContextBaseJavaMo
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -203,7 +203,7 @@ public abstract class NativeExceptionsManagerSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "
+  "java/com/facebook/fbreact/specs/NativeSampleTurboModuleSpec.java" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -215,7 +215,7 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
@@ -303,7 +303,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
 exports[`GenerateModuleJavaSpec can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "NativeSampleTurboModuleSpec.java" => "
+  "java/com/facebook/fbreact/specs/NativeSampleTurboModuleSpec.java" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -315,7 +315,7 @@ Map {
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -332,7 +332,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   public abstract void voidFunc();
 }
 ",
-  "NativeSampleTurboModule2Spec.java" => "
+  "java/com/facebook/fbreact/specs/NativeSampleTurboModule2Spec.java" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -344,7 +344,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
  * @nolint
  */
 
-package com.facebook.fbreact.specs.beta;
+package com.facebook.fbreact.specs;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;

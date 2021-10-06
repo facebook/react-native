@@ -27,9 +27,17 @@ GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
 
+# Platform Definitions
+CXX = "Default"
+
 ANDROID = "Android"
 
-APPLE = ""
+APPLE = "Apple"
+
+# Apple SDK Definitions
+IOS = "ios"
+
+MACOSX = "macosx"
 
 YOGA_TARGET = "//ReactAndroid/src/main/java/com/facebook:yoga"
 

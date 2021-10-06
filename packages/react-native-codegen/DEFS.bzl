@@ -1,19 +1,22 @@
-load("@fbsource//tools/build_defs:buckconfig.bzl", "read_bool")
-load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("@fbsource//tools/build_defs:platform_defs.bzl", "IOS", "MACOSX")
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
+load("//tools/build_defs:buckconfig.bzl", "read_bool")
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
     "CXX",
+    "IOS",
+    "MACOSX",
     "YOGA_CXX_TARGET",
+    "fb_apple_library",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
+    "get_preprocessor_flags_for_build_mode",
     "react_native_dep",
     "react_native_target",
     "react_native_xplat_target",
+    "react_native_xplat_target_apple",
     "rn_android_library",
     "rn_xplat_cxx_library",
 )
@@ -25,6 +28,10 @@ def rn_codegen_modules(
     generate_fixtures_rule_name = "generate_fixtures_modules-{}".format(name)
     generate_module_hobjcpp_name = "generate_module_hobjcpp-{}".format(name)
     generate_module_mm_name = "generate_module_mm-{}".format(name)
+    generate_module_java_name = "generate_module_java-{}".format(name)
+    generate_module_java_zip_name = "generate_module_java_zip-{}".format(name)
+    generate_module_jni_h_name = "generate_module_jni_h-{}".format(name)
+    generate_module_jni_cpp_name = "generate_module_jni_cpp-{}".format(name)
 
     fb_native.genrule(
         name = generate_fixtures_rule_name,
@@ -34,6 +41,92 @@ def rn_codegen_modules(
         labels = ["codegen_rule"],
     )
 
+    ##################
+    # Android handling
+    ##################
+    fb_native.genrule(
+        name = generate_module_java_name,
+        cmd = "cp -r $(location :{})/java $OUT/".format(generate_fixtures_rule_name),
+        out = "src",
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.zip_file(
+        name = generate_module_java_zip_name,
+        srcs = [":{}".format(generate_module_java_name)],
+        out = "{}.src.zip".format(generate_module_java_zip_name),
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.genrule(
+        name = generate_module_jni_h_name,
+        cmd = "cp $(location :{})/jni/{}.h $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
+        out = "{}.h".format(native_module_spec_name),
+        labels = ["codegen_rule"],
+    )
+
+    fb_native.genrule(
+        name = generate_module_jni_cpp_name,
+        cmd = "cp $(location :{})/jni/{}-generated.cpp $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
+        out = "{}-generated.cpp".format(native_module_spec_name),
+        labels = ["codegen_rule"],
+    )
+
+    rn_android_library(
+        name = "generated_modules-{}".format(name),
+        srcs = [
+            ":{}".format(generate_module_java_zip_name),
+        ],
+        labels = ["codegen_rule"],
+        visibility = ["PUBLIC"],
+        deps = [
+            "//fbandroid/third-party/java/jsr-305:jsr-305",
+            "//fbandroid/third-party/java/jsr-330:jsr-330",
+            react_native_target("java/com/facebook/react/bridge:bridge"),
+            react_native_target("java/com/facebook/react/common:common"),
+        ],
+        exported_deps = [
+            react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
+        ],
+    )
+
+    rn_xplat_cxx_library(
+        name = "generated_modules-{}-jni".format(name),
+        srcs = [
+            ":{}".format(generate_module_jni_cpp_name),
+        ],
+        header_namespace = "",
+        headers = [
+            ":{}".format(generate_module_jni_h_name),
+        ],
+        exported_headers = {
+            "{}/{}.h".format(native_module_spec_name, native_module_spec_name): ":{}".format(generate_module_jni_h_name),
+        },
+        compiler_flags = [
+            "-fexceptions",
+            "-frtti",
+            "-std=c++14",
+            "-Wall",
+        ],
+        preprocessor_flags = [
+            "-DLOG_TAG=\"ReactNative\"",
+            "-DWITH_FBSYSTRACE=1",
+        ],
+        visibility = [
+            "PUBLIC",
+        ],
+        deps = [],
+        exported_deps = [
+            "//xplat/jsi:jsi",
+            react_native_xplat_target("react/nativemodule/core:core"),
+        ],
+        platforms = (ANDROID,),
+        labels = ["codegen_rule"],
+    )
+
+    ##############
+    # iOS handling
+    ##############
     fb_native.genrule(
         name = generate_module_hobjcpp_name,
         cmd = "cp $(location :{})/{}.h $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
@@ -48,36 +141,29 @@ def rn_codegen_modules(
         labels = ["codegen_rule"],
     )
 
-    rn_xplat_cxx_library(
-        name = "generated_objcpp_modules-{}".format(name),
+    fb_apple_library(
+        name = "generated_objcpp_modules-{}Apple".format(name),
+        extension_api_only = True,
         header_namespace = "",
-        apple_sdks = (IOS),
+        sdks = (IOS),
         compiler_flags = [
-            "-fexceptions",
-            "-frtti",
-            "-std=c++14",
-            "-Wall",
+            "-Wno-unused-private-field",
         ],
-        fbobjc_compiler_flags = get_apple_compiler_flags(),
-        fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
-        ios_exported_headers = {
+        exported_headers = {
             "{}/{}.h".format(native_module_spec_name, native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
         },
-        ios_headers = [
+        headers = [
             ":{}".format(generate_module_hobjcpp_name),
         ],
-        ios_srcs = [
+        srcs = [
             ":{}".format(generate_module_mm_name),
         ],
         labels = ["codegen_rule"],
-        platforms = (APPLE),
-        preprocessor_flags = [
-            "-DLOG_TAG=\"ReactNative\"",
-            "-DWITH_FBSYSTRACE=1",
-        ],
         visibility = ["PUBLIC"],
-        deps = [
-            "//xplat/js:React",
+        exported_deps = [
+            "//xplat/js/react-native-github:RCTTypeSafety",
+            "//xplat/js/react-native-github/Libraries/RCTRequired:RCTRequired",
+            react_native_xplat_target_apple("react/nativemodule/core:core"),
         ],
     )
 

@@ -284,10 +284,12 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const files = new Map();
-    // TODO: Allow package configuration.
-    const packageName = 'com.facebook.fbreact.specs.beta';
+    const normalizedPackageName =
+      packageName != null ? packageName : 'com.facebook.fbreact.specs';
+    const outputDir = `java/${normalizedPackageName.replace(/\./g, '/')}`;
     const nativeModules = getModules(schema);
 
     Object.keys(nativeModules).forEach(hasteModuleName => {
@@ -365,9 +367,9 @@ module.exports = {
       });
 
       files.set(
-        `${className}.java`,
+        `${outputDir}/${className}.java`,
         FileTemplate({
-          packageName,
+          packageName: normalizedPackageName,
           className,
           methods: methods.filter(Boolean).join('\n\n'),
           imports: Array.from(imports)

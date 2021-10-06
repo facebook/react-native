@@ -641,7 +641,7 @@ jobs:
           name: Setup Android SDKs
           command: |
             sdkmanager --licenses
-            sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+            sdkmanager "system-images;android-21;google_apis;armeabi-v7a"
             sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
             sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
             sdkmanager "add-ons;addon-google_apis-google-23"

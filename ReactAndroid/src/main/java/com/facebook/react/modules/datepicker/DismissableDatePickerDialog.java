@@ -50,9 +50,7 @@ public class DismissableDatePickerDialog extends DatePickerDialog {
   protected void onStop() {
     // do *not* call super.onStop() on KitKat on lower, as that would erroneously call the
     // OnDateSetListener when the dialog is dismissed, or call it twice when "OK" is pressed.
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-      super.onStop();
-    }
+    super.onStop();
   }
 
   private void fixSpinner(Context context, int year, int month, int dayOfMonth) {

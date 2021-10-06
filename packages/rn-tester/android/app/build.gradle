@@ -147,7 +147,7 @@ android {
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -250,7 +250,7 @@ if (enableCodegen) {
             externalNativeBuild {
                 ndkBuild {
                     abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
-                    arguments "APP_PLATFORM=android-16",
+                    arguments "APP_PLATFORM=android-21",
                             "APP_STL=c++_shared",
                             "NDK_TOOLCHAIN_VERSION=clang",
                             // The following paths assume building React Native from source.
