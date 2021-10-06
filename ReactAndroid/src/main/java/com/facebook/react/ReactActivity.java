@@ -8,6 +8,7 @@
 package com.facebook.react;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.annotation.Nullable;
@@ -118,6 +119,12 @@ public abstract class ReactActivity extends AppCompatActivity
   public void onWindowFocusChanged(boolean hasFocus) {
     super.onWindowFocusChanged(hasFocus);
     mDelegate.onWindowFocusChanged(hasFocus);
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    mDelegate.onConfigurationChanged(newConfig);
   }
 
   protected final ReactNativeHost getReactNativeHost() {
