@@ -164,9 +164,7 @@ class TouchableWithoutFeedback extends React.Component<Props, State> {
               this.props.acceptsKeyboardFocus === true && !this.props.disabled,
           }
         : {
-            focusable:
-              this.props.focusable !== false &&
-              this.props.onPress !== undefined,
+            focusable: this.props.focusable !== false && !this.props.disabled,
           }),
       // macOS]
       enableFocusRing:
