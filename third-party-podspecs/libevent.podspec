@@ -549,27 +549,17 @@ Pod::Spec.new do |spec|
   spec.homepage        = "https://libevent.org"
   spec.license         = { :type => "BSD 3-Clause", :file => "LICENSE" }
   spec.author          = "Niels Provos and Nick Mathewson"
-  spec.platforms       = { :osx => "10.14" }
+  spec.platforms       = { :osx => "10.14", :ios => "10.0" }
   spec.source          = { :git => "https://github.com/libevent/libevent.git", :tag => "release-#{spec.version}-stable" }
-  spec.default_subspec = "core"
   spec.prepare_command = "touch evconfig-private.h; echo -e #{Shellwords.escape(CONFIG_WITHOUT_OPENSSL)} > include/event2/event-config.h"
-
-  # This subspec only exists so we can namespace these headers.
-  spec.subspec "event2-headers" do |ss|
-    ss.source_files = "include/event2/*.h"
-    ss.public_header_files = "include/event2/*.h"
-    ss.header_dir = "event2"
-  end
-
-  spec.subspec "core" do |ss|
-    ss.dependency "libevent/event2-headers"
-    ss.source_files =
-      "include/*.h", "*-{internal,private}.h",
-      "buffer.c", "bufferevent.c", "bufferevent_filter.c", "bufferevent_pair.c", "bufferevent_ratelim.c", "bufferevent_sock.c",
-      "event.c", "evmap.c", "evthread.c", "evutil.c", "evutil_rand.c", "evutil_time.c",
-      "kqueue.c", "listener.c", "log.c", "poll.c", "select.c", "signal.c", "strlcpy.c", "watch.c",
-      "evdns.c", "event_tagging.c", "evrpc.c", "http.c"
-    ss.private_header_files = "*-{internal,private}.h"
-    ss.public_header_files = "include/*.h"
-  end
+  spec.source_files =
+    "include/*.h", "*-{internal,private}.h",
+    "buffer.c", "bufferevent.c", "bufferevent_filter.c", "bufferevent_pair.c", "bufferevent_ratelim.c", "bufferevent_sock.c",
+    "event.c", "evmap.c", "evthread.c", "evutil.c", "evutil_rand.c", "evutil_time.c",
+    "kqueue.c", "listener.c", "log.c", "poll.c", "select.c", "signal.c", "strlcpy.c", "watch.c",
+    "evdns.c", "event_tagging.c", "evrpc.c", "http.c"
+  spec.private_header_files = "*-{internal,private}.h"
+  spec.public_header_files = "include/*.h"
+  spec.preserve_paths = "include/event2/*.h"
+  spec.xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/include/\"" }
 end

@@ -67,7 +67,7 @@ Pod::Spec.new do |spec|
   spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\"" }
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include/\"" }
 
   # TODO: The boost spec should really be selecting these files so that dependents of Folly can also access the required headers.
   spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\"" }
@@ -107,7 +107,7 @@ Pod::Spec.new do |spec|
                            'folly/io/{Cursor,Cursor-inl,IOBuf,IOBufQueue}.{h,cpp}',
                            'folly/tracing/StaticTracepoint.{h,cpp}',
                            'folly/{Executor,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
-                           'folly/detail/{AsyncTrace,AtFork,Futex,Futex-inl,MemoryIdler,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
+                           'folly/detail/{AsyncTrace,AtFork,Futex,Futex-inl,MemoryIdler,SingletonStackTrace,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
                            'folly/lang/SafeAssert.{h,cpp}',
                            'folly/memory/MallctlHelper.{h,cpp}',
                            'folly/portability/{GFlags,SysUio}.{h,cpp}',
@@ -123,6 +123,7 @@ Pod::Spec.new do |spec|
                           #  'folly/experimental/{ReadMostlySharedPtr,TLRefCount}.h',
   end
 
-  # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "10.0", :osx => "10.14" } # TODO(macOS GH#214)
+  # Folly has issues when compiled with iOS 10 set as deployment target
+  # See https://github.com/facebook/folly/issues/1470 for details
+  spec.platforms = { :ios => "9.0", :osx => "10.14", :tvos => "9.0", } # TODO(macOS GH#214)
 end

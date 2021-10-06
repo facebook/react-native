@@ -322,10 +322,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 {
   auto reactNativeConfig = _contextContainer->at<std::shared_ptr<ReactNativeConfig const>>("ReactNativeConfig");
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:sync_performance_flag_ios")) {
-    RCTExperimentSetSyncPerformanceFlag(YES);
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:scrollview_on_demand_mounting_ios")) {
     RCTExperimentSetOnDemandViewMounting(YES);
   }

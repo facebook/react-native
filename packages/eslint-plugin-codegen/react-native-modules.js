@@ -11,6 +11,7 @@
 'use strict';
 
 const path = require('path');
+const withBabelRegister = require('./with-babel-register');
 
 const ERRORS = {
   misnamedHasteModule(hasteModuleName) {
@@ -37,6 +38,28 @@ const ERRORS = {
     return `Module ${hasteModuleName}: TurboModuleRegistry.${requireMethodName}<Spec>() must be called with a string literal, detected ${literal}`;
   },
 };
+
+let RNModuleParser;
+let RNParserUtils;
+
+function requireModuleParser() {
+  if (RNModuleParser == null || RNParserUtils == null) {
+    const config = {
+      only: [/react-native-codegen\/src\//],
+      plugins: [require('@babel/plugin-transform-flow-strip-types').default],
+    };
+
+    withBabelRegister(config, () => {
+      RNModuleParser = require('react-native-codegen/src/parsers/flow/modules');
+      RNParserUtils = require('react-native-codegen/src/parsers/flow/utils');
+    });
+  }
+
+  return {
+    buildModuleSchema: RNModuleParser.buildModuleSchema,
+    createParserErrorCapturer: RNParserUtils.createParserErrorCapturer,
+  };
+}
 
 const VALID_SPEC_NAMES = /^Native\S+$/;
 
@@ -121,25 +144,12 @@ function rule(context) {
         });
       }
 
-      let buildModuleSchema = null;
-      let createParserErrorCapturer = null;
-      try {
-        /**
-         * The following files are written with Flow typings.
-         * Unless the typings are stripped at compile-time or run-time,
-         * the following requires fill fail. Hence, the try/catch.
-         */
-        ({
-          buildModuleSchema,
-        } = require('react-native-codegen/src/parsers/flow/modules'));
-        ({
-          createParserErrorCapturer,
-        } = require('react-native-codegen/src/parsers/flow/utils'));
-      } catch (ex) {
-        return;
-      }
-
+      const {
+        buildModuleSchema,
+        createParserErrorCapturer,
+      } = requireModuleParser();
       const flowParser = require('flow-parser');
+
       const [parsingErrors, guard] = createParserErrorCapturer();
 
       const sourceCode = context.getSourceCode().getText();

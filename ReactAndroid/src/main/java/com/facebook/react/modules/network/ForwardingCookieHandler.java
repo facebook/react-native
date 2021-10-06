@@ -126,8 +126,8 @@ public class ForwardingCookieHandler extends CookieHandler {
   }
 
   /**
-   * Instantiating CookieManager will load the Chromium task taking a 100ish ms so we do
-   * it lazily to make sure it's done on a background thread as needed.
+   * Instantiating CookieManager will load the Chromium task taking a 100ish ms so we do it lazily
+   * to make sure it's done on a background thread as needed.
    */
   private @Nullable CookieManager getCookieManager() {
     if (mCookieManager == null) {

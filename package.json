@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": "git@github.com:microsoft/react-native-macos.git",
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit",
@@ -68,7 +68,7 @@
     "prettier": "prettier --write \"./**/*.{js,md,yml}\"",
     "format-check": "prettier --list-different \"./**/*.{js,md,yml}\"",
     "update-lock": "npx yarn-deduplicate",
-    "docker-setup-android": "docker pull reactnativecommunity/react-native-android",
+    "docker-setup-android": "docker pull reactnativecommunity/react-native-android:2.1",
     "docker-build-android": "docker build -t reactnativeci/android -f .circleci/Dockerfiles/Dockerfile.android .",
     "test-android-run-instrumentation": "docker run --cap-add=SYS_ADMIN -it reactnativeci/android bash .circleci/Dockerfiles/scripts/run-android-docker-instrumentation-tests.sh",
     "test-android-run-unit": "docker run --cap-add=SYS_ADMIN -it reactnativeci/android bash .circleci/Dockerfiles/scripts/run-android-docker-unit-tests.sh",
@@ -122,7 +122,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.136.0",
+    "flow-bin": "^0.137.0",
     "react": "17.0.1"
   },
   "detox": {

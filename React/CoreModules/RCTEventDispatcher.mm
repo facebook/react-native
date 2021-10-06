@@ -65,7 +65,7 @@ RCT_EXPORT_MODULE()
                     method:@"emit"
                       args:body ? @[ name, body ] : @[ name ]
                 completion:NULL];
-  } else {
+  } else if (_invokeJS) {
     _invokeJS(@"RCTNativeAppEventEmitter", @"emit", body ? @[ name, body ] : @[ name ]);
   }
 }
@@ -77,7 +77,7 @@ RCT_EXPORT_MODULE()
                     method:@"emit"
                       args:body ? @[ name, body ] : @[ name ]
                 completion:NULL];
-  } else {
+  } else if (_invokeJS) {
     _invokeJS(@"RCTDeviceEventEmitter", @"emit", body ? @[ name, body ] : @[ name ]);
   }
 }
@@ -198,7 +198,7 @@ RCT_EXPORT_MODULE()
 {
   if (_bridge) {
     [_bridge enqueueJSCall:[[event class] moduleDotMethod] args:[event arguments]];
-  } else {
+  } else if (_invokeJSWithModuleDotMethod) {
     _invokeJSWithModuleDotMethod([[event class] moduleDotMethod], [event arguments]);
   }
 }

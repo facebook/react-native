@@ -870,12 +870,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   return [[RCTImageURLLoaderRequest alloc] initWithRequestId:loaderRequest.requestId imageURL:imageURLRequest.URL cancellationBlock:cancellationBlock];
 }
 
-- (NSString *)loaderModuleNameForRequestUrl:(NSURL *)url {
+- (BOOL)shouldEnablePerfLoggingForRequestUrl:(NSURL *)url {
   id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:url];
-  if ([loadHandler respondsToSelector:@selector(loaderModuleNameForRequestUrl:)]) {
-    return [(id<RCTImageURLLoaderWithAttribution>)loadHandler loaderModuleNameForRequestUrl:url];
+  if ([loadHandler respondsToSelector:@selector(shouldEnablePerfLogging)]) {
+    return [(id<RCTImageURLLoaderWithAttribution>)loadHandler shouldEnablePerfLogging];
   }
-  return nil;
+  return NO;
 }
 
 - (void)trackURLImageVisibilityForRequest:(RCTImageURLLoaderRequest *)loaderRequest imageView:(RCTUIView *)imageView // TODO(macOS GH#774)

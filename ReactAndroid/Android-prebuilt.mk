@@ -14,10 +14,6 @@
 
 LOCAL_PATH := $(call my-dir)
 
-REACT_ANDROID_DIR := $(LOCAL_PATH)
-# TODO: Find a better way without pointing to ReactAndroid/build dir.
-REACT_ANDROID_BUILD_DIR := $(REACT_ANDROID_DIR)/build
-
 FIRST_PARTY_NDK_DIR := $(REACT_ANDROID_DIR)/src/main/jni/first-party
 THIRD_PARTY_NDK_DIR := $(REACT_ANDROID_BUILD_DIR)/third-party-ndk
 REACT_ANDROID_SRC_DIR := $(REACT_ANDROID_DIR)/src/main

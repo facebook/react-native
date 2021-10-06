@@ -451,7 +451,7 @@ dependencies {
     api("com.google.code.findbugs:jsr305:3.0.2")
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
-    api("com.squareup.okio:okio:1.15.0")
+    api("com.squareup.okio:okio:1.17.5")
     api("com.facebook.fbjni:fbjni-java-only:0.0.3")
     extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
     extractJNI("com.facebook.fbjni:fbjni:0.0.2")
@@ -461,7 +461,7 @@ dependencies {
     testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
     testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
     testImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-    testImplementation("org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}")
+    testImplementation("org.easytesting:fest-assert-core:2.0M10")
     testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
 
     androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
@@ -474,6 +474,6 @@ apply(from: "release.gradle")
 
 react {
     jsRootDir = file("../Libraries")
-    reactNativeRootDir = file("$rootDir")
+    reactNativeRootDir = file("$projectDir/..")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
