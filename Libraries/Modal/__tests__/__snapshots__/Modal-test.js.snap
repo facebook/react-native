@@ -4,9 +4,7 @@ exports[`<Modal /> should not render its children when mocked with visible=false
 <Modal
   hardwareAccelerated={false}
   visible={false}
->
-  <View />
-</Modal>
+/>
 `;
 
 exports[`<Modal /> should render as <Modal> when mocked 1`] = `
@@ -22,7 +20,7 @@ exports[`<Modal /> should render as <RCTModalHostView> when not mocked 1`] = `
 <RCTModalHostView
   animationType="none"
   hardwareAccelerated={false}
-  identifier={2}
+  identifier={4}
   onDismiss={[Function]}
   onStartShouldSetResponder={[Function]}
   presentationStyle="fullScreen"
