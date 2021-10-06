@@ -11,12 +11,14 @@
 'use strict';
 
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import RCTPickerViewConfig from './RCTPickerViewConfig';
 import * as React from 'react';
 
 type PickerIOSChangeEvent = SyntheticEvent<
@@ -28,7 +30,7 @@ type PickerIOSChangeEvent = SyntheticEvent<
 
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
-  value: ?(number | string),
+  value: ?string,
   textColor: ?ProcessedColorValue,
 |}>;
 
@@ -56,8 +58,15 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeSelectedIndex'],
 });
 
-const RCTPickerNativeComponent: ComponentType = requireNativeComponent<NativeProps>(
-  'RCTPicker',
-);
+let RCTPickerNativeComponent;
+if (global.RN$Bridgeless) {
+  ReactNativeViewConfigRegistry.register('RCTPicker', () => {
+    return RCTPickerViewConfig;
+  });
+  RCTPickerNativeComponent = 'RCTPicker';
+} else {
+  RCTPickerNativeComponent = requireNativeComponent<NativeProps>('RCTPicker');
+}
 
-export default RCTPickerNativeComponent;
+// flowlint-next-line unclear-type:off
+export default ((RCTPickerNativeComponent: any): HostComponent<NativeProps>);

@@ -16,7 +16,6 @@
 #import "RCTBridge.h"
 #import "RCTConstants.h"
 #import "RCTDevSettings.h" // TODO(OSS Candidate ISS#2710739)
-#import "RCTEventDispatcher.h"
 // TODO(OSS Candidate ISS#2710739): remove #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"

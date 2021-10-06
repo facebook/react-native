@@ -712,6 +712,8 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
       @"systemPurpleColor": @{}, // 10_10
       @"systemRedColor": @{},    // 10_10
       @"systemYellowColor": @{}, // 10_10
+      // Transparent Color
+      @"clearColor" : @{},
 #else // ]TODO(macOS GH#774)
       // https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors
       // Label Colors
@@ -836,6 +838,11 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
       @"systemGray6Color" : @{
         // iOS 13.0
         RCTFallbackARGB : @(0xFFf2f2f7)
+      },
+      // Transparent Color
+      @"clearColor" : @{
+        // iOS 13.0
+        RCTFallbackARGB : @(0x00000000)
       },
 #endif // TODO(macOS GH#774)
     } mutableCopy];

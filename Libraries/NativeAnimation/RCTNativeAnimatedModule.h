@@ -6,7 +6,7 @@
  */
 
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTEventEmitter.h>
 #import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>

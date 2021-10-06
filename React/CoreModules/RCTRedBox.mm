@@ -12,7 +12,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTErrorInfo.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTJSStackFrame.h>
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 #import <React/RCTRedBoxExtraDataViewController.h>

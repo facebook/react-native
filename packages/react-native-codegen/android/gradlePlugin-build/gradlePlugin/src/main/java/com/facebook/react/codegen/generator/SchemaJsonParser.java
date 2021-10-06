@@ -93,13 +93,17 @@ public final class SchemaJsonParser {
   }
 
   // Parse type information from a JSON "typeAnnotation" node.
-  private Type parseTypeAnnotation(final TypeId typeId, final JsonObject typeAnnotation) {
-    final String type = typeAnnotation.get("type").getAsString();
-    // TODO (T71824250): Support NullableTypeAnnotation in the schema instead of a field here.
-    final boolean nullable =
-        typeAnnotation.has("nullable") ? typeAnnotation.get("nullable").getAsBoolean() : false;
-
+  private Type parseTypeAnnotation(final TypeId typeId, final JsonObject originalTypeAnnotation) {
+    JsonObject typeAnnotation = originalTypeAnnotation;
+    String type = typeAnnotation.get("type").getAsString();
+    boolean nullable = false;
     Type parsedType = null;
+
+    if (type.equals(NullableType.TYPE_NAME)) {
+      nullable = true;
+      typeAnnotation = typeAnnotation.get("typeAnnotation").getAsJsonObject();
+      type = typeAnnotation.get("type").getAsString();
+    }
 
     switch (type) {
       case AliasType.TYPE_NAME:
@@ -178,10 +182,9 @@ public final class SchemaJsonParser {
     properties.forEach(
         p -> {
           final JsonObject node = p.getAsJsonObject();
-          final String name = node.has("name") ? node.get("name").getAsString() : null;
+          final String name = node.get("name").getAsString();
           final JsonObject typeAnnotation = node.getAsJsonObject("typeAnnotation");
-          // TODO (T71845349): "optional" field shouldn't be part of the Function's typeAnnotation.
-          final boolean optional = typeAnnotation.get("optional").getAsBoolean();
+          final boolean optional = node.get("optional").getAsBoolean();
           final TypeId propertyTypeId =
               TypeId.expandOf(typeId, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name));
           collectedPropertiesBuilder.add(
@@ -214,28 +217,21 @@ public final class SchemaJsonParser {
 
     ImmutableList.Builder<FunctionType.ArgumentType> paramsList = new ImmutableList.Builder<>();
 
-    // TODO (T71846321): Some functions are missing params specification.
-    if (params != null) {
-      for (int i = 0; i < params.size(); i++) {
-        final JsonElement p = params.get(i);
-        final JsonObject node = p.getAsJsonObject();
-        final String name = node.has("name") ? node.get("name").getAsString() : ("Arg" + i);
-        paramsList.add(
-            FunctionType.createArgument(
-                name,
-                parseTypeAnnotation(
-                    TypeId.expandOf(
-                        typeId, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name)),
-                    node.getAsJsonObject("typeAnnotation"))));
-      }
+    for (int i = 0; i < params.size(); i++) {
+      final JsonElement p = params.get(i);
+      final JsonObject node = p.getAsJsonObject();
+      final String name = node.get("name").getAsString();
+      paramsList.add(
+          FunctionType.createArgument(
+              name,
+              parseTypeAnnotation(
+                  TypeId.expandOf(typeId, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name)),
+                  node.getAsJsonObject("typeAnnotation"))));
     }
 
-    // TODO (T71846321): Some functions are missing a return type.
     final JsonObject returnTypeAnnotation = typeAnnotation.getAsJsonObject("returnTypeAnnotation");
     final Type returnType =
-        returnTypeAnnotation != null
-            ? parseTypeAnnotation(TypeId.expandOf(typeId, "ReturnType"), returnTypeAnnotation)
-            : VoidType.VOID;
+        parseTypeAnnotation(TypeId.expandOf(typeId, "ReturnType"), returnTypeAnnotation);
 
     return new FunctionType(typeId, paramsList.build(), returnType);
   }
@@ -247,18 +243,12 @@ public final class SchemaJsonParser {
     properties.forEach(
         p -> {
           final JsonObject node = p.getAsJsonObject();
-          final String name = node.has("name") ? node.get("name").getAsString() : null;
+          final String name = node.get("name").getAsString();
           final boolean optional = node.get("optional").getAsBoolean();
           final JsonObject propertyTypeAnnotation = node.getAsJsonObject("typeAnnotation");
           final TypeId propertyTypeId =
               TypeId.expandOf(typeId, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name));
-
-          // TODO (T67898313): Some object properties are missing typeAnnotation.
-          final Type propertyType =
-              propertyTypeAnnotation != null
-                  ? parseTypeAnnotation(propertyTypeId, propertyTypeAnnotation)
-                  : new AnyType(propertyTypeId);
-
+          final Type propertyType = parseTypeAnnotation(propertyTypeId, propertyTypeAnnotation);
           propertiesList.add(new ObjectType.Property(name, propertyType, optional));
         });
 

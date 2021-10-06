@@ -162,6 +162,10 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
         break;
     }
   };
+
+  // TODO T76726108 Hook this up to the performance logger
+  ReactMarker::logTaggedMarkerWithInstanceKey =
+      [](const ReactMarker::ReactMarkerId markerId, const char *__unused tag, const __unused int) {};
 }
 
 @interface RCTCxxBridge ()

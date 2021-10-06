@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  Required,
+  Nullable,
   NativeModuleObjectTypeAnnotation,
   NativeModuleStringTypeAnnotation,
   NativeModuleNumberTypeAnnotation,
@@ -29,6 +29,10 @@ import type {
 import type {AliasResolver} from '../Utils';
 
 const {capitalize} = require('./Utils');
+const {
+  unwrapNullable,
+  wrapNullable,
+} = require('../../../parsers/flow/modules/utils');
 
 type StructContext = 'CONSTANTS' | 'REGULAR';
 
@@ -49,7 +53,7 @@ export type Struct = RegularStruct | ConstantsStruct;
 export type StructProperty = $ReadOnly<{|
   name: string,
   optional: boolean,
-  typeAnnotation: StructTypeAnnotation,
+  typeAnnotation: Nullable<StructTypeAnnotation>,
 |}>;
 
 export type StructTypeAnnotation =
@@ -62,7 +66,7 @@ export type StructTypeAnnotation =
   | NativeModuleGenericObjectTypeAnnotation
   | NativeModuleReservedFunctionValueTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
-  | NativeModuleArrayTypeAnnotation<StructTypeAnnotation>;
+  | NativeModuleArrayTypeAnnotation<Nullable<StructTypeAnnotation>>;
 
 class StructCollector {
   _structs: Map<string, Struct> = new Map();
@@ -71,46 +75,45 @@ class StructCollector {
     structName: string,
     structContext: StructContext,
     resolveAlias: AliasResolver,
-    typeAnnotation: NativeModuleBaseTypeAnnotation,
-  ): StructTypeAnnotation {
+    nullableTypeAnnotation: Nullable<NativeModuleBaseTypeAnnotation>,
+  ): Nullable<StructTypeAnnotation> {
+    const [typeAnnotation, nullable] = unwrapNullable(nullableTypeAnnotation);
     switch (typeAnnotation.type) {
       case 'ObjectTypeAnnotation': {
-        this._insertStruct(structName, structContext, resolveAlias, {
-          ...typeAnnotation,
-          // The nullability status of this struct is recorded in the type-alias we create for it below.
-          nullable: false,
-        });
-        return {
+        this._insertStruct(
+          structName,
+          structContext,
+          resolveAlias,
+          typeAnnotation,
+        );
+        return wrapNullable(nullable, {
           type: 'TypeAliasTypeAnnotation',
           name: structName,
-          nullable: typeAnnotation.nullable,
-        };
+        });
       }
       case 'ArrayTypeAnnotation': {
         if (typeAnnotation.elementType == null) {
-          return {
+          return wrapNullable(nullable, {
             type: 'ArrayTypeAnnotation',
-            nullable: typeAnnotation.nullable,
-          };
+          });
         }
 
-        return {
+        return wrapNullable(nullable, {
           type: 'ArrayTypeAnnotation',
-          nullable: typeAnnotation.nullable,
           elementType: this.process(
             structName + 'Element',
             structContext,
             resolveAlias,
             typeAnnotation.elementType,
           ),
-        };
+        });
       }
       case 'TypeAliasTypeAnnotation': {
         this._insertAlias(typeAnnotation.name, structContext, resolveAlias);
-        return typeAnnotation;
+        return wrapNullable(nullable, typeAnnotation);
       }
       default: {
-        return typeAnnotation;
+        return wrapNullable(nullable, typeAnnotation);
       }
     }
   }
@@ -139,10 +142,15 @@ class StructCollector {
     structName: string,
     structContext: StructContext,
     resolveAlias: AliasResolver,
-    objectTypeAnnotation: Required<NativeModuleObjectTypeAnnotation>,
+    objectTypeAnnotation: NativeModuleObjectTypeAnnotation,
   ): void {
-    const properties = objectTypeAnnotation.properties.map(property => {
-      const {typeAnnotation: propertyTypeAnnotation} = property;
+    const properties = objectTypeAnnotation.properties.map<
+      $ReadOnly<{
+        name: string,
+        optional: boolean,
+        typeAnnotation: Nullable<StructTypeAnnotation>,
+      }>,
+    >(property => {
       const propertyStructName = structName + capitalize(property.name);
 
       return {
@@ -151,7 +159,7 @@ class StructCollector {
           propertyStructName,
           structContext,
           resolveAlias,
-          propertyTypeAnnotation,
+          property.typeAnnotation,
         ),
       };
     });
