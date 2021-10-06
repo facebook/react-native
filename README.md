@@ -55,7 +55,7 @@ See [Contributing guidelines](https://github.com/microsoft/react-native-macos/bl
 [Good First Issue](https://github.com/microsoft/react-native-macos/labels/good%20first%20issue) and [help wanted](https://github.com/microsoft/react-native-macos/labels/help%20wanted) are great starting points for PRs.
 
 ## Documentation
-[React Native already has great documentation](https://reactnative.dev/docs/getting-started.html) and we're working to ensure the React Native for Windows + macOS are part of that documentation story.
+[React Native already has great documentation](https://reactnative.dev/docs/getting-started) and we're working to ensure the React Native for Windows + macOS are part of that documentation story.
 
 [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/) has it's own separate documentation site where Windows and macOS
 specific information, like API docs and blog updates live. We are bootstrapping documentation for macOS at this time, tune in for updates.
