@@ -45,8 +45,7 @@ class TelemetryController final {
   bool pullTransaction(
       std::function<void(MountingTransactionMetadata metadata)> willMount,
       std::function<void(ShadowViewMutationList const &mutations)> doMount,
-      std::function<void(MountingTransactionMetadata metadata)> didMount) const
-      noexcept;
+      std::function<void(MountingTransactionMetadata metadata)> didMount) const;
 
  private:
   MountingCoordinator const &mountingCoordinator_;

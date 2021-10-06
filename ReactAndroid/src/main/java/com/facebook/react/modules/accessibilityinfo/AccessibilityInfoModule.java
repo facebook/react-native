@@ -36,7 +36,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   public static final String NAME = "AccessibilityInfo";
 
-  @TargetApi(Build.VERSION_CODES.KITKAT)
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private class ReactTouchExplorationStateChangeListener
       implements AccessibilityManager.TouchExplorationStateChangeListener {
 
@@ -87,7 +87,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
     return "AccessibilityInfo";
   }
 
-  @TargetApi(Build.VERSION_CODES.KITKAT)
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private boolean getIsReduceMotionEnabledValue() {
     String value =
         Settings.Global.getString(mContentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE);
@@ -134,7 +134,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   }
 
   @Override
-  @TargetApi(Build.VERSION_CODES.KITKAT)
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void onHostResume() {
     mAccessibilityManager.addTouchExplorationStateChangeListener(
         mTouchExplorationStateChangeListener);
@@ -147,7 +147,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
   }
 
   @Override
-  @TargetApi(Build.VERSION_CODES.KITKAT)
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void onHostPause() {
     mAccessibilityManager.removeTouchExplorationStateChangeListener(
         mTouchExplorationStateChangeListener);

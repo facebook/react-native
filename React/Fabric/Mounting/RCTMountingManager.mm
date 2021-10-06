@@ -11,6 +11,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTFollyConvert.h>
+#import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
@@ -228,6 +229,19 @@ static void RCTPerformMountInstructions(
   componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   [componentView updateProps:newProps oldProps:oldProps];
   componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;
+
+  const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(newProps);
+
+  if (props[@"transform"] &&
+      !CATransform3DEqualToTransform(
+          RCTCATransform3DFromTransformMatrix(newViewProps.transform), componentView.layer.transform)) {
+    RCTLogWarn(@"transform was not applied during [RCTViewComponentView updateProps:oldProps:]");
+    componentView.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
+  }
+  if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
+    RCTLogWarn(@"opacity was not applied during [RCTViewComponentView updateProps:oldProps:]");
+    componentView.layer.opacity = newViewProps.opacity;
+  }
 }
 
 - (void)synchronouslyDispatchCommandOnUIThread:(ReactTag)reactTag

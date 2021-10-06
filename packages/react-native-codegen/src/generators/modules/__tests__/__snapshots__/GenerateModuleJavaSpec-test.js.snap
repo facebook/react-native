@@ -38,7 +38,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   public abstract void optionals(ReadableMap A);
 
   @ReactMethod
-  public abstract void optionalMethod(ReadableMap options, Callback callback, ReadableArray extras);
+  public void optionalMethod(ReadableMap options, Callback callback, ReadableArray extras) {}
 
   @ReactMethod
   public abstract void getArrays(ReadableMap options);
@@ -189,13 +189,13 @@ public abstract class NativeExceptionsManagerSpec extends ReactContextBaseJavaMo
   public abstract void reportSoftException(String message, ReadableArray stack, double exceptionId);
 
   @ReactMethod
-  public abstract void reportException(ReadableMap data);
+  public void reportException(ReadableMap data) {}
 
   @ReactMethod
   public abstract void updateExceptionMessage(String message, ReadableArray stack, double exceptionId);
 
   @ReactMethod
-  public abstract void dismissRedbox();
+  public void dismissRedbox() {}
 }
 ",
 }

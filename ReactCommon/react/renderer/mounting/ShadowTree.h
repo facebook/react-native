@@ -37,6 +37,13 @@ class ShadowTree final {
     Cancelled,
   };
 
+  struct CommitOptions {
+    bool enableStateReconciliation{false};
+    // Lambda called inside `tryCommit`. If false is returned, commit is
+    // cancelled.
+    std::function<bool()> shouldCancel;
+  };
+
   /*
    * Creates a new shadow tree instance.
    */
@@ -63,14 +70,14 @@ class ShadowTree final {
    */
   CommitStatus tryCommit(
       ShadowTreeCommitTransaction transaction,
-      bool enableStateReconciliation = false) const;
+      CommitOptions commitOptions = {false}) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
   CommitStatus commit(
       ShadowTreeCommitTransaction transaction,
-      bool enableStateReconciliation = false) const;
+      CommitOptions commitOptions = {false}) const;
 
   /*
    * Returns a `ShadowTreeRevision` representing the momentary state of

@@ -28,11 +28,11 @@ executors:
   nodelts:
     <<: *defaults
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:12
   reactnativeandroid:
     <<: *defaults
     docker:
@@ -588,7 +588,7 @@ jobs:
             source ~/.bashrc
             nvm i node
             npm i -g yarn
-            npx envinfo@latest
+            echo y | npx envinfo@latest
             yarn run docker-setup-android
             yarn run docker-build-android
 

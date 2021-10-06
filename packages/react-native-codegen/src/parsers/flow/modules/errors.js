@@ -135,6 +135,22 @@ class UnsupportedArrayElementTypeAnnotationParserError extends ParserError {
 class UnsupportedObjectPropertyTypeAnnotationParserError extends ParserError {
   constructor(
     hasteModuleName: string,
+    propertyAST: $FlowFixMe,
+    invalidPropertyType: string,
+  ) {
+    let message = `'ObjectTypeAnnotation' cannot contain '${invalidPropertyType}'.`;
+
+    if (invalidPropertyType === 'ObjectTypeSpreadProperty') {
+      message = "Object spread isn't supported in 'ObjectTypeAnnotation's.";
+    }
+
+    super(hasteModuleName, propertyAST, message);
+  }
+}
+
+class UnsupportedObjectPropertyValueTypeAnnotationParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
     propertyValueAST: $FlowFixMe,
     propertyName: string,
     invalidPropertyValueType: string,
@@ -202,4 +218,5 @@ module.exports = {
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
+  UnsupportedObjectPropertyValueTypeAnnotationParserError,
 };

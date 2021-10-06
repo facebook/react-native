@@ -8,9 +8,13 @@
  * @format
  */
 
+/**
+ * This generates all possible outputs by executing all available generators.
+ */
+
 'use strict';
 
-const RNCodegen = require('../src/generators/RNCodegen.js');
+const RNCodegen = require('../../generators/RNCodegen.js');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 

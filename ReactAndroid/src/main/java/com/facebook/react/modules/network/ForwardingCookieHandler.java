@@ -126,7 +126,7 @@ public class ForwardingCookieHandler extends CookieHandler {
   }
 
   /**
-   * Instantiating CookieManager in KitKat+ will load the Chromium task taking a 100ish ms so we do
+   * Instantiating CookieManager will load the Chromium task taking a 100ish ms so we do
    * it lazily to make sure it's done on a background thread as needed.
    */
   private @Nullable CookieManager getCookieManager() {

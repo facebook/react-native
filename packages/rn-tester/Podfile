@@ -102,6 +102,7 @@ pre_install do |installer|
   if ENV['USE_CODEGEN'] != '0'
     prefix_path = "../.."
     codegen_path = "../../packages/react-native-codegen"
+    system("(cd #{codegen_path} && yarn install && yarn run build)")
     codegen_pre_install(installer, {path:prefix_path, codegen_path:codegen_path})
   end
 end

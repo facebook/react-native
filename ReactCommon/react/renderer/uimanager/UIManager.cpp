@@ -92,7 +92,8 @@ void UIManager::appendChild(
 
 void UIManager::completeSurface(
     SurfaceId surfaceId,
-    const SharedShadowNodeUnsharedList &rootChildren) const {
+    SharedShadowNodeUnsharedList const &rootChildren,
+    ShadowTree::CommitOptions commitOptions) const {
   SystraceSection s("UIManager::completeSurface");
 
   shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
@@ -105,7 +106,7 @@ void UIManager::completeSurface(
                   /* .children = */ rootChildren,
               });
         },
-        true);
+        commitOptions);
   });
 }
 

@@ -19,8 +19,7 @@ TelemetryController::TelemetryController(
 bool TelemetryController::pullTransaction(
     std::function<void(MountingTransactionMetadata metadata)> willMount,
     std::function<void(ShadowViewMutationList const &mutations)> doMount,
-    std::function<void(MountingTransactionMetadata metadata)> didMount) const
-    noexcept {
+    std::function<void(MountingTransactionMetadata metadata)> didMount) const {
   auto optional = mountingCoordinator_.pullTransaction();
   if (!optional.has_value()) {
     return false;

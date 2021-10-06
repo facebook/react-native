@@ -12,281 +12,31 @@
 
 const path = require('path');
 
-const supportedTypes = [
-  'ArrayTypeAnnotation',
-  'BooleanTypeAnnotation',
-  'NumberTypeAnnotation',
-  'StringTypeAnnotation',
-];
-
-const supportedTypeAliases = {
-  BooleanTypeAnnotation: 'boolean',
-  FunctionTypeAnnotation: 'Function',
-  NumberTypeAnnotation: 'number',
-  StringTypeAnnotation: 'string',
-  ObjectTypeAnnotation: 'object',
-};
-
-const supportedGenericTypes = [
-  'Array',
-  'Object',
-  'RootTag',
-  '$ReadOnly',
-  '$ReadOnlyArray',
-];
-
-const supportedNullableTypes = [
-  'ArrayTypeAnnotation',
-  'BooleanTypeAnnotation',
-  'FunctionTypeAnnotation',
-  'NumberTypeAnnotation',
-  'ObjectTypeAnnotation',
-  'StringTypeAnnotation',
-];
-
-const supportedMethodReturnTypes = [
-  'BooleanTypeAnnotation',
-  'NumberTypeAnnotation',
-  'ObjectTypeAnnotation',
-  'StringTypeAnnotation',
-  'VoidTypeAnnotation',
-];
-
-const errors = {
-  invalidNativeModuleInterfaceName(interfaceName) {
-    return (
-      "NativeModule interfaces must be named 'Spec', " +
-      `got '${interfaceName}'.`
-    );
+const ERRORS = {
+  misnamedHasteModule(hasteModuleName) {
+    return `Module ${hasteModuleName}: All files using TurboModuleRegistry must start with Native.`;
   },
-  inexactObjectReturnType() {
-    return 'Spec interface method object return type must be exact.';
+  untypedModuleRequire(hasteModuleName, requireMethodName) {
+    return `Module ${hasteModuleName}: Please type parameterize the Module require: TurboModuleRegistry.${requireMethodName}<Spec>().`;
   },
-  invalidHasteName(hasteName) {
-    return (
-      'Module name for a NativeModule JS wrapper must start with ' +
-      `'Native', got '${hasteName}' instead.`
-    );
+  incorrectlyTypedModuleRequire(hasteModuleName, requireMethodName) {
+    return `Module ${hasteModuleName}: Type parameter of Module require must be 'Spec': TurboModuleRegistry.${requireMethodName}<Spec>().`;
   },
-  missingSpecInterfaceMethod() {
-    return 'NativeModule Spec interface must define at least one method';
+  multipleModuleRequires(hasteModuleName, numCalls) {
+    return `Module ${hasteModuleName}: Module spec must contain exactly one call into TurboModuleRegistry, detected ${numCalls}.`;
   },
-  unsupportedMethodReturnType(typeName) {
-    return (
-      `Spec interface method has unsupported return type '${typeName}'. ` +
-      'See https://fburl.com/rn-nativemodules for more details.'
-    );
+  calledModuleRequireWithWrongType(hasteModuleName, requireMethodName, type) {
+    const a = /[aeiouy]/.test(type.toLowerCase()) ? 'an' : 'a';
+    return `Module ${hasteModuleName}: TurboModuleRegistry.${requireMethodName}<Spec>() must be called with a string literal, detected ${a} '${type}'.`;
   },
-  unsupportedType(typeName) {
-    return (
-      `Unsupported type '${typeName}' for Spec interface. ` +
-      'See https://fburl.com/rn-nativemodules for more details.'
-    );
-  },
-  untypedModuleRequire(requireMethodName) {
-    return (
-      'NativeModule require not type-safe. Please require with the NativeModule interface ' +
-      `'Spec': TurboModuleRegistry.${requireMethodName}<Spec>`
-    );
-  },
-  incorrectlyTypedModuleRequire(requireMethodName) {
-    return (
-      'NativeModule require incorrectly typed. Please require with the NativeModule interface identifier ' +
-      `'Spec', and nothing else: TurboModuleRegistry.${requireMethodName}<Spec>`
-    );
-  },
-  specNotDeclaredInFile() {
-    return "The NativeModule interface 'Spec' wasn't declared in this NativeModule spec file.";
-  },
-};
-
-function interfaceExtendsFrom(node, superInterfaceName) {
-  return (
-    node.type === 'InterfaceDeclaration' &&
-    node.extends[0] &&
-    node.extends[0].id.name === superInterfaceName
-  );
-}
-
-function isSupportedFunctionParam(node) {
-  if (node.type !== 'FunctionTypeParam') {
-    return false;
-  }
-
-  if (node.optional) {
-    return false;
-  }
-
-  return findUnsupportedType(node.typeAnnotation, true) == null;
-}
-
-function findUnsupportedType(typeAnnotation, supportCallbacks) {
-  if (supportedTypes.includes(typeAnnotation.type)) {
-    return null;
-  }
-
-  if (typeAnnotation.type === 'NullableTypeAnnotation') {
-    if (supportedNullableTypes.includes(typeAnnotation.typeAnnotation.type)) {
-      return null;
-    }
-    typeAnnotation = typeAnnotation.typeAnnotation;
-  }
-
-  if (typeAnnotation.type === 'FunctionTypeAnnotation' && supportCallbacks) {
-    return null;
-  }
-
-  if (typeAnnotation.type === 'GenericTypeAnnotation') {
-    if (!supportedGenericTypes.includes(typeAnnotation.id.name)) {
-      return typeAnnotation;
-    }
-    if (
-      !isGenericArrayTypeAnnotation(typeAnnotation) &&
-      typeAnnotation.typeParameters
-    ) {
-      for (const param of typeAnnotation.typeParameters.params) {
-        const unsupported = findUnsupportedType(param, supportCallbacks);
-        if (unsupported != null) {
-          return unsupported;
-        }
-      }
-    }
-    return null;
-  }
-
-  if (typeAnnotation.type === 'ObjectTypeAnnotation') {
-    for (const prop of typeAnnotation.properties) {
-      const unsupported = findUnsupportedType(prop.value, supportCallbacks);
-      if (unsupported != null) {
-        return unsupported;
-      }
-    }
-    return null;
-  }
-
-  return typeAnnotation;
-}
-
-function functionParamTypeName(node) {
-  if (node.type !== 'FunctionTypeParam') {
-    return null;
-  }
-
-  const parts = [];
-  if (node.optional) {
-    parts.push('optional');
-  }
-  parts.push(functionParamTypeAnnotationName(node.typeAnnotation));
-  return parts.join(' ');
-}
-
-function functionParamTypeAnnotationName(typeAnnotation) {
-  const {id, type} = typeAnnotation;
-  if (type === 'GenericTypeAnnotation') {
-    return id.name;
-  }
-
-  const parts = [];
-  if (type === 'NullableTypeAnnotation') {
-    parts.push('nullable');
-    parts.push(functionParamTypeAnnotationName(typeAnnotation.typeAnnotation));
-  } else {
-    parts.push(supportedTypeAliases[type] || type);
-  }
-  return parts.join(' ');
-}
-
-function getTypeName(typeAnnotation) {
-  const {id, type} = typeAnnotation;
-  if (type === 'GenericTypeAnnotation') {
-    return id.name;
-  }
-  return supportedTypeAliases[type];
-}
-
-function checkSupportedSpecProperty(context, node) {
-  if (node.type !== 'FunctionTypeAnnotation') {
-    const unsupportedNode = findUnsupportedType(node, false);
-    if (unsupportedNode != null) {
-      context.report({
-        node: unsupportedNode,
-        message: errors.unsupportedType(
-          functionParamTypeAnnotationName(unsupportedNode),
-        ),
-      });
-      return false;
-    }
-    return true;
-  }
-
-  if (!isSupportedMethodReturnTypeAnnotation(node.returnType)) {
-    context.report({
-      node: node.returnType,
-      message: errors.unsupportedMethodReturnType(getTypeName(node.returnType)),
-    });
-    return false;
-  }
-
-  // Check for exact object return type.
-  if (
-    node.returnType.type === 'ObjectTypeAnnotation' &&
-    !node.returnType.exact
+  calledModuleRequireWithWrongLiteral(
+    hasteModuleName,
+    requireMethodName,
+    literal,
   ) {
-    context.report({
-      node: node.returnType,
-      message: errors.inexactObjectReturnType(),
-    });
-  }
-
-  for (const param of node.params) {
-    if (!isSupportedFunctionParam(param)) {
-      context.report({
-        node: param.typeAnnotation,
-        message: errors.unsupportedType(functionParamTypeName(param)),
-      });
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function isPromiseTypeAnnotation(typeAnnotation) {
-  return (
-    typeAnnotation.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id &&
-    typeAnnotation.id.name === 'Promise'
-  );
-}
-
-function isGenericArrayTypeAnnotation(typeAnnotation) {
-  return (
-    typeAnnotation.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id &&
-    typeAnnotation.id.name === 'Array'
-  );
-}
-
-function isGenericObjectTypeAnnotation(typeAnnotation) {
-  return (
-    typeAnnotation.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id &&
-    typeAnnotation.id.name === 'Object'
-  );
-}
-
-function isSupportedMethodReturnTypeAnnotation(typeAnnotation) {
-  const resolvedType =
-    typeAnnotation.type === 'NullableTypeAnnotation'
-      ? typeAnnotation.typeAnnotation
-      : typeAnnotation;
-  return (
-    supportedMethodReturnTypes.includes(resolvedType.type) ||
-    isGenericArrayTypeAnnotation(resolvedType) ||
-    isGenericObjectTypeAnnotation(resolvedType) ||
-    isPromiseTypeAnnotation(resolvedType)
-  );
-}
+    return `Module ${hasteModuleName}: TurboModuleRegistry.${requireMethodName}<Spec>() must be called with a string literal, detected ${literal}`;
+  },
+};
 
 const VALID_SPEC_NAMES = /^Native\S+$/;
 
@@ -337,37 +87,77 @@ function isGeneratedFile(context) {
  */
 function rule(context) {
   const filename = context.getFilename();
+  const hasteModuleName = path.basename(filename).replace(/\.js$/, '');
 
   if (isGeneratedFile(context)) {
     return {};
   }
 
-  const sourceCode = context.getSourceCode().getText();
-  if (!sourceCode.includes('TurboModuleRegistry')) {
-    return {};
-  }
-
-  const specIdentifierUsages = [];
-  const declaredModuleInterfaces = [];
-
+  let moduleRequires = [];
   return {
-    'Program:exit': function() {
-      if (
-        specIdentifierUsages.length > 0 &&
-        declaredModuleInterfaces.length === 0
-      ) {
-        specIdentifierUsages.forEach(specNode => {
+    'Program:exit': function(node) {
+      if (moduleRequires.length === 0) {
+        return;
+      }
+
+      if (moduleRequires.length > 1) {
+        moduleRequires.forEach(callExpressionNode => {
           context.report({
-            node: specNode,
-            message: errors.specNotDeclaredInFile(),
+            node: callExpressionNode,
+            message: ERRORS.multipleModuleRequires(
+              hasteModuleName,
+              moduleRequires.length,
+            ),
           });
         });
+        return;
       }
+
+      // Report invalid file names
+      if (!VALID_SPEC_NAMES.test(hasteModuleName)) {
+        context.report({
+          node,
+          message: ERRORS.misnamedHasteModule(hasteModuleName),
+        });
+      }
+
+      let buildModuleSchema = null;
+      let createParserErrorCapturer = null;
+      try {
+        /**
+         * The following files are written with Flow typings.
+         * Unless the typings are stripped at compile-time or run-time,
+         * the following requires fill fail. Hence, the try/catch.
+         */
+        ({
+          buildModuleSchema,
+        } = require('react-native-codegen/src/parsers/flow/modules'));
+        ({
+          createParserErrorCapturer,
+        } = require('react-native-codegen/src/parsers/flow/utils'));
+      } catch (ex) {
+        return;
+      }
+
+      const flowParser = require('flow-parser');
+      const [parsingErrors, guard] = createParserErrorCapturer();
+
+      const sourceCode = context.getSourceCode().getText();
+      const ast = flowParser.parse(sourceCode);
+      guard(() => buildModuleSchema(hasteModuleName, [], ast, guard));
+      parsingErrors.forEach(error => {
+        context.report({
+          loc: error.node.loc,
+          message: error.message,
+        });
+      });
     },
     CallExpression(node) {
       if (!isModuleRequire(node)) {
         return;
       }
+
+      moduleRequires.push(node);
 
       /**
        * Validate that NativeModule requires are typed
@@ -379,7 +169,7 @@ function rule(context) {
         const methodName = node.callee.property.name;
         context.report({
           node,
-          message: errors.untypedModuleRequire(methodName),
+          message: ERRORS.untypedModuleRequire(hasteModuleName, methodName),
         });
         return;
       }
@@ -402,66 +192,51 @@ function rule(context) {
         const methodName = node.callee.property.name;
         context.report({
           node,
-          message: errors.incorrectlyTypedModuleRequire(methodName),
+          message: ERRORS.incorrectlyTypedModuleRequire(
+            hasteModuleName,
+            methodName,
+          ),
         });
         return;
       }
 
-      specIdentifierUsages.push(param);
-      return true;
-    },
-    InterfaceDeclaration(node) {
-      if (
-        !interfaceExtendsFrom(node, 'DEPRECATED_RCTExport') &&
-        !interfaceExtendsFrom(node, 'TurboModule')
-      ) {
-        return;
-      }
+      /**
+       * Validate the TurboModuleRegistry.get<Spec>(...) argument
+       */
 
-      const basename = path.basename(filename, '.js');
-      if (
-        basename &&
-        basename !== 'RCTExport' &&
-        !VALID_SPEC_NAMES.test(basename)
-      ) {
-        context.report({
-          loc: {start: {line: 0, column: 0}},
-          message: errors.invalidHasteName(basename),
-        });
-      }
+      if (node.arguments.length === 1) {
+        const methodName = node.callee.property.name;
 
-      if (node.id.name !== 'Spec') {
-        context.report({
-          node,
-          message: errors.invalidNativeModuleInterfaceName(node.id.name),
-          fix: fixer => fixer.replaceText(node.id, 'Spec'),
-        });
-        return;
-      }
-
-      declaredModuleInterfaces.push(node);
-
-      if (!node.body.properties.length) {
-        context.report({
-          node: node.body,
-          message: errors.missingSpecInterfaceMethod(),
-        });
-        return;
-      }
-
-      let hasUnsupportedProp = false;
-      node.body.properties.forEach(prop => {
-        if (hasUnsupportedProp) {
+        if (node.arguments[0].type !== 'Literal') {
+          context.report({
+            node: node.arguments[0],
+            message: ERRORS.calledModuleRequireWithWrongType(
+              hasteModuleName,
+              methodName,
+              node.arguments[0].type,
+            ),
+          });
           return;
         }
-        if (!checkSupportedSpecProperty(context, prop.value)) {
-          hasUnsupportedProp = true;
+
+        if (typeof node.arguments[0].value !== 'string') {
+          context.report({
+            node: node.arguments[0],
+            message: ERRORS.calledModuleRequireWithWrongLiteral(
+              hasteModuleName,
+              methodName,
+              node.arguments[0].value,
+            ),
+          });
+          return;
         }
-      });
+      }
+
+      return true;
     },
   };
 }
 
-rule.errors = errors;
+rule.errors = ERRORS;
 
 module.exports = rule;

@@ -10,12 +10,13 @@
 
 'use strict';
 
+import createPerformanceLogger from '../../Utilities/createPerformanceLogger';
+
 jest.unmock('../../Utilities/Platform');
 jest.mock('../../Utilities/GlobalPerformanceLogger');
 
 const Platform = require('../../Utilities/Platform');
 const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
-const createPerformanceLogger = require('../../Utilities/createPerformanceLogger');
 let requestId = 1;
 
 function setRequestId(id) {

@@ -129,6 +129,7 @@ static uint64_t monotonicTimeGetCurrentNanoseconds(void)
   NSMutableArray *_pendingDecodes;
   NSInteger _scheduledDecodes;
   NSUInteger _activeBytes;
+  std::mutex _loadersMutex;
   __weak id<RCTImageRedirectProtocol> _redirectDelegate;
 }
 
@@ -209,26 +210,29 @@ RCT_EXPORT_MODULE()
   }
 
   if (!_loaders) {
-    // Get loaders, sorted in reverse priority order (highest priority first)
-
-    if (_loadersProvider) {
-      _loaders = _loadersProvider();
-    } else {
-      RCTAssert(_bridge, @"Trying to find RCTImageURLLoaders and bridge not set.");
-      _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
-    }
-
-    _loaders = [_loaders sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageURLLoader> a, id<RCTImageURLLoader> b) {
-      float priorityA = [a respondsToSelector:@selector(loaderPriority)] ? [a loaderPriority] : 0;
-      float priorityB = [b respondsToSelector:@selector(loaderPriority)] ? [b loaderPriority] : 0;
-      if (priorityA > priorityB) {
-        return NSOrderedAscending;
-      } else if (priorityA < priorityB) {
-        return NSOrderedDescending;
+    std::unique_lock<std::mutex> guard(_loadersMutex);
+    if (!_loaders) {
+      
+      // Get loaders, sorted in reverse priority order (highest priority first)
+      if (_loadersProvider) {
+        _loaders = _loadersProvider();
       } else {
-        return NSOrderedSame;
+        RCTAssert(_bridge, @"Trying to find RCTImageURLLoaders and bridge not set.");
+        _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
       }
-    }];
+
+      _loaders = [_loaders sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageURLLoader> a, id<RCTImageURLLoader> b) {
+        float priorityA = [a respondsToSelector:@selector(loaderPriority)] ? [a loaderPriority] : 0;
+        float priorityB = [b respondsToSelector:@selector(loaderPriority)] ? [b loaderPriority] : 0;
+        if (priorityA > priorityB) {
+          return NSOrderedAscending;
+        } else if (priorityA < priorityB) {
+          return NSOrderedDescending;
+        } else {
+          return NSOrderedSame;
+        }
+      }];
+    }
   }
 
   if (RCT_DEBUG) {

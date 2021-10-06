@@ -170,7 +170,7 @@ fi
   $EXTRA_PACKAGER_ARGS
 
 if [[ $USE_HERMES != true ]]; then
-  mv "$BUNDLE_FILE" "$DEST/"
+  cp "$BUNDLE_FILE" "$DEST/"
   BUNDLE_FILE="$DEST/main.jsbundle"
 else
   EXTRA_COMPILER_ARGS=

@@ -392,6 +392,7 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
   [self _forceDispatchNextScrollEvent];
+  [self scrollViewDidScroll:scrollView];
 
   if (!_eventEmitter) {
     return;
@@ -445,7 +446,30 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)scrollTo:(double)x y:(double)y animated:(BOOL)animated
 {
-  [_scrollView setContentOffset:CGPointMake(x, y) animated:animated];
+  CGPoint offset = CGPointMake(x, y);
+  if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    CGRect maxRect = CGRectMake(
+        fmin(-_scrollView.contentInset.left, 0),
+        fmin(-_scrollView.contentInset.top, 0),
+        fmax(
+            _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right +
+                fmax(_scrollView.contentInset.left, 0),
+            0.01),
+        fmax(
+            _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom +
+                fmax(_scrollView.contentInset.top, 0),
+            0.01)); // Make width and height greater than 0
+
+    [self _forceDispatchNextScrollEvent];
+    if (!CGRectContainsPoint(maxRect, offset)) {
+      CGFloat localX = fmax(offset.x, CGRectGetMinX(maxRect));
+      localX = fmin(localX, CGRectGetMaxX(maxRect));
+      CGFloat localY = fmax(offset.y, CGRectGetMinY(maxRect));
+      localY = fmin(localY, CGRectGetMaxY(maxRect));
+      offset = CGPointMake(localX, localY);
+    }
+    [_scrollView setContentOffset:offset animated:animated];
+  }
 }
 
 - (void)scrollToEnd:(BOOL)animated

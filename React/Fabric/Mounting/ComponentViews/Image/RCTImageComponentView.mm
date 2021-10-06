@@ -153,25 +153,17 @@ using namespace facebook::react;
                                   resizingMode:UIImageResizingModeStretch];
   }
 
-  void (^didSetImage)() = ^() {
-    auto data = self->_stateTeller.getData();
-    if (!data.hasValue()) {
-      return;
-    }
-  };
-
   if (imageProps.blurRadius > __FLT_EPSILON__) {
     // Blur on a background thread to avoid blocking interaction.
+    CGFloat blurRadius = imageProps.blurRadius;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      UIImage *blurredImage = RCTBlurredImageWithRadius(image, imageProps.blurRadius);
+      UIImage *blurredImage = RCTBlurredImageWithRadius(image, blurRadius);
       RCTExecuteOnMainQueue(^{
         self->_imageView.image = blurredImage;
-        didSetImage();
       });
     });
   } else {
     self->_imageView.image = image;
-    didSetImage();
   }
 }
 

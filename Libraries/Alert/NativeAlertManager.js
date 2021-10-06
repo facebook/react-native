@@ -49,7 +49,6 @@ type NativeArgs = {|
 
 export interface Spec extends TurboModule {
   +alertWithArgs: (
-    // eslint-disable-next-line @react-native/codegen/react-native-modules
     args: NativeArgs, // TODO(macOS GH#774): Args -> NativeArgs
     callback: (id: number, value: string) => void,
   ) => void;

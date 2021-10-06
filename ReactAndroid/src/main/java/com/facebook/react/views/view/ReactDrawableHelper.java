@@ -73,11 +73,7 @@ public class ReactDrawableHelper {
   }
 
   private static RippleDrawable getRippleDrawable(
-      Context context, ReadableMap drawableDescriptionDict) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      throw new JSApplicationIllegalArgumentException(
-          "Ripple drawable is not available on android API <21");
-    }
+    Context context, ReadableMap drawableDescriptionDict) {
     int color = getColor(context, drawableDescriptionDict);
     Drawable mask = getMask(drawableDescriptionDict);
     ColorStateList colorStateList =
