@@ -188,8 +188,8 @@ static UIColor *defaultPlaceholderColor()
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED < 140000
 - (void)setContentOffset:(CGPoint)contentOffset animated:(__unused BOOL)animated
 {
-  // Turning off scroll animation.
-  // This fixes the problem also known as "flaky scrolling".
+  // Turn off scroll animation to fix flaky scrolling.
+  // This is only necessary for iOS <= 13
   [super setContentOffset:contentOffset animated:NO];
 }
 #endif
