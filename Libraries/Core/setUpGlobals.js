@@ -14,10 +14,6 @@
  * Sets up global variables for React Native.
  * You can use this module directly, or just require InitializeCore.
  */
-if (global.GLOBAL === undefined) {
-  global.GLOBAL = global;
-}
-
 if (global.window === undefined) {
   // $FlowFixMe[cannot-write]
   global.window = global;
