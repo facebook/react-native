@@ -791,7 +791,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-l\"stdc++\"",
 					"-framework",
 					"\"JavaScriptCore\"",
 				);
@@ -824,7 +823,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-l\"stdc++\"",
 					"-framework",
 					"\"JavaScriptCore\"",
 				);
