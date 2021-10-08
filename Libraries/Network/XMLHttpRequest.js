@@ -423,12 +423,46 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       // according to the spec, return null if no response has been received
       return null;
     }
-    const headers = this.responseHeaders || {};
-    return Object.keys(headers)
-      .map(headerName => {
-        return headerName + ': ' + headers[headerName];
-      })
-      .join('\r\n');
+
+    // Combine headers by lower case into lists first.
+    const lowerCaseHeaders = {};
+    Object.keys(this.responseHeaders).forEach(headerName => {
+      const value = this.responseHeaders[headerName];
+      const lowerCaseHeaderName = headerName.toLowerCase();
+      const values = lowerCaseHeaders[lowerCaseHeaderName];
+      if (values) {
+        values.push(value);
+        return;
+      }
+      lowerCaseHeaders[lowerCaseHeaderName] = [value];
+    });
+
+    // Combine lists of headers into comma-and-space-separated values.
+    const combinedHeaders = Object.keys(lowerCaseHeaders).map(headerName => {
+      return [headerName, lowerCaseHeaders[headerName].join(', ')];
+    });
+
+    // Sort in ascending order, with a being less than b if a's name is legacy-uppercased-byte less than b's name.
+    combinedHeaders.sort((a, b) => {
+      const len = Math.min(a[0].length, b[0].length);
+      for (let i = 0; i < len; i++) {
+        const aChar = a[0][i].toUpperCase().charCodeAt(0);
+        const bChar = b[0][i].toUpperCase().charCodeAt(0);
+        if (aChar !== bChar) {
+          return aChar - bChar;
+        }
+      }
+      return a[0].length - b[0].length;
+    });
+
+    // Combine into single text response.
+    return (
+      combinedHeaders
+        .map(headerValue => {
+          return headerValue[0] + ': ' + headerValue[1];
+        })
+        .join('\r\n') + '\r\n'
+    );
   }
 
   getResponseHeader(header: string): ?string {
