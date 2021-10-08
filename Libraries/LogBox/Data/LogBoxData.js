@@ -100,7 +100,6 @@ export function reportLogBoxError(
 ): void {
   const ExceptionsManager = require('../../Core/ExceptionsManager');
 
-  error.forceRedbox = true;
   error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   if (componentStack != null) {
     error.componentStack = componentStack;
