@@ -1,0 +1,68 @@
+name: Package Release
+# This workflow is triggered on commits associated with a pull request to the main branch.
+on:
+  pull_request:
+    types: [ synchronize ]
+    branches:
+      - main
+
+jobs:
+  build_package:
+    name: Build release tarball
+    runs-on: ubuntu-latest
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+        GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+        BUILD_THREADS: 2
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache yarn
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-yarn
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: yarn install --non-interactive --cache-folder ~/.cache/yarn
+
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-gradle
+        with:
+          path: |
+            ~/.gradle
+            ReactAndroid/build/downloads
+            ReactAndroid/build/third-party-ndk
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('ReactAndroid/build.gradle') }}-${{ hashFiles('scripts/circleci/gradle_download_deps.sh') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('ReactAndroid/build.gradle') }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Download Gradle dependencies
+        run: ./scripts/circleci/gradle_download_deps.sh
+
+      - name: Bump version number and generate Android artifacts
+        run: node ./scripts/publish-npm.js --dry-run
+
+      - name: Build release package
+        run: |
+          mkdir -p build
+          FILENAME=$(npm pack)
+          mv $FILENAME build/
+      - name: Archive release artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-package
+          path: build/
