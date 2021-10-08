@@ -1,0 +1,37 @@
+name: Package Release
+# This workflow is triggered on commits.
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-package:
+    name: Build release package based on this commit
+    runs-on: ubuntu-latest
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+    steps:
+      - uses: actions/checkout@v2
+      - name: What OS is running
+        run: uname -a
+      - name: What java version do we have
+        run: java -version
+      - name: yarn install
+        run: yarn install --non-interactive
+      - name: Download Gradle dependencies
+        run: ./scripts/circleci/gradle_download_deps.sh
+      - name: Create artifacts and bump version number
+        run: node ./scripts/publish-npm.js --dry-run
+      - name: npm pack
+        run: |
+          mkdir -p build
+          FILENAME=$(npm pack)
+          mv $FILENAME build/
+      - name: Archive release artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-package
+          path: build/
