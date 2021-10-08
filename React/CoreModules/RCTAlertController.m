@@ -7,7 +7,7 @@
 
 #import <React/RCTUtils.h>
 
-#import "RCTAlertController.h"
+#import <React/RCTAlertController.h>
 
 @interface RCTAlertController ()
 
