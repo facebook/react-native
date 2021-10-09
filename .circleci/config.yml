@@ -774,6 +774,13 @@ jobs:
             - store_artifacts:
                 path: ~/react-native/build/
                 destination: build
+      - when:
+          condition:
+            matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
+          steps:
+            - run:
+                name: Post link to PR build artifacts (pull-bot)
+                command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh
 
   # -------------------------
   #    JOBS: Nightly
