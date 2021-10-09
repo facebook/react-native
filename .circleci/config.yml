@@ -598,27 +598,6 @@ jobs:
           command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
-  #    JOBS: Test Docker
-  # -------------------------
-  test_docker_android:
-    machine:
-      image: ubuntu-2004:202010-01
-    steps:
-      - checkout
-      - run:
-          name: Configure Node
-          command: |
-            source ~/.bashrc
-            nvm i node
-            echo y | npx envinfo@latest
-      - run:
-          name: Pulls down the React Native Community Android Docker image
-          command: npm run docker-setup-android
-      - run:
-          name: Builds the Docker image with a compiled instance of the test app
-          command: npm run docker-build-android
-
-  # -------------------------
   #    JOBS: Windows
   # -------------------------
   test_windows:
@@ -852,10 +831,6 @@ workflows:
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
-          filters:
-            branches:
-              ignore: gh-pages
-      - test_docker_android:
           filters:
             branches:
               ignore: gh-pages
