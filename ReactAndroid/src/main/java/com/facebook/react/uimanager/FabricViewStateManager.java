@@ -66,15 +66,6 @@ public class FabricViewStateManager {
       return;
     }
 
-    Runnable failureRunnable =
-        new Runnable() {
-          @Override
-          // Run on the UI thread
-          public void run() {
-            FLog.e(TAG, "UpdateState failed - retrying! " + numTries);
-            setState(stateWrapper, stateUpdateCallback, numTries + 1);
-          }
-        };
     @Nullable WritableMap stateUpdate = stateUpdateCallback.getStateUpdate();
     if (stateUpdate == null) {
       return;

@@ -140,12 +140,28 @@ LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_COMMON_DIR)/react/renderer/mounting
 include $(PREBUILT_SHARED_LIBRARY)
 
+# react_render_mapbuffer
+include $(CLEAR_VARS)
+LOCAL_MODULE := react_render_mapbuffer
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_render_mapbuffer.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_COMMON_DIR)/react/renderer/mapbuffer
+include $(PREBUILT_SHARED_LIBRARY)
+
 # rrc_view
 include $(CLEAR_VARS)
 LOCAL_MODULE := rrc_view
 LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/librrc_view.so
 LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_COMMON_DIR)/react/renderer/components/view
+include $(PREBUILT_SHARED_LIBRARY)
+
+# jsi
+include $(CLEAR_VARS)
+LOCAL_MODULE := jsi
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libjsi.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_COMMON_DIR)/jsi
 include $(PREBUILT_SHARED_LIBRARY)
 
 # react_codegen_rncore

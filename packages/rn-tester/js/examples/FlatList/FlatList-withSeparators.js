@@ -5,23 +5,57 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
-import {FlatList_withSeparators} from './FlatListExamples';
-const React = require('react');
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import BaseFlatListExample from './BaseFlatListExample';
+import {StyleSheet, View, Text} from 'react-native';
+import * as React from 'react';
 
-exports.title = 'FlatList with Separators';
-exports.testTitle = 'Test custom separator components';
-exports.category = 'ListView';
-exports.documentationURL = 'https://reactnative.dev/docs/sectionlist';
-exports.description = 'Tap to see pressed states for separator components.';
-exports.examples = [
-  {
-    title: 'FlatList with Separators',
-    render: function(): React.Element<typeof FlatList_withSeparators> {
-      return <FlatList_withSeparators />;
-    },
+const Separator = (defaultColor, highlightColor) => ({
+  leadingItem,
+  trailingItem,
+  highlighted,
+  hasBeenHighlighted,
+}) => {
+  const text = `Separator for leading ${leadingItem} and trailing ${trailingItem} has ${
+    !hasBeenHighlighted ? 'not ' : ''
+  }been pressed`;
+
+  return (
+    <View
+      style={[
+        styles.separator,
+        {backgroundColor: highlighted ? highlightColor : defaultColor},
+      ]}>
+      <Text style={styles.separtorText}>{text}</Text>
+    </View>
+  );
+};
+
+export function FlatList_withSeparators(): React.Node {
+  const exampleProps = {
+    ItemSeparatorComponent: Separator('lightgreen', 'green'),
+  };
+  const ref = React.useRef(null);
+
+  return <BaseFlatListExample ref={ref} exampleProps={exampleProps} />;
+}
+
+const styles = StyleSheet.create({
+  separator: {
+    height: 12,
   },
-];
+  separtorText: {
+    fontSize: 10,
+  },
+});
+
+export default ({
+  title: 'FlatList with Separators',
+  name: 'separators',
+  description: 'Tap to see pressed states for separator components.',
+  render: () => <FlatList_withSeparators />,
+}: RNTesterModuleExample);

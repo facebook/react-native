@@ -7,9 +7,13 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
 #include <react/renderer/imagemanager/ImageRequest.h>
 #include <react/renderer/imagemanager/primitives.h>
+
+#ifdef ANDROID
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
 
 namespace facebook {
 namespace react {
@@ -49,6 +53,10 @@ class ImageState final {
    */
   folly::dynamic getDynamic() const {
     return {};
+  };
+
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
   };
 #endif
 

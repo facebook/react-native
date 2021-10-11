@@ -10,6 +10,7 @@
 #include <memory>
 
 #include <better/mutex.h>
+#include <better/small_vector.h>
 
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/ReactPrimitives.h>
@@ -26,7 +27,7 @@ class State;
  * Represents all things that shadow nodes from the same family have in common.
  * To be used inside `ShadowNode` class *only*.
  */
-class ShadowNodeFamily {
+class ShadowNodeFamily final {
  public:
   using Shared = std::shared_ptr<ShadowNodeFamily const>;
   using Weak = std::weak_ptr<ShadowNodeFamily const>;

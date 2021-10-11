@@ -119,16 +119,10 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   auto reactTreeAttributedString = getAttributedString();
   auto const &state = getStateData();
 
-  react_native_assert(textLayoutManager_);
-  react_native_assert(
-      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
-      "`StateData` refers to a different `TextLayoutManager`");
-
   // Tree is often out of sync with the value of the TextInput.
   // This is by design - don't change the value of the TextInput in the State,
   // and therefore in Java, unless the tree itself changes.
-  if (state.reactTreeAttributedString == reactTreeAttributedString &&
-      state.layoutManager == textLayoutManager_) {
+  if (state.reactTreeAttributedString == reactTreeAttributedString) {
     return;
   }
 
@@ -163,7 +157,6 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       getConcreteProps().paragraphAttributes,
       defaultTextAttributes,
       ShadowView(*this),
-      textLayoutManager_,
       state.defaultThemePaddingStart,
       state.defaultThemePaddingEnd,
       state.defaultThemePaddingTop,

@@ -4,29 +4,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
-const React = require('react');
+import * as React from 'react';
 
-const {
+import {
   Platform,
   ScrollView,
-  Picker,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
   TextInput,
   RefreshControl,
-} = require('react-native');
+} from 'react-native';
 
-const nullthrows = require('nullthrows');
+import nullthrows from 'nullthrows';
 
 import {useState, useCallback} from 'react';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
 
 exports.displayName = 'ScrollViewExample';
 exports.title = 'ScrollView';
@@ -112,7 +112,10 @@ exports.examples = ([
     title: '<ScrollView> enable & disable\n',
     description: 'ScrollView scrolling behaviour can be disabled and enabled',
     render: function(): React.Node {
-      class EnableDisableList extends React.Component<{...}, *> {
+      class EnableDisableList extends React.Component<
+        {},
+        {scrollEnabled: boolean},
+      > {
         state = {
           scrollEnabled: true,
         };
@@ -189,6 +192,19 @@ exports.examples = ([
     },
   },
   {
+    name: 'pressableStickyHeaders',
+    title: '<ScrollView> Pressable Sticky Header\n',
+    description:
+      'Press the blue box to toggle it between blue and yellow. The box should remain Pressable after scrolling.',
+    render: function(): React.Node {
+      return (
+        <View style={{height: 400}}>
+          <ScrollViewPressableStickyHeaderExample />
+        </View>
+      );
+    },
+  },
+  {
     name: 'keyboardShouldPersistTaps',
     title: '<ScrollView> Keyboard Options\n',
     description:
@@ -250,7 +266,7 @@ exports.examples = ([
       return <SnapToOptions />;
     },
   },
-]: Array<RNTesterExampleModuleItem>);
+]: Array<RNTesterModuleExample>);
 
 if (Platform.OS === 'ios') {
   exports.examples.push({
@@ -260,11 +276,11 @@ if (Platform.OS === 'ios') {
       'without causing the visible content to jump. Re-ordering is not supported.',
     render: function() {
       let itemCount = 6;
-      class AppendingList extends React.Component<{...}, *> {
+      class AppendingList extends React.Component<
+        {},
+        {items: Array<React.Element<typeof Item>>},
+      > {
         state = {
-          /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.85 was deployed. To see the error,
-           * delete this comment and run Flow. */
           items: [...Array(itemCount)].map((_, ii) => (
             <Item msg={`Item ${ii}`} />
           )),
@@ -457,12 +473,19 @@ if (Platform.OS === 'ios') {
       return <ScrollToOptions />;
     },
   });
-} else {
+} else if (Platform.OS === 'android') {
   exports.examples.push({
     title: '<ScrollView> EndFillColor & FadingEdgeLength\n',
     description: 'Toggle to set endFillColor and fadingEdgeLength.',
     render: function(): React.Node {
       return <EndFillColorFadingEdgeLen />;
+    },
+  });
+  exports.examples.push({
+    title: '<ScrollView> persistentScrollBar\n',
+    description: 'Toggle to set persistentScrollbar option.',
+    render: function(): React.Node {
+      return <AndroidScrollBarOptions />;
     },
   });
 }
@@ -552,6 +575,7 @@ const SnapToOptions = () => {
   const [snapToInterval, setSnapToInterval] = useState(0);
   const [snapToOffsets, setSnapToOffsets] = useState([]);
   const [snapToStart, setSnapToStart] = useState(true);
+
   return (
     <View>
       <ScrollView
@@ -566,18 +590,17 @@ const SnapToOptions = () => {
       </ScrollView>
       {Platform.OS === 'ios' ? (
         <>
-          <Text style={styles.rowTitle}>Snap to Alignment Mode</Text>
-          <Picker
-            selectedValue={snapToAlignment}
-            onValueChange={value => {
-              if (value === 'start' || value === 'center' || value === 'end')
-                setSnapToAlignment(value);
-            }}
-            itemStyle={styles.pickerItem}>
-            {snapToAlignmentModes.map(label => {
-              return <Picker.Item label={label} value={label} key={label} />;
-            })}
-          </Picker>
+          <Text style={styles.rowTitle}>Select Snap to Alignment Mode</Text>
+          <View style={styles.row}>
+            {snapToAlignmentModes.map(label => (
+              <Button
+                active={snapToAlignment === label}
+                key={label}
+                label={label}
+                onPress={() => setSnapToAlignment(label)}
+              />
+            ))}
+          </View>
         </>
       ) : null}
       <Button
@@ -754,17 +777,16 @@ const OnScrollOptions = () => {
       {Platform.OS === 'android' ? (
         <>
           <Text style={styles.rowTitle}>Over Scroll Mode</Text>
-          <Picker
-            selectedValue={overScrollMode}
-            onValueChange={value => {
-              if (value === 'always' || value === 'auto' || value === 'never')
-                setOverScrollMode(value);
-            }}
-            itemStyle={styles.pickerItem}>
-            {overScrollModeOptions.map(label => {
-              return <Picker.Item label={label} value={label} key={label} />;
-            })}
-          </Picker>
+          <View style={styles.row}>
+            {overScrollModeOptions.map(value => (
+              <Button
+                active={value === overScrollMode}
+                label={value}
+                key={value}
+                onPress={() => setOverScrollMode(value)}
+              />
+            ))}
+          </View>
         </>
       ) : null}
     </View>
@@ -888,33 +910,27 @@ const KeyboardExample = () => {
         {ITEMS.map(createItemRow)}
       </ScrollView>
       <Text style={styles.rowTitle}>Keyboard Dismiss Mode</Text>
-      <Picker
-        selectedValue={keyboardDismissMode}
-        onValueChange={value => {
-          if (
-            value === 'none' ||
-            value === 'on-drag' ||
-            value === 'interactive'
-          )
-            setKeyboardDismissMode(value);
-        }}
-        itemStyle={styles.pickerItem}>
-        {dismissOptions.map(label => {
-          return <Picker.Item label={label} value={label} key={label} />;
-        })}
-      </Picker>
+      <View style={styles.row}>
+        {dismissOptions.map(value => (
+          <Button
+            active={value === keyboardDismissMode}
+            label={value}
+            key={value}
+            onPress={() => setKeyboardDismissMode(value)}
+          />
+        ))}
+      </View>
       <Text style={styles.rowTitle}>Keyboard Should Persist taps</Text>
-      <Picker
-        selectedValue={keyboardShouldPersistTaps}
-        onValueChange={value => {
-          if (value === 'never' || value === 'always' || value === 'handled')
-            setKeyboardShouldPersistTaps(value);
-        }}
-        itemStyle={styles.pickerItem}>
-        {persistOptions.map(label => {
-          return <Picker.Item label={label} value={label} key={label} />;
-        })}
-      </Picker>
+      <View style={styles.row}>
+        {persistOptions.map(value => (
+          <Button
+            active={value === keyboardShouldPersistTaps}
+            label={value}
+            key={value}
+            onPress={() => setKeyboardShouldPersistTaps(value)}
+          />
+        ))}
+      </View>
     </View>
   );
 };
@@ -934,24 +950,26 @@ const InvertStickyHeaders = () => {
         {<Text>STICKY HEADER</Text>}
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() => setInvertStickyHeaders(!invertStickyHeaders)}
-        label={'invertStickyHeaders: ' + invertStickyHeaders.toString()}
-      />
-      <Button
-        label="Scroll to top"
-        onPress={() => {
-          nullthrows(_scrollView.current).scrollTo({y: 0});
-        }}
-        testID="scroll_to_top_button"
-      />
-      <Button
-        label="Scroll to bottom"
-        onPress={() => {
-          nullthrows(_scrollView.current).scrollToEnd({animated: true});
-        }}
-        testID="scroll_to_bottom_button"
-      />
+      <View>
+        <Button
+          onPress={() => setInvertStickyHeaders(!invertStickyHeaders)}
+          label={'invertStickyHeaders: ' + invertStickyHeaders.toString()}
+        />
+        <Button
+          label="Scroll to top"
+          onPress={() => {
+            nullthrows(_scrollView.current).scrollTo({y: 0});
+          }}
+          testID="scroll_to_top_button"
+        />
+        <Button
+          label="Scroll to bottom"
+          onPress={() => {
+            nullthrows(_scrollView.current).scrollToEnd({animated: true});
+          }}
+          testID="scroll_to_bottom_button"
+        />
+      </View>
     </View>
   );
 };
@@ -974,20 +992,22 @@ const MultipleStickyHeaders = () => {
         {<Item msg={'Sticky Header 3'} style={stickyHeaderStyle} />}
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        label="Scroll to top"
-        onPress={() => {
-          nullthrows(_scrollView.current).scrollTo({y: 0});
-        }}
-        testID="scroll_to_top_button"
-      />
-      <Button
-        label="Scroll to bottom"
-        onPress={() => {
-          nullthrows(_scrollView.current).scrollToEnd({animated: true});
-        }}
-        testID="scroll_to_bottom_button"
-      />
+      <View>
+        <Button
+          label="Scroll to top"
+          onPress={() => {
+            nullthrows(_scrollView.current).scrollTo({y: 0});
+          }}
+          testID="scroll_to_top_button"
+        />
+        <Button
+          label="Scroll to bottom"
+          onPress={() => {
+            nullthrows(_scrollView.current).scrollToEnd({animated: true});
+          }}
+          testID="scroll_to_bottom_button"
+        />
+      </View>
     </View>
   );
 };
@@ -1002,14 +1022,16 @@ const IndicatorStyle = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() =>
-          indicatorStyle === 'default'
-            ? setIndicatorStyle('white')
-            : setIndicatorStyle('default')
-        }
-        label={'Indicator Style: ' + indicatorStyle}
-      />
+      <View>
+        <Button
+          onPress={() =>
+            indicatorStyle === 'default'
+              ? setIndicatorStyle('white')
+              : setIndicatorStyle('default')
+          }
+          label={'Indicator Style: ' + indicatorStyle}
+        />
+      </View>
     </View>
   );
 };
@@ -1033,27 +1055,31 @@ const DisableEnable = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      {Platform.OS === 'ios' ? (
+      <View>
+        {Platform.OS === 'ios' ? (
+          <Button
+            onPress={() => setDirectionalLockEnabled(!directionalLockEnabled)}
+            label={
+              'directionalLockEnabled: ' + directionalLockEnabled.toString()
+            }
+          />
+        ) : null}
         <Button
-          onPress={() => setDirectionalLockEnabled(!directionalLockEnabled)}
-          label={'directionalLockEnabled: ' + directionalLockEnabled.toString()}
+          onPress={() => setDisableIntervalMomentum(!disableIntervalMomentum)}
+          label={
+            'setDisableIntervalMomentum: ' + disableIntervalMomentum.toString()
+          }
         />
-      ) : null}
-      <Button
-        onPress={() => setDisableIntervalMomentum(!disableIntervalMomentum)}
-        label={
-          'setDisableIntervalMomentum: ' + disableIntervalMomentum.toString()
-        }
-      />
-      <Button
-        onPress={() =>
-          setDisableScrollViewPanResponder(!disableScrollViewPanResponder)
-        }
-        label={
-          'setDisableScrollViewPanResponder: ' +
-          disableScrollViewPanResponder.toString()
-        }
-      />
+        <Button
+          onPress={() =>
+            setDisableScrollViewPanResponder(!disableScrollViewPanResponder)
+          }
+          label={
+            'setDisableScrollViewPanResponder: ' +
+            disableScrollViewPanResponder.toString()
+          }
+        />
+      </View>
     </View>
   );
 };
@@ -1068,12 +1094,16 @@ const DecelerationRateExample = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() =>
-          decelRate === 'normal' ? setDecelRate('fast') : setDecelRate('normal')
-        }
-        label={'Deceleration Rate: ' + decelRate}
-      />
+      <View>
+        <Button
+          onPress={() =>
+            decelRate === 'normal'
+              ? setDecelRate('fast')
+              : setDecelRate('normal')
+          }
+          label={'Deceleration Rate: ' + decelRate}
+        />
+      </View>
     </View>
   );
 };
@@ -1098,50 +1128,54 @@ const ContentExample = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      {Platform.OS === 'ios' ? (
-        <>
-          <Button
-            onPress={() => setCanCancelContentTouches(!canCancelContentTouches)}
-            label={
-              'canCancelContentTouches: ' + canCancelContentTouches.toString()
-            }
-          />
-          <Button
-            onPress={() =>
-              contentInsetAdjustmentBehavior === 'never'
-                ? setContentInsetAdjustmentBehavior('always')
-                : setContentInsetAdjustmentBehavior('never')
-            }
-            label={
-              contentInsetAdjustmentBehavior === 'never'
-                ? "setContentInsetAdjustmentBehavior to 'always'"
-                : 'reset content inset adjustment behavior'
-            }
-          />
-        </>
-      ) : null}
-      <Button
-        onPress={() =>
-          contentContainerStyle === null
-            ? setContentContainerStyle(styles.containerStyle)
-            : setContentContainerStyle(null)
-        }
-        label={
-          contentContainerStyle === null
-            ? 'setContentContainerStyle'
-            : 'reset content container style'
-        }
-      />
-      <Button
-        onPress={() =>
-          contentInset === null
-            ? setContentInset({top: 10, bottom: 10, left: 10, right: 10})
-            : setContentInset(null)
-        }
-        label={
-          contentInset === null ? 'setContentInset' : 'reset content inset'
-        }
-      />
+      <View>
+        {Platform.OS === 'ios' ? (
+          <>
+            <Button
+              onPress={() =>
+                setCanCancelContentTouches(!canCancelContentTouches)
+              }
+              label={
+                'canCancelContentTouches: ' + canCancelContentTouches.toString()
+              }
+            />
+            <Button
+              onPress={() =>
+                contentInsetAdjustmentBehavior === 'never'
+                  ? setContentInsetAdjustmentBehavior('always')
+                  : setContentInsetAdjustmentBehavior('never')
+              }
+              label={
+                contentInsetAdjustmentBehavior === 'never'
+                  ? "setContentInsetAdjustmentBehavior to 'always'"
+                  : 'reset content inset adjustment behavior'
+              }
+            />
+          </>
+        ) : null}
+        <Button
+          onPress={() =>
+            contentContainerStyle === null
+              ? setContentContainerStyle(styles.containerStyle)
+              : setContentContainerStyle(null)
+          }
+          label={
+            contentContainerStyle === null
+              ? 'setContentContainerStyle'
+              : 'reset content container style'
+          }
+        />
+        <Button
+          onPress={() =>
+            contentInset === null
+              ? setContentInset({top: 10, bottom: 10, left: 10, right: 10})
+              : setContentInset(null)
+          }
+          label={
+            contentInset === null ? 'setContentInset' : 'reset content inset'
+          }
+        />
+      </View>
     </View>
   );
 };
@@ -1158,14 +1192,16 @@ const BouncesExample = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() => setBounces(!bounces)}
-        label={'Bounces: ' + bounces.toString()}
-      />
-      <Button
-        onPress={() => setBouncesZoom(!bouncesZoom)}
-        label={'Bounces Zoom: ' + bouncesZoom.toString()}
-      />
+      <View>
+        <Button
+          onPress={() => setBounces(!bounces)}
+          label={'Bounces: ' + bounces.toString()}
+        />
+        <Button
+          onPress={() => setBouncesZoom(!bouncesZoom)}
+          label={'Bounces Zoom: ' + bouncesZoom.toString()}
+        />
+      </View>
     </View>
   );
 };
@@ -1182,10 +1218,12 @@ const BouncesExampleHorizontal = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() => setBounce(!bounce)}
-        label={'Always Bounce Horizontal: ' + bounce.toString()}
-      />
+      <View>
+        <Button
+          onPress={() => setBounce(!bounce)}
+          label={'Always Bounce Horizontal: ' + bounce.toString()}
+        />
+      </View>
     </View>
   );
 };
@@ -1201,10 +1239,12 @@ const BouncesExampleVertical = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Button
-        onPress={() => setBounce(!bounce)}
-        label={'Always Bounce Vertical: ' + bounce.toString()}
-      />
+      <View>
+        <Button
+          onPress={() => setBounce(!bounce)}
+          label={'Always Bounce Vertical: ' + bounce.toString()}
+        />
+      </View>
     </View>
   );
 };
@@ -1227,12 +1267,16 @@ let ITEMS = [...Array(12)].map((_, i) => `Item ${i}`);
 const createItemRow = (msg, index) => <Item key={index} msg={msg} />;
 
 const Button = (props: {
+  active?: boolean,
   label: string,
   onPress: () => void,
   testID?: string,
 }) => (
   <TouchableOpacity
-    style={styles.button}
+    style={StyleSheet.compose(
+      styles.button,
+      props.active === true ? styles.activeButton : null,
+    )}
     onPress={props.onPress}
     testID={props.testID}>
     <Text>{props.label}</Text>
@@ -1251,6 +1295,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     margin: 5,
+  },
+  activeButton: {
+    backgroundColor: 'rgba(100,215,255,.3)',
   },
   button: {
     margin: 5,
@@ -1273,12 +1320,10 @@ const styles = StyleSheet.create({
   containerStyle: {
     backgroundColor: '#aae3b6',
   },
-  pickerItem: {
-    fontSize: 16,
-  },
   rowTitle: {
     flex: 1,
     fontWeight: 'bold',
+    alignSelf: 'center',
   },
   textInput: {
     height: 40,

@@ -23,9 +23,9 @@
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 #include <react/renderer/uimanager/primitives.h>
+#include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class UIManagerBinding;
 class UIManagerCommitHook;
@@ -35,7 +35,7 @@ class UIManager final : public ShadowTreeDelegate {
   UIManager(
       RuntimeExecutor const &runtimeExecutor,
       BackgroundExecutor const &backgroundExecutor,
-      GarbageCollectionTrigger const &garbageCollectionTrigger);
+      ContextContainer::Shared contextContainer);
 
   ~UIManager();
 
@@ -85,12 +85,17 @@ class UIManager final : public ShadowTreeDelegate {
 
 #pragma mark - Surface Start & Stop
 
-  ShadowTree const &startSurface(
+  void startSurface(
+      ShadowTree::Unique &&shadowTree,
+      std::string const &moduleName,
+      folly::dynamic const &props,
+      DisplayMode displayMode) const;
+
+  void setSurfaceProps(
       SurfaceId surfaceId,
       std::string const &moduleName,
       folly::dynamic const &props,
-      LayoutConstraints const &layoutConstraints,
-      LayoutContext const &layoutContext) const;
+      DisplayMode displayMode) const;
 
   ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
@@ -109,6 +114,9 @@ class UIManager final : public ShadowTreeDelegate {
   friend class UIManagerBinding;
   friend class Scheduler;
   friend class SurfaceHandler;
+
+  // `TimelineController` needs to call private `getShadowTreeRegistry()`.
+  friend class TimelineController;
 
   ShadowNode::Shared createNode(
       Tag tag,
@@ -180,18 +188,15 @@ class UIManager final : public ShadowTreeDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
   UIManagerAnimationDelegate *animationDelegate_{nullptr};
-  UIManagerBinding *uiManagerBinding_;
   RuntimeExecutor const runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor const backgroundExecutor_{};
+  ContextContainer::Shared contextContainer_;
 
   mutable better::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;
 
-  bool extractUIManagerBindingOnDemand_{};
-
   std::unique_ptr<LeakChecker> leakChecker_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -12,6 +12,7 @@
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/Transform.h>
@@ -26,7 +27,10 @@ using SharedViewProps = std::shared_ptr<ViewProps const>;
 class ViewProps : public YogaStylableProps, public AccessibilityProps {
  public:
   ViewProps() = default;
-  ViewProps(ViewProps const &sourceProps, RawProps const &rawProps);
+  ViewProps(
+      const PropsParserContext &context,
+      ViewProps const &sourceProps,
+      RawProps const &rawProps);
 
 #pragma mark - Props
 
@@ -58,6 +62,8 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   bool onLayout{};
 
   bool collapsable{true};
+
+  bool removeClippedSubviews{false};
 
   Float elevation{}; /* Android-only */
 

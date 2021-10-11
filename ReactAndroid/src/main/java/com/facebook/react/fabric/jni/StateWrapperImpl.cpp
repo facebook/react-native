@@ -8,6 +8,8 @@
 #include "StateWrapperImpl.h"
 #include <fbjni/fbjni.h>
 #include <react/jni/ReadableNativeMap.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
 using namespace facebook::jni;
 
@@ -30,6 +32,14 @@ StateWrapperImpl::getStateDataImpl() {
   return readableNativeMap;
 }
 
+jni::local_ref<ReadableMapBuffer::jhybridobject>
+StateWrapperImpl::getStateMapBufferDataImpl() {
+  MapBuffer map = state_->getMapBuffer();
+  auto ReadableMapBuffer =
+      ReadableMapBuffer::createWithContents(std::move(map));
+  return ReadableMapBuffer;
+}
+
 void StateWrapperImpl::updateStateImpl(NativeMap *map) {
   // Get folly::dynamic from map
   auto dynamicMap = map->consume();
@@ -42,6 +52,9 @@ void StateWrapperImpl::registerNatives() {
       makeNativeMethod("initHybrid", StateWrapperImpl::initHybrid),
       makeNativeMethod("getStateDataImpl", StateWrapperImpl::getStateDataImpl),
       makeNativeMethod("updateStateImpl", StateWrapperImpl::updateStateImpl),
+      makeNativeMethod(
+          "getStateMapBufferDataImpl",
+          StateWrapperImpl::getStateMapBufferDataImpl),
   });
 }
 

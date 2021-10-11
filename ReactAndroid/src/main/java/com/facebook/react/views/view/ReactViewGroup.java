@@ -29,8 +29,11 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -38,8 +41,10 @@ import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ReactOverflowView;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
@@ -60,7 +65,8 @@ public class ReactViewGroup extends ViewGroup
         ReactClippingViewGroup,
         ReactPointerEventsView,
         ReactHitSlopView,
-        ReactZIndexedViewGroup {
+        ReactZIndexedViewGroup,
+        ReactOverflowView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -549,7 +555,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   /*package*/ void addViewWithSubviewClippingEnabled(
-      View child, int index, ViewGroup.LayoutParams params) {
+      final View child, int index, ViewGroup.LayoutParams params) {
     Assertions.assertCondition(mRemoveClippedSubviews);
     Assertions.assertNotNull(mClippingRect);
     Assertions.assertNotNull(mAllChildren);
@@ -564,6 +570,29 @@ public class ReactViewGroup extends ViewGroup
     }
     updateSubviewClipStatus(mClippingRect, index, clippedSoFar);
     child.addOnLayoutChangeListener(mChildrenLayoutChangeListener);
+
+    if (child instanceof ReactClippingProhibitedView) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              if (!child.isShown()) {
+                ReactSoftExceptionLogger.logSoftException(
+                    TAG,
+                    new ReactNoCrashSoftException(
+                        "Child view has been added to Parent view in which it is clipped and not visible."
+                            + " This is not legal for this particular child view. Child: ["
+                            + child.getId()
+                            + "] "
+                            + child.toString()
+                            + " Parent: ["
+                            + getId()
+                            + "] "
+                            + toString()));
+              }
+            }
+          });
+    }
   }
 
   /*package*/ void removeViewWithSubviewClippingEnabled(View view) {
@@ -692,6 +721,7 @@ public class ReactViewGroup extends ViewGroup
     invalidate();
   }
 
+  @Override
   public @Nullable String getOverflow() {
     return mOverflow;
   }
@@ -730,6 +760,23 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
+  @Override
+  protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+    boolean drawWithZ =
+        child.getElevation() > 0 && ReactFeatureFlags.insertZReorderBarriersOnViewGroupChildren;
+
+    if (drawWithZ) {
+      CanvasUtil.enableZ(canvas, false);
+    }
+
+    boolean result = super.drawChild(canvas, child, drawingTime);
+
+    if (drawWithZ) {
+      CanvasUtil.enableZ(canvas, true);
+    }
+    return result;
+  }
+
   private void dispatchOverflowDraw(Canvas canvas) {
     if (mOverflow != null) {
       switch (mOverflow) {
@@ -739,6 +786,7 @@ public class ReactViewGroup extends ViewGroup
           }
           break;
         case ViewProps.HIDDEN:
+        case ViewProps.SCROLL:
           float left = 0f;
           float top = 0f;
           float right = getWidth();

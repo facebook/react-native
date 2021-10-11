@@ -358,6 +358,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
@@ -420,6 +421,7 @@ module.exports = {
       })
       .join('\n');
 
+    // $FlowFixMe[missing-type-arg]
     const moduleLookups = Object.keys(nativeModules)
       .filter(hasteModuleName => {
         const module = nativeModules[hasteModuleName];

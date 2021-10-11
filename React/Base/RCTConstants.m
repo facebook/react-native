@@ -11,36 +11,6 @@ NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceS
 NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 
 /*
- * On-demand view mounting
- */
-static BOOL RCTExperimentOnDemandViewMounting = NO;
-
-BOOL RCTExperimentGetOnDemandViewMounting()
-{
-  return RCTExperimentOnDemandViewMounting;
-}
-
-void RCTExperimentSetOnDemandViewMounting(BOOL value)
-{
-  RCTExperimentOnDemandViewMounting = value;
-}
-
-/*
- * Optimized hit-testing
- */
-static BOOL RCTExperimentOptimizedHitTesting = NO;
-
-BOOL RCTExperimentGetOptimizedHitTesting()
-{
-  return RCTExperimentOptimizedHitTesting;
-}
-
-void RCTExperimentSetOptimizedHitTesting(BOOL value)
-{
-  RCTExperimentOptimizedHitTesting = value;
-}
-
-/*
  * Preemptive View Allocation
  */
 static BOOL RCTExperimentPreemptiveViewAllocationDisabled = NO;
@@ -56,16 +26,16 @@ void RCTExperimentSetPreemptiveViewAllocationDisabled(BOOL value)
 }
 
 /*
- * Release resources when app enters background
+ * Remove clipped subviews
  */
-static BOOL RCTExperimentReleaseResourcesWhenBackgrounded = NO;
+static BOOL RCTRemoveClippedSubviewsEnabled = NO;
 
-BOOL RCTExperimentGetReleaseResourcesWhenBackgrounded()
+BOOL RCTGetRemoveClippedSubviewsEnabled(void)
 {
-  return RCTExperimentReleaseResourcesWhenBackgrounded;
+  return RCTRemoveClippedSubviewsEnabled;
 }
 
-void RCTExperimentSetReleaseResourcesWhenBackgrounded(BOOL value)
+void RCTSetRemoveClippedSubviewsEnabled(BOOL value)
 {
-  RCTExperimentReleaseResourcesWhenBackgrounded = value;
+  RCTRemoveClippedSubviewsEnabled = value;
 }

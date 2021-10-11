@@ -1,5 +1,3 @@
-# BUILD FILE SYNTAX: SKYLARK
-
 load("//tools/build_defs/oss:rn_defs.bzl", "APPLE", "IOS", "MACOSX", "react_native_xplat_dep", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
@@ -18,7 +16,7 @@ rn_xplat_cxx_library(
         "-O3",
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
         "-Werror",
         "-Wextra",

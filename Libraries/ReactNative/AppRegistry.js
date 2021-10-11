@@ -18,9 +18,11 @@ const invariant = require('invariant');
 const renderApplication = require('./renderApplication');
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
+import {coerceDisplayMode} from './DisplayMode';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 type Task = (taskData: any) => Promise<void>;
 export type TaskProvider = () => Task;
@@ -50,7 +52,7 @@ export type Registry = {
   runnables: Runnables,
   ...
 };
-export type WrapperComponentProvider = any => React$ComponentType<*>;
+export type WrapperComponentProvider = any => React$ComponentType<any>;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -111,7 +113,7 @@ const AppRegistry = {
     let scopedPerformanceLogger = createPerformanceLogger();
     runnables[appKey] = {
       componentProvider,
-      run: appParameters => {
+      run: (appParameters, displayMode) => {
         renderApplication(
           componentProviderInstrumentationHook(
             componentProvider,
@@ -125,6 +127,8 @@ const AppRegistry = {
           scopedPerformanceLogger,
           appKey === 'LogBox',
           appKey,
+          coerceDisplayMode(displayMode),
+          appParameters.concurrentRoot,
         );
       },
     };
@@ -179,10 +183,16 @@ const AppRegistry = {
    *
    * See https://reactnative.dev/docs/appregistry.html#runapplication
    */
-  runApplication(appKey: string, appParameters: any): void {
+  runApplication(
+    appKey: string,
+    appParameters: any,
+    displayMode?: number,
+  ): void {
     if (appKey !== 'LogBox') {
-      const msg =
-        'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
+      const logParams = __DEV__
+        ? '" with ' + JSON.stringify(appParameters)
+        : '';
+      const msg = 'Running "' + appKey + logParams;
       infoLog(msg);
       BugReporting.addSource(
         'AppRegistry.runApplication' + runCount++,
@@ -198,7 +208,38 @@ const AppRegistry = {
     );
 
     SceneTracker.setActiveScene({name: appKey});
-    runnables[appKey].run(appParameters);
+    runnables[appKey].run(appParameters, displayMode);
+  },
+
+  /**
+   * Update initial props for a surface that's already rendered
+   */
+  setSurfaceProps(
+    appKey: string,
+    appParameters: any,
+    displayMode?: number,
+  ): void {
+    if (appKey !== 'LogBox') {
+      const msg =
+        'Updating props for Surface "' +
+        appKey +
+        '" with ' +
+        JSON.stringify(appParameters);
+      infoLog(msg);
+      BugReporting.addSource(
+        'AppRegistry.setSurfaceProps' + runCount++,
+        () => msg,
+      );
+    }
+    invariant(
+      runnables[appKey] && runnables[appKey].run,
+      `"${appKey}" has not been registered. This can happen if:\n` +
+        '* Metro (the local dev server) is run from the wrong folder. ' +
+        'Check if Metro is running, stop it and restart it in the current project.\n' +
+        "* A module failed to load due to an error and `AppRegistry.registerComponent` wasn't called.",
+    );
+
+    runnables[appKey].run(appParameters, displayMode);
   },
 
   /**
@@ -206,7 +247,9 @@ const AppRegistry = {
    *
    * See https://reactnative.dev/docs/appregistry.html#unmountapplicationcomponentatroottag
    */
-  unmountApplicationComponentAtRootTag(rootTag: number): void {
+  unmountApplicationComponentAtRootTag(rootTag: RootTag): void {
+    // NOTE: RootTag type
+    // $FlowFixMe[incompatible-call] RootTag: RootTag is incompatible with number, needs an updated synced version of the ReactNativeTypes.js file
     ReactNative.unmountComponentAtNodeAndRemoveContainer(rootTag);
   },
 
@@ -216,6 +259,7 @@ const AppRegistry = {
    * See https://reactnative.dev/docs/appregistry.html#registerheadlesstask
    */
   registerHeadlessTask(taskKey: string, taskProvider: TaskProvider): void {
+    // $FlowFixMe[object-this-reference]
     this.registerCancellableHeadlessTask(taskKey, taskProvider, () => () => {
       /* Cancel is no-op */
     });

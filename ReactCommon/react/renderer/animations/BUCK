@@ -34,7 +34,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
         "-lm",
     ],
@@ -62,6 +62,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/renderer/componentregistry:componentregistry"),
         react_native_xplat_target("react/renderer/components/view:view"),
+        react_native_xplat_target("react/renderer/components/image:image"),
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("react/renderer/mounting:mounting"),
@@ -77,7 +78,7 @@ fb_xplat_cxx_test(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
@@ -91,6 +92,7 @@ fb_xplat_cxx_test(
         react_native_xplat_target("react/renderer/components/root:root"),
         react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
         react_native_xplat_target("react/renderer/components/view:view"),
+        react_native_xplat_target("react/test_utils:test_utils"),
         "//xplat/js/react-native-github:generated_components-rncore",
     ],
 )

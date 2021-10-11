@@ -12,12 +12,11 @@
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/core/RawValue.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class UIManagerAnimationDelegate {
  public:
-  virtual ~UIManagerAnimationDelegate(){};
+  virtual ~UIManagerAnimationDelegate() = default;
 
   /*
    * Configure a LayoutAnimation.
@@ -48,5 +47,4 @@ class UIManagerAnimationDelegate {
   virtual void stopSurface(SurfaceId surfaceId) = 0;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -14,9 +14,9 @@ const React = require('react');
 
 const ReactTestRenderer = require('react-test-renderer');
 const ShallowRenderer = require('react-shallow-renderer');
-/* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.125.1 was deployed. To see the error, delete this comment
- * and run Flow. */
+/* $FlowFixMe[not-a-function] (>=0.125.1 site=react_native_fb) This comment
+ * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
+ * delete this comment and run Flow. */
 const shallowRenderer = new ShallowRenderer();
 
 import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
@@ -27,9 +27,12 @@ export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;
 export type Predicate = (node: ReactTestInstance) => boolean;
 
 type $ReturnType<Fn> = $Call<<Ret, A>((...A) => Ret) => Ret, Fn>;
-/* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.125.1 was deployed. To see the error, delete this comment
- * and run Flow. */
+/* $FlowFixMe[prop-missing] (>=0.125.1 site=react_native_fb) This comment
+ * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
+ * delete this comment and run Flow. */
+/* $FlowFixMe[value-as-type] (>=0.125.1 site=react_native_fb) This comment
+ * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
+ * delete this comment and run Flow. */
 export type ReactTestRendererJSON = $ReturnType<ReactTestRenderer.create.toJSON>;
 
 const {

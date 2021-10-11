@@ -14,9 +14,12 @@ Map {
 package com.facebook.react.viewmanagers.Slider;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentPropsObjectElement {
   private @Nullable String mStringProp;
+  @DoNotStrip
   public @Nullable String getStringProp() {
     return mStringProp;
   }
@@ -34,9 +37,12 @@ public class ArrayPropsNativeComponentPropsObjectElement {
 package com.facebook.react.viewmanagers.Slider;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentPropsArrayElementObjectElement {
   private @Nullable String mStringProp;
+  @DoNotStrip
   public @Nullable String getStringProp() {
     return mStringProp;
   }
@@ -53,10 +59,13 @@ public class ArrayPropsNativeComponentPropsArrayElementObjectElement {
 
 package com.facebook.react.viewmanagers.Slider;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentPropsArrayElement {
   private ArrayList<ArrayPropsNativeComponentPropsArrayElementObjectElement> mObject;
+  @DoNotStrip
   public ArrayList<ArrayPropsNativeComponentPropsArrayElementObjectElement> getObject() {
     return mObject;
   }
@@ -74,9 +83,12 @@ public class ArrayPropsNativeComponentPropsArrayElement {
 package com.facebook.react.viewmanagers.Slider;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement {
   private @Nullable String mStringProp;
+  @DoNotStrip
   public @Nullable String getStringProp() {
     return mStringProp;
   }
@@ -110,36 +122,47 @@ public class ArrayPropsNativeComponentProps {
   private ArrayList<ArrayPropsNativeComponentPropsObjectElement> mObject;
   private ArrayList<ArrayPropsNativeComponentPropsArrayElement> mArray;
   private ArrayList<ArrayList<ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement>> mArrayOfArrayOfObject;
+  @DoNotStrip
   public ArrayList<String> getNames() {
     return mNames;
   }
+  @DoNotStrip
   public ArrayList<Boolean> getDisableds() {
     return mDisableds;
   }
+  @DoNotStrip
   public ArrayList<Integer> getProgress() {
     return mProgress;
   }
+  @DoNotStrip
   public ArrayList<Float> getRadii() {
     return mRadii;
   }
+  @DoNotStrip
   public ArrayList<Integer> getColors() {
     return mColors;
   }
+  @DoNotStrip
   public ArrayList<ReadableMap> getSrcs() {
     return mSrcs;
   }
+  @DoNotStrip
   public ArrayList<ReadableMap> getPoints() {
     return mPoints;
   }
+  @DoNotStrip
   public ArrayList<String> getSizes() {
     return mSizes;
   }
+  @DoNotStrip
   public ArrayList<ArrayPropsNativeComponentPropsObjectElement> getObject() {
     return mObject;
   }
+  @DoNotStrip
   public ArrayList<ArrayPropsNativeComponentPropsArrayElement> getArray() {
     return mArray;
   }
+  @DoNotStrip
   public ArrayList<ArrayList<ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement>> getArrayOfArrayOfObject() {
     return mArrayOfArrayOfObject;
   }
@@ -161,19 +184,24 @@ Map {
 
 package com.facebook.react.viewmanagers.Slider;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableMap;
 import java.util.ArrayList;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentPropsNativePrimitivesElement {
   private ArrayList<Integer> mColors;
   private ArrayList<ReadableMap> mSrcs;
   private ArrayList<ReadableMap> mPoints;
+  @DoNotStrip
   public ArrayList<Integer> getColors() {
     return mColors;
   }
+  @DoNotStrip
   public ArrayList<ReadableMap> getSrcs() {
     return mSrcs;
   }
+  @DoNotStrip
   public ArrayList<ReadableMap> getPoints() {
     return mPoints;
   }
@@ -196,6 +224,7 @@ import java.util.ArrayList;
 @DoNotStrip
 public class ArrayPropsNativeComponentProps {
   private ArrayList<ArrayPropsNativeComponentPropsNativePrimitivesElement> mNativePrimitives;
+  @DoNotStrip
   public ArrayList<ArrayPropsNativeComponentPropsNativePrimitivesElement> getNativePrimitives() {
     return mNativePrimitives;
   }
@@ -222,6 +251,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class BooleanPropNativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
@@ -249,6 +279,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class ColorPropNativeComponentProps {
   private @Nullable Integer mTintColor;
+  @DoNotStrip
   public @Nullable Integer getTintColor() {
     return mTintColor;
   }
@@ -300,6 +331,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class CommandNativeComponentProps {
   private @Nullable String mAccessibilityHint;
+  @DoNotStrip
   public @Nullable String getAccessibilityHint() {
     return mAccessibilityHint;
   }
@@ -331,21 +363,27 @@ public class DoublePropNativeComponentProps {
   private double mBlurRadius4;
   private double mBlurRadius5;
   private double mBlurRadius6;
+  @DoNotStrip
   public double getBlurRadius() {
     return mBlurRadius;
   }
+  @DoNotStrip
   public double getBlurRadius2() {
     return mBlurRadius2;
   }
+  @DoNotStrip
   public double getBlurRadius3() {
     return mBlurRadius3;
   }
+  @DoNotStrip
   public double getBlurRadius4() {
     return mBlurRadius4;
   }
+  @DoNotStrip
   public double getBlurRadius5() {
     return mBlurRadius5;
   }
+  @DoNotStrip
   public double getBlurRadius6() {
     return mBlurRadius6;
   }
@@ -372,6 +410,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class EventsNestedObjectNativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
@@ -398,6 +437,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class EventsNativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
@@ -457,21 +497,27 @@ public class FloatPropNativeComponentProps {
   private float mBlurRadius4;
   private float mBlurRadius5;
   private float mBlurRadius6;
+  @DoNotStrip
   public float getBlurRadius() {
     return mBlurRadius;
   }
+  @DoNotStrip
   public float getBlurRadius2() {
     return mBlurRadius2;
   }
+  @DoNotStrip
   public float getBlurRadius3() {
     return mBlurRadius3;
   }
+  @DoNotStrip
   public float getBlurRadius4() {
     return mBlurRadius4;
   }
+  @DoNotStrip
   public float getBlurRadius5() {
     return mBlurRadius5;
   }
+  @DoNotStrip
   public float getBlurRadius6() {
     return mBlurRadius6;
   }
@@ -500,6 +546,7 @@ import com.facebook.react.bridge.ReadableMap;
 @DoNotStrip
 public class ImagePropNativeComponentProps {
   private @Nullable ReadableMap mThumbImage;
+  @DoNotStrip
   public @Nullable ReadableMap getThumbImage() {
     return mThumbImage;
   }
@@ -528,6 +575,7 @@ import com.facebook.react.bridge.ReadableMap;
 @DoNotStrip
 public class InsetsPropNativeComponentProps {
   private @Nullable ReadableMap mContentInset;
+  @DoNotStrip
   public @Nullable ReadableMap getContentInset() {
     return mContentInset;
   }
@@ -555,6 +603,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class Int32EnumPropsNativeComponentProps {
   private @Nullable Integer mMaxInterval;
+  @DoNotStrip
   public @Nullable Integer getMaxInterval() {
     return mMaxInterval;
   }
@@ -583,12 +632,15 @@ public class IntegerPropNativeComponentProps {
   private int mProgress1;
   private int mProgress2;
   private int mProgress3;
+  @DoNotStrip
   public int getProgress1() {
     return mProgress1;
   }
+  @DoNotStrip
   public int getProgress2() {
     return mProgress2;
   }
+  @DoNotStrip
   public int getProgress3() {
     return mProgress3;
   }
@@ -616,6 +668,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class InterfaceOnlyComponentProps {
   private @Nullable String mAccessibilityHint;
+  @DoNotStrip
   public @Nullable String getAccessibilityHint() {
     return mAccessibilityHint;
   }
@@ -647,15 +700,19 @@ public class ImageColorPropNativeComponentProps {
   private @Nullable Integer mColor;
   private @Nullable Integer mThumbTintColor;
   private @Nullable ReadableMap mPoint;
+  @DoNotStrip
   public @Nullable ReadableMap getThumbImage() {
     return mThumbImage;
   }
+  @DoNotStrip
   public @Nullable Integer getColor() {
     return mColor;
   }
+  @DoNotStrip
   public @Nullable Integer getThumbTintColor() {
     return mThumbTintColor;
   }
+  @DoNotStrip
   public @Nullable ReadableMap getPoint() {
     return mPoint;
   }
@@ -701,10 +758,13 @@ Map {
 
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectPropObjectArrayProp {
   private ArrayList<String> mArray;
+  @DoNotStrip
   public ArrayList<String> getArray() {
     return mArray;
   }
@@ -722,18 +782,23 @@ public class ObjectPropsPropsObjectPropObjectArrayProp {
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableMap;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp {
   private @Nullable ReadableMap mImage;
   private @Nullable Integer mColor;
   private @Nullable ReadableMap mPoint;
+  @DoNotStrip
   public @Nullable ReadableMap getImage() {
     return mImage;
   }
+  @DoNotStrip
   public @Nullable Integer getColor() {
     return mColor;
   }
+  @DoNotStrip
   public @Nullable ReadableMap getPoint() {
     return mPoint;
   }
@@ -751,9 +816,12 @@ public class ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp {
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectPropNestedPropANestedPropB {
   private @Nullable String mNestedPropC;
+  @DoNotStrip
   public @Nullable String getNestedPropC() {
     return mNestedPropC;
   }
@@ -770,8 +838,12 @@ public class ObjectPropsPropsObjectPropNestedPropANestedPropB {
 
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class ObjectPropsPropsObjectPropNestedPropA {
   private ObjectPropsPropsObjectPropNestedPropANestedPropB mNestedPropB;
+  @DoNotStrip
   public ObjectPropsPropsObjectPropNestedPropANestedPropB getNestedPropB() {
     return mNestedPropB;
   }
@@ -789,9 +861,12 @@ public class ObjectPropsPropsObjectPropNestedPropA {
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement {
   private @Nullable String mStringProp;
+  @DoNotStrip
   public @Nullable String getStringProp() {
     return mStringProp;
   }
@@ -808,10 +883,13 @@ public class ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement {
 
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectPropNestedArrayAsProperty {
   private ArrayList<ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement> mArrayProp;
+  @DoNotStrip
   public ArrayList<ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement> getArrayProp() {
     return mArrayProp;
   }
@@ -829,7 +907,9 @@ public class ObjectPropsPropsObjectPropNestedArrayAsProperty {
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectProp {
   private @Nullable String mStringProp;
   private boolean mBooleanProp;
@@ -841,33 +921,43 @@ public class ObjectPropsPropsObjectProp {
   private ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp mObjectPrimitiveRequiredProp;
   private ObjectPropsPropsObjectPropNestedPropA mNestedPropA;
   private ObjectPropsPropsObjectPropNestedArrayAsProperty mNestedArrayAsProperty;
+  @DoNotStrip
   public @Nullable String getStringProp() {
     return mStringProp;
   }
+  @DoNotStrip
   public boolean getBooleanProp() {
     return mBooleanProp;
   }
+  @DoNotStrip
   public float getFloatProp() {
     return mFloatProp;
   }
+  @DoNotStrip
   public int getIntProp() {
     return mIntProp;
   }
+  @DoNotStrip
   public @Nullable String getStringEnumProp() {
     return mStringEnumProp;
   }
+  @DoNotStrip
   public @Nullable Integer getIntEnumProp() {
     return mIntEnumProp;
   }
+  @DoNotStrip
   public ObjectPropsPropsObjectPropObjectArrayProp getObjectArrayProp() {
     return mObjectArrayProp;
   }
+  @DoNotStrip
   public ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp getObjectPrimitiveRequiredProp() {
     return mObjectPrimitiveRequiredProp;
   }
+  @DoNotStrip
   public ObjectPropsPropsObjectPropNestedPropA getNestedPropA() {
     return mNestedPropA;
   }
+  @DoNotStrip
   public ObjectPropsPropsObjectPropNestedArrayAsProperty getNestedArrayAsProperty() {
     return mNestedArrayAsProperty;
   }
@@ -889,6 +979,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class ObjectPropsProps {
   private ObjectPropsPropsObjectProp mObjectProp;
+  @DoNotStrip
   public ObjectPropsPropsObjectProp getObjectProp() {
     return mObjectProp;
   }
@@ -917,6 +1008,7 @@ import com.facebook.react.bridge.ReadableMap;
 @DoNotStrip
 public class PointPropNativeComponentProps {
   private @Nullable ReadableMap mStartPoint;
+  @DoNotStrip
   public @Nullable ReadableMap getStartPoint() {
     return mStartPoint;
   }
@@ -944,6 +1036,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class StringEnumPropsNativeComponentProps {
   private @Nullable String mAlignment;
+  @DoNotStrip
   public @Nullable String getAlignment() {
     return mAlignment;
   }
@@ -972,9 +1065,11 @@ import com.facebook.proguard.annotations.DoNotStrip;
 public class StringPropComponentProps {
   private @Nullable String mAccessibilityHint;
   private @Nullable String mAccessibilityRole;
+  @DoNotStrip
   public @Nullable String getAccessibilityHint() {
     return mAccessibilityHint;
   }
+  @DoNotStrip
   public @Nullable String getAccessibilityRole() {
     return mAccessibilityRole;
   }
@@ -1001,6 +1096,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class MultiFile1NativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
@@ -1022,6 +1118,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class MultiFile2NativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
@@ -1048,6 +1145,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class MultiComponent1NativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
@@ -1069,6 +1167,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class MultiComponent2NativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }

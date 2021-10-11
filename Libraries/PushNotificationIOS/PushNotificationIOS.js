@@ -11,6 +11,7 @@
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import NativePushNotificationManagerIOS from './NativePushNotificationManagerIOS';
 import invariant from 'invariant';
+import Platform from '../Utilities/Platform';
 
 type NativePushNotificationIOSEventDefinitions = {
   remoteNotificationReceived: [
@@ -37,7 +38,9 @@ type NativePushNotificationIOSEventDefinitions = {
 };
 
 const PushNotificationEmitter = new NativeEventEmitter<NativePushNotificationIOSEventDefinitions>(
-  NativePushNotificationManagerIOS,
+  // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+  // If you want to use the native module on other platforms, please remove this condition and test its behavior
+  Platform.OS !== 'ios' ? null : NativePushNotificationManagerIOS,
 );
 
 const _notifHandlers = new Map();
@@ -397,6 +400,20 @@ class PushNotificationIOS {
         return notification && new PushNotificationIOS(notification);
       },
     );
+  }
+
+  /**
+   * This method returns a promise that resolves to notification authorization status.
+   */
+  static getAuthorizationStatus(
+    callback: (authorizationStatus: number) => void,
+  ): void {
+    invariant(
+      NativePushNotificationManagerIOS,
+      'PushNotificationManager is not available.',
+    );
+
+    NativePushNotificationManagerIOS.getAuthorizationStatus(callback);
   }
 
   /**

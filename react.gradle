@@ -26,19 +26,13 @@ def detectEntryFile(config) {
  */
 def detectCliPath(config) {
     if (config.cliPath) {
-        return config.cliPath
+        return "${projectDir}/${config.cliPath}"
     }
-
-    def cliPath = ["node", "-e", "console.log(require('react-native/cli').bin);"].execute([], projectDir).text.trim()
-
-    if (cliPath) {
-        return cliPath
-    } else if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
+    if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
         return "${projectDir}/../../node_modules/react-native/cli.js"
-    } else {
-        throw new Exception("Couldn't determine CLI location. " +
-            "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
     }
+    throw new Exception("Couldn't determine CLI location. " +
+             "Please set `project.ext.react.cliPath` to the path of the react-native cli.js");
 }
 
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
@@ -307,18 +301,24 @@ afterEvaluate {
                 into(file(config."jsBundleDir${targetName}"))
             } else {
                 into ("$buildDir/intermediates")
-                into ("assets/${targetPath}") {
-                    from(jsBundleDir)
-                }
+                if (isAndroidLibrary) {
+                    into ("library_assets/${variant.name}/out") {
+                        from(jsBundleDir)
+                    }
+                } else {
+                    into ("assets/${targetPath}") {
+                        from(jsBundleDir)
+                    }
 
-                // Workaround for Android Gradle Plugin 3.2+ new asset directory
-                into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
-                    from(jsBundleDir)
-                }
+                    // Workaround for Android Gradle Plugin 3.2+ new asset directory
+                    into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
+                        from(jsBundleDir)
+                    }
 
-                // Workaround for Android Gradle Plugin 3.4+ new asset directory
-                into ("merged_assets/${variant.name}/out") {
-                    from(jsBundleDir)
+                    // Workaround for Android Gradle Plugin 3.4+ new asset directory
+                    into ("merged_assets/${variant.name}/out") {
+                        from(jsBundleDir)
+                    }
                 }
             }
 
@@ -326,6 +326,7 @@ afterEvaluate {
             dependsOn(variant.mergeAssetsProvider.get())
 
             enabled(currentBundleTask.enabled)
+            dependsOn(currentBundleTask)
         }
 
         // mergeResources task runs before the bundle file is copied to the intermediate asset directory from Android plugin 4.1+.
@@ -345,8 +346,8 @@ afterEvaluate {
         // two separate HermesDebug and HermesRelease AARs, but until then we'll
         // kludge it by deleting the .so files out of the /transforms/ directory.
         def isRelease = targetName.toLowerCase().contains("release")
-        def libDir = "$buildDir/intermediates/transforms/"
-        def vmSelectionAction = {
+
+        def vmSelectionAction = { libDir ->
             fileTree(libDir).matching {
                 if (enableHermes) {
                     // For Hermes, delete all the libjsc* files
@@ -356,19 +357,27 @@ afterEvaluate {
                         // Reduce size by deleting the debugger/inspector
                         include '**/libhermes-inspector.so'
                         include '**/libhermes-executor-debug.so'
+                        include '**/libhermes-executor-common-debug.so'
                     } else {
                         // Release libs take precedence and must be removed
                         // to allow debugging
                         include '**/libhermes-executor-release.so'
+                        include '**/libhermes-executor-common-release.so'
                     }
                 } else {
                     // For JSC, delete all the libhermes* files
                     include "**/libhermes*.so"
+                    // Delete the libjscexecutor from release build
+                    if (isRelease) {
+                        include "**/libjscexecutor.so"
+                    }
                 }
             }.visit { details ->
-                def targetVariant = ".*/transforms/[^/]*/${targetPath}/.*"
+                def targetVariant1 = ".*/transforms/[^/]*/${targetPath}/.*"
+                def targetVariant2 = ".*/merged_native_libs/${targetPath}/out/lib/.*"
+                def targetVariant3 = ".*/stripped_native_libs/${targetPath}/out/lib/.*"
                 def path = details.file.getAbsolutePath().replace(File.separatorChar, '/' as char)
-                if (path.matches(targetVariant) && details.file.isFile()) {
+                if ((path.matches(targetVariant1) || path.matches(targetVariant2) || path.matches(targetVariant3)) && details.file.isFile()) {
                     details.file.delete()
                 }
             }
@@ -376,7 +385,20 @@ afterEvaluate {
 
         if (enableVmCleanup) {
             def task = tasks.findByName("package${targetName}")
-            task.doFirst(vmSelectionAction)
+            def transformsLibDir = "$buildDir/intermediates/transforms/"
+            task.doFirst { vmSelectionAction(transformsLibDir) }
+
+            def sTask = tasks.findByName("strip${targetName}DebugSymbols")
+            if (sTask != null) {
+                def strippedLibDir = "$buildDir/intermediates/stripped_native_libs/${targetPath}/out/lib/"
+                sTask.doLast { vmSelectionAction(strippedLibDir) }
+            }
+
+            def mTask = tasks.findByName("merge${targetName}NativeLibs")
+            if (mTask != null) {
+                def mergedLibDir = "$buildDir/intermediates/merged_native_libs/${targetPath}/out/lib/"
+                mTask.doLast { vmSelectionAction(mergedLibDir) }
+            }
         }
     }
 }

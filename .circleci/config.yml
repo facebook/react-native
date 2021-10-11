@@ -27,6 +27,7 @@ executors:
   nodelts:
     <<: *defaults
     docker:
+      # Note: Version set separately for Windows builds, see below.
       - image: circleci/node:14
   nodeprevlts:
     <<: *defaults
@@ -35,7 +36,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:3.2
+      - image: reactnativecommunity/react-native-android:4.0
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -51,26 +52,28 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: &_XCODE_VERSION "12.1.0"
+      xcode: &_XCODE_VERSION "13.0.0"
 
 # -------------------------
 #        COMMANDS
 # -------------------------
 commands:
-  restore_cache_checkout:
-    parameters:
-      checkout_type:
-        type: string
-        default: node
-    steps:
-      - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}-<< parameters.checkout_type >>
 
   setup_artifacts:
     steps:
       - run:
           name: Initial Setup
           command: mkdir -p ./reports/{buck,build,junit,outputs}
+
+  setup_ruby:
+    steps:
+      - restore_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+      - run: bundle check || bundle install --path vendor/bundle --clean
+      - save_cache:
+          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
 
   run_yarn:
     steps:
@@ -213,22 +216,6 @@ commands:
 #          JOBS
 # -------------------------
 jobs:
-  setup:
-    parameters:
-      executor:
-        type: executor
-        default: nodelts
-      checkout_type:
-        type: string
-        default: node
-    executor: << parameters.executor >>
-    steps:
-      - checkout
-      - save_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}-<< parameters.checkout_type >>
-          paths:
-            - ~/react-native
-
   # -------------------------
   #     JOBS: Analyze PR
   # -------------------------
@@ -238,8 +225,7 @@ jobs:
   analyze_pr:
     executor: reactnativeandroid
     steps:
-      - restore_cache_checkout:
-          checkout_type: android
+      - checkout
       - run_yarn
 
       - install_github_bot_deps
@@ -247,7 +233,12 @@ jobs:
       # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
       - run:
           name: Install additional GitHub bot dependencies
+          # TEMP: Added workaround from https://github.com/nodesource/distributions/issues/1266#issuecomment-932583579
           command: |
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            apt update && apt install -y shellcheck jq
+            apt-get install openssl ca-certificates
+            update-ca-certificates
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             apt update && apt install -y shellcheck jq
 
@@ -269,8 +260,7 @@ jobs:
   analyze_code:
     executor: reactnativeandroid
     steps:
-      - restore_cache_checkout:
-          checkout_type: android
+      - checkout
       - setup_artifacts
       - run_yarn
 
@@ -322,8 +312,7 @@ jobs:
         default: false
     executor: << parameters.executor >>
     steps:
-      - restore_cache_checkout:
-          checkout_type: node
+      - checkout
       - setup_artifacts
       - run_yarn
       - run:
@@ -375,9 +364,9 @@ jobs:
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
-      - restore_cache_checkout:
-          checkout_type: ios
+      - checkout
       - setup_artifacts
+      - setup_ruby
       - run_yarn
 
       - run: |
@@ -390,15 +379,13 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@12/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@14/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - with_brew_cache_span:
           steps:
             - brew_install:
                 package: watchman
-            - brew_install:
-                package: node@12
             - run:
                 name: "Brew: Tap wix/brew"
                 command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
@@ -406,8 +393,14 @@ jobs:
                 package: applesimutils
 
       - run:
+          name: Configure Node
+          # Sourcing find-node.sh will ensure nvm is set up.
+          # It also helps future invocation of find-node.sh prevent permission issue with nvm.sh.
+          command: source scripts/find-node.sh && nvm install 14 && nvm alias default 14
+
+      - run:
           name: Configure Watchman
-          command: touch .watchmanconfig
+          command: echo "{}" > .watchmanconfig
 
       - when:
           condition: << parameters.use_frameworks >>
@@ -425,13 +418,13 @@ jobs:
 
       - run:
           name: Setup the CocoaPods environment
-          command: pod setup
+          command: bundle exec pod setup
 
       - with_rntester_pods_cache_span:
           steps:
             - run:
                 name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && USE_FABRIC=1 bundle exec pod install --verbose
+                command: cd packages/rn-tester && bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -484,8 +477,7 @@ jobs:
         type: boolean
         default: false
     steps:
-      - restore_cache_checkout:
-          checkout_type: android
+      - checkout
       - setup_artifacts
       - run_yarn
 
@@ -502,14 +494,6 @@ jobs:
           name: Launch Android Virtual Device in Background
           command: source scripts/android-setup.sh && launchAVD
           background: true
-
-      # Keep configuring Android dependencies while AVD boots up
-      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
-      - run:
-          name: Install rsync, zip
-          command: |
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt-get update -y && apt-get install rsync zip -y
 
       # Install Buck
       - install_buck_tooling
@@ -588,21 +572,30 @@ jobs:
           path: ./reports/junit
 
   # -------------------------
-  #    JOBS: Test Docker
+  #    JOBS: Test Android Template
   # -------------------------
-  test_docker:
-    machine: true
+  test_android_template:
+    executor: reactnativeandroid
     steps:
       - checkout
+      - run_yarn
+
       - run:
-          name: Build Docker container for Android RNTester App
+          name: Setup the Android Template
           command: |
-            source ~/.bashrc
-            nvm i node
-            npm i -g yarn
-            echo y | npx envinfo@latest
-            yarn run docker-setup-android
-            yarn run docker-build-android
+            cd template
+            sed -i 's/1000\.0\.0/file\:\.\./g' package.json
+            npm install
+            # react-native-community/cli is needed as the Android template is referencing a .gradle file inside it.
+            npm i @react-native-community/cli
+
+      - run:
+          name: Bundle the latest version of ReactAndroid
+          command: ./gradlew :ReactAndroid:publishReleasePublicationToNpmRepository
+
+      - run:
+          name: Build the template application
+          command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
   #    JOBS: Windows
@@ -618,11 +611,18 @@ jobs:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
       - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
       - ANDROID_BUILD_VERSION: 30
-      - ANDROID_TOOLS_VERSION: 29.0.3
+      - ANDROID_TOOLS_VERSION: 30.0.2
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
-      - NDK_VERSION: 20.1.5948944
+      - NDK_VERSION: 21.4.7075529
     steps:
       - checkout
+
+      - run:
+          name: Install Node
+          # Note: Version set separately for non-Windows builds, see above.
+          command: |
+            nvm install 14.17.0
+            nvm use 14.17.0
 
       # Setup Dependencies
       - run:
@@ -694,8 +694,7 @@ jobs:
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
-      - restore_cache_checkout:
-          checkout_type: node
+      - checkout
       - setup_artifacts
       - run_yarn
       - run:
@@ -711,12 +710,11 @@ jobs:
   # -------------------------
   #      JOBS: Releases
   # -------------------------
-  # Publishes a new version onto npm
-  publish_npm_package:
+  build_npm_package:
     parameters:
       publish_npm_args:
         type: string
-        default: --nonightly
+        default: --dry-run
     executor: reactnativeandroid
     steps:
       - run:
@@ -724,24 +722,51 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-      - restore_cache_checkout:
-          checkout_type: android
+      - checkout
       - run_yarn
       - install_buck_tooling
       - download_buck_dependencies
       - download_gradle_dependencies
-      - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-      - run: |
-          git config --global user.email "react-native-bot@users.noreply.github.com"
-          git config --global user.name "npm Deployment Script"
-          echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
+      # Only tagged releases and nightlies should be able to publish to npm
+      - when:
+          condition:
+            or:
+              - equal: [ --release, << parameters.publish_npm_args >> ]
+              - equal: [ --nightly, << parameters.publish_npm_args >> ]
+          steps:
+            - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+            - run: |
+                git config --global user.email "react-native-bot@users.noreply.github.com"
+                git config --global user.name "npm Deployment Script"
+                echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
       - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
+      - when:
+          condition:
+            equal: [ --dry-run, << parameters.publish_npm_args >> ]
+          steps:
+            - run:
+                name: Build release package as a job artifact
+                command: |
+                  mkdir -p build
+                  FILENAME=$(npm pack)
+                  mv $FILENAME build/
+            - store_artifacts:
+                path: ~/react-native/build/
+                destination: build
+      - when:
+          condition:
+            matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
+          steps:
+            - run:
+                name: Post link to PR build artifacts (pull-bot)
+                command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh
 
   # -------------------------
   #    JOBS: Nightly
   # -------------------------
   nightly_job:
-    machine: true
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - run:
           name: Nightly
@@ -756,78 +781,56 @@ workflows:
 
   tests:
     jobs:
-      - setup:
-          name: setup_js
-          filters:
-            branches:
-              ignore: gh-pages
-      - setup:
-          name: setup_ios
-          checkout_type: ios
-          executor: reactnativeios
-          filters:
-            branches:
-              ignore: gh-pages
-      - setup:
-          name: setup_android
-          checkout_type: android
-          executor: reactnativeandroid
-          filters:
-            branches:
-              ignore: gh-pages
       - test_js:
           run_disabled_tests: false
-          requires:
-            - setup_js
+          filters:
+            branches:
+              ignore: gh-pages
       - test_android:
           run_disabled_tests: false
-          requires:
-            - setup_android
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_android_template:
+          filters:
+            branches:
+              ignore: gh-pages
       - test_ios:
           name: test_ios_unit_jsc
           run_unit_tests: true
-          requires:
-            - setup_ios
+          filters:
+            branches:
+              ignore: gh-pages
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_unit_frameworks_jsc
       #     use_frameworks: true
       #     run_unit_tests: true
-      #     requires:
-      #       - setup_ios
       - test_ios:
           name: test_ios_unit_hermes
           use_hermes: true
           run_unit_tests: true
-          requires:
-            - setup_ios
+          filters:
+            branches:
+              ignore: gh-pages
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_unit_frameworks_hermes
       #     use_hermes: true
       #     use_frameworks: true
       #     run_unit_tests: true
-      #     requires:
-      #       - setup_ios
       # DISABLED: Detox tests need to be fixed
       # - test_ios:
       #     name: test_ios_detox
       #     run_detox_tests: true
-      #     requires:
-      #       - setup_ios
       # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
       # - test_ios:
       #     name: test_ios_detox_frameworks
       #     use_frameworks: true
       #     run_detox_tests: true
-      #     requires:
-      #       - setup_ios
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
-          requires:
-            - setup_js
-      - test_docker:
           filters:
             branches:
               ignore: gh-pages
@@ -839,10 +842,9 @@ workflows:
 
   releases:
     jobs:
-      - setup:
-          name: setup_android
-          checkout_type: android
-          executor: reactnativeandroid
+      - build_npm_package:
+          name: build_and_publish_npm_package
+          publish_npm_args: --release
           filters:
             # Both of the following conditions must be included!
             # Ignore any commit on any branch by default.
@@ -851,65 +853,48 @@ workflows:
             # Only act on version tags.
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
-      - publish_npm_package:
-          requires:
-            - setup_android
+      - build_npm_package:
+          # Build a release package on every untagged commit, but do not publish to npm.
+          publish_npm_args: --dry-run
           filters:
-            # Both of the following conditions must be included!
-            # Ignore any commit on any branch by default.
             branches:
-              ignore: /.*/
-            # Only act on version tags.
+              only:
+                - main
+                - /^pull\/.*$/
+                - /^(\d+)\.(\d+)-stable$/
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+              ignore: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
   analysis:
     jobs:
-      - setup:
-          name: setup_js
-
-      - setup:
-          name: setup_android
-          checkout_type: android
-          executor: reactnativeandroid
-
       # Run lints on every commit other than those to the gh-pages branch
       - analyze_code:
-          requires:
-            - setup_android
           filters:
             branches:
               ignore: gh-pages
 
       # Run code checks on PRs from forks
       - analyze_pr:
-          requires:
-            - setup_android
           filters:
             branches:
               only: /^pull\/.*$/
 
       # Gather coverage
       - js_coverage:
-          requires:
-            - setup_js
+          filters:
+            branches:
+              ignore: gh-pages
+
   nightly:
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          cron: "0 20 * * *"
           filters:
             branches:
               only:
-                - master
+                - main
     jobs:
       - nightly_job
 
-      - setup:
-          name: setup_android
-          checkout_type: android
-          executor: reactnativeandroid
-
-      - publish_npm_package:
+      - build_npm_package:
           publish_npm_args: --nightly
-          requires:
-            - setup_android

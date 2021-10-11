@@ -64,9 +64,6 @@ PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../.."}
 
 cd "$PROJECT_ROOT" || exit
 
-# Define NVM_DIR and source the nvm.sh setup script
-[ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
-
 # Define entry file
 if [[ "$ENTRY_FILE" ]]; then
   # Use ENTRY_FILE defined by user
@@ -82,26 +79,9 @@ if [[ $DEV != true && ! -f "$ENTRY_FILE" ]]; then
   exit 2
 fi
 
-if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
-  . "$HOME/.nvm/nvm.sh"
-elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
-  . "$(brew --prefix nvm)/nvm.sh"
-fi
-
-# Set up the nodenv node version manager if present
-if [[ -x "$HOME/.nodenv/bin/nodenv" ]]; then
-  eval "$("$HOME/.nodenv/bin/nodenv" init -)"
-elif [[ -x "$(command -v brew)" && -x "$(brew --prefix nodenv)/bin/nodenv" ]]; then
-  eval "$("$(brew --prefix nodenv)/bin/nodenv" init -)"
-fi
-
-# Set up the ndenv of anyenv if preset
-if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
-  export PATH=${HOME}/.anyenv/bin:${PATH}
-  if [[ "$(anyenv envs | grep -c ndenv )" -eq 1 ]]; then
-    eval "$(anyenv init -)"
-  fi
-fi
+# Find path to Node
+# shellcheck source=/dev/null
+source "$REACT_NATIVE_DIR/scripts/find-node.sh"
 
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
@@ -116,7 +96,7 @@ fi
 
 if [[ $USE_HERMES == true && ! -f "$HERMES_CLI_PATH" ]]; then
   echo "error: USE_HERMES is set to true but the hermesc binary could not be " \
-       "found at ${HERMES_CLI_PATH}. Perhaps you need to run pod install or otherwise " \
+       "found at ${HERMES_CLI_PATH}. Perhaps you need to run 'bundle exec pod install' or otherwise " \
        "point the HERMES_CLI_PATH variable to your custom location." >&2
   exit 2
 fi
@@ -137,7 +117,7 @@ fi
 
 BUNDLE_FILE="$CONFIGURATION_BUILD_DIR/main.jsbundle"
 
-EXTRA_ARGS=
+EXTRA_ARGS=()
 
 case "$PLATFORM_NAME" in
   "macosx")
@@ -147,6 +127,10 @@ case "$PLATFORM_NAME" in
     BUNDLE_PLATFORM="ios"
     ;;
 esac
+
+if [ "${IS_MACCATALYST}" = "YES" ]; then
+  BUNDLE_PLATFORM="ios"
+fi
 
 EMIT_SOURCEMAP=
 if [[ ! -z "$SOURCEMAP_FILE" ]]; then
@@ -160,12 +144,12 @@ if [[ $EMIT_SOURCEMAP == true ]]; then
   else
     PACKAGER_SOURCEMAP_FILE="$SOURCEMAP_FILE"
   fi
-  EXTRA_ARGS="$EXTRA_ARGS --sourcemap-output $PACKAGER_SOURCEMAP_FILE"
+  EXTRA_ARGS+=("--sourcemap-output" "$PACKAGER_SOURCEMAP_FILE")
 fi
 
 # Hermes doesn't require JS minification.
 if [[ $USE_HERMES == true && $DEV == false ]]; then
-  EXTRA_ARGS="$EXTRA_ARGS --minify false"
+  EXTRA_ARGS+=("--minify" "false")
 fi
 
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
@@ -176,8 +160,8 @@ fi
   --reset-cache \
   --bundle-output "$BUNDLE_FILE" \
   --assets-dest "$DEST" \
-  $EXTRA_ARGS \
-  $EXTRA_PACKAGER_ARGS
+  "${EXTRA_ARGS[@]}" \
+  "${EXTRA_PACKAGER_ARGS[@]}"
 
 if [[ $USE_HERMES != true ]]; then
   cp "$BUNDLE_FILE" "$DEST/"

@@ -10,6 +10,11 @@
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/core/conversions.h>
+#ifdef ANDROID
+#include <react/common/mapbuffer/ReadableMapBuffer.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
 #include <string>
 
 namespace facebook {
@@ -85,6 +90,57 @@ Size measureAndroidComponent(
   stateRM.reset();
   stateRNM.reset();
 
+  return size;
+}
+
+Size measureAndroidComponentMapBuffer(
+    const ContextContainer::Shared &contextContainer,
+    Tag rootTag,
+    std::string componentName,
+    MapBuffer &localData,
+    MapBuffer &props,
+    float minWidth,
+    float maxWidth,
+    float minHeight,
+    float maxHeight,
+    jfloatArray attachmentPositions) {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
+  auto componentNameRef = make_jstring(componentName);
+
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jint,
+              jstring,
+              ReadableMapBuffer::javaobject,
+              ReadableMapBuffer::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloatArray)>("measureMapBuffer");
+
+  auto localDataMap =
+      ReadableMapBuffer::createWithContents(std::move(localData));
+  auto propsMap = ReadableMapBuffer::createWithContents(std::move(props));
+
+  auto size = yogaMeassureToSize(measure(
+      fabricUIManager,
+      rootTag,
+      componentNameRef.get(),
+      localDataMap.get(),
+      propsMap.get(),
+      minWidth,
+      maxWidth,
+      minHeight,
+      maxHeight,
+      attachmentPositions));
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  componentNameRef.reset();
+  localDataMap.reset();
+  propsMap.reset();
   return size;
 }
 

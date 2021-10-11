@@ -6,7 +6,7 @@
  */
 
 #include "TextLayoutManager.h"
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/utils/ManagedObjectWrapper.h>
 
 #import "RCTTextLayoutManager.h"

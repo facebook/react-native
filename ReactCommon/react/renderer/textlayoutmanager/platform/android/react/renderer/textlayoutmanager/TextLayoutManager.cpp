@@ -12,7 +12,7 @@
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/conversions.h>
-#include <react/renderer/mounting/TransactionTelemetry.h>
+#include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/utils/LayoutManager.h>
 
 using namespace facebook::jni;
@@ -40,8 +40,11 @@ TextMeasurement TextLayoutManager::measure(
           telemetry->willMeasureText();
         }
 
-        auto measurement =
-            doMeasure(attributedString, paragraphAttributes, layoutConstraints);
+        auto measurement = mapBufferSerializationEnabled_
+            ? doMeasureMapBuffer(
+                  attributedString, paragraphAttributes, layoutConstraints)
+            : doMeasure(
+                  attributedString, paragraphAttributes, layoutConstraints);
 
         if (telemetry) {
           telemetry->didMeasureText();
@@ -93,6 +96,10 @@ LinesMeasurements TextLayoutManager::measureLines(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     Size size) const {
+  if (mapBufferSerializationEnabled_) {
+    return measureLinesMapBuffer(attributedString, paragraphAttributes, size);
+  }
+
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
   static auto measureLines =
@@ -135,6 +142,47 @@ LinesMeasurements TextLayoutManager::measureLines(
   attributedStringRNM.reset();
   paragraphAttributesRM.reset();
   paragraphAttributesRNM.reset();
+
+  return lineMeasurements;
+}
+
+LinesMeasurements TextLayoutManager::measureLinesMapBuffer(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    Size size) const {
+  const jni::global_ref<jobject> &fabricUIManager =
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+  static auto measureLines =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<NativeArray::javaobject(
+              ReadableMapBuffer::javaobject,
+              ReadableMapBuffer::javaobject,
+              jfloat,
+              jfloat)>("measureLinesMapBuffer");
+
+  auto attributedStringMB =
+      ReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
+  auto paragraphAttributesMB =
+      ReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+
+  auto array = measureLines(
+      fabricUIManager,
+      attributedStringMB.get(),
+      paragraphAttributesMB.get(),
+      size.width,
+      size.height);
+
+  auto dynamicArray = cthis(array)->consume();
+  LinesMeasurements lineMeasurements;
+  lineMeasurements.reserve(dynamicArray.size());
+
+  for (auto const &data : dynamicArray) {
+    lineMeasurements.push_back(LineMeasurement(data));
+  }
+
+  // Explicitly release smart pointers to free up space faster in JNI tables
+  attributedStringMB.reset();
+  paragraphAttributesMB.reset();
 
   return lineMeasurements;
 }
@@ -184,6 +232,68 @@ TextMeasurement TextLayoutManager::doMeasure(
         float left = attachmentData[attachmentIndex * 2 + 1];
         float width = (float)fragment["width"].getDouble();
         float height = (float)fragment["height"].getDouble();
+
+        auto rect = facebook::react::Rect{
+            {left, top}, facebook::react::Size{width, height}};
+        attachments.push_back(TextMeasurement::Attachment{rect, false});
+        attachmentIndex++;
+      }
+    }
+  }
+
+  // Clean up allocated ref
+  env->ReleaseFloatArrayElements(
+      attachmentPositions, attachmentData, JNI_ABORT);
+  env->DeleteLocalRef(attachmentPositions);
+
+  return TextMeasurement{size, attachments};
+}
+
+TextMeasurement TextLayoutManager::doMeasureMapBuffer(
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    LayoutConstraints layoutConstraints) const {
+  layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
+
+  int attachmentsCount = 0;
+  for (auto fragment : attributedString.getFragments()) {
+    if (fragment.isAttachment()) {
+      attachmentsCount++;
+    }
+  }
+  auto env = Environment::current();
+  auto attachmentPositions = env->NewFloatArray(attachmentsCount * 2);
+
+  auto minimumSize = layoutConstraints.minimumSize;
+  auto maximumSize = layoutConstraints.maximumSize;
+
+  auto attributedStringMap = toMapBuffer(attributedString);
+  auto paragraphAttributesMap = toMapBuffer(paragraphAttributes);
+
+  auto size = measureAndroidComponentMapBuffer(
+      contextContainer_,
+      -1, // TODO: we should pass rootTag in
+      "RCTText",
+      attributedStringMap,
+      paragraphAttributesMap,
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height,
+      attachmentPositions);
+
+  jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
+
+  auto attachments = TextMeasurement::Attachments{};
+  if (attachmentsCount > 0) {
+    int attachmentIndex = 0;
+    for (auto fragment : attributedString.getFragments()) {
+      if (fragment.isAttachment()) {
+        float top = attachmentData[attachmentIndex * 2];
+        float left = attachmentData[attachmentIndex * 2 + 1];
+        float width = fragment.parentShadowView.layoutMetrics.frame.size.width;
+        float height =
+            fragment.parentShadowView.layoutMetrics.frame.size.height;
 
         auto rect = facebook::react::Rect{
             {left, top}, facebook::react::Size{width, height}};

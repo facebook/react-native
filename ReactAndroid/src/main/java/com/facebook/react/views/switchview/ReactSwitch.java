@@ -8,8 +8,11 @@
 package com.facebook.react.views.switchview;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -59,6 +62,16 @@ import androidx.appcompat.widget.SwitchCompat;
 
   public void setThumbColor(@Nullable Integer color) {
     setColor(super.getThumbDrawable(), color);
+
+    // Set the ripple color with thumb color if >= LOLLIPOP
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      RippleDrawable ripple = (RippleDrawable) super.getBackground();
+      ColorStateList customColorState =
+          new ColorStateList(
+              new int[][] {new int[] {android.R.attr.state_pressed}}, new int[] {color});
+
+      ripple.setColor(customColorState);
+    }
   }
 
   /*package*/ void setOn(boolean on) {

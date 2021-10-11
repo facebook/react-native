@@ -37,6 +37,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
         react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/common/mapbuffer:mapbuffer"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/views/view:view"),
         react_native_target("java/com/facebook/react/views/text:text"),

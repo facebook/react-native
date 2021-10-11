@@ -20,9 +20,11 @@ const ViewabilityHelper = require('./ViewabilityHelper');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
-import VirtualizedListInjection from './VirtualizedListInjection';
 
-import {computeWindowedRenderLimits} from './VirtualizeUtils';
+import {
+  keyExtractor as defaultKeyExtractor,
+  computeWindowedRenderLimits,
+} from './VirtualizeUtils';
 
 import * as React from 'react';
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
@@ -132,7 +134,7 @@ type OptionalProps = {|
    * Reverses the direction of scroll. Uses scale transforms of -1.
    */
   inverted?: ?boolean,
-  keyExtractor: (item: Item, index: number) => string,
+  keyExtractor?: ?(item: Item, index: number) => string,
   /**
    * Each cell is rendered using this element. Can be a React Component Class,
    * or a render function. Defaults to using View.
@@ -303,10 +305,6 @@ type Props = {|
   ...OptionalProps,
 |};
 
-type DefaultProps = {|
-  keyExtractor: (item: Item, index: number) => string,
-|};
-
 let _usedIndexForKey = false;
 let _keylessItemComponentName: string = '';
 
@@ -315,26 +313,37 @@ type State = {
   last: number,
 };
 
+/**
+ * Default Props Helper Functions
+ * Use the following helper functions for default values
+ */
+
+// horizontalOrDefault(this.props.horizontal)
 function horizontalOrDefault(horizontal: ?boolean) {
   return horizontal ?? false;
 }
 
+// initialNumToRenderOrDefault(this.props.initialNumToRenderOrDefault)
 function initialNumToRenderOrDefault(initialNumToRender: ?number) {
   return initialNumToRender ?? 10;
 }
 
+// maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
 function maxToRenderPerBatchOrDefault(maxToRenderPerBatch: ?number) {
   return maxToRenderPerBatch ?? 10;
 }
 
+// onEndReachedThresholdOrDefault(this.props.onEndReachedThreshold)
 function onEndReachedThresholdOrDefault(onEndReachedThreshold: ?number) {
   return onEndReachedThreshold ?? 2;
 }
 
+// scrollEventThrottleOrDefault(this.props.scrollEventThrottle)
 function scrollEventThrottleOrDefault(scrollEventThrottle: ?number) {
   return scrollEventThrottle ?? 50;
 }
 
+// windowSizeOrDefault(this.props.windowSize)
 function windowSizeOrDefault(windowSize: ?number) {
   return windowSize ?? 21;
 }
@@ -365,6 +374,7 @@ function windowSizeOrDefault(windowSize: ?number) {
  *   and we are working on improving it behind the scenes.
  * - By default, the list looks for a `key` or `id` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
+ * - As an effort to remove defaultProps, use helper functions when referencing certain props
  *
  */
 class VirtualizedList extends React.PureComponent<Props, State> {
@@ -580,22 +590,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  static defaultProps: DefaultProps = {
-    keyExtractor: (item: Item, index: number) => {
-      if (item.key != null) {
-        return item.key;
-      }
-      if (item.id != null) {
-        return item.id;
-      }
-      _usedIndexForKey = true;
-      if (item.type && item.type.displayName) {
-        _keylessItemComponentName = item.type.displayName;
-      }
-      return String(index);
-    },
-  };
-
   _getCellKey(): string {
     return this.context?.cellKey || 'rootList';
   }
@@ -686,7 +680,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     invariant(
-      // $FlowFixMe
+      // $FlowFixMe[prop-missing]
       !props.onScroll || !props.onScroll.__isNative,
       'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
         'to support native onScroll events with useNativeDriver',
@@ -804,7 +798,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItem,
       getItemCount,
       horizontal,
-      keyExtractor,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
@@ -812,7 +805,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
-      const key = keyExtractor(item, ii);
+      const key = this._keyExtractor(item, ii);
       this._indicesToKeys.set(ii, key);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
@@ -864,6 +857,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _getSpacerKey = (isVertical: boolean): string =>
     isVertical ? 'height' : 'width';
 
+  _keyExtractor(item: Item, index: number) {
+    if (this.props.keyExtractor != null) {
+      return this.props.keyExtractor(item, index);
+    }
+
+    const key = defaultKeyExtractor(item, index);
+    if (key === String(index)) {
+      _usedIndexForKey = true;
+      if (item.type && item.type.displayName) {
+        _keylessItemComponentName = item.type.displayName;
+      }
+    }
+    return key;
+  }
+
   render(): React.Node {
     if (__DEV__) {
       const flatStyles = flattenStyle(this.props.contentContainerStyle);
@@ -896,7 +904,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const element = React.isValidElement(ListHeaderComponent) ? (
         ListHeaderComponent
       ) : (
-        // $FlowFixMe
+        // $FlowFixMe[not-a-component]
+        // $FlowFixMe[incompatible-type-arg]
         <ListHeaderComponent />
       );
       cells.push(
@@ -910,7 +919,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this.props.ListHeaderComponentStyle,
             )}>
             {
-              // $FlowFixMe - Typing ReactNativeComponent revealed errors
+              // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
             }
           </View>
@@ -1019,7 +1028,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       ) ? (
         ListEmptyComponent
       ) : (
-        // $FlowFixMe
+        // $FlowFixMe[not-a-component]
+        // $FlowFixMe[incompatible-type-arg]
         <ListEmptyComponent />
       )): any);
       cells.push(
@@ -1039,7 +1049,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const element = React.isValidElement(ListFooterComponent) ? (
         ListFooterComponent
       ) : (
-        // $FlowFixMe
+        // $FlowFixMe[not-a-component]
+        // $FlowFixMe[incompatible-type-arg]
         <ListFooterComponent />
       );
       cells.push(
@@ -1053,7 +1064,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               this.props.ListFooterComponentStyle,
             )}>
             {
-              // $FlowFixMe - Typing ReactNativeComponent revealed errors
+              // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
             }
           </View>
@@ -1226,7 +1237,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
-      // $FlowFixMe - Typing ReactNativeComponent revealed errors
+      // $FlowFixMe[prop-missing] - Typing ReactNativeComponent revealed errors
       return <View {...props} />;
     } else if (onRefresh) {
       invariant(
@@ -1236,7 +1247,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           '`',
       );
       return (
-        // $FlowFixMe Invalid prop usage
+        // $FlowFixMe[prop-missing] Invalid prop usage
         <ScrollView
           {...props}
           refreshControl={
@@ -1253,7 +1264,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />
       );
     } else {
-      // $FlowFixMe Invalid prop usage
+      // $FlowFixMe[prop-missing] Invalid prop usage
       return <ScrollView {...props} />;
     }
   };
@@ -1341,22 +1352,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             this._scrollMetrics.visibleLength = scrollMetrics.visibleLength;
             this._scrollMetrics.offset = scrollMetrics.offset;
 
-            if (
-              VirtualizedListInjection?.unstable_enableVirtualizedListRemeasureChildrenIfNeeded
-            ) {
-              // If metrics of the scrollView changed, then we triggered remeasure for child list
-              // to ensure VirtualizedList has the right information.
-              this._cellKeysToChildListKeys.forEach(childListKeys => {
-                if (childListKeys) {
-                  for (let childKey of childListKeys) {
-                    const childList = this._nestedChildLists.get(childKey);
-                    childList &&
-                      childList.ref &&
-                      childList.ref.measureLayoutRelativeToContainingList();
-                  }
+            // If metrics of the scrollView changed, then we triggered remeasure for child list
+            // to ensure VirtualizedList has the right information.
+            this._cellKeysToChildListKeys.forEach(childListKeys => {
+              if (childListKeys) {
+                for (let childKey of childListKeys) {
+                  const childList = this._nestedChildLists.get(childKey);
+                  childList &&
+                    childList.ref &&
+                    childList.ref.measureLayoutRelativeToContainingList();
                 }
-              });
-            }
+              }
+            });
           }
         },
         error => {
@@ -1414,9 +1421,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const itemCount = this.props.getItemCount(this.props.data);
     for (let ii = 0; ii < itemCount; ii++) {
       const frame = this._getFrameMetricsApprox(ii);
-      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.68 was deployed. To see the error delete this
-       * comment and run Flow. */
+      /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
+       * suppresses an error found when Flow v0.68 was deployed. To see the
+       * error delete this comment and run Flow. */
       if (frame.inLayout) {
         framesInLayout.push(frame);
       }
@@ -1762,9 +1769,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       } else {
         const distanceFromEnd = contentLength - visibleLength - offset;
         const renderAhead =
-          /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.63 was deployed. To see the error
-           * delete this comment and run Flow. */
           distanceFromEnd < onEndReachedThreshold * visibleLength
             ? maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
             : 0;
@@ -1816,9 +1820,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _createViewToken = (index: number, isViewable: boolean) => {
-    const {data, getItem, keyExtractor} = this.props;
+    const {data, getItem} = this.props;
     const item = getItem(data, index);
-    return {index, item, key: keyExtractor(item, index), isViewable};
+    return {index, item, key: this._keyExtractor(item, index), isViewable};
   };
 
   _getFrameMetricsApprox = (
@@ -1854,27 +1858,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     inLayout?: boolean,
     ...
   } => {
-    const {
-      data,
-      getItem,
-      getItemCount,
-      getItemLayout,
-      keyExtractor,
-    } = this.props;
+    const {data, getItem, getItemCount, getItemLayout} = this.props;
     invariant(
       getItemCount(data) > index,
       'Tried to get frame for out of range index ' + index,
     );
     const item = getItem(data, index);
-    let frame = item && this._frames[keyExtractor(item, index)];
+    let frame = item && this._frames[this._keyExtractor(item, index)];
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         frame = getItemLayout(data, index);
       }
     }
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
+    /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
+     * suppresses an error found when Flow v0.63 was deployed. To see the error
+     * delete this comment and run Flow. */
     return frame;
   };
 
@@ -1897,7 +1895,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
 type CellRendererProps = {
   CellRendererComponent?: ?React.ComponentType<any>,
-  ItemSeparatorComponent: ?React.ComponentType<*>,
+  ItemSeparatorComponent: ?React.ComponentType<
+    any | {highlighted: boolean, leadingItem: ?Item},
+  >,
   cellKey: string,
   fillRateHelper: FillRateHelper,
   horizontal: ?boolean,
@@ -2001,9 +2001,12 @@ class CellRenderer extends React.Component<
     }
 
     if (ListItemComponent) {
-      /* $FlowFixMe(>=0.108.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.108 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[not-a-component] (>=0.108.0 site=react_native_fb) This
+       * comment suppresses an error found when Flow v0.108 was deployed. To
+       * see the error, delete this comment and run Flow. */
+      /* $FlowFixMe[incompatible-type-arg] (>=0.108.0 site=react_native_fb)
+       * This comment suppresses an error found when Flow v0.108 was deployed.
+       * To see the error, delete this comment and run Flow. */
       return React.createElement(ListItemComponent, {
         item,
         index,
@@ -2045,9 +2048,9 @@ class CellRenderer extends React.Component<
     );
 
     const onLayout =
-      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.68 was deployed. To see the error delete this
-       * comment and run Flow. */
+      /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
+       * suppresses an error found when Flow v0.68 was deployed. To see the
+       * error delete this comment and run Flow. */
       getItemLayout && !parentProps.debug && !fillRateHelper.enabled()
         ? undefined
         : this.props.onLayout;
@@ -2064,9 +2067,9 @@ class CellRenderer extends React.Component<
       ? [styles.row, inversionStyle]
       : inversionStyle;
     const result = !CellRendererComponent ? (
-      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.89 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
+        This comment suppresses an error found when Flow v0.89 was deployed. *
+        To see the error, delete this comment and run Flow. */
       <View style={cellStyle} onLayout={onLayout}>
         {element}
         {itemSeparator}

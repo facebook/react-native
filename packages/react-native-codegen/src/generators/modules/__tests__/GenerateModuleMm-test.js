@@ -25,6 +25,7 @@ describe('GenerateModuleMm', () => {
           fixtureName,
           fixture,
           'com.facebook.fbreact.specs',
+          false,
         );
         expect(
           new Map([

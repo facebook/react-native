@@ -6,7 +6,6 @@
  */
 
 #include "ShadowNode.h"
-#include "Constants.h"
 #include "DynamicPropsUtilities.h"
 #include "ShadowNodeFragment.h"
 
@@ -39,15 +38,13 @@ SharedProps ShadowNode::propsForClonedShadowNode(
     ShadowNode const &sourceShadowNode,
     Props::Shared const &props) {
 #ifdef ANDROID
-  if (Constants::getPropsForwardingEnabled()) {
-    bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
-    bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
-    if (!hasBeenMounted && sourceNodeHasRawProps && props) {
-      auto &castedProps = const_cast<Props &>(*props);
-      castedProps.rawProps = mergeDynamicProps(
-          sourceShadowNode.getProps()->rawProps, props->rawProps);
-      return props;
-    }
+  bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
+  bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
+  if (!hasBeenMounted && sourceNodeHasRawProps && props) {
+    auto &castedProps = const_cast<Props &>(*props);
+    castedProps.rawProps = mergeDynamicProps(
+        sourceShadowNode.getProps()->rawProps, props->rawProps);
+    return props;
   }
 #endif
   return props ? props : sourceShadowNode.getProps();
@@ -117,7 +114,8 @@ ShadowNode::ShadowNode(
   }
 }
 
-UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
+ShadowNode::Unshared ShadowNode::clone(
+    const ShadowNodeFragment &fragment) const {
   return family_->componentDescriptor_.cloneShadowNode(*this, fragment);
 }
 
@@ -212,7 +210,7 @@ void ShadowNode::replaceChild(
       *std::const_pointer_cast<ShadowNode::ListOfShared>(children_);
   auto size = children.size();
 
-  if (suggestedIndex != -1 && suggestedIndex < size) {
+  if (suggestedIndex != -1 && static_cast<size_t>(suggestedIndex) < size) {
     // If provided `suggestedIndex` is accurate,
     // replacing in place using the index.
     if (children.at(suggestedIndex).get() == &oldChild) {
@@ -221,7 +219,7 @@ void ShadowNode::replaceChild(
     }
   }
 
-  for (auto index = 0; index < size; index++) {
+  for (size_t index = 0; index < size; index++) {
     if (children.at(index).get() == &oldChild) {
       children[index] = newChild;
       return;
