@@ -766,13 +766,13 @@ public class ReactViewGroup extends ViewGroup
         child.getElevation() > 0 && ReactFeatureFlags.insertZReorderBarriersOnViewGroupChildren;
 
     if (drawWithZ) {
-      CanvasUtil.enableZ(canvas, false);
+      CanvasUtil.enableZ(canvas, true);
     }
 
     boolean result = super.drawChild(canvas, child, drawingTime);
 
     if (drawWithZ) {
-      CanvasUtil.enableZ(canvas, true);
+      CanvasUtil.enableZ(canvas, false);
     }
     return result;
   }
