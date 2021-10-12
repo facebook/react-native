@@ -10,8 +10,26 @@ PLATFORM_NAME="${PLATFORM_NAME:-iphoneos}"
 CURRENT_ARCH="${CURRENT_ARCH}"
 
 # Fix build on Apple Silicon
-wget -O config.guess 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD'
-wget -O config.sub 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD'
+if [ "$CURRENT_ARCH" == "arm64" ]; then
+    cat <<EOF >>fix_glog_0.3.5_apple_silicon.patch
+diff --git a/config.sub b/config.sub
+index 1761d8b..43fa2e8 100755
+--- a/config.sub
++++ b/config.sub
+@@ -1096,6 +1096,9 @@ case $basic_machine in
+ 		basic_machine=z8k-unknown
+ 		os=-sim
+ 		;;
++	arm64-*)
++		basic_machine=$(echo $basic_machine | sed 's/arm64/aarch64/')
++		;;
+ 	none)
+ 		basic_machine=none-none
+ 		os=-none
+EOF
+
+    patch -p1 cofnig.sub fix_glog_0.3.5_apple_silicon.patch
+fi
 
 if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     # Xcode 10 beta sets CURRENT_ARCH to "undefined_arch", this leads to incorrect linker arg.
