@@ -126,7 +126,7 @@
 - (instancetype)initWithFrame:(NSRect)frameRect
 {
   if (self = [super initWithFrame:frameRect]) {
-    self.cell.controlSize = NSRegularControlSize;
+    self.cell.controlSize = NSControlSizeRegular;
     ((RCTSliderCell*)self.cell).delegate = self;
   }
   return self;

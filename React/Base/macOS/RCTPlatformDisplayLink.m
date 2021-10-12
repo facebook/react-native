@@ -15,7 +15,7 @@
 #import <CoreVideo/CVDisplayLink.h>
 #import <CoreVideo/CVHostTime.h>
 
-#import <libkern/OSAtomic.h>
+#import <os/lock.h>
 
 @interface RCTPlatformDisplayLink ()
 
@@ -30,7 +30,7 @@
   __weak id _target;
   NSRunLoop *_runLoop;
   NSMutableArray<NSRunLoopMode> *_modes;
-  OSSpinLock _lock; // OS_SPINLOCK_INIT == 0
+  os_unfair_lock _lock; // OS_UNFAIR_LOCK_INIT == 0
 }
 
 + (RCTPlatformDisplayLink *)displayLinkWithTarget:(id)target selector:(SEL)sel
@@ -47,7 +47,7 @@ static CVReturn RCTPlatformDisplayLinkCallBack(__unused CVDisplayLinkRef display
     RCTPlatformDisplayLink *rctDisplayLink = (__bridge RCTPlatformDisplayLink*)displayLinkContext;
 
     // Lock and check for invalidation prior to calling out to the runloop
-    OSSpinLockLock(&rctDisplayLink->_lock);
+    os_unfair_lock_lock(&rctDisplayLink->_lock);
     if (rctDisplayLink->_runLoop != nil) {
       CFRunLoopRef cfRunLoop = [rctDisplayLink->_runLoop getCFRunLoop];
       CFRunLoopPerformBlock(cfRunLoop, kCFRunLoopDefaultMode, ^{
@@ -55,7 +55,7 @@ static CVReturn RCTPlatformDisplayLinkCallBack(__unused CVDisplayLinkRef display
       });
       CFRunLoopWakeUp(cfRunLoop);
     }
-    OSSpinLockUnlock(&rctDisplayLink->_lock);
+    os_unfair_lock_unlock(&rctDisplayLink->_lock);
   }
   return kCVReturnSuccess;
 }
@@ -98,10 +98,10 @@ static CVReturn RCTPlatformDisplayLinkCallBack(__unused CVDisplayLinkRef display
 - (void)invalidate
 {
   if (_runLoop != nil) {
-    OSSpinLockLock(&_lock);
+    os_unfair_lock_lock(&_lock);
     _runLoop = nil;
     _modes = nil;
-    OSSpinLockUnlock(&_lock);
+    os_unfair_lock_unlock(&_lock);
 
     // CVDisplayLinkStop attempts to acquire a mutex possibly held during the callback's invocation.
     // Stop the display link outside of the lock to avoid deadlocking here.

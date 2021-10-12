@@ -23,7 +23,7 @@
 {
   if ((self = [super initWithFrame:frame])) {
     self.displayedWhenStopped = NO;
-    self.style = NSProgressIndicatorSpinningStyle;
+    self.style = NSProgressIndicatorStyleSpinning;
   }
   return self;
 }
@@ -82,7 +82,7 @@
   [super updateLayer];
   if (_color != nil) {
     CGFloat r, g, b, a;
-    [[_color colorUsingColorSpaceName:NSCalibratedRGBColorSpace] getRed:&r green:&g blue:&b alpha:&a];
+    [[_color colorUsingColorSpace:[NSColorSpace genericRGBColorSpace]] getRed:&r green:&g blue:&b alpha:&a];
 
     CIFilter *colorPoly = [CIFilter filterWithName:@"CIColorPolynomial"];
     [colorPoly setDefaults];
