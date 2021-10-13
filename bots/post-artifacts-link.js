@@ -30,12 +30,13 @@ const {createOrUpdateComment} = require('./make-comment');
  * @param {string} commitSha github sha of PR
  */
 function postArtifactLink(buildUrl, commitSha) {
-  const artifactLink = buildUrl + '/artifacts';
+  // build url link is redirected by CircleCI so appending `/artifacts` doesn't work
+  const artifactLink = buildUrl;
   const comment = [
     `PR build artifact${
       commitSha != null ? ` for ${commitSha}` : ''
     } is ready.`,
-    `To use, download tarball from [this CircleCI job](${artifactLink}) then run \`yarn add <path to tarball>\` in your React Native project.`,
+    `To use, download tarball from "Artifacts" tab in [this CircleCI job](${artifactLink}) then run \`yarn add <path to tarball>\` in your React Native project.`,
   ].join('\n');
   createOrUpdateComment(comment);
 }
