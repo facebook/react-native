@@ -182,6 +182,11 @@ public abstract class Event<T extends Event> {
     return null;
   }
 
+  @EventCategoryDef
+  protected int getEventCategory() {
+    return EventCategoryDef.UNSPECIFIED;
+  }
+
   /**
    * Dispatch this event to JS using a V2 EventEmitter. If surfaceId is not -1 and `getEventData` is
    * non-null, this will use the RCTModernEventEmitter API. Otherwise, it falls back to the
@@ -215,7 +220,8 @@ public abstract class Event<T extends Event> {
             getEventName(),
             canCoalesce(),
             getCoalescingKey(),
-            eventData);
+            eventData,
+            getEventCategory());
         return;
       }
     }
