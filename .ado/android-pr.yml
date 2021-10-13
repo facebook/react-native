@@ -46,11 +46,18 @@ jobs:
 
       - template: templates\prep-android-nuget.yml
 
+      # Verify depenendencies can be enumerated and downloaded ..
+      - task: CmdLine@2
+        displayName: 'Verify Dependencies can be enumerated'
+        inputs:
+          script: sudo apt-get install python3-pip && sudo apt-get install python3-setuptools && pip3 install BeautifulSoup4 && pip3 install wheel && pip3 install wget && python3 android-patches/scripts/downloadDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
+
+
       # Very similar to the default pack task .. but appends 'ndk21' to the nuget pack version
       - task: CmdLine@2
         displayName: 'Verify NuGet can be packed'
         inputs:
-          script: NDK=ndk`cat ${ANDROID_SDK_ROOT}/ndk-bundle/source.properties 2>&1 | grep Pkg.Revision | awk '{ print $3}' | awk -F. '{ print $1 }'`; mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe pack $(System.DefaultWorkingDirectory)/ReactAndroid/ReactAndroid.nuspec -OutputDirectory $(System.DefaultWorkingDirectory) -Properties buildNumber=$(buildNumber)-$NDK;commitId=$(Build.SourceVersion)
+          script: NDK=ndk`cat ${ANDROID_SDK_ROOT}/ndk-bundle/source.properties 2>&1 | grep Pkg.Revision | awk '{ print $3}' | awk -F. '{ print $1 }'`; mono $(System.DefaultWorkingDirectory)/nuget-bin/nuget.exe pack $(System.DefaultWorkingDirectory)/ReactAndroid/ReactAndroid.nuspec -OutputDirectory $(Build.StagingDirectory)/final -Properties buildNumber=$(buildNumber)-$NDK;commitId=$(Build.SourceVersion)
 
       # Android CI doesn't create a nuget now, but this check is failing builds. Quickest fix to unblock builds is to disable the check... but we need to find the root cause and fix it and enable this again.
       # - script: '[ -f $(System.DefaultWorkingDirectory)/*.nupkg ]'
@@ -71,3 +78,9 @@ jobs:
         displayName: gradlew clean
         inputs:
           script: ./gradlew clean
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish final artifacts'
+        inputs:
+          PathtoPublish: '$(Build.StagingDirectory)/final'
+          ArtifactName: 'ReactNative-Final' 

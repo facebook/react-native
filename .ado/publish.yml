@@ -144,6 +144,13 @@ jobs:
 
       - template: templates\prep-android-nuget.yml
 
+      # Enumerate and download all dependencies ..
+      - task: CmdLine@2
+        displayName: 'Verify Dependencies can be enumerated'
+        inputs:
+          script: sudo apt-get install python3-pip && sudo apt-get install python3-setuptools && pip3 install BeautifulSoup4 && pip3 install wheel && pip3 install wget && python3 android-patches/scripts/downloadDependencies.py $(Build.SourcesDirectory) && tree $(Build.SourcesDirectory)/android
+
+
       # Very similar to the default pack task .. but appends 'ndk21b' to the nuget pack version
       - task: CmdLine@2
         displayName: 'NuGet pack'

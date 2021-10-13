@@ -1,6 +1,6 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\ReactAndroid.nuspec"	1969-12-31 16:00:00.000000000 -0800
-+++ "E:\\github\\rnm-63\\ReactAndroid\\ReactAndroid.nuspec"	2020-10-27 20:20:54.071789900 -0700
-@@ -0,0 +1,130 @@
+--- "E:\\gh\\react-native-macos2\\ReactAndroid\\ReactAndroid.nuspec"	1969-12-31 16:00:00.000000000 -0800
++++ "E:\\gh\\react-native-macos\\ReactAndroid\\ReactAndroid.nuspec"	2021-10-12 19:48:38.934480100 -0700
+@@ -0,0 +1,200 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 +  <metadata>
@@ -64,6 +64,41 @@
 +    <file src="build\react-ndk\all\armeabi-v7a\libyoga.so" target="lib\droidarm"/>
 +    <file src="build\react-ndk\all\x86\libyoga.so" target="lib\droidx86"/>
 +    <file src="build\react-ndk\all\arm64-v8a\libyoga.so" target="lib\droidarm64"/>
++    
++    <file src="build\react-ndk\all\x86_64\libhermes-executor-common-debug.so" target="lib\droidx64"/>
++    <file src="build\react-ndk\all\armeabi-v7a\libhermes-executor-common-debug.so" target="lib\droidarm"/>
++    <file src="build\react-ndk\all\x86\libhermes-executor-common-debug.so" target="lib\droidx86"/>
++    <file src="build\react-ndk\all\arm64-v8a\libhermes-executor-common-debug.so" target="lib\droidarm64"/>
++
++    <file src="build\react-ndk\all\x86_64\libhermes-executor-common-release.so" target="lib\droidx64"/>
++    <file src="build\react-ndk\all\armeabi-v7a\libhermes-executor-common-release.so" target="lib\droidarm"/>
++    <file src="build\react-ndk\all\x86\libhermes-executor-common-release.so" target="lib\droidx86"/>
++    <file src="build\react-ndk\all\arm64-v8a\libhermes-executor-common-release.so" target="lib\droidarm64"/>
++
++    <file src="build\react-ndk\all\x86_64\libhermes-executor-debug.so" target="lib\droidx64"/>
++    <file src="build\react-ndk\all\armeabi-v7a\libhermes-executor-debug.so" target="lib\droidarm"/>
++    <file src="build\react-ndk\all\x86\libhermes-executor-debug.so" target="lib\droidx86"/>
++    <file src="build\react-ndk\all\arm64-v8a\libhermes-executor-debug.so" target="lib\droidarm64"/>
++
++    <file src="build\react-ndk\all\x86_64\libhermes-executor-release.so" target="lib\droidx64"/>
++    <file src="build\react-ndk\all\armeabi-v7a\libhermes-executor-release.so" target="lib\droidarm"/>
++    <file src="build\react-ndk\all\x86\libhermes-executor-release.so" target="lib\droidx86"/>
++    <file src="build\react-ndk\all\arm64-v8a\libhermes-executor-release.so" target="lib\droidarm64"/>
++
++    <file src="build\react-ndk\all\x86_64\libhermes-inspector.so" target="lib\droidx64"/>
++    <file src="build\react-ndk\all\armeabi-v7a\libhermes-inspector.so" target="lib\droidarm"/>
++    <file src="build\react-ndk\all\x86\libhermes-inspector.so" target="lib\droidx86"/>
++    <file src="build\react-ndk\all\arm64-v8a\libhermes-inspector.so" target="lib\droidarm64"/>
++
++    <file src="build\react-ndk\all\x86_64\libjsijniprofiler.so" target="lib\droidx64"/>
++    <file src="build\react-ndk\all\armeabi-v7a\libjsijniprofiler.so" target="lib\droidarm"/>
++    <file src="build\react-ndk\all\x86\libjsijniprofiler.so" target="lib\droidx86"/>
++    <file src="build\react-ndk\all\arm64-v8a\libjsijniprofiler.so" target="lib\droidarm64"/>
++
++    <file src="build\react-ndk\all\x86_64\libfolly_futures.so" target="lib\droidx64"/>
++    <file src="build\react-ndk\all\armeabi-v7a\libfolly_futures.so" target="lib\droidarm"/>
++    <file src="build\react-ndk\all\x86\libfolly_futures.so" target="lib\droidx86"/>
++    <file src="build\react-ndk\all\arm64-v8a\libfolly_futures.so" target="lib\droidarm64"/>
 +
 +    <!-- Unstripped binaries -->
 +    <file src="build\tmp\buildReactNdkLib\local\x86_64\libfb.so" target="lib\droidx64\unstripped"/>
@@ -116,6 +151,40 @@
 +    <file src="build\tmp\buildReactNdkLib\local\x86\libyoga.so" target="lib\droidx86\unstripped"/>
 +    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libyoga.so" target="lib\droidarm64\unstripped"/>
 +
++    <file src="build\tmp\buildReactNdkLib\local\x86_64\libhermes-executor-common-debug.so" target="lib\droidx64\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libhermes-executor-common-debug.so" target="lib\droidarm\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\x86\libhermes-executor-common-debug.so" target="lib\droidx86\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libhermes-executor-common-debug.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\tmp\buildReactNdkLib\local\x86_64\libhermes-executor-common-release.so" target="lib\droidx64\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libhermes-executor-common-release.so" target="lib\droidarm\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\x86\libhermes-executor-common-release.so" target="lib\droidx86\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libhermes-executor-common-release.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\tmp\buildReactNdkLib\local\x86_64\libhermes-executor-debug.so" target="lib\droidx64\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libhermes-executor-debug.so" target="lib\droidarm\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\x86\libhermes-executor-debug.so" target="lib\droidx86\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libhermes-executor-debug.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\tmp\buildReactNdkLib\local\x86_64\libhermes-executor-release.so" target="lib\droidx64\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libhermes-executor-release.so" target="lib\droidarm\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\x86\libhermes-executor-release.so" target="lib\droidx86\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libhermes-executor-release.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\tmp\buildReactNdkLib\local\x86_64\libhermes-inspector.so" target="lib\droidx64\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libhermes-inspector.so" target="lib\droidarm\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\x86\libhermes-inspector.so" target="lib\droidx86\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libhermes-inspector.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\tmp\buildReactNdkLib\local\x86_64\libjsijniprofiler.so" target="lib\droidx64\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libjsijniprofiler.so" target="lib\droidarm\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\x86\libjsijniprofiler.so" target="lib\droidx86\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libjsijniprofiler.so" target="lib\droidarm64\unstripped"/>
++
++    <file src="build\tmp\buildReactNdkLib\local\x86_64\libfolly_futures.so" target="lib\droidx64\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libfolly_futures.so" target="lib\droidarm\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\x86\libfolly_futures.so" target="lib\droidx86\unstripped"/>
++    <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libfolly_futures.so" target="lib\droidarm64\unstripped"/>
 +    <!-- AAR and POM -->
 +    <file src="..\android\com\facebook\react\react-native\*\react-native-*.aar" target="lib"/>
 +    <file src="..\android\com\facebook\react\react-native\*\react-native-*.pom" target="lib"/>
@@ -128,6 +197,7 @@
 +    <file src="..\ReactCommon\cxxreact\**\*.h" target="inc\cxxreact"/>
 +    <file src="..\ReactCommon\jsi\**\*.h" target="inc\jsi"/>
 +    <file src="..\ReactCommon\yoga\yoga\**\*.h" target="inc\Yoga"/>
++    <file src="..\android\dependencies\**\*.*" target="dependencies"/>
 +  </files>
 +</package>
 +
