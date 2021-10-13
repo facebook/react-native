@@ -55,6 +55,12 @@ describe('MessageQueue', function() {
     assertQueue(flushedQueue, 0, 0, 0, ['foo']);
   });
 
+  it('should generate getter for native modules', () => {
+    NativeModules.getRemoteModule1().remoteMethod('foo');
+    const flushedQueue = BatchedBridge.flushedQueue();
+    assertQueue(flushedQueue, 0, 0, 0, ['foo']);
+  });
+
   it('should make round trip and clear memory', function() {
     const onFail = jest.fn();
     const onSucc = jest.fn();

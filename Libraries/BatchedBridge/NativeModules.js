@@ -195,6 +195,7 @@ if (global.nativeModuleProxy) {
 
       if (info.module) {
         NativeModules[info.name] = info.module;
+        NativeModules[`get${info.name}`] = () => info.module;
       }
       // If there's no module config, define a lazy getter
       else {
