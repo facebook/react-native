@@ -424,23 +424,19 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       return null;
     }
 
-    // Combine headers by lower case into lists first.
-    const lowerCaseHeaders = {};
-    Object.keys(this.responseHeaders).forEach(headerName => {
-      const value = this.responseHeaders[headerName];
-      const lowerCaseHeaderName = headerName.toLowerCase();
-      const values = lowerCaseHeaders[lowerCaseHeaderName];
-      if (values) {
-        values.push(value);
-        return;
-      }
-      lowerCaseHeaders[lowerCaseHeaderName] = [value];
-    });
+// Assign to non-nullable local variable.
+const responseHeaders = this.responseHeaders;
 
-    // Combine lists of headers into comma-and-space-separated values.
-    const combinedHeaders = Object.keys(lowerCaseHeaders).map(headerName => {
-      return [headerName, lowerCaseHeaders[headerName].join(', ')];
-    });
+const unsortedHeaders = {};
+for (const rawHeaderName of Object.keys(responseHeaders)) {
+  const headerValue = responseHeaders[rawHeaderName];
+  const lowerHeaderName = rawHeaderName.toLowerCase();
+  if (unsortedHeaders.hasOwnProperty(lowerHeaderName)) {
+    unsortedHeaders[lowerHeaderName] += ', ' + headerValue;
+  } else {
+    unsortedHeaders[lowerHeaderName] = headerValue;
+  }
+}
 
     // Sort in ascending order, with a being less than b if a's name is legacy-uppercased-byte less than b's name.
     combinedHeaders.sort((a, b) => {
@@ -458,8 +454,8 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
     // Combine into single text response.
     return (
       combinedHeaders
-        .map(headerValue => {
-          return headerValue[0] + ': ' + headerValue[1];
+        .map((name, value) => {
+          return name + ': ' + value;
         })
         .join('\r\n') + '\r\n'
     );
