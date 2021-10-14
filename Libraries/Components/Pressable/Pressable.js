@@ -23,7 +23,11 @@ import type {
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
 import {normalizeRect, type RectOrSize} from '../../StyleSheet/Rect';
-import type {LayoutEvent, MouseEvent, PressEvent} from '../../Types/CoreEventTypes';
+import type {
+  LayoutEvent,
+  MouseEvent,
+  PressEvent,
+} from '../../Types/CoreEventTypes';
 import View from '../View/View';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
