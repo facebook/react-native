@@ -91,6 +91,8 @@ if (buildFromMain) {
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
 const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
+
+// Note: We rely on tagsWithVersion to be alphabetically sorted
 // [34c034298dc9cad5a4553964a5a324450fda0385, refs/heads/0.33-stable, refs/tags/latest, refs/tags/v0.33.1, refs/tags/v0.34.1-rc]
 const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
   silent: true,
@@ -103,8 +105,8 @@ const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
   )
   // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2']
   .filter(version => version.indexOf(branchVersion) !== -1)
-  // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2']
-  .map(version => version.slice('refs/tags/'.length));
+  // ['0.33.0', '0.33.0-rc', '0.33.0-rc1', '0.33.0-rc2']
+  .map(version => version.slice('refs/tags/v'.length));
 
 if (!buildFromMain && tagsWithVersion.length === 0) {
   echo(
@@ -112,10 +114,11 @@ if (!buildFromMain && tagsWithVersion.length === 0) {
   );
   exit(1);
 }
+
 let releaseVersion;
 
 if (buildFromMain) {
-  releaseVersion = `0.0.0-${currentCommit.slice(0, 9)}`;
+  releaseVersion = '0.0.0';
 
   if (nightlyBuild) {
     releaseVersion += '-';
@@ -126,6 +129,8 @@ if (buildFromMain) {
       .replace(/[-:]/g, '')
       .replace(/[T]/g, '-');
   }
+
+  releaseVersion += `-${currentCommit.slice(0, 9)}`;
   // Bump version number in various files (package.json, gradle.properties etc)
   if (
     exec(
@@ -138,11 +143,11 @@ if (buildFromMain) {
 } else if (tagsWithVersion[0].indexOf('-rc') === -1) {
   // if first tag on this commit is non -rc then we are making a stable release
   // '0.33.0'
-  releaseVersion = tagsWithVersion[0].slice(1);
+  releaseVersion = tagsWithVersion[0];
 } else {
-  // otherwise pick last -rc tag alphabetically
-  // 0.33.0-rc2
-  releaseVersion = tagsWithVersion[tagsWithVersion.length - 1].slice(1);
+  // otherwise pick last -rc tag, indicates latest rc version due to alpha-sort
+  // '0.33.0-rc2'
+  releaseVersion = tagsWithVersion[tagsWithVersion.length - 1];
 }
 
 // -------- Generating Android Artifacts with JavaDoc
