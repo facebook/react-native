@@ -12,7 +12,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.uimanager.PixelUtil;
 
 /** Class responsible for generating catalyst touch events based on android {@link MotionEvent}. */
@@ -187,7 +186,7 @@ public class TouchesHelper {
   }
 
   private static WritableArray getWritableArray(boolean copyObjects, WritableMap... objects) {
-    WritableArray result = new WritableNativeArray();
+    WritableArray result = Arguments.createArray();
     for (WritableMap object : objects) {
       if (object != null) {
         result.pushMap(copyObjects ? object.copy() : object);
