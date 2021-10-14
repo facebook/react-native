@@ -12,12 +12,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "ReactCommon",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
         FBJNI_TARGET,
@@ -34,7 +28,6 @@ rn_xplat_cxx_library(
         ],
     ),
     fbobjc_compiler_flags = [
-        "-Wall",
         "-fobjc-arc-exceptions",
     ],
     fbobjc_inherited_buck_flags = get_static_library_ios_flags(),

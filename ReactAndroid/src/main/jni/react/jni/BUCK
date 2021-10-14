@@ -35,11 +35,6 @@ rn_xplat_cxx_library(
     header_namespace = "react/jni",
     exported_headers = EXPORTED_HEADERS,
     compiler_flags = [
-        "-Wall",
-        "-Werror",
-        "-fexceptions",
-        "-std=c++1y",
-        "-frtti",
         "-Wno-pessimizing-move",
         "-Wno-inconsistent-missing-override",
     ],
