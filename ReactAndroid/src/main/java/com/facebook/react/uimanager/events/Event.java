@@ -197,7 +197,7 @@ public abstract class Event<T extends Event> {
     if (getSurfaceId() != -1) {
       WritableMap eventData = getEventData();
       if (eventData != null) {
-        rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), getEventData());
+        rctEventEmitter.receiveEvent(getSurfaceId(), getViewTag(), getEventName(), eventData);
         return;
       }
     }

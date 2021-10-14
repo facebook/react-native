@@ -33,8 +33,7 @@ public class TouchesHelper {
    * given {@param event} instance. This method use {@param reactTarget} parameter to set as a
    * target view id associated with current gesture.
    */
-  private static WritableArray createsPointersArray(
-      int surfaceId, int reactTarget, TouchEvent event) {
+  private static WritableArray createsPointersArray(TouchEvent event) {
     WritableArray touches = Arguments.createArray();
     MotionEvent motionEvent = event.getMotionEvent();
 
@@ -60,8 +59,8 @@ public class TouchesHelper {
       float locationY = motionEvent.getY(index) - targetViewCoordinateY;
       touch.putDouble(LOCATION_X_KEY, PixelUtil.toDIPFromPixel(locationX));
       touch.putDouble(LOCATION_Y_KEY, PixelUtil.toDIPFromPixel(locationY));
-      touch.putInt(TARGET_SURFACE_KEY, surfaceId);
-      touch.putInt(TARGET_KEY, reactTarget);
+      touch.putInt(TARGET_SURFACE_KEY, event.getSurfaceId());
+      touch.putInt(TARGET_KEY, event.getViewTag());
       touch.putDouble(TIMESTAMP_KEY, event.getTimestampMs());
       touch.putDouble(POINTER_IDENTIFIER_KEY, motionEvent.getPointerId(index));
       touches.pushMap(touch);
@@ -75,17 +74,11 @@ public class TouchesHelper {
    * context}. Touch event can encode multiple concurrent touches (pointers).
    *
    * @param rctEventEmitter Event emitter used to execute JS module call
-   * @param type type of the touch event (see {@link TouchEventType})
-   * @param reactTarget target view react id associated with this gesture
    * @param touchEvent native touch event to read pointers count and coordinates from
    */
-  public static void sendTouchEvent(
-      RCTEventEmitter rctEventEmitter,
-      TouchEventType type,
-      int surfaceId,
-      int reactTarget,
-      TouchEvent touchEvent) {
-    WritableArray pointers = createsPointersArray(surfaceId, reactTarget, touchEvent);
+  public static void sendTouchEvent(RCTEventEmitter rctEventEmitter, TouchEvent touchEvent) {
+    TouchEventType type = touchEvent.getTouchEventType();
+    WritableArray pointers = createsPointersArray(touchEvent);
     MotionEvent motionEvent = touchEvent.getMotionEvent();
 
     // For START and END events send only index of the pointer that is associated with that event

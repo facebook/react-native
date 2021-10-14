@@ -188,12 +188,8 @@ public class TouchEvent extends Event<TouchEvent> {
               "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
       return;
     }
-    TouchesHelper.sendTouchEvent(
-        rctEventEmitter,
-        Assertions.assertNotNull(mTouchEventType),
-        getSurfaceId(),
-        getViewTag(),
-        this);
+
+    TouchesHelper.sendTouchEvent(rctEventEmitter, this);
   }
 
   @Override
@@ -208,6 +204,10 @@ public class TouchEvent extends Event<TouchEvent> {
 
   private boolean hasMotionEvent() {
     return mMotionEvent != null;
+  }
+
+  public TouchEventType getTouchEventType() {
+    return Assertions.assertNotNull(mTouchEventType);
   }
 
   public float getViewX() {
