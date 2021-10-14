@@ -80,17 +80,39 @@ def get_react_native_preprocessor_flags():
     return []
 
 # Building is not supported in OSS right now
-def rn_xplat_cxx_library(name, **kwargs):
-    new_kwargs = {
+def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = True, compiler_flags_enable_rtti = True, **kwargs):
+    visibility = kwargs.get("visibility", [])
+    kwargs = {
         k: v
         for k, v in kwargs.items()
         if k.startswith("exported_")
     }
 
+    # RTTI and exceptions must either be both on, or both off
+    if compiler_flags_enable_exceptions != compiler_flags_enable_rtti:
+        fail("Must enable or disable both exceptions and RTTI; they cannot be mismatched. See this post for details: https://fb.workplace.com/groups/iosappsize/permalink/2277094415672494/")
+
+    # These are the default compiler flags for ALL React Native Cxx targets.
+    # For all of these, we PREPEND to compiler_flags: if these are already set
+    # or being overridden in compiler_flags, it's very likely that the flag is set
+    # app-wide or that we're otherwise in some special mode.
+    kwargs["compiler_flags"] = kwargs.get("compiler_flags", [])
+    kwargs["compiler_flags"] = ["-std=c++17"] + kwargs["compiler_flags"]
+    kwargs["compiler_flags"] = ["-Wall"] + kwargs["compiler_flags"]
+    kwargs["compiler_flags"] = ["-Werror"] + kwargs["compiler_flags"]
+    if compiler_flags_enable_exceptions:
+        kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["compiler_flags"]
+    else:
+        kwargs["compiler_flags"] = ["-fno-exceptions"] + kwargs["compiler_flags"]
+    if compiler_flags_enable_rtti:
+        kwargs["compiler_flags"] = ["-frtti"] + kwargs["compiler_flags"]
+    else:
+        kwargs["compiler_flags"] = ["-fno-rtti"] + kwargs["compiler_flags"]
+
     native.cxx_library(
         name = name,
-        visibility = kwargs.get("visibility", []),
-        **new_kwargs
+        visibility = visibility,
+        **kwargs
     )
 
 rn_xplat_cxx_library2 = rn_xplat_cxx_library
