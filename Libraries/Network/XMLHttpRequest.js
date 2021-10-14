@@ -424,38 +424,40 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       return null;
     }
 
-// Assign to non-nullable local variable.
-const responseHeaders = this.responseHeaders;
+    // Assign to non-nullable local variable.
+    const responseHeaders = this.responseHeaders;
 
-const unsortedHeaders = {};
-for (const rawHeaderName of Object.keys(responseHeaders)) {
-  const headerValue = responseHeaders[rawHeaderName];
-  const lowerHeaderName = rawHeaderName.toLowerCase();
-  if (unsortedHeaders.hasOwnProperty(lowerHeaderName)) {
-    unsortedHeaders[lowerHeaderName] += ', ' + headerValue;
-  } else {
-    unsortedHeaders[lowerHeaderName] = headerValue;
-  }
-}
+    const unsortedHeaders = {};
+    for (const rawHeaderName of Object.keys(responseHeaders)) {
+      const headerValue = responseHeaders[rawHeaderName];
+      const lowerHeaderName = rawHeaderName.toLowerCase();
+      if (unsortedHeaders.hasOwnProperty(lowerHeaderName)) {
+        unsortedHeaders[lowerHeaderName].headerValue += ', ' + headerValue;
+      } else {
+        unsortedHeaders[lowerHeaderName] = {
+          lowerHeaderName,
+          upperHeaderName: rawHeaderName.toUpperCase(),
+          headerValue,
+        };
+      }
+    }
 
     // Sort in ascending order, with a being less than b if a's name is legacy-uppercased-byte less than b's name.
-    combinedHeaders.sort((a, b) => {
-      const len = Math.min(a[0].length, b[0].length);
-      for (let i = 0; i < len; i++) {
-        const aChar = a[0][i].toUpperCase().charCodeAt(0);
-        const bChar = b[0][i].toUpperCase().charCodeAt(0);
-        if (aChar !== bChar) {
-          return aChar - bChar;
-        }
+    const sortedHeaders = Object.values(unsortedHeaders).sort((a, b) => {
+      if (a.upperHeaderName < b.upperHeaderName) {
+        return -1;
       }
-      return a[0].length - b[0].length;
+      if (a.upperHeaderName > b.upperHeaderName) {
+        return 1;
+      }
+      return 0;
     });
 
     // Combine into single text response.
     return (
-      combinedHeaders
-        .map((name, value) => {
-          return name + ': ' + value;
+      sortedHeaders
+        .map(header => {
+          return header.lowerHeaderName + ': ' + header.headerValue;
         })
         .join('\r\n') + '\r\n'
     );
