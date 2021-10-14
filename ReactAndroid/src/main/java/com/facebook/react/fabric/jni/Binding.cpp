@@ -498,7 +498,6 @@ void Binding::installFabricUIManager(
     jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
     jni::alias_ref<jobject> javaUIManager,
     EventBeatManager *eventBeatManager,
-    jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
     ComponentFactory *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
@@ -532,8 +531,6 @@ void Binding::installFabricUIManager(
   ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
 
-  auto sharedJSMessageQueueThread =
-      std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
   if (runtimeSchedulerHolder) {
