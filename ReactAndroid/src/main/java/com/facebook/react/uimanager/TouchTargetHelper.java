@@ -182,7 +182,6 @@ public class TouchTargetHelper {
         eventCoords[0] = childPoint.x;
         eventCoords[1] = childPoint.y;
         View targetView = findTouchTargetViewWithPointerEvents(eventCoords, child, pathAccumulator);
-
         if (targetView != null) {
           // We don't allow touches on views that are outside the bounds of an `overflow: hidden`
           // View
@@ -196,6 +195,9 @@ public class TouchTargetHelper {
           }
           if (inOverflowBounds) {
             return targetView;
+          } else if (pathAccumulator != null) {
+            // Not a hit, reset the path found so far
+            pathAccumulator.clear();
           }
         }
         eventCoords[0] = restoreX;
