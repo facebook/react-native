@@ -13,7 +13,6 @@ import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.SoftAssertions;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.config.ReactFeatureFlags;
 
 /**
