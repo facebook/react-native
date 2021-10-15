@@ -15,7 +15,6 @@
 #include <yoga/YGEnums.h>
 #include <yoga/YGValue.h>
 
-#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -88,8 +87,6 @@ class AndroidTextInputComponentDescriptor final
 
  protected:
   void adopt(ShadowNode::Unshared const &shadowNode) const override {
-    react_native_assert(
-        std::dynamic_pointer_cast<AndroidTextInputShadowNode>(shadowNode));
     auto textInputShadowNode =
         std::static_pointer_cast<AndroidTextInputShadowNode>(shadowNode);
 

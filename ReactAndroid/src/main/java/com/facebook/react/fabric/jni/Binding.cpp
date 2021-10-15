@@ -646,16 +646,19 @@ inline local_ref<ReadableArray::javaobject> castReadableArray(
 
 // TODO: this method will be removed when binding for components are code-gen
 local_ref<JString> getPlatformComponentName(const ShadowView &shadowView) {
-  local_ref<JString> componentName;
-  auto newViewProps =
-      std::dynamic_pointer_cast<const ScrollViewProps>(shadowView.props);
+  static std::string scrollViewComponentName = std::string("ScrollView");
 
-  if (newViewProps &&
-      newViewProps->getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
-    componentName = make_jstring("AndroidHorizontalScrollView");
-  } else {
-    componentName = make_jstring(shadowView.componentName);
+  local_ref<JString> componentName;
+  if (scrollViewComponentName.compare(shadowView.componentName) == 0) {
+    auto newViewProps =
+        std::static_pointer_cast<const ScrollViewProps>(shadowView.props);
+    if (newViewProps->getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
+      componentName = make_jstring("AndroidHorizontalScrollView");
+      return componentName;
+    }
   }
+
+  componentName = make_jstring(shadowView.componentName);
   return componentName;
 }
 

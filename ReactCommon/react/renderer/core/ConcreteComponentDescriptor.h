@@ -66,9 +66,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   ShadowNode::Shared createShadowNode(
       const ShadowNodeFragment &fragment,
       ShadowNodeFamily::Shared const &family) const override {
-    react_native_assert(
-        std::dynamic_pointer_cast<const ConcreteProps>(fragment.props));
-
     auto shadowNode =
         std::make_shared<ShadowNodeT>(fragment, family, getTraits());
 
