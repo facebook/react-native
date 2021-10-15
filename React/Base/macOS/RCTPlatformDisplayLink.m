@@ -65,6 +65,7 @@ static CVReturn RCTPlatformDisplayLinkCallBack(__unused CVDisplayLinkRef display
   if (_displayLink != NULL) {
     CVDisplayLinkStop(_displayLink);
     CVDisplayLinkRelease(_displayLink);
+    _displayLink = NULL;
   }
 }
 
