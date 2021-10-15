@@ -22,6 +22,7 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUtils.h>
+#import <react/renderer/mounting/MountingCoordinator.h>
 
 #import "RCTSurfacePresenter.h"
 
