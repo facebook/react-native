@@ -47,6 +47,7 @@ async function reportSizeStats(stats, replacePattern) {
   );
   const collection = datastore.getBinarySizesCollection(store);
 
+  // Collect the current sizes for main branch only.
   if (GITHUB_REF === 'main') {
     // Ensure we only store numbers greater than zero.
     const validatedStats = Object.keys(stats).reduce((validated, key) => {
@@ -65,6 +66,8 @@ async function reportSizeStats(stats, replacePattern) {
         validatedStats,
       );
     }
+  } else if (GITHUB_REF.endsWith('-stable')) {
+    console.log(`Skipping bundle size reporting for branch: ${GITHUB_REF}`);
   } else {
     const document = await datastore.getLatestDocument(collection);
 
