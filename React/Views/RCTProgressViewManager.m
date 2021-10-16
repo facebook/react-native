@@ -14,9 +14,9 @@
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
 RCT_ENUM_CONVERTER(NSProgressIndicatorStyle, (@{
-  @"default": @(NSProgressIndicatorBarStyle),
-  @"bar": @(NSProgressIndicatorBarStyle),
-}), NSProgressIndicatorBarStyle, integerValue)
+  @"default": @(NSProgressIndicatorStyleBar),
+  @"bar": @(NSProgressIndicatorStyleBar),
+}), NSProgressIndicatorStyleBar, integerValue)
 #else // ]TODO(macOS GH#774)
 RCT_ENUM_CONVERTER(
     UIProgressViewStyle,

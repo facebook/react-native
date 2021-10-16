@@ -19,7 +19,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    self.buttonType = NSSwitchButton;
+    self.buttonType = NSButtonTypeSwitch;
     self.title = @""; // default is "Button"
   }
   return self;
@@ -34,7 +34,7 @@
 }
 #else // [TODO(macOS GH#774)
 - (void)setOn:(BOOL)on animated:(BOOL)animated {
-  self.state = on ? NSOnState : NSOffState;
+  self.state = on ? NSControlStateValueOn : NSControlStateValueOff;
 }
 #endif // ]TODO(macOS GH#774)
 
@@ -42,12 +42,12 @@
 
 - (BOOL)on
 {
-  return self.state == NSOnState;
+  return self.state == NSControlStateValueOn;
 }
 
 - (void)setOn:(BOOL)on
 {
-  self.state = on ? NSOnState : NSOffState;
+  self.state = on ? NSControlStateValueOn : NSControlStateValueOff;
 }
 
 #endif // ]TODO(macOS GH#774)

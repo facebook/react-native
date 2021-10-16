@@ -22,7 +22,7 @@
 
 This repository is a working fork of **facebook/react-native** that adds support for the official React Native for macOS implementation from Microsoft. 
 
-You can read more about the macOS implementation in our website - [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/)
+You can read more about the macOS implementation on our website - [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/)
 
 ## Contents
 
@@ -50,14 +50,14 @@ Search the [existing issues](https://github.com/microsoft/react-native-macos/iss
 - Ensure the [appropriate template](https://github.com/microsoft/react-native-macos/issues/new/choose) is used when filing your issue(s).
 
 ##  Contributing
-See [Contributing guidelines](https://github.com/microsoft/react-native-macos/blob/master/CONTRIBUTING.md) for how to setup your fork of the repo and start a PR to contribute to React Native for macOS.
+See [Contributing guidelines](https://github.com/microsoft/react-native-macos/blob/master/CONTRIBUTING.md) for how to set up your fork of the repo and start a PR to contribute to React Native for macOS.
 
 [Good First Issue](https://github.com/microsoft/react-native-macos/labels/good%20first%20issue) and [help wanted](https://github.com/microsoft/react-native-macos/labels/help%20wanted) are great starting points for PRs.
 
 ## Documentation
-[React Native already has great documentation](https://reactnative.dev/docs/getting-started.html) and we're working to ensure the React Native for Windows + macOS are part of that documentation story.
+[React Native already has great documentation](https://reactnative.dev/docs/getting-started) and we're working to ensure the React Native for Windows + macOS are part of that documentation story.
 
-[React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/) has it's own separate documentation site where Windows and macOS
+[React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/) has its own separate documentation site where Windows and macOS
 specific information, like API docs and blog updates live. We are bootstrapping documentation for macOS at this time, tune in for updates.
 
 ### Examples
