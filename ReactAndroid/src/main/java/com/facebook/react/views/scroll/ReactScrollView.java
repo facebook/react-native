@@ -600,7 +600,6 @@ public class ReactScrollView extends ScrollView
         new Runnable() {
 
           private boolean mSnappingToPage = false;
-          private boolean mRunning = true;
           private int mStableFrames = 0;
 
           @Override
@@ -609,7 +608,8 @@ public class ReactScrollView extends ScrollView
               // We are still scrolling.
               mActivelyScrolling = false;
               mStableFrames = 0;
-              mRunning = true;
+              ViewCompat.postOnAnimationDelayed(
+                  ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
             } else {
               // There has not been a scroll update since the last time this Runnable executed.
               ReactScrollViewHelper.updateFabricScrollState(ReactScrollView.this);
@@ -622,30 +622,24 @@ public class ReactScrollView extends ScrollView
               // fire before the first scroll event of an animated scroll/fling, and stop
               // immediately.
               mStableFrames++;
-              mRunning = (mStableFrames < 3);
 
-              if (mPagingEnabled && !mSnappingToPage) {
-                // Only if we have pagingEnabled and we have not snapped to the page do we
-                // need to continue checking for the scroll.  And we cause that scroll by asking for
-                // it
-                mSnappingToPage = true;
-                flingAndSnap(0);
-                ViewCompat.postOnAnimationDelayed(
-                    ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
-              } else {
+              if (mStableFrames >= 3) {
+                mPostTouchRunnable = null;
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
                 }
                 disableFpsListener();
+              } else {
+                if (mPagingEnabled && !mSnappingToPage) {
+                  // If we have pagingEnabled and we have not snapped to the page
+                  // we need to cause that scroll by asking for it
+                  mSnappingToPage = true;
+                  flingAndSnap(0);
+                }
+                // The scrollview has not "stabilized" so we just post to check again a frame later
+                ViewCompat.postOnAnimationDelayed(
+                    ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
               }
-            }
-
-            // We are still scrolling so we just post to check again a frame later
-            if (mRunning) {
-              ViewCompat.postOnAnimationDelayed(
-                  ReactScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
-            } else {
-              mPostTouchRunnable = null;
             }
           }
         };
