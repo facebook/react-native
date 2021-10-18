@@ -56,15 +56,11 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
 }
 
-task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
-    from(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
-    from("src/main/jni/third-party/boost")
-    include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp", "asm/**/*.S")
-    includeEmptyDirs = false
-    into("$thirdPartyNdkDir/boost")
-    doLast {
-        file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_${BOOST_VERSION}")
-    }
+final def prepareBoost = tasks.register("prepareBoost", PrepareBoostTask) {
+    it.dependsOn(boostPath ? [] : [downloadBoost])
+    it.boostPath.setFrom(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
+    it.boostVersion.set(BOOST_VERSION)
+    it.outputDir.set(new File(thirdPartyNdkDir, "boost"))
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
