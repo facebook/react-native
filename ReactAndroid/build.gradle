@@ -161,35 +161,11 @@ final def prepareGlog = tasks.register("prepareGlog", PrepareGlogTask) {
 }
 
 // Create Android.mk library module based on jsc from npm
-task prepareJSC {
-    doLast {
-        def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
-        if (!jscPackagePath) {
-            throw new GradleScriptException("Could not find the jsc-android npm package", null)
-        }
-
-        def jscDist = file("$jscPackagePath/dist")
-        if (!jscDist.exists()) {
-            throw new GradleScriptException("The jsc-android npm package is missing its \"dist\" directory", null)
-        }
-
-        def jscAAR = fileTree(jscDist).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-        def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
-
-        def headerFiles = fileTree(jscDist).matching({ it.include "**/include/*.h" })
-
-        copy {
-            from(soFiles)
-            from(headerFiles)
-            from("src/main/jni/third-party/jsc/Android.mk")
-
-            filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
-
-            includeEmptyDirs(false)
-            into("$thirdPartyNdkDir/jsc")
-        }
-    }
+tasks.register('prepareJSC', PrepareJSCTask) {
+    it.jscPackagePath.set(findNodeModulePath(projectDir, "jsc-android"))
+    it.outputDir = project.layout.buildDirectory.dir("third-party-ndk/jsc")
 }
+
 task downloadNdkBuildDependencies {
     if (!boostPath) {
         dependsOn(downloadBoost)
