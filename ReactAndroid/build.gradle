@@ -122,26 +122,12 @@ task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
     dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
 }
 
-task prepareLibevent(dependsOn: dependenciesPath ? [] : [downloadLibevent], type: Copy) {
-    from(dependenciesPath ?: tarTree(downloadLibevent.dest))
-    from("src/main/jni/third-party/libevent/Android.mk")
-    from("src/main/jni/third-party/libevent/event-config.h")
-    from("src/main/jni/third-party/libevent/evconfig-private.h")
-    include(
-        "libevent-${LIBEVENT_VERSION}-stable/*.c",
-        "libevent-${LIBEVENT_VERSION}-stable/*.h",
-        "libevent-${LIBEVENT_VERSION}-stable/include/**/*",
-        "evconfig-private.h",
-        "event-config.h",
-        "Android.mk"
-    )
-    eachFile { fname -> fname.path = (fname.path - "libevent-${LIBEVENT_VERSION}-stable/") }
-    includeEmptyDirs = false
-    into("$thirdPartyNdkDir/libevent")
 
-    doLast {
-        ant.move(file: "$thirdPartyNdkDir/libevent/event-config.h", tofile: "$thirdPartyNdkDir/libevent/include/event2/event-config.h")
-    }
+final def prepareLibevent = tasks.register("prepareLibevent", PrepareLibeventTask) {
+    it.dependsOn(dependenciesPath ? [] : [downloadLibevent])
+    it.libeventPath.setFrom(dependenciesPath ?: tarTree(downloadLibevent.dest))
+    it.libeventVersion.set(LIBEVENT_VERSION)
+    it.outputDir.set(new File(thirdPartyNdkDir, "libevent"))
 }
 
 task prepareHermes(dependsOn: createNativeDepsDirectories, type: Copy) {
