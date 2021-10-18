@@ -165,23 +165,23 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
   packageTask.configure {
     if (config.enableVmCleanup.get()) {
       val libDir = "$buildDir/intermediates/transforms/"
-      val targetVariant = ".*/transforms/[^/]*/$targetPath/.*".toRegex()
+      val targetVariant = ".*/transforms/[^/]*/${variant.name}/.*".toRegex()
       it.doFirst { cleanupVMFiles(libDir, targetVariant, enableHermes, cleanup) }
     }
   }
 
   stripDebugSymbolsTask?.configure {
     if (config.enableVmCleanup.get()) {
-      val libDir = "$buildDir/intermediates/stripped_native_libs/${targetPath}/out/lib/"
-      val targetVariant = ".*/stripped_native_libs/$targetPath/out/lib/.*".toRegex()
+      val libDir = "$buildDir/intermediates/stripped_native_libs/${variant.name}/out/lib/"
+      val targetVariant = ".*/stripped_native_libs/${variant.name}/out/lib/.*".toRegex()
       it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, cleanup) }
     }
   }
 
   mergeNativeLibsTask?.configure {
     if (config.enableVmCleanup.get()) {
-      val libDir = "$buildDir/intermediates/merged_native_libs/${targetPath}/out/lib/"
-      val targetVariant = ".*/merged_native_libs/$targetPath/out/lib/.*".toRegex()
+      val libDir = "$buildDir/intermediates/merged_native_libs/${variant.name}/out/lib/"
+      val targetVariant = ".*/merged_native_libs/${variant.name}/out/lib/.*".toRegex()
       it.doLast { cleanupVMFiles(libDir, targetVariant, enableHermes, cleanup) }
     }
   }
