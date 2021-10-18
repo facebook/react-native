@@ -369,9 +369,9 @@ afterEvaluate {
                     }
                 }
             }.visit { details ->
-                def targetVariant1 = ".*/transforms/[^/]*/${targetPath}/.*"
-                def targetVariant2 = ".*/merged_native_libs/${targetPath}/out/lib/.*"
-                def targetVariant3 = ".*/stripped_native_libs/${targetPath}/out/lib/.*"
+                def targetVariant1 = ".*/transforms/[^/]*/${variant.name}/.*"
+                def targetVariant2 = ".*/merged_native_libs/${variant.name}/out/lib/.*"
+                def targetVariant3 = ".*/stripped_native_libs/${variant.name}/out/lib/.*"
                 def path = details.file.getAbsolutePath().replace(File.separatorChar, '/' as char)
                 if ((path.matches(targetVariant1) || path.matches(targetVariant2) || path.matches(targetVariant3)) && details.file.isFile()) {
                     details.file.delete()
@@ -386,13 +386,13 @@ afterEvaluate {
 
             def sTask = tasks.findByName("strip${targetName}DebugSymbols")
             if (sTask != null) {
-                def strippedLibDir = "$buildDir/intermediates/stripped_native_libs/${targetPath}/out/lib/"
+                def strippedLibDir = "$buildDir/intermediates/stripped_native_libs/${variant.name}/out/lib/"
                 sTask.doLast { vmSelectionAction(strippedLibDir) }
             }
 
             def mTask = tasks.findByName("merge${targetName}NativeLibs")
             if (mTask != null) {
-                def mergedLibDir = "$buildDir/intermediates/merged_native_libs/${targetPath}/out/lib/"
+                def mergedLibDir = "$buildDir/intermediates/merged_native_libs/${variant.name}/out/lib/"
                 mTask.doLast { vmSelectionAction(mergedLibDir) }
             }
         }
