@@ -171,9 +171,7 @@ class Easing {
    * Use with `Animated.parallel()` to create a simple effect where the object
    * animates back slightly as the animation starts.
    *
-   * Wolfram Plot:
-   *
-   * - http://tiny.cc/back_default (s = 1.70158, default)
+   * https://easings.net/#easeInBack
    */
   static back(s: number = 1.70158): (t: number) => number {
     return t => t * t * ((s + 1) * t - s);
