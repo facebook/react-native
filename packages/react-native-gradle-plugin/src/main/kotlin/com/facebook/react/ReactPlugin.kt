@@ -27,8 +27,8 @@ class ReactPlugin : Plugin<Project> {
   }
 
   private fun applyAppPlugin(project: Project, config: ReactExtension) {
-    if (config.applyAppPlugin.getOrElse(false)) {
-      project.afterEvaluate {
+    project.afterEvaluate {
+      if (config.applyAppPlugin.getOrElse(false)) {
         val androidConfiguration = project.extensions.getByType(BaseExtension::class.java)
         project.configureDevPorts(androidConfiguration)
 
