@@ -284,7 +284,7 @@ def getNdkBuildFullPath() {
 }
 
 def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
-    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractAARHeaders, extractJNIFiles)
+    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractNativeDependencies)
     dependsOn("generateCodegenArtifactsFromSchema");
 
     inputs.dir("$projectDir/../ReactCommon")
@@ -343,32 +343,18 @@ def packageReactNdkLibsForBuck = tasks.register("packageReactNdkLibsForBuck", Co
     into("src/main/jni/prebuilt/lib")
 }
 
-task extractAARHeaders {
-    doLast {
-        configurations.extractHeaders.files.each {
-            def file = it.absoluteFile
-            def packageName = file.name.tokenize('-')[0]
-            copy {
-                from zipTree(file)
-                into "$projectDir/src/main/jni/first-party/$packageName/headers"
-                include "**/*.h"
-            }
-        }
-    }
-}
-
-task extractJNIFiles {
-    doLast {
-        configurations.extractJNI.files.each {
-            def file = it.absoluteFile
-            def packageName = file.name.tokenize('-')[0]
-            copy {
-                from zipTree(file)
-                into "$projectDir/src/main/jni/first-party/$packageName/"
-                include "jni/**/*"
-            }
-        }
-    }
+final def extractNativeDependencies = tasks.register('extractNativeDependencies', ExtractJniAndHeadersTask) {
+    it.extractHeadersConfiguration.setFrom(configurations.extractHeaders)
+    it.extractJniConfiguration.setFrom(configurations.extractJNI)
+    it.baseOutputDir = project.file("src/main/jni/first-party/")
+    // Sadly this task as an output folder path that is directly dependent on
+    // the task input (i.e. src/main/jni/first-party/<package-name>/...
+    // This means that this task is using the parent folder (first-party/) as
+    // @OutputFolder. The `prepareHermes` task will also output inside that
+    // folder and if the two tasks happen to be inside the same run, we want
+    // `extractNativeDependencies` to run after `prepareHermes` to do not
+    // invalidate the input/output calculation for this task.
+    it.mustRunAfter(prepareHermes)
 }
 
 task installArchives {
