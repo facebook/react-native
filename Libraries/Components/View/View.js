@@ -10,9 +10,9 @@
 
 import type {ViewProps} from './ViewPropTypes';
 
-const React = require('react');
 import ViewNativeComponent from './ViewNativeComponent';
-const TextAncestor = require('../../Text/TextAncestor');
+import TextAncestor from '../../Text/TextAncestor';
+import * as React from 'react';
 
 export type Props = ViewProps;
 
@@ -21,7 +21,7 @@ export type Props = ViewProps;
  * supports layout with flexbox, style, some touch handling, and accessibility
  * controls.
  *
- * @see https://reactnative.dev/docs/view.html
+ * @see https://reactnative.dev/docs/view
  */
 const View: React.AbstractComponent<
   ViewProps,

@@ -7,6 +7,8 @@
 
 package com.facebook.react.config;
 
+import com.facebook.proguard.annotations.DoNotStripAny;
+
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of RN. It
  * contains mainly flags for features that are either under active development and not ready for
@@ -14,8 +16,8 @@ package com.facebook.react.config;
  *
  * <p>These values are safe defaults and should not require manual changes.
  */
+@DoNotStripAny
 public class ReactFeatureFlags {
-
   /**
    * Should this application use TurboModules? If yes, then any module that inherits {@link
    * com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to C++
@@ -24,39 +26,43 @@ public class ReactFeatureFlags {
   public static volatile boolean useTurboModules = false;
 
   /**
-   * Should application use the new TM callback manager in Cxx? This is assumed to be a sane
-   * default, but it's new. We will delete once (1) we know it's safe to ship and (2) we have
-   * quantified impact.
+   * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
+   * use Fabric instead of the legacy renderer.
    */
-  public static volatile boolean useTurboModulesRAIICallbackManager = false;
+  public static volatile boolean enableFabricRenderer = false;
+
+  /**
+   * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
+   * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
+   * is used.
+   */
+  public static volatile boolean warnOnLegacyNativeModuleSystemUse = false;
 
   /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
   public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
 
-  /*
-   * This feature flag enables logs for Fabric
+  /**
+   * Experiment:
+   *
+   * <p>Bridge and Bridgeless mode can run concurrently. This means that there can be two
+   * TurboModule systems alive at the same time.
+   *
+   * <p>The TurboModule system stores all JS callbacks in a global LongLivedObjectCollection. This
+   * collection is cleared when the JS VM is torn down. Implication: Tearing down the bridge JSVM
+   * invalidates the bridgeless JSVM's callbacks, and vice versa.
+   *
+   * <p>useGlobalCallbackCleanupScopeUsingRetainJSCallback => Use a retainJSCallbacks lambda to
+   * store jsi::Functions into the global LongLivedObjectCollection
+   *
+   * <p>useTurboModuleManagerCallbackCleanupScope => Use a retainJSCallbacks labmda to store
+   * jsi::Functions into a LongLivedObjectCollection owned by the TurboModuleManager
    */
+  public static boolean useGlobalCallbackCleanupScopeUsingRetainJSCallback = false;
+
+  public static boolean useTurboModuleManagerCallbackCleanupScope = false;
+
+  /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
-
-  /**
-   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
-   * provided) to update the view properties. If {@code false}, then the generated {@code
-   * ...$$PropsSetter} class will be used instead.
-   */
-  public static boolean useViewManagerDelegates = false;
-
-  /**
-   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
-   * provided) to execute the view commands. If {@code false}, then {@code receiveCommand} method
-   * inside view manager will be called instead.
-   */
-  public static boolean useViewManagerDelegatesForCommands = false;
-
-  /**
-   * Temporary feature flat to control a fix in the transition to layoutOnlyViews TODO T61185028:
-   * remove this when bug is fixed
-   */
-  public static boolean enableTransitionLayoutOnlyViewCleanup = false;
 
   /** Feature flag to configure eager initialization of Fabric */
   public static boolean eagerInitializeFabric = false;
@@ -64,12 +70,39 @@ public class ReactFeatureFlags {
   /** Enables Static ViewConfig in RN Android native code. */
   public static boolean enableExperimentalStaticViewConfigs = false;
 
+  public static boolean enableRuntimeScheduler = false;
+
+  public static boolean enableRuntimeSchedulerInTurboModule = false;
+
   /** Enables a more aggressive cleanup during destruction of ReactContext */
   public static boolean enableReactContextCleanupFix = false;
 
-  /** Enables JS Responder in Fabric */
-  public static boolean enableJSResponder = false;
+  /** Feature flag to configure eager initialization of MapBuffer So file */
+  public static boolean enableEagerInitializeMapBufferSoFile = false;
 
-  /** Enables MapBuffer Serialization */
-  public static boolean mapBufferSerializationEnabled = false;
+  private static boolean mapBufferSerializationEnabled = false;
+
+  /** Enables or disables MapBuffer Serialization */
+  public static void setMapBufferSerializationEnabled(boolean enabled) {
+    mapBufferSerializationEnabled = enabled;
+  }
+
+  public static boolean isMapBufferSerializationEnabled() {
+    return mapBufferSerializationEnabled;
+  }
+
+  /** Enables Fabric for LogBox */
+  public static boolean enableFabricInLogBox = false;
+
+  public static boolean enableLockFreeEventDispatcher = false;
+
+  public static boolean enableAggressiveEventEmitterCleanup = false;
+
+  public static boolean insertZReorderBarriersOnViewGroupChildren = true;
+
+  public static boolean enableScrollViewSnapToAlignmentProp = true;
+
+  public static boolean useDispatchUniqueForCoalescableEvents = false;
+
+  public static boolean useUpdatedTouchPreprocessing = false;
 }

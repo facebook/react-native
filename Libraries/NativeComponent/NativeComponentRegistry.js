@@ -8,6 +8,7 @@
  * @format
  */
 
+import * as StaticViewConfigValidator from './StaticViewConfigValidator';
 import {createViewConfig} from './ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import type {
@@ -36,6 +37,7 @@ export function setRuntimeConfigProvider(
     name: string,
   ) => ?{
     native: boolean,
+    strict: boolean,
     verify: boolean,
   },
 ): void {
@@ -57,8 +59,9 @@ export function get<Config>(
   viewConfigProvider: () => PartialViewConfig,
 ): HostComponent<Config> {
   ReactNativeViewConfigRegistry.register(name, () => {
-    const {native, verify} = getRuntimeConfig?.(name) ?? {
+    const {native, strict, verify} = getRuntimeConfig?.(name) ?? {
       native: true,
+      strict: false,
       verify: false,
     };
 
@@ -67,16 +70,33 @@ export function get<Config>(
       : createViewConfig(viewConfigProvider());
 
     if (verify) {
-      if (native) {
-        verifyComponentAttributeEquivalence(
-          viewConfig,
-          createViewConfig(viewConfigProvider()),
-        );
+      if (strict) {
+        const results = native
+          ? StaticViewConfigValidator.validate(
+              name,
+              viewConfig,
+              createViewConfig(viewConfigProvider()),
+            )
+          : StaticViewConfigValidator.validate(
+              name,
+              getNativeComponentAttributes(name),
+              viewConfig,
+            );
+        if (results != null) {
+          console.error(results);
+        }
       } else {
-        verifyComponentAttributeEquivalence(
-          getNativeComponentAttributes(name),
-          viewConfig,
-        );
+        if (native) {
+          verifyComponentAttributeEquivalence(
+            viewConfig,
+            createViewConfig(viewConfigProvider()),
+          );
+        } else {
+          verifyComponentAttributeEquivalence(
+            getNativeComponentAttributes(name),
+            viewConfig,
+          );
+        }
       }
     }
 

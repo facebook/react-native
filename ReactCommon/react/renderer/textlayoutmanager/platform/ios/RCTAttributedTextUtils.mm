@@ -171,9 +171,8 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   if (textAttributes.textDecorationLineType.value_or(TextDecorationLineType::None) != TextDecorationLineType::None) {
     auto textDecorationLineType = textAttributes.textDecorationLineType.value();
 
-    NSUnderlineStyle style = RCTNSUnderlineStyleFromStyleAndPattern(
-        textAttributes.textDecorationLineStyle.value_or(TextDecorationLineStyle::Single),
-        textAttributes.textDecorationLinePattern.value_or(TextDecorationLinePattern::Solid));
+    NSUnderlineStyle style = RCTNSUnderlineStyleFromTextDecorationStyle(
+        textAttributes.textDecorationStyle.value_or(TextDecorationStyle::Solid));
 
     UIColor *textDecorationColor = RCTUIColorFromSharedColor(textAttributes.textDecorationColor);
 
@@ -288,6 +287,9 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
       case AccessibilityRole::Tab:
         attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tab");
         break;
+      case AccessibilityRole::TabBar:
+        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tabbar");
+        break;
       case AccessibilityRole::Tablist:
         attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tablist");
         break;
@@ -332,6 +334,11 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
     } else {
       NSString *string = [NSString stringWithCString:fragment.string.c_str() encoding:NSUTF8StringEncoding];
 
+      if (fragment.textAttributes.textTransform.hasValue()) {
+        auto textTransform = fragment.textAttributes.textTransform.value();
+        string = RCTNSStringFromStringApplyingTextTransform(string, textTransform);
+      }
+
       nsAttributedStringFragment = [[NSMutableAttributedString alloc]
           initWithString:string
               attributes:RCTNSTextAttributesFromTextAttributes(fragment.textAttributes)];
@@ -369,4 +376,18 @@ NSAttributedString *RCTNSAttributedStringFromAttributedStringBox(AttributedStrin
 AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(NSAttributedString *nsAttributedString)
 {
   return nsAttributedString.length ? AttributedStringBox{wrapManagedObject(nsAttributedString)} : AttributedStringBox{};
+}
+
+NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, TextTransform textTransform)
+{
+  switch (textTransform) {
+    case TextTransform::Uppercase:
+      return [string uppercaseString];
+    case TextTransform::Lowercase:
+      return [string lowercaseString];
+    case TextTransform::Capitalize:
+      return [string capitalizedString];
+    default:
+      return string;
+  }
 }

@@ -16,10 +16,13 @@ SurfaceHandlerBinding::SurfaceHandlerBinding(
     std::string const &moduleName)
     : surfaceHandler_(moduleName, surfaceId) {}
 
+void SurfaceHandlerBinding::setDisplayMode(jint mode) {
+  surfaceHandler_.setDisplayMode(static_cast<DisplayMode>(mode));
+}
+
 void SurfaceHandlerBinding::start() {
   std::unique_lock<better::shared_mutex> lock(lifecycleMutex_);
 
-  surfaceHandler_.setDisplayMode(SurfaceHandler::DisplayMode::Visible);
   if (surfaceHandler_.getStatus() != SurfaceHandler::Status::Running) {
     surfaceHandler_.start();
   }
@@ -62,16 +65,6 @@ SurfaceHandlerBinding::initHybrid(
   return makeCxxInstance(surfaceId, moduleNameValue);
 }
 
-void SurfaceHandlerBinding::registerScheduler(
-    std::shared_ptr<Scheduler> scheduler) {
-  scheduler->registerSurface(surfaceHandler_);
-}
-
-void SurfaceHandlerBinding::unregisterScheduler(
-    std::shared_ptr<Scheduler> scheduler) {
-  scheduler->unregisterSurface(surfaceHandler_);
-}
-
 void SurfaceHandlerBinding::setLayoutConstraints(
     jfloat minWidth,
     jfloat maxWidth,
@@ -100,6 +93,10 @@ void SurfaceHandlerBinding::setProps(NativeMap *props) {
   surfaceHandler_.setProps(props->consume());
 }
 
+SurfaceHandler const &SurfaceHandlerBinding::getSurfaceHandler() {
+  return surfaceHandler_;
+}
+
 void SurfaceHandlerBinding::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", SurfaceHandlerBinding::initHybrid),
@@ -116,6 +113,8 @@ void SurfaceHandlerBinding::registerNatives() {
           "setLayoutConstraintsNative",
           SurfaceHandlerBinding::setLayoutConstraints),
       makeNativeMethod("setPropsNative", SurfaceHandlerBinding::setProps),
+      makeNativeMethod(
+          "setDisplayModeNative", SurfaceHandlerBinding::setDisplayMode),
   });
 }
 

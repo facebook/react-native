@@ -9,6 +9,8 @@
 
 #include <folly/Hash.h>
 #include <react/renderer/core/LayoutPrimitives.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/Geometry.h>
 
 namespace facebook {
@@ -41,14 +43,16 @@ struct LayoutMetrics {
                this->borderWidth,
                this->displayType,
                this->layoutDirection,
-               this->pointScaleFactor) ==
+               this->pointScaleFactor,
+               this->overflowInset) ==
         std::tie(
                rhs.frame,
                rhs.contentInsets,
                rhs.borderWidth,
                rhs.displayType,
                rhs.layoutDirection,
-               rhs.pointScaleFactor);
+               rhs.pointScaleFactor,
+               rhs.overflowInset);
   }
 
   bool operator!=(const LayoutMetrics &rhs) const {
@@ -63,6 +67,15 @@ struct LayoutMetrics {
  */
 static LayoutMetrics const EmptyLayoutMetrics = {
     /* .frame = */ {{0, 0}, {-1.0, -1.0}}};
+
+#ifdef RN_DEBUG_STRING_CONVERTIBLE
+
+std::string getDebugName(LayoutMetrics const &object);
+std::vector<DebugStringConvertibleObject> getDebugProps(
+    LayoutMetrics const &object,
+    DebugStringConvertibleOptions options);
+
+#endif
 
 } // namespace react
 } // namespace facebook

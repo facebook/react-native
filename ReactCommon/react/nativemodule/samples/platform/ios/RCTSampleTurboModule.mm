@@ -17,8 +17,6 @@ using namespace facebook::react;
 // Backward-compatible export
 RCT_EXPORT_MODULE()
 
-@synthesize turboModuleRegistry = _turboModuleRegistry;
-
 // Backward-compatible queue configuration
 + (BOOL)requiresMainQueueSetup
 {

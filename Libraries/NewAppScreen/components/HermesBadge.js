@@ -15,6 +15,9 @@ import Colors from './Colors';
 
 const HermesBadge = (): Node => {
   const isDarkMode = useColorScheme() === 'dark';
+  const version =
+    global.HermesInternal?.getRuntimeProperties?.()['OSS Release Version'] ??
+    '';
   return global.HermesInternal ? (
     <View style={styles.badge}>
       <Text
@@ -24,7 +27,7 @@ const HermesBadge = (): Node => {
             color: isDarkMode ? Colors.light : Colors.dark,
           },
         ]}>
-        Engine: Hermes
+        {`Engine: Hermes ${version}`}
       </Text>
     </View>
   ) : null;

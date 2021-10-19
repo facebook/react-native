@@ -22,6 +22,9 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
+import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -45,6 +48,8 @@ public class ReactInstanceManagerBuilder {
   private @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private @Nullable Application mApplication;
   private boolean mUseDeveloperSupport;
+  private @Nullable DevSupportManagerFactory mDevSupportManagerFactory;
+  private boolean mRequireActivity;
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable UIImplementationProvider mUIImplementationProvider;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
@@ -59,6 +64,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JSIModulePackage mJSIModulesPackage;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
+  private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -168,6 +174,40 @@ public class ReactInstanceManagerBuilder {
    */
   public ReactInstanceManagerBuilder setUseDeveloperSupport(boolean useDeveloperSupport) {
     mUseDeveloperSupport = useDeveloperSupport;
+    return this;
+  }
+
+  /**
+   * Set the custom {@link DevSupportManagerFactory}. If not set, will use {@link
+   * DefaultDevSupportManagerFactory}.
+   */
+  public ReactInstanceManagerBuilder setDevSupportManagerFactory(
+      final DevSupportManagerFactory devSupportManagerFactory) {
+    mDevSupportManagerFactory = devSupportManagerFactory;
+    return this;
+  }
+
+  /**
+   * When {@code false}, indicates that correct usage of React Native will NOT involve an Activity.
+   * For the vast majority of Android apps in the ecosystem, this will not need to change. Unless
+   * you really know what you're doing, you should probably not change this!
+   */
+  public ReactInstanceManagerBuilder setRequireActivity(boolean requireActivity) {
+    mRequireActivity = requireActivity;
+    return this;
+  }
+
+  /**
+   * When the {@link SurfaceDelegateFactory} is provided, it will be used for native modules to get
+   * a {@link SurfaceDelegate} to interact with the platform specific surface that they that needs
+   * to be rendered in. For mobile platform this is default to be null so that these modules will
+   * need to provide a default surface delegate. One example of such native module is LogBoxModule,
+   * which is rendered in mobile platform with LogBoxDialog, while in VR platform with custom layer
+   * provided by runtime.
+   */
+  public ReactInstanceManagerBuilder setSurfaceDelegateFactory(
+      @Nullable final SurfaceDelegateFactory surfaceDelegateFactory) {
+    mSurfaceDelegateFactory = surfaceDelegateFactory;
     return this;
   }
 
@@ -283,6 +323,10 @@ public class ReactInstanceManagerBuilder {
         mJSMainModulePath,
         mPackages,
         mUseDeveloperSupport,
+        mDevSupportManagerFactory == null
+            ? new DefaultDevSupportManagerFactory()
+            : mDevSupportManagerFactory,
+        mRequireActivity,
         mBridgeIdleDebugListener,
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mUIImplementationProvider,
@@ -294,7 +338,8 @@ public class ReactInstanceManagerBuilder {
         mMinTimeLeftInFrameForNonBatchedOperationMs,
         mJSIModulesPackage,
         mCustomPackagerCommandHandlers,
-        mTMMDelegateBuilder);
+        mTMMDelegateBuilder,
+        mSurfaceDelegateFactory);
   }
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(

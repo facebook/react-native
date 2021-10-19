@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include <better/optional.h>
 #include <cinttypes>
+#include <string>
 
 namespace facebook {
 namespace react {
@@ -31,6 +33,7 @@ enum class AccessibilityTraits : uint32_t {
   CausesPageTurn = (1 << 14),
   Header = (1 << 15),
   Switch = (1 << 16),
+  TabBar = (1 << 17),
 };
 
 constexpr enum AccessibilityTraits operator|(
@@ -44,6 +47,11 @@ constexpr enum AccessibilityTraits operator&(
     const enum AccessibilityTraits rhs) {
   return (enum AccessibilityTraits)((uint32_t)lhs & (uint32_t)rhs);
 }
+
+struct AccessibilityAction {
+  std::string name{""};
+  better::optional<std::string> label{};
+};
 
 struct AccessibilityState {
   bool disabled{false};
@@ -64,6 +72,26 @@ constexpr bool operator==(
 constexpr bool operator!=(
     AccessibilityState const &lhs,
     AccessibilityState const &rhs) {
+  return !(rhs == lhs);
+}
+
+struct AccessibilityValue {
+  better::optional<int> min;
+  better::optional<int> max;
+  better::optional<int> now;
+  better::optional<std::string> text{};
+};
+
+constexpr bool operator==(
+    AccessibilityValue const &lhs,
+    AccessibilityValue const &rhs) {
+  return lhs.min == rhs.min && lhs.max == rhs.max && lhs.now == rhs.now &&
+      lhs.text == rhs.text;
+}
+
+constexpr bool operator!=(
+    AccessibilityValue const &lhs,
+    AccessibilityValue const &rhs) {
   return !(rhs == lhs);
 }
 

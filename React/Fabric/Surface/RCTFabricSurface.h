@@ -6,8 +6,6 @@
  */
 
 #import <React/RCTSurfaceProtocol.h>
-#import <React/RCTSurfaceStage.h>
-#import <react/renderer/mounting/MountingCoordinator.h>
 #import <react/renderer/scheduler/SurfaceHandler.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class RCTBridge;
 @class RCTSurfaceView;
 @class RCTSurfacePresenter;
-@protocol RCTSurfaceDelegate;
 
 /**
  * (This is Fabric-compatible RCTSurface implementation.)

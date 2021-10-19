@@ -107,12 +107,6 @@ class NativeToJsBridge {
   std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
       std::shared_ptr<CallInvoker> nativeInvoker);
 
-  /**
-   * RuntimeExecutor is used on Android to access the jsi::Runtime from Fabric
-   * and TurboModules
-   */
-  RuntimeExecutor getRuntimeExecutor();
-
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued
   // after ~NativeToJsBridge(), on the same thread. In that case, the callback

@@ -59,7 +59,7 @@ import javax.lang.model.util.Types;
 /**
  * This annotation processor crawls subclasses of ReactShadowNode and ViewManager and finds their
  * exported properties with the @ReactProp or @ReactGroupProp annotation. It generates a class per
- * shadow node/view manager that is named {@code <classname>$$PropSetter}. This class contains
+ * shadow node/view manager that is named {@code <classname>$$PropsSetter}. This class contains
  * methods to retrieve the name and type of all methods and a way to set these properties without
  * reflection.
  */

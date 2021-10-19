@@ -150,8 +150,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * - borderBottom(Left|Right)Radius → borderBottom(Start|End)Radius
    * - border(Left|Right)Width → border(Start|End)Width
    * - border(Left|Right)Color → border(Start|End)Color
-   * This is neccesarry to be backwards compatible with Paper, it swaps the
-   * values as well in https://fburl.com/diffusion/kl7bjr3h
+   * This is neccesarry to be backwards compatible with old renderer, it swaps
+   * the values as well in https://fburl.com/diffusion/kl7bjr3h
    */
   static void swapLeftAndRightInTree(
       YogaLayoutableShadowNode const &shadowNode);
@@ -186,9 +186,6 @@ inline YogaLayoutableShadowNode const &
 traitCast<YogaLayoutableShadowNode const &>(ShadowNode const &shadowNode) {
   bool castable =
       shadowNode.getTraits().check(ShadowNodeTraits::Trait::YogaLayoutableKind);
-  react_native_assert(
-      castable ==
-      (dynamic_cast<YogaLayoutableShadowNode const *>(&shadowNode) != nullptr));
   react_native_assert(castable);
   (void)castable;
   return static_cast<YogaLayoutableShadowNode const &>(shadowNode);
@@ -202,9 +199,6 @@ traitCast<YogaLayoutableShadowNode const *>(ShadowNode const *shadowNode) {
   }
   bool castable = shadowNode->getTraits().check(
       ShadowNodeTraits::Trait::YogaLayoutableKind);
-  react_native_assert(
-      castable ==
-      (dynamic_cast<YogaLayoutableShadowNode const *>(shadowNode) != nullptr));
   if (!castable) {
     return nullptr;
   }

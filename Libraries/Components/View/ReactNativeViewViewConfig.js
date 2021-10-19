@@ -8,7 +8,7 @@
  * @format
  */
 
-import {type ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+import type {ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
 import {Platform} from 'react-native';
 
@@ -122,7 +122,6 @@ const ReactNativeViewConfig: ViewConfig = {
     accessibilityLabel: true,
     accessibilityLiveRegion: true,
     accessibilityRole: true,
-    accessibilityStates: true, // TODO: Can be removed after next release
     accessibilityState: true,
     accessibilityValue: true,
     accessibilityViewIsModal: true,

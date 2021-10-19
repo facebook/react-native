@@ -15,6 +15,7 @@ const UIManagerProperties = require('./UIManagerProperties');
 const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
 
 import NativeUIManager from './NativeUIManager';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 const viewManagerConfigs = {};
 
@@ -33,6 +34,7 @@ function getConstants(): Object {
 function getViewManagerConfig(viewManagerName: string): any {
   if (
     viewManagerConfigs[viewManagerName] === undefined &&
+    global.nativeCallSyncHook && // If we're in the Chrome Debugger, let's not even try calling the sync method
     NativeUIManager.getConstantsForViewManager
   ) {
     try {
@@ -84,7 +86,7 @@ const UIManagerJS = {
   createView(
     reactTag: ?number,
     viewName: string,
-    rootTag: number,
+    rootTag: RootTag,
     props: Object,
   ): void {
     if (Platform.OS === 'ios' && viewManagerConfigs[viewName] === undefined) {

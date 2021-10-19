@@ -36,12 +36,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/textlayoutmanager",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     cxx_exported_headers = subdir_glob(
         [
             ("platform/cxx", "*.h"),

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
@@ -50,13 +51,21 @@ public class JSTouchDispatcher {
     mTargetTag = -1;
   }
 
+  /**
+   * See Event.java. By contract, this surfaceId should be a valid SurfaceId in Fabric, and should
+   * ALWAYS return -1 in non-Fabric.
+   *
+   * @return
+   */
   private int getSurfaceId() {
-    if (mRootViewGroup instanceof ReactRoot) {
+    if (mRootViewGroup != null
+        && mRootViewGroup instanceof ReactRoot
+        && ((ReactRoot) mRootViewGroup).getUIManagerType() == UIManagerType.FABRIC) {
+      if (mRootViewGroup.getContext() instanceof ThemedReactContext) {
+        ThemedReactContext context = (ThemedReactContext) mRootViewGroup.getContext();
+        return context.getSurfaceId();
+      }
       return ((ReactRoot) mRootViewGroup).getRootViewTag();
-    }
-    if (mRootViewGroup != null && mRootViewGroup.getContext() instanceof ThemedReactContext) {
-      ThemedReactContext context = (ThemedReactContext) mRootViewGroup.getContext();
-      return context.getSurfaceId();
     }
     return -1;
   }
@@ -146,7 +155,7 @@ public class JSTouchDispatcher {
               mTargetCoordinates[1],
               mTouchEventCoalescingKeyHelper));
     } else if (action == MotionEvent.ACTION_POINTER_UP) {
-      // Exactly onw of the pointers goes up
+      // Exactly one of the pointers goes up
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
               getSurfaceId(),

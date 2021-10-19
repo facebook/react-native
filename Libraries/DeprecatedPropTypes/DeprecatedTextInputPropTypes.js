@@ -11,9 +11,9 @@
 'use strict';
 
 const DeprecatedColorPropType = require('./DeprecatedColorPropType');
+const DeprecatedTextPropTypes = require('./DeprecatedTextPropTypes');
 const DeprecatedViewPropTypes = require('./DeprecatedViewPropTypes');
 const PropTypes = require('prop-types');
-const Text = require('../Text/Text');
 
 const DataDetectorTypes = [
   'phoneNumber',
@@ -64,7 +64,7 @@ module.exports = {
    *
    * @platform android
    */
-  autoCompleteType: (PropTypes.oneOf([
+  autoComplete: (PropTypes.oneOf([
     'cc-csc',
     'cc-exp',
     'cc-exp-month',
@@ -136,6 +136,7 @@ module.exports = {
    * - `decimal-pad`
    * - `email-address`
    * - `phone-pad`
+   * - `url`
    *
    * *iOS Only*
    *
@@ -143,7 +144,6 @@ module.exports = {
    *
    * - `ascii-capable`
    * - `numbers-and-punctuation`
-   * - `url`
    * - `name-phone-pad`
    * - `twitter`
    * - `web-search`
@@ -162,10 +162,10 @@ module.exports = {
     'numeric',
     'phone-pad',
     'number-pad',
+    'url',
     // iOS-only
     'ascii-capable',
     'numbers-and-punctuation',
-    'url',
     'name-phone-pad',
     'decimal-pad',
     'twitter',
@@ -467,7 +467,7 @@ module.exports = {
    * [Styles](docs/style.html)
    */
   // $FlowFixMe[incompatible-use]
-  style: Text.propTypes.style,
+  style: DeprecatedTextPropTypes.style,
   /**
    * The color of the `TextInput` underline.
    * @platform android
