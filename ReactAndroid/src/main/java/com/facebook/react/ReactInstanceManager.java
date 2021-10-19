@@ -138,15 +138,17 @@ import java.util.Set;
 public class ReactInstanceManager {
 
   private static final String TAG = ReactInstanceManager.class.getSimpleName();
-  /** Listener interface for react instance events. */
-  public interface ReactInstanceEventListener {
 
-    /**
-     * Called when the react context is initialized (all modules registered). Always called on the
-     * UI thread.
-     */
-    void onReactContextInitialized(ReactContext context);
-  }
+  /**
+   * Listener interface for react instance events. This class extends {@Link
+   * com.facebook.react.ReactInstanceEventListener} as a mitigation for both bridgeless and OSS
+   * compatibility: We create a separate ReactInstanceEventListener class to remove dependency on
+   * ReactInstanceManager which is a bridge-specific class, but in the mean time we have to keep
+   * ReactInstanceManager.ReactInstanceEventListener so OSS won't break.
+   */
+  @Deprecated
+  public interface ReactInstanceEventListener
+      extends com.facebook.react.ReactInstanceEventListener {}
 
   private final Set<ReactRoot> mAttachedReactRoots =
       Collections.synchronizedSet(new HashSet<ReactRoot>());
@@ -173,8 +175,10 @@ public class ReactInstanceManager {
   private final Context mApplicationContext;
   private @Nullable @ThreadConfined(UI) DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private @Nullable Activity mCurrentActivity;
-  private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
-      Collections.synchronizedList(new ArrayList<ReactInstanceEventListener>());
+  private final Collection<com.facebook.react.ReactInstanceEventListener>
+      mReactInstanceEventListeners =
+          Collections.synchronizedList(
+              new ArrayList<com.facebook.react.ReactInstanceEventListener>());
   // Identifies whether the instance manager is or soon will be initialized (on background thread)
   private volatile boolean mHasStartedCreatingInitialContext = false;
   // Identifies whether the instance manager destroy function is in process,
@@ -1001,12 +1005,14 @@ public class ReactInstanceManager {
   }
 
   /** Add a listener to be notified of react instance events. */
-  public void addReactInstanceEventListener(ReactInstanceEventListener listener) {
+  public void addReactInstanceEventListener(
+      com.facebook.react.ReactInstanceEventListener listener) {
     mReactInstanceEventListeners.add(listener);
   }
 
   /** Remove a listener previously added with {@link #addReactInstanceEventListener}. */
-  public void removeReactInstanceEventListener(ReactInstanceEventListener listener) {
+  public void removeReactInstanceEventListener(
+      com.facebook.react.ReactInstanceEventListener listener) {
     mReactInstanceEventListeners.remove(listener);
   }
 
@@ -1177,16 +1183,16 @@ public class ReactInstanceManager {
 
     // There is a race condition here - `finalListeners` can contain null entries
     // See usage below for more details.
-    ReactInstanceEventListener[] listeners =
-        new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
-    final ReactInstanceEventListener[] finalListeners =
+    com.facebook.react.ReactInstanceEventListener[] listeners =
+        new com.facebook.react.ReactInstanceEventListener[mReactInstanceEventListeners.size()];
+    final com.facebook.react.ReactInstanceEventListener[] finalListeners =
         mReactInstanceEventListeners.toArray(listeners);
 
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
-            for (ReactInstanceEventListener listener : finalListeners) {
+            for (com.facebook.react.ReactInstanceEventListener listener : finalListeners) {
               // Sometimes this listener is null - probably due to race
               // condition between allocating listeners with a certain
               // size, and getting a `final` version of the array on
