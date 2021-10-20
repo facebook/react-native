@@ -139,9 +139,11 @@ def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitect
 
 android {
     compileSdkVersion 29
-    ndkVersion ANDROID_NDK_VERSION
-    if (ANDROID_NDK_PATH != null) {
-        ndkPath ANDROID_NDK_PATH
+    if (project.hasProperty("ANDROID_NDK_VERSION")) {
+        ndkVersion project.property("ANDROID_NDK_VERSION")
+    }
+    if (project.hasProperty("ANDROID_NDK_PATH")) {
+        ndkPath project.property("ANDROID_NDK_PATH")
     }
 
     dexOptions {
