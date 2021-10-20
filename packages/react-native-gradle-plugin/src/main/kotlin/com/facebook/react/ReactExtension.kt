@@ -173,10 +173,10 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   /**
    * The path to the react-native-codegen folder.
    *
-   * Default: $projectDir/../../packages/react-native-codegen
+   * Default: $projectDir/../../node_modules/react-native-codegen
    */
   val codegenDir: DirectoryProperty =
-      objects.directoryProperty().convention(reactRoot.dir("packages/react-native-codegen"))
+      objects.directoryProperty().convention(reactRoot.dir("node_modules/react-native-codegen"))
 
   /**
    * The root directory for all JS files for the app.
