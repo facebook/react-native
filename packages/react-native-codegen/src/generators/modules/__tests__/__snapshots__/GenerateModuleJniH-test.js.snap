@@ -52,12 +52,12 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/reac
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/complex_objects
 
-LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libreact_debug libreact_render_debug
+LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libfbjni libturbomodulejsijni libreact_codegen_rncore
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 ",
@@ -116,12 +116,12 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/reac
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/empty_native_modules
 
-LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libreact_debug libreact_render_debug
+LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libfbjni libturbomodulejsijni libreact_codegen_rncore
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 ",
@@ -180,12 +180,12 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/reac
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/native_modules_with_type_aliases
 
-LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libreact_debug libreact_render_debug
+LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libfbjni libturbomodulejsijni libreact_codegen_rncore
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 ",
@@ -252,12 +252,12 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/reac
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/real_module_example
 
-LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libreact_debug libreact_render_debug
+LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libfbjni libturbomodulejsijni libreact_codegen_rncore
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 ",
@@ -316,12 +316,12 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/reac
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/simple_native_modules
 
-LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libreact_debug libreact_render_debug
+LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libfbjni libturbomodulejsijni libreact_codegen_rncore
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 ",
@@ -388,12 +388,12 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/reac
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/two_modules_different_files
 
-LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libreact_debug libreact_render_debug
+LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libfbjni libturbomodulejsijni libreact_codegen_rncore
 
 LOCAL_CFLAGS := \\\\
   -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 ",
