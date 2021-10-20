@@ -38,6 +38,15 @@ NS_ASSUME_NONNULL_BEGIN
                               moduleName:(NSString *)moduleName
                        initialProperties:(NSDictionary *)initialProperties;
 
+#pragma mark - Surface presenter
+
+/**
+ * EXPERIMENTAL
+ * Reset's the Surface to it's initial stage.
+ * It uses the passed in surface presenter, and whatever else was passed in init.
+ */
+- (void)resetWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter;
+
 #pragma mark - Dealing with UIView representation, the Main thread only access
 
 /**
@@ -53,27 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
  * This method must be called only from the main queue.
  */
 - (RCTSurfaceView *)view;
-
-#pragma mark - Start & Stop
-
-/**
- * Starts or stops the Surface.
- * A Surface object can be stopped and then restarted.
- * The starting process includes initializing all underlying React Native
- * infrastructure and running React app.
- * Surface stops itself on deallocation automatically.
- * Returns YES in case of success. Returns NO if the Surface is already
- * started or stopped.
- */
-- (BOOL)start;
-- (BOOL)stop;
-
-/**
- * EXPERIMENTAL
- * Reset's the Surface to it's initial stage.
- * It uses the passed in surface presenter, and whatever else was passed in init.
- */
-- (void)resetWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter;
 
 #pragma mark - Layout: Setting the size constrains
 
