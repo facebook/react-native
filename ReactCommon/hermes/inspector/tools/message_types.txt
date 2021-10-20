@@ -17,6 +17,7 @@ Debugger.stepInto
 Debugger.stepOut
 Debugger.stepOver
 HeapProfiler.addHeapSnapshotChunk
+HeapProfiler.collectGarbage
 HeapProfiler.reportHeapSnapshotProgress
 HeapProfiler.takeHeapSnapshot
 HeapProfiler.startTrackingHeapObjects

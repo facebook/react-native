@@ -10,11 +10,6 @@
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 
-#if __has_include("hermes.h") || __has_include(<hermes/hermes.h>)
-#import <hermes/hermes.h>
-#define HAS_BYTECODE_VERSION
-#endif
-
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
@@ -242,9 +237,8 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
                           runModule:(BOOL)runModule
 {
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
-#ifdef HAS_BYTECODE_VERSION
-  NSString *runtimeBytecodeVersion =
-      [NSString stringWithFormat:@"&runtimeBytecodeVersion=%u", facebook::hermes::HermesRuntime::getBytecodeVersion()];
+#ifdef HERMES_BYTECODE_VERSION
+  NSString *runtimeBytecodeVersion = [NSString stringWithFormat:@"&runtimeBytecodeVersion=%u", HERMES_BYTECODE_VERSION];
 #else
   NSString *runtimeBytecodeVersion = @"";
 #endif

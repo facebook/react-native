@@ -19,27 +19,8 @@ const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('./components/schema');
 const {buildModuleSchema} = require('./modules');
 const {wrapModuleSchema} = require('./modules/schema');
-
-import type {TypeDeclarationMap} from './utils';
-
-function getTypes(ast): TypeDeclarationMap {
-  return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
-      if (
-        node.declaration.type === 'TypeAlias' ||
-        node.declaration.type === 'InterfaceDeclaration'
-      ) {
-        types[node.declaration.id.name] = node.declaration;
-      }
-    } else if (
-      node.type === 'TypeAlias' ||
-      node.type === 'InterfaceDeclaration'
-    ) {
-      types[node.id.name] = node;
-    }
-    return types;
-  }, {});
-}
+const {createParserErrorCapturer} = require('./utils');
+const invariant = require('invariant');
 
 function isComponent(ast) {
   const defaultExports = ast.body.filter(
@@ -67,27 +48,39 @@ function isComponent(ast) {
   );
 }
 
-function isModule(types: TypeDeclarationMap) {
-  const declaredModuleNames: Array<string> = Object.keys(types).filter(
-    (typeName: string) => {
-      const declaration = types[typeName];
+function isModule(
+  // TODO(T71778680): Flow-type this node.
+  ast: $FlowFixMe,
+) {
+  const moduleInterfaces = ast.body
+    .map(node => {
+      if (
+        node.type === 'ExportNamedDeclaration' &&
+        node.exportKind === 'type' &&
+        node.declaration.type === 'InterfaceDeclaration'
+      ) {
+        return node.declaration;
+      }
+      return node;
+    })
+    .filter(declaration => {
       return (
         declaration.type === 'InterfaceDeclaration' &&
         declaration.extends.length === 1 &&
         declaration.extends[0].type === 'InterfaceExtends' &&
         declaration.extends[0].id.name === 'TurboModule'
       );
-    },
-  );
+    })
+    .map(declaration => declaration.id.name);
 
-  if (declaredModuleNames.length === 0) {
+  if (moduleInterfaces.length === 0) {
     return false;
   }
 
-  if (declaredModuleNames.length > 1) {
+  if (moduleInterfaces.length > 1) {
     throw new Error(
       'File contains declarations of more than one module: ' +
-        declaredModuleNames.join(', ') +
+        moduleInterfaces.join(', ') +
         '. Please declare exactly one module in this file.',
     );
   }
@@ -95,9 +88,12 @@ function isModule(types: TypeDeclarationMap) {
   return true;
 }
 
-function getConfigType(ast, types: TypeDeclarationMap): 'module' | 'component' {
+function getConfigType(
+  // TODO(T71778680): Flow-type this node.
+  ast: $FlowFixMe,
+): 'module' | 'component' {
   const isConfigAComponent = isComponent(ast);
-  const isConfigAModule = isModule(types);
+  const isConfigAModule = isModule(ast);
 
   if (isConfigAModule && isConfigAComponent) {
     throw new Error(
@@ -118,21 +114,88 @@ function getConfigType(ast, types: TypeDeclarationMap): 'module' | 'component' {
   }
 }
 
+const withSpace = (...args) => args.join('\\s*');
+/**
+ * Parse the TurboModuleRegistry.get(Enforcing)? call using RegExp.
+ * Why? This call can appear anywhere in the NativeModule spec. Currently,
+ * there is no good way of traversing the AST to find the MemberExpression
+ * responsible for the call.
+ */
+const TURBO_MODULE_REGISTRY_REQUIRE_REGEX_STRING = withSpace(
+  'TurboModuleRegistry',
+  '\\.',
+  'get(Enforcing)?',
+  '<',
+  'Spec',
+  '>',
+  '\\(',
+  '[\'"](?<nativeModuleName>[A-Za-z$_0-9]+)[\'"]',
+  ',?',
+  '\\)',
+);
+
 function buildSchema(contents: string, filename: ?string): SchemaType {
   const ast = flowParser.parse(contents);
 
-  const types = getTypes(ast);
-
-  const configType = getConfigType(ast, types);
+  const configType = getConfigType(ast);
 
   if (configType === 'component') {
-    return wrapComponentSchema(buildComponentSchema(ast, types));
+    return wrapComponentSchema(buildComponentSchema(ast));
   } else {
     if (filename === undefined || filename === null) {
       throw new Error('Filepath expected while parasing a module');
     }
-    const moduleName = path.basename(filename).slice(6, -3);
-    return wrapModuleSchema(buildModuleSchema(moduleName, types), moduleName);
+    const hasteModuleName = path.basename(filename).replace(/\.js$/, '');
+
+    const regex = new RegExp(TURBO_MODULE_REGISTRY_REQUIRE_REGEX_STRING, 'g');
+    let match = regex.exec(contents);
+
+    const errorHeader = `Error while parsing Module '${hasteModuleName}'`;
+
+    if (match == null) {
+      throw new Error(
+        `${errorHeader}: No call to TurboModuleRegistry.get<Spec>('...') detected.`,
+      );
+    }
+
+    const moduleNames = [];
+    while (match != null) {
+      const resultGroups = match.groups;
+      invariant(
+        resultGroups != null,
+        `Couldn't parse TurboModuleRegistry.(get|getEnforcing)<Spec> call in module '${hasteModuleName}'.`,
+      );
+
+      if (!moduleNames.includes(resultGroups.nativeModuleName)) {
+        moduleNames.push(resultGroups.nativeModuleName);
+      }
+      match = regex.exec(contents);
+    }
+
+    const [parsingErrors, guard] = createParserErrorCapturer();
+
+    const schema = guard(() =>
+      buildModuleSchema(hasteModuleName, moduleNames, ast, guard),
+    );
+
+    if (parsingErrors.length > 0) {
+      /**
+       * TODO(T77968131): We have two options:
+       *  - Throw the first error, but indicate there are more then one errors.
+       *  - Display all errors, nicely formatted.
+       *
+       * For the time being, we're just throw the first error.
+       **/
+
+      throw parsingErrors[0];
+    }
+
+    invariant(
+      schema != null,
+      'When there are no parsing errors, the schema should not be null',
+    );
+
+    return wrapModuleSchema(schema, hasteModuleName);
   }
 }
 

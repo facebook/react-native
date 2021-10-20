@@ -46,17 +46,17 @@ void ViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
     lastLayoutMetrics_ = layoutMetrics;
   }
 
-  std::atomic_uint_fast8_t *eventCounter = &eventCounter_;
-  uint_fast8_t expectedEventCount = ++*eventCounter;
+  auto expectedEventCount = ++*eventCounter_;
 
   // dispatchUniqueEvent only drops consecutive onLayout events to the same
   // node. We want to drop *any* unprocessed onLayout events when there's a
   // newer one.
   dispatchEvent(
       "layout",
-      [frame = layoutMetrics.frame, expectedEventCount, eventCounter](
-          jsi::Runtime &runtime) {
-        uint_fast8_t actualEventCount = eventCounter->load();
+      [frame = layoutMetrics.frame,
+       expectedEventCount,
+       eventCounter = eventCounter_](jsi::Runtime &runtime) {
+        auto actualEventCount = eventCounter->load();
         if (expectedEventCount != actualEventCount) {
           // Drop stale events
           return jsi::Value::null();

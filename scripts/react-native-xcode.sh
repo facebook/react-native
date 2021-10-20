@@ -109,13 +109,25 @@ fi
 # shellcheck source=/dev/null
 source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
+[ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$PODS_ROOT/hermes-engine/destroot/bin/hermesc"
+
+if [[ -z "$USE_HERMES" && -f "$HERMES_CLI_PATH" ]]; then
+  echo "Enabling Hermes byte-code compilation. Disable with USE_HERMES=false if needed."
+  USE_HERMES=true
+fi
+
+if [[ $USE_HERMES == true && ! -f "$HERMES_CLI_PATH" ]]; then
+  echo "error: USE_HERMES is set to true but the hermesc binary could not be " \
+       "found at ${HERMES_CLI_PATH}. Perhaps you need to run pod install or otherwise " \
+       "point the HERMES_CLI_PATH variable to your custom location." >&2
+  exit 2
+fi
+
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
 [ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/cli.js"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
-
-[ -z "$HERMES_PATH" ] && HERMES_PATH="$PROJECT_ROOT/node_modules/hermes-engine-darwin/destroot/bin/hermesc"
 
 [ -z "$COMPOSE_SOURCEMAP_PATH" ] && COMPOSE_SOURCEMAP_PATH="$REACT_NATIVE_DIR/scripts/compose-source-maps.js"
 
@@ -137,11 +149,6 @@ case "$PLATFORM_NAME" in
     BUNDLE_PLATFORM="ios"
     ;;
 esac
-
-USE_HERMES=
-if [[ "$BUNDLE_PLATFORM" == "macos" && -f "$HERMES_PATH" ]]; then
-  USE_HERMES=true
-fi
 
 EMIT_SOURCEMAP=
 if [[ ! -z "$SOURCEMAP_FILE" ]]; then
@@ -170,7 +177,7 @@ fi
   $EXTRA_PACKAGER_ARGS
 
 if [[ $USE_HERMES != true ]]; then
-  mv "$BUNDLE_FILE" "$DEST/"
+  cp "$BUNDLE_FILE" "$DEST/"
   BUNDLE_FILE="$DEST/main.jsbundle"
 else
   EXTRA_COMPILER_ARGS=
@@ -182,14 +189,12 @@ else
   if [[ $EMIT_SOURCEMAP == true ]]; then
     EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
   fi
-  HBC_FILE="$CONFIGURATION_BUILD_DIR/$(basename $BUNDLE_FILE)"
-  "$HERMES_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$HBC_FILE" "$BUNDLE_FILE"
-  mv "$HBC_FILE" "$DEST/"
-  BUNDLE_FILE="$DEST/main.jsbundle"
+  "$HERMES_CLI_PATH" -emit-binary $EXTRA_COMPILER_ARGS -out "$DEST/main.jsbundle" "$BUNDLE_FILE" 
   if [[ $EMIT_SOURCEMAP == true ]]; then
-    HBC_SOURCEMAP_FILE="$HBC_FILE.map"
+    HBC_SOURCEMAP_FILE="$BUNDLE_FILE.map"
     "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
   fi
+  BUNDLE_FILE="$DEST/main.jsbundle"
 fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then

@@ -7,7 +7,7 @@
 
 #import <React/RCTImageURLLoader.h>
 #import <React/RCTImageLoaderProtocol.h>
-#import <React/RCTImageLoaderInstrumentableProtocol.h>
+#import <React/RCTImageLoaderLoggable.h>
 
 #import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
@@ -41,7 +41,7 @@ struct ImageURLLoaderAttribution {
  * Same as the RCTImageURLLoader interface, but allows passing in optional `attribution` information.
  * This is useful for per-app logging and other instrumentation.
  */
-@protocol RCTImageURLLoaderWithAttribution <RCTImageURLLoader, RCTImageLoaderInstrumentableProtocol>
+@protocol RCTImageURLLoaderWithAttribution <RCTImageURLLoader, RCTImageLoaderLoggable>
 
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus

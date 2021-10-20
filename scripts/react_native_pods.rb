@@ -4,9 +4,8 @@
 # LICENSE file in the root directory of this source tree.
 
 def use_react_native! (options={})
-  # The prefix to the react-native
+  # The prefix to react-native
   prefix = options[:path] ||= "../node_modules/react-native"
-  hermes_engine_prefix = options[:hermes_path] ||= "../node_modules/hermes-engine-darwin"
 
   # Include Fabric dependencies
   fabric_enabled = options[:fabric_enabled] ||= false
@@ -67,7 +66,7 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-Core/Hermes', :path => "#{prefix}/"
-    pod 'hermes', :path => hermes_engine_prefix
+    pod 'hermes-engine'
     pod 'libevent', :podspec => "#{prefix}/third-party-podspecs/libevent.podspec"
   end
 end

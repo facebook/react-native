@@ -9,8 +9,6 @@ node_modules/
 packages/*/node_modules
 packages/*/lib
 packages/*/lib-commonjs
-pr-inactivity-bookmarklet.js
-question-bookmarklet.js
 bots/node_modules
 android-patches/
 packages/react-native-codegen/lib

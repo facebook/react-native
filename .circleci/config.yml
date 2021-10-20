@@ -20,7 +20,6 @@ defaults: &defaults
     - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: &github_token_a "78a72af35445ca3f8180"
     - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: &github_token_b "b1a98e0bbd56ff1ccba1"
 
-
 # -------------------------
 #        EXECUTORS
 # -------------------------
@@ -28,15 +27,15 @@ executors:
   nodelts:
     <<: *defaults
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:12
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:2019-10-18
+      - image: reactnativecommunity/react-native-android:2.1
     resource_class: "large"
     environment:
       - TERM: "dumb"
@@ -50,7 +49,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: &_XCODE_VERSION "11.6.0"
+      xcode: &_XCODE_VERSION "12.1.0"
 
 # -------------------------
 #        COMMANDS
@@ -152,13 +151,13 @@ commands:
           command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
       - restore_cache:
           keys:
-            - v1-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
-            - v1-pods-{{ .Environment.CIRCLE_JOB }}-
+            - v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
+            - v3-pods-{{ .Environment.CIRCLE_JOB }}-
       - steps: << parameters.steps >>
       - save_cache:
           paths:
             - packages/rn-tester/Pods
-          key: v1-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
+          key: v3-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}
 
   download_gradle_dependencies:
     steps:
@@ -216,12 +215,12 @@ commands:
 jobs:
   setup:
     parameters:
-        executor:
-          type: executor
-          default: nodelts
-        checkout_type:
-          type: string
-          default: node
+      executor:
+        type: executor
+        default: nodelts
+      checkout_type:
+        type: string
+        default: node
     executor: << parameters.executor >>
     steps:
       - checkout
@@ -350,6 +349,9 @@ jobs:
       use_frameworks:
         type: boolean
         default: false
+      use_hermes:
+        type: boolean
+        default: false
       run_unit_tests:
         description: Specifies whether unit tests should run.
         type: boolean
@@ -380,7 +382,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@10/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@12/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - with_brew_cache_span:
@@ -388,7 +390,7 @@ jobs:
             - brew_install:
                 package: watchman
             - brew_install:
-                package: node@10
+                package: node@12
             - run:
                 name: "Brew: Tap wix/brew"
                 command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
@@ -406,10 +408,13 @@ jobs:
                 name: Set USE_FRAMEWORKS=1
                 command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
 
-      - run:
-          name: Fetch CocoaPods Specs
-          command: |
-            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+      - when:
+          condition: << parameters.use_hermes >>
+          steps:
+            - run:
+                name: Set USE_HERMES=1
+                command: echo "export USE_HERMES=1" >> $BASH_ENV
+
       - run:
           name: Setup the CocoaPods environment
           command: pod setup
@@ -418,11 +423,7 @@ jobs:
           steps:
             - run:
                 name: Generate RNTesterPods Workspace
-                command: cd packages/rn-tester && pod install --verbose
-
-      - run:
-          name: Generate RNTesterPods Xcode Workspace
-          command: pushd packages/rn-tester && pod install --verbose && popd
+                command: cd packages/rn-tester && bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -542,12 +543,13 @@ jobs:
           name: "Run Tests: Android Unit Tests"
           command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
       - run:
-          name: "Run Tests: Android Instrumentation Tests"
+          name: "Build Tests: Android Instrumentation Tests"
+          # Here, just build the instrumentation tests. There is a known issue with installing the APK to android-21+ emulator.
           command: |
             if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
               echo "JavaScript bundle missing, cannot run instrumentation tests. Verify Build JavaScript Bundle step completed successfully."; exit 1;
             fi
-            source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+            source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck build ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
 
       # Optionally, run disabled tests
       - when:
@@ -588,7 +590,7 @@ jobs:
             source ~/.bashrc
             nvm i node
             npm i -g yarn
-            npx envinfo@latest
+            echo y | npx envinfo@latest
             yarn run docker-setup-android
             yarn run docker-build-android
 
@@ -641,7 +643,7 @@ jobs:
           name: Setup Android SDKs
           command: |
             sdkmanager --licenses
-            sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+            sdkmanager "system-images;android-21;google_apis;armeabi-v7a"
             sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
             sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
             sdkmanager "add-ons;addon-google_apis-google-23"
@@ -772,20 +774,31 @@ workflows:
           requires:
             - setup_android
       - test_ios:
-          name: test_ios_unit
-          run_disabled_tests: false
+          name: test_ios_unit_jsc
           run_unit_tests: true
           requires:
             - setup_ios
       - test_ios:
-          name: test_ios_unit_frameworks
+          name: test_ios_unit_frameworks_jsc
+          use_frameworks: true
+          run_unit_tests: true
+          requires:
+            - setup_ios
+      - test_ios:
+          name: test_ios_unit_hermes
+          use_hermes: true
+          run_unit_tests: true
+          requires:
+            - setup_ios
+      - test_ios:
+          name: test_ios_unit_frameworks_hermes
+          use_hermes: true
           use_frameworks: true
           run_unit_tests: true
           requires:
             - setup_ios
       # - test_ios:
       #     name: test_ios_detox
-      #     run_disabled_tests: false
       #     run_detox_tests: true
       #     requires:
       #       - setup_ios

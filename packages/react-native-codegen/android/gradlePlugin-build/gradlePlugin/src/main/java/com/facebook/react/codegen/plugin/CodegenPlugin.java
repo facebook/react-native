@@ -25,12 +25,6 @@ import org.gradle.api.tasks.Exec;
 public class CodegenPlugin implements Plugin<Project> {
 
   public void apply(final Project project) {
-    // This flag should have been defined in CodegenPluginExtension, but the extension values
-    // resolution is pending project full evaluation. Given that no codegen actual task should
-    // be defined if the flag is not enabled, read directly from env var here.
-    final String useCodegenVar = System.getenv("USE_CODEGEN");
-    final boolean enableCodegen =
-        useCodegenVar != null && (Boolean.parseBoolean(useCodegenVar) || useCodegenVar.equals("1"));
     final CodegenPluginExtension extension =
         project.getExtensions().create("react", CodegenPluginExtension.class, project);
 
@@ -45,10 +39,8 @@ public class CodegenPlugin implements Plugin<Project> {
             "generateCodegenSchemaFromJavaScript",
             Exec.class,
             task -> {
-              if (!enableCodegen) {
-                task.commandLine("echo", "Skipping: not using react-native-codegen.");
-                return;
-              }
+              // This is needed when using codegen from source, not from npm.
+              task.dependsOn(":packages:react-native-codegen:android:buildCodegenCLI");
 
               task.doFirst(
                   s -> {
@@ -86,11 +78,6 @@ public class CodegenPlugin implements Plugin<Project> {
             "generateCodegenArtifactsFromSchema",
             Exec.class,
             task -> {
-              if (!enableCodegen) {
-                task.commandLine("echo", "Skipping: not using react-native-codegen.");
-                return;
-              }
-
               task.dependsOn("generateCodegenSchemaFromJavaScript");
 
               task.getInputs()
@@ -124,10 +111,6 @@ public class CodegenPlugin implements Plugin<Project> {
     // Note: This last step needs to happen after the project has been evaluated.
     project.afterEvaluate(
         s -> {
-          if (!enableCodegen) {
-            return;
-          }
-
           // `preBuild` is one of the base tasks automatically registered by Gradle.
           // This will invoke the codegen before compiling the entire project.
           Task preBuild = project.getTasks().findByName("preBuild");

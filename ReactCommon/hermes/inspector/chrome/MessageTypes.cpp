@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<80b4da5580a1fe18b9551723bdf7cab0>>
+// @generated SignedSource<<e4c911229f0e8cac24dbc3ec8a933d5e>>
 
 #include "MessageTypes.h"
 
@@ -44,6 +44,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
       {"Debugger.stepOut", makeUnique<debugger::StepOutRequest>},
       {"Debugger.stepOver", makeUnique<debugger::StepOverRequest>},
+      {"HeapProfiler.collectGarbage",
+       makeUnique<heapProfiler::CollectGarbageRequest>},
       {"HeapProfiler.startTrackingHeapObjects",
        makeUnique<heapProfiler::StartTrackingHeapObjectsRequest>},
       {"HeapProfiler.stopTrackingHeapObjects",
@@ -653,6 +655,27 @@ dynamic debugger::StepOverRequest::toDynamic() const {
 }
 
 void debugger::StepOverRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+heapProfiler::CollectGarbageRequest::CollectGarbageRequest()
+    : Request("HeapProfiler.collectGarbage") {}
+
+heapProfiler::CollectGarbageRequest::CollectGarbageRequest(const dynamic &obj)
+    : Request("HeapProfiler.collectGarbage") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic heapProfiler::CollectGarbageRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void heapProfiler::CollectGarbageRequest::accept(
+    RequestHandler &handler) const {
   handler.handle(*this);
 }
 

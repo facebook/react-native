@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleJniCpp can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -16,7 +16,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
 
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_difficult(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, ObjectKind, \\"difficult\\", \\"(Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/bridge/WritableMap;\\", args, count);
@@ -57,7 +56,7 @@ std::shared_ptr<TurboModule> COMPLEX_OBJECTS_ModuleProvider(const std::string mo
 
 exports[`GenerateModuleJniCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -94,7 +93,7 @@ std::shared_ptr<TurboModule> EMPTY_NATIVE_MODULES_ModuleProvider(const std::stri
 
 exports[`GenerateModuleJniCpp can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -111,19 +110,18 @@ namespace react {
 
 
 
-static facebook::jsi::Value __hostFunction_NativeAliasTurboModuleSpecJSI_cropImage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+static facebook::jsi::Value __hostFunction_AliasTurboModuleSpecJSI_cropImage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, \\"cropImage\\", \\"(Lcom/facebook/react/bridge/ReadableMap;)V\\", args, count);
 }
 
-NativeAliasTurboModuleSpecJSI::NativeAliasTurboModuleSpecJSI(const JavaTurboModule::InitParams &params)
+AliasTurboModuleSpecJSI::AliasTurboModuleSpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
-
-  methodMap_[\\"cropImage\\"] = MethodMetadata {1, __hostFunction_NativeAliasTurboModuleSpecJSI_cropImage};
+  methodMap_[\\"cropImage\\"] = MethodMetadata {1, __hostFunction_AliasTurboModuleSpecJSI_cropImage};
 }
 
 std::shared_ptr<TurboModule> NATIVE_MODULES_WITH_TYPE_ALIASES_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
   if (moduleName == \\"AliasTurboModule\\") {
-    return std::make_shared<NativeAliasTurboModuleSpecJSI>(params);
+    return std::make_shared<AliasTurboModuleSpecJSI>(params);
   }
   return nullptr;
 }
@@ -136,7 +134,7 @@ std::shared_ptr<TurboModule> NATIVE_MODULES_WITH_TYPE_ALIASES_ModuleProvider(con
 
 exports[`GenerateModuleJniCpp can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -167,21 +165,10 @@ static facebook::jsi::Value __hostFunction_NativeCameraRollManagerSpecJSI_delete
 
 NativeCameraRollManagerSpecJSI::NativeCameraRollManagerSpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
-
   methodMap_[\\"getPhotos\\"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_getPhotos};
   methodMap_[\\"saveToCameraRoll\\"] = MethodMetadata {2, __hostFunction_NativeCameraRollManagerSpecJSI_saveToCameraRoll};
   methodMap_[\\"deletePhotos\\"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerSpecJSI_deletePhotos};
 }
-
-static facebook::jsi::Value __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, \\"openCameraDialog\\", \\"(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V\\", args, count);
-}
-
-NativeImagePickerIOSSpecJSI::NativeImagePickerIOSSpecJSI(const JavaTurboModule::InitParams &params)
-  : JavaTurboModule(params) {
-  methodMap_[\\"openCameraDialog\\"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog};
-}
-
 static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_reportFatalException(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, \\"reportFatalException\\", \\"(Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;D)V\\", args, count);
 }
@@ -215,9 +202,6 @@ std::shared_ptr<TurboModule> REAL_MODULE_EXAMPLE_ModuleProvider(const std::strin
   if (moduleName == \\"CameraRollManager\\") {
     return std::make_shared<NativeCameraRollManagerSpecJSI>(params);
   }
-  if (moduleName == \\"ImagePickerIOS\\") {
-    return std::make_shared<NativeImagePickerIOSSpecJSI>(params);
-  }
   if (moduleName == \\"ExceptionsManager\\") {
     return std::make_shared<NativeExceptionsManagerSpecJSI>(params);
   }
@@ -232,7 +216,7 @@ std::shared_ptr<TurboModule> REAL_MODULE_EXAMPLE_ModuleProvider(const std::strin
 
 exports[`GenerateModuleJniCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -246,7 +230,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
 
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, ObjectKind, \\"getConstants\\", \\"()Ljava/util/Map;\\", args, count);
@@ -322,7 +305,7 @@ std::shared_ptr<TurboModule> SIMPLE_NATIVE_MODULES_ModuleProvider(const std::str
 
 exports[`GenerateModuleJniCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "SampleSpec-generated.cpp" => "
+  "jni/SampleSpec-generated.cpp" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -337,7 +320,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, \\"voidFunc\\", \\"()V\\", args, count);
 }
@@ -348,74 +330,21 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const JavaTurboMo
 }
 
 
-static facebook::jsi::Value __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+static facebook::jsi::Value __hostFunction_NativeSampleTurboModule2SpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, \\"voidFunc\\", \\"()V\\", args, count);
 }
 
-NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(const JavaTurboModule::InitParams &params)
+NativeSampleTurboModule2SpecJSI::NativeSampleTurboModule2SpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
-
-  methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
+  methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModule2SpecJSI_voidFunc};
 }
 
 std::shared_ptr<TurboModule> TWO_MODULES_DIFFERENT_FILES_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
   if (moduleName == \\"SampleTurboModule\\") {
     return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
   }
-  if (moduleName == \\"Sample2TurboModule\\") {
-    return std::make_shared<NativeSample2TurboModuleSpecJSI>(params);
-  }
-  return nullptr;
-}
-
-} // namespace react
-} // namespace facebook
-",
-}
-`;
-
-exports[`GenerateModuleJniCpp can generate fixture TWO_MODULES_SAME_FILE 1`] = `
-Map {
-  "SampleSpec-generated.cpp" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @generated by codegen project: GenerateModuleJniCpp.js
- */
-
-#include \\"SampleSpec.h\\"
-
-namespace facebook {
-namespace react {
-
-
-static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, \\"voidFunc\\", \\"()V\\", args, count);
-}
-
-NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const JavaTurboModule::InitParams &params)
-  : JavaTurboModule(params) {
-  methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
-}
-
-static facebook::jsi::Value __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, \\"voidFunc\\", \\"()V\\", args, count);
-}
-
-NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(const JavaTurboModule::InitParams &params)
-  : JavaTurboModule(params) {
-  methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
-}
-
-std::shared_ptr<TurboModule> TWO_MODULES_SAME_FILE_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params) {
-  if (moduleName == \\"SampleTurboModule\\") {
-    return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
-  }
-  if (moduleName == \\"Sample2TurboModule\\") {
-    return std::make_shared<NativeSample2TurboModuleSpecJSI>(params);
+  if (moduleName == \\"SampleTurboModule2\\") {
+    return std::make_shared<NativeSampleTurboModule2SpecJSI>(params);
   }
   return nullptr;
 }

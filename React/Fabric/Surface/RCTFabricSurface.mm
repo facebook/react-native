@@ -58,8 +58,6 @@ using namespace facebook::react;
 
     _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
-    _touchHandler = [RCTSurfaceTouchHandler new];
-
     _stage = RCTSurfaceStageSurfaceDidInitialize;
   }
 
@@ -106,6 +104,7 @@ using namespace facebook::react;
 
   if (!_view) {
     _view = [[RCTSurfaceView alloc] initWithSurface:(RCTSurface *)self];
+    _touchHandler = [RCTSurfaceTouchHandler new];
     [_touchHandler attachToView:_view];
   }
 

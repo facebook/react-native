@@ -1,6 +1,6 @@
 {
   "name": "react-native-codegen",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "⚛️ Code generation tools for React Native",
   "homepage": "https://github.com/facebook/react-native/tree/master/packages/react-native-codegen",
   "repository": {
@@ -37,6 +37,7 @@
     "@babel/plugin-transform-flow-strip-types": "^7.0.0",
     "chalk": "^4.0.0",
     "glob": "^7.1.1",
+    "invariant": "^2.2.4",
     "micromatch": "^4.0.2",
     "mkdirp": "^0.5.1",
     "prettier": "1.19.1"

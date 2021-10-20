@@ -41,6 +41,7 @@ function wrapComponentSchema({
   return {
     modules: {
       [filename]: {
+        type: 'Component',
         components: {
           [componentName]: {
             ...(options || {}),

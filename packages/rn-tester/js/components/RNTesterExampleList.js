@@ -40,6 +40,7 @@ const ExampleCard = ({
   const onAndroid = !platform || platform === 'android';
   return (
     <TouchableHighlight
+      testID={item.module.title}
       onShowUnderlay={onShowUnderlay}
       onHideUnderlay={onHideUnderlay}
       focusable={false} // TODO(macOS GH#774)

@@ -92,7 +92,8 @@ void UIManager::appendChild(
 
 void UIManager::completeSurface(
     SurfaceId surfaceId,
-    const SharedShadowNodeUnsharedList &rootChildren) const {
+    SharedShadowNodeUnsharedList const &rootChildren,
+    ShadowTree::CommitOptions commitOptions) const {
   SystraceSection s("UIManager::completeSurface");
 
   shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
@@ -105,7 +106,7 @@ void UIManager::completeSurface(
                   /* .children = */ rootChildren,
               });
         },
-        true);
+        commitOptions);
   });
 }
 
@@ -160,31 +161,6 @@ ShadowNode::Shared UIManager::findNodeAtPoint(
     Point point) const {
   return LayoutableShadowNode::findNodeAtPoint(
       getNewestCloneOfShadowNode(*node), point);
-}
-
-void UIManager::setNativeProps(
-    ShadowNode const &shadowNode,
-    RawProps const &rawProps) const {
-  SystraceSection s("UIManager::setNativeProps");
-
-  auto &componentDescriptor = shadowNode.getComponentDescriptor();
-  auto props = componentDescriptor.cloneProps(shadowNode.getProps(), rawProps);
-
-  shadowTreeRegistry_.visit(
-      shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
-        shadowTree.tryCommit(
-            [&](RootShadowNode const &oldRootShadowNode) {
-              return std::static_pointer_cast<RootShadowNode>(
-                  oldRootShadowNode.cloneTree(
-                      shadowNode.getFamily(),
-                      [&](ShadowNode const &oldShadowNode) {
-                        return oldShadowNode.clone({
-                            /* .props = */ props,
-                        });
-                      }));
-            },
-            true);
-      });
 }
 
 LayoutMetrics UIManager::getRelativeLayoutMetrics(

@@ -15,6 +15,7 @@ pluginManagement {
 
 include(
     ":ReactAndroid",
+    ":packages:react-native-codegen:android",
     ":packages:rn-tester:android:app"
 )
 

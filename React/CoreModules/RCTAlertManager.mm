@@ -78,7 +78,7 @@ RCT_EXPORT_MODULE()
  * The key from the `buttons` dictionary is passed back in the callback on click.
  * Buttons are displayed in the order they are specified.
  */
-RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback : (RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::NativeArgs &)args callback : (RCTResponseSenderBlock)callback)
 {
   NSString *title = [RCTConvert NSString:args.title()];
   NSString *message = [RCTConvert NSString:args.message()];
@@ -93,8 +93,8 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   NSString *destructiveButtonKey = [RCTConvert NSString:args.destructiveButtonKey()];
   UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args.keyboardType()];
 #else // [TODO(macOS GH#774)
-  BOOL critical = args.critical();
-  BOOL modal = args.modal();
+  BOOL critical = args.critical().value_or(NO);
+  BOOL modal = args.modal().value_or(NO);
   NSArray<NSDictionary *> *defaultInputs = [RCTConvert NSDictionaryArray:RCTConvertOptionalVecToArray(args.defaultInputs(), ^id(id<NSObject> element) { return element; })];
 #endif // ]TODO(macOS GH#774)
 

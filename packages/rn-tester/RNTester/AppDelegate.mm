@@ -7,7 +7,15 @@
 
 #import "AppDelegate.h"
 
+#if __has_include(<hermes/hermes.h>)
+#define RCT_USE_HERMES 1
+#endif
+#if RCT_USE_HERMES
+#import <React/HermesExecutorFactory.h>
+#else
 #import <React/JSCExecutorFactory.h>
+#endif
+
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -172,7 +180,11 @@
 #endif
 
   __weak __typeof(self) weakSelf = self;
+#if RCT_USE_HERMES
+  return std::make_unique<facebook::react::HermesExecutorFactory>(
+#else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
+#endif
     facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
       if (!bridge) {
         return;

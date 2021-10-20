@@ -40,7 +40,7 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] 
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ArrayTurboModule'
+     * ObjC++ class for module 'NativeArrayTurboModule'
      */
     class JSI_EXPORT NativeArrayTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -58,7 +58,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'BooleanTurboModule'
+     * ObjC++ class for module 'NativeBooleanTurboModule'
      */
     class JSI_EXPORT NativeBooleanTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -76,7 +76,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'CallbackTurboModule'
+     * ObjC++ class for module 'NativeCallbackTurboModule'
      */
     class JSI_EXPORT NativeCallbackTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -99,7 +99,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'NullableTurboModule'
+     * ObjC++ class for module 'NativeNullableTurboModule'
      */
     class JSI_EXPORT NativeNullableTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -117,7 +117,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'NumberTurboModule'
+     * ObjC++ class for module 'NativeNumberTurboModule'
      */
     class JSI_EXPORT NativeNumberTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -288,7 +288,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ObjectTurboModule'
+     * ObjC++ class for module 'NativeObjectTurboModule'
      */
     class JSI_EXPORT NativeObjectTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -422,7 +422,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'OptionalObjectTurboModule'
+     * ObjC++ class for module 'NativeOptionalObjectTurboModule'
      */
     class JSI_EXPORT NativeOptionalObjectTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -444,7 +444,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'PromiseTurboModule'
+     * ObjC++ class for module 'NativePromiseTurboModule'
      */
     class JSI_EXPORT NativePromiseTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -536,7 +536,7 @@ getValuegetValuegetValuegetValuegetValuey:(NSString *)getValuegetValuegetValuege
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SampleTurboModule'
+     * ObjC++ class for module 'NativeSampleTurboModule'
      */
     class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
     public:
@@ -626,7 +626,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SampleTurboModuleArrays'
+     * ObjC++ class for module 'NativeSampleTurboModuleArrays'
      */
     class JSI_EXPORT NativeSampleTurboModuleArraysSpecJSI : public ObjCTurboModule {
     public:
@@ -718,7 +718,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SampleTurboModuleNullable'
+     * ObjC++ class for module 'NativeSampleTurboModuleNullable'
      */
     class JSI_EXPORT NativeSampleTurboModuleNullableSpecJSI : public ObjCTurboModule {
     public:
@@ -810,7 +810,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SampleTurboModuleNullableAndOptional'
+     * ObjC++ class for module 'NativeSampleTurboModuleNullableAndOptional'
      */
     class JSI_EXPORT NativeSampleTurboModuleNullableAndOptionalSpecJSI : public ObjCTurboModule {
     public:
@@ -902,7 +902,7 @@ namespace JS {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'SampleTurboModuleOptional'
+     * ObjC++ class for module 'NativeSampleTurboModuleOptional'
      */
     class JSI_EXPORT NativeSampleTurboModuleOptionalSpecJSI : public ObjCTurboModule {
     public:
@@ -920,7 +920,7 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'StringTurboModule'
+     * ObjC++ class for module 'NativeStringTurboModule'
      */
     class JSI_EXPORT NativeStringTurboModuleSpecJSI : public ObjCTurboModule {
     public:

@@ -55,6 +55,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const fileName = 'ShadowNodes.h';
 
@@ -62,7 +63,12 @@ module.exports = {
 
     const moduleResults = Object.keys(schema.modules)
       .map(moduleName => {
-        const components = schema.modules[moduleName].components;
+        const module = schema.modules[moduleName];
+        if (module.type !== 'Component') {
+          return;
+        }
+
+        const {components} = module;
         // No components in this module
         if (components == null) {
           return null;

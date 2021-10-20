@@ -12,17 +12,10 @@
 
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-import type {ProcessedColorValue} from '../StyleSheet/processColor'; // TODO(macOS GH#774)
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
   +showActionSheetWithOptions: (
-    // TODO(macOS GH#774) - For some reason, yarn lint complains here with this error:
-    //   "Unsupported type 'object' for Spec interface. See https://fburl.com/rn-nativemodules for more details"
-    // The link in the error is restricted to Facebook employees, so we can't access this info.
-    // 3a6327a5d9ebfd0de56c37009ab7de1d0e6bdf85 apparently solves this in other places by disabling the error,
-    // so we might as well do the same thing here.
-    // eslint-disable-next-line @react-native/codegen/react-native-modules
     options: {|
       +title?: ?string,
       +message?: ?string,
@@ -30,7 +23,7 @@ export interface Spec extends TurboModule {
       +destructiveButtonIndices?: ?Array<number>,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
-      +tintColor?: ?ProcessedColorValue, // TODO(macOS GH#774)
+      +tintColor?: ?number,
       +userInterfaceStyle?: ?string,
     |},
     callback: (buttonIndex: number) => void,
@@ -41,7 +34,7 @@ export interface Spec extends TurboModule {
       +url?: ?string,
       +subject?: ?string,
       +anchor?: ?number,
-      +tintColor?: ?ProcessedColorValue, // TODO(macOS GH#774)
+      +tintColor?: ?number,
       +excludedActivityTypes?: ?Array<string>,
       +userInterfaceStyle?: ?string,
     |},

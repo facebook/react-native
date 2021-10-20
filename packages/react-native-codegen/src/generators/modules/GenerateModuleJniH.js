@@ -16,16 +16,24 @@ type FilesOutput = Map<string, string>;
 
 const {getModules} = require('./Utils');
 
-const moduleTemplate = `/**
- * JNI C++ class for module '::_MODULE_NAME_::'
+const ModuleClassDeclarationTemplate = ({
+  hasteModuleName,
+}: $ReadOnly<{|hasteModuleName: string|}>) => {
+  return `/**
+ * JNI C++ class for module '${hasteModuleName}'
  */
-class JSI_EXPORT Native::_MODULE_NAME_::SpecJSI : public JavaTurboModule {
+class JSI_EXPORT ${hasteModuleName}SpecJSI : public JavaTurboModule {
 public:
-  Native::_MODULE_NAME_::SpecJSI(const JavaTurboModule::InitParams &params);
+  ${hasteModuleName}SpecJSI(const JavaTurboModule::InitParams &params);
 };
 `;
+};
 
-const template = `
+const HeaderFileTemplate = ({
+  modules,
+  libraryName,
+}: $ReadOnly<{|modules: string, libraryName: string|}>) => {
+  return `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -44,15 +52,17 @@ const template = `
 namespace facebook {
 namespace react {
 
-::_MODULES_::
+${modules}
 
-std::shared_ptr<TurboModule> ::_LIBRARY_NAME_::_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
+std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string moduleName, const JavaTurboModule::InitParams &params);
 
 } // namespace react
 } // namespace facebook
 `;
+};
 
-const androidMkTemplate = `# Copyright (c) Facebook, Inc. and its affiliates.
+const AndroidMkTemplate = ({libraryName}: $ReadOnly<{libraryName: string}>) => {
+  return `# Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -61,7 +71,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := ::_LIBRARY_NAME_::
+LOCAL_MODULE := ${libraryName}
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 
@@ -80,30 +90,40 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 `;
+};
 
 module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const nativeModules = getModules(schema);
     const modules = Object.keys(nativeModules)
-      .map(name => moduleTemplate.replace(/::_MODULE_NAME_::/g, name))
+      .filter(hasteModuleName => {
+        const module = nativeModules[hasteModuleName];
+        return !(
+          module.excludedPlatforms != null &&
+          module.excludedPlatforms.includes('android')
+        );
+      })
+      .sort()
+      .map(hasteModuleName => ModuleClassDeclarationTemplate({hasteModuleName}))
       .join('\n');
 
     const fileName = `${moduleSpecName}.h`;
-    const replacedTemplate = template
-      .replace(/::_MODULES_::/g, modules)
-      .replace(/::_LIBRARY_NAME_::/g, libraryName);
+    const replacedTemplate = HeaderFileTemplate({
+      modules: modules,
+      libraryName: libraryName.replace(/-/g, '_'),
+    });
     return new Map([
-      [fileName, replacedTemplate],
+      [`jni/${fileName}`, replacedTemplate],
       [
-        'Android.mk',
-        androidMkTemplate.replace(
-          /::_LIBRARY_NAME_::/g,
-          `react_codegen_${libraryName.toLowerCase()}`,
-        ),
+        'jni/Android.mk',
+        AndroidMkTemplate({
+          libraryName: `react_codegen_${libraryName.toLowerCase()}`,
+        }),
       ],
     ]);
   },

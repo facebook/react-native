@@ -1,7 +1,7 @@
 --- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\jni\\react\\jni\\JReactMarker.cpp"	2020-10-27 20:26:17.027172300 -0700
 +++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\jni\\react\\jni\\JReactMarker.cpp"	2020-10-13 21:51:47.447172900 -0700
 @@ -75,6 +75,15 @@
-     case ReactMarker::NATIVE_REQUIRE_STOP:
+     case ReactMarker::REACT_INSTANCE_INIT_STOP:
        // These are not used on Android.
        break;
 +    case ReactMarker::BYTECODE_CREATION_FAILED:

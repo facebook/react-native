@@ -12,7 +12,6 @@
 
 import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {ProcessedColorValue} from '../../StyleSheet/processColor'; // TODO(macOS GH#774)
 import type {ViewProps} from '../View/ViewPropTypes';
 import * as React from 'react';
 
@@ -30,14 +29,14 @@ type NativeProps = $ReadOnly<{|
   // Props
   disabled?: WithDefault<boolean, false>,
   value?: WithDefault<boolean, false>,
-  tintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
-  onTintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
-  thumbTintColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
+  tintColor?: ?ColorValue,
+  onTintColor?: ?ColorValue,
+  thumbTintColor?: ?ColorValue,
 
   // Deprecated props
-  thumbColor?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
-  trackColorForFalse?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
-  trackColorForTrue?: ?(ColorValue | ProcessedColorValue), // TODO(macOS GH#774)
+  thumbColor?: ?ColorValue,
+  trackColorForFalse?: ?ColorValue,
+  trackColorForTrue?: ?ColorValue,
 
   // Events
   onChange?: ?BubblingEventHandler<SwitchChangeEvent>,

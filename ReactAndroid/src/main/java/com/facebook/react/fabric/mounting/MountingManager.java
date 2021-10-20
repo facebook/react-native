@@ -262,12 +262,17 @@ public class MountingManager {
     }
   }
 
-  private @NonNull ViewState getViewState(int tag) {
+  @NonNull
+  private ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
       throw new RetryableMountingLayerException("Unable to find viewState view for tag " + tag);
     }
     return viewState;
+  }
+
+  public boolean getViewExists(int tag) {
+    return mTagToViewState.get(tag) != null;
   }
 
   private @Nullable ViewState getNullableViewState(int tag) {

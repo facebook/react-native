@@ -131,6 +131,6 @@ rn_apple_library(
         "//xplat/js:RCTLinkingApple",
         "//xplat/js:RCTPushNotificationApple",
         "//xplat/js/react-native-github:ReactInternalApple",
-        "//xplat/js/react-native-github/Libraries/FBReactNativeSpec:FBReactNativeSpecApple",
+        "//xplat/js/react-native-github/Libraries:generated_objcpp_modules-FBReactNativeSpecApple",
     ],
 )

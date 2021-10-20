@@ -12,11 +12,12 @@
 
 'use strict';
 
-import NativeAsyncStorage from './NativeAsyncStorage';
+import NativeAsyncLocalStorage from './NativeAsyncLocalStorage';
+import NativeAsyncSQLiteDBStorage from './NativeAsyncSQLiteDBStorage';
 import invariant from 'invariant';
 
 // Use SQLite if available, otherwise file storage.
-const RCTAsyncStorage = NativeAsyncStorage;
+const RCTAsyncStorage = NativeAsyncSQLiteDBStorage || NativeAsyncLocalStorage;
 
 /**
  * `AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value

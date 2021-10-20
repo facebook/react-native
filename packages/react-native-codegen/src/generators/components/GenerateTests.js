@@ -140,6 +140,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     moduleSpecName: string,
+    packageName?: string,
   ): FilesOutput {
     const fileName = 'Tests.cpp';
     const allImports = new Set([
@@ -150,7 +151,12 @@ module.exports = {
 
     const componentTests = Object.keys(schema.modules)
       .map(moduleName => {
-        const components = schema.modules[moduleName].components;
+        const module = schema.modules[moduleName];
+        if (module.type !== 'Component') {
+          return;
+        }
+
+        const {components} = module;
         if (components == null) {
           return null;
         }

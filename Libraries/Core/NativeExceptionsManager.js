@@ -47,7 +47,6 @@ export interface Spec extends TurboModule {
     stack: Array<StackFrame>,
     exceptionId: number,
   ) => void;
-  // eslint-disable-next-line @react-native/codegen/react-native-modules
   +reportException?: (data: ExceptionData) => void;
   +updateExceptionMessage: (
     message: string,

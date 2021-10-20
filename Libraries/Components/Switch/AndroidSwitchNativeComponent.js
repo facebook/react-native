@@ -21,7 +21,7 @@ import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativ
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
-import type {ProcessedColorValue} from '../../StyleSheet/processColor'; // TODO(macOS GH#774)
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 type SwitchChangeEvent = $ReadOnly<{|
@@ -34,13 +34,13 @@ type NativeProps = $ReadOnly<{|
   // Props
   disabled?: WithDefault<boolean, false>,
   enabled?: WithDefault<boolean, true>,
-  thumbColor?: ?(string | ProcessedColorValue), // TODO(macOS GH#774)
-  trackColorForFalse?: ?(string | ProcessedColorValue), // TODO(macOS GH#774)
-  trackColorForTrue?: ?(string | ProcessedColorValue), // TODO(macOS GH#774)
+  thumbColor?: ?ColorValue,
+  trackColorForFalse?: ?ColorValue,
+  trackColorForTrue?: ?ColorValue,
   value?: WithDefault<boolean, false>,
   on?: WithDefault<boolean, false>,
-  thumbTintColor?: ?(string | ProcessedColorValue), // TODO(macOS GH#774)
-  trackTintColor?: ?(string | ProcessedColorValue), // TODO(macOS GH#774)
+  thumbTintColor?: ?ColorValue,
+  trackTintColor?: ?ColorValue,
 
   // Events
   onChange?: BubblingEventHandler<SwitchChangeEvent>,

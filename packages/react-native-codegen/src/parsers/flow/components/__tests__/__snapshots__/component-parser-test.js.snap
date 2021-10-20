@@ -38,6 +38,7 @@ exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [
@@ -564,6 +565,7 @@ exports[`RN Codegen Flow Parser can generate fixture ARRAY_PROP_TYPES_NO_EVENTS 
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [
@@ -1278,6 +1280,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [
@@ -2525,6 +2528,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_T
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [
@@ -2618,6 +2622,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_WITH_EXTERNAL_TYPE
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [
@@ -2662,6 +2667,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_AS_NULL_INLI
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [
@@ -2807,6 +2813,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [
@@ -5832,6 +5839,7 @@ exports[`RN Codegen Flow Parser can generate fixture NO_PROPS_EVENTS_ONLY_DEPREC
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'deprecatedViewConfigName': 'DeprecateModuleName',
@@ -5855,6 +5863,7 @@ exports[`RN Codegen Flow Parser can generate fixture OBJECT_PROP_TYPES_NO_EVENTS
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [
@@ -6520,6 +6529,7 @@ exports[`RN Codegen Flow Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFA
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'interfaceOnly': true,
@@ -6578,6 +6588,7 @@ exports[`RN Codegen Flow Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFA
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'interfaceOnly': true,
@@ -6639,6 +6650,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_ALIASED_LOCALLY 1`] =
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [
@@ -6755,6 +6767,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [
@@ -7980,6 +7993,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AS_EXTERNAL_TYPES 1`]
 "{
   'modules': {
     'Module': {
+      'type': 'Component',
       'components': {
         'Module': {
           'extendsProps': [],

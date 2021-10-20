@@ -1,5 +1,4 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags", "react_native_target", "react_native_xplat_shared_library_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
     name = "core",
@@ -83,6 +82,6 @@ rn_xplat_cxx_library(
         react_native_xplat_target("reactperflogger:reactperflogger"),
     ],
     exported_deps = [
-        "//xplat/jsi:jsi",
+        react_native_xplat_shared_library_target("jsi:jsi"),
     ],
 )
