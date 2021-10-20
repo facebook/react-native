@@ -104,6 +104,7 @@ def rn_xplat_cxx_library(name, compiler_flags_enable_exceptions = False, compile
     kwargs["compiler_flags"] = ["-Werror"] + kwargs["compiler_flags"]
 
     # For now, we allow turning off RTTI and exceptions for android builds only
+    kwargs["fbandroid_compiler_flags"] = kwargs.get("fbandroid_compiler_flags", [])
     if compiler_flags_enable_exceptions:
         kwargs["compiler_flags"] = ["-fexceptions"] + kwargs["fbandroid_compiler_flags"]
     else:
