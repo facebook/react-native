@@ -460,7 +460,7 @@ react {
     libraryName = "rncore"
     jsRootDir = file("../Libraries")
     reactRoot = file("$projectDir/..")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
 }
 
 afterEvaluate {

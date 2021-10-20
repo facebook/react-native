@@ -88,7 +88,7 @@ react {
 
     // Codegen Configs
     jsRootDir = file("$rootDir/packages/rn-tester")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
 }
 
 project.ext.react = [
