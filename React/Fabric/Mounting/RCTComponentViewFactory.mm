@@ -68,7 +68,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   static RCTComponentViewFactory *componentViewFactory;
 
   dispatch_once(&onceToken, ^{
-    componentViewFactory = [[RCTComponentViewFactory alloc] init];
+    componentViewFactory = [RCTComponentViewFactory new];
     [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
     [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
     [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
@@ -183,7 +183,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   Class viewClass = componentViewClassDescriptor.viewClass;
 
   return RCTComponentViewDescriptor{
-      .view = [[viewClass alloc] init],
+      .view = [viewClass new],
       .observesMountingTransactionWillMount = componentViewClassDescriptor.observesMountingTransactionWillMount,
       .observesMountingTransactionDidMount = componentViewClassDescriptor.observesMountingTransactionDidMount,
   };
