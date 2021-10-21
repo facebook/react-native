@@ -310,7 +310,10 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
           passthroughAnimatedPropExplicitValues
         }>
         {React.cloneElement(child, {
-          style: styles.fill, // We transfer the child style to the wrapper.
+          style: [
+            styles.fill,
+            {flexDirection: child.props.style.flexDirection},
+          ], // We transfer the child style to the wrapper but still need to apply the flexDirection
           onLayout: undefined, // we call this manually through our this._onLayout
         })}
       </AnimatedView>
