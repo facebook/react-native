@@ -13,7 +13,6 @@
 
 const combine = require('./combine-js-to-schema');
 const fs = require('fs');
-// $FlowFixMe[untyped-import] glob is untyped
 const glob = require('glob');
 const path = require('path');
 
