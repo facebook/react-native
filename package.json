@@ -158,5 +158,25 @@
         "name": "iPhone 8"
       }
     }
+  },
+  "codegenConfig": {
+    "libraries": [
+      {
+        "name": "FBReactNativeSpec",
+        "ios": {
+          "_outputDir": "React/FBReactNativeSpec"
+        },
+        "android": {},
+        "jsSrcsDir": "Libraries"
+      },
+      {
+        "name": "rncore",
+        "ios": {
+          "_outputDir": "ReactCommon"
+        },
+        "android": {},
+        "jsSrcsDir": "Libraries"
+      }
+    ]
   }
 }
