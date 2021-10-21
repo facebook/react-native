@@ -34,7 +34,6 @@ import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
-import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
