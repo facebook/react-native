@@ -55,6 +55,9 @@ sed_i -e "s/^\(ruby '\)[^']*\('.*\)$/\1$VERSION\2/" template/Gemfile
 
 rm -f Gemfile.lock template/Gemfile.lock
 
+export BUNDLE_APP_CONFIG="$ROOT/.bundle"
+cp "$BUNDLE_APP_CONFIG/"* template/_bundle # sync!
+
 bundle lock
 (cd template && bundle lock)
 
