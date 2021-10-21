@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.hermes.reactexecutor.HermesExecutor;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -28,6 +29,7 @@ import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.jscexecutor.JSCExecutor;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
@@ -347,7 +349,7 @@ public class ReactInstanceManagerBuilder {
     try {
       // If JSC is included, use it as normal
       initializeSoLoaderIfNecessary(applicationContext);
-      SoLoader.loadLibrary("jscexecutor");
+      JSCExecutor.loadLibrary();
       return new JSCExecutorFactory(appName, deviceName);
     } catch (UnsatisfiedLinkError jscE) {
       // https://github.com/facebook/hermes/issues/78 shows that
@@ -365,6 +367,7 @@ public class ReactInstanceManagerBuilder {
 
       // Otherwise use Hermes
       try {
+        HermesExecutor.loadLibrary();
         return new HermesExecutorFactory();
       } catch (UnsatisfiedLinkError hermesE) {
         // If we get here, either this is a JSC build, and of course
