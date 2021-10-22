@@ -26,7 +26,7 @@ def detectEntryFile(config) {
  */
 def detectCliPath(config) {
     if (config.cliPath) {
-        return config.cliPath
+        return "${projectDir}/${config.cliPath}"
     }
     if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
         return "${projectDir}/../../node_modules/react-native/cli.js"
@@ -81,6 +81,28 @@ def getHermesCommand = {
 // or set `enableHermes` to True/False to set all of them
 def enableHermesForVariant = config.enableHermesForVariant ?: {
     def variant -> config.enableHermes ?: false
+}
+
+// Set hermesFlagsForVariant to a function to configure per variant,
+// or set `hermesFlagsRelease` and `hermesFlagsDebug` to an array
+def hermesFlagsForVariant = config.hermesFlagsForVariant ?: {
+    def variant ->
+        def hermesFlags;
+        if (variant.name.toLowerCase().contains("release")) {
+            // Can't use ?: since that will also substitute valid empty lists
+            hermesFlags = config.hermesFlagsRelease
+            if (hermesFlags == null) hermesFlags = ["-O", "-output-source-map"]
+        } else {
+            hermesFlags = config.hermesFlagsDebug
+            if (hermesFlags == null) hermesFlags = []
+        }
+        return hermesFlags
+}
+
+// Set deleteDebugFilesForVariant to a function to configure per variant,
+// defaults to True for Release variants and False for debug variants
+def deleteDebugFilesForVariant = config.deleteDebugFilesForVariant ?: {
+    def variant -> variant.name.toLowerCase().contains("release")
 }
 
 android {
@@ -177,18 +199,9 @@ afterEvaluate {
 
             if (enableHermes) {
                 doLast {
-                    def hermesFlags;
+                    def hermesFlags = hermesFlagsForVariant(variant)
                     def hbcTempFile = file("${jsBundleFile}.hbc")
                     exec {
-                        if (targetName.toLowerCase().contains("release")) {
-                            // Can't use ?: since that will also substitute valid empty lists
-                            hermesFlags = config.hermesFlagsRelease
-                            if (hermesFlags == null) hermesFlags = ["-O", "-output-source-map"]
-                        } else {
-                            hermesFlags = config.hermesFlagsDebug
-                            if (hermesFlags == null) hermesFlags = []
-                        }
-
                         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                             commandLine("cmd", "/c", getHermesCommand(), "-emit-binary", "-out", hbcTempFile, jsBundleFile, *hermesFlags)
                         } else {
@@ -284,18 +297,24 @@ afterEvaluate {
                 into(file(config."jsBundleDir${targetName}"))
             } else {
                 into ("$buildDir/intermediates")
-                into ("assets/${targetPath}") {
-                    from(jsBundleDir)
-                }
+                if (isAndroidLibrary) {
+                    into ("library_assets/${variant.name}/out") {
+                        from(jsBundleDir)
+                    }
+                } else {
+                    into ("assets/${targetPath}") {
+                        from(jsBundleDir)
+                    }
 
-                // Workaround for Android Gradle Plugin 3.2+ new asset directory
-                into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
-                    from(jsBundleDir)
-                }
+                    // Workaround for Android Gradle Plugin 3.2+ new asset directory
+                    into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
+                        from(jsBundleDir)
+                    }
 
-                // Workaround for Android Gradle Plugin 3.4+ new asset directory
-                into ("merged_assets/${variant.name}/out") {
-                    from(jsBundleDir)
+                    // Workaround for Android Gradle Plugin 3.4+ new asset directory
+                    into ("merged_assets/${variant.name}/out") {
+                        from(jsBundleDir)
+                    }
                 }
             }
 
@@ -303,6 +322,7 @@ afterEvaluate {
             dependsOn(variant.mergeAssetsProvider.get())
 
             enabled(currentBundleTask.enabled)
+            dependsOn(currentBundleTask)
         }
 
         // mergeResources task runs before the bundle file is copied to the intermediate asset directory from Android plugin 4.1+.
@@ -321,31 +341,39 @@ afterEvaluate {
         // This should really be done by packaging all Hermes related libs into
         // two separate HermesDebug and HermesRelease AARs, but until then we'll
         // kludge it by deleting the .so files out of the /transforms/ directory.
-        def isRelease = targetName.toLowerCase().contains("release")
-        def libDir = "$buildDir/intermediates/transforms/"
-        def vmSelectionAction = {
+        def cleanup = deleteDebugFilesForVariant(variant)
+
+        def vmSelectionAction = { libDir ->
             fileTree(libDir).matching {
                 if (enableHermes) {
                     // For Hermes, delete all the libjsc* files
                     include "**/libjsc*.so"
 
-                    if (isRelease) {
+                    if (cleanup) {
                         // Reduce size by deleting the debugger/inspector
                         include '**/libhermes-inspector.so'
                         include '**/libhermes-executor-debug.so'
+                        include '**/libhermes-executor-common-debug.so'
                     } else {
                         // Release libs take precedence and must be removed
                         // to allow debugging
                         include '**/libhermes-executor-release.so'
+                        include '**/libhermes-executor-common-release.so'
                     }
                 } else {
                     // For JSC, delete all the libhermes* files
                     include "**/libhermes*.so"
+                    // Delete the libjscexecutor from release build
+                    if (cleanup) {
+                        include "**/libjscexecutor.so"
+                    }
                 }
             }.visit { details ->
-                def targetVariant = ".*/transforms/[^/]*/${targetPath}/.*"
+                def targetVariant1 = ".*/transforms/[^/]*/${variant.name}/.*"
+                def targetVariant2 = ".*/merged_native_libs/${variant.name}/out/lib/.*"
+                def targetVariant3 = ".*/stripped_native_libs/${variant.name}/out/lib/.*"
                 def path = details.file.getAbsolutePath().replace(File.separatorChar, '/' as char)
-                if (path.matches(targetVariant) && details.file.isFile()) {
+                if ((path.matches(targetVariant1) || path.matches(targetVariant2) || path.matches(targetVariant3)) && details.file.isFile()) {
                     details.file.delete()
                 }
             }
@@ -353,7 +381,20 @@ afterEvaluate {
 
         if (enableVmCleanup) {
             def task = tasks.findByName("package${targetName}")
-            task.doFirst(vmSelectionAction)
+            def transformsLibDir = "$buildDir/intermediates/transforms/"
+            task.doFirst { vmSelectionAction(transformsLibDir) }
+
+            def sTask = tasks.findByName("strip${targetName}DebugSymbols")
+            if (sTask != null) {
+                def strippedLibDir = "$buildDir/intermediates/stripped_native_libs/${variant.name}/out/lib/"
+                sTask.doLast { vmSelectionAction(strippedLibDir) }
+            }
+
+            def mTask = tasks.findByName("merge${targetName}NativeLibs")
+            if (mTask != null) {
+                def mergedLibDir = "$buildDir/intermediates/merged_native_libs/${variant.name}/out/lib/"
+                mTask.doLast { vmSelectionAction(mergedLibDir) }
+            }
         }
     }
 }

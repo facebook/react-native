@@ -46,7 +46,7 @@ class FileReader extends (EventTarget(...READER_EVENTS): any) {
   _error: ?Error;
   _result: ?ReaderResult;
   _aborted: boolean = false;
-  _subscriptions: Array<*> = [];
+  _subscriptions: Array<any> = [];
 
   constructor() {
     super();

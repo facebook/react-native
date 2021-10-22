@@ -6,7 +6,6 @@
  */
 
 #include "ShadowNode.h"
-#include "Constants.h"
 #include "DynamicPropsUtilities.h"
 #include "ShadowNodeFragment.h"
 
@@ -39,15 +38,13 @@ SharedProps ShadowNode::propsForClonedShadowNode(
     ShadowNode const &sourceShadowNode,
     Props::Shared const &props) {
 #ifdef ANDROID
-  if (Constants::getPropsForwardingEnabled()) {
-    bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
-    bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
-    if (!hasBeenMounted && sourceNodeHasRawProps && props) {
-      auto &castedProps = const_cast<Props &>(*props);
-      castedProps.rawProps = mergeDynamicProps(
-          sourceShadowNode.getProps()->rawProps, props->rawProps);
-      return props;
-    }
+  bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
+  bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
+  if (!hasBeenMounted && sourceNodeHasRawProps && props) {
+    auto &castedProps = const_cast<Props &>(*props);
+    castedProps.rawProps = mergeDynamicProps(
+        sourceShadowNode.getProps()->rawProps, props->rawProps);
+    return props;
   }
 #endif
   return props ? props : sourceShadowNode.getProps();

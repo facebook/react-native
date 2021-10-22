@@ -54,14 +54,17 @@ function getReactDiffProcessValue(typeAnnotation) {
     case 'ReservedPropTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
-          return j.template.expression`{ process: require('processColor') }`;
+          return j.template
+            .expression`{ process: require('react-native/Libraries/StyleSheet/processColor') }`;
         case 'ImageSourcePrimitive':
           return j.template
-            .expression`{ process: require('resolveAssetSource') }`;
+            .expression`{ process: require('react-native/Libraries/Image/resolveAssetSource') }`;
         case 'PointPrimitive':
-          return j.template.expression`{ diff: require('pointsDiffer') }`;
+          return j.template
+            .expression`{ diff: require('react-native/Libraries/Utilities/differ/pointsDiffer') }`;
         case 'EdgeInsetsPrimitive':
-          return j.template.expression`{ diff: require('insetsDiffer') }`;
+          return j.template
+            .expression`{ diff: require('react-native/Libraries/Utilities/differ/insetsDiffer') }`;
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -73,7 +76,7 @@ function getReactDiffProcessValue(typeAnnotation) {
         switch (typeAnnotation.elementType.name) {
           case 'ColorPrimitive':
             return j.template
-              .expression`{ process: require('processColorArray') }`;
+              .expression`{ process: require('react-native/Libraries/StyleSheet/processColorArray') }`;
           case 'ImageSourcePrimitive':
             return j.literal(true);
           case 'PointPrimitive':
@@ -177,7 +180,7 @@ function buildViewConfig(
         switch (extendProps.knownTypeName) {
           case 'ReactNativeCoreViewProps':
             imports.add(
-              "const NativeComponentRegistry = require('NativeComponentRegistry');",
+              "const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');",
             );
 
             return;

@@ -248,6 +248,24 @@ describe('Native Animated', () => {
       );
     });
 
+    it('shoud map AnimatedValueXY', () => {
+      const value = new Animated.ValueXY({x: 0, y: 0});
+      value.__makeNative();
+      const event = Animated.event([{nativeEvent: {state: value}}], {
+        useNativeDriver: true,
+      });
+
+      TestRenderer.create(<Animated.View onTouchMove={event} />);
+      ['x', 'y'].forEach((key, idx) =>
+        expect(
+          NativeAnimatedModule.addAnimatedEventToView,
+        ).toHaveBeenNthCalledWith(idx + 1, expect.any(Number), 'onTouchMove', {
+          nativeEventPath: ['state', key],
+          animatedValueTag: value[key].__getNativeTag(),
+        }),
+      );
+    });
+
     it('should throw on invalid event path', () => {
       const value = new Animated.Value(0);
       value.__makeNative();

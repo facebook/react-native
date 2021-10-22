@@ -172,6 +172,12 @@ type IOSProps = $ReadOnly<{|
    */
   automaticallyAdjustContentInsets?: ?boolean,
   /**
+   * Controls whether iOS should automatically adjust the scroll indicator
+   * insets. The default value is true. Available on iOS 13 and later.
+   * @platform ios
+   */
+  automaticallyAdjustsScrollIndicatorInsets?: ?boolean,
+  /**
    * The amount by which the scroll view content is inset from the edges
    * of the scroll view. Defaults to `{top: 0, left: 0, bottom: 0, right: 0}`.
    * @platform ios
@@ -340,17 +346,6 @@ type IOSProps = $ReadOnly<{|
    * The default value is true.
    */
   showsHorizontalScrollIndicator?: ?boolean,
-  /**
-   * When `snapToInterval` is set, `snapToAlignment` will define the relationship
-   * of the snapping to the scroll view.
-   *
-   *   - `'start'` (the default) will align the snap at the left (horizontal) or top (vertical)
-   *   - `'center'` will align the snap in the center
-   *   - `'end'` will align the snap at the right (horizontal) or bottom (vertical)
-   *
-   * @platform ios
-   */
-  snapToAlignment?: ?('start' | 'center' | 'end'),
   /**
    * The current scale of the scroll view content. The default value is 1.0.
    * @platform ios
@@ -591,6 +586,15 @@ export type Props = $ReadOnly<{|
    * for example when you want your list to have an animated hidable header.
    */
   StickyHeaderComponent?: StickyHeaderComponentType,
+  /**
+   * When `snapToInterval` is set, `snapToAlignment` will define the relationship
+   * of the snapping to the scroll view.
+   *
+   *   - `'start'` (the default) will align the snap at the left (horizontal) or top (vertical)
+   *   - `'center'` will align the snap in the center
+   *   - `'end'` will align the snap at the right (horizontal) or bottom (vertical)
+   */
+  snapToAlignment?: ?('start' | 'center' | 'end'),
   /**
    * When set, causes the scroll view to stop at multiples of the value of
    * `snapToInterval`. This can be used for paginating through children
@@ -1172,11 +1176,6 @@ class ScrollView extends React.Component<Props, State> {
         );
       }
     }
-    if (Platform.OS === 'android') {
-      if (this.props.keyboardDismissMode === 'on-drag' && this._isTouching) {
-        dismissKeyboard();
-      }
-    }
     this._observedScrollSinceBecomingResponder = true;
     this.props.onScroll && this.props.onScroll(e);
   };
@@ -1293,6 +1292,14 @@ class ScrollView extends React.Component<Props, State> {
    */
   _handleScrollBeginDrag: (e: ScrollEvent) => void = (e: ScrollEvent) => {
     FrameRateLogger.beginScroll(); // TODO: track all scrolls after implementing onScrollEndAnimation
+
+    if (
+      Platform.OS === 'android' &&
+      this.props.keyboardDismissMode === 'on-drag'
+    ) {
+      dismissKeyboard();
+    }
+
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
 

@@ -26,14 +26,40 @@ public class ReactFeatureFlags {
   public static volatile boolean useTurboModules = false;
 
   /**
-   * Should application use the new TM callback manager in Cxx? This is assumed to be a sane
-   * default, but it's new. We will delete once (1) we know it's safe to ship and (2) we have
-   * quantified impact.
+   * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
+   * use Fabric instead of the legacy renderer.
    */
-  public static volatile boolean useTurboModulesRAIICallbackManager = false;
+  public static volatile boolean enableFabricRenderer = false;
+
+  /**
+   * After TurboModules and Fabric are enabled, we need to ensure that the legacy NativeModule isn't
+   * isn't used. So, turn this flag on to trigger warnings whenever the legacy NativeModule system
+   * is used.
+   */
+  public static volatile boolean warnOnLegacyNativeModuleSystemUse = false;
 
   /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
   public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
+
+  /**
+   * Experiment:
+   *
+   * <p>Bridge and Bridgeless mode can run concurrently. This means that there can be two
+   * TurboModule systems alive at the same time.
+   *
+   * <p>The TurboModule system stores all JS callbacks in a global LongLivedObjectCollection. This
+   * collection is cleared when the JS VM is torn down. Implication: Tearing down the bridge JSVM
+   * invalidates the bridgeless JSVM's callbacks, and vice versa.
+   *
+   * <p>useGlobalCallbackCleanupScopeUsingRetainJSCallback => Use a retainJSCallbacks lambda to
+   * store jsi::Functions into the global LongLivedObjectCollection
+   *
+   * <p>useTurboModuleManagerCallbackCleanupScope => Use a retainJSCallbacks labmda to store
+   * jsi::Functions into a LongLivedObjectCollection owned by the TurboModuleManager
+   */
+  public static boolean useGlobalCallbackCleanupScopeUsingRetainJSCallback = false;
+
+  public static boolean useTurboModuleManagerCallbackCleanupScope = false;
 
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
@@ -45,6 +71,8 @@ public class ReactFeatureFlags {
   public static boolean enableExperimentalStaticViewConfigs = false;
 
   public static boolean enableRuntimeScheduler = false;
+
+  public static boolean enableRuntimeSchedulerInTurboModule = false;
 
   /** Enables a more aggressive cleanup during destruction of ReactContext */
   public static boolean enableReactContextCleanupFix = false;
@@ -70,16 +98,14 @@ public class ReactFeatureFlags {
 
   public static boolean enableAggressiveEventEmitterCleanup = false;
 
-  //
-  // ScrollView C++ UpdateState vs onScroll race fixes
-  //
+  public static boolean insertZReorderBarriersOnViewGroupChildren = true;
 
-  /* Enables a "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter */
-  public static boolean enableScrollViewStateEventRaceFix = false;
+  public static boolean enableScrollViewSnapToAlignmentProp = true;
 
-  /* Enables another "state race condition fix" for ScrollViews StateUpdate + onScroll event emitter. Races a StateUpdate with every onScroll event. */
-  public static boolean enableScrollViewStateEventAlwaysRace = false;
+  public static boolean useDispatchUniqueForCoalescableEvents = false;
 
-  /* Configure a min scroll delta for UpdateState to be called while still actively scrolling. */
-  public static int scrollViewUpdateStateMinScrollDelta = 0;
+  public static boolean useUpdatedTouchPreprocessing = false;
+
+  /** TODO: T103427072 Delete ReactFeatureFlags.enableNestedTextOnPressEventFix */
+  public static boolean enableNestedTextOnPressEventFix = true;
 }

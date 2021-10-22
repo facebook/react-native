@@ -103,7 +103,6 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
   return formattedLocalNotification;
 }
 
-API_AVAILABLE(ios(10.0))
 static NSDictionary *RCTFormatUNNotification(UNNotification *notification)
 {
   NSMutableDictionary *formattedNotification = [NSMutableDictionary dictionary];

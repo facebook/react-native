@@ -4,13 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
-const React = require('react');
+import * as React from 'react';
 
-const {
+import {
   Platform,
   ScrollView,
   StyleSheet,
@@ -19,13 +19,14 @@ const {
   View,
   TextInput,
   RefreshControl,
-} = require('react-native');
+} from 'react-native';
 
-const nullthrows = require('nullthrows');
+import nullthrows from 'nullthrows';
 
 import {useState, useCallback} from 'react';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
 
 exports.displayName = 'ScrollViewExample';
 exports.title = 'ScrollView';
@@ -111,7 +112,10 @@ exports.examples = ([
     title: '<ScrollView> enable & disable\n',
     description: 'ScrollView scrolling behaviour can be disabled and enabled',
     render: function(): React.Node {
-      class EnableDisableList extends React.Component<{...}, *> {
+      class EnableDisableList extends React.Component<
+        {},
+        {scrollEnabled: boolean},
+      > {
         state = {
           scrollEnabled: true,
         };
@@ -188,6 +192,19 @@ exports.examples = ([
     },
   },
   {
+    name: 'pressableStickyHeaders',
+    title: '<ScrollView> Pressable Sticky Header\n',
+    description:
+      'Press the blue box to toggle it between blue and yellow. The box should remain Pressable after scrolling.',
+    render: function(): React.Node {
+      return (
+        <View style={{height: 400}}>
+          <ScrollViewPressableStickyHeaderExample />
+        </View>
+      );
+    },
+  },
+  {
     name: 'keyboardShouldPersistTaps',
     title: '<ScrollView> Keyboard Options\n',
     description:
@@ -249,7 +266,7 @@ exports.examples = ([
       return <SnapToOptions />;
     },
   },
-]: Array<RNTesterExampleModuleItem>);
+]: Array<RNTesterModuleExample>);
 
 if (Platform.OS === 'ios') {
   exports.examples.push({
@@ -259,7 +276,10 @@ if (Platform.OS === 'ios') {
       'without causing the visible content to jump. Re-ordering is not supported.',
     render: function() {
       let itemCount = 6;
-      class AppendingList extends React.Component<{...}, *> {
+      class AppendingList extends React.Component<
+        {},
+        {items: Array<React.Element<typeof Item>>},
+      > {
         state = {
           items: [...Array(itemCount)].map((_, ii) => (
             <Item msg={`Item ${ii}`} />
@@ -453,12 +473,19 @@ if (Platform.OS === 'ios') {
       return <ScrollToOptions />;
     },
   });
-} else {
+} else if (Platform.OS === 'android') {
   exports.examples.push({
     title: '<ScrollView> EndFillColor & FadingEdgeLength\n',
     description: 'Toggle to set endFillColor and fadingEdgeLength.',
     render: function(): React.Node {
       return <EndFillColorFadingEdgeLen />;
+    },
+  });
+  exports.examples.push({
+    title: '<ScrollView> persistentScrollBar\n',
+    description: 'Toggle to set persistentScrollbar option.',
+    render: function(): React.Node {
+      return <AndroidScrollBarOptions />;
     },
   });
 }

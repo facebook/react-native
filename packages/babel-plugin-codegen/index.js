@@ -127,6 +127,7 @@ module.exports = function({parse, types: t}) {
               parse(viewConfig, {
                 babelrc: false,
                 browserslistConfigFile: false,
+                configFile: false,
               }).program.body,
             );
             if (this.commandsExport != null) {

@@ -10,17 +10,17 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
+#include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
-
-#include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
-#include <react/renderer/mounting/stubs.h>
 
+#include <react/renderer/mounting/stubs.h>
 #include <react/test_utils/Entropy.h>
 #include <react/test_utils/MockClock.h>
 #include <react/test_utils/shadowTreeGeneration.h>
@@ -51,7 +51,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
   auto entropy = seed == 0 ? Entropy() : Entropy(seed);
 
   auto eventDispatcher = EventDispatcher::Shared{};
-  auto contextContainer = std::make_shared<ContextContainer>();
+  auto contextContainer = std::make_shared<ContextContainer const>();
   auto componentDescriptorParameters =
       ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
   auto viewComponentDescriptor =
@@ -60,6 +60,8 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
       RootComponentDescriptor(componentDescriptorParameters);
   auto noopEventEmitter =
       std::make_shared<ViewEventEmitter const>(nullptr, -1, eventDispatcher);
+
+  PropsParserContext parserContext{-1, *contextContainer};
 
   // Create a RuntimeExecutor
   RuntimeExecutor runtimeExecutor =
@@ -75,8 +77,8 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
       concreteComponentDescriptorProvider<ViewComponentDescriptor>());
 
   // Create Animation Driver
-  auto animationDriver =
-      std::make_shared<LayoutAnimationDriver>(runtimeExecutor, nullptr);
+  auto animationDriver = std::make_shared<LayoutAnimationDriver>(
+      runtimeExecutor, contextContainer, nullptr);
   animationDriver->setComponentDescriptorRegistry(componentDescriptorRegistry);
 
   // Mock animation timers
@@ -106,6 +108,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
 
     // Applying size constraints.
     emptyRootNode = emptyRootNode->clone(
+        parserContext,
         LayoutConstraints{
             Size{512, 0}, Size{512, std::numeric_limits<Float>::infinity()}},
         LayoutContext{});

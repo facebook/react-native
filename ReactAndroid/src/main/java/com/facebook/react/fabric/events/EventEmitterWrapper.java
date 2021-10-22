@@ -16,6 +16,7 @@ import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.fabric.FabricSoLoader;
+import com.facebook.react.uimanager.events.EventCategoryDef;
 
 /**
  * This class holds reference to the C++ EventEmitter object. Instances of this class are created on
@@ -36,7 +37,8 @@ public class EventEmitterWrapper {
     mHybridData = initHybrid();
   }
 
-  private native void invokeEvent(@NonNull String eventName, @NonNull NativeMap params);
+  private native void invokeEvent(
+      @NonNull String eventName, @NonNull NativeMap params, @EventCategoryDef int category);
 
   private native void invokeUniqueEvent(
       @NonNull String eventName, @NonNull NativeMap params, int customCoalesceKey);
@@ -47,12 +49,15 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public void invoke(@NonNull String eventName, @Nullable WritableMap params) {
+  public synchronized void invoke(
+      @NonNull String eventName,
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory) {
     if (!isValid()) {
       return;
     }
     NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
-    invokeEvent(eventName, payload);
+    invokeEvent(eventName, payload, eventCategory);
   }
 
   /**
@@ -62,7 +67,7 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public void invokeUnique(
+  public synchronized void invokeUnique(
       @NonNull String eventName, @Nullable WritableMap params, int customCoalesceKey) {
     if (!isValid()) {
       return;
@@ -71,7 +76,7 @@ public class EventEmitterWrapper {
     invokeUniqueEvent(eventName, payload, customCoalesceKey);
   }
 
-  public void destroy() {
+  public synchronized void destroy() {
     if (mHybridData != null) {
       mHybridData.resetNative();
     }

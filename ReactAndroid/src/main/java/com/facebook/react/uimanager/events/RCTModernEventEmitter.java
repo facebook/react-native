@@ -28,5 +28,6 @@ public interface RCTModernEventEmitter extends RCTEventEmitter {
       String eventName,
       boolean canCoalesceEvent,
       int customCoalesceKey,
-      @Nullable WritableMap event);
+      @Nullable WritableMap event,
+      @EventCategoryDef int category);
 }

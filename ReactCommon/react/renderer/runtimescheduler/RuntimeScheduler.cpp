@@ -6,8 +6,10 @@
  */
 
 #include "RuntimeScheduler.h"
+#include "ErrorUtils.h"
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 #pragma mark - Public
 
@@ -41,7 +43,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
   taskQueue_.push(task);
 
-  if (!isCallbackScheduled_) {
+  if (!isCallbackScheduled_ && !isPerformingWork_) {
     isCallbackScheduled_ = true;
     runtimeExecutor_([this](jsi::Runtime &runtime) {
       isCallbackScheduled_ = false;
@@ -87,26 +89,36 @@ void RuntimeScheduler::executeNowOnTheSameThread(
 
 void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
   auto previousPriority = currentPriority_;
-  while (!taskQueue_.empty()) {
-    auto topPriorityTask = taskQueue_.top();
-    auto now = now_();
-    auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
+  isPerformingWork_ = true;
+  try {
+    while (!taskQueue_.empty()) {
+      auto topPriorityTask = taskQueue_.top();
+      auto now = now_();
+      auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
 
-    if (!didUserCallbackTimeout && shouldYield_) {
-      // This task hasn't expired and we need to yield.
-      break;
-    }
-    currentPriority_ = topPriorityTask->priority;
-    auto result = topPriorityTask->execute(runtime);
+      if (!didUserCallbackTimeout && shouldYield_) {
+        // This task hasn't expired and we need to yield.
+        break;
+      }
+      currentPriority_ = topPriorityTask->priority;
+      auto result = topPriorityTask->execute(runtime);
 
-    if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
-      topPriorityTask->callback =
-          result.getObject(runtime).getFunction(runtime);
-    } else {
-      taskQueue_.pop();
+      if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+        topPriorityTask->callback =
+            result.getObject(runtime).getFunction(runtime);
+      } else {
+        if (taskQueue_.top() == topPriorityTask) {
+          taskQueue_.pop();
+        }
+      }
     }
+  } catch (jsi::JSError &error) {
+    handleFatalError(runtime, error);
   }
+
   currentPriority_ = previousPriority;
+  isPerformingWork_ = false;
 }
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

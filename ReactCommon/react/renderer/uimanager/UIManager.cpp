@@ -8,6 +8,7 @@
 #include "UIManager.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
@@ -29,9 +30,11 @@ static std::unique_ptr<LeakChecker> constructLeakCheckerIfNeeded(
 
 UIManager::UIManager(
     RuntimeExecutor const &runtimeExecutor,
-    BackgroundExecutor const &backgroundExecutor)
+    BackgroundExecutor const &backgroundExecutor,
+    ContextContainer::Shared contextContainer)
     : runtimeExecutor_(runtimeExecutor),
       backgroundExecutor_(backgroundExecutor),
+      contextContainer_(contextContainer),
       leakChecker_(constructLeakCheckerIfNeeded(runtimeExecutor)) {}
 
 UIManager::~UIManager() {
@@ -51,10 +54,13 @@ SharedShadowNode UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
+  PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
+
   auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
   auto family =
       componentDescriptor.createFamily(fragment, std::move(eventTarget));
-  auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
+  auto const props =
+      componentDescriptor.cloneProps(propsParserContext, nullptr, rawProps);
   auto const state =
       componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
 
@@ -65,16 +71,17 @@ SharedShadowNode UIManager::createNode(
                   fallbackDescriptor->getComponentHandle() ==
                       componentDescriptor.getComponentHandle()
               ? componentDescriptor.cloneProps(
-                    props, RawProps(folly::dynamic::object("name", name)))
+                    propsParserContext,
+                    props,
+                    RawProps(folly::dynamic::object("name", name)))
               : props,
           /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
           /* .state = */ state,
       },
       family);
 
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidCreateShadowNode(*shadowNode.get());
+  if (delegate_) {
+    delegate_->uiManagerDidCreateShadowNode(*shadowNode.get());
   }
   if (leakChecker_) {
     leakChecker_->uiManagerDidCreateShadowNodeFamily(family);
@@ -89,20 +96,22 @@ SharedShadowNode UIManager::cloneNode(
     const RawProps *rawProps) const {
   SystraceSection s("UIManager::cloneNode");
 
+  PropsParserContext propsParserContext{
+      shadowNode->getFamily().getSurfaceId(), *contextContainer_.get()};
+
   auto &componentDescriptor = shadowNode->getComponentDescriptor();
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       *shadowNode,
       {
           /* .props = */
           rawProps ? componentDescriptor.cloneProps(
-                         shadowNode->getProps(), *rawProps)
+                         propsParserContext, shadowNode->getProps(), *rawProps)
                    : ShadowNodeFragment::propsPlaceholder(),
           /* .children = */ children,
       });
 
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidCloneShadowNode(
+  if (delegate_) {
+    delegate_->uiManagerDidCloneShadowNode(
         *shadowNode.get(), *clonedShadowNode.get());
   }
 
@@ -142,9 +151,8 @@ void UIManager::setIsJSResponder(
     ShadowNode::Shared const &shadowNode,
     bool isJSResponder,
     bool blockNativeResponder) const {
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidSetIsJSResponder(
+  if (delegate_) {
+    delegate_->uiManagerDidSetIsJSResponder(
         shadowNode, isJSResponder, blockNativeResponder);
   }
 }
@@ -160,6 +168,7 @@ void UIManager::startSurface(
   shadowTreeRegistry_.add(std::move(shadowTree));
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
+    SystraceSection s("UIManager::startSurface::onRuntime");
     auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
     if (!uiManagerBinding) {
       return;
@@ -325,18 +334,16 @@ void UIManager::dispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
     folly::dynamic const args) const {
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidDispatchCommand(shadowNode, commandName, args);
+  if (delegate_) {
+    delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
   }
 }
 
 void UIManager::sendAccessibilityEvent(
     const ShadowNode::Shared &shadowNode,
     std::string const &eventType) {
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidSendAccessibilityEvent(shadowNode, eventType);
+  if (delegate_) {
+    delegate_->uiManagerDidSendAccessibilityEvent(shadowNode, eventType);
   }
 }
 
@@ -345,9 +352,8 @@ void UIManager::configureNextLayoutAnimation(
     RawValue const &config,
     jsi::Value const &successCallback,
     jsi::Value const &failureCallback) const {
-  auto animationDelegate = animationDelegate_.load();
-  if (animationDelegate) {
-    animationDelegate->uiManagerDidConfigureNextLayoutAnimation(
+  if (animationDelegate_) {
+    animationDelegate_->uiManagerDidConfigureNextLayoutAnimation(
         runtime,
         config,
         std::move(successCallback),
@@ -423,9 +429,8 @@ void UIManager::shadowTreeDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) const {
   SystraceSection s("UIManager::shadowTreeDidFinishTransaction");
 
-  auto delegate = delegate_.load();
-  if (delegate) {
-    delegate->uiManagerDidFinishTransaction(mountingCoordinator);
+  if (delegate_) {
+    delegate_->uiManagerDidFinishTransaction(mountingCoordinator);
   }
 }
 
@@ -436,15 +441,14 @@ void UIManager::setAnimationDelegate(UIManagerAnimationDelegate *delegate) {
 }
 
 void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
-  auto animationDelegate = animationDelegate_.load();
-  if (animationDelegate) {
-    animationDelegate->stopSurface(surfaceId);
+  if (animationDelegate_ != nullptr) {
+    animationDelegate_->stopSurface(surfaceId);
   }
 }
 
 void UIManager::animationTick() {
-  auto animationDelegate = animationDelegate_.load();
-  if (animationDelegate && animationDelegate->shouldAnimateFrame()) {
+  if (animationDelegate_ != nullptr &&
+      animationDelegate_->shouldAnimateFrame()) {
     shadowTreeRegistry_.enumerate(
         [&](ShadowTree const &shadowTree, bool &stop) {
           shadowTree.notifyDelegatesOfUpdates();

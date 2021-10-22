@@ -23,6 +23,7 @@
 #include <react/renderer/uimanager/UIManagerAnimationDelegate.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 #include <react/renderer/uimanager/primitives.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
 
@@ -33,7 +34,8 @@ class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
       RuntimeExecutor const &runtimeExecutor,
-      BackgroundExecutor const &backgroundExecutor);
+      BackgroundExecutor const &backgroundExecutor,
+      ContextContainer::Shared contextContainer);
 
   ~UIManager();
 
@@ -184,11 +186,12 @@ class UIManager final : public ShadowTreeDelegate {
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
-  std::atomic<UIManagerDelegate *> delegate_;
-  std::atomic<UIManagerAnimationDelegate *> animationDelegate_{nullptr};
+  UIManagerDelegate *delegate_;
+  UIManagerAnimationDelegate *animationDelegate_{nullptr};
   RuntimeExecutor const runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
   BackgroundExecutor const backgroundExecutor_{};
+  ContextContainer::Shared contextContainer_;
 
   mutable better::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook const *> commitHooks_;

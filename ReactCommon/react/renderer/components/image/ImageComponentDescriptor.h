@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/image/ImageShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 #include <react/renderer/imagemanager/ImageManager.h>
@@ -29,7 +28,6 @@ class ImageComponentDescriptor final
   void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    react_native_assert(std::dynamic_pointer_cast<ImageShadowNode>(shadowNode));
     auto imageShadowNode =
         std::static_pointer_cast<ImageShadowNode>(shadowNode);
 

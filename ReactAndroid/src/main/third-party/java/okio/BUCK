@@ -19,6 +19,6 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "okio-binary.jar",
-    sha1 = "0dcc813b08ce5933f8bdfd1dfbab4ad4bd170e7a",
-    url = "mvn:com.squareup.okio:okio:jar:2.9.0",
+    sha1 = "accaddddbb597fb70290fd40358b1ce66b8c2b3d",
+    url = "mvn:com.squareup.okio:okio:jar:2.10.0",
 )
