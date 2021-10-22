@@ -30,12 +30,29 @@ steps:
     inputs:
       script: yarn install --frozen-lockfile
 
+  # scripts/bump-oss-version.js
+  #
+  # update the following files to the commit id.
+  # package.json (-> npm package version)
+  # gradle.properties (-> aar version)
+  # gradle.properties (-> aar version)
+  #
+  # The following files are updated for runtime version checking.
+  # ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java
+  # React/Base/RCTVersion.m
+  # ReactCommon/cxxreact/ReactNativeVersion.h
+  # Libraries/Core/ReactNativeVersion.js
+  #
+  # --nightly => version = `0.0.0-${currentCommit.slice(0, 9)}`;
+  # When on master branch or non-stable branch.
   - task: CmdLine@2
     displayName: Bump canary package version
     inputs:
       script: node scripts/bump-oss-version.js --nightly
-    condition: eq(variables['Build.SourceBranchName'], 'master')
-  
+    condition: or(eq(variables['Build.SourceBranchName'], 'master'), not(contains(variables['Build.SourceBranchName'], '-stable')))
+
+  # TODO: We don't seem to be running bump-oss-version.js for stable branches, hence we would end up publishing using the values in the repository.
+
   - task: CmdLine@2
     displayName: nuget restore
     inputs:
