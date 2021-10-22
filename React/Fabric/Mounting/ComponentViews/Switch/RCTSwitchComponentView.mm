@@ -14,7 +14,7 @@
 #import <react/renderer/components/rncore/Props.h>
 #import <react/renderer/components/rncore/RCTComponentViewHelpers.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 

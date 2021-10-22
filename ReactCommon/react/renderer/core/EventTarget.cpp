@@ -7,6 +7,8 @@
 
 #include "EventTarget.h"
 
+#include <react/debug/react_native_assert.h>
+
 namespace facebook {
 namespace react {
 
@@ -38,8 +40,8 @@ void EventTarget::retain(jsi::Runtime &runtime) const {
   // particular implementation of JSI was able to detect this inconsistency and
   // dealt with it, but some JSI implementation may not support this feature and
   // that case will lead to a crash in those environments.
-  assert(!strongInstanceHandle_.isNull());
-  assert(!strongInstanceHandle_.isUndefined());
+  react_native_assert(!strongInstanceHandle_.isNull());
+  react_native_assert(!strongInstanceHandle_.isUndefined());
 }
 
 void EventTarget::release(jsi::Runtime &runtime) const {

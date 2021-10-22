@@ -16,7 +16,8 @@
   <string name="catalyst_hot_reloading_stop" project="catalyst" translatable="false">Disable Fast Refresh</string>
   <string name="catalyst_hot_reloading_auto_disable" project="catalyst" translatable="false">Disabling Fast Refresh because it requires a development bundle.</string>
   <string name="catalyst_hot_reloading_auto_enable" project="catalyst" translatable="false">Switching to development bundle in order to enable Fast Refresh.</string>
-  <string name="catalyst_inspector" project="catalyst" translatable="false">Toggle Inspector</string>
+  <string name="catalyst_inspector" project="catalyst" translatable="false">Show Element Inspector</string>
+  <string name="catalyst_inspector_stop" project="catalyst" translatable="false">Hide Element Inspector</string>
   <string name="catalyst_perf_monitor" project="catalyst" translatable="false">Show Perf Monitor</string>
   <string name="catalyst_perf_monitor_stop" project="catalyst" translatable="false">Hide Perf Monitor</string>
   <string name="catalyst_settings" project="catalyst" translatable="false">Settings</string>

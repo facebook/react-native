@@ -8,7 +8,6 @@
  * @format
  */
 
-'use strict';
 import type {Node} from 'react';
 import {ImageBackground, StyleSheet, Text, useColorScheme} from 'react-native';
 import React from 'react';
@@ -20,6 +19,7 @@ const Header = (): Node => {
   return (
     <ImageBackground
       accessibilityRole="image"
+      testID="new-app-screen-header"
       source={require('./logo.png')}
       style={[
         styles.background,

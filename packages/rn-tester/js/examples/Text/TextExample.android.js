@@ -10,11 +10,13 @@
 
 'use strict';
 
+import TextAdjustsDynamicLayoutExample from './TextAdjustsDynamicLayoutExample';
+
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 const TextInlineView = require('../../components/TextInlineView');
-const TextLegend = require('../../components/TextLegend');
+import TextLegend from '../../components/TextLegend';
 
 const {LayoutAnimation, StyleSheet, Text, View} = require('react-native');
 
@@ -202,6 +204,9 @@ class TextExample extends React.Component<{...}> {
         <RNTesterBlock title="Dynamic Font Size Adjustment">
           <AdjustingFontSize />
         </RNTesterBlock>
+        <RNTesterBlock title="Font Size Adjustment with Dynamic Layout">
+          <TextAdjustsDynamicLayoutExample />
+        </RNTesterBlock>
         <RNTesterBlock title="Wrap">
           <Text>
             The text should wrap if it goes on multiple lines. See, this is
@@ -211,23 +216,15 @@ class TextExample extends React.Component<{...}> {
         <RNTesterBlock title="Hyphenation">
           <Text android_hyphenationFrequency="normal">
             <Text style={{color: 'red'}}>Normal: </Text>
-            WillHaveAnHyphenWhenBreakingForNewLine
+            WillHaveAHyphenWhenBreakingForNewLine
           </Text>
           <Text android_hyphenationFrequency="none">
             <Text style={{color: 'red'}}>None: </Text>
-            WillNotHaveAnHyphenWhenBreakingForNewLine
+            WillNotHaveAHyphenWhenBreakingForNewLine
           </Text>
           <Text android_hyphenationFrequency="full">
             <Text style={{color: 'red'}}>Full: </Text>
-            WillHaveAnHyphenWhenBreakingForNewLine
-          </Text>
-          <Text android_hyphenationFrequency="high">
-            <Text style={{color: 'red'}}>High: </Text>
-            WillHaveAnHyphenWhenBreakingForNewLine
-          </Text>
-          <Text android_hyphenationFrequency="balanced">
-            <Text style={{color: 'red'}}>Balanced: </Text>
-            WillHaveAnHyphenWhenBreakingForNewLine
+            WillHaveAHyphenWhenBreakingForNewLine
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Padding">
@@ -383,6 +380,15 @@ class TextExample extends React.Component<{...}> {
         <RNTesterBlock title="Font Weight">
           <Text style={{fontWeight: 'bold'}}>Move fast and be bold</Text>
           <Text style={{fontWeight: 'normal'}}>Move fast and be normal</Text>
+          <Text style={{fontWeight: '900'}}>FONT WEIGHT 900</Text>
+          <Text style={{fontWeight: '800'}}>FONT WEIGHT 800</Text>
+          <Text style={{fontWeight: '700'}}>FONT WEIGHT 700</Text>
+          <Text style={{fontWeight: '600'}}>FONT WEIGHT 600</Text>
+          <Text style={{fontWeight: '500'}}>FONT WEIGHT 500</Text>
+          <Text style={{fontWeight: '400'}}>FONT WEIGHT 400</Text>
+          <Text style={{fontWeight: '300'}}>FONT WEIGHT 300</Text>
+          <Text style={{fontWeight: '200'}}>FONT WEIGHT 200</Text>
+          <Text style={{fontWeight: '100'}}>FONT WEIGHT 100</Text>
         </RNTesterBlock>
         <RNTesterBlock title="Font Style">
           <Text style={{fontStyle: 'italic'}}>Move fast and be italic</Text>
@@ -878,6 +884,62 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+
+function TextBaseLineLayoutExample(props: {}): React.Node {
+  const texts = [];
+  for (let i = 9; i >= 0; i--) {
+    texts.push(
+      <Text
+        key={i}
+        style={{fontSize: 8 + i * 5, maxWidth: 20, backgroundColor: '#eee'}}>
+        {i}
+      </Text>,
+    );
+  }
+
+  const marker = (
+    <View style={{width: 20, height: 20, backgroundColor: 'gray'}} />
+  );
+  const subtitleStyle = {fontSize: 16, marginTop: 8, fontWeight: 'bold'};
+
+  return (
+    <View>
+      <Text style={subtitleStyle}>{'Nested <Text/>s:'}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        {marker}
+        <Text>{texts}</Text>
+        {marker}
+      </View>
+
+      <Text style={subtitleStyle}>{'Array of <Text/>s in <View>:'}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        {marker}
+        {texts}
+        {marker}
+      </View>
+
+      <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+        {marker}
+        <Text selectable={true}>
+          Some text.
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'baseline',
+              backgroundColor: '#eee',
+            }}>
+            {marker}
+            <Text>Text inside View.</Text>
+            {marker}
+          </View>
+        </Text>
+        {marker}
+      </View>
+    </View>
+  );
+}
+
 exports.title = 'Text';
 exports.documentationURL = 'https://reactnative.dev/docs/text';
 exports.category = 'Basic';
@@ -887,6 +949,12 @@ exports.examples = [
     title: 'Basic text',
     render: function(): React.Element<typeof TextExample> {
       return <TextExample />;
+    },
+  },
+  {
+    title: "Text `alignItems: 'baseline'` style",
+    render: function(): React.Node {
+      return <TextBaseLineLayoutExample />;
     },
   },
 ];

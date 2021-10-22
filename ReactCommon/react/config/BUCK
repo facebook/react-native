@@ -18,12 +18,8 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/config",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++14",
-        "-Wall",
-    ],
+    compiler_flags_enable_exceptions = True,
+    compiler_flags_enable_rtti = True,  # for ReactNativeConfig
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,

@@ -96,23 +96,26 @@ static void UpdateActiveTouchWithUITouch(
   activeTouch.touch.timestamp = uiTouch.timestamp;
 
   if (RCTForceTouchAvailable()) {
-    activeTouch.touch.force = uiTouch.force / uiTouch.maximumPossibleForce;
+    activeTouch.touch.force = RCTZeroIfNaN(uiTouch.force / uiTouch.maximumPossibleForce);
   }
 }
 
 static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponentView, CGPoint rootViewOriginOffset)
 {
-  UIView *componentView = uiTouch.view;
-
   ActiveTouch activeTouch = {};
 
-  if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
-    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
-        touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
-    activeTouch.touch.target = (Tag)componentView.tag;
+  // Find closest Fabric-managed touchable view
+  UIView *componentView = uiTouch.view;
+  while (componentView) {
+    if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+      activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
+          touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
+      activeTouch.touch.target = (Tag)componentView.tag;
+      activeTouch.componentView = componentView;
+      break;
+    }
+    componentView = componentView.superview;
   }
-
-  activeTouch.componentView = componentView;
 
   UpdateActiveTouchWithUITouch(activeTouch, uiTouch, rootComponentView, rootViewOriginOffset);
   return activeTouch;
@@ -405,6 +408,24 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 {
   // Same condition for `failure of` as for `be prevented by`.
   return [self canBePreventedByGestureRecognizer:otherGestureRecognizer];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  BOOL canBePrevented = [self canBePreventedByGestureRecognizer:otherGestureRecognizer];
+  if (canBePrevented) {
+    [self _cancelTouches];
+  }
+  return NO;
+}
+
+#pragma mark -
+
+- (void)_cancelTouches
+{
+  [self setEnabled:NO];
+  [self setEnabled:YES];
 }
 
 @end

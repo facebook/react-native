@@ -8,11 +8,9 @@
  * @flow
  */
 
-'use strict';
-
 const React = require('react');
 const ReactNative = require('react-native');
-import Platform from '../../../../../Libraries/Utilities/Platform';
+import Platform from 'react-native/Libraries/Utilities/Platform';
 const {DynamicColorIOS, PlatformColor, StyleSheet, Text, View} = ReactNative;
 
 function PlatformColorsExample() {
@@ -110,6 +108,9 @@ function PlatformColorsExample() {
         {label: 'systemGray4', color: PlatformColor('systemGray4')},
         {label: 'systemGray5', color: PlatformColor('systemGray5')},
         {label: 'systemGray6', color: PlatformColor('systemGray6')},
+        // Transparent Color
+        {label: 'clear', color: PlatformColor('clear')},
+        {label: 'customColor', color: PlatformColor('customColor')},
       ];
     } else if (Platform.OS === 'android') {
       colors = [
@@ -233,6 +234,20 @@ function DynamicColorsExample() {
           style={{
             ...styles.colorCell,
             backgroundColor: DynamicColorIOS({light: 'red', dark: 'blue'}),
+          }}
+        />
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.labelCell}>
+          DynamicColorIOS({'{\n'}
+          {'  '}light: 'red', dark: 'blue'{'\n'}
+          {'}'})
+        </Text>
+        <View
+          style={{
+            ...styles.colorCell,
+            borderColor: DynamicColorIOS({light: 'red', dark: 'blue'}),
+            borderWidth: 1,
           }}
         />
       </View>

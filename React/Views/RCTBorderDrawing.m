@@ -33,22 +33,23 @@ BOOL RCTBorderColorsAreEqual(RCTBorderColors borderColors)
 
 RCTCornerInsets RCTGetCornerInsets(RCTCornerRadii cornerRadii, UIEdgeInsets edgeInsets)
 {
-  return (RCTCornerInsets){{
-                               MAX(0, cornerRadii.topLeft - edgeInsets.left),
-                               MAX(0, cornerRadii.topLeft - edgeInsets.top),
-                           },
-                           {
-                               MAX(0, cornerRadii.topRight - edgeInsets.right),
-                               MAX(0, cornerRadii.topRight - edgeInsets.top),
-                           },
-                           {
-                               MAX(0, cornerRadii.bottomLeft - edgeInsets.left),
-                               MAX(0, cornerRadii.bottomLeft - edgeInsets.bottom),
-                           },
-                           {
-                               MAX(0, cornerRadii.bottomRight - edgeInsets.right),
-                               MAX(0, cornerRadii.bottomRight - edgeInsets.bottom),
-                           }};
+  return (RCTCornerInsets){
+      {
+          MAX(0, cornerRadii.topLeft - edgeInsets.left),
+          MAX(0, cornerRadii.topLeft - edgeInsets.top),
+      },
+      {
+          MAX(0, cornerRadii.topRight - edgeInsets.right),
+          MAX(0, cornerRadii.topRight - edgeInsets.top),
+      },
+      {
+          MAX(0, cornerRadii.bottomLeft - edgeInsets.left),
+          MAX(0, cornerRadii.bottomLeft - edgeInsets.bottom),
+      },
+      {
+          MAX(0, cornerRadii.bottomRight - edgeInsets.right),
+          MAX(0, cornerRadii.bottomRight - edgeInsets.bottom),
+      }};
 }
 
 static UIEdgeInsets RCTRoundInsetsToPixel(UIEdgeInsets edgeInsets)
@@ -206,11 +207,11 @@ static UIImage *RCTGetSolidBorderImage(
       (borderInsets.top + cornerInsets.topRight.height + borderInsets.bottom + cornerInsets.bottomLeft.height <=
        viewSize.height);
 
-  UIEdgeInsets edgeInsets =
-      (UIEdgeInsets){borderInsets.top + MAX(cornerInsets.topLeft.height, cornerInsets.topRight.height),
-                     borderInsets.left + MAX(cornerInsets.topLeft.width, cornerInsets.bottomLeft.width),
-                     borderInsets.bottom + MAX(cornerInsets.bottomLeft.height, cornerInsets.bottomRight.height),
-                     borderInsets.right + MAX(cornerInsets.bottomRight.width, cornerInsets.topRight.width)};
+  UIEdgeInsets edgeInsets = (UIEdgeInsets){
+      borderInsets.top + MAX(cornerInsets.topLeft.height, cornerInsets.topRight.height),
+      borderInsets.left + MAX(cornerInsets.topLeft.width, cornerInsets.bottomLeft.width),
+      borderInsets.bottom + MAX(cornerInsets.bottomLeft.height, cornerInsets.bottomRight.height),
+      borderInsets.right + MAX(cornerInsets.bottomRight.width, cornerInsets.topRight.width)};
 
   if (hasCornerRadii) {
     // Asymmetrical edgeInsets cause strange artifacting on iOS 10 and earlier.
@@ -271,8 +272,9 @@ static UIImage *RCTGetSolidBorderImage(
     if (cornerInsets.bottomLeft.width > 0 && cornerInsets.bottomLeft.height > 0) {
       CGPoint points[2];
       RCTEllipseGetIntersectionsWithLine(
-          (CGRect){{bottomLeft.x, bottomLeft.y - 2 * cornerInsets.bottomLeft.height},
-                   {2 * cornerInsets.bottomLeft.width, 2 * cornerInsets.bottomLeft.height}},
+          (CGRect){
+              {bottomLeft.x, bottomLeft.y - 2 * cornerInsets.bottomLeft.height},
+              {2 * cornerInsets.bottomLeft.width, 2 * cornerInsets.bottomLeft.height}},
           (CGPoint){0, size.height},
           bottomLeft,
           points);
@@ -285,8 +287,9 @@ static UIImage *RCTGetSolidBorderImage(
     if (cornerInsets.topRight.width > 0 && cornerInsets.topRight.height > 0) {
       CGPoint points[2];
       RCTEllipseGetIntersectionsWithLine(
-          (CGRect){{topRight.x - 2 * cornerInsets.topRight.width, topRight.y},
-                   {2 * cornerInsets.topRight.width, 2 * cornerInsets.topRight.height}},
+          (CGRect){
+              {topRight.x - 2 * cornerInsets.topRight.width, topRight.y},
+              {2 * cornerInsets.topRight.width, 2 * cornerInsets.topRight.height}},
           (CGPoint){size.width, 0},
           topRight,
           points);

@@ -9,12 +9,13 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTSurfacePresenterStub.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 @protocol RCTValueAnimatedNodeObserver;
 
 @interface RCTNativeAnimatedNodesManager : NSObject
 
-- (nonnull instancetype)initWithBridge:(nonnull RCTBridge *)bridge
+- (nonnull instancetype)initWithBridge:(RCTBridge *)bridge
                       surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 
 - (void)updateAnimations;

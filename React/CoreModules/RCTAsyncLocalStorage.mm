@@ -162,7 +162,7 @@ static NSDictionary *RCTDeleteStorageDirectory()
 
 #pragma mark - RCTAsyncLocalStorage
 
-@interface RCTAsyncLocalStorage () <NativeAsyncStorageSpec>
+@interface RCTAsyncLocalStorage () <NativeAsyncLocalStorageSpec>
 @end
 
 @implementation RCTAsyncLocalStorage {
@@ -306,7 +306,11 @@ RCT_EXPORT_MODULE()
   if (errorOut) {
     return errorOut;
   }
+  if (![entry[1] isKindOfClass:[NSString class]]) {
+    return RCTMakeAndLogError(@"Invalid value for entry - must be a string. Got entry: ", entry, nil);
+  }
   NSString *value = entry[1];
+
   NSString *filePath = [self _filePathForKey:key];
   NSError *error;
   if (value.length <= RCTInlineValueThreshold) {
@@ -455,7 +459,7 @@ RCT_EXPORT_METHOD(getAllKeys : (RCTResponseSenderBlock)callback)
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-  return std::make_shared<facebook::react::NativeAsyncStorageSpecJSI>(params);
+  return std::make_shared<facebook::react::NativeAsyncLocalStorageSpecJSI>(params);
 }
 
 @end

@@ -6,10 +6,12 @@
  */
 
 #include "ShadowNode.h"
+#include "DynamicPropsUtilities.h"
 #include "ShadowNodeFragment.h"
 
 #include <better/small_vector.h>
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
@@ -22,6 +24,30 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
       std::make_shared<SharedShadowNodeList>();
   return emptySharedShadowNodeSharedList;
+}
+
+/*
+ * On iOS, this method returns `props` if provided, `sourceShadowNode`'s props
+ * otherwise. On Android, we forward props in case `sourceShadowNode` hasn't
+ * been mounted. `Props::rawProps` are merged from `props` to a copy of
+ * `sourceShadowNode.props_` and returned. This is necessary to enable
+ * Background Executor and should be removed once reimplementation of JNI layer
+ * is finished.
+ */
+SharedProps ShadowNode::propsForClonedShadowNode(
+    ShadowNode const &sourceShadowNode,
+    Props::Shared const &props) {
+#ifdef ANDROID
+  bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
+  bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
+  if (!hasBeenMounted && sourceNodeHasRawProps && props) {
+    auto &castedProps = const_cast<Props &>(*props);
+    castedProps.rawProps = mergeDynamicProps(
+        sourceShadowNode.getProps()->rawProps, props->rawProps);
+    return props;
+  }
+#endif
+  return props ? props : sourceShadowNode.getProps();
 }
 
 bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
@@ -46,8 +72,8 @@ ShadowNode::ShadowNode(
       orderIndex_(0),
       family_(family),
       traits_(traits) {
-  assert(props_);
-  assert(children_);
+  react_native_assert(props_);
+  react_native_assert(children_);
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
@@ -60,13 +86,13 @@ ShadowNode::ShadowNode(
 }
 
 ShadowNode::ShadowNode(
-    const ShadowNode &sourceShadowNode,
-    const ShadowNodeFragment &fragment)
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
     :
 #if RN_DEBUG_STRING_CONVERTIBLE
       revision_(sourceShadowNode.revision_ + 1),
 #endif
-      props_(fragment.props ? fragment.props : sourceShadowNode.props_),
+      props_(propsForClonedShadowNode(sourceShadowNode, fragment.props)),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       state_(
@@ -76,8 +102,8 @@ ShadowNode::ShadowNode(
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
 
-  assert(props_);
-  assert(children_);
+  react_native_assert(props_);
+  react_native_assert(children_);
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
@@ -88,7 +114,8 @@ ShadowNode::ShadowNode(
   }
 }
 
-UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
+ShadowNode::Unshared ShadowNode::clone(
+    const ShadowNodeFragment &fragment) const {
   return family_->componentDescriptor_.cloneShadowNode(*this, fragment);
 }
 
@@ -183,7 +210,7 @@ void ShadowNode::replaceChild(
       *std::const_pointer_cast<ShadowNode::ListOfShared>(children_);
   auto size = children.size();
 
-  if (suggestedIndex != -1 && suggestedIndex < size) {
+  if (suggestedIndex != -1 && static_cast<size_t>(suggestedIndex) < size) {
     // If provided `suggestedIndex` is accurate,
     // replacing in place using the index.
     if (children.at(suggestedIndex).get() == &oldChild) {
@@ -192,14 +219,14 @@ void ShadowNode::replaceChild(
     }
   }
 
-  for (auto index = 0; index < size; index++) {
+  for (size_t index = 0; index < size; index++) {
     if (children.at(index).get() == &oldChild) {
       children[index] = newChild;
       return;
     }
   }
 
-  assert(false && "Child to replace was not found.");
+  react_native_assert(false && "Child to replace was not found.");
 }
 
 void ShadowNode::cloneChildrenIfShared() {
@@ -214,6 +241,7 @@ void ShadowNode::cloneChildrenIfShared() {
 void ShadowNode::setMounted(bool mounted) const {
   if (mounted) {
     family_->setMostRecentState(getState());
+    hasBeenMounted_ = mounted;
   }
 
   family_->eventEmitter_->setEnabled(mounted);
@@ -238,7 +266,7 @@ ShadowNode::Unshared ShadowNode::cloneTree(
 
   auto newShadowNode = callback(*oldShadowNode);
 
-  assert(
+  react_native_assert(
       newShadowNode &&
       "`callback` returned `nullptr` which is not allowed value.");
 
@@ -249,7 +277,8 @@ ShadowNode::Unshared ShadowNode::cloneTree(
     auto childIndex = it->second;
 
     auto children = parentNode.getChildren();
-    assert(ShadowNode::sameFamily(*children.at(childIndex), *childNode));
+    react_native_assert(
+        ShadowNode::sameFamily(*children.at(childIndex), *childNode));
     children[childIndex] = childNode;
 
     childNode = parentNode.clone({

@@ -20,10 +20,11 @@ export type GetSegmentFunction = typeof __getSegment;
 
 function __fetchSegment(
   segmentId: number,
-  options: {|
-    +otaBuildNumber: ?string,
-    +requestedModuleName?: ?string,
-  |},
+  options: $ReadOnly<{
+    otaBuildNumber: ?string,
+    requestedModuleName: string,
+    segmentHash: string,
+  }>,
   callback: (?Error) => void,
 ) {
   const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
@@ -53,10 +54,11 @@ global.__fetchSegment = __fetchSegment;
 
 function __getSegment(
   segmentId: number,
-  options: {|
-    +otaBuildNumber: ?string,
-    +requestedModuleName?: ?string,
-  |},
+  options: $ReadOnly<{
+    otaBuildNumber: ?string,
+    requestedModuleName: string,
+    segmentHash: string,
+  }>,
   callback: (?Error, ?string) => void,
 ) {
   const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')

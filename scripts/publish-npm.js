@@ -18,21 +18,21 @@
  *
  * To cut a branch (and release RC):
  * - Developer: `git checkout -b 0.XY-stable`
- * - Developer: `./scripts/bump-oss-version.js v0.XY.0-rc.0`
+ * - Developer: `./scripts/bump-oss-version.js -v v0.XY.0-rc.0`
  * - CI: test and deploy to npm (run this script) with version `0.XY.0-rc.0`
  *   with tag "next"
  *
  * To update RC release:
  * - Developer: `git checkout 0.XY-stable`
  * - Developer: cherry-pick whatever changes needed
- * - Developer: `./scripts/bump-oss-version.js v0.XY.0-rc.1`
+ * - Developer: `./scripts/bump-oss-version.js -v v0.XY.0-rc.1`
  * - CI: test and deploy to npm (run this script) with version `0.XY.0-rc.1`
  *   with tag "next"
  *
  * To publish a release:
  * - Developer: `git checkout 0.XY-stable`
  * - Developer: cherry-pick whatever changes needed
- * - Developer: `./scripts/bump-oss-version.js v0.XY.0`
+ * - Developer: `./scripts/bump-oss-version.js -v v0.XY.0`
  * - CI: test and deploy to npm (run this script) with version `0.XY.0`
  *   and no tag ("latest" is implied by npm)
  *
@@ -53,18 +53,26 @@
 require('shelljs/global');
 const yargs = require('yargs');
 
-let argv = yargs.option('n', {
-  alias: 'nightly',
-  type: 'boolean',
-  default: false,
-}).argv;
+let argv = yargs
+  .option('n', {
+    alias: 'nightly',
+    type: 'boolean',
+    default: false,
+  })
+  .option('d', {
+    alias: 'dry-run',
+    type: 'boolean',
+    default: false,
+  }).argv;
 
 const nightlyBuild = argv.nightly;
+const dryRunBuild = argv.dryRun;
+const buildFromMain = nightlyBuild || dryRunBuild;
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
 
 let branchVersion = 0;
-if (nightlyBuild) {
+if (buildFromMain) {
   branchVersion = 0;
 } else {
   if (!buildTag) {
@@ -83,6 +91,8 @@ if (nightlyBuild) {
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
 const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
+
+// Note: We rely on tagsWithVersion to be alphabetically sorted
 // [34c034298dc9cad5a4553964a5a324450fda0385, refs/heads/0.33-stable, refs/tags/latest, refs/tags/v0.33.1, refs/tags/v0.34.1-rc]
 const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
   silent: true,
@@ -95,23 +105,37 @@ const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
   )
   // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2']
   .filter(version => version.indexOf(branchVersion) !== -1)
-  // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2']
-  .map(version => version.slice('refs/tags/'.length));
+  // ['0.33.0', '0.33.0-rc', '0.33.0-rc1', '0.33.0-rc2']
+  .map(version => version.slice('refs/tags/v'.length));
 
-if (!nightlyBuild && tagsWithVersion.length === 0) {
+if (!buildFromMain && tagsWithVersion.length === 0) {
   echo(
     'Error: Cannot find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit',
   );
   exit(1);
 }
+
 let releaseVersion;
 
-if (nightlyBuild) {
-  releaseVersion = `0.0.0-${currentCommit.slice(0, 9)}`;
+if (buildFromMain) {
+  releaseVersion = '0.0.0';
 
+  if (nightlyBuild) {
+    releaseVersion += '-';
+    // 2021-09-28T05:38:40.669Z -> 20210928-0538
+    releaseVersion += new Date()
+      .toISOString()
+      .slice(0, -8)
+      .replace(/[-:]/g, '')
+      .replace(/[T]/g, '-');
+  }
+
+  releaseVersion += `-${currentCommit.slice(0, 9)}`;
   // Bump version number in various files (package.json, gradle.properties etc)
   if (
-    exec(`node scripts/bump-oss-version.js --nightly ${releaseVersion}`).code
+    exec(
+      `node scripts/bump-oss-version.js --nightly --to-version ${releaseVersion}`,
+    ).code
   ) {
     echo('Failed to bump version number');
     exit(1);
@@ -119,11 +143,11 @@ if (nightlyBuild) {
 } else if (tagsWithVersion[0].indexOf('-rc') === -1) {
   // if first tag on this commit is non -rc then we are making a stable release
   // '0.33.0'
-  releaseVersion = tagsWithVersion[0].slice(1);
+  releaseVersion = tagsWithVersion[0];
 } else {
-  // otherwise pick last -rc tag alphabetically
-  // 0.33.0-rc2
-  releaseVersion = tagsWithVersion[tagsWithVersion.length - 1].slice(1);
+  // otherwise pick last -rc tag, indicates latest rc version due to alpha-sort
+  // '0.33.0-rc2'
+  releaseVersion = tagsWithVersion[tagsWithVersion.length - 1];
 }
 
 // -------- Generating Android Artifacts with JavaDoc
@@ -137,7 +161,7 @@ exec('git checkout ReactAndroid/gradle.properties');
 
 echo('Generated artifacts for Maven');
 
-let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map(suffix => {
+let artifacts = ['.aar', '.pom'].map(suffix => {
   return `react-native-${releaseVersion}${suffix}`;
 });
 
@@ -152,6 +176,11 @@ artifacts.forEach(name => {
     exit(1);
   }
 });
+
+if (dryRunBuild) {
+  echo('Skipping `npm publish` because --dry-run is set.');
+  exit(0);
+}
 
 // if version contains -rc, tag as prerelease
 const tagFlag = nightlyBuild
@@ -170,5 +199,4 @@ if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
   echo(`Published to npm ${releaseVersion}`);
   exit(0);
 }
-
 /*eslint-enable no-undef */

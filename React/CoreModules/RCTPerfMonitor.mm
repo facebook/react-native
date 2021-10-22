@@ -20,6 +20,7 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTFPSGraph.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTInvalidating.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTPerformanceLogger.h>
@@ -84,8 +85,13 @@ static vm_size_t RCTGetResidentMemorySize(void)
   return memoryUsageInByte;
 }
 
-@interface RCTPerfMonitor
-    : NSObject <RCTBridgeModule, RCTTurboModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
+@interface RCTPerfMonitor : NSObject <
+                                RCTBridgeModule,
+                                RCTTurboModule,
+                                RCTInitializing,
+                                RCTInvalidating,
+                                UITableViewDataSource,
+                                UITableViewDelegate>
 
 #if __has_include(<React/RCTDevMenu.h>)
 @property (nonatomic, strong, readonly) RCTDevMenuItem *devMenuItem;
@@ -136,6 +142,7 @@ static vm_size_t RCTGetResidentMemorySize(void)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
 
@@ -149,12 +156,10 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)initialize
 {
-  _bridge = bridge;
-
 #if __has_include(<React/RCTDevMenu.h>)
-  [_bridge.devMenu addItem:self.devMenuItem];
+  [(RCTDevMenu *)[_moduleRegistry moduleForName:"DevMenu"] addItem:self.devMenuItem];
 #endif
 }
 
@@ -168,7 +173,7 @@ RCT_EXPORT_MODULE()
 {
   if (!_devMenuItem) {
     __weak __typeof__(self) weakSelf = self;
-    __weak RCTDevSettings *devSettings = self.bridge.devSettings;
+    __weak RCTDevSettings *devSettings = [self->_moduleRegistry moduleForName:"DevSettings"];
     if (devSettings.isPerfMonitorShown) {
       [weakSelf show];
     }
@@ -557,6 +562,12 @@ RCT_EXPORT_MODULE()
 - (CGFloat)tableView:(__unused UITableView *)tableView heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
 {
   return 20;
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
 }
 
 @end

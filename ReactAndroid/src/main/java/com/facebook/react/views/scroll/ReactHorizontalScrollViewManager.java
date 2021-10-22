@@ -102,9 +102,19 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     view.setSnapInterval((int) (snapToInterval * screenDisplayMetrics.density));
   }
 
+  @ReactProp(name = "snapToAlignment")
+  public void setSnapToAlignment(ReactHorizontalScrollView view, String alignment) {
+    view.setSnapToAlignment(ReactScrollViewHelper.parseSnapToAlignment(alignment));
+  }
+
   @ReactProp(name = "snapToOffsets")
   public void setSnapToOffsets(
       ReactHorizontalScrollView view, @Nullable ReadableArray snapToOffsets) {
+    if (snapToOffsets == null) {
+      view.setSnapOffsets(null);
+      return;
+    }
+
     DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     List<Integer> offsets = new ArrayList<Integer>();
     for (int i = 0; i < snapToOffsets.size(); i++) {
@@ -193,7 +203,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
-      scrollView.reactScrollTo(data.mDestX, data.mDestY);
+      scrollView.scrollTo(data.mDestX, data.mDestY);
     }
   }
 
@@ -206,7 +216,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(right, scrollView.getScrollY());
     } else {
-      scrollView.reactScrollTo(right, scrollView.getScrollY());
+      scrollView.scrollTo(right, scrollView.getScrollY());
     }
   }
 
@@ -306,9 +316,9 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
     if (value != null) {
       double x = value.hasKey("x") ? value.getDouble("x") : 0;
       double y = value.hasKey("y") ? value.getDouble("y") : 0;
-      view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+      view.scrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
     } else {
-      view.reactScrollTo(0, 0);
+      view.scrollTo(0, 0);
     }
   }
 }

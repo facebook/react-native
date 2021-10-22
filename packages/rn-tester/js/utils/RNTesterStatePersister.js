@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 const React = require('react');
 import {AsyncStorage} from 'react-native';
 

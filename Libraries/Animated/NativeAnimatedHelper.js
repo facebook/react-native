@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import NativeAnimatedNonTurboModule from './NativeAnimatedModule';
 import NativeAnimatedTurboModule from './NativeAnimatedTurboModule';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
@@ -26,7 +24,7 @@ import invariant from 'invariant';
 
 // TODO T69437152 @petetheheat - Delete this fork when Fabric ships to 100%.
 const NativeAnimatedModule =
-  Platform.OS === 'ios' && global.RN$Bridgeless
+  Platform.OS === 'ios' && global.RN$Bridgeless === true
     ? NativeAnimatedTurboModule
     : NativeAnimatedNonTurboModule;
 
@@ -37,7 +35,6 @@ let nativeEventEmitter;
 
 let waitingForQueuedOperations = new Set();
 let queueOperations = false;
-let queueConnections = false;
 let queue: Array<() => void> = [];
 
 /**
@@ -45,24 +42,20 @@ let queue: Array<() => void> = [];
  * the native module methods
  */
 const API = {
-  enableQueue: function(): void {
-    queueConnections = true;
-  },
   getValue: function(
     tag: number,
     saveValueCallback: (value: number) => void,
   ): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
-    if (NativeAnimatedModule.getValue) {
+    API.queueOperation(() => {
       NativeAnimatedModule.getValue(tag, saveValueCallback);
-    }
+    });
   },
-  setWaitingForIdentifier: function(id: number): void {
+  setWaitingForIdentifier: function(id: string): void {
     waitingForQueuedOperations.add(id);
     queueOperations = true;
-    queueConnections = true;
   },
-  unsetWaitingForIdentifier: function(id: number): void {
+  unsetWaitingForIdentifier: function(id: string): void {
     waitingForQueuedOperations.delete(id);
 
     if (waitingForQueuedOperations.size === 0) {
@@ -72,25 +65,16 @@ const API = {
   },
   disableQueue: function(): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
-    queueConnections = false;
-    if (!queueOperations) {
-      if (Platform.OS === 'android') {
-        NativeAnimatedModule.startOperationBatch();
-      }
-      for (let q = 0, l = queue.length; q < l; q++) {
-        queue[q]();
-      }
-      queue.length = 0;
-      if (Platform.OS === 'android') {
-        NativeAnimatedModule.finishOperationBatch();
-      }
+
+    if (Platform.OS === 'android') {
+      NativeAnimatedModule.startOperationBatch();
     }
-  },
-  queueConnection: (fn: () => void): void => {
-    if (queueConnections) {
-      queue.push(fn);
-    } else {
-      fn();
+    for (let q = 0, l = queue.length; q < l; q++) {
+      queue[q]();
+    }
+    queue.length = 0;
+    if (Platform.OS === 'android') {
+      NativeAnimatedModule.finishOperationBatch();
     }
   },
   queueOperation: (fn: () => void): void => {
@@ -120,7 +104,7 @@ const API = {
   },
   connectAnimatedNodes: function(parentTag: number, childTag: number): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
-    API.queueConnection(() =>
+    API.queueOperation(() =>
       NativeAnimatedModule.connectAnimatedNodes(parentTag, childTag),
     );
   },
@@ -371,7 +355,7 @@ function shouldUseNativeDriver(
           'animated module is missing. Falling back to JS-based animation. To ' +
           'resolve this, add `RCTAnimation` module to this app, or remove ' +
           '`useNativeDriver`. ' +
-          'Make sure to run `pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md',
+          'Make sure to run `bundle exec pod install` first. Read more about autolinking: https://github.com/react-native-community/cli/blob/master/docs/autolinking.md',
       );
       _warnedMissingNativeAnimated = true;
     }
@@ -409,10 +393,15 @@ module.exports = {
   assertNativeAnimatedModule,
   shouldUseNativeDriver,
   transformDataType,
-  // $FlowExpectedError - unsafe getter lint suppresion
+  // $FlowExpectedError[unsafe-getters-setters] - unsafe getter lint suppresion
+  // $FlowExpectedError[missing-type-arg] - unsafe getter lint suppresion
   get nativeEventEmitter(): NativeEventEmitter {
     if (!nativeEventEmitter) {
-      nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);
+      nativeEventEmitter = new NativeEventEmitter(
+        // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+        // If you want to use the native module on other platforms, please remove this condition and test its behavior
+        Platform.OS !== 'ios' ? null : NativeAnimatedModule,
+      );
     }
     return nativeEventEmitter;
   },

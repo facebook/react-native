@@ -8,15 +8,13 @@
  * @flow
  */
 
-'use strict';
-
 import {dispatchCommand} from '../../Libraries/Renderer/shims/ReactNative';
 
 type Options<T = string> = $ReadOnly<{|
   supportedCommands: $ReadOnlyArray<T>,
 |}>;
 
-function codegenNativeCommands<T: {...}>(options: Options<$Keys<T>>): T {
+function codegenNativeCommands<T: interface {}>(options: Options<$Keys<T>>): T {
   const commandObj = {};
 
   options.supportedCommands.forEach(command => {

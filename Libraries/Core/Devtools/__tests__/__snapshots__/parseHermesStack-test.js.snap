@@ -107,3 +107,31 @@ Object {
   "message": "TypeError: undefined is not a function",
 }
 `;
+
+exports[`parseHermesStack tolerate empty filename 1`] = `
+Object {
+  "entries": Array [
+    Object {
+      "functionName": "global",
+      "location": Object {
+        "column1Based": 9,
+        "line1Based": 1,
+        "sourceUrl": "unknown",
+        "type": "SOURCE",
+      },
+      "type": "FRAME",
+    },
+    Object {
+      "functionName": "foo$bar",
+      "location": Object {
+        "column1Based": 1234,
+        "line1Based": 10,
+        "sourceUrl": "",
+        "type": "SOURCE",
+      },
+      "type": "FRAME",
+    },
+  ],
+  "message": "TypeError: undefined is not a function",
+}
+`;

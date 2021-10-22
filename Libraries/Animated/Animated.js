@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import Platform from '../Utilities/Platform';
 import typeof AnimatedFlatList from './components/AnimatedFlatList';
 import typeof AnimatedImage from './components/AnimatedImage';

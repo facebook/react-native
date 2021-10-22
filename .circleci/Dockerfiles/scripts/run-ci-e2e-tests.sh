@@ -109,7 +109,7 @@ function e2e_suite() {
 
         # create virtual device
         if ! android list avd | grep "$AVD_UUID" > /dev/null; then
-            echo no | android create avd -n "$AVD_UUID" -f -t android-19 --abi default/armeabi-v7a
+            echo no | android create avd -n "$AVD_UUID" -f -t android-21 --abi default/armeabi-v7a
         fi
 
         # newline at end of adb devices call and first line is headers

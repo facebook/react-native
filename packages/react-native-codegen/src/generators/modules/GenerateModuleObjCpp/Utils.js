@@ -12,9 +12,6 @@
 
 import type {StructProperty} from './StructCollector';
 
-function capitalize(string: string): string {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
 function getSafePropertyName(property: StructProperty): string {
   if (property.name === 'id') {
     return `${property.name}_`;
@@ -23,14 +20,13 @@ function getSafePropertyName(property: StructProperty): string {
 }
 
 function getNamespacedStructName(
-  moduleName: string,
+  hasteModuleName: string,
   structName: string,
 ): string {
-  return `JS::Native${moduleName}::${structName}`;
+  return `JS::${hasteModuleName}::${structName}`;
 }
 
 module.exports = {
-  capitalize,
   getSafePropertyName,
   getNamespacedStructName,
 };

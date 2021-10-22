@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
@@ -70,9 +71,11 @@ public class JSTouchDispatcher {
       // this gesture
       mChildIsHandlingNativeGesture = false;
       mGestureStartTime = ev.getEventTime();
+
       mTargetTag = findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              Event.getSurfaceIdForView(mRootViewGroup),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -97,6 +100,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              Event.getSurfaceIdForView(mRootViewGroup),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -111,6 +115,7 @@ public class JSTouchDispatcher {
       findTargetTagAndSetCoordinates(ev);
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              Event.getSurfaceIdForView(mRootViewGroup),
               mTargetTag,
               TouchEventType.MOVE,
               ev,
@@ -122,6 +127,7 @@ public class JSTouchDispatcher {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              Event.getSurfaceIdForView(mRootViewGroup),
               mTargetTag,
               TouchEventType.START,
               ev,
@@ -130,9 +136,10 @@ public class JSTouchDispatcher {
               mTargetCoordinates[1],
               mTouchEventCoalescingKeyHelper));
     } else if (action == MotionEvent.ACTION_POINTER_UP) {
-      // Exactly onw of the pointers goes up
+      // Exactly one of the pointers goes up
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
+              Event.getSurfaceIdForView(mRootViewGroup),
               mTargetTag,
               TouchEventType.END,
               ev,
@@ -181,6 +188,7 @@ public class JSTouchDispatcher {
     Assertions.assertNotNull(eventDispatcher)
         .dispatchEvent(
             TouchEvent.obtain(
+                Event.getSurfaceIdForView(mRootViewGroup),
                 mTargetTag,
                 TouchEventType.CANCEL,
                 androidEvent,

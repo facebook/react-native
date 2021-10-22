@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.view;
 
-import static android.os.Build.VERSION_CODES.KITKAT;
+import static android.os.Build.VERSION_CODES.LOLLIPOP;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -24,7 +24,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -90,6 +89,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private @Nullable Path mOuterClipPathForBorderRadius;
   private @Nullable Path mPathForBorderRadiusOutline;
   private @Nullable Path mPathForBorder;
+  private Path mPathForSingleBorder = new Path();
   private @Nullable Path mCenterDrawPath;
   private @Nullable RectF mInnerClipTempRectForBorderRadius;
   private @Nullable RectF mOuterClipTempRectForBorderRadius;
@@ -184,10 +184,6 @@ public class ReactViewBackgroundDrawable extends Drawable {
   /* Android's elevation implementation requires this to be implemented to know where to draw the shadow. */
   @Override
   public void getOutline(Outline outline) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      super.getOutline(outline);
-      return;
-    }
     if ((!YogaConstants.isUndefined(mBorderRadius) && mBorderRadius > 0)
         || mBorderCornerRadii != null) {
       updatePath();
@@ -545,60 +541,58 @@ public class ReactViewBackgroundDrawable extends Drawable {
     float bottomRightRadius =
         getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_RIGHT);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-      float topStartRadius = getBorderRadius(BorderRadiusLocation.TOP_START);
-      float topEndRadius = getBorderRadius(BorderRadiusLocation.TOP_END);
-      float bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START);
-      float bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END);
+    final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+    float topStartRadius = getBorderRadius(BorderRadiusLocation.TOP_START);
+    float topEndRadius = getBorderRadius(BorderRadiusLocation.TOP_END);
+    float bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START);
+    float bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END);
 
-      if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
-        if (YogaConstants.isUndefined(topStartRadius)) {
-          topStartRadius = topLeftRadius;
-        }
+    if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
+      if (YogaConstants.isUndefined(topStartRadius)) {
+        topStartRadius = topLeftRadius;
+      }
 
-        if (YogaConstants.isUndefined(topEndRadius)) {
-          topEndRadius = topRightRadius;
-        }
+      if (YogaConstants.isUndefined(topEndRadius)) {
+        topEndRadius = topRightRadius;
+      }
 
-        if (YogaConstants.isUndefined(bottomStartRadius)) {
-          bottomStartRadius = bottomLeftRadius;
-        }
+      if (YogaConstants.isUndefined(bottomStartRadius)) {
+        bottomStartRadius = bottomLeftRadius;
+      }
 
-        if (YogaConstants.isUndefined(bottomEndRadius)) {
-          bottomEndRadius = bottomRightRadius;
-        }
+      if (YogaConstants.isUndefined(bottomEndRadius)) {
+        bottomEndRadius = bottomRightRadius;
+      }
 
-        final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
-        final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
-        final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
-        final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
+      final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
+      final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
+      final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
+      final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
 
+      topLeftRadius = directionAwareTopLeftRadius;
+      topRightRadius = directionAwareTopRightRadius;
+      bottomLeftRadius = directionAwareBottomLeftRadius;
+      bottomRightRadius = directionAwareBottomRightRadius;
+    } else {
+      final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
+      final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
+      final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
+      final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
+
+      if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
         topLeftRadius = directionAwareTopLeftRadius;
+      }
+
+      if (!YogaConstants.isUndefined(directionAwareTopRightRadius)) {
         topRightRadius = directionAwareTopRightRadius;
+      }
+
+      if (!YogaConstants.isUndefined(directionAwareBottomLeftRadius)) {
         bottomLeftRadius = directionAwareBottomLeftRadius;
+      }
+
+      if (!YogaConstants.isUndefined(directionAwareBottomRightRadius)) {
         bottomRightRadius = directionAwareBottomRightRadius;
-      } else {
-        final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
-        final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
-        final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
-        final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
-
-        if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
-          topLeftRadius = directionAwareTopLeftRadius;
-        }
-
-        if (!YogaConstants.isUndefined(directionAwareTopRightRadius)) {
-          topRightRadius = directionAwareTopRightRadius;
-        }
-
-        if (!YogaConstants.isUndefined(directionAwareBottomLeftRadius)) {
-          bottomLeftRadius = directionAwareBottomLeftRadius;
-        }
-
-        if (!YogaConstants.isUndefined(directionAwareBottomRightRadius)) {
-          bottomRightRadius = directionAwareBottomRightRadius;
-        }
       }
     }
 
@@ -975,6 +969,14 @@ public class ReactViewBackgroundDrawable extends Drawable {
     mPaint.setPathEffect(mPathEffectForBorderStyle);
   }
 
+  private void updatePathEffect(int borderWidth) {
+    PathEffect pathEffectForBorderStyle = null;
+    if (mBorderStyle != null) {
+      pathEffectForBorderStyle = BorderStyle.getPathEffect(mBorderStyle, borderWidth);
+    }
+    mPaint.setPathEffect(pathEffectForBorderStyle);
+  }
+
   /** For rounded borders we use default "borderWidth" property. */
   public float getFullBorderWidth() {
     return (mBorderWidth != null && !YogaConstants.isUndefined(mBorderWidth.getRaw(Spacing.ALL)))
@@ -1038,43 +1040,41 @@ public class ReactViewBackgroundDrawable extends Drawable {
       int colorRight = getBorderColor(Spacing.RIGHT);
       int colorBottom = getBorderColor(Spacing.BOTTOM);
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-        int colorStart = getBorderColor(Spacing.START);
-        int colorEnd = getBorderColor(Spacing.END);
+      final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+      int colorStart = getBorderColor(Spacing.START);
+      int colorEnd = getBorderColor(Spacing.END);
 
-        if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
-          if (!isBorderColorDefined(Spacing.START)) {
-            colorStart = colorLeft;
-          }
+      if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
+        if (!isBorderColorDefined(Spacing.START)) {
+          colorStart = colorLeft;
+        }
 
-          if (!isBorderColorDefined(Spacing.END)) {
-            colorEnd = colorRight;
-          }
+        if (!isBorderColorDefined(Spacing.END)) {
+          colorEnd = colorRight;
+        }
 
-          final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
-          final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
+        final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
+        final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
 
+        colorLeft = directionAwareColorLeft;
+        colorRight = directionAwareColorRight;
+      } else {
+        final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
+        final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
+
+        final boolean isColorStartDefined = isBorderColorDefined(Spacing.START);
+        final boolean isColorEndDefined = isBorderColorDefined(Spacing.END);
+        final boolean isDirectionAwareColorLeftDefined =
+            isRTL ? isColorEndDefined : isColorStartDefined;
+        final boolean isDirectionAwareColorRightDefined =
+            isRTL ? isColorStartDefined : isColorEndDefined;
+
+        if (isDirectionAwareColorLeftDefined) {
           colorLeft = directionAwareColorLeft;
+        }
+
+        if (isDirectionAwareColorRightDefined) {
           colorRight = directionAwareColorRight;
-        } else {
-          final int directionAwareColorLeft = isRTL ? colorEnd : colorStart;
-          final int directionAwareColorRight = isRTL ? colorStart : colorEnd;
-
-          final boolean isColorStartDefined = isBorderColorDefined(Spacing.START);
-          final boolean isColorEndDefined = isBorderColorDefined(Spacing.END);
-          final boolean isDirectionAwareColorLeftDefined =
-              isRTL ? isColorEndDefined : isColorStartDefined;
-          final boolean isDirectionAwareColorRightDefined =
-              isRTL ? isColorStartDefined : isColorEndDefined;
-
-          if (isDirectionAwareColorLeftDefined) {
-            colorLeft = directionAwareColorLeft;
-          }
-
-          if (isDirectionAwareColorRightDefined) {
-            colorRight = directionAwareColorRight;
-          }
         }
       }
 
@@ -1092,6 +1092,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
               colorTop,
               colorRight,
               colorBottom);
+
       if (fastBorderColor != 0) {
         if (Color.alpha(fastBorderColor) != 0) {
           // Border color is not transparent.
@@ -1099,21 +1100,42 @@ public class ReactViewBackgroundDrawable extends Drawable {
           int bottom = bounds.bottom;
 
           mPaint.setColor(fastBorderColor);
+          mPaint.setStyle(Paint.Style.STROKE);
           if (borderLeft > 0) {
-            int leftInset = left + borderLeft;
-            canvas.drawRect(left, top, leftInset, bottom - borderBottom, mPaint);
+            mPathForSingleBorder.reset();
+            int width = Math.round(borderWidth.left);
+            updatePathEffect(width);
+            mPaint.setStrokeWidth(width);
+            mPathForSingleBorder.moveTo(left + width / 2, top);
+            mPathForSingleBorder.lineTo(left + width / 2, bottom);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderTop > 0) {
-            int topInset = top + borderTop;
-            canvas.drawRect(left + borderLeft, top, right, topInset, mPaint);
+            mPathForSingleBorder.reset();
+            int width = Math.round(borderWidth.top);
+            updatePathEffect(width);
+            mPaint.setStrokeWidth(width);
+            mPathForSingleBorder.moveTo(left, top + width / 2);
+            mPathForSingleBorder.lineTo(right, top + width / 2);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderRight > 0) {
-            int rightInset = right - borderRight;
-            canvas.drawRect(rightInset, top + borderTop, right, bottom, mPaint);
+            mPathForSingleBorder.reset();
+            int width = Math.round(borderWidth.right);
+            updatePathEffect(width);
+            mPaint.setStrokeWidth(width);
+            mPathForSingleBorder.moveTo(right - width / 2, top);
+            mPathForSingleBorder.lineTo(right - width / 2, bottom);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
           if (borderBottom > 0) {
-            int bottomInset = bottom - borderBottom;
-            canvas.drawRect(left, bottomInset, right - borderRight, bottom, mPaint);
+            mPathForSingleBorder.reset();
+            int width = Math.round(borderWidth.bottom);
+            updatePathEffect(width);
+            mPaint.setStrokeWidth(width);
+            mPathForSingleBorder.moveTo(left, bottom - width / 2);
+            mPathForSingleBorder.lineTo(right, bottom - width / 2);
+            canvas.drawPath(mPathForSingleBorder, mPaint);
           }
         }
       } else {
@@ -1244,7 +1266,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     return ReactViewBackgroundDrawable.colorFromAlphaAndRGBComponents(alpha, rgb);
   }
 
-  @TargetApi(KITKAT)
+  @TargetApi(LOLLIPOP)
   public RectF getDirectionAwareBorderInsets() {
     final float borderWidth = getBorderWidthOrDefaultTo(0, Spacing.ALL);
     final float borderTopWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);

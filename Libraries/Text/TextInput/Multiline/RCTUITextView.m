@@ -165,8 +165,6 @@ static UIColor *defaultPlaceholderColor()
   [self textDidChange];
 }
 
-#pragma mark - Overrides
-
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
 {
   if (!notifyDelegate) {
@@ -184,12 +182,14 @@ static UIColor *defaultPlaceholderColor()
   _textWasPasted = YES;
 }
 
+// Turn off scroll animation to fix flaky scrolling.
+// This is only necessary for iOS <= 13.
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED < 140000
 - (void)setContentOffset:(CGPoint)contentOffset animated:(__unused BOOL)animated
 {
-  // Turning off scroll animation.
-  // This fixes the problem also known as "flaky scrolling".
   [super setContentOffset:contentOffset animated:NO];
 }
+#endif
 
 - (void)selectAll:(id)sender
 {
@@ -282,6 +282,7 @@ static UIColor *defaultPlaceholderColor()
 - (void)_updatePlaceholder
 {
   _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self _placeholderTextAttributes]];
+  [self _invalidatePlaceholderVisibility];
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
@@ -295,6 +296,17 @@ static UIColor *defaultPlaceholderColor()
   }
 
   return textAttributes;
+}
+
+#pragma mark - Caret Manipulation
+
+- (CGRect)caretRectForPosition:(UITextPosition *)position
+{
+  if (_caretHidden) {
+    return CGRectZero;
+  }
+
+  return [super caretRectForPosition:position];
 }
 
 #pragma mark - Utility Methods

@@ -36,6 +36,7 @@ class ScrollViewShadowNode final : public ConcreteViewShadowNode<
 
  private:
   void updateStateIfNeeded();
+  void updateScrollContentOffsetIfNeeded();
 };
 
 } // namespace react

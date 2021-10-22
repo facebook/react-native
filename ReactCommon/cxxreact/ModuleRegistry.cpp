@@ -48,6 +48,11 @@ void ModuleRegistry::updateModuleNamesFromIndex(size_t index) {
 void ModuleRegistry::registerModules(
     std::vector<std::unique_ptr<NativeModule>> modules) {
   SystraceSection s_("ModuleRegistry::registerModules");
+  // Noop if there are no NativeModules to add
+  if (modules.empty()) {
+    return;
+  }
+
   if (modules_.empty() && unknownModules_.empty()) {
     modules_ = std::move(modules);
   } else {

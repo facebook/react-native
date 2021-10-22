@@ -15,19 +15,19 @@ import type {Struct} from '../StructCollector';
 const {serializeConstantsStruct} = require('./serializeConstantsStruct');
 const {serializeRegularStruct} = require('./serializeRegularStruct');
 
-export type StructSerilizationOutput = $ReadOnly<{|
+export type StructSerilizationOutput = $ReadOnly<{
   methods: string,
   declaration: string,
-|}>;
+}>;
 
 function serializeStruct(
-  moduleName: string,
+  hasteModuleName: string,
   struct: Struct,
 ): StructSerilizationOutput {
   if (struct.context === 'REGULAR') {
-    return serializeRegularStruct(moduleName, struct);
+    return serializeRegularStruct(hasteModuleName, struct);
   }
-  return serializeConstantsStruct(moduleName, struct);
+  return serializeConstantsStruct(hasteModuleName, struct);
 }
 
 module.exports = {

@@ -23,8 +23,7 @@ project.xcworkspace
 
 # Gradle
 /build/
-/packages/react-native-codegen/android/build/
-/packages/react-native-codegen/android/gradlePlugin-build/gradlePlugin/build
+/packages/react-native-gradle-plugin/build/
 /packages/rn-tester/android/app/.cxx/
 /packages/rn-tester/android/app/build/
 /packages/rn-tester/android/app/gradle/
@@ -34,6 +33,8 @@ project.xcworkspace
 /ReactAndroid/gradle/
 /ReactAndroid/gradlew
 /ReactAndroid/gradlew.bat
+/template/android/app/build/
+/template/android/build/
 
 # Buck
 .buckd
@@ -85,10 +86,14 @@ package-lock.json
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
-/Libraries/FBReactNativeSpec/**/*.xcodeproj
 /Libraries/RCTRequired/**/*.xcodeproj
 /React/CoreModules/**/*.xcodeproj
+/React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj
+
+# Ruby Gems (Bundler)
+/vendor
+/template/vendor
 
 # CocoaPods
 /template/ios/Pods/
@@ -100,10 +105,10 @@ package-lock.json
 !/packages/rn-tester/Pods/__offline_mirrors__
 
 # react-native-codegen
+/React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
-/ReactCommon/fabric/components/rncore/
-/schema-native-modules.json
-/schema-rncore.json
+/ReactCommon/react/renderer/components/rncore/
+/packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
 
 # Visual studio
 .vscode

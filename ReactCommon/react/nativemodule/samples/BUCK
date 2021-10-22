@@ -1,5 +1,4 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "react_native_dep", "react_native_target", "react_native_xplat_target", "rn_android_library", "rn_xplat_cxx_library", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags", "react_native_dep", "react_native_target", "react_native_xplat_target", "rn_android_library", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
     name = "samples",
@@ -13,12 +12,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "ReactCommon",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++14",
-        "-Wall",
-    ],
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
         FBJNI_TARGET,
@@ -35,18 +28,17 @@ rn_xplat_cxx_library(
         ],
     ),
     fbobjc_compiler_flags = [
-        "-Wall",
         "-fobjc-arc-exceptions",
     ],
     fbobjc_inherited_buck_flags = get_static_library_ios_flags(),
-    fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_preprocessor_flags_for_build_mode(),
+    fbobjc_preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
     force_static = True,
     ios_deps = [
         "//xplat/FBBaseLite:FBBaseLite",
-        "//xplat/js:RCTLinking",
-        "//xplat/js:RCTPushNotification",
         "//xplat/js/react-native-github:RCTCxxBridge",
         "//xplat/js/react-native-github:RCTCxxModule",
+        "//xplat/js/react-native-github:RCTLinking",
+        "//xplat/js/react-native-github:RCTPushNotification",
         "//xplat/js/react-native-github:ReactInternal",
     ],
     ios_exported_headers = subdir_glob(
@@ -85,6 +77,7 @@ rn_xplat_cxx_library(
 rn_android_library(
     name = "impl",
     srcs = glob(["platform/android/*.java"]),
+    autoglob = False,
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

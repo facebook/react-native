@@ -180,8 +180,54 @@ UIReturnKeyType RCTUIReturnKeyTypeFromReturnKeyType(ReturnKeyType returnKeyType)
 API_AVAILABLE(ios(10.0))
 UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
 {
-  // TODO: Implement properly (T26519801).
-  return RCTNSStringFromStringNilIfEmpty(contentType);
+  static dispatch_once_t onceToken;
+  static NSDictionary<NSString *, NSString *> *contentTypeMap;
+
+  dispatch_once(&onceToken, ^{
+    NSMutableDictionary<NSString *, NSString *> *mutableContentTypeMap = [@{
+      @"" : @"",
+      @"none" : @"",
+      @"URL" : UITextContentTypeURL,
+      @"addressCity" : UITextContentTypeAddressCity,
+      @"addressCityAndState" : UITextContentTypeAddressCityAndState,
+      @"addressState" : UITextContentTypeAddressState,
+      @"countryName" : UITextContentTypeCountryName,
+      @"creditCardNumber" : UITextContentTypeCreditCardNumber,
+      @"emailAddress" : UITextContentTypeEmailAddress,
+      @"familyName" : UITextContentTypeFamilyName,
+      @"fullStreetAddress" : UITextContentTypeFullStreetAddress,
+      @"givenName" : UITextContentTypeGivenName,
+      @"jobTitle" : UITextContentTypeJobTitle,
+      @"location" : UITextContentTypeLocation,
+      @"middleName" : UITextContentTypeMiddleName,
+      @"name" : UITextContentTypeName,
+      @"namePrefix" : UITextContentTypeNamePrefix,
+      @"nameSuffix" : UITextContentTypeNameSuffix,
+      @"nickname" : UITextContentTypeNickname,
+      @"organizationName" : UITextContentTypeOrganizationName,
+      @"postalCode" : UITextContentTypePostalCode,
+      @"streetAddressLine1" : UITextContentTypeStreetAddressLine1,
+      @"streetAddressLine2" : UITextContentTypeStreetAddressLine2,
+      @"sublocality" : UITextContentTypeSublocality,
+      @"telephoneNumber" : UITextContentTypeTelephoneNumber,
+    } mutableCopy];
+
+    if (@available(iOS 11.0, *)) {
+      [mutableContentTypeMap
+          addEntriesFromDictionary:@{@"username" : UITextContentTypeUsername, @"password" : UITextContentTypePassword}];
+    }
+
+    if (@available(iOS 12.0, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"newPassword" : UITextContentTypeNewPassword,
+        @"oneTimeCode" : UITextContentTypeOneTimeCode
+      }];
+    }
+
+    contentTypeMap = [mutableContentTypeMap copy];
+  });
+
+  return contentTypeMap[RCTNSStringFromString(contentType)] ?: @"";
 }
 
 API_AVAILABLE(ios(12.0))

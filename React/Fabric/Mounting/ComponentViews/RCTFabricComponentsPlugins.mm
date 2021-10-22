@@ -29,6 +29,7 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     {"TextInput", RCTTextInputCls},
     {"InputAccessoryView", RCTInputAccessoryCls},
     {"View", RCTViewCls},
+    {"Image", RCTImageCls},
   };
 
   auto p = sFabricComponentsClassMap.find(name);

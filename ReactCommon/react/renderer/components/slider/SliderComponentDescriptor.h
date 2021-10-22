@@ -28,10 +28,9 @@ class SliderComponentDescriptor final
                 ? std::make_shared<SliderMeasurementsManager>(contextContainer_)
                 : nullptr) {}
 
-  void adopt(UnsharedShadowNode shadowNode) const override {
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    assert(std::dynamic_pointer_cast<SliderShadowNode>(shadowNode));
     auto sliderShadowNode =
         std::static_pointer_cast<SliderShadowNode>(shadowNode);
 

@@ -20,6 +20,17 @@ class ShadowTree;
 class ShadowTreeDelegate {
  public:
   /*
+   * Called right before a ShadowTree commits a new tree.
+   * The receiver can alter a new (proposed) shadow tree with another tree
+   * by returning the altered tree.
+   * Returning a `nullptr` cancels the commit.
+   */
+  virtual RootShadowNode::Unshared shadowTreeWillCommit(
+      ShadowTree const &shadowTree,
+      RootShadowNode::Shared const &oldRootShadowNode,
+      RootShadowNode::Unshared const &newRootShadowNode) const = 0;
+
+  /*
    * Called right after Shadow Tree commit a new state of the tree.
    */
   virtual void shadowTreeDidFinishTransaction(

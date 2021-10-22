@@ -28,14 +28,6 @@ ViewShadowNode::ViewShadowNode(
   initialize();
 }
 
-static bool isColorMeaningful(SharedColor const &color) noexcept {
-  if (!color) {
-    return false;
-  }
-
-  return colorComponentsFromColor(color).alpha > 0;
-}
-
 void ViewShadowNode::initialize() noexcept {
   auto &viewProps = static_cast<ViewProps const &>(*props_);
 
@@ -50,20 +42,15 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.getClipsContentToBounds() ||
       isColorMeaningful(viewProps.shadowColor) ||
       viewProps.accessibilityElementsHidden ||
-      viewProps.importantForAccessibility != ImportantForAccessibility::Auto;
+      viewProps.accessibilityViewIsModal ||
+      viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
+      viewProps.removeClippedSubviews;
 
-  bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
+  bool formsView = formsStackingContext ||
+      isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||
-      !(viewProps.yogaStyle.border() == YGStyle::Edges{});
-
-  formsView = formsView || formsStackingContext;
-
-#ifdef ANDROID
-  // Force `formsStackingContext` trait for nodes which have `formsView`.
-  // TODO: T63560216 Investigate why/how `formsView` entangled with
-  // `formsStackingContext`.
-  formsStackingContext = formsStackingContext || formsView;
-#endif
+      !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
+      !viewProps.testId.empty();
 
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);

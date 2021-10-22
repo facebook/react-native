@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import invariant from 'invariant';
 import {Commands} from '../View/ViewNativeComponent';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
@@ -29,6 +27,7 @@ export type RippleConfig = {|
   color?: ColorValue,
   borderless?: boolean,
   radius?: number,
+  foreground?: boolean,
 |};
 
 /**
@@ -42,11 +41,11 @@ export default function useAndroidRippleForView(
   onPressIn: (event: PressEvent) => void,
   onPressMove: (event: PressEvent) => void,
   onPressOut: (event: PressEvent) => void,
-  viewProps: $ReadOnly<{|
-    nativeBackgroundAndroid: NativeBackgroundProp,
-  |}>,
+  viewProps:
+    | $ReadOnly<{|nativeBackgroundAndroid: NativeBackgroundProp|}>
+    | $ReadOnly<{|nativeForegroundAndroid: NativeBackgroundProp|}>,
 |}> {
-  const {color, borderless, radius} = rippleConfig ?? {};
+  const {color, borderless, radius, foreground} = rippleConfig ?? {};
 
   return useMemo(() => {
     if (
@@ -60,25 +59,27 @@ export default function useAndroidRippleForView(
         'Unexpected color given for Ripple color',
       );
 
+      const nativeRippleValue = {
+        type: 'RippleAndroid',
+        color: processedColor,
+        borderless: borderless === true,
+        rippleRadius: radius,
+      };
+
       return {
-        viewProps: {
-          // Consider supporting `nativeForegroundAndroid`
-          nativeBackgroundAndroid: {
-            type: 'RippleAndroid',
-            color: processedColor,
-            borderless: borderless === true,
-            rippleRadius: radius,
-          },
-        },
+        viewProps:
+          foreground === true
+            ? {nativeForegroundAndroid: nativeRippleValue}
+            : {nativeBackgroundAndroid: nativeRippleValue},
         onPressIn(event: PressEvent): void {
           const view = viewRef.current;
           if (view != null) {
-            Commands.setPressed(view, true);
             Commands.hotspotUpdate(
               view,
               event.nativeEvent.locationX ?? 0,
               event.nativeEvent.locationY ?? 0,
             );
+            Commands.setPressed(view, true);
           }
         },
         onPressMove(event: PressEvent): void {
@@ -100,5 +101,5 @@ export default function useAndroidRippleForView(
       };
     }
     return null;
-  }, [color, borderless, radius, viewRef]);
+  }, [borderless, color, foreground, radius, viewRef]);
 }

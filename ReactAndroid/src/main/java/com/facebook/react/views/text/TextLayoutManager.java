@@ -24,11 +24,13 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -44,9 +46,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TextLayoutManager {
 
   // TODO T67606397: Refactor configuration of fabric logs
-  private static final boolean ENABLE_MEASURE_LOGGING = false;
+  private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
 
-  private static final String TAG = "TextLayoutManager";
+  private static final String TAG = TextLayoutManager.class.getSimpleName();
 
   // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
   // later by calling setFlags. This is because the latter approach triggers a bug on Android 4.4.2.
@@ -62,30 +64,35 @@ public class TextLayoutManager {
   private static final boolean DEFAULT_INCLUDE_FONT_PADDING = true;
   private static final String INCLUDE_FONT_PADDING_KEY = "includeFontPadding";
   private static final String TEXT_BREAK_STRATEGY_KEY = "textBreakStrategy";
+  private static final String HYPHENATION_FREQUENCY_KEY = "android_hyphenationFrequency";
   private static final String MAXIMUM_NUMBER_OF_LINES_KEY = "maximumNumberOfLines";
-  private static final LruCache<String, Spannable> sSpannableCache =
-      new LruCache<>(spannableCacheSize);
-  private static final LruCache<ReadableNativeMap, Spannable> sSpannableCacheV2 =
+  private static final LruCache<ReadableNativeMap, Spannable> sSpannableCache =
       new LruCache<>(spannableCacheSize);
   private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
       new ConcurrentHashMap<>();
 
   public static boolean isRTL(ReadableMap attributedString) {
     ReadableArray fragments = attributedString.getArray("fragments");
-    for (int i = 0, length = fragments.size(); i < length; i++) {
+    for (int i = 0; i < fragments.size(); i++) {
       ReadableMap fragment = fragments.getMap(i);
-      ReactStylesDiffMap map = new ReactStylesDiffMap(fragment.getMap("textAttributes"));
-      TextAttributeProps textAttributes = new TextAttributeProps(map);
-      return textAttributes.mLayoutDirection == LayoutDirection.RTL;
+      ReadableMap map = fragment.getMap("textAttributes");
+      return TextAttributeProps.getLayoutDirection(map.getString(ViewProps.LAYOUT_DIRECTION))
+          == LayoutDirection.RTL;
     }
     return false;
   }
 
   public static void setCachedSpannabledForTag(int reactTag, @NonNull Spannable sp) {
+    if (ENABLE_MEASURE_LOGGING) {
+      FLog.e(TAG, "Set cached spannable for tag[" + reactTag + "]: " + sp.toString());
+    }
     sTagToSpannableCache.put(reactTag, sp);
   }
 
   public static void deleteCachedSpannableForTag(int reactTag) {
+    if (ENABLE_MEASURE_LOGGING) {
+      FLog.e(TAG, "Delete cached spannable for tag[" + reactTag + "]");
+    }
     sTagToSpannableCache.remove(reactTag);
   }
 
@@ -101,7 +108,8 @@ public class TextLayoutManager {
 
       // ReactRawText
       TextAttributeProps textAttributes =
-          new TextAttributeProps(new ReactStylesDiffMap(fragment.getMap("textAttributes")));
+          TextAttributeProps.fromReadableMap(
+              new ReactStylesDiffMap(fragment.getMap("textAttributes")));
 
       sb.append(TextTransform.apply(fragment.getString("string"), textAttributes.mTextTransform));
 
@@ -132,12 +140,10 @@ public class TextLayoutManager {
               new SetSpanOperation(
                   start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          if (!Float.isNaN(textAttributes.getLetterSpacing())) {
-            ops.add(
-                new SetSpanOperation(
-                    start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
-          }
+        if (!Float.isNaN(textAttributes.getLetterSpacing())) {
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new CustomLetterSpacingSpan(textAttributes.getLetterSpacing())));
         }
         ops.add(
             new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
@@ -190,25 +196,11 @@ public class TextLayoutManager {
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     Spannable preparedSpannableText;
-    String attributedStringPayload = "";
 
-    boolean cacheByReadableNativeMap =
-        ReactFeatureFlags.enableSpannableCacheByReadableNativeMapEquality;
-    // TODO: T74600554 Cleanup this experiment once positive impact is confirmed in production
-    if (cacheByReadableNativeMap) {
-      synchronized (sSpannableCacheLock) {
-        preparedSpannableText = sSpannableCacheV2.get((ReadableNativeMap) attributedString);
-        if (preparedSpannableText != null) {
-          return preparedSpannableText;
-        }
-      }
-    } else {
-      attributedStringPayload = attributedString.toString();
-      synchronized (sSpannableCacheLock) {
-        preparedSpannableText = sSpannableCache.get(attributedStringPayload);
-        if (preparedSpannableText != null) {
-          return preparedSpannableText;
-        }
+    synchronized (sSpannableCacheLock) {
+      preparedSpannableText = sSpannableCache.get((ReadableNativeMap) attributedString);
+      if (preparedSpannableText != null) {
+        return preparedSpannableText;
       }
     }
 
@@ -216,15 +208,10 @@ public class TextLayoutManager {
         createSpannableFromAttributedString(
             context, attributedString, reactTextViewManagerCallback);
 
-    if (cacheByReadableNativeMap) {
-      synchronized (sSpannableCacheLock) {
-        sSpannableCacheV2.put((ReadableNativeMap) attributedString, preparedSpannableText);
-      }
-    } else {
-      synchronized (sSpannableCacheLock) {
-        sSpannableCache.put(attributedStringPayload, preparedSpannableText);
-      }
+    synchronized (sSpannableCacheLock) {
+      sSpannableCache.put((ReadableNativeMap) attributedString, preparedSpannableText);
     }
+
     return preparedSpannableText;
   }
 
@@ -264,7 +251,8 @@ public class TextLayoutManager {
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       boolean includeFontPadding,
-      int textBreakStrategy) {
+      int textBreakStrategy,
+      int hyphenationFrequency) {
     Layout layout;
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
@@ -295,18 +283,24 @@ public class TextLayoutManager {
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
                 .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
+                .setHyphenationFrequency(hyphenationFrequency)
                 .build();
       }
-
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
+      int boringLayoutWidth = boring.width;
+      if (boring.width < 0) {
+        ReactSoftExceptionLogger.logSoftException(
+            TAG, new ReactNoCrashSoftException("Text width is invalid: " + boring.width));
+        boringLayoutWidth = 0;
+      }
+
       // Is used for single-line, boring text when the width is either unknown or bigger
       // than the width of the text.
       layout =
           BoringLayout.make(
               text,
               textPaint,
-              boring.width,
+              boringLayoutWidth,
               Layout.Alignment.ALIGN_NORMAL,
               1.f,
               0.f,
@@ -332,7 +326,7 @@ public class TextLayoutManager {
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
                 .setBreakStrategy(textBreakStrategy)
-                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
+                .setHyphenationFrequency(hyphenationFrequency);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
           builder.setUseLineSpacingFromFallbacks(true);
@@ -360,9 +354,18 @@ public class TextLayoutManager {
     Spannable text;
     if (attributedString.hasKey("cacheId")) {
       int cacheId = attributedString.getInt("cacheId");
+      if (ENABLE_MEASURE_LOGGING) {
+        FLog.e(TAG, "Get cached spannable for cacheId[" + cacheId + "]");
+      }
       if (sTagToSpannableCache.containsKey(cacheId)) {
         text = sTagToSpannableCache.get(cacheId);
+        if (ENABLE_MEASURE_LOGGING) {
+          FLog.e(TAG, "Text for spannable found for cacheId[" + cacheId + "]: " + text.toString());
+        }
       } else {
+        if (ENABLE_MEASURE_LOGGING) {
+          FLog.e(TAG, "No cached spannable found for cacheId[" + cacheId + "]");
+        }
         return 0;
       }
     } else {
@@ -376,20 +379,25 @@ public class TextLayoutManager {
         paragraphAttributes.hasKey(INCLUDE_FONT_PADDING_KEY)
             ? paragraphAttributes.getBoolean(INCLUDE_FONT_PADDING_KEY)
             : DEFAULT_INCLUDE_FONT_PADDING;
+    int hyphenationFrequency =
+        TextAttributeProps.getHyphenationFrequency(
+            paragraphAttributes.getString(HYPHENATION_FREQUENCY_KEY));
 
     if (text == null) {
       throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
     }
 
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
-    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
-
-    // technically, width should never be negative, but there is currently a bug in
-    boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
 
     Layout layout =
         createLayout(
-            text, boring, width, widthYogaMeasureMode, includeFontPadding, textBreakStrategy);
+            text,
+            boring,
+            width,
+            widthYogaMeasureMode,
+            includeFontPadding,
+            textBreakStrategy,
+            hyphenationFrequency);
 
     int maximumNumberOfLines =
         paragraphAttributes.hasKey(MAXIMUM_NUMBER_OF_LINES_KEY)
@@ -495,16 +503,16 @@ public class TextLayoutManager {
 
           // The attachment array returns the positions of each of the attachments as
           attachmentsPositions[attachmentPosition] =
-              PixelUtil.toSPFromPixel(placeholderTopPosition);
+              PixelUtil.toDIPFromPixel(placeholderTopPosition);
           attachmentsPositions[attachmentPosition + 1] =
-              PixelUtil.toSPFromPixel(placeholderLeftPosition);
+              PixelUtil.toDIPFromPixel(placeholderLeftPosition);
           attachmentIndex++;
         }
       }
     }
 
-    float widthInSP = PixelUtil.toSPFromPixel(calculatedWidth);
-    float heightInSP = PixelUtil.toSPFromPixel(calculatedHeight);
+    float widthInSP = PixelUtil.toDIPFromPixel(calculatedWidth);
+    float heightInSP = PixelUtil.toDIPFromPixel(calculatedHeight);
 
     if (ENABLE_MEASURE_LOGGING) {
       FLog.e(
@@ -541,10 +549,19 @@ public class TextLayoutManager {
         paragraphAttributes.hasKey(INCLUDE_FONT_PADDING_KEY)
             ? paragraphAttributes.getBoolean(INCLUDE_FONT_PADDING_KEY)
             : DEFAULT_INCLUDE_FONT_PADDING;
+    int hyphenationFrequency =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(HYPHENATION_FREQUENCY_KEY));
 
     Layout layout =
         createLayout(
-            text, boring, width, YogaMeasureMode.EXACTLY, includeFontPadding, textBreakStrategy);
+            text,
+            boring,
+            width,
+            YogaMeasureMode.EXACTLY,
+            includeFontPadding,
+            textBreakStrategy,
+            hyphenationFrequency);
     return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
   }
 

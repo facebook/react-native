@@ -16,6 +16,7 @@ import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 export type AccessibilityRole =
   | 'none'
   | 'button'
+  | 'togglebutton'
   | 'link'
   | 'search'
   | 'image'
@@ -38,8 +39,10 @@ export type AccessibilityRole =
   | 'spinbutton'
   | 'switch'
   | 'tab'
+  | 'tabbar'
   | 'tablist'
   | 'timer'
+  | 'list'
   | 'toolbar';
 
 // the info associated with an accessibility action
@@ -82,5 +85,5 @@ export type AccessibilityValue = $ReadOnly<{|
   /**
    * A textual description of this component's value. (will override minimum, current, and maximum if set)
    */
-  text?: string,
+  text?: Stringish,
 |}>;

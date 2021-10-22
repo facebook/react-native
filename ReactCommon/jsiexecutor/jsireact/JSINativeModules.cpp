@@ -89,6 +89,8 @@ folly::Optional<Object> JSINativeModules::createModule(
       valueFromDynamic(rt, result->config),
       static_cast<double>(result->index));
   CHECK(!moduleInfo.isNull()) << "Module returned from genNativeModule is null";
+  CHECK(moduleInfo.isObject())
+      << "Module returned from genNativeModule isn't an Object";
 
   folly::Optional<Object> module(
       moduleInfo.asObject(rt).getPropertyAsObject(rt, "module"));

@@ -20,6 +20,7 @@ rn_android_library(
         ["**/*.java"],
         exclude = INTERFACES,
     ),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     proguard_config = "reactnative.pro",
@@ -65,6 +66,7 @@ rn_android_library(
 rn_android_library(
     name = "interfaces",
     srcs = glob(INTERFACES),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     proguard_config = "reactnative.pro",

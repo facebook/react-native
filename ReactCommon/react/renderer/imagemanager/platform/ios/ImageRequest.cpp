@@ -11,7 +11,7 @@ namespace facebook {
 namespace react {
 
 ImageRequest::ImageRequest(
-    const ImageSource &imageSource,
+    ImageSource const &imageSource,
     std::shared_ptr<const ImageTelemetry> telemetry)
     : imageSource_(imageSource), telemetry_(telemetry) {
   coordinator_ = std::make_shared<ImageResponseObserverCoordinator>();
@@ -21,10 +21,10 @@ ImageRequest::ImageRequest(ImageRequest &&other) noexcept
     : imageSource_(std::move(other.imageSource_)),
       telemetry_(std::move(other.telemetry_)),
       coordinator_(std::move(other.coordinator_)) {
-  other.moved_ = true;
   other.coordinator_ = nullptr;
   other.cancelRequest_ = nullptr;
   other.telemetry_ = nullptr;
+  other.imageSource_ = {};
 }
 
 ImageRequest::~ImageRequest() {
@@ -36,6 +36,10 @@ ImageRequest::~ImageRequest() {
 void ImageRequest::setCancelationFunction(
     std::function<void(void)> cancelationFunction) {
   cancelRequest_ = cancelationFunction;
+}
+
+const ImageSource &ImageRequest::getImageSource() const {
+  return imageSource_;
 }
 
 const std::shared_ptr<const ImageTelemetry> &ImageRequest::getSharedTelemetry()

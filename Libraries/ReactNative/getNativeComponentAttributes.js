@@ -38,7 +38,6 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
   while (baseModuleName) {
     const baseModule = UIManager.getViewManagerConfig(baseModuleName);
     if (!baseModule) {
-      console.warn('Base module "%s" does not exist', baseModuleName);
       baseModuleName = null;
     } else {
       bubblingEventTypes = {
@@ -155,7 +154,8 @@ function getDifferForType(
     case 'UIEdgeInsets':
       return insetsDiffer;
     // Android Types
-    // (not yet implemented)
+    case 'Point':
+      return pointsDiffer;
   }
   return null;
 }

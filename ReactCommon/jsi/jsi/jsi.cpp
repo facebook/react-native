@@ -99,8 +99,15 @@ Instrumentation& Runtime::instrumentation() {
 
     void collectGarbage(std::string) override {}
 
-    void startTrackingHeapObjectStackTraces() override {}
+    void startTrackingHeapObjectStackTraces(
+        std::function<void(
+            uint64_t,
+            std::chrono::microseconds,
+            std::vector<HeapStatsUpdate>)>) override {}
     void stopTrackingHeapObjectStackTraces() override {}
+
+    void startHeapSampling(size_t) override {}
+    void stopHeapSampling(std::ostream&) override {}
 
     void createSnapshotToFile(const std::string&) override {
       throw JSINativeException(

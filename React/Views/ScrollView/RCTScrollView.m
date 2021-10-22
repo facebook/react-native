@@ -197,10 +197,8 @@
   if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
     self.contentOffset = originalOffset;
   } else {
-    if (@available(iOS 11.0, *)) {
-      if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
-        contentInset = self.adjustedContentInset;
-      }
+    if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
+      contentInset = self.adjustedContentInset;
     }
     CGSize boundsSize = self.bounds.size;
     CGFloat xMaxOffset = contentSize.width - boundsSize.width + contentInset.right;
@@ -261,7 +259,7 @@
 @end
 
 @implementation RCTScrollView {
-  RCTEventDispatcher *_eventDispatcher;
+  id<RCTEventDispatcherProtocol> _eventDispatcher;
   CGRect _prevFirstVisibleFrame;
   __weak UIView *_firstVisibleView;
   RCTCustomScrollView *_scrollView;
@@ -275,7 +273,7 @@
   NSHashTable *_scrollListeners;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher
 {
   RCTAssertParam(eventDispatcher);
 
@@ -287,21 +285,16 @@
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
     // `contentInsetAdjustmentBehavior` is only available since iOS 11.
     // We set the default behavior to "never" so that iOS
     // doesn't do weird things to UIScrollView insets automatically
     // and keeps it as an opt-in behavior.
     if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-      if (@available(iOS 11.0, *)) {
-        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      }
+      _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
-#endif
 
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
 
     _scrollEventThrottle = 0.0;
@@ -381,7 +374,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
   if ([changedProps containsObject:@"contentSize"]) {
-    [self updateContentOffsetIfNeeded];
+    [self updateContentSizeIfNeeded];
   }
 }
 
@@ -715,9 +708,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     // Pick snap point based on direction and proximity
     CGFloat fractionalIndex = (targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF;
 
-    NSInteger snapIndex = velocityAlongAxis > 0.0
-        ? ceil(fractionalIndex)
-        : velocityAlongAxis < 0.0 ? floor(fractionalIndex) : round(fractionalIndex);
+    NSInteger snapIndex = velocityAlongAxis > 0.0 ? ceil(fractionalIndex)
+        : velocityAlongAxis < 0.0                 ? floor(fractionalIndex)
+                                                  : round(fractionalIndex);
     CGFloat newTargetContentOffset = (snapIndex * snapToIntervalF) - alignmentOffset;
 
     // Set new targetContentOffset
@@ -799,8 +792,6 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   return _contentView;
 }
 
-#pragma mark - Setters
-
 - (CGSize)_calculateViewportSize
 {
   CGSize viewportSize = self.bounds.size;
@@ -813,71 +804,16 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   return viewportSize;
 }
 
-- (CGPoint)calculateOffsetForContentSize:(CGSize)newContentSize
-{
-  CGPoint oldOffset = _scrollView.contentOffset;
-  CGPoint newOffset = oldOffset;
-
-  CGSize oldContentSize = _scrollView.contentSize;
-  CGSize viewportSize = [self _calculateViewportSize];
-
-  BOOL fitsinViewportY = oldContentSize.height <= viewportSize.height && newContentSize.height <= viewportSize.height;
-  if (newContentSize.height < oldContentSize.height && !fitsinViewportY) {
-    CGFloat offsetHeight = oldOffset.y + viewportSize.height;
-    if (oldOffset.y < 0) {
-      // overscrolled on top, leave offset alone
-    } else if (offsetHeight > oldContentSize.height) {
-      // overscrolled on the bottom, preserve overscroll amount
-      newOffset.y = MAX(0, oldOffset.y - (oldContentSize.height - newContentSize.height));
-    } else if (offsetHeight > newContentSize.height) {
-      // offset falls outside of bounds, scroll back to end of list
-      newOffset.y = MAX(0, newContentSize.height - viewportSize.height);
-    }
-  }
-
-  BOOL fitsinViewportX = oldContentSize.width <= viewportSize.width && newContentSize.width <= viewportSize.width;
-  if (newContentSize.width < oldContentSize.width && !fitsinViewportX) {
-    CGFloat offsetHeight = oldOffset.x + viewportSize.width;
-    if (oldOffset.x < 0) {
-      // overscrolled at the beginning, leave offset alone
-    } else if (offsetHeight > oldContentSize.width && newContentSize.width > viewportSize.width) {
-      // overscrolled at the end, preserve overscroll amount as much as possible
-      newOffset.x = MAX(0, oldOffset.x - (oldContentSize.width - newContentSize.width));
-    } else if (offsetHeight > newContentSize.width) {
-      // offset falls outside of bounds, scroll back to end
-      newOffset.x = MAX(0, newContentSize.width - viewportSize.width);
-    }
-  }
-
-  // all other cases, offset doesn't change
-  return newOffset;
-}
-
-/**
- * Once you set the `contentSize`, to a nonzero value, it is assumed to be
- * managed by you, and we'll never automatically compute the size for you,
- * unless you manually reset it back to {0, 0}
- */
 - (CGSize)contentSize
 {
-  if (!CGSizeEqualToSize(_contentSize, CGSizeZero)) {
-    return _contentSize;
-  }
-
   return _contentView.frame.size;
 }
 
-- (void)updateContentOffsetIfNeeded
+- (void)updateContentSizeIfNeeded
 {
   CGSize contentSize = self.contentSize;
   if (!CGSizeEqualToSize(_scrollView.contentSize, contentSize)) {
-    // When contentSize is set manually, ScrollView internals will reset
-    // contentOffset to  {0, 0}. Since we potentially set contentSize whenever
-    // anything in the ScrollView updates, we workaround this issue by manually
-    // adjusting contentOffset whenever this happens
-    CGPoint newOffset = [self calculateOffsetForContentSize:contentSize];
     _scrollView.contentSize = contentSize;
-    _scrollView.contentOffset = newOffset;
   }
 }
 
@@ -986,19 +922,27 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScroll
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior API_AVAILABLE(ios(11.0))
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
+- (void)setAutomaticallyAdjustsScrollIndicatorInsets:(BOOL)automaticallyAdjusts API_AVAILABLE(ios(13.0))
+{
+  // `automaticallyAdjustsScrollIndicatorInsets` is available since iOS 13.
+  if ([_scrollView respondsToSelector:@selector(setAutomaticallyAdjustsScrollIndicatorInsets:)]) {
+    if (@available(iOS 13.0, *)) {
+      _scrollView.automaticallyAdjustsScrollIndicatorInsets = automaticallyAdjusts;
+    }
+  }
+}
+#endif
+
+- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
 {
   // `contentInsetAdjustmentBehavior` is available since iOS 11.
   if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
     CGPoint contentOffset = _scrollView.contentOffset;
-    if (@available(iOS 11.0, *)) {
-      _scrollView.contentInsetAdjustmentBehavior = behavior;
-    }
+    _scrollView.contentInsetAdjustmentBehavior = behavior;
     _scrollView.contentOffset = contentOffset;
   }
 }
-#endif
 
 - (void)sendScrollEventWithName:(NSString *)eventName
                      scrollView:(UIScrollView *)scrollView
@@ -1022,9 +966,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 
 @end
 
-@implementation RCTEventDispatcher (RCTScrollView)
-
-- (void)sendFakeScrollEvent:(NSNumber *)reactTag
+void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNumber *reactTag)
 {
   // Use the selector here in case the onScroll block property is ever renamed
   NSString *eventName = NSStringFromSelector(@selector(onScroll));
@@ -1037,7 +979,5 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
                                                           scrollViewZoomScale:0
                                                                      userData:nil
                                                                 coalescingKey:0];
-  [self sendEvent:fakeScrollEvent];
+  [eventDispatcher sendEvent:fakeScrollEvent];
 }
-
-@end

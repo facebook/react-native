@@ -57,18 +57,44 @@ ShadowViewMutation ShadowViewMutation::RemoveMutation(
 }
 
 ShadowViewMutation ShadowViewMutation::UpdateMutation(
+    ShadowView oldChildShadowView,
+    ShadowView newChildShadowView) {
+  return {
+      /* .type = */ Update,
+      /* .parentShadowView = */ {},
+      /* .oldChildShadowView = */ oldChildShadowView,
+      /* .newChildShadowView = */ newChildShadowView,
+      /* .index = */ -1,
+  };
+}
+
+bool ShadowViewMutation::mutatedViewIsVirtual() const {
+  bool viewIsVirtual = false;
+
+#ifdef ANDROID
+  // Explanation: Even for non-virtual views,
+  //              for "Insert" mutations, oldChildShadowView is always empty.
+  //              for "Remove" mutations, newChildShadowView is always empty.
+  // Thus, to see if a view is virtual, we need to always check both the old and
+  // new View.
+  viewIsVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
+      oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+#endif
+
+  return viewIsVirtual;
+}
+
+ShadowViewMutation::ShadowViewMutation(
+    Type type,
     ShadowView parentShadowView,
     ShadowView oldChildShadowView,
     ShadowView newChildShadowView,
-    int index) {
-  return {
-      /* .type = */ Update,
-      /* .parentShadowView = */ parentShadowView,
-      /* .oldChildShadowView = */ oldChildShadowView,
-      /* .newChildShadowView = */ newChildShadowView,
-      /* .index = */ index,
-  };
-}
+    int index)
+    : type(type),
+      parentShadowView(parentShadowView),
+      oldChildShadowView(oldChildShadowView),
+      newChildShadowView(newChildShadowView),
+      index(index) {}
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 

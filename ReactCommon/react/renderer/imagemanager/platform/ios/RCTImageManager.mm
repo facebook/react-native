@@ -40,8 +40,14 @@ using namespace facebook::react;
 {
   SystraceSection s("RCTImageManager::requestImage");
 
-  auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
-  telemetry->willRequestUrl();
+  NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
+  std::shared_ptr<ImageTelemetry> telemetry;
+  if ([self->_imageLoader shouldEnablePerfLoggingForRequestUrl:request.URL]) {
+    telemetry = std::make_shared<ImageTelemetry>(surfaceId);
+  } else {
+    telemetry = nullptr;
+  }
+
   auto imageRequest = ImageRequest(imageSource, telemetry);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
@@ -60,14 +66,6 @@ using namespace facebook::react;
    * T46024425 for more details.
    */
   dispatch_async(_backgroundSerialQueue, ^{
-    NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
-
-    BOOL hasModuleName = [self->_imageLoader respondsToSelector:@selector(loaderModuleNameForRequestUrl:)];
-    NSString *moduleName = hasModuleName ? [self->_imageLoader loaderModuleNameForRequestUrl:request.URL] : nil;
-    std::string moduleCString =
-        std::string([moduleName UTF8String], [moduleName lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
-    telemetry->setLoaderModuleName(moduleCString);
-
     auto completionBlock = ^(NSError *error, UIImage *image, id metadata) {
       auto observerCoordinator = weakObserverCoordinator.lock();
       if (!observerCoordinator) {

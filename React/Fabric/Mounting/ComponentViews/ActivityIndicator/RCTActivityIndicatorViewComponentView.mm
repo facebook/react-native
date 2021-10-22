@@ -13,7 +13,7 @@
 #import <react/renderer/components/rncore/EventEmitters.h>
 #import <react/renderer/components/rncore/Props.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 

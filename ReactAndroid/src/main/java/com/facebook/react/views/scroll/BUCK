@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "r
 rn_android_library(
     name = "scroll",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
@@ -29,5 +30,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/views/view:view"),
+        react_native_target("res:uimanager"),
     ],
 )

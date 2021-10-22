@@ -7,7 +7,7 @@
 
 plugins {
     id("com.android.application")
-    id("com.facebook.react.codegen")
+    id("com.facebook.react")
 }
 
 /**
@@ -66,7 +66,7 @@ plugins {
  *   // Root dir for all JS files for the app. Defaults to `root` above.
  *   jsRootDir: "../..",
  *
- *   // Enable Fabric at build time and runtime.
+ *   // Enable Fabric at runtime.
  *   enableFabric: true,
  *
  *   // Java package name to use for any codegen artifacts produced during build time.
@@ -75,21 +75,28 @@ plugins {
  * ]
  */
 
+react {
+    applyAppPlugin = true
+    cliPath = "../../../../cli.js"
+    bundleAssetName = "RNTesterApp.android.bundle"
+    entryFile = file("../../js/RNTesterApp.android.js")
+    reactRoot = rootDir
+    inputExcludes = ["android/**", "./**", ".gradle/**"]
+    composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
+    hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
+    enableHermesForVariant { def v -> v.name.contains("hermes") }
+
+    // Codegen Configs
+    jsRootDir = file("$rootDir/packages/rn-tester")
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
+}
+
 project.ext.react = [
-    cliPath: "$rootDir/cli.js",
-    bundleAssetName: "RNTesterApp.android.bundle",
-    entryFile: file("../../js/RNTesterApp.android.js"),
-    root: "$rootDir",
-    inputExcludes: ["android/**", "./**", ".gradle/**"],
-    composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
-    hermesCommand: "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc",
-    enableHermesForVariant: { def v -> v.name.contains("hermes") },
-    jsRootDir: "$rootDir/RNTester",
-    enableCodegen: (System.getenv('USE_CODEGEN') ?: '0').toBoolean(),
-    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean(),
+    enableCodegen: true, // Keep this here until it's sync'ed to Android template.
+    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean()
 ]
 
-apply from: "../../../../react.gradle"
+//apply from: "../../../../react.gradle"
 
 /**
  * Set this to true to create three separate APKs instead of one:
@@ -113,7 +120,7 @@ def enableProguardInReleaseBuilds = true
 def enableCodegen = project.ext.react.enableCodegen
 
 /**
- * Build and enable Fabric in RN Tester app.
+ * Enable Fabric in RN Tester app.
  */
 def enableFabric = project.ext.react.enableFabric
 
@@ -125,13 +132,20 @@ def enableFabric = project.ext.react.enableFabric
  */
 def useIntlJsc = false
 
+/**
+ * Architectures to build native code for in debug.
+ */
+def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
+
 android {
     compileSdkVersion 29
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    if (project.hasProperty("ANDROID_NDK_VERSION")) {
+        ndkVersion project.property("ANDROID_NDK_VERSION")
     }
+    if (project.hasProperty("ANDROID_NDK_PATH")) {
+        ndkPath project.property("ANDROID_NDK_PATH")
+    }
+
     dexOptions {
         javaMaxHeapSize "4g"
     }
@@ -147,7 +161,7 @@ android {
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -174,9 +188,16 @@ android {
     }
     buildTypes {
         debug {
+            debuggable true
             signingConfig signingConfigs.release
+            if (nativeArchitectures) {
+                ndk {
+                    abiFilters nativeArchitectures.split(',')
+                }
+            }
         }
         release {
+            debuggable false
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
@@ -234,12 +255,6 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
 }
 
-react {
-    jsRootDir = file("$rootDir/packages/rn-tester")
-    reactNativeRootDir = file("$rootDir")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
-}
-
 if (enableCodegen) {
     // TODO: Move all this logic to CodegenPlugin.java.
     def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
@@ -249,14 +264,14 @@ if (enableCodegen) {
         defaultConfig {
             externalNativeBuild {
                 ndkBuild {
-                    abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
-                    arguments "APP_PLATFORM=android-16",
+                    arguments "APP_PLATFORM=android-21",
                             "APP_STL=c++_shared",
                             "NDK_TOOLCHAIN_VERSION=clang",
                             // The following paths assume building React Native from source.
                             "GENERATED_SRC_DIR=$buildDir/generated/source",
                             "PROJECT_BUILD_DIR=$buildDir",
-                            "REACT_ANDROID_DIR=$reactAndroidProjectDir"
+                            "REACT_ANDROID_DIR=$reactAndroidProjectDir",
+                            "REACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
                     cppFlags "-std=c++1y"
                     targets "rntester_appmodules"
@@ -273,6 +288,7 @@ if (enableCodegen) {
     def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
         dependsOn(":ReactAndroid:packageReactNdkLibs")
+        dependsOn("generateCodegenSchemaFromJavaScript")
         from("$reactAndroidBuildDir/react-ndk/exported")
         into("$buildDir/react-ndk/exported")
     }

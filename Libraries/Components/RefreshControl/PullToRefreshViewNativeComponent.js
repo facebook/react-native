@@ -8,9 +8,11 @@
  * @flow strict-local
  */
 
-'use strict';
-
-import type {DirectEventHandler, WithDefault} from '../../Types/CodegenTypes';
+import type {
+  DirectEventHandler,
+  Float,
+  WithDefault,
+} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import * as React from 'react';
@@ -34,6 +36,10 @@ type NativeProps = $ReadOnly<{|
    * The title displayed under the refresh indicator.
    */
   title?: WithDefault<string, null>,
+  /**
+   * Progress view top offset
+   */
+  progressViewOffset?: WithDefault<Float, 0>,
 
   /**
    * Called when the view starts refreshing.

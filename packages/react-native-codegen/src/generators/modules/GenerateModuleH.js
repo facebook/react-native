@@ -14,6 +14,7 @@ import type {
   Nullable,
   SchemaType,
   NativeModuleTypeAnnotation,
+  NativeModuleFunctionTypeAnnotation,
 } from '../../CodegenSchema';
 
 import type {AliasResolver} from './Utils';
@@ -22,18 +23,26 @@ const {unwrapNullable} = require('../../parsers/flow/modules/utils');
 
 type FilesOutput = Map<string, string>;
 
-const moduleTemplate = `
-class JSI_EXPORT Native::_MODULE_NAME_::CxxSpecJSI : public TurboModule {
+const ModuleClassDeclarationTemplate = ({
+  hasteModuleName,
+  moduleProperties,
+}: $ReadOnly<{hasteModuleName: string, moduleProperties: string}>) => {
+  return `class JSI_EXPORT ${hasteModuleName}CxxSpecJSI : public TurboModule {
 protected:
-  Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
+  ${hasteModuleName}CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
 public:
-::_MODULE_PROPERTIES_::
+${moduleProperties}
 
 };`;
+};
 
-const template = `
-/**
+const FileTemplate = ({
+  modules,
+}: $ReadOnly<{
+  modules: string,
+}>) => {
+  return `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -48,25 +57,28 @@ const template = `
 
 namespace facebook {
 namespace react {
-::_MODULES_::
+${modules}
 
 } // namespace react
 } // namespace facebook
 `;
+};
 
 function translatePrimitiveJSTypeToCpp(
   nullableTypeAnnotation: Nullable<NativeModuleTypeAnnotation>,
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
 ) {
-  const [typeAnnotation] = unwrapNullable(nullableTypeAnnotation);
+  const [typeAnnotation] = unwrapNullable<NativeModuleTypeAnnotation>(
+    nullableTypeAnnotation,
+  );
   let realTypeAnnotation = typeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
     realTypeAnnotation = resolveAlias(realTypeAnnotation.name);
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'double';
@@ -111,18 +123,26 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
+    packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
     const modules = Object.keys(nativeModules)
-      .map(name => {
-        const {aliases, properties} = nativeModules[name];
+      .map(hasteModuleName => {
+        const {
+          aliases,
+          spec: {properties},
+        } = nativeModules[hasteModuleName];
         const resolveAlias = createAliasResolver(aliases);
 
         const traversedProperties = properties
           .map(prop => {
-            const [propTypeAnnotation] = unwrapNullable(prop.typeAnnotation);
+            const [
+              propTypeAnnotation,
+            ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+              prop.typeAnnotation,
+            );
             const traversedArgs = propTypeAnnotation.params
               .map(param => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(
@@ -156,15 +176,16 @@ module.exports = {
               );
           })
           .join('\n');
-        return moduleTemplate
-          .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)
-          .replace(/::_MODULE_NAME_::/g, name)
-          .replace('::_PROPERTIES_MAP_::', '');
+
+        return ModuleClassDeclarationTemplate({
+          hasteModuleName,
+          moduleProperties: traversedProperties,
+        });
       })
       .join('\n');
 
     const fileName = 'NativeModules.h';
-    const replacedTemplate = template.replace(/::_MODULES_::/g, modules);
+    const replacedTemplate = FileTemplate({modules});
 
     return new Map([[fileName, replacedTemplate]]);
   },

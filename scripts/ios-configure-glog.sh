@@ -16,7 +16,7 @@ if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     if [[ "$PLATFORM_NAME" == *"simulator"* ]]; then
         CURRENT_ARCH="x86_64"
     else
-        CURRENT_ARCH="armv7"
+        CURRENT_ARCH="arm64"
     fi
 fi
 
@@ -27,6 +27,10 @@ export CXX="$CC"
 if [ -h "test-driver" ]; then
     rm test-driver
 fi
+
+# Manually disable gflags include to fix issue https://github.com/facebook/react-native/issues/28446
+sed -i '' 's/\@ac_cv_have_libgflags\@/0/' src/glog/logging.h.in
+sed -i '' 's/HAVE_LIB_GFLAGS/HAVE_LIB_GFLAGS_DISABLED/' src/config.h.in
 
 ./configure --host arm-apple-darwin
 

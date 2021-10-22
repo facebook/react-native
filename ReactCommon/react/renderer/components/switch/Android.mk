@@ -7,7 +7,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := react_render_components_switch
+LOCAL_MODULE := rrc_switch
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/androidswitch/react/renderer/components/androidswitch/*.cpp)
 
@@ -17,11 +17,11 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/androidswitch/
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
 
-LOCAL_SHARED_LIBRARIES := libfbjni libreact_render_viewmanagers libreactnativeutilsjni libreact_render_componentregistry libreact_render_uimanager libyoga libfolly_futures glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_graphics libreact_render_components_view
+LOCAL_SHARED_LIBRARIES := libfbjni libreact_codegen_rncore libreactnativeutilsjni libreact_render_componentregistry libreact_render_uimanager libyoga libfolly_futures glog libfolly_json libglog_init libreact_render_core libreact_render_debug libreact_render_graphics librrc_view libreact_debug
 
 include $(BUILD_SHARED_LIBRARY)
 

@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import UTFSequence from '../../UTFSequence';
 import stringifySafe from '../../Utilities/stringifySafe';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';

@@ -15,6 +15,9 @@
 #include <better/mutex.h>
 #include <better/optional.h>
 
+#include <react/debug/flags.h>
+#include <react/debug/react_native_assert.h>
+
 namespace facebook {
 namespace react {
 
@@ -42,10 +45,6 @@ class ContextContainer final {
     std::unique_lock<better::shared_mutex> lock(mutex_);
 
     instances_.insert({key, std::make_shared<T>(instance)});
-
-#ifndef NDEBUG
-    typeNames_.insert({key, typeid(T).name()});
-#endif
   }
 
   /*
@@ -56,10 +55,6 @@ class ContextContainer final {
     std::unique_lock<better::shared_mutex> lock(mutex_);
 
     instances_.erase(key);
-
-#ifndef NDEBUG
-    typeNames_.erase(key);
-#endif
   }
 
   /*
@@ -73,11 +68,6 @@ class ContextContainer final {
     for (auto const &pair : contextContainer.instances_) {
       instances_.erase(pair.first);
       instances_.insert(pair);
-#ifndef NDEBUG
-      typeNames_.erase(pair.first);
-      typeNames_.insert(
-          {pair.first, contextContainer.typeNames_.at(pair.first)});
-#endif
     }
   }
 
@@ -90,12 +80,9 @@ class ContextContainer final {
   T at(std::string const &key) const {
     std::shared_lock<better::shared_mutex> lock(mutex_);
 
-    assert(
+    react_native_assert(
         instances_.find(key) != instances_.end() &&
         "ContextContainer doesn't have an instance for given key.");
-    assert(
-        typeNames_.at(key) == typeid(T).name() &&
-        "ContextContainer stores an instance of different type for given key.");
     return *std::static_pointer_cast<T>(instances_.at(key));
   }
 
@@ -113,10 +100,6 @@ class ContextContainer final {
       return {};
     }
 
-    assert(
-        typeNames_.at(key) == typeid(T).name() &&
-        "ContextContainer stores an instance of different type for given key.");
-
     return *std::static_pointer_cast<T>(iterator->second);
   }
 
@@ -124,9 +107,6 @@ class ContextContainer final {
   mutable better::shared_mutex mutex_;
   // Protected by mutex_`.
   mutable better::map<std::string, std::shared_ptr<void>> instances_;
-#ifndef NDEBUG
-  mutable better::map<std::string, std::string> typeNames_;
-#endif
 };
 
 } // namespace react

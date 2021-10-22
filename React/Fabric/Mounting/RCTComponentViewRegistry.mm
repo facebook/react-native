@@ -9,6 +9,7 @@
 
 #import <Foundation/NSMapTable.h>
 #import <React/RCTAssert.h>
+#import <React/RCTConstants.h>
 
 #import "RCTImageComponentView.h"
 #import "RCTParagraphComponentView.h"
@@ -28,7 +29,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 - (instancetype)init
 {
   if (self = [super init]) {
-    _componentViewFactory = [RCTComponentViewFactory standardComponentViewFactory];
+    _componentViewFactory = [RCTComponentViewFactory currentComponentViewFactory];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleApplicationDidReceiveMemoryWarningNotification)
@@ -46,6 +47,10 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
 - (void)preallocateViewComponents
 {
+  if (RCTExperimentGetPreemptiveViewAllocationDisabled()) {
+    return;
+  }
+
   // This data is based on empirical evidence which should represent the reality pretty well.
   // Regular `<View>` has magnitude equals to `1` by definition.
   std::vector<std::pair<ComponentHandle, float>> componentMagnitudes = {

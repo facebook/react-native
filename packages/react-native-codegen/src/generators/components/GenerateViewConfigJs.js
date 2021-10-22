@@ -54,14 +54,17 @@ function getReactDiffProcessValue(typeAnnotation) {
     case 'ReservedPropTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
-          return j.template.expression`{ process: require('processColor') }`;
+          return j.template
+            .expression`{ process: require('react-native/Libraries/StyleSheet/processColor') }`;
         case 'ImageSourcePrimitive':
           return j.template
-            .expression`{ process: require('resolveAssetSource') }`;
+            .expression`{ process: require('react-native/Libraries/Image/resolveAssetSource') }`;
         case 'PointPrimitive':
-          return j.template.expression`{ diff: require('pointsDiffer') }`;
+          return j.template
+            .expression`{ diff: require('react-native/Libraries/Utilities/differ/pointsDiffer') }`;
         case 'EdgeInsetsPrimitive':
-          return j.template.expression`{ diff: require('insetsDiffer') }`;
+          return j.template
+            .expression`{ diff: require('react-native/Libraries/Utilities/differ/insetsDiffer') }`;
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -73,7 +76,7 @@ function getReactDiffProcessValue(typeAnnotation) {
         switch (typeAnnotation.elementType.name) {
           case 'ColorPrimitive':
             return j.template
-              .expression`{ process: require('processColorArray') }`;
+              .expression`{ process: require('react-native/Libraries/StyleSheet/processColorArray') }`;
           case 'ImageSourcePrimitive':
             return j.literal(true);
           case 'PointPrimitive':
@@ -94,24 +97,18 @@ function getReactDiffProcessValue(typeAnnotation) {
 }
 
 const componentTemplate = `
-const ::_COMPONENT_NAME_::ViewConfig = VIEW_CONFIG;
-
 let nativeComponentName = '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::';
 ::_DEPRECATION_CHECK_::
-registerGeneratedViewConfig(nativeComponentName, ::_COMPONENT_NAME_::ViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = ::_COMPONENT_NAME_::ViewConfig;
-
-export default nativeComponentName;
+export default NativeComponentRegistry.get(nativeComponentName, () => VIEW_CONFIG);
 `.trim();
 
 const deprecatedComponentTemplate = `
 if (UIManager.getViewManagerConfig('::_COMPONENT_NAME_::')) {
   nativeComponentName = '::_COMPONENT_NAME_::';
-} else if (UIManager.getViewManagerConfig('::_COMPONENT_NAME_DEPRECATED_::')){
+} else if (UIManager.getViewManagerConfig('::_COMPONENT_NAME_DEPRECATED_::')) {
   nativeComponentName = '::_COMPONENT_NAME_DEPRECATED_::';
 } else {
-  throw new Error('Failed to find native component for either "::_COMPONENT_NAME_::" or "::_COMPONENT_NAME_DEPRECATED_::"')
+  throw new Error('Failed to find native component for either "::_COMPONENT_NAME_::" or "::_COMPONENT_NAME_DEPRECATED_::"');
 }
 `.trim();
 
@@ -183,7 +180,7 @@ function buildViewConfig(
         switch (extendProps.knownTypeName) {
           case 'ReactNativeCoreViewProps':
             imports.add(
-              "const registerGeneratedViewConfig = require('registerGeneratedViewConfig');",
+              "const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');",
             );
 
             return;
@@ -337,14 +334,15 @@ module.exports = {
 
       const moduleResults = Object.keys(schema.modules)
         .map(moduleName => {
-          const components = schema.modules[moduleName].components;
-          // No components in this module
-          if (components == null) {
-            return null;
+          const module = schema.modules[moduleName];
+          if (module.type !== 'Component') {
+            return;
           }
 
+          const {components} = module;
+
           return Object.keys(components)
-            .map(componentName => {
+            .map((componentName: string) => {
               const component = components[componentName];
 
               const paperComponentName = component.paperComponentName

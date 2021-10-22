@@ -9,7 +9,6 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTEventDispatcher.h>
 #import <React/RCTImageBlurUtils.h>
 #import <React/RCTImageSource.h>
 #import <React/RCTImageUtils.h>
@@ -88,7 +87,7 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 {
   if ((self = [super initWithFrame:CGRectZero])) {
     _bridge = bridge;
-    _imageView = [[RCTUIImageViewAnimated alloc] init];
+    _imageView = [RCTUIImageViewAnimated new];
     _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:_imageView];
 
@@ -235,6 +234,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   [_imageLoader trackURLImageRequestDidDestroy:_loaderRequest];
   _loaderRequest = nil;
+  
+  if (!self.image) {
+    self.image = _defaultImage;
+  }
 }
 
 - (void)clearImageIfDetached

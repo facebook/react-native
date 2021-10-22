@@ -16,9 +16,11 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const ArrayPropsNativeComponentViewConfig = {
+let nativeComponentName = 'ArrayPropsNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'ArrayPropsNativeComponent',
 
   validAttributes: {
@@ -26,7 +28,11 @@ const ArrayPropsNativeComponentViewConfig = {
     disableds: true,
     progress: true,
     radii: true,
-    colors: { process: require('processColorArray') },
+
+    colors: {
+      process: require('react-native/Libraries/StyleSheet/processColorArray'),
+    },
+
     srcs: true,
     points: true,
     sizes: true,
@@ -34,15 +40,7 @@ const ArrayPropsNativeComponentViewConfig = {
     array: true,
     arrayOfArrayOfObject: true,
   },
-};
-
-let nativeComponentName = 'ArrayPropsNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, ArrayPropsNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = ArrayPropsNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -63,23 +61,17 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const ArrayPropsNativeComponentViewConfig = {
+let nativeComponentName = 'ArrayPropsNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'ArrayPropsNativeComponent',
 
   validAttributes: {
     nativePrimitives: true,
   },
-};
-
-let nativeComponentName = 'ArrayPropsNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, ArrayPropsNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = ArrayPropsNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -100,23 +92,17 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const BooleanPropNativeComponentViewConfig = {
+let nativeComponentName = 'BooleanPropNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'BooleanPropNativeComponent',
 
   validAttributes: {
     disabled: true,
   },
-};
-
-let nativeComponentName = 'BooleanPropNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, BooleanPropNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = BooleanPropNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -137,23 +123,19 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const ColorPropNativeComponentViewConfig = {
-  uiViewClassName: 'ColorPropNativeComponent',
-
-  validAttributes: {
-    tintColor: { process: require('processColor') },
-  },
-};
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ColorPropNativeComponent';
 
-registerGeneratedViewConfig(nativeComponentName, ColorPropNativeComponentViewConfig);
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
+  uiViewClassName: 'ColorPropNativeComponent',
 
-export const __INTERNAL_VIEW_CONFIG = ColorPropNativeComponentViewConfig;
-
-export default nativeComponentName;
+  validAttributes: {
+    tintColor: {
+      process: require('react-native/Libraries/StyleSheet/processColor'),
+    },
+  },
+}));
 ",
 }
 `;
@@ -174,21 +156,15 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
-
-const CommandNativeComponentViewConfig = {
-  uiViewClassName: 'CommandNativeComponent',
-  validAttributes: {},
-};
 
 let nativeComponentName = 'CommandNativeComponent';
 
-registerGeneratedViewConfig(nativeComponentName, CommandNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = CommandNativeComponentViewConfig;
-
-export default nativeComponentName;
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
+  uiViewClassName: 'CommandNativeComponent',
+  validAttributes: {},
+}));
 
 export const Commands = {
     flashScrollIndicators(ref) {
@@ -219,24 +195,18 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
-const CommandNativeComponentViewConfig = {
+let nativeComponentName = 'CommandNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'CommandNativeComponent',
 
   validAttributes: {
     accessibilityHint: true,
   },
-};
-
-let nativeComponentName = 'CommandNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, CommandNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = CommandNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 
 export const Commands = {
     handleRootTag(ref, rootTag) {
@@ -267,9 +237,11 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const DoublePropNativeComponentViewConfig = {
+let nativeComponentName = 'DoublePropNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'DoublePropNativeComponent',
 
   validAttributes: {
@@ -280,15 +252,7 @@ const DoublePropNativeComponentViewConfig = {
     blurRadius5: true,
     blurRadius6: true,
   },
-};
-
-let nativeComponentName = 'DoublePropNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, DoublePropNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = DoublePropNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -309,9 +273,11 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const EventsNestedObjectNativeComponentViewConfig = {
+let nativeComponentName = 'EventsNestedObjectNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'EventsNestedObjectNativeComponent',
 
   bubblingEventTypes: {
@@ -327,15 +293,7 @@ const EventsNestedObjectNativeComponentViewConfig = {
     disabled: true,
     onChange: true,
   },
-};
-
-let nativeComponentName = 'EventsNestedObjectNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, EventsNestedObjectNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = EventsNestedObjectNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -356,9 +314,11 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const EventsNativeComponentViewConfig = {
+let nativeComponentName = 'EventsNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'EventsNativeComponent',
 
   bubblingEventTypes: {
@@ -394,15 +354,7 @@ const EventsNativeComponentViewConfig = {
     onOrientationChange: true,
     onEnd: true,
   },
-};
-
-let nativeComponentName = 'EventsNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, EventsNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = EventsNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -423,9 +375,11 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const InterfaceOnlyComponentViewConfig = {
+let nativeComponentName = 'RCTInterfaceOnlyComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'RCTInterfaceOnlyComponent',
 
   bubblingEventTypes: {
@@ -458,15 +412,7 @@ const InterfaceOnlyComponentViewConfig = {
     onChange: true,
     onDire tChange: true,
   },
-};
-
-let nativeComponentName = 'RCTInterfaceOnlyComponent';
-
-registerGeneratedViewConfig(nativeComponentName, InterfaceOnlyComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = InterfaceOnlyComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -487,20 +433,14 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const ExcludedAndroidComponentViewConfig = {
-  uiViewClassName: 'ExcludedAndroidComponent',
-  validAttributes: {},
-};
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ExcludedAndroidComponent';
 
-registerGeneratedViewConfig(nativeComponentName, ExcludedAndroidComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = ExcludedAndroidComponentViewConfig;
-
-export default nativeComponentName;
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
+  uiViewClassName: 'ExcludedAndroidComponent',
+  validAttributes: {},
+}));
 ",
 }
 `;
@@ -521,20 +461,14 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const ExcludedAndroidIosComponentViewConfig = {
-  uiViewClassName: 'ExcludedAndroidIosComponent',
-  validAttributes: {},
-};
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ExcludedAndroidIosComponent';
 
-registerGeneratedViewConfig(nativeComponentName, ExcludedAndroidIosComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = ExcludedAndroidIosComponentViewConfig;
-
-export default nativeComponentName;
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
+  uiViewClassName: 'ExcludedAndroidIosComponent',
+  validAttributes: {},
+}));
 ",
 }
 `;
@@ -555,9 +489,11 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const FloatPropNativeComponentViewConfig = {
+let nativeComponentName = 'FloatPropNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'FloatPropNativeComponent',
 
   validAttributes: {
@@ -568,15 +504,7 @@ const FloatPropNativeComponentViewConfig = {
     blurRadius5: true,
     blurRadius6: true,
   },
-};
-
-let nativeComponentName = 'FloatPropNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, FloatPropNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = FloatPropNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -597,23 +525,19 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const ImagePropNativeComponentViewConfig = {
-  uiViewClassName: 'ImagePropNativeComponent',
-
-  validAttributes: {
-    thumbImage: { process: require('resolveAssetSource') },
-  },
-};
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ImagePropNativeComponent';
 
-registerGeneratedViewConfig(nativeComponentName, ImagePropNativeComponentViewConfig);
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
+  uiViewClassName: 'ImagePropNativeComponent',
 
-export const __INTERNAL_VIEW_CONFIG = ImagePropNativeComponentViewConfig;
-
-export default nativeComponentName;
+  validAttributes: {
+    thumbImage: {
+      process: require('react-native/Libraries/Image/resolveAssetSource'),
+    },
+  },
+}));
 ",
 }
 `;
@@ -634,23 +558,19 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const InsetsPropNativeComponentViewConfig = {
-  uiViewClassName: 'InsetsPropNativeComponent',
-
-  validAttributes: {
-    contentInset: { diff: require('insetsDiffer') },
-  },
-};
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'InsetsPropNativeComponent';
 
-registerGeneratedViewConfig(nativeComponentName, InsetsPropNativeComponentViewConfig);
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
+  uiViewClassName: 'InsetsPropNativeComponent',
 
-export const __INTERNAL_VIEW_CONFIG = InsetsPropNativeComponentViewConfig;
-
-export default nativeComponentName;
+  validAttributes: {
+    contentInset: {
+      diff: require('react-native/Libraries/Utilities/differ/insetsDiffer'),
+    },
+  },
+}));
 ",
 }
 `;
@@ -671,23 +591,17 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const Int32EnumPropsNativeComponentViewConfig = {
+let nativeComponentName = 'Int32EnumPropsNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'Int32EnumPropsNativeComponent',
 
   validAttributes: {
     maxInterval: true,
   },
-};
-
-let nativeComponentName = 'Int32EnumPropsNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, Int32EnumPropsNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = Int32EnumPropsNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -708,9 +622,11 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const IntegerPropNativeComponentViewConfig = {
+let nativeComponentName = 'IntegerPropNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'IntegerPropNativeComponent',
 
   validAttributes: {
@@ -718,15 +634,7 @@ const IntegerPropNativeComponentViewConfig = {
     progress2: true,
     progress3: true,
   },
-};
-
-let nativeComponentName = 'IntegerPropNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, IntegerPropNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = IntegerPropNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -747,9 +655,11 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const InterfaceOnlyComponentViewConfig = {
+let nativeComponentName = 'RCTInterfaceOnlyComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'RCTInterfaceOnlyComponent',
 
   bubblingEventTypes: {
@@ -765,15 +675,7 @@ const InterfaceOnlyComponentViewConfig = {
     accessibilityHint: true,
     onChange: true,
   },
-};
-
-let nativeComponentName = 'RCTInterfaceOnlyComponent';
-
-registerGeneratedViewConfig(nativeComponentName, InterfaceOnlyComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = InterfaceOnlyComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -794,26 +696,31 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const ImageColorPropNativeComponentViewConfig = {
-  uiViewClassName: 'ImageColorPropNativeComponent',
-
-  validAttributes: {
-    thumbImage: { process: require('resolveAssetSource') },
-    color: { process: require('processColor') },
-    thumbTintColor: { process: require('processColor') },
-    point: { diff: require('pointsDiffer') },
-  },
-};
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ImageColorPropNativeComponent';
 
-registerGeneratedViewConfig(nativeComponentName, ImageColorPropNativeComponentViewConfig);
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
+  uiViewClassName: 'ImageColorPropNativeComponent',
 
-export const __INTERNAL_VIEW_CONFIG = ImageColorPropNativeComponentViewConfig;
+  validAttributes: {
+    thumbImage: {
+      process: require('react-native/Libraries/Image/resolveAssetSource'),
+    },
 
-export default nativeComponentName;
+    color: {
+      process: require('react-native/Libraries/StyleSheet/processColor'),
+    },
+
+    thumbTintColor: {
+      process: require('react-native/Libraries/StyleSheet/processColor'),
+    },
+
+    point: {
+      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
+    },
+  },
+}));
 ",
 }
 `;
@@ -834,20 +741,14 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const NoPropsNoEventsComponentViewConfig = {
-  uiViewClassName: 'NoPropsNoEventsComponent',
-  validAttributes: {},
-};
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'NoPropsNoEventsComponent';
 
-registerGeneratedViewConfig(nativeComponentName, NoPropsNoEventsComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = NoPropsNoEventsComponentViewConfig;
-
-export default nativeComponentName;
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
+  uiViewClassName: 'NoPropsNoEventsComponent',
+  validAttributes: {},
+}));
 ",
 }
 `;
@@ -868,23 +769,17 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const ObjectPropsViewConfig = {
+let nativeComponentName = 'ObjectProps';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'ObjectProps',
 
   validAttributes: {
     objectProp: true,
   },
-};
-
-let nativeComponentName = 'ObjectProps';
-
-registerGeneratedViewConfig(nativeComponentName, ObjectPropsViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = ObjectPropsViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -905,23 +800,19 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const PointPropNativeComponentViewConfig = {
-  uiViewClassName: 'PointPropNativeComponent',
-
-  validAttributes: {
-    startPoint: { diff: require('pointsDiffer') },
-  },
-};
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'PointPropNativeComponent';
 
-registerGeneratedViewConfig(nativeComponentName, PointPropNativeComponentViewConfig);
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
+  uiViewClassName: 'PointPropNativeComponent',
 
-export const __INTERNAL_VIEW_CONFIG = PointPropNativeComponentViewConfig;
-
-export default nativeComponentName;
+  validAttributes: {
+    startPoint: {
+      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
+    },
+  },
+}));
 ",
 }
 `;
@@ -942,23 +833,17 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const StringEnumPropsNativeComponentViewConfig = {
+let nativeComponentName = 'StringEnumPropsNativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'StringEnumPropsNativeComponent',
 
   validAttributes: {
     alignment: true,
   },
-};
-
-let nativeComponentName = 'StringEnumPropsNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, StringEnumPropsNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = StringEnumPropsNativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -979,24 +864,18 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const StringPropComponentViewConfig = {
+let nativeComponentName = 'StringPropComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'StringPropComponent',
 
   validAttributes: {
     accessibilityHint: true,
     accessibilityRole: true,
   },
-};
-
-let nativeComponentName = 'StringPropComponent';
-
-registerGeneratedViewConfig(nativeComponentName, StringPropComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = StringPropComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -1017,39 +896,27 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const MultiFile1NativeComponentViewConfig = {
+let nativeComponentName = 'MultiFile1NativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'MultiFile1NativeComponent',
 
   validAttributes: {
     disabled: true,
   },
-};
+}));
 
-let nativeComponentName = 'MultiFile1NativeComponent';
+let nativeComponentName = 'MultiFile2NativeComponent';
 
-registerGeneratedViewConfig(nativeComponentName, MultiFile1NativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = MultiFile1NativeComponentViewConfig;
-
-export default nativeComponentName;
-
-const MultiFile2NativeComponentViewConfig = {
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'MultiFile2NativeComponent',
 
   validAttributes: {
     disabled: true,
   },
-};
-
-let nativeComponentName = 'MultiFile2NativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, MultiFile2NativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = MultiFile2NativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -1070,39 +937,27 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
-const MultiComponent1NativeComponentViewConfig = {
+let nativeComponentName = 'MultiComponent1NativeComponent';
+
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'MultiComponent1NativeComponent',
 
   validAttributes: {
     disabled: true,
   },
-};
+}));
 
-let nativeComponentName = 'MultiComponent1NativeComponent';
+let nativeComponentName = 'MultiComponent2NativeComponent';
 
-registerGeneratedViewConfig(nativeComponentName, MultiComponent1NativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = MultiComponent1NativeComponentViewConfig;
-
-export default nativeComponentName;
-
-const MultiComponent2NativeComponentViewConfig = {
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
   uiViewClassName: 'MultiComponent2NativeComponent',
 
   validAttributes: {
     disabled: true,
   },
-};
-
-let nativeComponentName = 'MultiComponent2NativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, MultiComponent2NativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = MultiComponent2NativeComponentViewConfig;
-
-export default nativeComponentName;
+}));
 ",
 }
 `;
@@ -1123,27 +978,21 @@ Map {
 
 'use strict';
 
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 const {UIManager} = require(\\"react-native\\")
-
-const NativeComponentNameViewConfig = {
-  uiViewClassName: 'NativeComponentName',
-  validAttributes: {},
-};
 
 let nativeComponentName = 'NativeComponentName';
 if (UIManager.getViewManagerConfig('NativeComponentName')) {
   nativeComponentName = 'NativeComponentName';
-} else if (UIManager.getViewManagerConfig('DeprecatedNativeComponentName')){
+} else if (UIManager.getViewManagerConfig('DeprecatedNativeComponentName')) {
   nativeComponentName = 'DeprecatedNativeComponentName';
 } else {
-  throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\"')
+  throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\"');
 }
-registerGeneratedViewConfig(nativeComponentName, NativeComponentNameViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = NativeComponentNameViewConfig;
-
-export default nativeComponentName;
+export default NativeComponentRegistry.get(nativeComponentName, () => ({
+  uiViewClassName: 'NativeComponentName',
+  validAttributes: {},
+}));
 ",
 }
 `;

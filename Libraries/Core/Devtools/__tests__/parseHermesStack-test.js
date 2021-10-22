@@ -38,6 +38,18 @@ describe('parseHermesStack', () => {
     ).toMatchSnapshot();
   });
 
+  test('tolerate empty filename', () => {
+    expect(
+      parseHermesStack(
+        [
+          'TypeError: undefined is not a function',
+          '    at global (unknown:1:9)',
+          '    at foo$bar (:10:1234)',
+        ].join('\n'),
+      ),
+    ).toMatchSnapshot();
+  });
+
   test('skipped frames', () => {
     expect(
       parseHermesStack(

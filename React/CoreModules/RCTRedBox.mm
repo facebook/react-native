@@ -12,7 +12,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTErrorInfo.h>
-#import <React/RCTEventDispatcher.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTJSStackFrame.h>
 #import <React/RCTRedBoxExtraDataViewController.h>
 #import <React/RCTRedBoxSetEnabled.h>
@@ -201,20 +201,10 @@
 
 - (NSInteger)bottomSafeViewHeight
 {
-  if (@available(iOS 11.0, *)) {
-    return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
-  } else {
-    return 0;
-  }
+  return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
-
-- (void)dealloc
-{
-  _stackTraceTableView.dataSource = nil;
-  _stackTraceTableView.delegate = nil;
-}
 
 - (NSString *)stripAnsi:(NSString *)text
 {
@@ -455,6 +445,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -590,7 +582,8 @@ RCT_EXPORT_MODULE()
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [self->_bridge.eventDispatcher sendDeviceEventWithName:@"collectRedBoxExtraData" body:nil];
+    [[self->_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"collectRedBoxExtraData"
+                                                                                body:nil];
 #pragma clang diagnostic pop
 
     if (!self->_window) {
@@ -640,7 +633,7 @@ RCT_EXPORT_METHOD(dismiss)
 
 - (void)redBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow openStackFrameInEditor:(RCTJSStackFrame *)stackFrame
 {
-  NSURL *const bundleURL = _overrideBundleURL ?: _bridge.bundleURL;
+  NSURL *const bundleURL = _overrideBundleURL ?: _bundleManager.bundleURL;
   if (![bundleURL.scheme hasPrefix:@"http"]) {
     RCTLogWarn(@"Cannot open stack frame in editor because you're not connected to the packager.");
     return;

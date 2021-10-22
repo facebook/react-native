@@ -8,8 +8,6 @@
  * @flow strict
  */
 
-'use strict';
-
 import NativeJSCHeapCapture from './NativeJSCHeapCapture';
 
 const HeapCapture = {

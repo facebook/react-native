@@ -14,7 +14,19 @@
 namespace facebook {
 namespace react {
 
-StubViewTree stubViewTreeFromShadowNode(ShadowNode const &rootShadowNode);
+/*
+ * Builds a ShadowView tree from given root ShadowNode using custom built-in
+ * implementation (*without* using Differentiator).
+ */
+StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
+    ShadowNode const &rootShadowNode);
+
+/*
+ * Builds a ShadowView tree from given root ShadowNode using Differentiator by
+ * generating mutation instructions between empty and final trees.
+ */
+StubViewTree buildStubViewTreeUsingDifferentiator(
+    ShadowNode const &rootShadowNode);
 
 } // namespace react
 } // namespace facebook

@@ -102,12 +102,22 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   @ReactProp(name = "snapToOffsets")
   public void setSnapToOffsets(ReactScrollView view, @Nullable ReadableArray snapToOffsets) {
+    if (snapToOffsets == null) {
+      view.setSnapOffsets(null);
+      return;
+    }
+
     DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     List<Integer> offsets = new ArrayList<Integer>();
     for (int i = 0; i < snapToOffsets.size(); i++) {
       offsets.add((int) (snapToOffsets.getDouble(i) * screenDisplayMetrics.density));
     }
     view.setSnapOffsets(offsets);
+  }
+
+  @ReactProp(name = "snapToAlignment")
+  public void setSnapToAlignment(ReactScrollView view, String alignment) {
+    view.setSnapToAlignment(ReactScrollViewHelper.parseSnapToAlignment(alignment));
   }
 
   @ReactProp(name = "snapToStart")
@@ -206,7 +216,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
-      scrollView.reactScrollTo(data.mDestX, data.mDestY);
+      scrollView.scrollTo(data.mDestX, data.mDestY);
     }
   }
 
@@ -285,7 +295,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(scrollView.getScrollX(), bottom);
     } else {
-      scrollView.reactScrollTo(scrollView.getScrollX(), bottom);
+      scrollView.scrollTo(scrollView.getScrollX(), bottom);
     }
   }
 
@@ -305,14 +315,14 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     }
   }
 
-  @ReactProp(name = "contentOffset")
+  @ReactProp(name = "contentOffset", customType = "Point")
   public void setContentOffset(ReactScrollView view, ReadableMap value) {
     if (value != null) {
       double x = value.hasKey("x") ? value.getDouble("x") : 0;
       double y = value.hasKey("y") ? value.getDouble("y") : 0;
-      view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+      view.scrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
     } else {
-      view.reactScrollTo(0, 0);
+      view.scrollTo(0, 0);
     }
   }
 

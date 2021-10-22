@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 export function toCppNamespace(domain: string): string {
   return domain.substr(0, 1).toLowerCase() + domain.substr(1);
 }

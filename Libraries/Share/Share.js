@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');
@@ -53,7 +51,7 @@ class Share {
    *
    * #### iOS
    *
-   *  - `url` - an URL to share
+   *  - `url` - a URL to share
    *
    * At least one of URL and message is required.
    *

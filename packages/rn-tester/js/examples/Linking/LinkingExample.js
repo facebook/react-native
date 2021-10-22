@@ -11,6 +11,7 @@
 
 const React = require('react');
 const {
+  Button,
   Linking,
   Platform,
   StyleSheet,
@@ -48,6 +49,16 @@ class OpenURLButton extends React.Component<Props> {
   }
 }
 
+class OpenSettingsExample extends React.Component<Props, any> {
+  openSettings() {
+    Linking.openSettings();
+  }
+
+  render() {
+    return <Button onPress={this.openSettings} title={'Open Settings'} />;
+  }
+}
+
 class SendIntentButton extends React.Component<Props> {
   handleIntent = async () => {
     try {
@@ -72,14 +83,14 @@ class IntentAndroidExample extends React.Component {
   render() {
     return (
       <View>
-        <RNTesterBlock title="Open external URLs">
+        <View>
           <OpenURLButton url={'https://www.facebook.com'} />
           <OpenURLButton url={'http://www.facebook.com'} />
           <OpenURLButton url={'http://facebook.com'} />
           <OpenURLButton url={'fb://notifications'} />
           <OpenURLButton url={'geo:37.484847,-122.148386'} />
           <OpenURLButton url={'tel:9876543210'} />
-        </RNTesterBlock>
+        </View>
         {Platform.OS === 'android' && (
           <RNTesterBlock title="Send intents">
             <SendIntentButton action="android.intent.action.POWER_USAGE_SUMMARY" />
@@ -122,9 +133,15 @@ exports.documentationURL = 'https://reactnative.dev/docs/linking';
 exports.description = 'Shows how to use Linking to open URLs.';
 exports.examples = [
   {
-    title: 'Simple list of items',
+    title: 'Open external URLs',
     render: function(): React.Element<typeof IntentAndroidExample> {
       return <IntentAndroidExample />;
+    },
+  },
+  {
+    title: 'Open settings app',
+    render: function(): React.Element<typeof LinkingChangesListenerExample> {
+      return <OpenSettingsExample />;
     },
   },
 ];

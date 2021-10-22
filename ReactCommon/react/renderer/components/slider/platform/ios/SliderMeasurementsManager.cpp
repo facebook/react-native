@@ -7,13 +7,15 @@
 
 #include "SliderMeasurementsManager.h"
 
+#include <react/debug/react_native_assert.h>
+
 namespace facebook {
 namespace react {
 
 Size SliderMeasurementsManager::measure(
     SurfaceId surfaceId,
     LayoutConstraints layoutConstraints) const {
-  assert(false); // should never reach this point
+  react_native_assert(false); // should never reach this point
   return {};
 }
 

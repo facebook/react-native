@@ -10,11 +10,4 @@ package com.facebook.hermes.reactexecutor;
 /** Holds runtime configuration for a Hermes VM instance (master or snapshot). */
 public final class RuntimeConfig {
   public long heapSizeMB;
-  public boolean es6Proxy;
-
-  RuntimeConfig() {}
-
-  RuntimeConfig(long heapSizeMB) {
-    this.heapSizeMB = heapSizeMB;
-  }
 }

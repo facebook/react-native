@@ -7,7 +7,12 @@
 
 #pragma once
 
+#ifdef ANDROID
 #include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
+
 #include <react/renderer/imagemanager/ImageRequest.h>
 #include <react/renderer/imagemanager/primitives.h>
 
@@ -63,6 +68,9 @@ class SliderState final {
    */
   folly::dynamic getDynamic() const {
     return {};
+  };
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
   };
 #endif
 

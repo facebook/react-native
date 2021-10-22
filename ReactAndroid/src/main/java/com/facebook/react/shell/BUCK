@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_tar
 rn_android_library(
     name = "shell",
     srcs = glob(["**/*.java"]),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:xplat/default/public.react_native.infra"],
     provided_deps = [
@@ -33,7 +34,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/camera:camera"),
         react_native_target("java/com/facebook/react/modules/clipboard:clipboard"),
         react_native_target("java/com/facebook/react/modules/core:core"),
-        react_native_target("java/com/facebook/react/modules/datepicker:datepicker"),
         react_native_target("java/com/facebook/react/modules/debug:debug"),
         react_native_target("java/com/facebook/react/modules/dialog:dialog"),
         react_native_target("java/com/facebook/react/modules/fresco:fresco"),
@@ -54,7 +54,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/drawer:drawer"),
         react_native_target("java/com/facebook/react/views/image:image"),
         react_native_target("java/com/facebook/react/views/modal:modal"),
-        react_native_target("java/com/facebook/react/views/picker:picker"),
         react_native_target("java/com/facebook/react/views/progressbar:progressbar"),
         react_native_target("java/com/facebook/react/views/scroll:scroll"),
         react_native_target("java/com/facebook/react/views/slider:slider"),

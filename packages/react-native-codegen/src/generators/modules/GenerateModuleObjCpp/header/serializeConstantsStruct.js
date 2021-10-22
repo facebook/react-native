@@ -10,11 +10,8 @@
 
 'use strict';
 
-const {
-  capitalize,
-  getSafePropertyName,
-  getNamespacedStructName,
-} = require('../Utils');
+const {getSafePropertyName, getNamespacedStructName} = require('../Utils');
+const {capitalize} = require('../../../Utils');
 
 import type {Nullable} from '../../../../CodegenSchema';
 import type {StructTypeAnnotation, ConstantsStruct} from '../StructCollector';
@@ -23,16 +20,15 @@ import type {StructSerilizationOutput} from './serializeStruct';
 const {unwrapNullable} = require('../../../../parsers/flow/modules/utils');
 
 const StructTemplate = ({
-  moduleName,
+  hasteModuleName,
   structName,
   builderInputProps,
-}: $ReadOnly<{|
-  moduleName: string,
+}: $ReadOnly<{
+  hasteModuleName: string,
   structName: string,
   builderInputProps: string,
-|}>) => `
-namespace JS {
-  namespace Native${moduleName} {
+}>) => `namespace JS {
+  namespace ${hasteModuleName} {
     struct ${structName} {
 
       struct Builder {
@@ -60,25 +56,24 @@ namespace JS {
 }`;
 
 const MethodTemplate = ({
-  moduleName,
+  hasteModuleName,
   structName,
   properties,
-}: $ReadOnly<{|
-  moduleName: string,
+}: $ReadOnly<{
+  hasteModuleName: string,
   structName: string,
   properties: string,
-|}>) => `
-inline JS::Native${moduleName}::${structName}::Builder::Builder(const Input i) : _factory(^{
+}>) => `inline JS::${hasteModuleName}::${structName}::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
 ${properties}
   return d;
 }) {}
-inline JS::Native${moduleName}::${structName}::Builder::Builder(${structName} i) : _factory(^{
+inline JS::${hasteModuleName}::${structName}::Builder::Builder(${structName} i) : _factory(^{
   return i.unsafeRawValue();
 }) {}`;
 
 function toObjCType(
-  moduleName: string,
+  hasteModuleName: string,
   nullableTypeAnnotation: Nullable<StructTypeAnnotation>,
   isOptional: boolean = false,
 ): string {
@@ -89,7 +84,7 @@ function toObjCType(
   };
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapFollyOptional('double');
@@ -117,12 +112,15 @@ function toObjCType(
       }
 
       return wrapFollyOptional(
-        `std::vector<${toObjCType(moduleName, typeAnnotation.elementType)}>`,
+        `std::vector<${toObjCType(
+          hasteModuleName,
+          typeAnnotation.elementType,
+        )}>`,
       );
     case 'TypeAliasTypeAnnotation':
       const structName = capitalize(typeAnnotation.name);
       const namespacedStructName = getNamespacedStructName(
-        moduleName,
+        hasteModuleName,
         structName,
       );
       return wrapFollyOptional(`${namespacedStructName}::Builder`);
@@ -135,7 +133,7 @@ function toObjCType(
 }
 
 function toObjCValue(
-  moduleName: string,
+  hasteModuleName: string,
   nullableTypeAnnotation: Nullable<StructTypeAnnotation>,
   value: string,
   depth: number,
@@ -151,7 +149,7 @@ function toObjCValue(
   }
 
   switch (typeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapPrimitive('double');
@@ -182,9 +180,9 @@ function toObjCValue(
       }
 
       const localVarName = `el${'_'.repeat(depth + 1)}`;
-      const elementObjCType = toObjCType(moduleName, elementType);
+      const elementObjCType = toObjCType(hasteModuleName, elementType);
       const elementObjCValue = toObjCValue(
-        moduleName,
+        hasteModuleName,
         elementType,
         localVarName,
         depth + 1,
@@ -212,44 +210,44 @@ function toObjCValue(
 }
 
 function serializeConstantsStruct(
-  moduleName: string,
+  hasteModuleName: string,
   struct: ConstantsStruct,
 ): StructSerilizationOutput {
   const declaration = StructTemplate({
-    moduleName,
+    hasteModuleName,
     structName: struct.name,
     builderInputProps: struct.properties
       .map(property => {
         const {typeAnnotation, optional} = property;
-        const propName = getSafePropertyName(property);
-        const objCType = toObjCType(moduleName, typeAnnotation, optional);
+        const safePropName = getSafePropertyName(property);
+        const objCType = toObjCType(hasteModuleName, typeAnnotation, optional);
 
         if (!optional) {
-          return `RCTRequired<${objCType}> ${propName};`;
+          return `RCTRequired<${objCType}> ${safePropName};`;
         }
 
         const space = ' '.repeat(objCType.endsWith('*') ? 0 : 1);
-        return `${objCType}${space}${propName};`;
+        return `${objCType}${space}${safePropName};`;
       })
       .join('\n          '),
   });
 
   const methods = MethodTemplate({
-    moduleName,
+    hasteModuleName,
     structName: struct.name,
     properties: struct.properties
       .map(property => {
-        const {typeAnnotation, optional} = property;
-        const propName = getSafePropertyName(property);
+        const {typeAnnotation, optional, name: propName} = property;
+        const safePropName = getSafePropertyName(property);
         const objCValue = toObjCValue(
-          moduleName,
+          hasteModuleName,
           typeAnnotation,
-          propName,
+          safePropName,
           0,
           optional,
         );
 
-        let varDecl = `auto ${propName} = i.${propName}`;
+        let varDecl = `auto ${safePropName} = i.${safePropName}`;
         if (!optional) {
           varDecl += '.get()';
         }

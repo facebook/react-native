@@ -110,6 +110,16 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
   }
 
   @DoNotStrip
+  @Override
+  @SuppressWarnings("unused")
+  public WritableMap getUnsafeObject(ReadableMap arg) {
+    WritableNativeMap map = new WritableNativeMap();
+    map.merge(arg);
+    log("getUnsafeObject", arg, map);
+    return map;
+  }
+
+  @DoNotStrip
   @SuppressWarnings("unused")
   @Override
   public WritableMap getValue(double numberArg, String stringArg, ReadableMap mapArg) {

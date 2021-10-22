@@ -8,13 +8,18 @@
  * @flow strict-local
  */
 
-'use strict';
-
+import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import InteractionManager from '../Interaction/InteractionManager';
 import Platform from '../Utilities/Platform';
-import NativeLinking from './NativeLinking';
+import NativeLinkingManager from './NativeLinkingManager';
+import NativeIntentAndroid from './NativeIntentAndroid';
 import invariant from 'invariant';
+import nullthrows from 'nullthrows';
+
+type LinkingEventDefinitions = {
+  url: [{url: string}],
+};
 
 /**
  * `Linking` gives you a general interface to interact with both incoming
@@ -22,9 +27,9 @@ import invariant from 'invariant';
  *
  * See https://reactnative.dev/docs/linking.html
  */
-class Linking extends NativeEventEmitter {
+class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor() {
-    super(NativeLinking);
+    super(Platform.OS === 'ios' ? nullthrows(NativeLinkingManager) : undefined);
   }
 
   /**
@@ -33,17 +38,23 @@ class Linking extends NativeEventEmitter {
    *
    * See https://reactnative.dev/docs/linking.html#addeventlistener
    */
-  addEventListener<T>(type: string, handler: T) {
-    this.addListener(type, handler);
+  addEventListener<K: $Keys<LinkingEventDefinitions>>(
+    eventType: K,
+    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
+    context: $FlowFixMe,
+  ): EventSubscription {
+    return this.addListener(eventType, listener);
   }
 
   /**
-   * Remove a handler by passing the `url` event type and the handler.
-   *
-   * See https://reactnative.dev/docs/linking.html#removeeventlistener
+   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
    */
-  removeEventListener<T>(type: string, handler: T) {
-    this.removeListener(type, handler);
+  removeEventListener<K: $Keys<LinkingEventDefinitions>>(
+    eventType: K,
+    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
+  ): void {
+    // NOTE: This will report a deprecation notice via `console.error`.
+    this.removeListener(eventType, listener);
   }
 
   /**
@@ -53,7 +64,11 @@ class Linking extends NativeEventEmitter {
    */
   openURL(url: string): Promise<void> {
     this._validateURL(url);
-    return NativeLinking.openURL(url);
+    if (Platform.OS === 'android') {
+      return nullthrows(NativeIntentAndroid).openURL(url);
+    } else {
+      return nullthrows(NativeLinkingManager).openURL(url);
+    }
   }
 
   /**
@@ -63,7 +78,11 @@ class Linking extends NativeEventEmitter {
    */
   canOpenURL(url: string): Promise<boolean> {
     this._validateURL(url);
-    return NativeLinking.canOpenURL(url);
+    if (Platform.OS === 'android') {
+      return nullthrows(NativeIntentAndroid).canOpenURL(url);
+    } else {
+      return nullthrows(NativeLinkingManager).canOpenURL(url);
+    }
   }
 
   /**
@@ -72,7 +91,11 @@ class Linking extends NativeEventEmitter {
    * See https://reactnative.dev/docs/linking.html#opensettings
    */
   openSettings(): Promise<void> {
-    return NativeLinking.openSettings();
+    if (Platform.OS === 'android') {
+      return nullthrows(NativeIntentAndroid).openSettings();
+    } else {
+      return nullthrows(NativeLinkingManager).openSettings();
+    }
   }
 
   /**
@@ -84,9 +107,9 @@ class Linking extends NativeEventEmitter {
   getInitialURL(): Promise<?string> {
     return Platform.OS === 'android'
       ? InteractionManager.runAfterInteractions().then(() =>
-          NativeLinking.getInitialURL(),
+          nullthrows(NativeIntentAndroid).getInitialURL(),
         )
-      : NativeLinking.getInitialURL();
+      : nullthrows(NativeLinkingManager).getInitialURL();
   }
 
   /*
@@ -105,9 +128,10 @@ class Linking extends NativeEventEmitter {
     }>,
   ): Promise<void> {
     if (Platform.OS === 'android') {
-      return NativeLinking.sendIntent(action, extras);
+      return nullthrows(NativeIntentAndroid).sendIntent(action, extras);
+    } else {
+      return new Promise((resolve, reject) => reject(new Error('Unsupported')));
     }
-    return new Promise((resolve, reject) => reject(new Error('Unsupported')));
   }
 
   _validateURL(url: string) {

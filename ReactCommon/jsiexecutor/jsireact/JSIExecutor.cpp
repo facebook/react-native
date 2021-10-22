@@ -7,6 +7,7 @@
 
 #include "jsireact/JSIExecutor.h"
 
+#include <cxxreact/ErrorUtils.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/ReactMarker.h>
@@ -204,6 +205,30 @@ void JSIExecutor::registerBundle(
       ReactMarker::REGISTER_JS_SEGMENT_STOP, tag.c_str());
 }
 
+// Looping on \c drainMicrotasks until it completes or hits the retries bound.
+static void performMicrotaskCheckpoint(jsi::Runtime &runtime) {
+  uint8_t retries = 0;
+  // A heuristic number to guard inifinite or absurd numbers of retries.
+  const static unsigned int kRetriesBound = 255;
+
+  while (retries < kRetriesBound) {
+    try {
+      // The default behavior of \c drainMicrotasks is unbounded execution.
+      // We may want to make it bounded in the future.
+      if (runtime.drainMicrotasks()) {
+        break;
+      }
+    } catch (jsi::JSError &error) {
+      handleJSError(runtime, error, true);
+    }
+    retries++;
+  }
+
+  if (retries == kRetriesBound) {
+    throw std::runtime_error("Hits microtasks retries bound.");
+  }
+}
+
 void JSIExecutor::callFunction(
     const std::string &moduleId,
     const std::string &methodId,
@@ -240,6 +265,8 @@ void JSIExecutor::callFunction(
         std::runtime_error("Error calling " + moduleId + "." + methodId));
   }
 
+  performMicrotaskCheckpoint(*runtime_);
+
   callNativeModules(ret, true);
 }
 
@@ -258,6 +285,8 @@ void JSIExecutor::invokeCallback(
     std::throw_with_nested(std::runtime_error(
         folly::to<std::string>("Error invoking callback ", callbackId)));
   }
+
+  performMicrotaskCheckpoint(*runtime_);
 
   callNativeModules(ret, true);
 }
@@ -394,7 +423,9 @@ void JSIExecutor::callNativeModules(const Value &queue, bool isEndOfBatch) {
 void JSIExecutor::flush() {
   SystraceSection s("JSIExecutor::flush");
   if (flushedQueue_) {
-    callNativeModules(flushedQueue_->call(*runtime_), true);
+    Value ret = flushedQueue_->call(*runtime_);
+    performMicrotaskCheckpoint(*runtime_);
+    callNativeModules(ret, true);
     return;
   }
 
@@ -410,7 +441,9 @@ void JSIExecutor::flush() {
     // If calls were made, we bind to the JS bridge methods, and use them to
     // get the pending queue of native calls.
     bindBridge();
-    callNativeModules(flushedQueue_->call(*runtime_), true);
+    Value ret = flushedQueue_->call(*runtime_);
+    performMicrotaskCheckpoint(*runtime_);
+    callNativeModules(ret, true);
   } else if (delegate_) {
     // If we have a delegate, we need to call it; we pass a null list to
     // callNativeModules, since we know there are no native calls, without
@@ -439,7 +472,7 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
     throw std::invalid_argument("nativeCallSyncHook arg count must be 3");
   }
 
-  if (!args[2].asObject(*runtime_).isArray(*runtime_)) {
+  if (!args[2].isObject() || !args[2].asObject(*runtime_).isArray(*runtime_)) {
     throw std::invalid_argument(
         folly::to<std::string>("method parameters should be array"));
   }

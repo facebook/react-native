@@ -45,9 +45,10 @@ ShadowNode::Unshared ComponentBuilder::build(
         *family, elementFragment.stateCallback());
     constShadowNode = componentDescriptor.cloneShadowNode(
         *constShadowNode,
-        ShadowNodeFragment{ShadowNodeFragment::propsPlaceholder(),
-                           ShadowNodeFragment::childrenPlaceholder(),
-                           newState});
+        ShadowNodeFragment{
+            ShadowNodeFragment::propsPlaceholder(),
+            ShadowNodeFragment::childrenPlaceholder(),
+            newState});
   }
 
   auto shadowNode = std::const_pointer_cast<ShadowNode>(constShadowNode);

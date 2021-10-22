@@ -10,28 +10,28 @@
 
 /* eslint-env jest */
 
-'use strict';
-
 const React = require('react');
 
 const ReactTestRenderer = require('react-test-renderer');
 const ShallowRenderer = require('react-shallow-renderer');
-/* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.125.1 was deployed. To see the error, delete this comment
- * and run Flow. */
+/* $FlowFixMe[not-a-function] (>=0.125.1 site=react_native_fb) This comment
+ * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
+ * delete this comment and run Flow. */
 const shallowRenderer = new ShallowRenderer();
 
 import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
 
-// $FlowFixMe[value-as-type]
 export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;
 
 export type Predicate = (node: ReactTestInstance) => boolean;
 
 type $ReturnType<Fn> = $Call<<Ret, A>((...A) => Ret) => Ret, Fn>;
-/* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.125.1 was deployed. To see the error, delete this comment
- * and run Flow. */
+/* $FlowFixMe[prop-missing] (>=0.125.1 site=react_native_fb) This comment
+ * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
+ * delete this comment and run Flow. */
+/* $FlowFixMe[value-as-type] (>=0.125.1 site=react_native_fb) This comment
+ * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
+ * delete this comment and run Flow. */
 export type ReactTestRendererJSON = $ReturnType<ReactTestRenderer.create.toJSON>;
 
 const {
@@ -57,13 +57,8 @@ function byClickable(): Predicate {
       // HACK: Find components that use `Pressability`.
       node.instance?.state?.pressability != null ||
       // TODO: Remove this after deleting `Touchable`.
-      /* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.125.1 was deployed. To see the error, delete
-       * this comment and run Flow. */
-      (node.instance &&
-        /* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses
-         * an error found when Flow v0.125.1 was deployed. To see the error,
-         * delete this comment and run Flow. */
+      (node.instance != null &&
+        // $FlowFixMe[prop-missing]
         typeof node.instance.touchableHandlePress === 'function'),
     'is clickable',
   );
@@ -78,10 +73,7 @@ function byTestID(testID: string): Predicate {
 
 function byTextMatching(regex: RegExp): Predicate {
   return withMessage(
-    /* $FlowFixMe(>=0.125.1 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.125.1 was deployed. To see the error, delete
-     * this comment and run Flow. */
-    node => node.props && regex.exec(node.props.children),
+    node => node.props != null && regex.exec(node.props.children) !== null,
     `text content matches ${regex.toString()}`,
   );
 }
@@ -94,7 +86,6 @@ function enter(instance: ReactTestInstance, text: string) {
 
 // Returns null if there is no error, otherwise returns an error message string.
 function maximumDepthError(
-  // $FlowFixMe[value-as-type]
   tree: ReactTestRendererType,
   maxDepthLimit: number,
 ): ?string {
@@ -186,7 +177,6 @@ function renderAndEnforceStrictMode(element: React.Node): any {
   return renderWithStrictMode(element);
 }
 
-// $FlowFixMe[value-as-type]
 function renderWithStrictMode(element: React.Node): ReactTestRendererType {
   const WorkAroundBugWithStrictModeInTestRenderer = prps => prps.children;
   const StrictMode = (React: $FlowFixMe).StrictMode;
