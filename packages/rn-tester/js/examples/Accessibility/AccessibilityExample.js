@@ -978,7 +978,8 @@ class EnabledExample extends React.Component<
       | 'invertColorsChanged'
       | 'reduceTransparencyChanged'
       | 'reduceMotionChanged'
-      | 'screenReaderChanged',
+      | 'screenReaderChanged'
+      | 'accessibilityServiceChanged',
     test: string,
   },
   {
