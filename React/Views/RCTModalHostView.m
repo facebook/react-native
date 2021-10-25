@@ -117,9 +117,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 - (void)dismissModalViewController
 {
   if (_isPresented) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [_delegate dismissModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
-      _isPresented = NO;
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self->_delegate dismissModalHostView:self withViewController:self->_modalViewController animated:[self hasAnimationType]];
+        self->_isPresented = NO;
     });
   }
 }
