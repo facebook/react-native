@@ -374,8 +374,19 @@ end
 # See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
 # Actual fix was authored by https://github.com/mikehardy.
 # New app template will call this for now until the underlying issue is resolved.
-#
-# It's not needed anymore and will be removed later
 def __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  puts "__apply_Xcode_12_5_M1_post_install_workaround() is not needed anymore"
+  # Flipper podspecs are still targeting an older iOS deployment target, and may cause an error like:
+  #   "error: thread-local storage is not supported for the current target"
+  # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+      end
+  end
+
+  # But... doing so caused another issue in Flipper:
+  #   "Time.h:52:17: error: typedef redefinition with different types"
+  # We need to make a patch to RCT-Folly - set `__IPHONE_10_0` to our iOS target + 1.
+  # See https://github.com/facebook/flipper/issues/834 for more details.
+  `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_12_0/' Pods/RCT-Folly/folly/portability/Time.h`
 end
