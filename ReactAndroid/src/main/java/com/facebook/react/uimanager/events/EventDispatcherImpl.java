@@ -13,6 +13,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -366,7 +367,12 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
               }
               Systrace.endAsyncFlow(
                   Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
-              event.dispatchModern(mReactEventEmitter);
+
+              if (ReactFeatureFlags.useDispatchUniqueForCoalescableEvents) {
+                event.dispatchModernV2(mReactEventEmitter);
+              } else {
+                event.dispatchModern(mReactEventEmitter);
+              }
               event.dispose();
             }
             clearEventsToDispatch();

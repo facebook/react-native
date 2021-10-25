@@ -41,6 +41,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
  public:
   LayoutAnimationKeyFrameManager(
       RuntimeExecutor runtimeExecutor,
+      ContextContainer::Shared &contextContainer,
       LayoutAnimationStatusDelegate *delegate);
 
 #pragma mark - UIManagerAnimationDelegate methods
@@ -108,10 +109,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   bool hasComponentDescriptorForShadowView(ShadowView const &shadowView) const;
   ComponentDescriptor const &getComponentDescriptorForShadowView(
       ShadowView const &shadowView) const;
-  std::pair<double, double> calculateAnimationProgress(
-      uint64_t now,
-      LayoutAnimation const &animation,
-      AnimationConfig const &mutationConfig) const;
 
   /**
    * Given a `progress` between 0 and 1, a mutation and LayoutAnimation config,
@@ -142,10 +139,12 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       AnimationKeyFrame const &keyframe,
       ShadowViewMutation::List &mutationsList,
       bool interrupted,
-      std::string logPrefix) const;
+      const std::string &logPrefix) const;
 
  private:
   RuntimeExecutor runtimeExecutor_;
+  ContextContainer::Shared contextContainer_;
+
   mutable std::mutex layoutAnimationStatusDelegateMutex_;
   mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
   mutable std::mutex surfaceIdsToStopMutex_;

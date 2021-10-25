@@ -27,6 +27,15 @@ describe('<Modal />', () => {
     expect(instance).toMatchSnapshot();
   });
 
+  it('should not render its children when mocked with visible=false', () => {
+    const instance = render.create(
+      <Modal visible={false}>
+        <View testID="child" />
+      </Modal>,
+    );
+    expect(instance.root.findAllByProps({testID: 'child'})).toHaveLength(0);
+  });
+
   it('should shallow render as <Modal> when mocked', () => {
     const output = render.shallow(
       <Modal>

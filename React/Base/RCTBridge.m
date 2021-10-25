@@ -15,6 +15,7 @@
 #import "RCTInspectorDevServerHelper.h"
 #endif
 #import "RCTDevLoadingViewProtocol.h"
+#import "RCTJSThread.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -168,15 +169,9 @@ void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
   NSURL *_delegateBundleURL;
 }
 
-dispatch_queue_t RCTJSThread;
-
 + (void)initialize
 {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // Set up JS thread
-    RCTJSThread = (id)kCFNull;
-  });
+  _RCTInitializeJSThreadConstantInternal();
 }
 
 static RCTBridge *RCTCurrentBridgeInstance = nil;

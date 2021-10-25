@@ -7,8 +7,7 @@
 
 plugins {
     id("com.android.application")
-    id("com.facebook.react.codegen")
-    id("com.facebook.react.app")
+    id("com.facebook.react")
 }
 
 /**
@@ -76,8 +75,9 @@ plugins {
  * ]
  */
 
-reactApp {
-    cliPath = "$rootDir/cli.js"
+react {
+    applyAppPlugin = true
+    cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
     reactRoot = rootDir
@@ -85,6 +85,10 @@ reactApp {
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
     enableHermesForVariant { def v -> v.name.contains("hermes") }
+
+    // Codegen Configs
+    jsRootDir = file("$rootDir/packages/rn-tester")
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
 }
 
 project.ext.react = [
@@ -135,9 +139,11 @@ def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitect
 
 android {
     compileSdkVersion 29
-    ndkVersion ANDROID_NDK_VERSION
-    if (ANDROID_NDK_PATH != null) {
-        ndkPath ANDROID_NDK_PATH
+    if (project.hasProperty("ANDROID_NDK_VERSION")) {
+        ndkVersion project.property("ANDROID_NDK_VERSION")
+    }
+    if (project.hasProperty("ANDROID_NDK_PATH")) {
+        ndkPath project.property("ANDROID_NDK_PATH")
     }
 
     dexOptions {
@@ -247,12 +253,6 @@ dependencies {
     // Use detox test library
     androidTestImplementation('com.wix:detox:+') { transitive = true }
     androidTestImplementation 'junit:junit:4.12'
-}
-
-react {
-    jsRootDir = file("$rootDir/packages/rn-tester")
-    reactNativeRootDir = file("$rootDir")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
 
 if (enableCodegen) {

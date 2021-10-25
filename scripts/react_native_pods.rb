@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+$CODEGEN_TEMP_DIR = 'build/generated'
+
 def use_react_native! (options={})
   # The prefix to react-native
   prefix = options[:path] ||= "../node_modules/react-native"
@@ -15,6 +17,13 @@ def use_react_native! (options={})
 
   # Include Hermes dependencies
   hermes_enabled = options[:hermes_enabled] ||= false
+
+  if `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i == 1 && !RUBY_PLATFORM.start_with?('arm64')
+    Pod::UI.warn 'Do not use "pod install" from inside Rosetta2 (x86_64 emulation on arm64).'
+    Pod::UI.warn ' - Emulated x86_64 is slower than native arm64'
+    Pod::UI.warn ' - May result in mixed architectures in rubygems (eg: ffi_c.bundle files may be x86_64 with an arm64 interpreter)'
+    Pod::UI.warn 'Run "env /usr/bin/arch -arm64 /bin/bash --login" then try again.'
+  end
 
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
@@ -127,20 +136,49 @@ def exclude_architectures(installer)
     .uniq{ |p| p.path }
     .push(installer.pods_project)
 
-  arm_value = `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i
-
   # Hermes does not support `i386` architecture
   excluded_archs_default = has_pod(installer, 'hermes-engine') ? "i386" : ""
 
   projects.each do |project|
     project.build_configurations.each do |config|
-      if arm_value == 1 then
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
-      else
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64 " + excluded_archs_default
-      end
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = excluded_archs_default
     end
 
+    project.save()
+  end
+end
+
+def fix_library_search_paths(installer)
+  def fix_config(config)
+    lib_search_paths = config.build_settings["LIBRARY_SEARCH_PATHS"]
+    if lib_search_paths
+      if lib_search_paths.include?("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)") || lib_search_paths.include?("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
+        # since the libraries there are only built for x86_64 and i386.
+        lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
+        lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
+        if !(lib_search_paths.include?("$(SDKROOT)/usr/lib/swift") || lib_search_paths.include?("\"$(SDKROOT)/usr/lib/swift\""))
+          # however, $(SDKROOT)/usr/lib/swift is required, at least if user is not running CocoaPods 1.11
+          lib_search_paths.insert(0, "$(SDKROOT)/usr/lib/swift")
+        end
+      end
+    end
+  end
+
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      fix_config(config)
+    end
+    project.native_targets.each do |target|
+      target.build_configurations.each do |config|
+        fix_config(config)
+      end
+    end
     project.save()
   end
 end
@@ -151,7 +189,67 @@ def react_native_post_install(installer)
   end
 
   exclude_architectures(installer)
+  fix_library_search_paths(installer)
 end
+
+
+def generate_temp_pod_spec_for_codegen!()
+  output_dir = "#{Pod::Config.instance.installation_root}/#{$CODEGEN_TEMP_DIR}"
+  Pod::Executable.execute_command("mkdir", ["-p", output_dir]);
+
+  package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
+  version = package['version']
+
+  folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+  folly_version = '2021.06.28.00'
+  boost_version = '1.76.0'
+  boost_compiler_flags = '-Wno-documentation'
+
+  spec = {
+    'name' => "ReactNative-Codegen",
+    'version' => version,
+    'summary' => 'Temp pod for generated files for React Native',
+    'homepage' => 'https://facebook.com/',
+    'license' => 'Unlicense',
+    'authors' => 'Facebook',
+    'compiler_flags'  => "#{folly_compiler_flags} #{boost_compiler_flags} -Wno-nullability-completeness",
+    'source' => { :git => '' },
+    'platforms' => {
+      'ios' => '11.0',
+    },
+    'source_files' => "**/*.{h,mm,cpp}",
+    'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>
+      [
+        "\"$(PODS_ROOT)/boost\"",
+        "\"$(PODS_ROOT)/RCT-Folly\"",
+        "\"$(PODS_ROOT)/Headers/Private/React-Fabric\""
+      ].join(' ')
+    },
+    'dependencies': {
+      "React-graphics":  [version],
+      "React-jsiexecutor":  [version],
+      "RCT-Folly": [folly_version],
+      "RCTRequired": [version],
+      "RCTTypeSafety": [version],
+      "React-Core": [version],
+      "React-jsi": [version],
+      "ReactCommon/turbomodule/core": [version]
+    }
+  }
+  podspec_path = File.join(output_dir, 'ReactNative-Codegen.podspec.json')
+  Pod::UI.puts "[Codegene] Generating #{podspec_path}"
+
+  File.open(podspec_path, 'w') do |f|
+    f.write(spec.to_json)
+    f.fsync
+  end
+
+  return {
+    "spec" => spec,
+    "path" => output_dir,
+  }
+end
+
 
 def use_react_native_codegen!(spec, options={})
   return if ENV['DISABLE_CODEGEN'] == '1'
@@ -160,7 +258,7 @@ def use_react_native_codegen!(spec, options={})
   prefix = options[:react_native_path] ||= "../.."
 
   # Library name (e.g. FBReactNativeSpec)
-  library_name = options[:library_name] ||= "#{spec.name}Spec"
+  library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
 
   # Output dir, relative to podspec that invoked this method
   output_dir = options[:output_dir] ||= "#{library_name}"
@@ -338,19 +436,6 @@ end
 # Actual fix was authored by https://github.com/mikehardy.
 # New app template will call this for now until the underlying issue is resolved.
 def __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  # Apple Silicon builds require a library path tweak for Swift library discovery to resolve Swift-related "symbol not found".
-  # Note: this was fixed via https://github.com/facebook/react-native/commit/eb938863063f5535735af2be4e706f70647e5b90
-  # Keeping this logic here but commented out for future reference.
-  #
-  # installer.aggregate_targets.each do |aggregate_target|
-  #   aggregate_target.user_project.native_targets.each do |target|
-  #     target.build_configurations.each do |config|
-  #       config.build_settings['LIBRARY_SEARCH_PATHS'] = ['$(SDKROOT)/usr/lib/swift', '$(inherited)']
-  #     end
-  #   end
-  #   aggregate_target.user_project.save
-  # end
-
   # Flipper podspecs are still targeting an older iOS deployment target, and may cause an error like:
   #   "error: thread-local storage is not supported for the current target"
   # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).

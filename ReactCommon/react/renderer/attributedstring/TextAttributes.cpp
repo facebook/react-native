@@ -71,13 +71,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   textDecorationLineType = textAttributes.textDecorationLineType.hasValue()
       ? textAttributes.textDecorationLineType
       : textDecorationLineType;
-  textDecorationLineStyle = textAttributes.textDecorationLineStyle.hasValue()
-      ? textAttributes.textDecorationLineStyle
-      : textDecorationLineStyle;
-  textDecorationLinePattern =
-      textAttributes.textDecorationLinePattern.hasValue()
-      ? textAttributes.textDecorationLinePattern
-      : textDecorationLinePattern;
+  textDecorationStyle = textAttributes.textDecorationStyle.hasValue()
+      ? textAttributes.textDecorationStyle
+      : textDecorationStyle;
 
   // Shadow
   textShadowOffset = textAttributes.textShadowOffset.hasValue()
@@ -117,8 +113,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              baseWritingDirection,
              textDecorationColor,
              textDecorationLineType,
-             textDecorationLineStyle,
-             textDecorationLinePattern,
+             textDecorationStyle,
              textShadowOffset,
              textShadowColor,
              isHighlighted,
@@ -137,8 +132,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              rhs.baseWritingDirection,
              rhs.textDecorationColor,
              rhs.textDecorationLineType,
-             rhs.textDecorationLineStyle,
-             rhs.textDecorationLinePattern,
+             rhs.textDecorationStyle,
              rhs.textShadowOffset,
              rhs.textShadowColor,
              rhs.isHighlighted,
@@ -199,10 +193,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem("textDecorationColor", textDecorationColor),
       debugStringConvertibleItem(
           "textDecorationLineType", textDecorationLineType),
-      debugStringConvertibleItem(
-          "textDecorationLineStyle", textDecorationLineStyle),
-      debugStringConvertibleItem(
-          "textDecorationLinePattern", textDecorationLinePattern),
+      debugStringConvertibleItem("textDecorationStyle", textDecorationStyle),
 
       // Shadow
       debugStringConvertibleItem("textShadowOffset", textShadowOffset),

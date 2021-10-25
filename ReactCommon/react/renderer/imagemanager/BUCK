@@ -31,12 +31,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/imagemanager",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     fbandroid_exported_headers = subdir_glob(
         [

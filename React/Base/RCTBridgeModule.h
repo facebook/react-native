@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
+#import <React/RCTJSThread.h>
 
 @class RCTBridge;
 @protocol RCTBridgeMethod;
@@ -41,16 +42,6 @@ typedef void (^RCTPromiseResolveBlock)(id result);
  * precise error messages.
  */
 typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
-
-/**
- * This constant can be returned from +methodQueue to force module
- * methods to be called on the JavaScript thread. This can have serious
- * implications for performance, so only use this if you're sure it's what
- * you need.
- *
- * NOTE: RCTJSThread is not a real libdispatch queue
- */
-RCT_EXTERN dispatch_queue_t RCTJSThread;
 
 RCT_EXTERN_C_BEGIN
 

@@ -77,6 +77,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.LockFreeEventDispatcherImpl;
@@ -558,6 +559,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     SurfaceMountingManager surfaceMountingManager =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData");
     ThemedReactContext themedReactContext = surfaceMountingManager.getContext();
+
+    if (themedReactContext == null) {
+      FLog.w(TAG, "\"themedReactContext\" is null when call \"getThemeData\"");
+      return false;
+    }
     float[] defaultTextInputPaddingForTheme =
         UIManagerHelper.getDefaultTextInputPadding(themedReactContext);
     defaultTextInputPadding[0] = defaultTextInputPaddingForTheme[PADDING_START_INDEX];
@@ -626,6 +632,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           @Override
           public int getSurfaceId() {
             return View.NO_ID;
+          }
+
+          @Override
+          public String toString() {
+            String propsString =
+                IS_DEVELOPMENT_ENVIRONMENT
+                    ? (props != null ? props.toHashMap().toString() : "<null>")
+                    : "<hidden>";
+            return String.format("SYNC UPDATE PROPS [%d]: %s", reactTag, propsString);
           }
         };
 
@@ -829,6 +844,23 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     receiveEvent(surfaceId, reactTag, eventName, false, 0, params);
   }
 
+  public void receiveEvent(
+      int surfaceId,
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      int customCoalesceKey,
+      @Nullable WritableMap params) {
+    receiveEvent(
+        surfaceId,
+        reactTag,
+        eventName,
+        canCoalesceEvent,
+        customCoalesceKey,
+        params,
+        EventCategoryDef.UNSPECIFIED);
+  }
+
   /**
    * receiveEvent API that emits an event to C++. If `canCoalesceEvent` is true, that signals that
    * C++ may coalesce the event optionally. Otherwise, coalescing can happen in Java before
@@ -842,6 +874,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @param canCoalesceEvent
    * @param customCoalesceKey
    * @param params
+   * @param eventCategory
    */
   public void receiveEvent(
       int surfaceId,
@@ -849,7 +882,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       String eventName,
       boolean canCoalesceEvent,
       int customCoalesceKey,
-      @Nullable WritableMap params) {
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory) {
     if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
       FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
     }
@@ -870,7 +904,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (canCoalesceEvent) {
       eventEmitter.invokeUnique(eventName, params, customCoalesceKey);
     } else {
-      eventEmitter.invoke(eventName, params);
+      eventEmitter.invoke(eventName, params, eventCategory);
     }
   }
 
@@ -996,6 +1030,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           public int getSurfaceId() {
             return surfaceId;
           }
+
+          @Override
+          public String toString() {
+            return String.format("SET_JS_RESPONDER [%d] [surface:%d]", reactTag, surfaceId);
+          }
         });
   }
 
@@ -1014,6 +1053,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           @Override
           public int getSurfaceId() {
             return View.NO_ID;
+          }
+
+          @Override
+          public String toString() {
+            return "CLEAR_JS_RESPONDER";
           }
         });
   }

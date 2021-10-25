@@ -7,6 +7,8 @@
 
 #pragma once
 
+// foo bar 2
+
 // #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/graphics/Color.h>

@@ -172,7 +172,7 @@ static NSArray<NSString *> *fontNamesForFamilyName(NSString *familyName)
 
   auto names = [cache objectForKey:familyName];
   if (!names) {
-    names = [UIFont fontNamesForFamilyName:familyName];
+    names = [UIFont fontNamesForFamilyName:familyName] ?: [NSArray new];
     [cache setObject:names forKey:familyName];
   }
   return names;

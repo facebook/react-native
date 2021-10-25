@@ -61,6 +61,45 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
         ])}
       </ScrollView>,
     );
+    items.push(
+      <ScrollView
+        key={'scrollViewSnapStart'}
+        horizontal
+        snapToAlignment={'start'}
+        pagingEnabled>
+        {this.makeItems(NUM_ITEMS, [
+          styles.itemWrapper,
+          styles.horizontalItemWrapper,
+          styles.horizontalPagingItemWrapper,
+        ])}
+      </ScrollView>,
+    );
+    items.push(
+      <ScrollView
+        key={'scrollViewSnapCenter'}
+        horizontal
+        snapToAlignment={'center'}
+        pagingEnabled>
+        {this.makeItems(NUM_ITEMS, [
+          styles.itemWrapper,
+          styles.horizontalItemWrapper,
+          styles.horizontalPagingItemWrapper,
+        ])}
+      </ScrollView>,
+    );
+    items.push(
+      <ScrollView
+        key={'scrollViewSnapEnd'}
+        horizontal
+        snapToAlignment={'end'}
+        pagingEnabled>
+        {this.makeItems(NUM_ITEMS, [
+          styles.itemWrapper,
+          styles.horizontalItemWrapper,
+          styles.horizontalPagingItemWrapper,
+        ])}
+      </ScrollView>,
+    );
 
     const verticalScrollView = (
       <ScrollView style={styles.verticalScrollView}>{items}</ScrollView>

@@ -21,7 +21,7 @@ export type Props = ViewProps;
  * supports layout with flexbox, style, some touch handling, and accessibility
  * controls.
  *
- * @see https://reactnative.dev/docs/view.html
+ * @see https://reactnative.dev/docs/view
  */
 const View: React.AbstractComponent<
   ViewProps,

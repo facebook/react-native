@@ -16,8 +16,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.view.DisplayCutout;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -182,7 +184,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onChildStartedNativeGesture(MotionEvent androidEvent) {
+  public void onChildStartedNativeGesture(MotionEvent ev) {
     if (mReactInstanceManager == null
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
@@ -198,8 +200,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
-      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
     }
+  }
+
+  @Override
+  public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
+    onChildStartedNativeGesture(ev);
   }
 
   @Override
@@ -647,6 +654,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     mJSTouchDispatcher = new JSTouchDispatcher(this);
   }
 
+  @VisibleForTesting
+  /* package */ void simulateCheckForKeyboardForTesting() {
+    getCustomGlobalLayoutListener().checkForKeyboardEvents();
+  }
+
   private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {
     if (mCustomGlobalLayoutListener == null) {
       mCustomGlobalLayoutListener = new CustomGlobalLayoutListener();
@@ -766,8 +778,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
+      int notchHeight = 0;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        DisplayCutout displayCutout = getRootView().getRootWindowInsets().getDisplayCutout();
+        if (displayCutout != null) {
+          notchHeight = displayCutout.getSafeInsetTop();
+        }
+      }
       final int heightDiff =
-          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
+          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels
+              - mVisibleViewArea.bottom
+              + notchHeight;
 
       boolean isKeyboardShowingOrKeyboardHeightChanged =
           mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected;

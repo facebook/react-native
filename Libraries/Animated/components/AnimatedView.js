@@ -15,9 +15,7 @@ const createAnimatedComponent = require('../createAnimatedComponent');
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-module.exports = (createAnimatedComponent(View, {
-  collapsable: true,
-}): AnimatedComponentType<
+module.exports = (createAnimatedComponent(View): AnimatedComponentType<
   React.ElementConfig<typeof View>,
   React.ElementRef<typeof View>,
 >);

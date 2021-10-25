@@ -94,8 +94,10 @@ interpolateFloats(float coefficient, float oldValue, float newValue) {
 
 LayoutAnimationKeyFrameManager::LayoutAnimationKeyFrameManager(
     RuntimeExecutor runtimeExecutor,
+    ContextContainer::Shared &contextContainer,
     LayoutAnimationStatusDelegate *delegate)
     : runtimeExecutor_(runtimeExecutor),
+      contextContainer_(contextContainer),
       layoutAnimationStatusDelegate_(delegate),
       now_([]() {
         return std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -228,14 +230,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     LOG(ERROR) << "BEGINNING DONE DISPLAYING ONGOING inflightAnimations_!";
 #endif
 
-    // Stub PropsParserContext used for cloneProps.
-    // This is/should be safe because cloning doesn't actually need to
-    // parse props, and just copies them; therefore there should be no
-    // need to actually use anything in the PropsParserContext.
-    // If this ever changes, the LayoutAnimations API will need to change
-    // to pass in a real PropsParserContext.
-    ContextContainer contextContainer{};
-    PropsParserContext propsParserContext{surfaceId, contextContainer};
+    PropsParserContext propsParserContext{surfaceId, *contextContainer_};
 
     // What to do if we detect a conflict? Get current value and make
     // that the baseline of the next animation. Scale the remaining time
@@ -1118,65 +1113,6 @@ LayoutAnimationKeyFrameManager::getComponentDescriptorForShadowView(
   return componentDescriptorRegistry_->at(shadowView.componentHandle);
 }
 
-std::pair<double, double>
-LayoutAnimationKeyFrameManager::calculateAnimationProgress(
-    uint64_t now,
-    const LayoutAnimation &animation,
-    const AnimationConfig &mutationConfig) const {
-  if (mutationConfig.animationType == AnimationType::None) {
-    return {1, 1};
-  }
-
-  uint64_t startTime = animation.startTime;
-  uint64_t delay = mutationConfig.delay;
-  uint64_t endTime = startTime + delay + mutationConfig.duration;
-
-  static const float PI = 3.14159265358979323846;
-
-  if (now >= endTime) {
-    return {1, 1};
-  }
-  if (now < startTime + delay) {
-    return {0, 0};
-  }
-
-  double linearTimeProgression = 1 -
-      (double)(endTime - delay - now) / (double)(endTime - animation.startTime);
-
-  if (mutationConfig.animationType == AnimationType::Linear) {
-    return {linearTimeProgression, linearTimeProgression};
-  } else if (mutationConfig.animationType == AnimationType::EaseIn) {
-    // This is an accelerator-style interpolator.
-    // In the future, this parameter (2.0) could be adjusted. This has been the
-    // default for Classic RN forever.
-    return {linearTimeProgression, pow(linearTimeProgression, 2.0)};
-  } else if (mutationConfig.animationType == AnimationType::EaseOut) {
-    // This is an decelerator-style interpolator.
-    // In the future, this parameter (2.0) could be adjusted. This has been the
-    // default for Classic RN forever.
-    return {linearTimeProgression, 1.0 - pow(1 - linearTimeProgression, 2.0)};
-  } else if (mutationConfig.animationType == AnimationType::EaseInEaseOut) {
-    // This is a combination of accelerate+decelerate.
-    // The animation starts and ends slowly, and speeds up in the middle.
-    return {
-        linearTimeProgression,
-        cos((linearTimeProgression + 1.0) * PI) / 2 + 0.5};
-  } else if (mutationConfig.animationType == AnimationType::Spring) {
-    // Using mSpringDamping in this equation is not really the exact
-    // mathematical springDamping, but a good approximation We need to replace
-    // this equation with the right Factor that accounts for damping and
-    // friction
-    double damping = mutationConfig.springDamping;
-    return {
-        linearTimeProgression,
-        (1 +
-         pow(2, -10 * linearTimeProgression) *
-             sin((linearTimeProgression - damping / 4) * PI * 2 / damping))};
-  } else {
-    return {linearTimeProgression, linearTimeProgression};
-  }
-}
-
 ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     double progress,
     ShadowView const &startingView,
@@ -1189,15 +1125,6 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
     react_native_assert(false);
     return finalView;
   }
-
-  // Stub PropsParserContext used for interpolateProps.
-  // This is/should be safe because interpolating doesn't actually need to
-  // parse props, and just copies them; therefore there should be no
-  // need to actually use anything in the PropsParserContext.
-  // If this ever changes, the LayoutAnimations API will need to change
-  // to pass in a real PropsParserContext.
-  ContextContainer contextContainer{};
-  PropsParserContext propsParserContext{-1, contextContainer};
 
   ComponentDescriptor const &componentDescriptor =
       getComponentDescriptorForShadowView(startingView);
@@ -1219,6 +1146,8 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   }
 
   // Animate opacity or scale/transform
+  PropsParserContext propsParserContext{
+      finalView.surfaceId, *contextContainer_};
   mutatedShadowView.props = componentDescriptor.interpolateProps(
       propsParserContext, progress, startingView.props, finalView.props);
   react_native_assert(mutatedShadowView.props != nullptr);
@@ -1261,7 +1190,7 @@ void LayoutAnimationKeyFrameManager::queueFinalMutationsForCompletedKeyFrame(
     AnimationKeyFrame const &keyframe,
     ShadowViewMutation::List &mutationsList,
     bool interrupted,
-    std::string logPrefix) const {
+    const std::string &logPrefix) const {
   if (skipInvalidatedKeyFrames_ && keyframe.invalidated) {
     return;
   }

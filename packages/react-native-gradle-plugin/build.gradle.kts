@@ -9,7 +9,7 @@ import org.gradle.api.internal.classpath.ModuleRegistry
 import org.gradle.configurationcache.extensions.serviceOf
 
 plugins {
-  kotlin("jvm") version "1.4.21"
+  kotlin("jvm") version "1.5.31"
   id("java-gradle-plugin")
 }
 
@@ -20,9 +20,9 @@ repositories {
 
 gradlePlugin {
   plugins {
-    create("reactApp") {
-      id = "com.facebook.react.app"
-      implementationClass = "com.facebook.react.ReactAppPlugin"
+    create("react") {
+      id = "com.facebook.react"
+      implementationClass = "com.facebook.react.ReactPlugin"
     }
   }
 }
@@ -30,7 +30,7 @@ gradlePlugin {
 dependencies {
   implementation(gradleApi())
   implementation("com.android.tools.build:gradle:4.2.2")
-  
+
   testImplementation("junit:junit:4.13.2")
 
   testRuntimeOnly(

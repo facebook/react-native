@@ -91,8 +91,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     _runtimeExecutor = runtimeExecutor;
     _contextContainer = contextContainer;
 
-    _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
-    _mountingManager = [[RCTMountingManager alloc] init];
+    _surfaceRegistry = [RCTSurfaceRegistry new];
+    _mountingManager = [RCTMountingManager new];
     _mountingManager.contextContainer = contextContainer;
     _mountingManager.delegate = self;
 
@@ -257,10 +257,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_remove_clipped_subviews_ios")) {
     RCTSetRemoveClippedSubviewsEnabled(YES);
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_initial_max_size_ios")) {
-    RCTSetInitialMaxSizeEnabled(YES);
   }
 
   auto componentRegistryFactory =

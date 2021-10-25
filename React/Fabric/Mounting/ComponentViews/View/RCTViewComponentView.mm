@@ -29,6 +29,8 @@ using namespace facebook::react;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
+@synthesize removeClippedSubviews = _removeClippedSubviews;
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -329,11 +331,7 @@ using namespace facebook::react;
 
   // `accessibilityIgnoresInvertColors`
   if (oldViewProps.accessibilityIgnoresInvertColors != newViewProps.accessibilityIgnoresInvertColors) {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-    if (@available(iOS 11.0, *)) {
-      self.accessibilityIgnoresInvertColors = newViewProps.accessibilityIgnoresInvertColors;
-    }
-#endif
+    self.accessibilityIgnoresInvertColors = newViewProps.accessibilityIgnoresInvertColors;
   }
 
   // `accessibilityValue`
@@ -580,7 +578,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.backgroundColor = _backgroundColor.CGColor;
   } else {
     if (!_borderLayer) {
-      _borderLayer = [[CALayer alloc] init];
+      _borderLayer = [CALayer new];
       _borderLayer.zPosition = -1024.0f;
       _borderLayer.frame = layer.bounds;
       _borderLayer.magnificationFilter = kCAFilterNearest;

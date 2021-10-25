@@ -52,13 +52,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 - (UIEdgeInsets)safeAreaInsetsIfSupportedAndEnabled
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
   if (self.isSupportedByOS) {
-    if (@available(iOS 11.0, *)) {
-      return self.safeAreaInsets;
-    }
+    return self.safeAreaInsets;
   }
-#endif
   return self.emulateUnlessSupported ? self.emulatedSafeAreaInsets : UIEdgeInsetsZero;
 }
 

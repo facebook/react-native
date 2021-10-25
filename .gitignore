@@ -23,7 +23,6 @@ project.xcworkspace
 
 # Gradle
 /build/
-/packages/react-native-codegen/android/build/
 /packages/react-native-gradle-plugin/build/
 /packages/rn-tester/android/app/.cxx/
 /packages/rn-tester/android/app/build/
@@ -91,6 +90,10 @@ package-lock.json
 /React/CoreModules/**/*.xcodeproj
 /React/FBReactNativeSpec/**/*.xcodeproj
 /packages/react-native-codegen/**/*.xcodeproj
+
+# Ruby Gems (Bundler)
+/vendor
+/template/vendor
 
 # CocoaPods
 /template/ios/Pods/

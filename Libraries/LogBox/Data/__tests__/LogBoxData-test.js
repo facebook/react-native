@@ -676,7 +676,6 @@ describe('LogBoxData', () => {
 
     const receivedError = ExceptionsManager.handleException.mock.calls[0][0];
     expect(receivedError.componentStack).toBe('    in Component (file.js:1)');
-    expect(receivedError.forceRedbox).toBe(true);
     expect(receivedError.message).toBe(
       'An error was thrown when attempting to render log messages via LogBox.\n\nSimulated Error',
     );
@@ -689,7 +688,6 @@ describe('LogBoxData', () => {
 
     const receivedError = ExceptionsManager.handleException.mock.calls[0][0];
     expect(receivedError.componentStack).toBeUndefined();
-    expect(receivedError.forceRedbox).toBe(true);
     expect(receivedError.message).toBe(
       'An error was thrown when attempting to render log messages via LogBox.\n\nSimulated Error',
     );

@@ -16,7 +16,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ArrayPropsNativeComponent';
 
@@ -30,7 +30,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
     radii: true,
 
     colors: {
-      process: require('processColorArray'),
+      process: require('react-native/Libraries/StyleSheet/processColorArray'),
     },
 
     srcs: true,
@@ -61,7 +61,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ArrayPropsNativeComponent';
 
@@ -92,7 +92,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'BooleanPropNativeComponent';
 
@@ -123,7 +123,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ColorPropNativeComponent';
 
@@ -132,7 +132,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     tintColor: {
-      process: require('processColor'),
+      process: require('react-native/Libraries/StyleSheet/processColor'),
     },
   },
 }));
@@ -156,7 +156,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 let nativeComponentName = 'CommandNativeComponent';
@@ -195,7 +195,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 let nativeComponentName = 'CommandNativeComponent';
@@ -237,7 +237,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'DoublePropNativeComponent';
 
@@ -273,7 +273,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'EventsNestedObjectNativeComponent';
 
@@ -314,7 +314,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'EventsNativeComponent';
 
@@ -375,7 +375,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'RCTInterfaceOnlyComponent';
 
@@ -433,7 +433,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ExcludedAndroidComponent';
 
@@ -461,7 +461,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ExcludedAndroidIosComponent';
 
@@ -489,7 +489,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'FloatPropNativeComponent';
 
@@ -525,7 +525,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ImagePropNativeComponent';
 
@@ -534,7 +534,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     thumbImage: {
-      process: require('resolveAssetSource'),
+      process: require('react-native/Libraries/Image/resolveAssetSource'),
     },
   },
 }));
@@ -558,7 +558,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'InsetsPropNativeComponent';
 
@@ -567,7 +567,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     contentInset: {
-      diff: require('insetsDiffer'),
+      diff: require('react-native/Libraries/Utilities/differ/insetsDiffer'),
     },
   },
 }));
@@ -591,7 +591,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'Int32EnumPropsNativeComponent';
 
@@ -622,7 +622,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'IntegerPropNativeComponent';
 
@@ -655,7 +655,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'RCTInterfaceOnlyComponent';
 
@@ -696,7 +696,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ImageColorPropNativeComponent';
 
@@ -705,19 +705,19 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     thumbImage: {
-      process: require('resolveAssetSource'),
+      process: require('react-native/Libraries/Image/resolveAssetSource'),
     },
 
     color: {
-      process: require('processColor'),
+      process: require('react-native/Libraries/StyleSheet/processColor'),
     },
 
     thumbTintColor: {
-      process: require('processColor'),
+      process: require('react-native/Libraries/StyleSheet/processColor'),
     },
 
     point: {
-      diff: require('pointsDiffer'),
+      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
     },
   },
 }));
@@ -741,7 +741,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'NoPropsNoEventsComponent';
 
@@ -769,7 +769,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ObjectProps';
 
@@ -800,7 +800,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'PointPropNativeComponent';
 
@@ -809,7 +809,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
 
   validAttributes: {
     startPoint: {
-      diff: require('pointsDiffer'),
+      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
     },
   },
 }));
@@ -833,7 +833,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'StringEnumPropsNativeComponent';
 
@@ -864,7 +864,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'StringPropComponent';
 
@@ -896,7 +896,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'MultiFile1NativeComponent';
 
@@ -937,7 +937,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'MultiComponent1NativeComponent';
 
@@ -978,7 +978,7 @@ Map {
 
 'use strict';
 
-const NativeComponentRegistry = require('NativeComponentRegistry');
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 const {UIManager} = require(\\"react-native\\")
 
 let nativeComponentName = 'NativeComponentName';

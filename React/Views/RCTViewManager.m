@@ -189,7 +189,7 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
 {
   NSDictionary<NSString *, id> *state = json ? [RCTConvert NSDictionary:json] : nil;
-  NSMutableDictionary<NSString *, id> *newState = [[NSMutableDictionary<NSString *, id> alloc] init];
+  NSMutableDictionary<NSString *, id> *newState = [NSMutableDictionary<NSString *, id> new];
 
   if (!state) {
     return;

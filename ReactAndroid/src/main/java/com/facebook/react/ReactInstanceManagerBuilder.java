@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import androidx.annotation.Nullable;
+import com.facebook.hermes.reactexecutor.HermesExecutor;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -22,14 +23,17 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
+import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.jscexecutor.JSCExecutor;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
-import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +49,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
   private @Nullable Application mApplication;
   private boolean mUseDeveloperSupport;
+  private @Nullable DevSupportManagerFactory mDevSupportManagerFactory;
   private boolean mRequireActivity;
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable UIImplementationProvider mUIImplementationProvider;
@@ -60,6 +65,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JSIModulePackage mJSIModulesPackage;
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
+  private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -173,12 +179,36 @@ public class ReactInstanceManagerBuilder {
   }
 
   /**
+   * Set the custom {@link DevSupportManagerFactory}. If not set, will use {@link
+   * DefaultDevSupportManagerFactory}.
+   */
+  public ReactInstanceManagerBuilder setDevSupportManagerFactory(
+      final DevSupportManagerFactory devSupportManagerFactory) {
+    mDevSupportManagerFactory = devSupportManagerFactory;
+    return this;
+  }
+
+  /**
    * When {@code false}, indicates that correct usage of React Native will NOT involve an Activity.
    * For the vast majority of Android apps in the ecosystem, this will not need to change. Unless
    * you really know what you're doing, you should probably not change this!
    */
   public ReactInstanceManagerBuilder setRequireActivity(boolean requireActivity) {
     mRequireActivity = requireActivity;
+    return this;
+  }
+
+  /**
+   * When the {@link SurfaceDelegateFactory} is provided, it will be used for native modules to get
+   * a {@link SurfaceDelegate} to interact with the platform specific surface that they that needs
+   * to be rendered in. For mobile platform this is default to be null so that these modules will
+   * need to provide a default surface delegate. One example of such native module is LogBoxModule,
+   * which is rendered in mobile platform with LogBoxDialog, while in VR platform with custom layer
+   * provided by runtime.
+   */
+  public ReactInstanceManagerBuilder setSurfaceDelegateFactory(
+      @Nullable final SurfaceDelegateFactory surfaceDelegateFactory) {
+    mSurfaceDelegateFactory = surfaceDelegateFactory;
     return this;
   }
 
@@ -294,6 +324,9 @@ public class ReactInstanceManagerBuilder {
         mJSMainModulePath,
         mPackages,
         mUseDeveloperSupport,
+        mDevSupportManagerFactory == null
+            ? new DefaultDevSupportManagerFactory()
+            : mDevSupportManagerFactory,
         mRequireActivity,
         mBridgeIdleDebugListener,
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
@@ -306,7 +339,8 @@ public class ReactInstanceManagerBuilder {
         mMinTimeLeftInFrameForNonBatchedOperationMs,
         mJSIModulesPackage,
         mCustomPackagerCommandHandlers,
-        mTMMDelegateBuilder);
+        mTMMDelegateBuilder,
+        mSurfaceDelegateFactory);
   }
 
   private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
@@ -314,7 +348,7 @@ public class ReactInstanceManagerBuilder {
     try {
       // If JSC is included, use it as normal
       initializeSoLoaderIfNecessary(applicationContext);
-      SoLoader.loadLibrary("jscexecutor");
+      JSCExecutor.loadLibrary();
       return new JSCExecutorFactory(appName, deviceName);
     } catch (UnsatisfiedLinkError jscE) {
       // https://github.com/facebook/hermes/issues/78 shows that
@@ -332,6 +366,7 @@ public class ReactInstanceManagerBuilder {
 
       // Otherwise use Hermes
       try {
+        HermesExecutor.loadLibrary();
         return new HermesExecutorFactory();
       } catch (UnsatisfiedLinkError hermesE) {
         // If we get here, either this is a JSC build, and of course

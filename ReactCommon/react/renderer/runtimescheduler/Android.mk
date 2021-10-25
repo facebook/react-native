@@ -15,7 +15,7 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../
 
-LOCAL_SHARED_LIBRARIES := libruntimeexecutor libreact_render_core libreact_debug libjsi
+LOCAL_SHARED_LIBRARIES := libruntimeexecutor libreact_render_core libreact_debug libjsi callinvoker
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
@@ -25,3 +25,4 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,runtimeexecutor)
+$(call import-module,callinvoker)

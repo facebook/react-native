@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.view.MotionEvent;
+import android.view.View;
 
 /** Interface for the root native view of a React native application. */
 public interface RootView {
@@ -16,7 +17,10 @@ public interface RootView {
    * Called when a child starts a native gesture (e.g. a scroll in a ScrollView). Should be called
    * from the child's onTouchIntercepted implementation.
    */
-  void onChildStartedNativeGesture(MotionEvent androidEvent);
+  void onChildStartedNativeGesture(View childView, MotionEvent ev);
+
+  /** @deprecated */
+  void onChildStartedNativeGesture(MotionEvent ev);
 
   void handleException(Throwable t);
 }

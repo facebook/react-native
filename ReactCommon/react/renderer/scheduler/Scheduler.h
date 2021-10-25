@@ -52,7 +52,7 @@ class Scheduler final : public UIManagerDelegate {
   void unregisterSurface(SurfaceHandler const &surfaceHandler) const noexcept;
 
   InspectorData getInspectorDataForInstance(
-      SharedEventEmitter eventEmitter) const noexcept;
+      EventEmitter const &eventEmitter) const noexcept;
 
   void renderTemplateToSurface(
       SurfaceId surfaceId,

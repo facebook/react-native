@@ -42,15 +42,15 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.getClipsContentToBounds() ||
       isColorMeaningful(viewProps.shadowColor) ||
       viewProps.accessibilityElementsHidden ||
+      viewProps.accessibilityViewIsModal ||
       viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
       viewProps.removeClippedSubviews;
 
-  bool formsView = isColorMeaningful(viewProps.backgroundColor) ||
+  bool formsView = formsStackingContext ||
+      isColorMeaningful(viewProps.backgroundColor) ||
       isColorMeaningful(viewProps.foregroundColor) ||
       !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
       !viewProps.testId.empty();
-
-  formsView = formsView || formsStackingContext;
 
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);

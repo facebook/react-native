@@ -41,4 +41,49 @@ class TaskUtilsTest {
   fun windowsAwareCommandLine_onWindows_prependsCmd() {
     assertEquals(listOf("cmd", "/c", "a", "b", "c"), windowsAwareCommandLine("a", "b", "c"))
   }
+
+  @Test
+  @WithOs(OS.MAC)
+  fun windowsAwareYarn_onMac_returnsTheList() {
+    assertEquals(listOf("yarn", "a", "b", "c"), windowsAwareYarn("a", "b", "c"))
+  }
+
+  @Test
+  @WithOs(OS.UNIX)
+  fun windowsAwareYarn_onLinux_returnsTheList() {
+    assertEquals(listOf("yarn", "a", "b", "c"), windowsAwareYarn("a", "b", "c"))
+  }
+
+  @Test
+  @WithOs(OS.WIN)
+  fun windowsAwareYarn_onWindows_prependsCmd() {
+    assertEquals(listOf("yarn.cmd", "a", "b", "c"), windowsAwareYarn("a", "b", "c"))
+  }
+
+  @Test
+  @WithOs(OS.MAC)
+  fun windowsAwareBashCommandLine_onMac_returnsTheList() {
+    assertEquals(
+        listOf("a", "b", "c"), windowsAwareBashCommandLine("a", "b", "c", bashWindowsHome = "abc"))
+  }
+
+  @Test
+  @WithOs(OS.UNIX)
+  fun windowsAwareBashCommandLine_onLinux_returnsTheList() {
+    assertEquals(listOf("a", "b", "c"), windowsAwareBashCommandLine("a", "b", "c"))
+  }
+
+  @Test
+  @WithOs(OS.WIN)
+  fun windowsAwareBashCommandLine_onWindows_prependsBash() {
+    assertEquals(listOf("bash", "-c", "a", "b", "c"), windowsAwareBashCommandLine("a", "b", "c"))
+  }
+
+  @Test
+  @WithOs(OS.WIN)
+  fun windowsAwareBashCommandLine_onWindows_prependsCustomBashPath() {
+    assertEquals(
+        listOf("/custom/bash", "-c", "a", "b", "c"),
+        windowsAwareBashCommandLine("a", "b", "c", bashWindowsHome = "/custom/bash"))
+  }
 }

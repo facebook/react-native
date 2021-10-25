@@ -11,6 +11,10 @@
     "watch": "babel src --out-dir bin --source-maps --watch",
     "test": "jest"
   },
+  "dependencies": {
+    "devtools-protocol": "0.0.730699",
+    "yargs": "^14.2.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.2.0",
@@ -26,13 +30,12 @@
     "sshpk": "1.16.1",
     "webpack": "^4.41.0"
   },
+  "resolutions": {
+    "set-value": "^4.1.0"
+  },
   "jest": {
     "transform": {
       ".*": "<rootDir>/node_modules/babel-jest"
     }
-  },
-  "dependencies": {
-    "devtools-protocol": "0.0.730699",
-    "yargs": "^14.2.0"
   }
 }
