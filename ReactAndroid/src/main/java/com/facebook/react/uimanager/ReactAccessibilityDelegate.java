@@ -192,6 +192,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         };
   }
 
+  @Nullable View mAccessibilityLabelledBy;
+
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
@@ -203,19 +205,11 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
     final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);
     if (accessibilityLabelledBy != null) {
-      ReactFindViewUtil.findView(
-          host.getRootView(),
-          new ReactFindViewUtil.OnViewFoundListener() {
-            @Override
-            public String getNativeId() {
-              return (String) accessibilityLabelledBy;
-            }
-
-            @Override
-            public void onViewFound(View view) {
-              info.setLabeledBy(view);
-            }
-          });
+      mAccessibilityLabelledBy =
+          ReactFindViewUtil.findView(host.getRootView(), (String) accessibilityLabelledBy);
+      if (mAccessibilityLabelledBy != null) {
+        info.setLabeledBy(mAccessibilityLabelledBy);
+      }
     }
 
     // state is changeable.
