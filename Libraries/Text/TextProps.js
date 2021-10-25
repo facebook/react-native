@@ -199,4 +199,6 @@ export type TextProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/text.html#supperhighlighting
    */
   suppressHighlighting?: ?boolean,
+
+  accessibilityLabelledBy?: ?string,
 |}>;

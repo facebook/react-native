@@ -65,6 +65,9 @@ public abstract class BaseViewManagerAdapter<T extends View>
   public void setNativeId(@NonNull T view, String nativeId) {}
 
   @Override
+  public void setAccessibilityLabelledBy(@NonNull T view, String nativeId) {}
+
+  @Override
   public void setOpacity(@NonNull T view, float opacity) {}
 
   @Override

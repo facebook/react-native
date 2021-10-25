@@ -84,6 +84,9 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
       case ViewProps.NATIVE_ID:
         mViewManager.setNativeId(view, (String) value);
         break;
+      case ViewProps.ACCESSIBILITY_LABELLED_BY:
+        mViewManager.setAccessibilityLabelledBy(view, (String) value);
+        break;
       case ViewProps.OPACITY:
         mViewManager.setOpacity(view, value == null ? 1.0f : ((Double) value).floatValue());
         break;

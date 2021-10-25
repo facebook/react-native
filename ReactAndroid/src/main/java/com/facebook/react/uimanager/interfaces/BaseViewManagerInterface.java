@@ -49,6 +49,8 @@ public interface BaseViewManagerInterface<T extends View> {
 
   void setNativeId(T view, @Nullable String nativeId);
 
+  void setAccessibilityLabelledBy(T view, @Nullable String nativeId);
+
   void setOpacity(T view, float opacity);
 
   void setRenderToHardwareTexture(T view, boolean useHWTexture);

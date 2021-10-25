@@ -36,6 +36,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.HashMap;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * Utility class that handles the addition of a "role" for accessibility to either a View or
@@ -198,6 +199,24 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         (AccessibilityRole) host.getTag(R.id.accessibility_role);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
+    }
+
+    final Object accessibilityLabelledBy = host.getTag(R.id.labelled_by);
+    if (accessibilityLabelledBy != null) {
+        ReactFindViewUtil.findView(
+            host.getRootView(),
+            new ReactFindViewUtil.OnViewFoundListener() {
+                @Override
+                public String getNativeId() {
+                  return (String) accessibilityLabelledBy;
+                }
+
+                @Override
+                public void onViewFound(View view) {
+                  info.setLabeledBy(view);
+                }
+            }
+        );
     }
 
     // state is changeable.
