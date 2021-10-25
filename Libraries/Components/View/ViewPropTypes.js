@@ -434,7 +434,7 @@ export type ViewProps = $ReadOnly<{|
 
   /**
    * Specifies the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
-   * 
+   *
    * @platform android
    */
   accessibilityLabelledBy?: ?string,
