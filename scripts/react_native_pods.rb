@@ -294,6 +294,9 @@ def use_react_native_codegen!(spec, options={})
   library_type = options[:library_type]
 
   if library_type
+    if !codegen_config[library_type]
+      raise "[Codegen] invalid library_type: #{library_type}. Check your podspec to make sure it's set to 'modules' or 'components'. Removing the option will generate files for both"
+    end
     js_srcs_pattern = codegen_config[library_type][:js_srcs_pattern]
   end
 
