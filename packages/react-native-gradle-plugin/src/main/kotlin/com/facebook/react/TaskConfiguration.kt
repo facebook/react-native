@@ -64,7 +64,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
             }
         it.execCommand = execCommand
         it.bundleCommand = config.bundleCommand.get()
-        it.devEnabled = !(variant.name in config.devDisabledInVariants.get() || isRelease)
+        it.devEnabled = !config.disableDevForVariant(variant)
         it.entryFile = detectedEntryFile(config)
 
         val extraArgs = mutableListOf<String>()
