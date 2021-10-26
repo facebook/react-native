@@ -29,7 +29,6 @@ const Text: React.AbstractComponent<
 > = React.forwardRef((props: TextProps, forwardedRef) => {
   const {
     accessible,
-    accessibilityLabelledBy,
     allowFontScaling,
     ellipsizeMode,
     onLongPress,
@@ -180,7 +179,6 @@ const Text: React.AbstractComponent<
         numberOfLines={numberOfLines}
         selectionColor={selectionColor}
         style={style}
-        accessibilityLabelledBy={accessibilityLabelledBy}
         ref={forwardedRef}
       />
     </TextAncestor.Provider>
