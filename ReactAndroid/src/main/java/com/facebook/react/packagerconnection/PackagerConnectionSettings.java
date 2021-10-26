@@ -13,7 +13,6 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 
 public class PackagerConnectionSettings {
@@ -23,24 +22,31 @@ public class PackagerConnectionSettings {
   private final SharedPreferences mPreferences;
   private final String mPackageName;
   private final Context mAppContext;
-  private String mDebugServerHost;
+  private String mNonPersistentDebugServerHost = null;
 
   public PackagerConnectionSettings(Context applicationContext) {
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPackageName = applicationContext.getPackageName();
     mAppContext = applicationContext;
-    mDebugServerHost = mPreferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null);
   }
 
+  /**
+   * Try to get debug server host in the order: 1. non-persistent host set by {@link
+   * #setDebugServerHostWithoutPersisting} programmatically 2. debug setting 3. default hostname for
+   * current device/emulator
+   */
   public String getDebugServerHost() {
-    // Check host setting first. If empty try to detect emulator type and use default
-    // hostname for those
-    if (!TextUtils.isEmpty(mDebugServerHost)) {
-      return Assertions.assertNotNull(mDebugServerHost);
+    String host = getNonPersistentDebugServerHost();
+    if (!TextUtils.isEmpty(host)) {
+      return host;
     }
 
-    String host = AndroidInfoHelpers.getServerHost(mAppContext);
+    host = mPreferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null);
+    if (!TextUtils.isEmpty(host)) {
+      return host;
+    }
 
+    host = AndroidInfoHelpers.getServerHost(mAppContext);
     if (host.equals(AndroidInfoHelpers.DEVICE_LOCALHOST)) {
       FLog.w(
           TAG,
@@ -54,19 +60,26 @@ public class PackagerConnectionSettings {
   }
 
   public void setDebugServerHost(String host) {
-    mDebugServerHost = host;
     mPreferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply();
   }
 
-  public void setDebugServerHostWithoutPersisting(final String host) {
-    mDebugServerHost = host;
+  public synchronized String getNonPersistentDebugServerHost() {
+    return mNonPersistentDebugServerHost;
   }
 
+  public synchronized void setDebugServerHostWithoutPersisting(String host) {
+    mNonPersistentDebugServerHost = host;
+  }
+
+  /**
+   * Try to get inspector server host in the order: 1. non-persistent host set by {@link
+   * #setDebugServerHostWithoutPersisting} programmatically 2. default hostname for current
+   * device/emulator
+   */
   public String getInspectorServerHost() {
-    // Check host setting first. If empty try to detect emulator type and use default
-    // hostname for those
-    if (!TextUtils.isEmpty(mDebugServerHost)) {
-      return Assertions.assertNotNull(mDebugServerHost);
+    String host = getNonPersistentDebugServerHost();
+    if (!TextUtils.isEmpty(host)) {
+      return host;
     }
 
     return AndroidInfoHelpers.getInspectorProxyHost(mAppContext);
