@@ -130,6 +130,17 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   val bundleIn: MapProperty<String, Boolean> =
       objects.mapProperty(String::class.java, Boolean::class.java).convention(emptyMap())
 
+  /**
+   * Functional interface to toggle the bundle command only on specific [BaseVariant] Default: will
+   * check [bundleIn] or return True for Release variants and False for Debug variants.
+   */
+  var bundleForVariant: (BaseVariant) -> Boolean = { variant ->
+    if (bundleIn.getting(variant.name).isPresent) bundleIn.getting(variant.name).get()
+    else if (bundleIn.getting(variant.buildType.name).isPresent)
+        bundleIn.getting(variant.buildType.name).get()
+    else variant.isRelease
+  }
+
   /** Hermes Config */
 
   /** The command to use to invoke hermes. Default is `hermesc` for the correct OS. */
