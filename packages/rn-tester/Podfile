@@ -3,6 +3,10 @@ require_relative '../../scripts/react_native_pods'
 source 'https://cdn.cocoapods.org/'
 platform :ios, '11.0'
 
+# Temporary solution to suppress duplicated GUID error.
+# Can be removed once we move to generate files outside pod install.
+install! 'cocoapods', :deterministic_uuids => false
+
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
 
 if USE_FRAMEWORKS

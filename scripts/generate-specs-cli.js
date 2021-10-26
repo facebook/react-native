@@ -94,24 +94,6 @@ function generateSpec(
         fs.renameSync(`${outputDirectory}/${f}`, `${jniOutputDirectory}/${f}`);
       });
   }
-
-  if (platform === 'ios') {
-    const files = fs.readdirSync(outputDirectory);
-    const componentsOutputDirectory = `${outputDirectory}/react/renderer/components/${libraryName}`;
-    mkdirp.sync(componentsOutputDirectory);
-    files
-      .filter(
-        f =>
-          (f.endsWith('.h') && !f.startsWith(libraryName)) ||
-          f.endsWith('.cpp'),
-      )
-      .forEach(f => {
-        fs.renameSync(
-          `${outputDirectory}/${f}`,
-          `${componentsOutputDirectory}/${f}`,
-        );
-      });
-  }
 }
 
 function main() {
