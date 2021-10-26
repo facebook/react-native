@@ -204,7 +204,7 @@ class AccessibilityExample extends React.Component<{}> {
             <Text nativeID="formLabel2">First Name</Text>
             <TextInput
               accessibilityLabel="input test2"
-              accessibilityLabelledBy="formLabel2"
+              accessibilityLabelledBy={["formLabel2", "formLabel3"]}
               style={styles.default}
               value="Foo"
             />

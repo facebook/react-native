@@ -437,7 +437,7 @@ export type ViewProps = $ReadOnly<{|
    *
    * @platform android
    */
-  accessibilityLabelledBy?: ?string,
+  accessibilityLabelledBy?: ?string | ?Array<string>,
 
   /**
    * Views that are only used to layout their children or otherwise don't draw

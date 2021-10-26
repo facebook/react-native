@@ -10,6 +10,7 @@ package com.facebook.react.uimanager;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
@@ -65,7 +66,7 @@ public abstract class BaseViewManagerAdapter<T extends View>
   public void setNativeId(@NonNull T view, String nativeId) {}
 
   @Override
-  public void setAccessibilityLabelledBy(@NonNull T view, String nativeId) {}
+  public void setAccessibilityLabelledBy(@NonNull T view, Dynamic nativeId) {}
 
   @Override
   public void setOpacity(@NonNull T view, float opacity) {}
