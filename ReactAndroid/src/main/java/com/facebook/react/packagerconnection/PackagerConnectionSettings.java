@@ -32,7 +32,7 @@ public class PackagerConnectionSettings {
 
   /**
    * Try to get debug server host in the order: 1. non-persistent host set by {@link
-   * #setDebugServerHostWithoutPersisting} programmatically 2. debug setting 3. default hostname for
+   * #setNonPersistentDebugServerHost} programmatically 2. debug setting 3. default hostname for
    * current device/emulator
    */
   public String getDebugServerHost() {
@@ -67,13 +67,13 @@ public class PackagerConnectionSettings {
     return mNonPersistentDebugServerHost;
   }
 
-  public synchronized void setDebugServerHostWithoutPersisting(String host) {
+  public synchronized void setNonPersistentDebugServerHost(String host) {
     mNonPersistentDebugServerHost = host;
   }
 
   /**
    * Try to get inspector server host in the order: 1. non-persistent host set by {@link
-   * #setDebugServerHostWithoutPersisting} programmatically 2. default hostname for current
+   * #setNonPersistentDebugServerHost} programmatically 2. default hostname for current
    * device/emulator
    */
   public String getInspectorServerHost() {
