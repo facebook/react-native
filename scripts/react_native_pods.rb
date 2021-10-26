@@ -68,7 +68,7 @@ def use_react_native! (options={})
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
 
   # Generate a podspec file for generated files.
-  temp_podinfo = generate_temp_pod_spec_for_codegen!()
+  temp_podinfo = generate_temp_pod_spec_for_codegen!(fabric_enabled)
   pod temp_podinfo['spec']['name'], :path => temp_podinfo['path']
 
   if fabric_enabled
@@ -200,7 +200,7 @@ def react_native_post_install(installer)
 end
 
 
-def generate_temp_pod_spec_for_codegen!()
+def generate_temp_pod_spec_for_codegen!(fabric_enabled)
   relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   output_dir = "#{relative_installation_root}/#{$CODEGEN_OUTPUT_DIR}"
   Pod::Executable.execute_command("mkdir", ["-p", output_dir]);
@@ -246,7 +246,6 @@ def generate_temp_pod_spec_for_codegen!()
     },
     'dependencies': {
       "FBReactNativeSpec":  [version],
-      "React-graphics":  [version],
       "React-jsiexecutor":  [version],
       "RCT-Folly": [folly_version],
       "RCTRequired": [version],
@@ -256,6 +255,11 @@ def generate_temp_pod_spec_for_codegen!()
       "ReactCommon/turbomodule/core": [version]
     }
   }
+
+  if fabric_enabled
+    spec[:'dependencies'].merge!({'React-graphics': [version]});
+  end
+
   podspec_path = File.join(output_dir, 'React-Codegen.podspec.json')
   Pod::UI.puts "[Codegen] Generating #{podspec_path}"
 
