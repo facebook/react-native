@@ -549,6 +549,7 @@ rn_apple_library(
         ],
     ),
     autoglob = False,
+    complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
     extension_api_only = True,
     frameworks = [
