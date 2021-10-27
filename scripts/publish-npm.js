@@ -118,7 +118,7 @@ if (!buildFromMain && tagsWithVersion.length === 0) {
 let releaseVersion;
 
 if (buildFromMain) {
-  releaseVersion = '0.0.0';
+  releaseVersion = '0.68.0';
 
   if (nightlyBuild) {
     releaseVersion += '-';
