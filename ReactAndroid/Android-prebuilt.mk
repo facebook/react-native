@@ -114,6 +114,15 @@ LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_COMMON_DIR)/react/renderer/debug
 include $(PREBUILT_SHARED_LIBRARY)
 
+# react_debug
+include $(CLEAR_VARS)
+LOCAL_MODULE := react_debug
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_debug.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_COMMON_DIR)/react/debug
+LOCAL_SHARED_LIBRARIES := libfolly_json
+include $(PREBUILT_SHARED_LIBRARY)
+
 # react_render_graphics
 include $(CLEAR_VARS)
 LOCAL_MODULE := react_render_graphics
