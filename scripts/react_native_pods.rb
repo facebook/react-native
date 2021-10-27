@@ -73,6 +73,7 @@ def use_react_native! (options={})
 
   if fabric_enabled
     pod 'React-Fabric', :path => "#{prefix}/ReactCommon"
+    pod 'React-rncore', :path => "#{prefix}/ReactCommon"
     pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
     pod 'React-jsi/Fabric', :path => "#{prefix}/ReactCommon/jsi"
     pod 'React-RCTFabric', :path => "#{prefix}/React"
@@ -257,7 +258,10 @@ def generate_temp_pod_spec_for_codegen!(fabric_enabled)
   }
 
   if fabric_enabled
-    spec[:'dependencies'].merge!({'React-graphics': [version]});
+    spec[:'dependencies'].merge!({
+      'React-graphics': [version],
+      'React-rncore':  [version],
+    });
   end
 
   podspec_path = File.join(output_dir, 'React-Codegen.podspec.json')
