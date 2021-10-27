@@ -20,7 +20,7 @@
     "gradle",
     "gradlew",
     "gradlew.bat",
-    "src",
+    "src/main",
     "README.md"
   ],
   "dependencies": {
