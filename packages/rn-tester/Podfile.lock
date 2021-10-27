@@ -119,6 +119,7 @@ PODS:
     - React-graphics (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
+    - React-rncore (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-Core (1000.0.0):
     - glog
@@ -682,6 +683,7 @@ PODS:
     - React-Core/RCTVibrationHeaders (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
+  - React-rncore (1000.0.0)
   - React-runtimeexecutor (1000.0.0):
     - React-jsi (= 1000.0.0)
   - ReactCommon/turbomodule/core (1000.0.0):
@@ -772,6 +774,7 @@ DEPENDENCIES:
   - React-RCTTest (from `./RCTTest`)
   - React-RCTText (from `../../Libraries/Text`)
   - React-RCTVibration (from `../../Libraries/Vibration`)
+  - React-rncore (from `../../ReactCommon`)
   - React-runtimeexecutor (from `../../ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../../ReactCommon`)
   - ReactCommon/turbomodule/samples (from `../../ReactCommon`)
@@ -862,6 +865,8 @@ EXTERNAL SOURCES:
     :path: "../../Libraries/Text"
   React-RCTVibration:
     :path: "../../Libraries/Vibration"
+  React-rncore:
+    :path: "../../ReactCommon"
   React-runtimeexecutor:
     :path: "../../ReactCommon/runtimeexecutor"
   ReactCommon:
@@ -895,11 +900,11 @@ SPEC CHECKSUMS:
   RCTTypeSafety: c7a7f67ae5b1b986b78d817baa408fc984ab7c0c
   React: f64c9f6db5428717922a3292ba6a448615a2e143
   React-callinvoker: c5d61e29df57793f0dc10ec2bc01c846f863e51f
-  React-Codegen: cc3fbbc057abebec3102ec376eb6593d1e5f34bb
+  React-Codegen: 5c20632d128f21b4b94d00d70690821a8ac5dbef
   React-Core: 22bc86b79dd931dbfb7fd2af91a35a98d41ceb64
   React-CoreModules: a8e2bdc1ebbf8d440478456197abd58d1691f61a
   React-cxxreact: cfc1663dae1ea52b465bbf021ef7b1527c5dc80c
-  React-Fabric: 4132b0bc73f67a2044c6870e27abf7af3eb517bc
+  React-Fabric: 002345cff43721617e0a3c0866f6f76bae8c50ff
   React-graphics: 9a84942b49ea1375ce83844041fa2ba766cfe0b9
   React-jsi: c1c0108d86e1378aabf7c9146ed7d12d87c7df85
   React-jsiexecutor: d08ec14edc8f2e19af51550cd1505332eae35c7b
@@ -918,6 +923,7 @@ SPEC CHECKSUMS:
   React-RCTTest: 12bbd7fc2e72bd9920dc7286c5b8ef96639582b6
   React-RCTText: e9146b2c0550a83d1335bfe2553760070a2d75c7
   React-RCTVibration: 50be9c390f2da76045ef0dfdefa18b9cf9f35cfa
+  React-rncore: f592388ccb12d9317609bdb1d8dda236e6c0a2be
   React-runtimeexecutor: 4b0c6eb341c7d3ceb5e2385cb0fdb9bf701024f3
   ReactCommon: 7a2714d1128f965392b6f99a8b390e3aa38c9569
   ScreenshotManager: dd14e8064e4e3e84c7f568431c8439cb7c1df81e

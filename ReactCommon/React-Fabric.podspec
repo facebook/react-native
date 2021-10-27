@@ -333,10 +333,4 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
-  use_react_native_codegen!(s, {
-    :react_native_path => react_native_path,
-    :js_srcs_dir => "#{react_native_path}/Libraries",
-    :library_name => "rncore",
-    :library_type => "components",
-  })
 end
