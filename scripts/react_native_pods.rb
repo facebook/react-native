@@ -274,7 +274,7 @@ def generate_temp_pod_spec_for_codegen!(fabric_enabled)
 
   return {
     "spec" => spec,
-    "path" => output_dir,
+    "path" => $CODEGEN_OUTPUT_DIR,  # Path needs to be relative to `Podfile`
   }
 end
 
