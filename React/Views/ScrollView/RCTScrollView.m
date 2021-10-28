@@ -289,9 +289,7 @@
     // We set the default behavior to "never" so that iOS
     // doesn't do weird things to UIScrollView insets automatically
     // and keeps it as an opt-in behavior.
-    if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-      _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
+    _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
 
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
@@ -937,11 +935,9 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 - (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
 {
   // `contentInsetAdjustmentBehavior` is available since iOS 11.
-  if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-    CGPoint contentOffset = _scrollView.contentOffset;
-    _scrollView.contentInsetAdjustmentBehavior = behavior;
-    _scrollView.contentOffset = contentOffset;
-  }
+  CGPoint contentOffset = _scrollView.contentOffset;
+  _scrollView.contentInsetAdjustmentBehavior = behavior;
+  _scrollView.contentOffset = contentOffset;
 }
 
 - (void)sendScrollEventWithName:(NSString *)eventName
