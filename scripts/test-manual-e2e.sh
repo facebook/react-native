@@ -22,15 +22,6 @@ info() {
     echo -e "$BLUE""$*""$ENDCOLOR"
 }
 
-PACKAGE_VERSION=$(cat package.json \
-  | grep version \
-  | head -1 \
-  | awk -F: '{ print $2 }' \
-  | sed 's/[",]//g' \
-  | tr -d '[[:space:]]')
-
-success "Preparing version $PACKAGE_VERSION"
-
 repo_root=$(pwd)
 
 rm -rf android
@@ -100,6 +91,17 @@ read -r -n 1
 success "Killing packager"
 lsof -i :8081 | grep LISTEN
 lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
+
+# Testing the template app
+
+PACKAGE_VERSION=$(cat package.json \
+  | grep version \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[",]//g' \
+  | tr -d '[[:space:]]')
+
+success "Preparing version $PACKAGE_VERSION"
 
 npm pack
 

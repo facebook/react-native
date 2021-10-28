@@ -118,16 +118,17 @@ if (!buildFromMain && tagsWithVersion.length === 0) {
 let releaseVersion;
 
 if (buildFromMain) {
-  releaseVersion = '0.0.0';
-
   if (nightlyBuild) {
-    releaseVersion += '-';
+    releaseVersion = '0.0.0-';
     // 2021-09-28T05:38:40.669Z -> 20210928-0538
     releaseVersion += new Date()
       .toISOString()
       .slice(0, -8)
       .replace(/[-:]/g, '')
       .replace(/[T]/g, '-');
+  } else {
+    // 0.0.0 triggers issues with cocoapods for codegen for building template project.
+    releaseVersion = '1000.0.0';
   }
 
   releaseVersion += `-${currentCommit.slice(0, 9)}`;
