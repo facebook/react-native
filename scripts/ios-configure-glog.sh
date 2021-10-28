@@ -11,7 +11,7 @@ CURRENT_ARCH="${CURRENT_ARCH}"
 
 # Fix build on Apple Silicon
 if [ "$CURRENT_ARCH" == "arm64" ]; then
-    cat <<EOF >>fix_glog_0.3.5_apple_silicon.patch
+    cat <<\EOF >>fix_glog_0.3.5_apple_silicon.patch
 diff --git a/config.sub b/config.sub
 index 1761d8b..43fa2e8 100755
 --- a/config.sub
