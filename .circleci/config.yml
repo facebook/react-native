@@ -210,7 +210,7 @@ commands:
       - install_github_bot_deps
       - run:
           name: Report size of RNTester.app (analysis-bot)
-          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >>
+          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
 
 # -------------------------
 #          JOBS
