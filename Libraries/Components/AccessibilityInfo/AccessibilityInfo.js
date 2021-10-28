@@ -237,7 +237,9 @@ const AccessibilityInfo = {
    * Returns a promise which resolves to a boolean.
    * The result is `true` when any service is enabled and `false` otherwise.
    *
-   * See https://reactnative.dev/docs/accessibilityinfo.html#isAccessibilityServiceEnabled
+   * @platform android
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo/#isaccessibilityserviceenabled-android
    */
   isAccessibilityServiceEnabled(): Promise<boolean> {
     return new Promise((resolve, reject) => {

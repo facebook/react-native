@@ -943,7 +943,11 @@ class EnabledExamples extends React.Component<{}> {
         ) : null}
 
         {Platform.OS === 'android' ? (
-          <RNTesterBlock title="isAccessibilityServiceEnabled()">
+          <RNTesterBlock
+            title="isAccessibilityServiceEnabled()"
+            description={
+              'Event emitted whenever an accessibility service is enabled. This includes TalkBack as well as assistive technologies such as "Select to Speak".'
+            }>
             <EnabledExample
               test="any accessibility service"
               eventListener="accessibilityServiceChanged"
