@@ -28,7 +28,7 @@ index 1761d8b..43fa2e8 100755
  		os=-none
 EOF
 
-    patch -p1 cofnig.sub fix_glog_0.3.5_apple_silicon.patch
+    patch -p1 config.sub fix_glog_0.3.5_apple_silicon.patch
 fi
 
 if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
