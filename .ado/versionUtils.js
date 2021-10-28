@@ -47,9 +47,28 @@ function updateVersionsInFiles(patchVersionPrefix) {
     return {releaseVersion, branchVersionSuffix};
 }
 
+const workspaceJsonPath = path.resolve(require('os').tmpdir(), 'rnpkg.json');
+
+function removeWorkspaceConfig() {
+  let {pkgJson} = gatherVersionInfo();
+  fs.writeFileSync(workspaceJsonPath, JSON.stringify(pkgJson, null, 2));
+  delete pkgJson.private;
+  delete pkgJson.workspaces;
+  fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
+  console.log(`Removing workspace config from package.json to prepare to publish.`);
+}
+
+function restoreWorkspaceConfig() {
+  let pkgJson = JSON.parse(fs.readFileSync(workspaceJsonPath, "utf8"));
+  fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
+  console.log(`Restoring workspace config from package.json`);
+}
+
 module.exports = {
     gatherVersionInfo,
     publishBranchName,
     pkgJsonPath,
+    removeWorkspaceConfig,
+    restoreWorkspaceConfig,
     updateVersionsInFiles
 }
