@@ -99,9 +99,10 @@ RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)callback
 
 RCT_EXPORT_METHOD(setAccessibilityFocus:(nonnull NSNumber *)reactTag)
 {
-   dispatch_async(dispatch_get_main_queue(), ^{
+  dispatch_async(dispatch_get_main_queue(), ^{
     NSView *view = [self.bridge.uiManager viewForReactTag:reactTag];
     [[view window] makeFirstResponder:view];
+    NSAccessibilityPostNotification(view, NSAccessibilityLayoutChangedNotification);
   });
 }
 
