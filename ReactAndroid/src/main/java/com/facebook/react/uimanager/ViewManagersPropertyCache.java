@@ -54,7 +54,7 @@ import java.util.Map;
     private PropSetter(ReactProp prop, String defaultType, Method setter) {
       mPropName = prop.name();
       mPropType =
-        ReactProp.USE_DEFAULT_TYPE.equals(prop.customType()) ? defaultType : prop.customType();
+         ReactProp.USE_DEFAULT_TYPE.equals(prop.customType()) ? defaultType : prop.customType();
       mSetter = setter;
       mIndex = null;
     }
@@ -62,9 +62,9 @@ import java.util.Map;
     private PropSetter(ReactPropGroup prop, String defaultType, Method setter, int index) {
       mPropName = prop.names()[index];
       mPropType =
-        ReactPropGroup.USE_DEFAULT_TYPE.equals(prop.customType())
-          ? defaultType
-          : prop.customType();
+          ReactPropGroup.USE_DEFAULT_TYPE.equals(prop.customType())
+              ? defaultType
+              : prop.customType();
       mSetter = setter;
       mIndex = index;
     }
@@ -95,11 +95,11 @@ import java.util.Map;
       } catch (Throwable t) {
         FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
         throw new JSApplicationIllegalArgumentException(
-          "Error while updating property '"
-            + mPropName
-            + "' of a view managed by: "
-            + viewManager.getName(),
-          t);
+            "Error while updating property '"
+                + mPropName
+                + "' of a view managed by: "
+                + viewManager.getName(),
+            t);
       }
     }
 
@@ -119,11 +119,11 @@ import java.util.Map;
       } catch (Throwable t) {
         FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
         throw new JSApplicationIllegalArgumentException(
-          "Error while updating property '"
-            + mPropName
-            + "' in shadow node of type: "
-            + nodeToUpdate.getViewClass(),
-          t);
+            "Error while updating property '"
+                + mPropName
+                + "' in shadow node of type: "
+                + nodeToUpdate.getViewClass(),
+            t);
       }
     }
 
@@ -341,18 +341,18 @@ import java.util.Map;
   }
 
   /*package*/ static Map<String, String> getNativePropsForView(
-    Class<? extends ViewManager> viewManagerTopClass,
-    Class<? extends ReactShadowNode> shadowNodeTopClass) {
+      Class<? extends ViewManager> viewManagerTopClass,
+      Class<? extends ReactShadowNode> shadowNodeTopClass) {
     Map<String, String> nativeProps = new HashMap<>();
 
     Map<String, PropSetter> viewManagerProps =
-      getNativePropSettersForViewManagerClass(viewManagerTopClass);
+        getNativePropSettersForViewManagerClass(viewManagerTopClass);
     for (PropSetter setter : viewManagerProps.values()) {
       nativeProps.put(setter.getPropName(), setter.getPropType());
     }
 
     Map<String, PropSetter> shadowNodeProps =
-      getNativePropSettersForShadowNodeClass(shadowNodeTopClass);
+        getNativePropSettersForShadowNodeClass(shadowNodeTopClass);
     for (PropSetter setter : shadowNodeProps.values()) {
       nativeProps.put(setter.getPropName(), setter.getPropType());
     }
@@ -366,7 +366,7 @@ import java.util.Map;
    * parent classes.
    */
   /*package*/ static Map<String, PropSetter> getNativePropSettersForViewManagerClass(
-    Class<? extends ViewManager> cls) {
+      Class<? extends ViewManager> cls) {
     if (cls == ViewManager.class) {
       return EMPTY_PROPS_MAP;
     }
@@ -377,9 +377,9 @@ import java.util.Map;
     // This is to include all the setters from parent classes. Once calculated the result will be
     // stored in CLASS_PROPS_CACHE so that we only scan for @ReactProp annotations once per class.
     props =
-      new HashMap<>(
-        getNativePropSettersForViewManagerClass(
-          (Class<? extends ViewManager>) cls.getSuperclass()));
+        new HashMap<>(
+            getNativePropSettersForViewManagerClass(
+                (Class<? extends ViewManager>) cls.getSuperclass()));
     extractPropSettersFromViewManagerClassDefinition(cls, props);
     CLASS_PROPS_CACHE.put(cls, props);
     return props;
@@ -392,7 +392,7 @@ import java.util.Map;
    * as a base class.
    */
   /*package*/ static Map<String, PropSetter> getNativePropSettersForShadowNodeClass(
-    Class<? extends ReactShadowNode> cls) {
+      Class<? extends ReactShadowNode> cls) {
     for (Class iface : cls.getInterfaces()) {
       if (iface == ReactShadowNode.class) {
         return EMPTY_PROPS_MAP;
@@ -404,16 +404,16 @@ import java.util.Map;
     }
     // This is to include all the setters from parent classes up to ReactShadowNode class
     props =
-      new HashMap<>(
-        getNativePropSettersForShadowNodeClass(
-          (Class<? extends ReactShadowNode>) cls.getSuperclass()));
+        new HashMap<>(
+            getNativePropSettersForShadowNodeClass(
+                (Class<? extends ReactShadowNode>) cls.getSuperclass()));
     extractPropSettersFromShadowNodeClassDefinition(cls, props);
     CLASS_PROPS_CACHE.put(cls, props);
     return props;
   }
 
   private static PropSetter createPropSetter(
-    ReactProp annotation, Method method, Class<?> propTypeClass) {
+      ReactProp annotation, Method method, Class<?> propTypeClass) {
     if (propTypeClass == Dynamic.class) {
       return new DynamicPropSetter(annotation, method);
     } else if (propTypeClass == boolean.class) {
@@ -442,20 +442,20 @@ import java.util.Map;
       return new MapPropSetter(annotation, method);
     } else {
       throw new RuntimeException(
-        "Unrecognized type: "
-          + propTypeClass
-          + " for method: "
-          + method.getDeclaringClass().getName()
-          + "#"
-          + method.getName());
+          "Unrecognized type: "
+              + propTypeClass
+              + " for method: "
+              + method.getDeclaringClass().getName()
+              + "#"
+              + method.getName());
     }
   }
 
   private static void createPropSetters(
-    ReactPropGroup annotation,
-    Method method,
-    Class<?> propTypeClass,
-    Map<String, PropSetter> props) {
+      ReactPropGroup annotation,
+      Method method,
+      Class<?> propTypeClass,
+      Map<String, PropSetter> props) {
     String[] names = annotation.names();
     if (propTypeClass == Dynamic.class) {
       for (int i = 0; i < names.length; i++) {
@@ -472,7 +472,7 @@ import java.util.Map;
     } else if (propTypeClass == double.class) {
       for (int i = 0; i < names.length; i++) {
         props.put(
-          names[i], new DoublePropSetter(annotation, method, i, annotation.defaultDouble()));
+            names[i], new DoublePropSetter(annotation, method, i, annotation.defaultDouble()));
       }
     } else if (propTypeClass == Integer.class) {
       for (int i = 0; i < names.length; i++) {
@@ -480,17 +480,17 @@ import java.util.Map;
       }
     } else {
       throw new RuntimeException(
-        "Unrecognized type: "
-          + propTypeClass
-          + " for method: "
-          + method.getDeclaringClass().getName()
-          + "#"
-          + method.getName());
+          "Unrecognized type: "
+              + propTypeClass
+              + " for method: "
+              + method.getDeclaringClass().getName()
+              + "#"
+              + method.getName());
     }
   }
 
   private static void extractPropSettersFromViewManagerClassDefinition(
-    Class<? extends ViewManager> cls, Map<String, PropSetter> props) {
+      Class<? extends ViewManager> cls, Map<String, PropSetter> props) {
     Method[] declaredMethods = cls.getDeclaredMethods();
     for (int i = 0; i < declaredMethods.length; i++) {
       Method method = declaredMethods[i];
@@ -499,14 +499,14 @@ import java.util.Map;
         Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes.length != 2) {
           throw new RuntimeException(
-            "Wrong number of args for prop setter: " + cls.getName() + "#" + method.getName());
+              "Wrong number of args for prop setter: " + cls.getName() + "#" + method.getName());
         }
         if (!View.class.isAssignableFrom(paramTypes[0])) {
           throw new RuntimeException(
-            "First param should be a view subclass to be updated: "
-              + cls.getName()
-              + "#"
-              + method.getName());
+              "First param should be a view subclass to be updated: "
+                  + cls.getName()
+                  + "#"
+                  + method.getName());
         }
         props.put(annotation.name(), createPropSetter(annotation, method, paramTypes[1]));
       }
@@ -516,24 +516,24 @@ import java.util.Map;
         Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes.length != 3) {
           throw new RuntimeException(
-            "Wrong number of args for group prop setter: "
-              + cls.getName()
-              + "#"
-              + method.getName());
+              "Wrong number of args for group prop setter: "
+                  + cls.getName()
+                  + "#"
+                  + method.getName());
         }
         if (!View.class.isAssignableFrom(paramTypes[0])) {
           throw new RuntimeException(
-            "First param should be a view subclass to be updated: "
-              + cls.getName()
-              + "#"
-              + method.getName());
+              "First param should be a view subclass to be updated: "
+                  + cls.getName()
+                  + "#"
+                  + method.getName());
         }
         if (paramTypes[1] != int.class) {
           throw new RuntimeException(
-            "Second argument should be property index: "
-              + cls.getName()
-              + "#"
-              + method.getName());
+              "Second argument should be property index: "
+                  + cls.getName()
+                  + "#"
+                  + method.getName());
         }
         createPropSetters(groupAnnotation, method, paramTypes[2], props);
       }
@@ -541,14 +541,14 @@ import java.util.Map;
   }
 
   private static void extractPropSettersFromShadowNodeClassDefinition(
-    Class<? extends ReactShadowNode> cls, Map<String, PropSetter> props) {
+      Class<? extends ReactShadowNode> cls, Map<String, PropSetter> props) {
     for (Method method : cls.getDeclaredMethods()) {
       ReactProp annotation = method.getAnnotation(ReactProp.class);
       if (annotation != null) {
         Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes.length != 1) {
           throw new RuntimeException(
-            "Wrong number of args for prop setter: " + cls.getName() + "#" + method.getName());
+              "Wrong number of args for prop setter: " + cls.getName() + "#" + method.getName());
         }
         props.put(annotation.name(), createPropSetter(annotation, method, paramTypes[0]));
       }
@@ -558,17 +558,17 @@ import java.util.Map;
         Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes.length != 2) {
           throw new RuntimeException(
-            "Wrong number of args for group prop setter: "
-              + cls.getName()
-              + "#"
-              + method.getName());
+              "Wrong number of args for group prop setter: "
+                  + cls.getName()
+                  + "#"
+                  + method.getName());
         }
         if (paramTypes[0] != int.class) {
           throw new RuntimeException(
-            "Second argument should be property index: "
-              + cls.getName()
-              + "#"
-              + method.getName());
+              "Second argument should be property index: "
+                  + cls.getName()
+                  + "#"
+                  + method.getName());
         }
         createPropSetters(groupAnnotation, method, paramTypes[1], props);
       }
