@@ -436,7 +436,7 @@ generateCodegenSchemaFromJavaScript () {
 generateCodegenArtifactsFromSchema () {
   describe "Generating codegen artifacts from schema"
   pushd "$RN_DIR" >/dev/null || exit 1
-    "$NODE_BINARY" "scripts/generate-specs-cli.js" ios "$GENERATED_SCHEMA_FILE" "$TEMP_OUTPUT_DIR" "$LIBRARY_NAME" "" "$LIBRARY_TYPE"
+    "$NODE_BINARY" "scripts/generate-specs-cli.js" --platform ios --schemaPath "$GENERATED_SCHEMA_FILE" --outputDir "$TEMP_OUTPUT_DIR" --libraryName "$LIBRARY_NAME" --libraryType "$LIBRARY_TYPE"
   popd >/dev/null || exit 1
 }
 
