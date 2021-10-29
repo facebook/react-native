@@ -22,7 +22,7 @@ import com.facebook.react.module.annotations.ReactModule;
 public final class TimingModule extends NativeTimingSpec
     implements LifecycleEventListener, HeadlessJsTaskEventListener {
 
-  public class BridgeTimerManager implements JavaScriptTimerManager {
+  public class BridgeTimerExecutor implements JavaScriptTimerExecutor {
     @Override
     public void callTimers(WritableArray timerIDs) {
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
@@ -61,7 +61,7 @@ public final class TimingModule extends NativeTimingSpec
     mJavaTimerManager =
         new JavaTimerManager(
             reactContext,
-            new BridgeTimerManager(),
+            new BridgeTimerExecutor(),
             ReactChoreographer.getInstance(),
             devSupportManager);
   }

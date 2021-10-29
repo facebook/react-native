@@ -82,6 +82,12 @@ TextInputProps::TextInputProps(
           "autoFocus",
           sourceProps.autoFocus,
           {})),
+      selection(convertRawProp(
+          context,
+          rawProps,
+          "selection",
+          sourceProps.selection,
+          better::optional<Selection>())),
       inputAccessoryViewID(convertRawProp(
           context,
           rawProps,
@@ -114,14 +120,6 @@ ParagraphAttributes TextInputProps::getEffectiveParagraphAttributes() const {
 
   return result;
 }
-
-#ifdef ANDROID
-folly::dynamic TextInputProps::getDynamic() const {
-  folly::dynamic props = folly::dynamic::object();
-  props["value"] = value;
-  return props;
-}
-#endif
 
 } // namespace react
 } // namespace facebook

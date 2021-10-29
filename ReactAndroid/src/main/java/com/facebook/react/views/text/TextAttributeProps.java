@@ -47,8 +47,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_BEST_WRITING_DIRECTION = 13;
   public static final short TA_KEY_TEXT_DECORATION_COLOR = 14;
   public static final short TA_KEY_TEXT_DECORATION_LINE = 15;
-  public static final short TA_KEY_TEXT_DECORATION_LINE_STYLE = 16;
-  public static final short TA_KEY_TEXT_DECORATION_LINE_PATTERN = 17;
+  public static final short TA_KEY_TEXT_DECORATION_STYLE = 16;
   public static final short TA_KEY_TEXT_SHADOW_RAIDUS = 18;
   public static final short TA_KEY_TEXT_SHADOW_COLOR = 19;
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
@@ -68,9 +67,10 @@ public class TextAttributeProps {
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
   private static final int DEFAULT_JUSTIFICATION_MODE =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
-
   private static final int DEFAULT_BREAK_STRATEGY =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+  private static final int DEFAULT_HYPHENATION_FREQUENCY =
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
 
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
@@ -191,9 +191,7 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_DECORATION_LINE:
           result.setTextDecorationLine(entry.getString());
           break;
-        case TA_KEY_TEXT_DECORATION_LINE_STYLE:
-          break;
-        case TA_KEY_TEXT_DECORATION_LINE_PATTERN:
+        case TA_KEY_TEXT_DECORATION_STYLE:
           break;
         case TA_KEY_TEXT_SHADOW_RAIDUS:
           result.setTextShadowRadius(entry.getInt(1));
@@ -567,5 +565,23 @@ public class TextAttributeProps {
       }
     }
     return androidTextBreakStrategy;
+  }
+
+  public static int getHyphenationFrequency(@Nullable String hyphenationFrequency) {
+    int androidHyphenationFrequency = DEFAULT_HYPHENATION_FREQUENCY;
+    if (hyphenationFrequency != null) {
+      switch (hyphenationFrequency) {
+        case "none":
+          androidHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE;
+          break;
+        case "normal":
+          androidHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NORMAL;
+          break;
+        default:
+          androidHyphenationFrequency = Layout.HYPHENATION_FREQUENCY_FULL;
+          break;
+      }
+    }
+    return androidHyphenationFrequency;
   }
 }

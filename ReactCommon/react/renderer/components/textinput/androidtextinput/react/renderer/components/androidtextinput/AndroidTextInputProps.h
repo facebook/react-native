@@ -7,6 +7,8 @@
 
 #pragma once
 
+// foo bar 2
+
 // #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/graphics/Color.h>
@@ -108,7 +110,6 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
 #pragma mark - Props
 
   const std::string autoComplete{};
-  const std::string autoCompleteType{};
   const std::string returnKeyLabel{};
   const int numberOfLines{0};
   const bool disableFullscreenUI{false};

@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
-import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.common.mapbuffer.ReadableMapBufferSoLoader;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
@@ -41,23 +40,20 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.get");
     final EventBeatManager eventBeatManager = new EventBeatManager(mReactApplicationContext);
     final FabricUIManager uiManager = createUIManager(eventBeatManager);
+
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
     final Binding binding = new Binding();
+
     if (ReactFeatureFlags.enableEagerInitializeMapBufferSoFile) {
       ReadableMapBufferSoLoader.staticInit();
     }
-    MessageQueueThread jsMessageQueueThread =
-        mReactApplicationContext
-            .getCatalystInstance()
-            .getReactQueueConfiguration()
-            .getJSQueueThread();
 
     binding.register(
         mReactApplicationContext.getCatalystInstance().getRuntimeExecutor(),
+        mReactApplicationContext.getCatalystInstance().getRuntimeScheduler(),
         uiManager,
         eventBeatManager,
-        jsMessageQueueThread,
         mComponentFactory,
         mConfig);
 

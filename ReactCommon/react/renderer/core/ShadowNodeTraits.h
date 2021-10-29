@@ -21,7 +21,7 @@ class ShadowNodeTraits {
  public:
   /*
    * Underlying type for the traits.
-   * The first 18 bits are reserved for Core.
+   * The first 23 bits are reserved for Core.
    */
   enum Trait : int32_t {
     None = 0,
@@ -88,6 +88,16 @@ class ShadowNodeTraits {
 
     // Inherits 'TextShadowNode'
     Text = 1 << 17,
+
+    // Reserved
+    ReservedTrait1 = 1 << 18,
+    ReservedTrait2 = 1 << 19,
+    ReservedTrait3 = 1 << 20,
+    ReservedTrait4 = 1 << 21,
+    ReservedTrait5 = 1 << 22,
+
+    // Unserved - alias these for local usage
+    UnreservedTrait1 = 1 << 23
   };
 
   /*

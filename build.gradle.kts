@@ -7,13 +7,12 @@
 
 buildscript {
     repositories {
-        mavenLocal()
         google()
         mavenCentral()
     }
     dependencies {
         val kotlin_version: String by project
-        classpath("com.android.tools.build:gradle:4.2.1")
+        classpath("com.android.tools.build:gradle:4.2.2")
         classpath("de.undercouch:gradle-download-task:4.1.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         // NOTE: Do not place your application dependencies here; they belong
@@ -31,9 +30,14 @@ allprojects {
             // All of Detox's artifacts are provided via the npm module
             url = uri("$rootDir/node_modules/detox/Detox-android")
         }
-        mavenLocal()
         google()
-        mavenCentral()
+        mavenCentral {
+            // We don't want to fetch react-native from Maven Central as there are
+            // older versions over there.
+            content {
+                excludeGroup("com.facebook.react")
+            }
+        }
     }
 
     // used to override ndk path/version from env variables on CI

@@ -10,7 +10,13 @@
 'use strict';
 
 const React = require('react');
-const {StyleSheet, View} = require('react-native');
+const {
+  StyleSheet,
+  View,
+  PlatformColor,
+  Platform,
+  DynamicColorIOS,
+} = require('react-native');
 
 const styles = StyleSheet.create({
   box: {
@@ -175,6 +181,22 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 40,
   },
+  border15: {
+    borderWidth: 10,
+    borderColor: Platform.select({
+      ios: PlatformColor('systemGray4'),
+      android: PlatformColor('@android:color/holo_orange_dark'),
+      windows: PlatformColor('SystemAccentColorDark1'),
+      default: 'black',
+    }),
+  },
+  border16: {
+    borderWidth: 10,
+    borderColor:
+      Platform.OS === 'ios'
+        ? DynamicColorIOS({light: 'magenta', dark: 'cyan'})
+        : 'black',
+  },
 });
 
 exports.title = 'Border';
@@ -300,6 +322,21 @@ exports.examples = [
     description: 'Make a non-uniform radius curved border',
     render() {
       return <View style={[styles.box, styles.border14]} />;
+    },
+  },
+  {
+    title: 'System color',
+    description: 'Using a platform color',
+    render() {
+      return <View style={[styles.box, styles.border15]} />;
+    },
+  },
+  {
+    title: 'Dynamic color',
+    description: 'Using a custom dynamic color',
+    platform: 'ios',
+    render() {
+      return <View style={[styles.box, styles.border16]} />;
     },
   },
 ];

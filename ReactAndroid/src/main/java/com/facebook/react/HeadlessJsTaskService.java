@@ -99,7 +99,7 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
     ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
     if (reactContext == null) {
       reactInstanceManager.addReactInstanceEventListener(
-          new ReactInstanceManager.ReactInstanceEventListener() {
+          new ReactInstanceEventListener() {
             @Override
             public void onReactContextInitialized(ReactContext reactContext) {
               invokeStartTask(reactContext, taskConfig);

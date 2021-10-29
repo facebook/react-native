@@ -27,9 +27,6 @@
 
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
-#import <react/renderer/components/root/RootShadowNode.h>
-#import <react/renderer/core/LayoutConstraints.h>
-#import <react/renderer/core/LayoutContext.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
@@ -94,8 +91,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     _runtimeExecutor = runtimeExecutor;
     _contextContainer = contextContainer;
 
-    _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
-    _mountingManager = [[RCTMountingManager alloc] init];
+    _surfaceRegistry = [RCTSurfaceRegistry new];
+    _mountingManager = [RCTMountingManager new];
     _mountingManager.contextContainer = contextContainer;
     _mountingManager.delegate = self;
 

@@ -10,8 +10,6 @@
 
 import * as React from 'react';
 
-import DeprecatedTextInputPropTypes from '../../DeprecatedPropTypes/DeprecatedTextInputPropTypes';
-
 import Platform from '../../Utilities/Platform';
 import StyleSheet, {
   type TextStyleProp,
@@ -34,7 +32,6 @@ import type {
   PressEvent,
 } from '../../Types/CoreEventTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
 const {useLayoutEffect, useRef, useState} = React;
 
@@ -331,7 +328,7 @@ type AndroidProps = $ReadOnly<{|
    *
    * @platform android
    */
-  autoCompleteType?: ?(
+  autoComplete?: ?(
     | 'birthdate-day'
     | 'birthdate-full'
     | 'birthdate-month'
@@ -1163,6 +1160,7 @@ function InternalTextInput(props: Props): React.Node {
   } else if (Platform.OS === 'android') {
     const style = [props.style];
     const autoCapitalize = props.autoCapitalize || 'sentences';
+    const placeholder = props.placeholder ?? '';
     let children = props.children;
     const childCount = React.Children.count(children);
     invariant(
@@ -1205,6 +1203,7 @@ function InternalTextInput(props: Props): React.Node {
          * to get fixed */
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
+        placeholder={placeholder}
         selection={selection}
         style={style}
         text={text}
@@ -1242,8 +1241,11 @@ const ExportedForwardRef: React.AbstractComponent<
   );
 });
 
-// TODO: Deprecate this
-ExportedForwardRef.propTypes = DeprecatedTextInputPropTypes;
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+ExportedForwardRef.propTypes = require('deprecated-react-native-prop-types').TextInputPropTypes;
 
 // $FlowFixMe[prop-missing]
 ExportedForwardRef.State = {
@@ -1261,7 +1263,6 @@ type TextInputComponentStatics = $ReadOnly<{|
     focusTextInput: typeof TextInputState.focusTextInput,
     blurTextInput: typeof TextInputState.blurTextInput,
   |}>,
-  propTypes: typeof DeprecatedTextInputPropTypes,
 |}>;
 
 const styles = StyleSheet.create({

@@ -67,7 +67,7 @@ using namespace facebook::react;
     _props = defaultProps;
     auto &props = *defaultProps;
 
-    _backedTextInputView = props.traits.multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
+    _backedTextInputView = props.traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
@@ -89,6 +89,7 @@ using namespace facebook::react;
     }
     _didMoveToWindow = YES;
   }
+  [self _restoreTextSelection];
 }
 
 #pragma mark - RCTViewComponentView overrides
@@ -208,7 +209,6 @@ using namespace facebook::react;
   if (newTextInputProps.inputAccessoryViewID != oldTextInputProps.inputAccessoryViewID) {
     _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
   }
-
   [super updateProps:props oldProps:oldProps];
 
   [self setDefaultInputAccessoryView];
@@ -465,7 +465,7 @@ using namespace facebook::react;
   }
 
   if (shouldHaveInputAccesoryView) {
-    UIToolbar *toolbarView = [[UIToolbar alloc] init];
+    UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -526,13 +526,27 @@ using namespace facebook::react;
   return AttributedString::Range{(int)start, (int)(end - start)};
 }
 
+- (void)_restoreTextSelection
+{
+  const auto selection = std::dynamic_pointer_cast<TextInputProps const>(_props)->selection.get_pointer();
+  if (selection == nullptr) {
+    return;
+  }
+  auto start = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                   offset:selection->start];
+  auto end = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument offset:selection->end];
+  auto range = [_backedTextInputView textRangeFromPosition:start toPosition:end];
+  [_backedTextInputView setSelectedTextRange:range notifyDelegate:YES];
+}
+
 - (void)_setAttributedString:(NSAttributedString *)attributedString
 {
+  if ([self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
+    return;
+  }
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
-  if (![self _textOf:attributedString equals:_backedTextInputView.attributedText]) {
-    _backedTextInputView.attributedText = attributedString;
-  }
+  _backedTextInputView.attributedText = attributedString;
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
     NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
@@ -544,14 +558,14 @@ using namespace facebook::react;
     [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                                 notifyDelegate:YES];
   }
+  [self _restoreTextSelection];
   _lastStringStateWasUpdatedWith = attributedString;
 }
 
 - (void)_setMultiline:(BOOL)multiline
 {
   [_backedTextInputView removeFromSuperview];
-  UIView<RCTBackedTextInputViewProtocol> *backedTextInputView =
-      multiline ? [[RCTUITextView alloc] init] : [[RCTUITextField alloc] init];
+  UIView<RCTBackedTextInputViewProtocol> *backedTextInputView = multiline ? [RCTUITextView new] : [RCTUITextField new];
   backedTextInputView.frame = _backedTextInputView.frame;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;

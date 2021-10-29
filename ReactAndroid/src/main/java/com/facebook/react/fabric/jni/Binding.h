@@ -8,8 +8,8 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <react/jni/JMessageQueueThread.h>
 #include <react/jni/JRuntimeExecutor.h>
+#include <react/jni/JRuntimeScheduler.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/animations/LayoutAnimationDriver.h>
 #include <react/renderer/scheduler/Scheduler.h>
@@ -105,9 +105,9 @@ class Binding : public jni::HybridClass<Binding>,
 
   void installFabricUIManager(
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
+      jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
       jni::alias_ref<jobject> javaUIManager,
       EventBeatManager *eventBeatManager,
-      jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
       ComponentFactory *componentsRegistry,
       jni::alias_ref<jobject> reactNativeConfig);
 
@@ -197,9 +197,10 @@ class Binding : public jni::HybridClass<Binding>,
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
   bool disablePreallocateViews_{false};
-  bool disableVirtualNodePreallocation_{false};
   bool enableFabricLogs_{false};
   bool enableEarlyEventEmitterUpdate_{false};
+  bool disableRevisionCheckForPreallocation_{false};
+  bool enableEventEmitterRawPointer_{false};
 };
 
 } // namespace react

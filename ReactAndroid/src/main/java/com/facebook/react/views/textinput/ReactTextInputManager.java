@@ -37,7 +37,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -158,6 +158,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_URI = "url";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
+  private static final String[] DRAWABLE_FIELDS = {
+    "mCursorDrawable", "mSelectHandleLeft", "mSelectHandleRight", "mSelectHandleCenter"
+  };
+  private static final String[] DRAWABLE_RESOURCES = {
+    "mCursorDrawableRes",
+    "mTextSelectHandleLeftRes",
+    "mTextSelectHandleRightRes",
+    "mTextSelectHandleRes"
+  };
 
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
 
@@ -459,7 +468,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @ReactProp(name = "placeholder")
-  public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
+  public void setPlaceholder(ReactEditText view, String placeholder) {
     view.setHint(placeholder);
   }
 
@@ -507,34 +516,40 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
 
     // The evil code that follows uses reflection to achieve this on Android 8.1 and below.
-    // Based on
-    // http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
-    try {
-      // Get the original cursor drawable resource.
-      Field cursorDrawableResField = TextView.class.getDeclaredField("mCursorDrawableRes");
-      cursorDrawableResField.setAccessible(true);
-      int drawableResId = cursorDrawableResField.getInt(view);
+    // Based on https://tinyurl.com/3vff8lyu https://tinyurl.com/vehggzs9
+    for (int i = 0; i < DRAWABLE_RESOURCES.length; i++) {
+      try {
+        Field drawableResourceField = TextView.class.getDeclaredField(DRAWABLE_RESOURCES[i]);
+        drawableResourceField.setAccessible(true);
+        int resourceId = drawableResourceField.getInt(view);
 
-      // The view has no cursor drawable.
-      if (drawableResId == 0) {
-        return;
+        // The view has no cursor drawable.
+        if (resourceId == 0) {
+          return;
+        }
+
+        Drawable drawable = ContextCompat.getDrawable(view.getContext(), resourceId);
+
+        Drawable drawableCopy = drawable.mutate();
+        drawableCopy.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+
+        Field editorField = TextView.class.getDeclaredField("mEditor");
+        editorField.setAccessible(true);
+        Object editor = editorField.get(view);
+
+        Field cursorDrawableField = editor.getClass().getDeclaredField(DRAWABLE_FIELDS[i]);
+        cursorDrawableField.setAccessible(true);
+        if (DRAWABLE_RESOURCES[i] == "mCursorDrawableRes") {
+          Drawable[] drawables = {drawableCopy, drawableCopy};
+          cursorDrawableField.set(editor, drawables);
+        } else {
+          cursorDrawableField.set(editor, drawableCopy);
+        }
+      } catch (NoSuchFieldException ex) {
+        // Ignore errors to avoid crashing if these private fields don't exist on modified
+        // or future android versions.
+      } catch (IllegalAccessException ex) {
       }
-
-      Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
-      drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-      Drawable[] drawables = {drawable, drawable};
-
-      // Update the current cursor drawable with the new one.
-      Field editorField = TextView.class.getDeclaredField("mEditor");
-      editorField.setAccessible(true);
-      Object editor = editorField.get(view);
-      Field cursorDrawableField = editor.getClass().getDeclaredField("mCursorDrawable");
-      cursorDrawableField.setAccessible(true);
-      cursorDrawableField.set(editor, drawables);
-    } catch (NoSuchFieldException ex) {
-      // Ignore errors to avoid crashing if these private fields don't exist on modified
-      // or future android versions.
-    } catch (IllegalAccessException ex) {
     }
   }
 
@@ -578,7 +593,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         view.setTextColor(defaultContextTextColor);
       } else {
         Context c = view.getContext();
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG,
             new IllegalStateException(
                 "Could not get default text color from View Context: "
@@ -726,12 +741,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid autoComplete: " + autoComplete);
     }
-  }
-
-  // TODO: T96744578 - Delete autoCompleteType prop
-  @ReactProp(name = "autoCompleteType")
-  public void setTextContentTypeDeprecated(ReactEditText view, @Nullable String autoCompleteType) {
-    setTextContentType(view, autoCompleteType);
   }
 
   @ReactProp(name = "autoCorrect")

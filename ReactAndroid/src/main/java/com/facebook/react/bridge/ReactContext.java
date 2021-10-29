@@ -78,7 +78,7 @@ public class ReactContext extends ContextWrapper {
       throw new IllegalStateException("ReactContext has been already initialized");
     }
     if (mDestroyed) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalStateException("Cannot initialize ReactContext after it has been destroyed."));
     }
@@ -91,6 +91,7 @@ public class ReactContext extends ContextWrapper {
 
   /** Initialize message queue threads using a ReactQueueConfiguration. */
   public synchronized void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
+    FLog.w(TAG, "initializeMessageQueueThreads() is called.");
     if (mUiMessageQueueThread != null
         || mNativeModulesMessageQueueThread != null
         || mJSMessageQueueThread != null) {

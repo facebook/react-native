@@ -96,7 +96,7 @@ inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
 
   LOG(ERROR) << "Unsupported TextBreakStrategy value";
   react_native_assert(false);
-  return "simple";
+  return "highQuality";
 }
 
 inline void fromRawValue(
@@ -116,14 +116,14 @@ inline void fromRawValue(
       // sane default
       LOG(ERROR) << "Unsupported TextBreakStrategy value: " << string;
       react_native_assert(false);
-      result = TextBreakStrategy::Simple;
+      result = TextBreakStrategy::HighQuality;
     }
     return;
   }
 
   LOG(ERROR) << "Unsupported TextBreakStrategy type";
   react_native_assert(false);
-  result = TextBreakStrategy::Simple;
+  result = TextBreakStrategy::HighQuality;
 }
 
 inline void fromRawValue(
@@ -475,94 +475,45 @@ inline std::string toString(
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
-    TextDecorationLineStyle &result) {
-  react_native_assert(value.hasType<std::string>());
-  if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
-    if (string == "single") {
-      result = TextDecorationLineStyle::Single;
-    } else if (string == "thick") {
-      result = TextDecorationLineStyle::Thick;
-    } else if (string == "double") {
-      result = TextDecorationLineStyle::Double;
-    } else {
-      LOG(ERROR) << "Unsupported TextDecorationLineStyle value: " << string;
-      react_native_assert(false);
-      // sane default for prod
-      result = TextDecorationLineStyle::Single;
-    }
-    return;
-  }
-
-  LOG(ERROR) << "Unsupported TextDecorationLineStyle type";
-  // sane default for prod
-  result = TextDecorationLineStyle::Single;
-}
-
-inline std::string toString(
-    const TextDecorationLineStyle &textDecorationLineStyle) {
-  switch (textDecorationLineStyle) {
-    case TextDecorationLineStyle::Single:
-      return "single";
-    case TextDecorationLineStyle::Thick:
-      return "thick";
-    case TextDecorationLineStyle::Double:
-      return "double";
-  }
-
-  LOG(ERROR) << "Unsupported TextDecorationLineStyle value";
-  react_native_assert(false);
-  // sane default for prod
-  return "single";
-}
-
-inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    TextDecorationLinePattern &result) {
+    TextDecorationStyle &result) {
   react_native_assert(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "solid") {
-      result = TextDecorationLinePattern::Solid;
-    } else if (string == "dot") {
-      result = TextDecorationLinePattern::Dot;
-    } else if (string == "dash") {
-      result = TextDecorationLinePattern::Dash;
-    } else if (string == "dash-dot") {
-      result = TextDecorationLinePattern::DashDot;
-    } else if (string == "dash-dot-dot") {
-      result = TextDecorationLinePattern::DashDotDot;
+      result = TextDecorationStyle::Solid;
+    } else if (string == "double") {
+      result = TextDecorationStyle::Double;
+    } else if (string == "dotted") {
+      result = TextDecorationStyle::Dotted;
+    } else if (string == "dashed") {
+      result = TextDecorationStyle::Dashed;
     } else {
-      LOG(ERROR) << "Unsupported TextDecorationLinePattern value: " << string;
+      LOG(ERROR) << "Unsupported TextDecorationStyle value: " << string;
       react_native_assert(false);
       // sane default for prod
-      result = TextDecorationLinePattern::Solid;
+      result = TextDecorationStyle::Solid;
     }
     return;
   }
 
-  LOG(ERROR) << "Unsupported TextDecorationLineStyle type";
+  LOG(ERROR) << "Unsupported TextDecorationStyle type";
   // sane default for prod
-  result = TextDecorationLinePattern::Solid;
+  result = TextDecorationStyle::Solid;
 }
 
-inline std::string toString(
-    const TextDecorationLinePattern &textDecorationLinePattern) {
-  switch (textDecorationLinePattern) {
-    case TextDecorationLinePattern::Solid:
+inline std::string toString(const TextDecorationStyle &textDecorationStyle) {
+  switch (textDecorationStyle) {
+    case TextDecorationStyle::Solid:
       return "solid";
-    case TextDecorationLinePattern::Dot:
-      return "dot";
-    case TextDecorationLinePattern::Dash:
-      return "dash";
-    case TextDecorationLinePattern::DashDot:
-      return "dash-dot";
-    case TextDecorationLinePattern::DashDotDot:
-      return "dash-dot-dot";
+    case TextDecorationStyle::Double:
+      return "double";
+    case TextDecorationStyle::Dotted:
+      return "dotted";
+    case TextDecorationStyle::Dashed:
+      return "dashed";
   }
 
-  LOG(ERROR) << "Unsupported TextDecorationLinePattern value";
+  LOG(ERROR) << "Unsupported TextDecorationStyle value";
   react_native_assert(false);
   // sane default for prod
   return "solid";
@@ -618,6 +569,8 @@ inline std::string toString(const AccessibilityRole &accessibilityRole) {
       return "switch";
     case AccessibilityRole::Tab:
       return "tab";
+    case AccessibilityRole::TabBar:
+      return "tabbar";
     case AccessibilityRole::Tablist:
       return "tablist";
     case AccessibilityRole::Timer:
@@ -687,6 +640,8 @@ inline void fromRawValue(
       result = AccessibilityRole::Switch;
     } else if (string == "tab") {
       result = AccessibilityRole::Tab;
+    } else if (string == "tabbar") {
+      result = AccessibilityRole::TabBar;
     } else if (string == "tablist") {
       result = AccessibilityRole::Tablist;
     } else if (string == "timer") {
@@ -706,6 +661,48 @@ inline void fromRawValue(
   react_native_assert(false);
   // sane default for prod
   result = AccessibilityRole::None;
+}
+
+inline std::string toString(const HyphenationFrequency &hyphenationFrequency) {
+  switch (hyphenationFrequency) {
+    case HyphenationFrequency::None:
+      return "none";
+    case HyphenationFrequency::Normal:
+      return "normal";
+    case HyphenationFrequency::Full:
+      return "full";
+  }
+
+  LOG(ERROR) << "Unsupported HyphenationFrequency value";
+  react_native_assert(false);
+  return "none";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    HyphenationFrequency &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (value.hasType<std::string>()) {
+    auto string = (std::string)value;
+    if (string == "none") {
+      result = HyphenationFrequency::None;
+    } else if (string == "normal") {
+      result = HyphenationFrequency::Normal;
+    } else if (string == "full") {
+      result = HyphenationFrequency::Full;
+    } else {
+      // sane default
+      LOG(ERROR) << "Unsupported HyphenationFrequency value: " << string;
+      react_native_assert(false);
+      result = HyphenationFrequency::None;
+    }
+    return;
+  }
+
+  LOG(ERROR) << "Unsupported HyphenationFrequency type";
+  react_native_assert(false);
+  result = HyphenationFrequency::None;
 }
 
 inline ParagraphAttributes convertRawProp(
@@ -757,6 +754,12 @@ inline ParagraphAttributes convertRawProp(
       "includeFontPadding",
       sourceParagraphAttributes.includeFontPadding,
       defaultParagraphAttributes.includeFontPadding);
+  paragraphAttributes.android_hyphenationFrequency = convertRawProp(
+      context,
+      rawProps,
+      "android_hyphenationFrequency",
+      sourceParagraphAttributes.android_hyphenationFrequency,
+      defaultParagraphAttributes.android_hyphenationFrequency);
 
   return paragraphAttributes;
 }
@@ -792,6 +795,9 @@ inline folly::dynamic toDynamic(
   values("textBreakStrategy", toString(paragraphAttributes.textBreakStrategy));
   values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
   values("includeFontPadding", paragraphAttributes.includeFontPadding);
+  values(
+      "android_hyphenationFrequency",
+      toString(paragraphAttributes.android_hyphenationFrequency));
 
   return values;
 }
@@ -876,15 +882,9 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes(
         "textDecorationLine", toString(*textAttributes.textDecorationLineType));
   }
-  if (textAttributes.textDecorationLineStyle.has_value()) {
+  if (textAttributes.textDecorationStyle.has_value()) {
     _textAttributes(
-        "textDecorationLineStyle",
-        toString(*textAttributes.textDecorationLineStyle));
-  }
-  if (textAttributes.textDecorationLinePattern.has_value()) {
-    _textAttributes(
-        "textDecorationLinePattern",
-        toString(*textAttributes.textDecorationLinePattern));
+        "textDecorationStyle", toString(*textAttributes.textDecorationStyle));
   }
   // Shadow
   // textShadowOffset = textAttributes.textShadowOffset.has_value() ?
@@ -975,8 +975,7 @@ constexpr static Key TA_KEY_ALIGNMENT = 12;
 constexpr static Key TA_KEY_BEST_WRITING_DIRECTION = 13;
 constexpr static Key TA_KEY_TEXT_DECORATION_COLOR = 14;
 constexpr static Key TA_KEY_TEXT_DECORATION_LINE = 15;
-constexpr static Key TA_KEY_TEXT_DECORATION_LINE_STYLE = 16;
-constexpr static Key TA_KEY_TEXT_DECORATION_LINE_PATTERN = 17;
+constexpr static Key TA_KEY_TEXT_DECORATION_STYLE = 16;
 constexpr static Key TA_KEY_TEXT_SHADOW_RAIDUS = 18;
 constexpr static Key TA_KEY_TEXT_SHADOW_COLOR = 19;
 constexpr static Key TA_KEY_IS_HIGHLIGHTED = 20;
@@ -989,6 +988,7 @@ constexpr static Key PA_KEY_ELLIPSIZE_MODE = 1;
 constexpr static Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
 constexpr static Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
 constexpr static Key PA_KEY_INCLUDE_FONT_PADDING = 4;
+constexpr static Key PA_KEY_HYPHENATION_FREQUENCY = 5;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
   auto builder = MapBufferBuilder();
@@ -1003,6 +1003,9 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
       PA_KEY_ADJUST_FONT_SIZE_TO_FIT, paragraphAttributes.adjustsFontSizeToFit);
   builder.putBool(
       PA_KEY_INCLUDE_FONT_PADDING, paragraphAttributes.includeFontPadding);
+  builder.putString(
+      PA_KEY_HYPHENATION_FREQUENCY,
+      toString(paragraphAttributes.android_hyphenationFrequency));
 
   return builder.build();
 }
@@ -1091,16 +1094,12 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
         TA_KEY_TEXT_DECORATION_LINE,
         toString(*textAttributes.textDecorationLineType));
   }
-  if (textAttributes.textDecorationLineStyle.has_value()) {
+  if (textAttributes.textDecorationStyle.has_value()) {
     builder.putString(
-        TA_KEY_TEXT_DECORATION_LINE_STYLE,
-        toString(*textAttributes.textDecorationLineStyle));
+        TA_KEY_TEXT_DECORATION_STYLE,
+        toString(*textAttributes.textDecorationStyle));
   }
-  if (textAttributes.textDecorationLinePattern.has_value()) {
-    builder.putString(
-        TA_KEY_TEXT_DECORATION_LINE_PATTERN,
-        toString(*textAttributes.textDecorationLinePattern));
-  }
+
   // Shadow
   if (!std::isnan(textAttributes.textShadowRadius)) {
     builder.putDouble(

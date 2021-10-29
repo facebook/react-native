@@ -18,7 +18,3 @@ indent_size = 4
 
 [BUCK]
 indent_size = 4
-
-# Windows files
-[*.bat]
-end_of_line = crlf

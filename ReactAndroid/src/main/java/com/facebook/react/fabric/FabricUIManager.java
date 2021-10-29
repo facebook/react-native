@@ -43,7 +43,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -77,6 +77,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.LockFreeEventDispatcherImpl;
@@ -201,7 +202,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Deprecated
   public <T extends View> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
-    ReactSoftException.logSoftException(
+    ReactSoftExceptionLogger.logSoftException(
         TAG,
         new IllegalViewOperationException(
             "Do not call addRootView in Fabric; it is unsupported. Call startSurface instead."));
@@ -212,7 +213,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     ThemedReactContext reactContext =
         new ThemedReactContext(
             mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID(), rootTag);
-    mMountingManager.startSurface(rootTag, rootView, reactContext);
+    mMountingManager.startSurface(rootTag, reactContext, rootView);
     String moduleName = reactRootView.getJSModuleName();
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
@@ -270,7 +271,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
-    mMountingManager.startSurface(rootTag, rootView, reactContext);
+    mMountingManager.startSurface(rootTag, reactContext, rootView);
 
     // If startSurface is executed in the UIThread then, it uses the ViewportOffset from the View,
     // Otherwise Fabric relies on calling {@link Binding#setConstraints} method to update the
@@ -294,14 +295,24 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
-  public void startSurface(final SurfaceHandler surfaceHandler) {
-    int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
-    mMountingManager.startSurface(rootTag);
+  public void startSurface(
+      final SurfaceHandler surfaceHandler, final Context context, final @Nullable View rootView) {
+    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
 
-    startSurfaceWithId(surfaceHandler, rootTag, false);
+    ThemedReactContext reactContext =
+        new ThemedReactContext(
+            mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
+    mMountingManager.startSurface(rootTag, reactContext, rootView);
+
+    surfaceHandler.setSurfaceId(rootTag);
+    if (surfaceHandler instanceof SurfaceHandlerBinding) {
+      mBinding.registerSurface((SurfaceHandlerBinding) surfaceHandler);
+    }
+    surfaceHandler.setMountable(rootView != null);
+    surfaceHandler.start();
   }
 
-  public void attachRootView(final View rootView, final SurfaceHandler surfaceHandler) {
+  public void attachRootView(final SurfaceHandler surfaceHandler, final View rootView) {
     ThemedReactContext reactContext =
         new ThemedReactContext(
             mReactApplicationContext,
@@ -313,30 +324,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     surfaceHandler.setMountable(true);
   }
 
-  public void startSurfaceWithView(final View rootView, final SurfaceHandler surfaceHandler) {
-    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
-
-    Context context = rootView.getContext();
-    ThemedReactContext reactContext =
-        new ThemedReactContext(
-            mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
-    mMountingManager.startSurface(rootTag, rootView, reactContext);
-
-    startSurfaceWithId(surfaceHandler, rootTag, true);
-  }
-
-  private void startSurfaceWithId(SurfaceHandler surfaceHandler, int rootTag, boolean isMountable) {
-    surfaceHandler.setSurfaceId(rootTag);
-    if (surfaceHandler instanceof SurfaceHandlerBinding) {
-      mBinding.registerSurface((SurfaceHandlerBinding) surfaceHandler);
-    }
-    surfaceHandler.setMountable(isMountable);
-    surfaceHandler.start();
-  }
-
   public void stopSurface(final SurfaceHandler surfaceHandler) {
     if (!surfaceHandler.isRunning()) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           FabricUIManager.TAG,
           new IllegalStateException("Trying to stop surface that hasn't started yet"));
       return;
@@ -384,7 +374,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
 
     if (mDestroyed) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           FabricUIManager.TAG, new IllegalStateException("Cannot double-destroy FabricUIManager"));
       return;
     }
@@ -565,6 +555,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     SurfaceMountingManager surfaceMountingManager =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData");
     ThemedReactContext themedReactContext = surfaceMountingManager.getContext();
+
+    if (themedReactContext == null) {
+      FLog.w(TAG, "\"themedReactContext\" is null when call \"getThemeData\"");
+      return false;
+    }
     float[] defaultTextInputPaddingForTheme =
         UIManagerHelper.getDefaultTextInputPadding(themedReactContext);
     defaultTextInputPadding[0] = defaultTextInputPaddingForTheme[PADDING_START_INDEX];
@@ -633,6 +628,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           @Override
           public int getSurfaceId() {
             return View.NO_ID;
+          }
+
+          @Override
+          public String toString() {
+            String propsString =
+                IS_DEVELOPMENT_ENVIRONMENT
+                    ? (props != null ? props.toHashMap().toString() : "<null>")
+                    : "<hidden>";
+            return String.format("SYNC UPDATE PROPS [%d]: %s", reactTag, propsString);
           }
         };
 
@@ -790,7 +794,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     // TODO T83615646: make this a hard-crash in the future.
     if (surfaceMountingManager == null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG,
           new IllegalViewOperationException(
               "Cannot updateRootLayoutSpecs on surfaceId that does not exist: " + surfaceId));
@@ -836,6 +840,23 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     receiveEvent(surfaceId, reactTag, eventName, false, 0, params);
   }
 
+  public void receiveEvent(
+      int surfaceId,
+      int reactTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      int customCoalesceKey,
+      @Nullable WritableMap params) {
+    receiveEvent(
+        surfaceId,
+        reactTag,
+        eventName,
+        canCoalesceEvent,
+        customCoalesceKey,
+        params,
+        EventCategoryDef.UNSPECIFIED);
+  }
+
   /**
    * receiveEvent API that emits an event to C++. If `canCoalesceEvent` is true, that signals that
    * C++ may coalesce the event optionally. Otherwise, coalescing can happen in Java before
@@ -849,6 +870,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @param canCoalesceEvent
    * @param customCoalesceKey
    * @param params
+   * @param eventCategory
    */
   public void receiveEvent(
       int surfaceId,
@@ -856,7 +878,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       String eventName,
       boolean canCoalesceEvent,
       int customCoalesceKey,
-      @Nullable WritableMap params) {
+      @Nullable WritableMap params,
+      @EventCategoryDef int eventCategory) {
     if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
       FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
     }
@@ -877,7 +900,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (canCoalesceEvent) {
       eventEmitter.invokeUnique(eventName, params, customCoalesceKey);
     } else {
-      eventEmitter.invoke(eventName, params);
+      eventEmitter.invoke(eventName, params, eventCategory);
     }
   }
 
@@ -1003,6 +1026,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           public int getSurfaceId() {
             return surfaceId;
           }
+
+          @Override
+          public String toString() {
+            return String.format("SET_JS_RESPONDER [%d] [surface:%d]", reactTag, surfaceId);
+          }
         });
   }
 
@@ -1021,6 +1049,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
           @Override
           public int getSurfaceId() {
             return View.NO_ID;
+          }
+
+          @Override
+          public String toString() {
+            return "CLEAR_JS_RESPONDER";
           }
         });
   }

@@ -1,7 +1,6 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("//tools/build_defs/apple:config_utils_defs.bzl", "STATIC_LIBRARY_APPLETVOS_CONFIG", "fbobjc_configs")
 load("//tools/build_defs/apple:fb_apple_test.bzl", "fb_apple_test")
-load("//tools/build_defs/apple:flag_defs.bzl", "get_base_appletvos_flags", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
+load("//tools/build_defs/apple:flag_defs.bzl", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags")
 load("//tools/build_defs/apple/plugins:plugin_defs.bzl", "plugin")
 load("//tools/build_defs/oss:metro_defs.bzl", "rn_library")
 load(
@@ -184,8 +183,6 @@ rn_xplat_cxx_library2(
         prefix = "React",
     ),
     apple_sdks = (IOS, APPLETVOS),
-    appletvos_configs = fbobjc_configs(STATIC_LIBRARY_APPLETVOS_CONFIG),
-    appletvos_inherited_buck_flags = get_base_appletvos_flags(),
     contacts = ["oncall+react_native@xmail.facebook.com"],
     fbobjc_enable_exceptions = True,
     frameworks = [
@@ -247,6 +244,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTInvalidating.h": RCTBASE_PATH + "RCTInvalidating.h",
     "React/RCTJSScriptLoaderModule.h": RCTBASE_PATH + "RCTJSScriptLoaderModule.h",
     "React/RCTJSStackFrame.h": RCTBASE_PATH + "RCTJSStackFrame.h",
+    "React/RCTJSThread.h": RCTBASE_PATH + "RCTJSThread.h",
     "React/RCTJavaScriptExecutor.h": RCTBASE_PATH + "RCTJavaScriptExecutor.h",
     "React/RCTJavaScriptLoader.h": RCTBASE_PATH + "RCTJavaScriptLoader.h",
     "React/RCTKeyCommands.h": RCTBASE_PATH + "RCTKeyCommands.h",
@@ -376,6 +374,7 @@ rn_xplat_cxx_library2(
         "$SDKROOT/System/Library/Frameworks/CFNetwork.framework",
         "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
         "$SDKROOT/System/Library/Frameworks/CoreLocation.framework",
+        "$SDKROOT/System/Library/Frameworks/CoreText.framework",
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
         "$SDKROOT/System/Library/Frameworks/MapKit.framework",
         "$SDKROOT/System/Library/Frameworks/QuartzCore.framework",
@@ -550,6 +549,7 @@ rn_apple_library(
         ],
     ),
     autoglob = False,
+    complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
     extension_api_only = True,
     frameworks = [
@@ -686,12 +686,12 @@ rn_library(
         ],
     ),
     labels = ["supermodule:xplat/default/public.react_native.core"],
-    skip_processors = True,  # Don't anticipate routes or fbicon here
     visibility = ["PUBLIC"],
     deps = [
         "//xplat/js:node_modules__abort_19controller",
         "//xplat/js:node_modules__anser",
         "//xplat/js:node_modules__base64_19js",
+        "//xplat/js:node_modules__deprecated_19react_19native_19prop_19types",
         "//xplat/js:node_modules__event_19target_19shim",
         "//xplat/js:node_modules__invariant",
         "//xplat/js:node_modules__nullthrows",

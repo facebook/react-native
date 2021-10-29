@@ -56,92 +56,57 @@ function reportException(
   isFatal: boolean,
   reportToConsole: boolean, // only true when coming from handleException; the error has not yet been logged
 ) {
-  const NativeExceptionsManager = require('./NativeExceptionsManager').default;
-  if (NativeExceptionsManager) {
-    const parseErrorStack = require('./Devtools/parseErrorStack');
-    const stack = parseErrorStack(e?.stack);
-    const currentExceptionID = ++exceptionID;
-    const originalMessage = e.message || '';
-    let message = originalMessage;
-    if (e.componentStack != null) {
-      message += `\n\nThis error is located at:${e.componentStack}`;
-    }
-    const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
+  const parseErrorStack = require('./Devtools/parseErrorStack');
+  const stack = parseErrorStack(e?.stack);
+  const currentExceptionID = ++exceptionID;
+  const originalMessage = e.message || '';
+  let message = originalMessage;
+  if (e.componentStack != null) {
+    message += `\n\nThis error is located at:${e.componentStack}`;
+  }
+  const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
 
-    if (!message.startsWith(namePrefix)) {
-      message = namePrefix + message;
-    }
+  if (!message.startsWith(namePrefix)) {
+    message = namePrefix + message;
+  }
 
-    message =
-      e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
+  message =
+    e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
-    const isHandledByLogBox =
-      e.forceRedbox !== true && !global.RN$Bridgeless && !global.RN$Express;
+  const data = preprocessException({
+    message,
+    originalMessage: message === originalMessage ? null : originalMessage,
+    name: e.name == null || e.name === '' ? null : e.name,
+    componentStack:
+      typeof e.componentStack === 'string' ? e.componentStack : null,
+    stack,
+    id: currentExceptionID,
+    isFatal,
+    extraData: {
+      jsEngine: e.jsEngine,
+      rawStack: e.stack,
+    },
+  });
 
-    const data = preprocessException({
-      message,
-      originalMessage: message === originalMessage ? null : originalMessage,
-      name: e.name == null || e.name === '' ? null : e.name,
-      componentStack:
-        typeof e.componentStack === 'string' ? e.componentStack : null,
-      stack,
-      id: currentExceptionID,
-      isFatal,
-      extraData: {
-        jsEngine: e.jsEngine,
-        rawStack: e.stack,
-
-        // Hack to hide native redboxes when in the LogBox experiment.
-        // This is intentionally untyped and stuffed here, because it is temporary.
-        suppressRedBox: isHandledByLogBox,
-      },
-    });
-
-    if (reportToConsole) {
-      // we feed back into console.error, to make sure any methods that are
-      // monkey patched on top of console.error are called when coming from
-      // handleException
-      console.error(data.message);
-    }
-
-    if (__DEV__ && isHandledByLogBox) {
-      const LogBox = require('../LogBox/LogBox');
-      LogBox.addException({
-        ...data,
-        isComponentError: !!e.isComponentError,
-      });
-    }
-
-    if (isFatal || e.type !== 'warn') {
-      NativeExceptionsManager.reportException(data);
-
-      if (__DEV__ && !global.RN$Express) {
-        if (e.preventSymbolication === true) {
-          return;
-        }
-        const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
-        symbolicateStackTrace(stack)
-          .then(({stack: prettyStack}) => {
-            if (prettyStack) {
-              NativeExceptionsManager.updateExceptionMessage(
-                data.message,
-                prettyStack,
-                currentExceptionID,
-              );
-            } else {
-              throw new Error('The stack is null');
-            }
-          })
-          .catch(error => {
-            console.log('Unable to symbolicate stack trace: ' + error.message);
-          });
-      }
-    }
-  } else if (reportToConsole) {
+  if (reportToConsole) {
     // we feed back into console.error, to make sure any methods that are
     // monkey patched on top of console.error are called when coming from
     // handleException
-    console.error(e);
+    console.error(data.message);
+  }
+
+  if (__DEV__) {
+    const LogBox = require('../LogBox/LogBox');
+    LogBox.addException({
+      ...data,
+      isComponentError: !!e.isComponentError,
+    });
+  } else if (isFatal || e.type !== 'warn') {
+    const NativeExceptionsManager = require('./NativeExceptionsManager')
+      .default;
+    if (NativeExceptionsManager) {
+      NativeExceptionsManager.reportException(data);
+    }
   }
 }
 

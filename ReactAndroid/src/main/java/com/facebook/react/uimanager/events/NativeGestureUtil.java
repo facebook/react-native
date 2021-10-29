@@ -23,6 +23,6 @@ public class NativeGestureUtil {
    * @param event the MotionEvent that caused the gesture to be started
    */
   public static void notifyNativeGestureStarted(View view, MotionEvent event) {
-    RootViewUtil.getRootView(view).onChildStartedNativeGesture(event);
+    RootViewUtil.getRootView(view).onChildStartedNativeGesture(view, event);
   }
 }

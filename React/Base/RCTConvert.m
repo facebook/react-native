@@ -807,11 +807,11 @@ static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
   return color;
 }
 
-/** Returns an alphabetically sorted comma seperated list of the valid semantic color names
+/** Returns an alphabetically sorted comma separated list of the valid semantic color names
  */
 static NSString *RCTSemanticColorNames()
 {
-  NSMutableString *names = [[NSMutableString alloc] init];
+  NSMutableString *names = [NSMutableString new];
   NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();
   NSArray *allKeys =
       [[[colorMap allKeys] mutableCopy] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];

@@ -9,7 +9,8 @@
 
 #include <chrono>
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 /*
  * Represents a monotonic clock suitable for measuring intervals.
@@ -19,4 +20,5 @@ using RuntimeSchedulerClock = std::chrono::steady_clock;
 using RuntimeSchedulerTimePoint = RuntimeSchedulerClock::time_point;
 using RuntimeSchedulerDuration = RuntimeSchedulerClock::duration;
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

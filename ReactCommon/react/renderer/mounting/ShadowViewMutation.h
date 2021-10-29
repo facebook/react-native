@@ -23,6 +23,8 @@ namespace react {
 struct ShadowViewMutation final {
   using List = std::vector<ShadowViewMutation>;
 
+  ShadowViewMutation() = delete;
+
 #pragma mark - Designated Initializers
 
   /*
@@ -70,13 +72,20 @@ struct ShadowViewMutation final {
   ShadowView newChildShadowView = {};
   int index = -1;
 
- public:
   // Some platforms can have the notion of virtual views - views that are in the
   // ShadowTree hierarchy but never are on the platform. Generally this is used
   // so notify the platform that a view exists so that we can keep EventEmitters
   // around, to notify JS of something. This mechanism is DEPRECATED and it is
   // highly recommended that you NOT make use of this in your platform!
   bool mutatedViewIsVirtual() const;
+
+ private:
+  ShadowViewMutation(
+      Type type,
+      ShadowView parentShadowView,
+      ShadowView oldChildShadowView,
+      ShadowView newChildShadowView,
+      int index);
 };
 
 using ShadowViewMutationList = std::vector<ShadowViewMutation>;

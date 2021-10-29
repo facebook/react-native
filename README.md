@@ -32,7 +32,7 @@
   <span> · </span>
   <a href="https://reactnative.dev/docs/tutorial">Learn the Basics</a>
   <span> · </span>
-  <a href="https://reactnative.dev/showcase.html">Showcase</a>
+  <a href="https://reactnative.dev/showcase">Showcase</a>
   <span> · </span>
   <a href="https://reactnative.dev/docs/contributing">Contribute</a>
   <span> · </span>

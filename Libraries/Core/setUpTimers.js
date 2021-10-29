@@ -21,14 +21,14 @@ if (__DEV__) {
 
 // Currently, Hermes `Promise` is implemented via Internal Bytecode.
 const hasHermesPromiseQueuedToJSVM =
-  global?.HermesInternal?.hasPromise?.() &&
-  global?.HermesInternal?.useEngineQueue?.();
+  global.HermesInternal?.hasPromise?.() === true &&
+  global.HermesInternal?.useEngineQueue?.() === true;
 
 const hasNativePromise = isNativeFunction(Promise);
 const hasPromiseQueuedToJSVM = hasNativePromise || hasHermesPromiseQueuedToJSVM;
 
 // In bridgeless mode, timers are host functions installed from cpp.
-if (!global.RN$Bridgeless) {
+if (global.RN$Bridgeless !== true) {
   /**
    * Set up timers.
    * You can use this module directly, or just require InitializeCore.
@@ -65,7 +65,7 @@ if (hasPromiseQueuedToJSVM) {
   // When promise was polyfilled hence is queued to the RN microtask queue,
   // we polyfill the immediate APIs as aliases to the ReactNativeMicrotask APIs.
   // Note that in bridgeless mode, immediate APIs are installed from cpp.
-  if (!global.RN$Bridgeless) {
+  if (global.RN$Bridgeless !== true) {
     polyfillGlobal(
       'setImmediate',
       () => require('./Timers/JSTimers').queueReactNativeMicrotask,
@@ -83,7 +83,7 @@ if (hasPromiseQueuedToJSVM) {
  */
 if (hasHermesPromiseQueuedToJSVM) {
   // Fast path for Hermes.
-  polyfillGlobal('queueMicrotask', () => global.HermesInternal.enqueueJob);
+  polyfillGlobal('queueMicrotask', () => global.HermesInternal?.enqueueJob);
 } else {
   // Polyfill it with promise (regardless it's polyfiled or native) otherwise.
   polyfillGlobal(

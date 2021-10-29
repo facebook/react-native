@@ -8,10 +8,10 @@
  * @format
  */
 
-import DeprecatedImagePropType from '../DeprecatedPropTypes/DeprecatedImagePropType';
 import * as React from 'react';
 import StyleSheet from '../StyleSheet/StyleSheet';
 
+import ImageInjection from './ImageInjection';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import resolveAssetSource from './resolveAssetSource';
@@ -93,7 +93,6 @@ type ImageComponentStatics = $ReadOnly<{|
   prefetchWithMetadata: typeof prefetchWithMetadata,
   queryCache: typeof queryCache,
   resolveAssetSource: typeof resolveAssetSource,
-  propTypes: typeof DeprecatedImagePropType,
 |}>;
 
 /**
@@ -125,11 +124,7 @@ let Image = (props: ImagePropsType, forwardedRef) => {
     }
   }
 
-  // $FlowFixMe[incompatible-use]
-  // $FlowFixMe[incompatible-type]
   const resizeMode = props.resizeMode || style.resizeMode || 'cover';
-  // $FlowFixMe[prop-missing]
-  // $FlowFixMe[incompatible-use]
   const tintColor = style.tintColor;
 
   if (props.src != null) {
@@ -152,7 +147,6 @@ let Image = (props: ImagePropsType, forwardedRef) => {
             {...props}
             ref={forwardedRef}
             style={style}
-            // $FlowFixMe[incompatible-type]
             resizeMode={resizeMode}
             tintColor={tintColor}
             source={sources}
@@ -168,6 +162,11 @@ Image = React.forwardRef<
   ImagePropsType,
   React.ElementRef<typeof ImageViewNativeComponent>,
 >(Image);
+
+if (ImageInjection.unstable_createImageComponent != null) {
+  Image = ImageInjection.unstable_createImageComponent(Image);
+}
+
 Image.displayName = 'Image';
 
 /**
@@ -233,7 +232,11 @@ Image.queryCache = queryCache;
  * delete this comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
 
-Image.propTypes = DeprecatedImagePropType;
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {

@@ -11,9 +11,9 @@
 
 let RNCodegen;
 try {
-  RNCodegen = require('react-native-codegen/lib/generators/RNCodegen.js');
-} catch (e) {
   RNCodegen = require('../packages/react-native-codegen/lib/generators/RNCodegen.js');
+} catch (e) {
+  RNCodegen = require('react-native-codegen/lib/generators/RNCodegen.js');
   if (!RNCodegen) {
     throw 'RNCodegen not found.';
   }
@@ -24,8 +24,18 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 
 const GENERATORS = {
-  android: ['componentsAndroid', 'modulesAndroid'],
-  ios: ['componentsIOS', 'modulesIOS'],
+  all: {
+    android: ['componentsAndroid', 'modulesAndroid'],
+    ios: ['componentsIOS', 'modulesIOS'],
+  },
+  components: {
+    android: ['componentsAndroid'],
+    ios: ['componentsIOS'],
+  },
+  modules: {
+    android: ['modulesAndroid'],
+    ios: ['modulesIOS'],
+  },
 };
 
 function generateSpec(
@@ -34,6 +44,7 @@ function generateSpec(
   outputDirectory,
   libraryName,
   packageName,
+  libraryType,
 ) {
   const schemaText = fs.readFileSync(schemaPath, 'utf-8');
 
@@ -53,6 +64,10 @@ function generateSpec(
     throw new Error(`Can't parse schema to JSON. ${schemaPath}`);
   }
 
+  if (GENERATORS[libraryType] == null) {
+    throw new Error(`Invalid library type. ${libraryType}`);
+  }
+
   RNCodegen.generate(
     {
       libraryName,
@@ -61,7 +76,7 @@ function generateSpec(
       packageName,
     },
     {
-      generators: GENERATORS[platform],
+      generators: GENERATORS[libraryType][platform],
     },
   );
 
@@ -88,7 +103,15 @@ function main() {
   const outputDir = args[2];
   const libraryName = args[3] || 'FBReactNativeSpec';
   const javaPackageName = args[4] || 'com.facebook.fbreact.specs';
-  generateSpec(platform, schemaPath, outputDir, libraryName, javaPackageName);
+  const libraryType = args[5] || 'all'; // all, components, or modules
+  generateSpec(
+    platform,
+    schemaPath,
+    outputDir,
+    libraryName,
+    javaPackageName,
+    libraryType,
+  );
 }
 
 main();

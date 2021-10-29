@@ -42,6 +42,7 @@ def rn_codegen(
                 src_prefix + "**/Native*.js",
             ],
             exclude = [
+                src_prefix + "**/nativeImageSource.js",
                 "**/__*__/**",
             ],
         )

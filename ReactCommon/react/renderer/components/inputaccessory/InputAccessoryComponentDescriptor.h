@@ -23,13 +23,9 @@ class InputAccessoryComponentDescriptor final
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
   void adopt(ShadowNode::Unshared const &shadowNode) const override {
-    react_native_assert(
-        std::dynamic_pointer_cast<InputAccessoryShadowNode>(shadowNode));
     auto concreteShadowNode =
         std::static_pointer_cast<InputAccessoryShadowNode>(shadowNode);
 
-    react_native_assert(std::dynamic_pointer_cast<YogaLayoutableShadowNode>(
-        concreteShadowNode));
     auto layoutableShadowNode =
         std::static_pointer_cast<YogaLayoutableShadowNode>(concreteShadowNode);
 

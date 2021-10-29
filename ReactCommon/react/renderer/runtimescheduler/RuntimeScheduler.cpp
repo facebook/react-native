@@ -6,8 +6,10 @@
  */
 
 #include "RuntimeScheduler.h"
+#include "ErrorUtils.h"
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 #pragma mark - Public
 
@@ -88,29 +90,35 @@ void RuntimeScheduler::executeNowOnTheSameThread(
 void RuntimeScheduler::startWorkLoop(jsi::Runtime &runtime) const {
   auto previousPriority = currentPriority_;
   isPerformingWork_ = true;
-  while (!taskQueue_.empty()) {
-    auto topPriorityTask = taskQueue_.top();
-    auto now = now_();
-    auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
+  try {
+    while (!taskQueue_.empty()) {
+      auto topPriorityTask = taskQueue_.top();
+      auto now = now_();
+      auto didUserCallbackTimeout = topPriorityTask->expirationTime <= now;
 
-    if (!didUserCallbackTimeout && shouldYield_) {
-      // This task hasn't expired and we need to yield.
-      break;
-    }
-    currentPriority_ = topPriorityTask->priority;
-    auto result = topPriorityTask->execute(runtime);
+      if (!didUserCallbackTimeout && shouldYield_) {
+        // This task hasn't expired and we need to yield.
+        break;
+      }
+      currentPriority_ = topPriorityTask->priority;
+      auto result = topPriorityTask->execute(runtime);
 
-    if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
-      topPriorityTask->callback =
-          result.getObject(runtime).getFunction(runtime);
-    } else {
-      if (taskQueue_.top() == topPriorityTask) {
-        taskQueue_.pop();
+      if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+        topPriorityTask->callback =
+            result.getObject(runtime).getFunction(runtime);
+      } else {
+        if (taskQueue_.top() == topPriorityTask) {
+          taskQueue_.pop();
+        }
       }
     }
+  } catch (jsi::JSError &error) {
+    handleFatalError(runtime, error);
   }
+
   currentPriority_ = previousPriority;
   isPerformingWork_ = false;
 }
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

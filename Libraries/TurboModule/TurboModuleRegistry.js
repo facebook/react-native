@@ -16,7 +16,7 @@ const turboModuleProxy = global.__turboModuleProxy;
 
 function requireModule<T: TurboModule>(name: string): ?T {
   // Bridgeless mode requires TurboModules
-  if (!global.RN$Bridgeless) {
+  if (global.RN$Bridgeless !== true) {
     // Backward compatibility layer during migration.
     const legacyModule = NativeModules[name];
     if (legacyModule != null) {

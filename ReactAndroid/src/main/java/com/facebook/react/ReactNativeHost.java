@@ -15,6 +15,9 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.SurfaceDelegate;
+import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.List;
@@ -68,6 +71,9 @@ public abstract class ReactNativeHost {
             .setApplication(mApplication)
             .setJSMainModulePath(getJSMainModuleName())
             .setUseDeveloperSupport(getUseDeveloperSupport())
+            .setDevSupportManagerFactory(getDevSupportManagerFactory())
+            .setRequireActivity(getShouldRequireActivity())
+            .setSurfaceDelegateFactory(getSurfaceDelegateFactory())
             .setRedBoxHandler(getRedBoxHandler())
             .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
             .setUIImplementationProvider(getUIImplementationProvider())
@@ -124,6 +130,26 @@ public abstract class ReactNativeHost {
     return null;
   }
 
+  /** Returns whether or not to treat it as normal if Activity is null. */
+  public boolean getShouldRequireActivity() {
+    return true;
+  }
+
+  /**
+   * Return the {@link SurfaceDelegateFactory} used by NativeModules to get access to a {@link
+   * SurfaceDelegate} to interact with a surface. By default in the mobile platform the {@link
+   * SurfaceDelegate} it returns is null, and the NativeModule needs to implement its own {@link
+   * SurfaceDelegate} to decide how it would interact with its own container surface.
+   */
+  public SurfaceDelegateFactory getSurfaceDelegateFactory() {
+    return new SurfaceDelegateFactory() {
+      @Override
+      public @Nullable SurfaceDelegate createSurfaceDelegate(String moduleName) {
+        return null;
+      }
+    };
+  }
+
   /**
    * Returns the name of the main module. Determines the URL used to fetch the JS bundle from Metro.
    * It is only used when dev support is enabled. This is the first file to be executed once the
@@ -153,6 +179,11 @@ public abstract class ReactNativeHost {
 
   /** Returns whether dev mode should be enabled. This enables e.g. the dev menu. */
   public abstract boolean getUseDeveloperSupport();
+
+  /** Get the {@link DevSupportManagerFactory}. Override this to use a custom dev support manager */
+  protected @Nullable DevSupportManagerFactory getDevSupportManagerFactory() {
+    return null;
+  }
 
   /**
    * Returns a list of {@link ReactPackage} used by the app. You'll most likely want to return at

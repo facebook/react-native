@@ -9,12 +9,13 @@
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 #import <React/RCTNativeAnimatedTurboModule.h>
 #import <React/RCTNativeAnimatedNodesManager.h>
+#import <React/RCTInitializing.h>
 
 #import "RCTAnimationPlugins.h"
 
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 
-@interface RCTNativeAnimatedTurboModule() <NativeAnimatedModuleSpec>
+@interface RCTNativeAnimatedTurboModule() <NativeAnimatedModuleSpec, RCTInitializing>
 @end
 
 @implementation RCTNativeAnimatedTurboModule

@@ -10,6 +10,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/ColorComponents.h>
+#include <react/renderer/graphics/RCTPlatformColorUtils.h>
 
 namespace facebook {
 namespace react {
@@ -17,13 +18,16 @@ namespace react {
 inline ColorComponents parsePlatformColor(
     const PropsParserContext &context,
     const RawValue &value) {
-  // TODO T87791134: implement parsing of PlatformColor for iOS
-  float alpha = 0;
-  float red = 0;
-  float green = 0;
-  float blue = 0;
+  if (value.hasType<better::map<std::string, RawValue>>()) {
+    auto items = (better::map<std::string, RawValue>)value;
+    if (items.find("semantic") != items.end() &&
+        items.at("semantic").hasType<std::vector<std::string>>()) {
+      auto semanticItems = (std::vector<std::string>)items.at("semantic");
+      return RCTPlatformColorComponentsFromSemanticItems(semanticItems);
+    }
+  }
 
-  return {red, green, blue, alpha};
+  return {0, 0, 0, 0};
 }
 
 } // namespace react
