@@ -54,7 +54,7 @@ import java.util.Map;
     private PropSetter(ReactProp prop, String defaultType, Method setter) {
       mPropName = prop.name();
       mPropType =
-         ReactProp.USE_DEFAULT_TYPE.equals(prop.customType()) ? defaultType : prop.customType();
+          ReactProp.USE_DEFAULT_TYPE.equals(prop.customType()) ? defaultType : prop.customType();
       mSetter = setter;
       mIndex = null;
     }
