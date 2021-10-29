@@ -21,8 +21,8 @@ end
 def pods()
   project 'RNTesterPods.xcodeproj'
 
-  puts "Building RNTester with Fabric enabled."
   fabric_enabled = true
+  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
 
   prefix_path = "../.."
   use_react_native!(path: prefix_path, fabric_enabled: fabric_enabled, hermes_enabled: ENV['USE_HERMES'] == '1')
