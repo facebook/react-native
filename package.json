@@ -98,8 +98,8 @@
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
-    "event-target-shim": "^5.0.1",
     "deprecated-react-native-prop-types": "^2.1.0",
+    "event-target-shim": "^5.0.1",
     "hermes-engine": "~0.9.0",
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
@@ -120,7 +120,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.162.0",
+    "flow-bin": "^0.163.0",
     "react": "17.0.2"
   },
   "detox": {
