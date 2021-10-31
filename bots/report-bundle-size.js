@@ -45,7 +45,7 @@ async function reportSizeStats(stats, replacePattern) {
   );
   const collection = datastore.getBinarySizesCollection(store);
 
-  if (isPullRequest(GITHUB_REF)) {
+  if (!isPullRequest(GITHUB_REF)) {
     // Ensure we only store numbers greater than zero.
     const validatedStats = Object.keys(stats).reduce((validated, key) => {
       const value = stats[key];
