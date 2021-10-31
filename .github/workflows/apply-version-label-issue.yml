@@ -1,0 +1,16 @@
+name: Apply version label to issue
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  add-version-label-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: lucasbento/core-workflow-apply-version-label@v0.0.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
