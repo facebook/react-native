@@ -52,44 +52,21 @@ async function updateComment(octokit, issueParams, body, replacePattern) {
 
 /**
  * Creates or updates a comment with specified pattern.
+ * @param {{ auth: string; owner: string; repo: string; issue_number: string; }} params
  * @param {string} body Comment body
  * @param {string} replacePattern Pattern for finding the comment to update
  */
-async function createOrUpdateComment(body, replacePattern) {
-  const {GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_PR_NUMBER} =
-    process.env;
-  if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO || !GITHUB_PR_NUMBER) {
-    if (!GITHUB_TOKEN) {
-      console.error(
-        'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e. PR feedback cannot be provided on GitHub without a valid token.',
-      );
-    }
-    if (!GITHUB_OWNER) {
-      console.error('Missing GITHUB_OWNER. Example: facebook');
-    }
-    if (!GITHUB_REPO) {
-      console.error('Missing GITHUB_REPO. Example: react-native');
-    }
-    if (!GITHUB_PR_NUMBER) {
-      console.error(
-        'Missing GITHUB_PR_NUMBER. Example: 4687. PR feedback cannot be provided on GitHub without a valid pull request number.',
-      );
-    }
-    process.exit(1);
-  }
-
+async function createOrUpdateComment(
+  {auth, ...issueParams},
+  body,
+  replacePattern,
+) {
   if (!body) {
     return;
   }
 
   const {Octokit} = require('@octokit/rest');
-  const octokit = new Octokit({auth: GITHUB_TOKEN});
-
-  const issueParams = {
-    owner: GITHUB_OWNER,
-    repo: GITHUB_REPO,
-    issue_number: GITHUB_PR_NUMBER,
-  };
+  const octokit = new Octokit({auth});
 
   if (await updateComment(octokit, issueParams, body, replacePattern)) {
     return;
