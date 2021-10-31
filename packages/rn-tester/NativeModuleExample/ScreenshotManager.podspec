@@ -35,6 +35,5 @@ Pod::Spec.new do |s|
     :react_native_path => "../../..",
     :js_srcs_dir => "./",
     :library_type => "modules",
-    :output_dir => "./"
   })
 end

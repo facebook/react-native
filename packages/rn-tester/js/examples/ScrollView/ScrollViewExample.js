@@ -34,7 +34,7 @@ exports.documentationURL = 'https://reactnative.dev/docs/scrollview';
 exports.category = 'Basic';
 exports.description =
   'Component that enables scrolling through child components';
-exports.examples = ([
+const examples = ([
   {
     name: 'scrollTo',
     title: '<ScrollView>\n',
@@ -269,7 +269,7 @@ exports.examples = ([
 ]: Array<RNTesterModuleExample>);
 
 if (Platform.OS === 'ios') {
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> smooth bi-directional content loading\n',
     description:
       'The `maintainVisibleContentPosition` prop allows insertions to either end of the content ' +
@@ -391,7 +391,7 @@ if (Platform.OS === 'ios') {
       return <AppendingList />;
     },
   });
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> (centerContent = true)\n',
     description:
       'ScrollView puts its content in the center if the content is smaller than scroll view',
@@ -406,7 +406,7 @@ if (Platform.OS === 'ios') {
       return <CenterContentList />;
     },
   });
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> (contentOffset = {x: 100, y: 0})\n',
     description: 'Initial contentOffset can be set on ScrollView.',
     render: function(): React.Node {
@@ -423,7 +423,7 @@ if (Platform.OS === 'ios') {
       return <CenterContentList />;
     },
   });
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> Always Bounces\n',
     description: 'Always bounce vertically or horizontally.',
     render: function(): React.Node {
@@ -437,35 +437,35 @@ if (Platform.OS === 'ios') {
       );
     },
   });
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> Bounces & Bounces Zoom\n',
     description: 'There are different options for bouncing behavior.',
     render: function(): React.Node {
       return <BouncesExample />;
     },
   });
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> Indicator Style\n',
     description: 'There are different options for indicator style colors.',
     render: function(): React.Node {
       return <IndicatorStyle />;
     },
   });
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> Maximum & Minimum Zoom Scale\n',
     description: 'Set the maximum and minimum allowed zoom scale.',
     render: function(): React.Node {
       return <MaxMinZoomScale />;
     },
   });
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> Maximum & Minimum Zoom Scale\n',
     description: 'Set the maximum and minimum allowed zoom scale.',
     render: function(): React.Node {
       return <MaxMinZoomScale />;
     },
   });
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> ScrollTo Options\n',
     description:
       'Toggle scrollToOverflowEnabled and scrollsToTop. When scrollToOverflowEnabled is true, the scroll view can be programmatically scrolled beyond its content size. When scrollsToTop is true, the scroll view scrolls to top when the status bar is tapped.',
@@ -474,14 +474,14 @@ if (Platform.OS === 'ios') {
     },
   });
 } else if (Platform.OS === 'android') {
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> EndFillColor & FadingEdgeLength\n',
     description: 'Toggle to set endFillColor and fadingEdgeLength.',
     render: function(): React.Node {
       return <EndFillColorFadingEdgeLen />;
     },
   });
-  exports.examples.push({
+  examples.push({
     title: '<ScrollView> persistentScrollBar\n',
     description: 'Toggle to set persistentScrollbar option.',
     render: function(): React.Node {
@@ -489,6 +489,7 @@ if (Platform.OS === 'ios') {
     },
   });
 }
+exports.examples = examples;
 
 const AndroidScrollBarOptions = () => {
   const [persistentScrollBar, setPersistentScrollBar] = useState(false);

@@ -19,6 +19,9 @@ export interface Spec extends TurboModule {
   +isTouchExplorationEnabled: (
     onSuccess: (isScreenReaderEnabled: boolean) => void,
   ) => void;
+  +isAccessibilityServiceEnabled?: ?(
+    onSuccess: (isAccessibilityServiceEnabled: boolean) => void,
+  ) => void;
   +setAccessibilityFocus: (reactTag: number) => void;
   +announceForAccessibility: (announcement: string) => void;
   +getRecommendedTimeoutMillis?: (

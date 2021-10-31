@@ -241,7 +241,7 @@ describe('XMLHttpRequest', function() {
     });
 
     expect(xhr.getAllResponseHeaders()).toBe(
-      'Content-Type: text/plain; charset=utf-8\r\n' + 'Content-Length: 32',
+      'content-length: 32\r\n' + 'content-type: text/plain; charset=utf-8\r\n',
     );
   });
 
@@ -291,5 +291,23 @@ describe('XMLHttpRequest', function() {
       'network_XMLHttpRequest_blabla',
     );
     expect(GlobalPerformanceLogger.stopTimespan).not.toHaveBeenCalled();
+  });
+
+  it('should sort and lowercase response headers', function() {
+    // Derived from XHR Web Platform Test: https://github.com/web-platform-tests/wpt/blob/master/xhr/getallresponseheaders.htm
+    xhr.open('GET', 'blabla');
+    xhr.send();
+    setRequestId(10);
+    xhr.__didReceiveResponse(requestId, 200, {
+      'foo-TEST': '1',
+      'FOO-test': '2',
+      __Custom: 'token',
+      'ALSO-here': 'Mr. PB',
+      ewok: 'lego',
+    });
+
+    expect(xhr.getAllResponseHeaders()).toBe(
+      'also-here: Mr. PB\r\newok: lego\r\nfoo-test: 1, 2\r\n__custom: token\r\n',
+    );
   });
 });

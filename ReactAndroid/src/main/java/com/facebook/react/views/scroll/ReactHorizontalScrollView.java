@@ -983,7 +983,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 maximumOffset);
       } else {
         ViewGroup contentView = (ViewGroup) getContentView();
-        for (int i = 1; i < contentView.getChildCount(); i++) {
+        for (int i = 0; i < contentView.getChildCount(); i++) {
           View item = contentView.getChildAt(i);
           int itemStartOffset =
               getItemStartOffset(mSnapToAlignment, item.getLeft(), item.getWidth(), width);

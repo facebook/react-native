@@ -598,6 +598,39 @@ jobs:
           command: cd template/android/ && ./gradlew assembleDebug
 
   # -------------------------
+  #    JOBS: Test iOS Template
+  # -------------------------
+  test_ios_template:
+    executor: reactnativeios
+    environment:
+      - PROJECT_NAME: "iOSTemplateProject"
+
+    steps:
+      - checkout
+      - run_yarn
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: Create iOS template project
+          command: |
+            REPO_ROOT=$(pwd)
+            PACKAGE=$(cat build/react-native-package-version)
+            PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
+            node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
+            mkdir -p ~/tmp
+            cd ~/tmp
+            node "$REPO_ROOT/cli.js" init "$PROJECT_NAME" --template "$REPO_ROOT"
+
+      - run:
+          name: Build template project
+          command: |
+            xcodebuild build \
+              -workspace ~/tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
+              -scheme $PROJECT_NAME \
+              -sdk iphonesimulator
+
+  # -------------------------
   #    JOBS: Windows
   # -------------------------
   test_windows:
@@ -750,9 +783,15 @@ jobs:
                   mkdir -p build
                   FILENAME=$(npm pack)
                   mv $FILENAME build/
+                  echo $FILENAME > build/react-native-package-version
             - store_artifacts:
                 path: ~/react-native/build/
                 destination: build
+            - persist_to_workspace:
+                root: .
+                paths:
+                  - build/*
+
       - when:
           condition:
             matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
@@ -782,6 +821,15 @@ workflows:
 
   tests:
     jobs:
+      - build_npm_package:
+          # Build a release package on every untagged commit, but do not publish to npm.
+          publish_npm_args: --dry-run
+          filters:
+            branches:
+              only:
+                - main
+                - /^pull\/.*$/
+                - /^(\d+)\.(\d+)-stable$/
       - test_js:
           run_disabled_tests: false
           filters:
@@ -793,6 +841,12 @@ workflows:
             branches:
               ignore: gh-pages
       - test_android_template:
+          filters:
+            branches:
+              ignore: gh-pages
+      - test_ios_template:
+          requires:
+            - build_npm_package
           filters:
             branches:
               ignore: gh-pages
@@ -854,17 +908,6 @@ workflows:
             # Only act on version tags.
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
-      - build_npm_package:
-          # Build a release package on every untagged commit, but do not publish to npm.
-          publish_npm_args: --dry-run
-          filters:
-            branches:
-              only:
-                - main
-                - /^pull\/.*$/
-                - /^(\d+)\.(\d+)-stable$/
-            tags:
-              ignore: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
   analysis:
     jobs:

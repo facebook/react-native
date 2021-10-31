@@ -766,7 +766,7 @@ public class ReactScrollView extends ScrollView
                 maximumOffset);
       } else {
         ViewGroup contentView = (ViewGroup) getContentView();
-        for (int i = 1; i < contentView.getChildCount(); i++) {
+        for (int i = 0; i < contentView.getChildCount(); i++) {
           View item = contentView.getChildAt(i);
           int itemStartOffset;
           switch (mSnapToAlignment) {

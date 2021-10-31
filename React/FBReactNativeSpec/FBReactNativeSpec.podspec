@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/React/FBReactNativeSpec\" \"$(PODS_ROOT)/RCT-Folly\""
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\""
                              }
 
   s.dependency "RCT-Folly", folly_version
@@ -53,6 +53,5 @@ Pod::Spec.new do |s|
     :js_srcs_dir => "#{react_native_path}/Libraries",
     :library_name => "FBReactNativeSpec",
     :library_type => "modules",
-    :output_dir => "#{react_native_path}/React/FBReactNativeSpec/FBReactNativeSpec"
   })
 end
