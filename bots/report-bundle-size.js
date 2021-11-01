@@ -83,7 +83,7 @@ async function reportSizeStats(stats, replacePattern) {
     const document =
       (await datastore.getLatestDocument(collection, 'main')) || {};
     const comment = formatBundleStats(document, stats);
-    createOrUpdateComment(comment, replacePattern);
+    createOrUpdateComment(params, comment, replacePattern);
   }
 
   await datastore.terminateStore(store);
