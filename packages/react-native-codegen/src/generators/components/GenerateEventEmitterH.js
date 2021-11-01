@@ -35,7 +35,7 @@ type ComponentCollection = $ReadOnly<{
   ...,
 }>;
 
-const template = `
+const FileTemplate = ({componentEmitters}: {componentEmitters: string}) => `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -51,36 +51,61 @@ const template = `
 namespace facebook {
 namespace react {
 
-::_COMPONENT_EMITTERS_::
+${componentEmitters}
 
 } // namespace react
 } // namespace facebook
 `;
 
-const componentTemplate = `
-class ::_CLASSNAME_::EventEmitter : public ViewEventEmitter {
+const ComponentTemplate = ({
+  className,
+  structs,
+  events,
+}: {
+  className: string,
+  structs: string,
+  events: string,
+}) =>
+  `
+class ${className}EventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  ::_STRUCTS_::
+  ${structs}
 
-  ::_EVENTS_::
+  ${events}
 };
 `.trim();
 
-const structTemplate = `
-  struct ::_STRUCT_NAME_:: {
-    ::_FIELDS_::
+const StructTemplate = ({
+  structName,
+  fields,
+}: {
+  structName: string,
+  fields: string,
+}) =>
+  `
+  struct ${structName} {
+    ${fields}
   };
 `.trim();
 
-const enumTemplate = `enum class ::_ENUM_NAME_:: {
-  ::_VALUES_::
+const EnumTemplate = ({
+  enumName,
+  values,
+  toCases,
+}: {
+  enumName: string,
+  values: string,
+  toCases: string,
+}) =>
+  `enum class ${enumName} {
+  ${values}
 };
 
-static char const *toString(const ::_ENUM_NAME_:: value) {
+static char const *toString(const ${enumName} value) {
   switch (value) {
-    ::_TO_CASES_::
+    ${toCases}
   }
 }
 `.trim();
@@ -136,10 +161,11 @@ function generateEnum(structs, options, nameParts) {
 
   structs.set(
     structName,
-    enumTemplate
-      .replace(/::_ENUM_NAME_::/g, structName)
-      .replace('::_VALUES_::', fields)
-      .replace('::_TO_CASES_::', toCases),
+    EnumTemplate({
+      enumName: structName,
+      values: fields,
+      toCases: toCases,
+    }),
   );
 }
 
@@ -196,9 +222,10 @@ function generateStruct(
 
   structs.set(
     structName,
-    structTemplate
-      .replace('::_STRUCT_NAME_::', structName)
-      .replace('::_FIELDS_::', fields),
+    StructTemplate({
+      structName,
+      fields,
+    }),
   );
 }
 
@@ -271,27 +298,20 @@ module.exports = {
             .map(componentName => {
               const component = moduleComponents[componentName];
 
-              const replacedTemplate = componentTemplate
-                .replace(/::_CLASSNAME_::/g, componentName)
-                .replace(
-                  '::_STRUCTS_::',
-                  indent(generateStructs(componentName, component), 2),
-                )
-                .replace(
-                  '::_EVENTS_::',
-                  generateEvents(componentName, component),
-                )
-                .trim();
+              const replacedTemplate = ComponentTemplate({
+                className: componentName,
+                structs: indent(generateStructs(componentName, component), 2),
+                events: generateEvents(componentName, component),
+              });
 
               return replacedTemplate;
             })
             .join('\n')
         : '';
 
-    const replacedTemplate = template.replace(
-      /::_COMPONENT_EMITTERS_::/g,
+    const replacedTemplate = FileTemplate({
       componentEmitters,
-    );
+    });
 
     return new Map([[fileName, replacedTemplate]]);
   },

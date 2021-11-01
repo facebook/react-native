@@ -23,7 +23,16 @@ type TestCase = $ReadOnly<{
   raw?: boolean,
 }>;
 
-const fileTemplate = `
+const FileTemplate = ({
+  libraryName,
+  imports,
+  componentTests,
+}: {
+  libraryName: string,
+  imports: string,
+  componentTests: string,
+}) =>
+  `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -35,25 +44,35 @@ const fileTemplate = `
 
 #include <gtest/gtest.h>
 #include <react/renderer/core/PropsParserContext.h>
-#include <react/renderer/components/::_LIBRARY_NAME_::/Props.h>
-::_IMPORTS_::
+#include <react/renderer/components/${libraryName}/Props.h>
+${imports}
 
 using namespace facebook::react;
-::_COMPONENT_TESTS_::
-`;
+${componentTests}
+`.trim();
 
-const testTemplate = `
-TEST(::_COMPONENT_NAME_::_::_TEST_NAME_::, etc) {
+const TestTemplate = ({
+  componentName,
+  testName,
+  propName,
+  propValue,
+}: {
+  componentName: string,
+  testName: string,
+  propName: string,
+  propValue: string,
+}) => `
+TEST(${componentName}_${testName}, etc) {
   auto propParser = RawPropsParser();
-  propParser.prepare<::_COMPONENT_NAME_::>();
-  auto const &sourceProps = ::_COMPONENT_NAME_::();
-  auto const &rawProps = RawProps(folly::dynamic::object("::_PROP_NAME_::", ::_PROP_VALUE_::));
+  propParser.prepare<${componentName}>();
+  auto const &sourceProps = ${componentName}();
+  auto const &rawProps = RawProps(folly::dynamic::object("${propName}", ${propValue}));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
   rawProps.parse(propParser, parserContext);
-  ::_COMPONENT_NAME_::(parserContext, sourceProps, rawProps);
+  ${componentName}(parserContext, sourceProps, rawProps);
 }
 `;
 
@@ -120,11 +139,12 @@ function generateTestsString(name, component) {
     const value =
       !raw && typeof propValue === 'string' ? `"${propValue}"` : propValue;
 
-    return testTemplate
-      .replace(/::_COMPONENT_NAME_::/g, name)
-      .replace(/::_TEST_NAME_::/g, testName != null ? testName : propName)
-      .replace(/::_PROP_NAME_::/g, propName)
-      .replace(/::_PROP_VALUE_::/g, String(value));
+    return TestTemplate({
+      componentName: name,
+      testName: testName != null ? testName : propName,
+      propName,
+      propValue: String(value),
+    });
   }
 
   const testCases = component.props.reduce((cases, prop) => {
@@ -187,11 +207,11 @@ module.exports = {
       .join('\n')
       .trim();
 
-    const replacedTemplate = fileTemplate
-      .replace(/::_IMPORTS_::/g, imports)
-      .replace(/::_LIBRARY_NAME_::/g, libraryName)
-      .replace(/::_COMPONENT_TESTS_::/g, componentTests)
-      .trim();
+    const replacedTemplate = FileTemplate({
+      imports,
+      libraryName,
+      componentTests,
+    });
 
     return new Map([[fileName, replacedTemplate]]);
   },

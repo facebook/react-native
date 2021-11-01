@@ -17,7 +17,13 @@ import type {SchemaType} from '../../CodegenSchema';
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
-const template = `
+const FileTemplate = ({
+  imports,
+  componentConfig,
+}: {
+  imports: string,
+  componentConfig: string,
+}) => `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -31,9 +37,9 @@ const template = `
 
 'use strict';
 
-::_IMPORTS_::
+${imports}
 
-::_COMPONENT_CONFIG_::
+${componentConfig}
 `;
 
 // We use this to add to a set. Need to make sure we aren't importing
@@ -96,19 +102,33 @@ function getReactDiffProcessValue(typeAnnotation) {
   }
 }
 
-const componentTemplate = `
-let nativeComponentName = '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::';
-::_DEPRECATION_CHECK_::
+const ComponentTemplate = ({
+  componentNameWithCompatSupport,
+  deprecationCheck,
+}: {
+  componentNameWithCompatSupport: string,
+  deprecationCheck: string,
+}) =>
+  `
+let nativeComponentName = '${componentNameWithCompatSupport}';
+${deprecationCheck}
 export default NativeComponentRegistry.get(nativeComponentName, () => VIEW_CONFIG);
 `.trim();
 
-const deprecatedComponentTemplate = `
-if (UIManager.getViewManagerConfig('::_COMPONENT_NAME_::')) {
-  nativeComponentName = '::_COMPONENT_NAME_::';
-} else if (UIManager.getViewManagerConfig('::_COMPONENT_NAME_DEPRECATED_::')) {
-  nativeComponentName = '::_COMPONENT_NAME_DEPRECATED_::';
+const DeprecatedComponentTemplate = ({
+  componentName,
+  componentNameDeprecated,
+}: {
+  componentName: string,
+  componentNameDeprecated: string,
+}) =>
+  `
+if (UIManager.getViewManagerConfig('${componentName}')) {
+  nativeComponentName = '${componentName}';
+} else if (UIManager.getViewManagerConfig('${componentNameDeprecated}')) {
+  nativeComponentName = '${componentNameDeprecated}';
 } else {
-  throw new Error('Failed to find native component for either "::_COMPONENT_NAME_::" or "::_COMPONENT_NAME_DEPRECATED_::"');
+  throw new Error('Failed to find native component for either "${componentName}" or "${componentNameDeprecated}"');
 }
 `.trim();
 
@@ -354,21 +374,17 @@ module.exports = {
               }
 
               const deprecatedCheckBlock = component.paperComponentNameDeprecated
-                ? deprecatedComponentTemplate
-                    .replace(/::_COMPONENT_NAME_::/g, componentName)
-                    .replace(
-                      /::_COMPONENT_NAME_DEPRECATED_::/g,
+                ? DeprecatedComponentTemplate({
+                    componentName,
+                    componentNameDeprecated:
                       component.paperComponentNameDeprecated || '',
-                    )
+                  })
                 : '';
 
-              const replacedTemplate = componentTemplate
-                .replace(/::_COMPONENT_NAME_::/g, componentName)
-                .replace(
-                  /::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::/g,
-                  paperComponentName,
-                )
-                .replace(/::_DEPRECATION_CHECK_::/, deprecatedCheckBlock);
+              const replacedTemplate = ComponentTemplate({
+                componentNameWithCompatSupport: paperComponentName,
+                deprecationCheck: deprecatedCheckBlock,
+              });
 
               const replacedSourceRoot = j.withParser('flow')(replacedTemplate);
 
@@ -409,14 +425,12 @@ module.exports = {
         .filter(Boolean)
         .join('\n\n');
 
-      const replacedTemplate = template
-        .replace(/::_COMPONENT_CONFIG_::/g, moduleResults)
-        .replace(
-          '::_IMPORTS_::',
-          Array.from(imports)
-            .sort()
-            .join('\n'),
-        );
+      const replacedTemplate = FileTemplate({
+        componentConfig: moduleResults,
+        imports: Array.from(imports)
+          .sort()
+          .join('\n'),
+      });
 
       return new Map([[fileName, replacedTemplate]]);
     } catch (error) {
