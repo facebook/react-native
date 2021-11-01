@@ -147,7 +147,7 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "robolectric4-sandbox.jar",
-    sha1 = "03cedd73c5aedaf79fb9a593552816c9fb3282f2",
+    sha1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709",
     url = "mvn:org.robolectric:sandbox:jar:4.4",
 )
 
