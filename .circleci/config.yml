@@ -515,7 +515,7 @@ jobs:
       - run:
           name: Compile Native Libs for Unit and Integration Tests
           command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS
-          no_output_timeout: 6m
+          no_output_timeout: 30m
 
       # Build JavaScript Bundle for instrumentation tests
       - run:

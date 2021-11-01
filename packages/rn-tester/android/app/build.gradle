@@ -213,6 +213,10 @@ android {
             ]
         }
     }
+    packagingOptions {
+        pickFirst '**/libhermes.so'
+        pickFirst '**/libjsc.so'
+    }
 }
 
 configurations {
@@ -287,9 +291,9 @@ if (enableCodegen) {
 
     def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
-        dependsOn(":ReactAndroid:packageReactNdkLibs")
+        dependsOn(":ReactAndroid:packageReactNdkLibsForBuck")
         dependsOn("generateCodegenSchemaFromJavaScript")
-        from("$reactAndroidBuildDir/react-ndk/exported")
+        from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
         into("$buildDir/react-ndk/exported")
     }
 
