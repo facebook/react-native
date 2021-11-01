@@ -45,7 +45,7 @@ import java.util.Map;
     protected final Method mSetter;
     protected final @Nullable Integer mIndex; /* non-null only for group setters */
 
-    //use ThreadLocal for every shadow thread
+    // use ThreadLocal for every shadow thread
     private static final ThreadLocal<Object[]> VIEW_MGR_ARGS = createThreadLocalArray(2);
     private static final ThreadLocal<Object[]> VIEW_MGR_GROUP_ARGS = createThreadLocalArray(3);
     private static final ThreadLocal<Object[]> SHADOW_ARGS = createThreadLocalArray(1);
