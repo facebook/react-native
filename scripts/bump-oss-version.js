@@ -29,6 +29,11 @@ let argv = yargs
     type: 'boolean',
     default: false,
   })
+  .option('p', { // [MacOS: Used during RNM's publish pipelines
+    alias: 'rnmpublish',
+    type: 'boolean',
+    default: false,
+  })
   .option('n', {
     alias: 'nightly',
     type: 'boolean',
@@ -37,6 +42,7 @@ let argv = yargs
 
 const nightlyBuild = argv.nightly;
 const ci = argv.ci;
+const rnmpublish = argv.rnmpublish;
 
 let version, branch;
 if (nightlyBuild) {
@@ -45,10 +51,15 @@ if (nightlyBuild) {
   }).stdout.trim();
   version = `0.0.0-${currentCommit.slice(0, 9)}`;
 } else {
-  // Check we are in release branch, e.g. 0.33-stable
-  branch = exec('git symbolic-ref --short HEAD', {
-    silent: true,
-  }).stdout.trim();
+  if (!ci && process.env.BUILD_SOURCEBRANCH) {
+    console.log(`BUILD_SOURCEBRANCH: ${process.env.BUILD_SOURCEBRANCH}`)
+    branch = process.env.BUILD_SOURCEBRANCH.match(/refs\/heads\/(.*)/)[1];
+    console.log(`Identified branch: ${branch}`)
+  } else {
+    branch = exec('git symbolic-ref --short HEAD', {
+      silent: true,
+    }).stdout.trim();
+  }
 
   if (!ci && branch.indexOf('-stable') === -1) {
     echo('You must be in 0.XX-stable branch to bump a version');
@@ -133,8 +144,10 @@ fs.writeFileSync(
 
 let packageJson = JSON.parse(cat('package.json'));
 packageJson.version = version;
-delete packageJson.workspaces;
-delete packageJson.private;
+if (!rnmpublish) {
+  delete packageJson.workspaces;
+  delete packageJson.private;
+}
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // Change ReactAndroid/gradle.properties
@@ -161,7 +174,7 @@ let numberOfChangedLinesWithNewVersion = exec(
 
 // Release builds should commit the version bumps, and create tags.
 // Nightly builds do not need to do that.
-if (!nightlyBuild) {
+if (!nightlyBuild && !rnmpublish) {
   if (+numberOfChangedLinesWithNewVersion !== 3) {
     echo(
       'Failed to update all the files. package.json and gradle.properties must have versions in them',
