@@ -211,6 +211,13 @@ function validateEnvironment() {
     return false;
   }
 
+  console.log(`  GITHUB_TOKEN=${GITHUB_TOKEN}`);
+  console.log(`  GITHUB_OWNER=${GITHUB_OWNER}`);
+  console.log(`  GITHUB_REPO=${GITHUB_REPO}`);
+  console.log(`  GITHUB_PR_NUMBER=${GITHUB_PR_NUMBER}`);
+  console.log(`  GITHUB_REF=${GITHUB_REF}`);
+  console.log(`  GITHUB_SHA=${GITHUB_SHA}`);
+
   return true;
 }
 
