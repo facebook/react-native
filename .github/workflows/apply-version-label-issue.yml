@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
-
       - uses: lucasbento/core-workflow-apply-version-label@v0.0.4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
