@@ -270,8 +270,6 @@ RCT_CUSTOM_VIEW_PROPERTY(borderCurve, RCTBorderCurve, RCTView)
       case RCTBorderCurveCircular:
         view.layer.cornerCurve = kCACornerCurveCircular;
         break;
-      default:
-        view.layer.cornerCurve = kCACornerCurveCircular;
     }
   }
 }
