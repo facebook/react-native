@@ -9,6 +9,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: lucasbento/core-workflow-apply-version-label@v0.0.4
+      - uses: lucasbento/core-workflow-apply-version-label@v0.0.5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
