@@ -21,7 +21,7 @@ const {
   StyleSheet,
 } = require('react-native');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 const styles = StyleSheet.create({
   default: {
@@ -327,9 +327,7 @@ class TokenizedTextExample extends React.Component<
         index = 1;
       }
       parts.push(_text.substr(0, index));
-      // $FlowFixMe[incompatible-use]
       parts.push(token[0]);
-      // $FlowFixMe[incompatible-use]
       index = index + token[0].length;
       _text = _text.slice(index);
     }
@@ -367,7 +365,7 @@ class TokenizedTextExample extends React.Component<
 type SelectionExampleState = {
   selection: $ReadOnly<{|
     start: number,
-    end?: number,
+    end: number,
   |}>,
   value: string,
   ...
@@ -427,6 +425,7 @@ class SelectionExample extends React.Component<
             testID={`${this.props.testID}-text-input`}
             multiline={this.props.multiline}
             onChangeText={value => this.setState({value})}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onSelectionChange={this.onSelectionChange.bind(this)}
             ref={textInput => (this._textInput = textInput)}
             selection={this.state.selection}
@@ -436,24 +435,32 @@ class SelectionExample extends React.Component<
         </View>
         <View>
           <Text testID={`${this.props.testID}-selection`}>
-            selection = {JSON.stringify(this.state.selection).replace(/"/g, '')}
+            selection ={' '}
+            {`{start:${this.state.selection.start},end:${this.state.selection.end}}`}
           </Text>
           <Text
             testID={`${this.props.testID}-cursor-start`}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onPress={this.placeAt.bind(this, 0)}>
             Place at Start (0, 0)
           </Text>
           <Text
             testID={`${this.props.testID}-cursor-end`}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onPress={this.placeAt.bind(this, length)}>
             Place at End ({length}, {length})
           </Text>
+          {/* $FlowFixMe[method-unbinding] added when improving typing for this
+           * parameters */}
           <Text onPress={this.placeAtRandom.bind(this)}>Place at Random</Text>
           <Text
             testID={`${this.props.testID}-select-all`}
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onPress={this.select.bind(this, 0, length)}>
             Select All
           </Text>
+          {/* $FlowFixMe[method-unbinding] added when improving typing for this
+           * parameters */}
           <Text onPress={this.selectRandom.bind(this)}>Select Random</Text>
         </View>
       </View>
@@ -657,4 +664,4 @@ module.exports = ([
       );
     },
   },
-]: Array<RNTesterExampleModuleItem>);
+]: Array<RNTesterModuleExample>);

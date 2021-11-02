@@ -183,14 +183,14 @@ TransformOperation Transform::DefaultTransformOperation(
 }
 
 Transform Transform::Interpolate(
-    float animationProgress,
+    Float animationProgress,
     Transform const &lhs,
     Transform const &rhs) {
   // Iterate through operations and reconstruct an interpolated resulting
   // transform If at any point we hit an "Arbitrary" Transform, return at that
   // point
   Transform result = Transform::Identity();
-  for (int i = 0, j = 0;
+  for (size_t i = 0, j = 0;
        i < lhs.operations.size() || j < rhs.operations.size();) {
     bool haveLHS = i < lhs.operations.size();
     bool haveRHS = j < rhs.operations.size();

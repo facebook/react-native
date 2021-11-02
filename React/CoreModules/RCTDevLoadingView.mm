@@ -34,7 +34,6 @@ using namespace facebook::react;
   dispatch_block_t _initialMessageBlock;
 }
 
-@synthesize bridge = _bridge;
 @synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
@@ -61,16 +60,7 @@ RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
-}
-
-- (void)setBundleManager:(RCTBundleManager *)bundleManager
-{
-  _bundleManager = bundleManager;
-
-  if (_bridge.loading) {
-    [self showWithURL:bundleManager.bundleURL];
-  }
+  return NO;
 }
 
 - (void)clearInitialMessageDelay
@@ -124,16 +114,11 @@ RCT_EXPORT_MODULE()
     if (!self->_window && !RCTRunningInTestEnvironment()) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
 
-      if (@available(iOS 11.0, *)) {
-        UIWindow *window = RCTSharedApplication().keyWindow;
-        self->_window =
-            [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 10)];
-        self->_label =
-            [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, screenSize.width, 20)];
-      } else {
-        self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 20)];
-        self->_label = [[UILabel alloc] initWithFrame:self->_window.bounds];
-      }
+      UIWindow *window = RCTSharedApplication().keyWindow;
+      self->_window =
+          [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 10)];
+      self->_label =
+          [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, screenSize.width, 20)];
       [self->_window addSubview:self->_label];
 
       self->_window.windowLevel = UIWindowLevelStatusBar + 1;

@@ -27,5 +27,12 @@ public interface RCTEventEmitter extends JavaScriptModule {
   @Deprecated
   void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event);
 
+  /**
+   * Receive and process touches
+   *
+   * @param eventName JS event name
+   * @param touches active pointers data
+   * @param changedIndices indices of changed pointers
+   */
   void receiveTouches(String eventName, WritableArray touches, WritableArray changedIndices);
 }

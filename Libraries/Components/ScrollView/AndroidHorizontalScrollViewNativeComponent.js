@@ -31,6 +31,7 @@ const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> = NativeC
       scrollPerfTag: true,
       sendMomentumEvents: true,
       showsHorizontalScrollIndicator: true,
+      snapToAlignment: true,
       snapToEnd: true,
       snapToInterval: true,
       snapToStart: true,

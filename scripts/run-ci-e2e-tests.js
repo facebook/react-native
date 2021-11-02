@@ -99,6 +99,7 @@ try {
   );
   mv('_flowconfig', '.flowconfig');
   mv('_watchmanconfig', '.watchmanconfig');
+  mv('_bundle', '.bundle');
 
   describe('Install React Native package');
   exec(`npm install ${REACT_NATIVE_PACKAGE}`);
@@ -210,7 +211,7 @@ try {
     echo(`Metro is running, ${SERVER_PID}`);
 
     describe('Install CocoaPod dependencies');
-    exec('pod install');
+    exec('bundle exec pod install');
 
     describe('Test: iOS end-to-end test');
     if (

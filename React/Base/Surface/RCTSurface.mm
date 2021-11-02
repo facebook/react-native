@@ -567,18 +567,16 @@
   }
 }
 
-- (BOOL)start
+- (void)start
 {
   // Does nothing.
   // The Start&Stop feature is not implemented for regular Surface yet.
-  return YES;
 }
 
-- (BOOL)stop
+- (void)stop
 {
   // Does nothing.
   // The Start&Stop feature is not implemented for regular Surface yet.
-  return YES;
 }
 
 #pragma mark - Mounting/Unmounting of React components

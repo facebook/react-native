@@ -8,9 +8,9 @@
  * @format
  */
 
-import ModalCustomizable from './ModalCustomizable';
+import ModalPresentation from './ModalPresentation';
 import ModalOnShow from './ModalOnShow';
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 export const displayName = (undefined: ?string);
 export const framework = 'React';
@@ -19,6 +19,6 @@ export const category = 'UI';
 export const documentationURL = 'https://reactnative.dev/docs/modal';
 export const description = 'Component for presenting modal views.';
 export const examples = ([
-  ModalCustomizable,
+  ModalPresentation,
   ModalOnShow,
-]: Array<RNTesterExampleModuleItem>);
+]: Array<RNTesterModuleExample>);

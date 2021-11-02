@@ -8,6 +8,7 @@
  * @emails oncall+react_native
  */
 
+import AnimatedProps from '../nodes/AnimatedProps';
 import TestRenderer from 'react-test-renderer';
 import * as React from 'react';
 
@@ -21,6 +22,7 @@ jest.mock('../../BatchedBridge/NativeModules', () => ({
 }));
 
 let Animated = require('../Animated');
+
 describe('Animated tests', () => {
   beforeEach(() => {
     jest.resetModules();
@@ -32,7 +34,7 @@ describe('Animated tests', () => {
 
       const callback = jest.fn();
 
-      const node = new Animated.__PropsOnlyForTests(
+      const node = new AnimatedProps(
         {
           style: {
             backgroundColor: 'red',
@@ -55,8 +57,6 @@ describe('Animated tests', () => {
         callback,
       );
 
-      expect(anim.__getChildren().length).toBe(3);
-
       expect(node.__getValue()).toEqual({
         style: {
           backgroundColor: 'red',
@@ -68,6 +68,12 @@ describe('Animated tests', () => {
           },
         },
       });
+
+      expect(anim.__getChildren().length).toBe(0);
+
+      node.__attach();
+
+      expect(anim.__getChildren().length).toBe(3);
 
       anim.setValue(0.5);
 
@@ -632,6 +638,16 @@ describe('Animated tests', () => {
       handler({bar: 'ignoreBar'}, {state: {baz: 'ignoreBaz', foo: 42}});
       expect(value.__getValue()).toBe(42);
     });
+
+    it('should validate AnimatedValueXY mappings', () => {
+      const value = new Animated.ValueXY({x: 0, y: 0});
+      const handler = Animated.event([{state: value}], {
+        useNativeDriver: false,
+      });
+      handler({state: {x: 1, y: 2}});
+      expect(value.__getValue()).toMatchObject({x: 1, y: 2});
+    });
+
     it('should call listeners', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
@@ -644,6 +660,7 @@ describe('Animated tests', () => {
       expect(listener.mock.calls.length).toBe(1);
       expect(listener).toBeCalledWith({foo: 42});
     });
+
     it('should call forked event listeners, with Animated.event() listener', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
@@ -660,6 +677,7 @@ describe('Animated tests', () => {
       expect(listener2.mock.calls.length).toBe(1);
       expect(listener2).toBeCalledWith({foo: 42});
     });
+
     it('should call forked event listeners, with js listener', () => {
       const listener = jest.fn();
       const listener2 = jest.fn();
@@ -670,6 +688,7 @@ describe('Animated tests', () => {
       expect(listener2.mock.calls.length).toBe(1);
       expect(listener2).toBeCalledWith({foo: 42});
     });
+
     it('should call forked event listeners, with undefined listener', () => {
       const listener = undefined;
       const listener2 = jest.fn();
@@ -786,7 +805,7 @@ describe('Animated tests', () => {
 
       const callback = jest.fn();
 
-      const node = new Animated.__PropsOnlyForTests(
+      const node = new AnimatedProps(
         {
           style: {
             opacity: vec.x.interpolate({
@@ -808,6 +827,10 @@ describe('Animated tests', () => {
           top: 0,
         },
       });
+
+      node.__attach();
+
+      expect(callback.mock.calls.length).toBe(0);
 
       vec.setValue({x: 42, y: 1492});
 
@@ -890,7 +913,7 @@ describe('Animated tests', () => {
       const value3 = new Animated.Value(0);
       const value4 = Animated.add(value3, Animated.multiply(value1, value2));
       const callback = jest.fn();
-      const view = new Animated.__PropsOnlyForTests(
+      const view = new AnimatedProps(
         {
           style: {
             transform: [
@@ -902,6 +925,7 @@ describe('Animated tests', () => {
         },
         callback,
       );
+      view.__attach();
       const listener = jest.fn();
       const id = value4.addListener(listener);
       value3.setValue(137);

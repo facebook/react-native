@@ -11,7 +11,9 @@ import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.SoftAssertions;
+import com.facebook.react.config.ReactFeatureFlags;
 
 /**
  * An event representing the start, end or movement of a touch. Corresponds to a single {@link
@@ -22,6 +24,7 @@ import com.facebook.react.bridge.SoftAssertions;
  * these coalescing keys are determined.
  */
 public class TouchEvent extends Event<TouchEvent> {
+  private static final String TAG = TouchEvent.class.getSimpleName();
 
   private static final int TOUCH_EVENTS_POOL_SIZE = 3;
 
@@ -43,7 +46,7 @@ public class TouchEvent extends Event<TouchEvent> {
         -1,
         viewTag,
         touchEventType,
-        motionEventToCopy,
+        Assertions.assertNotNull(motionEventToCopy),
         gestureStartTime,
         viewX,
         viewY,
@@ -67,7 +70,7 @@ public class TouchEvent extends Event<TouchEvent> {
         surfaceId,
         viewTag,
         touchEventType,
-        motionEventToCopy,
+        Assertions.assertNotNull(motionEventToCopy),
         gestureStartTime,
         viewX,
         viewY,
@@ -94,7 +97,7 @@ public class TouchEvent extends Event<TouchEvent> {
       float viewX,
       float viewY,
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
-    super.init(surfaceId, viewTag);
+    super.init(surfaceId, viewTag, motionEventToCopy.getEventTime());
 
     SoftAssertions.assertCondition(
         gestureStartTime != UNSET, "Gesture start time must be initialized");
@@ -129,9 +132,25 @@ public class TouchEvent extends Event<TouchEvent> {
 
   @Override
   public void onDispose() {
-    Assertions.assertNotNull(mMotionEvent).recycle();
+    MotionEvent motionEvent = mMotionEvent;
     mMotionEvent = null;
-    EVENTS_POOL.release(this);
+    if (motionEvent != null) {
+      motionEvent.recycle();
+    }
+
+    // Either `this` is in the event pool, or motionEvent
+    // is null. It is in theory not possible for a TouchEvent to
+    // be in the EVENTS_POOL but for motionEvent to be null. However,
+    // out of an abundance of caution and to avoid memory leaks or
+    // other crashes at all costs, we attempt to release here and log
+    // a soft exception here if release throws an IllegalStateException
+    // due to `this` being over-released. This may indicate that there is
+    // a logic error in our events system or pooling mechanism.
+    try {
+      EVENTS_POOL.release(this);
+    } catch (IllegalStateException e) {
+      ReactSoftExceptionLogger.logSoftException(TAG, e);
+    }
   }
 
   @Override
@@ -163,22 +182,67 @@ public class TouchEvent extends Event<TouchEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    TouchesHelper.sendTouchEvent(
-        rctEventEmitter,
-        Assertions.assertNotNull(mTouchEventType),
-        getSurfaceId(),
-        getViewTag(),
-        this);
+    if (!hasMotionEvent()) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
+      return;
+    }
+
+    TouchesHelper.sendTouchEvent(rctEventEmitter, this);
   }
 
   @Override
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
-    dispatch(rctEventEmitter);
+    if (ReactFeatureFlags.useUpdatedTouchPreprocessing) {
+      TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ false);
+    } else {
+      dispatch(rctEventEmitter);
+    }
+  }
+
+  @Override
+  public void dispatchModernV2(RCTModernEventEmitter rctEventEmitter) {
+    if (ReactFeatureFlags.useUpdatedTouchPreprocessing) {
+      TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ true);
+    } else {
+      dispatch(rctEventEmitter);
+    }
+  }
+
+  @Override
+  protected int getEventCategory() {
+    TouchEventType type = mTouchEventType;
+    if (type == null) {
+      return EventCategoryDef.UNSPECIFIED;
+    }
+
+    switch (type) {
+      case START:
+        return EventCategoryDef.CONTINUOUS_START;
+      case END:
+      case CANCEL:
+        return EventCategoryDef.CONTINUOUS_END;
+      case MOVE:
+        return EventCategoryDef.CONTINUOUS;
+    }
+
+    // Something something smart compiler...
+    return super.getEventCategory();
   }
 
   public MotionEvent getMotionEvent() {
     Assertions.assertNotNull(mMotionEvent);
     return mMotionEvent;
+  }
+
+  private boolean hasMotionEvent() {
+    return mMotionEvent != null;
+  }
+
+  public TouchEventType getTouchEventType() {
+    return Assertions.assertNotNull(mTouchEventType);
   }
 
   public float getViewX() {

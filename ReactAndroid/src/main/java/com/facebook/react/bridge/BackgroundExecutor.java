@@ -30,13 +30,14 @@ public class BackgroundExecutor {
     // but it's also cheap to leave it here.
 
     if (runnable == null) {
-      ReactSoftException.logSoftException(TAG, new ReactNoCrashSoftException("runnable is null"));
+      ReactSoftExceptionLogger.logSoftException(
+          TAG, new ReactNoCrashSoftException("runnable is null"));
       return;
     }
 
     final ExecutorService executorService = mExecutorService;
     if (executorService == null) {
-      ReactSoftException.logSoftException(
+      ReactSoftExceptionLogger.logSoftException(
           TAG, new ReactNoCrashSoftException("executorService is null"));
       return;
     }

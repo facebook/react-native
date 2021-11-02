@@ -9,12 +9,14 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
+#import <React/RCTJSThread.h>
 
 @class RCTBridge;
 @protocol RCTBridgeMethod;
 @class RCTModuleRegistry;
 @class RCTViewRegistry;
 @class RCTBundleManager;
+@class RCTCallableJSModules;
 
 /**
  * The type of a block that is capable of sending a response to a bridged
@@ -40,16 +42,6 @@ typedef void (^RCTPromiseResolveBlock)(id result);
  * precise error messages.
  */
 typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
-
-/**
- * This constant can be returned from +methodQueue to force module
- * methods to be called on the JavaScript thread. This can have serious
- * implications for performance, so only use this if you're sure it's what
- * you need.
- *
- * NOTE: RCTJSThread is not a real libdispatch queue
- */
-RCT_EXTERN dispatch_queue_t RCTJSThread;
 
 RCT_EXTERN_C_BEGIN
 
@@ -123,7 +115,7 @@ RCT_EXTERN_C_END
  * moduleRegistry = _moduleRegistry;`. If using Swift, add
  * `@objc var moduleRegistry: RCTModuleRegistry!` to your module.
  */
-@property (nonatomic, weak, readonly) RCTModuleRegistry *moduleRegistry;
+@property (nonatomic, weak, readwrite) RCTModuleRegistry *moduleRegistry;
 
 /**
  * A reference to the RCTViewRegistry. Useful for modules that query UIViews,
@@ -145,6 +137,17 @@ RCT_EXTERN_C_END
  * RCTBundleManager!` to your module.
  */
 @property (nonatomic, weak, readwrite) RCTBundleManager *bundleManager;
+
+/**
+ * A reference to an RCTCallableJSModules. Useful for modules that need to
+ * call into methods on JavaScript modules registered as callable with
+ * React Native.
+ *
+ * To implement this in your module, just add `@synthesize callableJSModules =
+ * _callableJSModules;`. If using Swift, add `@objc var callableJSModules:
+ * RCTCallableJSModules!` to your module.
+ */
+@property (nonatomic, weak, readwrite) RCTCallableJSModules *callableJSModules;
 
 /**
  * A reference to the RCTBridge. Useful for modules that require access
@@ -418,7 +421,7 @@ RCT_EXTERN_C_END
 @end
 
 typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
-typedef NSURL * (^RCTBridgelessBundleURLGetter)();
+typedef NSURL * (^RCTBridgelessBundleURLGetter)(void);
 
 /**
  * A class that allows NativeModules/TurboModules to read/write the bundleURL, with or without the bridge.
@@ -442,4 +445,25 @@ typedef UIView * (^RCTBridgelessComponentViewProvider)(NSNumber *);
 - (void)setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider)bridgelessComponentViewProvider;
 
 - (UIView *)viewForReactTag:(NSNumber *)reactTag;
+@end
+
+typedef void (^RCTBridgelessJSModuleMethodInvoker)(
+    NSString *moduleName,
+    NSString *methodName,
+    NSArray *args,
+    dispatch_block_t onComplete);
+
+/**
+ * A class that allows NativeModules to call methods on JavaScript modules registered
+ * as callable with React Native.
+ */
+@interface RCTCallableJSModules : NSObject
+- (void)setBridge:(RCTBridge *)bridge;
+- (void)setBridgelessJSModuleMethodInvoker:(RCTBridgelessJSModuleMethodInvoker)bridgelessJSModuleMethodInvoker;
+
+- (void)invokeModule:(NSString *)moduleName method:(NSString *)methodName withArgs:(NSArray *)args;
+- (void)invokeModule:(NSString *)moduleName
+              method:(NSString *)methodName
+            withArgs:(NSArray *)args
+          onComplete:(dispatch_block_t)onComplete;
 @end

@@ -10,7 +10,7 @@
 
 /* eslint no-bitwise: 0 */
 
-import normalizeColorBase from '@react-native/normalize-color/base';
+import _normalizeColor from '@react-native/normalize-color';
 
 import type {ColorValue} from './StyleSheet';
 import type {ProcessedColorValue} from './processColor';
@@ -27,7 +27,7 @@ function normalizeColor(
   }
 
   if (typeof color === 'string' || typeof color === 'number') {
-    return normalizeColorBase(color);
+    return _normalizeColor(color);
   }
 }
 

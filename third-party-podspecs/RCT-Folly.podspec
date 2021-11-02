@@ -3,22 +3,25 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+folly_release_version = '2021.06.28.00'
+
 Pod::Spec.new do |spec|
   spec.name = 'RCT-Folly'
-  spec.version = '2021.04.26.00'
+  # Patched to v2 to address https://github.com/react-native-community/releases/issues/251
+  spec.version = folly_release_version + '-v2'
   spec.license = { :type => 'Apache License, Version 2.0' }
   spec.homepage = 'https://github.com/facebook/folly'
   spec.summary = 'An open-source C++ library developed and used at Facebook.'
   spec.authors = 'Facebook'
   spec.source = { :git => 'https://github.com/facebook/folly.git',
-                  :tag => "v#{spec.version}" }
+                  :tag => "v#{folly_release_version}" }
   spec.module_name = 'folly'
   spec.header_mappings_dir = '.'
-  spec.dependency 'boost-for-react-native'
+  spec.dependency 'boost'
   spec.dependency 'DoubleConversion'
   spec.dependency 'glog'
-  spec.dependency 'fmt'
-  spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation'
+  spec.dependency 'fmt' , '~> 6.2.1'
+  spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -faligned-new'
   spec.source_files = 'folly/String.cpp',
                       'folly/Conv.cpp',
                       'folly/Demangle.cpp',
@@ -37,6 +40,7 @@ Pod::Spec.new do |spec|
                       'folly/hash/SpookyHashV2.cpp',
                       'folly/lang/Assume.cpp',
                       'folly/lang/CString.cpp',
+                      'folly/lang/Exception.cpp',
                       'folly/memory/detail/MallocImpl.cpp',
                       'folly/net/NetOps.cpp',
                       'folly/portability/SysUio.cpp',
@@ -68,13 +72,13 @@ Pod::Spec.new do |spec|
                         'folly/net/*.h',
                         'folly/net/detail/*.h',
                         'folly/portability/*.h'
-  spec.libraries           = "stdc++"
+  spec.libraries           = "c++abi" # NOTE Apple-only: Keep c++abi here due to https://github.com/react-native-community/releases/issues/251
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include/\"" }
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include/\"" }
 
   # TODO: The boost spec should really be selecting these files so that dependents of Folly can also access the required headers.
-  spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\"" }
+  spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"" }
 
   spec.default_subspec = 'Default'
 
@@ -107,25 +111,27 @@ Pod::Spec.new do |spec|
                            'folly/system/{ThreadId,ThreadName,HardwareConcurrency}.{h,cpp}',
                            'folly/synchronization/*.{h,cpp}',
                            'folly/synchronization/detail/*.{h,cpp}',
+                           'folly/Try.cpp',
+                           'folly/concurrency/CacheLocality.cpp',
                            'folly/experimental/{ExecutionObserver,ReadMostlySharedPtr,SingleWriterFixedHashMap,TLRefCount}.{h,cpp}',
-                           'folly/io/async/{AtomicNotificationQueue,AtomicNotificationQueue-inl,AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseManager,EventBaseAtomicNotificationQueue,EventBaseAtomicNotificationQueue-inl,EventBaseBackendBase,EventHandler,EventUtil,HHWheelTimer,HHWheelTimer-fwd,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
+                           'folly/io/async/{AtomicNotificationQueue,AtomicNotificationQueue-inl,AsyncTimeout,DelayedDestruction,DelayedDestructionBase,EventBase,EventBaseLocal,EventBaseManager,EventBaseAtomicNotificationQueue,EventBaseAtomicNotificationQueue-inl,EventBaseBackendBase,EventHandler,EventUtil,HHWheelTimer,HHWheelTimer-fwd,NotificationQueue,Request,TimeoutManager,VirtualEventBase}.{h,cpp}',
                            'folly/io/{Cursor,Cursor-inl,IOBuf,IOBufQueue}.{h,cpp}',
                            'folly/tracing/StaticTracepoint.{h,cpp}',
                            'folly/tracing/AsyncStack.{h,cpp}',
                            'folly/tracing/AsyncStack-inl.h',
-                           'folly/{Executor,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
+                           'folly/{Executor,ExceptionString,ExceptionWrapper,ExceptionWrapper-inl,FileUtil,Singleton,SharedMutex}.{h,cpp}',
                            'folly/detail/{AsyncTrace,AtFork,Futex,Futex-inl,MemoryIdler,SingletonStackTrace,StaticSingletonManager,ThreadLocalDetail}.{h,cpp}',
                            'folly/lang/SafeAssert.{h,cpp}',
                            'folly/memory/MallctlHelper.{h,cpp}',
                            'folly/portability/{GFlags,SysUio}.{h,cpp}',
+                           'folly/portability/SysMembarrier.cpp',
                            'folly/chrono/Hardware.{h,cpp}',
-                          'folly/experimental/coro/Traits.{h,cpp}',
-                          'folly/fibers/*.{h,cpp}',
-                          'folly/experimental/coro/Coroutine.{h,cpp}',
-                          'folly/fibers/Baton-inl.h',
-                          'folly/experimental/**/*.h',
-                          'folly/system/Pid.h'
-
+                           'folly/experimental/coro/Traits.{h,cpp}',
+                           'folly/fibers/*.{h,cpp}',
+                           'folly/experimental/coro/Coroutine.{h,cpp}',
+                           'folly/fibers/Baton-inl.h',
+                           'folly/experimental/**/*.h',
+                           'folly/system/Pid.{h,cpp}'
                           # TODO: Perhaps some of the wildcards above can be further trimmed down with some of these:
                           #
                           #  'folly/executors/{DrivableExecutor,InlineExecutor,QueuedImmediateExecutor,TimedDrivableExecutor}.{h,cpp}',

@@ -22,11 +22,13 @@ rn_codegen_modules = _rn_codegen_modules
 
 def rn_codegen(
         name,
+        ios_assume_nonnull,
         native_module_spec_name = None,
         android_package_name = None,
         codegen_components = False,
         codegen_modules = False,
-        library_labels = []):
+        library_labels = [],
+        src_prefix = ""):
     if (codegen_modules):
         error_header = "rn_codegen(name=\"{}\")".format(name)
         if not native_module_spec_name:
@@ -37,9 +39,10 @@ def rn_codegen(
 
         spec_srcs = native.glob(
             [
-                "**/Native*.js",
+                src_prefix + "**/Native*.js",
             ],
             exclude = [
+                src_prefix + "**/nativeImageSource.js",
                 "**/__*__/**",
             ],
         )
@@ -57,6 +60,7 @@ def rn_codegen(
         rn_codegen_modules(
             name = native_module_spec_name,
             android_package_name = android_package_name,
+            ios_assume_nonnull = ios_assume_nonnull,
             schema_target = ":{}".format(module_schema_target),
             library_labels = library_labels,
         )
@@ -66,7 +70,7 @@ def rn_codegen(
             name = "codegen_rn_components_schema_{}".format(name),
             srcs = native.glob(
                 [
-                    "**/*NativeComponent.js",
+                    src_prefix + "**/*NativeComponent.js",
                 ],
                 exclude = [
                     "**/__*__/**",

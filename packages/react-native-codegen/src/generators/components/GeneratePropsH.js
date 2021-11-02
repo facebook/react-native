@@ -32,9 +32,15 @@ import type {
 type FilesOutput = Map<string, string>;
 type StructsMap = Map<string, string>;
 
-const template = `
+const FileTemplate = ({
+  imports,
+  componentClasses,
+}: {
+  imports: string,
+  componentClasses: string,
+}) => `
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,97 +49,149 @@ const template = `
  */
 #pragma once
 
-::_IMPORTS_::
+${imports}
 
 namespace facebook {
 namespace react {
 
-::_COMPONENT_CLASSES_::
+${componentClasses}
 
 } // namespace react
 } // namespace facebook
 `;
 
-const classTemplate = `
-::_ENUMS_::
-::_STRUCTS_::
-class ::_CLASSNAME_:: final::_EXTEND_CLASSES_:: {
+const ClassTemplate = ({
+  enums,
+  structs,
+  className,
+  props,
+  extendClasses,
+}: {
+  enums: string,
+  structs: string,
+  className: string,
+  props: string,
+  extendClasses: string,
+}) =>
+  `
+${enums}
+${structs}
+class ${className} final${extendClasses} {
  public:
-  ::_CLASSNAME_::() = default;
-  ::_CLASSNAME_::(const ::_CLASSNAME_:: &sourceProps, const RawProps &rawProps);
+  ${className}() = default;
+  ${className}(const PropsParserContext& context, const ${className} &sourceProps, const RawProps &rawProps);
 
 #pragma mark - Props
 
-  ::_PROPS_::
+  ${props}
 };
 `.trim();
 
-const enumTemplate = `
-enum class ::_ENUM_NAME_:: { ::_VALUES_:: };
+const EnumTemplate = ({
+  enumName,
+  values,
+  fromCases,
+  toCases,
+}: {
+  enumName: string,
+  values: string,
+  fromCases: string,
+  toCases: string,
+}) =>
+  `
+enum class ${enumName} { ${values} };
 
-static inline void fromRawValue(const RawValue &value, ::_ENUM_NAME_:: &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${enumName} &result) {
   auto string = (std::string)value;
-  ::_FROM_CASES_::
+  ${fromCases}
   abort();
 }
 
-static inline std::string toString(const ::_ENUM_NAME_:: &value) {
+static inline std::string toString(const ${enumName} &value) {
   switch (value) {
-    ::_TO_CASES_::
+    ${toCases}
   }
 }
 `.trim();
 
-const intEnumTemplate = `
-enum class ::_ENUM_NAME_:: { ::_VALUES_:: };
+const IntEnumTemplate = ({
+  enumName,
+  values,
+  fromCases,
+  toCases,
+}: {
+  enumName: string,
+  values: string,
+  fromCases: string,
+  toCases: string,
+}) =>
+  `
+enum class ${enumName} { ${values} };
 
-static inline void fromRawValue(const RawValue &value, ::_ENUM_NAME_:: &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${enumName} &result) {
   assert(value.hasType<int>());
   auto integerValue = (int)value;
-  switch (integerValue) {::_FROM_CASES_::
+  switch (integerValue) {${fromCases}
   }
   abort();
 }
 
-static inline std::string toString(const ::_ENUM_NAME_:: &value) {
+static inline std::string toString(const ${enumName} &value) {
   switch (value) {
-    ::_TO_CASES_::
+    ${toCases}
   }
 }
 `.trim();
 
-const structTemplate = `struct ::_STRUCT_NAME_:: {
-  ::_FIELDS_::
+const StructTemplate = ({
+  structName,
+  fields,
+  fromCases,
+}: {
+  structName: string,
+  fields: string,
+  fromCases: string,
+}) =>
+  `struct ${structName} {
+  ${fields}
 };
 
-static inline void fromRawValue(const RawValue &value, ::_STRUCT_NAME_:: &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${structName} &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  ::_FROM_CASES_::
+  ${fromCases}
 }
 
-static inline std::string toString(const ::_STRUCT_NAME_:: &value) {
-  return "[Object ::_STRUCT_NAME_::]";
+static inline std::string toString(const ${structName} &value) {
+  return "[Object ${structName}]";
 }
 `.trim();
 
-const arrayConversionFunction = `static inline void fromRawValue(const RawValue &value, std::vector<::_STRUCT_NAME_::> &result) {
+const ArrayConversionFunctionTemplate = ({
+  structName,
+}: {
+  structName: string,
+}) => `static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<${structName}> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
-    ::_STRUCT_NAME_:: newItem;
-    fromRawValue(item, newItem);
+    ${structName} newItem;
+    fromRawValue(context, item, newItem);
     result.emplace_back(newItem);
   }
 }
 `;
 
-const doubleArrayConversionFunction = `static inline void fromRawValue(const RawValue &value, std::vector<std::vector<::_STRUCT_NAME_::>> &result) {
+const DoubleArrayConversionFunctionTemplate = ({
+  structName,
+}: {
+  structName: string,
+}) => `static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<std::vector<${structName}>> &result) {
   auto items = (std::vector<std::vector<RawValue>>)value;
   for (const std::vector<RawValue> &item : items) {
-    auto nestedArray = std::vector<::_STRUCT_NAME_::>{};
+    auto nestedArray = std::vector<${structName}>{};
     for (const RawValue &nestedItem : item) {
-      ::_STRUCT_NAME_:: newItem;
-      fromRawValue(nestedItem, newItem);
+      ${structName} newItem;
+      fromRawValue(context, nestedItem, newItem);
       nestedArray.emplace_back(newItem);
     }
     result.emplace_back(nestedArray);
@@ -141,44 +199,57 @@ const doubleArrayConversionFunction = `static inline void fromRawValue(const Raw
 }
 `;
 
-const arrayEnumTemplate = `
-using ::_ENUM_MASK_:: = uint32_t;
+const ArrayEnumTemplate = ({
+  enumName,
+  enumMask,
+  values,
+  fromCases,
+  toCases,
+}: {
+  enumName: string,
+  enumMask: string,
+  values: string,
+  fromCases: string,
+  toCases: string,
+}) =>
+  `
+using ${enumMask} = uint32_t;
 
-enum class ::_ENUM_NAME_::: ::_ENUM_MASK_:: {
-  ::_VALUES_::
+enum class ${enumName}: ${enumMask} {
+  ${values}
 };
 
 constexpr bool operator&(
-  ::_ENUM_MASK_:: const lhs,
-  enum ::_ENUM_NAME_:: const rhs) {
-  return lhs & static_cast<::_ENUM_MASK_::>(rhs);
+  ${enumMask} const lhs,
+  enum ${enumName} const rhs) {
+  return lhs & static_cast<${enumMask}>(rhs);
 }
 
-constexpr ::_ENUM_MASK_:: operator|(
-  ::_ENUM_MASK_:: const lhs,
-  enum ::_ENUM_NAME_:: const rhs) {
-  return lhs | static_cast<::_ENUM_MASK_::>(rhs);
+constexpr ${enumMask} operator|(
+  ${enumMask} const lhs,
+  enum ${enumName} const rhs) {
+  return lhs | static_cast<${enumMask}>(rhs);
 }
 
 constexpr void operator|=(
-  ::_ENUM_MASK_:: &lhs,
-  enum ::_ENUM_NAME_:: const rhs) {
-  lhs = lhs | static_cast<::_ENUM_MASK_::>(rhs);
+  ${enumMask} &lhs,
+  enum ${enumName} const rhs) {
+  lhs = lhs | static_cast<${enumMask}>(rhs);
 }
 
-static inline void fromRawValue(const RawValue &value, ::_ENUM_MASK_:: &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${enumMask} &result) {
   auto items = std::vector<std::string>{value};
   for (const auto &item : items) {
-    ::_FROM_CASES_::
+    ${fromCases}
     abort();
   }
 }
 
-static inline std::string toString(const ::_ENUM_MASK_:: &value) {
+static inline std::string toString(const ${enumMask} &value) {
     auto result = std::string{};
     auto separator = std::string{", "};
 
-    ::_TO_CASES_::
+    ${toCases}
     if (!result.empty()) {
       result.erase(result.length() - separator.length());
     }
@@ -187,6 +258,9 @@ static inline std::string toString(const ::_ENUM_MASK_:: &value) {
 `.trim();
 
 function getClassExtendString(component): string {
+  if (component.extendsProps.length === 0) {
+    throw new Error('Invalid: component.extendsProps is empty');
+  }
   const extendString =
     ' : ' +
     component.extendsProps
@@ -317,12 +391,13 @@ function generateArrayEnumString(
     )
     .join('\n' + '    ');
 
-  return arrayEnumTemplate
-    .replace(/::_ENUM_NAME_::/g, enumName)
-    .replace(/::_ENUM_MASK_::/g, getEnumMaskName(enumName))
-    .replace('::_VALUES_::', values)
-    .replace('::_FROM_CASES_::', fromCases)
-    .replace('::_TO_CASES_::', toCases);
+  return ArrayEnumTemplate({
+    enumName,
+    enumMask: getEnumMaskName(enumName),
+    values,
+    fromCases,
+    toCases,
+  });
 }
 
 function generateStringEnum(componentName, prop) {
@@ -349,11 +424,12 @@ function generateStringEnum(componentName, prop) {
       )
       .join('\n' + '    ');
 
-    return enumTemplate
-      .replace(/::_ENUM_NAME_::/g, enumName)
-      .replace('::_VALUES_::', values.map(toSafeCppString).join(', '))
-      .replace('::_FROM_CASES_::', fromCases)
-      .replace('::_TO_CASES_::', toCases);
+    return EnumTemplate({
+      enumName,
+      values: values.map(toSafeCppString).join(', '),
+      fromCases: fromCases,
+      toCases: toCases,
+    });
   }
 
   return '';
@@ -389,11 +465,12 @@ function generateIntEnum(componentName, prop) {
       .map(val => `${toIntEnumValueName(prop.name, val)} = ${val}`)
       .join(', ');
 
-    return intEnumTemplate
-      .replace(/::_ENUM_NAME_::/g, enumName)
-      .replace('::_VALUES_::', valueVariables)
-      .replace('::_FROM_CASES_::', fromCases)
-      .replace('::_TO_CASES_::', toCases);
+    return IntEnumTemplate({
+      enumName,
+      values: valueVariables,
+      fromCases,
+      toCases,
+    });
   }
 
   return '';
@@ -459,6 +536,8 @@ function getExtendsImports(
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
 ): Set<string> {
   const imports: Set<string> = new Set();
+
+  imports.add('#include <react/renderer/core/PropsParserContext.h>');
 
   extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
@@ -535,7 +614,9 @@ function getLocalImports(
       const objectProps = typeAnnotation.elementType.properties;
       const objectImports = getImports(objectProps);
       const localImports = getLocalImports(objectProps);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       localImports.forEach(imports.add, imports);
     }
 
@@ -543,7 +624,9 @@ function getLocalImports(
       imports.add('#include <react/renderer/core/propsConversions.h>');
       const objectImports = getImports(typeAnnotation.properties);
       const localImports = getLocalImports(typeAnnotation.properties);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       localImports.forEach(imports.add, imports);
     }
   });
@@ -619,10 +702,12 @@ function generateStructs(
         `${[componentName, ...nameParts.concat([prop.name])].join(
           '',
         )}ArrayStruct`,
-        arrayConversionFunction.replace(
-          /::_STRUCT_NAME_::/g,
-          generateStructName(componentName, nameParts.concat([prop.name])),
-        ),
+        ArrayConversionFunctionTemplate({
+          structName: generateStructName(
+            componentName,
+            nameParts.concat([prop.name]),
+          ),
+        }),
       );
     }
     if (
@@ -658,10 +743,12 @@ function generateStructs(
         `${[componentName, ...nameParts.concat([prop.name])].join(
           '',
         )}ArrayArrayStruct`,
-        doubleArrayConversionFunction.replace(
-          /::_STRUCT_NAME_::/g,
-          generateStructName(componentName, nameParts.concat([prop.name])),
-        ),
+        DoubleArrayConversionFunctionTemplate({
+          structName: generateStructName(
+            componentName,
+            nameParts.concat([prop.name]),
+          ),
+        }),
       );
     }
   });
@@ -733,17 +820,18 @@ function generateStruct(
       const variable = property.name;
       return `auto ${variable} = map.find("${property.name}");
   if (${variable} != map.end()) {
-    fromRawValue(${variable}->second, result.${variable});
+    fromRawValue(context, ${variable}->second, result.${variable});
   }`;
     })
     .join('\n  ');
 
   structs.set(
     structName,
-    structTemplate
-      .replace(/::_STRUCT_NAME_::/g, structName)
-      .replace('::_FIELDS_::', fields)
-      .replace('::_FROM_CASES_::', fromCases),
+    StructTemplate({
+      structName,
+      fields,
+      fromCases,
+    }),
   );
 }
 
@@ -752,6 +840,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'Props.h';
 
@@ -795,16 +884,18 @@ module.exports = {
             const extendsImports = getExtendsImports(component.extendsProps);
             const imports = getLocalImports(component.props);
 
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             extendsImports.forEach(allImports.add, allImports);
+            // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             imports.forEach(allImports.add, allImports);
 
-            const replacedTemplate = classTemplate
-              .replace('::_ENUMS_::', enumString)
-              .replace('::_STRUCTS_::', structString)
-              .replace(/::_CLASSNAME_::/g, newName)
-              .replace('::_EXTEND_CLASSES_::', extendString)
-              .replace('::_PROPS_::', propsString)
-              .trim();
+            const replacedTemplate = ClassTemplate({
+              enums: enumString,
+              structs: structString,
+              className: newName,
+              extendClasses: extendString,
+              props: propsString,
+            });
 
             return replacedTemplate;
           })
@@ -813,14 +904,12 @@ module.exports = {
       .filter(Boolean)
       .join('\n\n');
 
-    const replacedTemplate = template
-      .replace(/::_COMPONENT_CLASSES_::/g, componentClasses)
-      .replace(
-        '::_IMPORTS_::',
-        Array.from(allImports)
-          .sort()
-          .join('\n'),
-      );
+    const replacedTemplate = FileTemplate({
+      componentClasses,
+      imports: Array.from(allImports)
+        .sort()
+        .join('\n'),
+    });
 
     return new Map([[fileName, replacedTemplate]]);
   },

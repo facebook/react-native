@@ -52,7 +52,7 @@ export type Registry = {
   runnables: Runnables,
   ...
 };
-export type WrapperComponentProvider = any => React$ComponentType<*>;
+export type WrapperComponentProvider = any => React$ComponentType<any>;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -128,6 +128,7 @@ const AppRegistry = {
           appKey === 'LogBox',
           appKey,
           coerceDisplayMode(displayMode),
+          appParameters.concurrentRoot,
         );
       },
     };
@@ -188,8 +189,10 @@ const AppRegistry = {
     displayMode?: number,
   ): void {
     if (appKey !== 'LogBox') {
-      const msg =
-        'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
+      const logParams = __DEV__
+        ? '" with ' + JSON.stringify(appParameters)
+        : '';
+      const msg = 'Running "' + appKey + logParams;
       infoLog(msg);
       BugReporting.addSource(
         'AppRegistry.runApplication' + runCount++,
@@ -256,6 +259,7 @@ const AppRegistry = {
    * See https://reactnative.dev/docs/appregistry.html#registerheadlesstask
    */
   registerHeadlessTask(taskKey: string, taskProvider: TaskProvider): void {
+    // $FlowFixMe[object-this-reference]
     this.registerCancellableHeadlessTask(taskKey, taskProvider, () => () => {
       /* Cancel is no-op */
     });

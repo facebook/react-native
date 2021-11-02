@@ -145,7 +145,10 @@ type RTLSwitcherComponentState = {|
 |};
 
 function withRTLState(Component) {
-  return class extends React.Component<*, RTLSwitcherComponentState> {
+  return class extends React.Component<
+    {style?: any},
+    RTLSwitcherComponentState,
+  > {
     constructor(...args) {
       super(...args);
       this.state = {

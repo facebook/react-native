@@ -24,8 +24,13 @@ class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
   static void registerNatives();
 
   SharedEventEmitter eventEmitter;
+  EventEmitter const *eventEmitterPointer;
 
-  void invokeEvent(std::string eventName, NativeMap *params);
+  void invokeEvent(std::string eventName, NativeMap *params, int category);
+  void invokeUniqueEvent(
+      std::string eventName,
+      NativeMap *params,
+      int customCoalesceKey);
 
  private:
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);

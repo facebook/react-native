@@ -8,7 +8,7 @@
 #import "AppDelegate.h"
 
 #ifndef RCT_USE_HERMES
-#if __has_include(<hermes/hermes.h>)
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #define RCT_USE_HERMES 1
 #else
 #define RCT_USE_HERMES 0
@@ -206,6 +206,7 @@
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
+  // Set up the default RCTImageLoader and RCTNetworking modules.
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
         loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry * moduleRegistry) {

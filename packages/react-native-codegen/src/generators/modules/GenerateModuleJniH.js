@@ -80,14 +80,12 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/reac
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/${libraryName}
 
-LOCAL_SHARED_LIBRARIES := libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libreact_debug libreact_render_debug
-
-LOCAL_STATIC_LIBRARIES := libjsi
+LOCAL_SHARED_LIBRARIES := libjsi libglog libfolly_json libyoga libreact_nativemodule_core librrc_view libreact_render_core libreact_render_graphics libfbjni libturbomodulejsijni libreact_codegen_rncore libreact_debug libreact_render_debug
 
 LOCAL_CFLAGS := \\
   -DLOG_TAG=\\"ReactNative\\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 include $(BUILD_SHARED_LIBRARY)
 `;
@@ -98,6 +96,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const nativeModules = getModules(schema);
     const modules = Object.keys(nativeModules)
