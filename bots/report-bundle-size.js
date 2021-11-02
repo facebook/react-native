@@ -20,7 +20,10 @@ const {
 
 const fs = require('fs');
 const datastore = require('./datastore');
-const {createOrUpdateComment} = require('./make-comment');
+const {
+  createOrUpdateComment,
+  validateEnvironment: validateEnvironmentForMakeComment,
+} = require('./make-comment');
 
 /**
  * Generates and submits a comment. If this is run on the main or release branch, data is
@@ -176,7 +179,7 @@ function isPullRequest(ref) {
 
 /**
  * Validates that required environment variables are set.
- * @returns `true` if everything is in order; `false` otherwise.
+ * @returns {boolean} `true` if everything is in order; `false` otherwise.
  */
 function validateEnvironment() {
   if (!GITHUB_REF) {
@@ -185,24 +188,7 @@ function validateEnvironment() {
   }
 
   if (isPullRequest(GITHUB_REF)) {
-    // We need the following variables to post a comment on a PR
-    if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO || !GITHUB_PR_NUMBER) {
-      if (!GITHUB_TOKEN) {
-        console.error(
-          'Missing GITHUB_TOKEN. Example: ghp_5fd88b964fa214c4be2b144dc5af5d486a2. PR feedback cannot be provided on GitHub without a valid token.',
-        );
-      }
-      if (!GITHUB_OWNER) {
-        console.error('Missing GITHUB_OWNER. Example: facebook');
-      }
-      if (!GITHUB_REPO) {
-        console.error('Missing GITHUB_REPO. Example: react-native');
-      }
-      if (!GITHUB_PR_NUMBER) {
-        console.error(
-          'Missing GITHUB_PR_NUMBER. Example: 4687. PR feedback cannot be provided on GitHub without a valid pull request number.',
-        );
-      }
+    if (!validateEnvironmentForMakeComment()) {
       return false;
     }
   } else if (!GITHUB_SHA) {
@@ -211,11 +197,6 @@ function validateEnvironment() {
     return false;
   }
 
-  console.log(`  GITHUB_TOKEN=${GITHUB_TOKEN}`);
-  console.log(`  GITHUB_OWNER=${GITHUB_OWNER}`);
-  console.log(`  GITHUB_REPO=${GITHUB_REPO}`);
-  console.log(`  GITHUB_PR_NUMBER=${GITHUB_PR_NUMBER}`);
-  console.log(`  GITHUB_REF=${GITHUB_REF}`);
   console.log(`  GITHUB_SHA=${GITHUB_SHA}`);
 
   return true;

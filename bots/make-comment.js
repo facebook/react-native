@@ -80,6 +80,60 @@ async function createOrUpdateComment(
   });
 }
 
+/**
+ * Validates that required environment variables are set.
+ * @returns {boolean} `true` if everything is in order; `false` otherwise.
+ */
+function validateEnvironment() {
+  const {
+    GITHUB_TOKEN,
+    GITHUB_OWNER,
+    GITHUB_REPO,
+    GITHUB_PR_NUMBER,
+    GITHUB_REF,
+  } = process.env;
+
+  // We need the following variables to post a comment on a PR
+  if (
+    !GITHUB_TOKEN ||
+    !GITHUB_OWNER ||
+    !GITHUB_REPO ||
+    !GITHUB_PR_NUMBER ||
+    !GITHUB_REF
+  ) {
+    if (!GITHUB_TOKEN) {
+      console.error(
+        'Missing GITHUB_TOKEN. Example: ghp_5fd88b964fa214c4be2b144dc5af5d486a2. PR feedback cannot be provided on GitHub without a valid token.',
+      );
+    }
+    if (!GITHUB_OWNER) {
+      console.error('Missing GITHUB_OWNER. Example: facebook');
+    }
+    if (!GITHUB_REPO) {
+      console.error('Missing GITHUB_REPO. Example: react-native');
+    }
+    if (!GITHUB_PR_NUMBER) {
+      console.error(
+        'Missing GITHUB_PR_NUMBER. Example: 4687. PR feedback cannot be provided on GitHub without a valid pull request number.',
+      );
+    }
+    if (!GITHUB_REF) {
+      console.error("Missing GITHUB_REF. This should've been set by the CI.");
+    }
+
+    return false;
+  }
+
+  console.log(`  GITHUB_TOKEN=${GITHUB_TOKEN}`);
+  console.log(`  GITHUB_OWNER=${GITHUB_OWNER}`);
+  console.log(`  GITHUB_REPO=${GITHUB_REPO}`);
+  console.log(`  GITHUB_PR_NUMBER=${GITHUB_PR_NUMBER}`);
+  console.log(`  GITHUB_REF=${GITHUB_REF}`);
+
+  return true;
+}
+
 module.exports = {
   createOrUpdateComment,
+  validateEnvironment,
 };
