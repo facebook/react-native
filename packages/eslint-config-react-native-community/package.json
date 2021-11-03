@@ -23,7 +23,7 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.7",
     "eslint-plugin-react-native": "^3.10.0",
-    "prettier": "^2.0.2"
+    "prettier": "^2.4.1"
   },
   "peerDependencies": {
     "eslint": ">=7",
@@ -31,6 +31,6 @@
   },
   "devDependencies": {
     "eslint": "7.12.0",
-    "prettier": "^2.3.2"
+    "prettier": "^2.4.1"
   }
 }

@@ -37,6 +37,6 @@
     "invariant": "^2.2.4",
     "micromatch": "^4.0.2",
     "mkdirp": "^0.5.1",
-    "prettier": "1.19.1"
+    "prettier": "^2.4.1"
   }
 }

@@ -43,7 +43,7 @@
     "metro-babel-register": "0.66.2",
     "metro-transform-plugins": "^0.66.2",
     "mkdirp": "^0.5.1",
-    "prettier": "1.19.1",
+    "prettier": "^2.4.1",
     "react": "17.0.2",
     "react-native-codegen": "^0.0.10",
     "react-shallow-renderer": "16.14.1",
