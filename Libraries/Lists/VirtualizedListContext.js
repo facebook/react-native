@@ -64,9 +64,8 @@ type Context = $ReadOnly<{
   debugInfo: ListDebugInfo,
 }>;
 
-export const VirtualizedListContext: React.Context<?Context> = React.createContext(
-  null,
-);
+export const VirtualizedListContext: React.Context<?Context> =
+  React.createContext(null);
 if (__DEV__) {
   VirtualizedListContext.displayName = 'VirtualizedListContext';
 }

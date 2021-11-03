@@ -39,9 +39,7 @@ const nightlyBuild = argv.nightly;
 const version = argv.toVersion;
 
 if (!version) {
-  echo(
-    'You must specify a version using -v',
-  );
+  echo('You must specify a version using -v');
   exit(1);
 }
 
@@ -139,10 +137,16 @@ delete packageJson.private;
 
 // Copy dependencies over from repo-config/package.json
 const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
-packageJson.devDependencies = {...packageJson.devDependencies, ...repoConfigJson.dependencies};
+packageJson.devDependencies = {
+  ...packageJson.devDependencies,
+  ...repoConfigJson.dependencies,
+};
 // Make react-native-codegen a direct dependency of react-native
 delete packageJson.devDependencies['react-native-codegen'];
-packageJson.dependencies = {...packageJson.dependencies, 'react-native-codegen': repoConfigJson.dependencies['react-native-codegen']};
+packageJson.dependencies = {
+  ...packageJson.dependencies,
+  'react-native-codegen': repoConfigJson.dependencies['react-native-codegen'],
+};
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // Change ReactAndroid/gradle.properties
@@ -168,7 +172,9 @@ const filesToValidate = [
   'template/package.json',
 ];
 let numberOfChangedLinesWithNewVersion = exec(
-  `git diff -U0 ${filesToValidate.join(' ')}| grep '^[+]' | grep -c ${version} `,
+  `git diff -U0 ${filesToValidate.join(
+    ' ',
+  )}| grep '^[+]' | grep -c ${version} `,
   {silent: true},
 ).stdout.trim();
 
@@ -183,7 +189,9 @@ if (exec('scripts/update-ruby.sh').code) {
 if (!nightlyBuild) {
   if (+numberOfChangedLinesWithNewVersion !== filesToValidate.length) {
     echo(
-      `Failed to update all the files: [${filesToValidate.join(', ')}] must have versions in them`,
+      `Failed to update all the files: [${filesToValidate.join(
+        ', ',
+      )}] must have versions in them`,
     );
     echo('Fix the issue, revert and try again');
     exec('git diff');

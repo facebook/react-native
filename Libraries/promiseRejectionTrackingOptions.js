@@ -10,7 +10,7 @@
 
 import typeof {enable} from 'promise/setimmediate/rejection-tracking';
 
-type ExtractOptionsType = <P>((options?: ?P) => void) => P;
+type ExtractOptionsType = <P>(((options?: ?P) => void)) => P;
 
 let rejectionTrackingOptions: $Call<ExtractOptionsType, enable> = {
   allRejections: true,

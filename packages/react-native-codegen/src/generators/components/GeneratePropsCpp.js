@@ -160,10 +160,7 @@ module.exports = {
     const replacedTemplate = FileTemplate({
       componentClasses: componentProps,
       libraryName,
-      imports: Array.from(allImports)
-        .sort()
-        .join('\n')
-        .trim(),
+      imports: Array.from(allImports).sort().join('\n').trim(),
     });
 
     return new Map([[fileName, replacedTemplate]]);

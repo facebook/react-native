@@ -114,7 +114,7 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
       callback(global.performance.now());
     } else if (type === 'requestIdleCallback') {
       callback({
-        timeRemaining: function() {
+        timeRemaining: function () {
           // TODO: Optimisation: allow running for longer than one frame if
           // there are no pending JS calls on the bridge from native. This
           // would require a way to check the bridge queue synchronously.
@@ -209,7 +209,11 @@ const JSTimers = {
    * @param {function} func Callback to be invoked after `duration` ms.
    * @param {number} duration Number of milliseconds.
    */
-  setTimeout: function(func: Function, duration: number, ...args: any): number {
+  setTimeout: function (
+    func: Function,
+    duration: number,
+    ...args: any
+  ): number {
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setTimeout',
@@ -222,7 +226,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked every `duration` ms.
    * @param {number} duration Number of milliseconds.
    */
-  setInterval: function(
+  setInterval: function (
     func: Function,
     duration: number,
     ...args: any
@@ -243,7 +247,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked before the end of the
    * current JavaScript execution loop.
    */
-  queueReactNativeMicrotask: function(func: Function, ...args: any) {
+  queueReactNativeMicrotask: function (func: Function, ...args: any) {
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'queueReactNativeMicrotask',
@@ -255,7 +259,7 @@ const JSTimers = {
   /**
    * @param {function} func Callback to be invoked every frame.
    */
-  requestAnimationFrame: function(func: Function) {
+  requestAnimationFrame: function (func: Function) {
     const id = _allocateCallback(func, 'requestAnimationFrame');
     createTimer(id, 1, Date.now(), /* recurring */ false);
     return id;
@@ -266,7 +270,7 @@ const JSTimers = {
    * with time remaining in frame.
    * @param {?object} options
    */
-  requestIdleCallback: function(func: Function, options: ?Object) {
+  requestIdleCallback: function (func: Function, options: ?Object) {
     if (requestIdleCallbacks.length === 0) {
       setSendIdleEvents(true);
     }
@@ -304,7 +308,7 @@ const JSTimers = {
     return id;
   },
 
-  cancelIdleCallback: function(timerID: number) {
+  cancelIdleCallback: function (timerID: number) {
     _freeCallback(timerID);
     const index = requestIdleCallbacks.indexOf(timerID);
     if (index !== -1) {
@@ -322,15 +326,15 @@ const JSTimers = {
     }
   },
 
-  clearTimeout: function(timerID: number) {
+  clearTimeout: function (timerID: number) {
     _freeCallback(timerID);
   },
 
-  clearInterval: function(timerID: number) {
+  clearInterval: function (timerID: number) {
     _freeCallback(timerID);
   },
 
-  clearReactNativeMicrotask: function(timerID: number) {
+  clearReactNativeMicrotask: function (timerID: number) {
     _freeCallback(timerID);
     const index = reactNativeMicrotasks.indexOf(timerID);
     if (index !== -1) {
@@ -338,7 +342,7 @@ const JSTimers = {
     }
   },
 
-  cancelAnimationFrame: function(timerID: number) {
+  cancelAnimationFrame: function (timerID: number) {
     _freeCallback(timerID);
   },
 
@@ -346,7 +350,7 @@ const JSTimers = {
    * This is called from the native side. We are passed an array of timerIDs,
    * and
    */
-  callTimers: function(timersToCall: Array<number>) {
+  callTimers: function (timersToCall: Array<number>) {
     invariant(
       timersToCall.length !== 0,
       'Cannot call `callTimers` with an empty list of IDs.',
@@ -378,7 +382,7 @@ const JSTimers = {
     }
   },
 
-  callIdleCallbacks: function(frameTime: number) {
+  callIdleCallbacks: function (frameTime: number) {
     if (
       FRAME_DURATION - (global.performance.now() - frameTime) <
       IDLE_CALLBACK_FRAME_DEADLINE

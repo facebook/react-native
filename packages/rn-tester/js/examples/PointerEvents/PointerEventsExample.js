@@ -272,7 +272,7 @@ const infoToExample = info => {
   return {
     title: info.title,
     description: info.description,
-    render: function() {
+    render: function () {
       return <ExampleBox key={info.title} Component={info.Component} />;
     },
   };

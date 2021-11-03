@@ -14,7 +14,7 @@ const {NativeModules} = require('react-native');
 const {Assert} = NativeModules;
 
 const Asserts = {
-  assertEquals: function(expected, actual, msg) {
+  assertEquals: function (expected, actual, msg) {
     if (expected !== actual) {
       Assert.fail(
         msg ||
@@ -30,7 +30,7 @@ const Asserts = {
       Assert.success();
     }
   },
-  assertTrue: function(expr, msg) {
+  assertTrue: function (expr, msg) {
     Asserts.assertEquals(true, expr, msg);
   },
 };

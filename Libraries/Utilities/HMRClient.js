@@ -308,8 +308,8 @@ function dismissRedbox() {
   ) {
     NativeRedBox.dismiss();
   } else {
-    const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
-      .default;
+    const NativeExceptionsManager =
+      require('../Core/NativeExceptionsManager').default;
     NativeExceptionsManager &&
       NativeExceptionsManager.dismissRedbox &&
       NativeExceptionsManager.dismissRedbox();

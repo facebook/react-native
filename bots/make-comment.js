@@ -56,12 +56,8 @@ async function updateComment(octokit, issueParams, body, replacePattern) {
  * @param {string} replacePattern Pattern for finding the comment to update
  */
 async function createOrUpdateComment(body, replacePattern) {
-  const {
-    GITHUB_TOKEN,
-    GITHUB_OWNER,
-    GITHUB_REPO,
-    GITHUB_PR_NUMBER,
-  } = process.env;
+  const {GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_PR_NUMBER} =
+    process.env;
   if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO || !GITHUB_PR_NUMBER) {
     if (!GITHUB_TOKEN) {
       console.error(

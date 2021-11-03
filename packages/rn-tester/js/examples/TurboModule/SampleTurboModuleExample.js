@@ -28,7 +28,7 @@ type State = {|
       value: mixed,
       ...
     },
-    ...,
+    ...
   },
 |};
 

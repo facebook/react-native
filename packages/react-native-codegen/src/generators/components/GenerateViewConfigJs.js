@@ -432,9 +432,7 @@ module.exports = {
 
       const replacedTemplate = FileTemplate({
         componentConfig: moduleResults,
-        imports: Array.from(imports)
-          .sort()
-          .join('\n'),
+        imports: Array.from(imports).sort().join('\n'),
       });
 
       return new Map([[fileName, replacedTemplate]]);

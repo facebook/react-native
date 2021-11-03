@@ -38,7 +38,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
       y: string,
       ...
     },
-    ...,
+    ...
   };
 
   constructor(

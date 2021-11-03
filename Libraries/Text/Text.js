@@ -71,7 +71,8 @@ const Text: React.AbstractComponent<
               setHighlighted(false);
               onPressOut?.(event);
             },
-            onResponderTerminationRequest_DEPRECATED: onResponderTerminationRequest,
+            onResponderTerminationRequest_DEPRECATED:
+              onResponderTerminationRequest,
             onStartShouldSetResponder_DEPRECATED: onStartShouldSetResponder,
           }
         : null,

@@ -12,8 +12,8 @@
 'use strict';
 
 const React = require('react');
-const LogBoxInspectorSourceMapStatus = require('../LogBoxInspectorSourceMapStatus')
-  .default;
+const LogBoxInspectorSourceMapStatus =
+  require('../LogBoxInspectorSourceMapStatus').default;
 const render = require('../../../../jest/renderer');
 
 describe('LogBoxInspectorSourceMapStatus', () => {

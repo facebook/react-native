@@ -162,9 +162,10 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     return {Left: 'left', Right: 'right'};
   }
 
-  _nativeRef = React.createRef<
-    React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
-  >();
+  _nativeRef =
+    React.createRef<
+      React.ElementRef<typeof AndroidDrawerLayoutNativeComponent>,
+    >();
 
   state: State = {statusBarBackgroundColor: null};
 

@@ -88,7 +88,7 @@ const mockCompositeAnimation = (
   }),
 });
 
-const spring = function(
+const spring = function (
   value: AnimatedValue | AnimatedValueXY,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
@@ -102,7 +102,7 @@ const spring = function(
   };
 };
 
-const timing = function(
+const timing = function (
   value: AnimatedValue | AnimatedValueXY,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
@@ -116,32 +116,32 @@ const timing = function(
   };
 };
 
-const decay = function(
+const decay = function (
   value: AnimatedValue | AnimatedValueXY,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
   return emptyAnimation;
 };
 
-const sequence = function(
+const sequence = function (
   animations: Array<CompositeAnimation>,
 ): CompositeAnimation {
   return mockCompositeAnimation(animations);
 };
 
 type ParallelConfig = {stopTogether?: boolean, ...};
-const parallel = function(
+const parallel = function (
   animations: Array<CompositeAnimation>,
   config?: ?ParallelConfig,
 ): CompositeAnimation {
   return mockCompositeAnimation(animations);
 };
 
-const delay = function(time: number): CompositeAnimation {
+const delay = function (time: number): CompositeAnimation {
   return emptyAnimation;
 };
 
-const stagger = function(
+const stagger = function (
   time: number,
   animations: Array<CompositeAnimation>,
 ): CompositeAnimation {
@@ -154,7 +154,7 @@ type LoopAnimationConfig = {
   ...
 };
 
-const loop = function(
+const loop = function (
   animation: CompositeAnimation,
   {iterations = -1}: LoopAnimationConfig = {},
 ): CompositeAnimation {

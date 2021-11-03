@@ -121,7 +121,7 @@ exports.description = 'Adds pull-to-refresh support to a scrollview.';
 exports.examples = [
   {
     title: 'Simple refresh',
-    render: function(): React.Element<typeof RefreshControlExample> {
+    render: function (): React.Element<typeof RefreshControlExample> {
       return <RefreshControlExample />;
     },
   },
