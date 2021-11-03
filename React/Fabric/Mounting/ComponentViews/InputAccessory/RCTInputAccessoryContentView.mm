@@ -24,21 +24,12 @@
     _heightConstraint = [_safeAreaContainer.heightAnchor constraintEqualToConstant:0];
     _heightConstraint.active = YES;
 
-    if (@available(iOS 11.0, *)) {
-      [NSLayoutConstraint activateConstraints:@[
-        [_safeAreaContainer.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
-        [_safeAreaContainer.topAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
-        [_safeAreaContainer.leadingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor],
-        [_safeAreaContainer.trailingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor]
-      ]];
-    } else {
-      [NSLayoutConstraint activateConstraints:@[
-        [_safeAreaContainer.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-        [_safeAreaContainer.topAnchor constraintEqualToAnchor:self.topAnchor],
-        [_safeAreaContainer.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-        [_safeAreaContainer.trailingAnchor constraintEqualToAnchor:self.trailingAnchor]
-      ]];
-    }
+    [NSLayoutConstraint activateConstraints:@[
+      [_safeAreaContainer.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
+      [_safeAreaContainer.topAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
+      [_safeAreaContainer.leadingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor],
+      [_safeAreaContainer.trailingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor]
+    ]];
   }
   return self;
 }

@@ -210,12 +210,9 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
       @"streetAddressLine2" : UITextContentTypeStreetAddressLine2,
       @"sublocality" : UITextContentTypeSublocality,
       @"telephoneNumber" : UITextContentTypeTelephoneNumber,
+      @"username" : UITextContentTypeUsername,
+      @"password" : UITextContentTypePassword,
     } mutableCopy];
-
-    if (@available(iOS 11.0, *)) {
-      [mutableContentTypeMap
-          addEntriesFromDictionary:@{@"username" : UITextContentTypeUsername, @"password" : UITextContentTypePassword}];
-    }
 
     if (@available(iOS 12.0, *)) {
       [mutableContentTypeMap addEntriesFromDictionary:@{
