@@ -103,32 +103,44 @@ function getReactDiffProcessValue(typeAnnotation) {
 }
 
 const ComponentTemplate = ({
-  componentNameWithCompatSupport,
-  deprecationCheck,
-}: {
-  componentNameWithCompatSupport: string,
-  deprecationCheck: string,
-}) =>
-  `
-let nativeComponentName = '${componentNameWithCompatSupport}';
-${deprecationCheck}
-export default NativeComponentRegistry.get(nativeComponentName, () => VIEW_CONFIG);
-`.trim();
-
-const DeprecatedComponentTemplate = ({
   componentName,
-  componentNameDeprecated,
+  paperComponentName,
+  paperComponentNameDeprecated,
 }: {
   componentName: string,
-  componentNameDeprecated: string,
+  paperComponentName: ?string,
+  paperComponentNameDeprecated: ?string,
+}) => {
+  const nativeComponentName = paperComponentName ?? componentName;
+
+  return `
+let nativeComponentName = '${nativeComponentName}';
+${
+  paperComponentNameDeprecated != null
+    ? DeprecatedComponentNameCheckTemplate({
+        componentName,
+        paperComponentNameDeprecated,
+      })
+    : ''
+}
+export default NativeComponentRegistry.get(nativeComponentName, () => VIEW_CONFIG);
+`.trim();
+};
+
+const DeprecatedComponentNameCheckTemplate = ({
+  componentName,
+  paperComponentNameDeprecated,
+}: {
+  componentName: string,
+  paperComponentNameDeprecated: string,
 }) =>
   `
 if (UIManager.getViewManagerConfig('${componentName}')) {
   nativeComponentName = '${componentName}';
-} else if (UIManager.getViewManagerConfig('${componentNameDeprecated}')) {
-  nativeComponentName = '${componentNameDeprecated}';
+} else if (UIManager.getViewManagerConfig('${paperComponentNameDeprecated}')) {
+  nativeComponentName = '${paperComponentNameDeprecated}';
 } else {
-  throw new Error('Failed to find native component for either "${componentName}" or "${componentNameDeprecated}"');
+  throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}"');
 }
 `.trim();
 
@@ -365,28 +377,21 @@ module.exports = {
             .map((componentName: string) => {
               const component = components[componentName];
 
-              const paperComponentName = component.paperComponentName
-                ? component.paperComponentName
-                : componentName;
-
               if (component.paperComponentNameDeprecated) {
                 imports.add(UIMANAGER_IMPORT);
               }
 
-              const deprecatedCheckBlock = component.paperComponentNameDeprecated
-                ? DeprecatedComponentTemplate({
-                    componentName,
-                    componentNameDeprecated:
-                      component.paperComponentNameDeprecated || '',
-                  })
-                : '';
-
               const replacedTemplate = ComponentTemplate({
-                componentNameWithCompatSupport: paperComponentName,
-                deprecationCheck: deprecatedCheckBlock,
+                componentName,
+                paperComponentName: component.paperComponentName,
+                paperComponentNameDeprecated:
+                  component.paperComponentNameDeprecated,
               });
 
               const replacedSourceRoot = j.withParser('flow')(replacedTemplate);
+
+              const paperComponentName =
+                component.paperComponentName ?? componentName;
 
               replacedSourceRoot
                 .find(j.Identifier, {
