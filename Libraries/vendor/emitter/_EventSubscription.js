@@ -18,7 +18,8 @@ import type EventSubscriptionVendor from './_EventSubscriptionVendor';
  * remove its own subscription.
  */
 class _EventSubscription<EventDefinitions: {...}, K: $Keys<EventDefinitions>>
-  implements EventSubscription {
+  implements EventSubscription
+{
   eventType: K;
   key: number;
   subscriber: EventSubscriptionVendor<EventDefinitions>;
