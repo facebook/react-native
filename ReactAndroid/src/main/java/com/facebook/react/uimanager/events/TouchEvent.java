@@ -182,21 +182,17 @@ public class TouchEvent extends Event<TouchEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    if (!hasMotionEvent()) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new IllegalStateException(
-              "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
-      return;
+    if (verifyMotionEvent()) {
+      TouchesHelper.sendTouchEvent(rctEventEmitter, this);
     }
-
-    TouchesHelper.sendTouchEvent(rctEventEmitter, this);
   }
 
   @Override
   public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
     if (ReactFeatureFlags.useUpdatedTouchPreprocessing) {
-      TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ false);
+      if (verifyMotionEvent()) {
+        TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ false);
+      }
     } else {
       dispatch(rctEventEmitter);
     }
@@ -205,7 +201,9 @@ public class TouchEvent extends Event<TouchEvent> {
   @Override
   public void dispatchModernV2(RCTModernEventEmitter rctEventEmitter) {
     if (ReactFeatureFlags.useUpdatedTouchPreprocessing) {
-      TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ true);
+      if (verifyMotionEvent()) {
+        TouchesHelper.sendTouchEventModern(rctEventEmitter, this, /* useDispatchV2 */ true);
+      }
     } else {
       dispatch(rctEventEmitter);
     }
@@ -237,8 +235,15 @@ public class TouchEvent extends Event<TouchEvent> {
     return mMotionEvent;
   }
 
-  private boolean hasMotionEvent() {
-    return mMotionEvent != null;
+  private boolean verifyMotionEvent() {
+    if (mMotionEvent == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
+      return false;
+    }
+    return true;
   }
 
   public TouchEventType getTouchEventType() {
