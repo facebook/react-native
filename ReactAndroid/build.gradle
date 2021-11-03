@@ -224,11 +224,8 @@ def reactNativeInspectorProxyPort() {
 }
 
 def reactNativeArchitectures() {
-    def isDebug = gradle.startParameter.taskRequests.any {
-        it.args.any { it.endsWith("Debug") }
-    }
-    def value = project.getProperties().get("reactNativeDebugArchitectures")
-    return value != null && isDebug ? value : "all"
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
 def ndkBuildJobs() {
@@ -290,8 +287,7 @@ android {
 
         externalNativeBuild {
             ndkBuild {
-                arguments "APP_ABI=${reactNativeArchitectures()}",
-                        "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
+                arguments "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
                         "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
                         "REACT_COMMON_DIR=$projectDir/../ReactCommon",
                         "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
@@ -303,6 +299,9 @@ android {
                     arguments "--output-sync=none"
                 }
             }
+        }
+        ndk {
+            abiFilters (*reactNativeArchitectures())
         }
     }
 
