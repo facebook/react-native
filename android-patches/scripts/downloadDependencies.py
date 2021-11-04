@@ -523,7 +523,7 @@ def main():
     shutil.copy(os.path.join(hermes_engine_node_modules_path, "package.json"), dependency_dir_hermes)
 
     dependency_dir_hermes_android_native_debug = os.path.join(dependency_dir_hermes_android_aar_path, "debug")
-    dependency_dir_hermes_android_native_release = os.path.join(dependency_dir_hermes_android_aar_path, "release")
+    dependency_dir_hermes_android_native_release = os.path.join(dependency_dir_hermes_android_aar_path, "ship")
     extract_so(dependency_dir_hermes_android_aar_path, dependency_dir_hermes_android_native_debug, "hermes-debug.aar")
     extract_so(dependency_dir_hermes_android_aar_path, dependency_dir_hermes_android_native_debug, "hermes-cppruntime-debug.aar")
 
