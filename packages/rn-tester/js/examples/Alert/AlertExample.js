@@ -190,6 +190,39 @@ const AlertWithStyles = () => {
   );
 };
 
+const AlertWithStylesPreferred = () => {
+  const [message, setMessage] = useState('');
+
+  const alertMessage =
+    "The OK button is styled with 'preferred', so it is emphasized over the cancel button.";
+
+  return (
+    <View>
+      <TouchableHighlight
+        style={styles.wrapper}
+        onPress={() =>
+          Alert.alert('Foo Title', alertMessage, [
+            {
+              text: 'OK',
+              style: 'preferred',
+              onPress: () => setMessage('OK Pressed!'),
+            },
+            {
+              text: 'Cancel',
+              style: 'cancel',
+              onPress: () => setMessage('Cancel Pressed!'),
+            },
+          ])
+        }>
+        <View style={styles.button}>
+          <Text>Tap to view alert</Text>
+        </View>
+      </TouchableHighlight>
+      <Log message={message} />
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
@@ -257,9 +290,18 @@ exports.examples = [
     title: 'Alert with styles',
     platform: 'ios',
     description:
-      "Alert buttons can be styled. There are three button styles - 'default' | 'cancel' | 'destructive'.",
+      "Alert buttons can be styled. Three button button styles are shown here - 'default' | 'cancel' | 'destructive'.",
     render(): React.Node {
       return <AlertWithStyles />;
+    },
+  },
+  {
+    title: 'Alert with styles + preferred',
+    platform: 'ios',
+    description:
+      "Alert buttons can be styled. Setting the style of a button as 'preferred' will give it emphasis over cancel buttons",
+    render(): React.Node {
+      return <AlertWithStylesPreferred />;
     },
   },
 ];

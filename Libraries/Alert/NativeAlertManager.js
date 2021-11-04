@@ -19,6 +19,7 @@ export type Args = {|
   defaultValue?: string,
   cancelButtonKey?: string,
   destructiveButtonKey?: string,
+  preferredButtonKey?: string,
   keyboardType?: string,
 |};
 

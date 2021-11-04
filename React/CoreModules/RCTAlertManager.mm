@@ -80,6 +80,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   NSString *defaultValue = [RCTConvert NSString:args.defaultValue()];
   NSString *cancelButtonKey = [RCTConvert NSString:args.cancelButtonKey()];
   NSString *destructiveButtonKey = [RCTConvert NSString:args.destructiveButtonKey()];
+  NSString *preferredButtonKey = [RCTConvert NSString:args.preferredButtonKey()];
   UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args.keyboardType()];
 
   if (!title && !message) {
@@ -152,32 +153,37 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
       buttonStyle = UIAlertActionStyleDestructive;
     }
     __weak RCTAlertController *weakAlertController = alertController;
+
+    UIAlertAction *action = [UIAlertAction actionWithTitle:buttonTitle
+                                                     style:buttonStyle
+                                                   handler:^(__unused UIAlertAction *action) {
+      switch (type) {
+        case RCTAlertViewStylePlainTextInput:
+        case RCTAlertViewStyleSecureTextInput:
+          callback(@[ buttonKey, [weakAlertController.textFields.firstObject text] ]);
+          [weakAlertController hide];
+          break;
+        case RCTAlertViewStyleLoginAndPasswordInput: {
+          NSDictionary<NSString *, NSString *> *loginCredentials = @{
+            @"login" : [weakAlertController.textFields.firstObject text],
+            @"password" : [weakAlertController.textFields.lastObject text]
+          };
+          callback(@[ buttonKey, loginCredentials ]);
+          [weakAlertController hide];
+          break;
+        }
+        case RCTAlertViewStyleDefault:
+          callback(@[ buttonKey ]);
+          [weakAlertController hide];
+          break;
+      }
+    }];
     [alertController
-        addAction:[UIAlertAction
-                      actionWithTitle:buttonTitle
-                                style:buttonStyle
-                              handler:^(__unused UIAlertAction *action) {
-                                switch (type) {
-                                  case RCTAlertViewStylePlainTextInput:
-                                  case RCTAlertViewStyleSecureTextInput:
-                                    callback(@[ buttonKey, [weakAlertController.textFields.firstObject text] ]);
-                                    [weakAlertController hide];
-                                    break;
-                                  case RCTAlertViewStyleLoginAndPasswordInput: {
-                                    NSDictionary<NSString *, NSString *> *loginCredentials = @{
-                                      @"login" : [weakAlertController.textFields.firstObject text],
-                                      @"password" : [weakAlertController.textFields.lastObject text]
-                                    };
-                                    callback(@[ buttonKey, loginCredentials ]);
-                                    [weakAlertController hide];
-                                    break;
-                                  }
-                                  case RCTAlertViewStyleDefault:
-                                    callback(@[ buttonKey ]);
-                                    [weakAlertController hide];
-                                    break;
-                                }
-                              }]];
+        addAction:action];
+
+    if ([buttonKey isEqualToString:preferredButtonKey]) {
+          [alertController setPreferredAction:action];
+    }
   }
 
   if (!_alertControllers) {

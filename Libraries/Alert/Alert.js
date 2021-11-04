@@ -17,7 +17,11 @@ export type AlertType =
   | 'plain-text'
   | 'secure-text'
   | 'login-password';
-export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
+export type AlertButtonStyle =
+  | 'default'
+  | 'cancel'
+  | 'destructive'
+  | 'preferred';
 export type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
@@ -113,6 +117,7 @@ class Alert {
       const buttons = [];
       let cancelButtonKey;
       let destructiveButtonKey;
+      let preferredButtonKey;
       if (typeof callbackOrButtons === 'function') {
         callbacks = [callbackOrButtons];
       } else if (Array.isArray(callbackOrButtons)) {
@@ -122,6 +127,8 @@ class Alert {
             cancelButtonKey = String(index);
           } else if (btn.style === 'destructive') {
             destructiveButtonKey = String(index);
+          } else if (btn.style === 'preferred') {
+            preferredButtonKey = String(index);
           }
           if (btn.text || index < (callbackOrButtons || []).length - 1) {
             const btnDef = {};
@@ -140,6 +147,7 @@ class Alert {
           defaultValue,
           cancelButtonKey,
           destructiveButtonKey,
+          preferredButtonKey,
           keyboardType,
         },
         (id, value) => {
