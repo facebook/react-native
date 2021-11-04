@@ -35,6 +35,7 @@
         android:name=".RNTesterActivity"
         android:label="@string/app_name"
         android:screenOrientation="fullSensor"
+        android:exported="true"
         android:launchMode="singleTask"
         android:configChanges="orientation|screenSize|uiMode" >
       <intent-filter>
@@ -51,7 +52,10 @@
         <data android:scheme="rntester" android:host="example" />
       </intent-filter>
     </activity>
-    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+    <activity
+        android:name="com.facebook.react.devsupport.DevSettingsActivity"
+        android:exported="true"
+    />
     <provider
       android:name="com.facebook.react.modules.blob.BlobProvider"
       android:authorities="@string/blob_provider_authority"

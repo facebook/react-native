@@ -140,7 +140,7 @@ def nativeArchitectures = project.getProperties().get("reactNativeArchitectures"
                           : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
     if (project.hasProperty("ANDROID_NDK_VERSION")) {
         ndkVersion project.property("ANDROID_NDK_VERSION")
     }
@@ -164,7 +164,7 @@ android {
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
