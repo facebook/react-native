@@ -409,6 +409,7 @@ rn_xplat_cxx_library2(
         "//xplat/js/react-native-github/ReactCommon/react/nativemodule/core:",
         "//xplat/js/react-native-github/ReactCommon/react/nativemodule/samples:",
         "//xplat/js/react-native-github/packages/rn-tester:",
+        "//xplat/rtc/manul/...",
     ],
     deps = [
         YOGA_CXX_TARGET,
