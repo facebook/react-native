@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const semver = require('semver');
+const {execSync} = require('child_process');
 
 const pkgJsonPath = path.resolve(__dirname, "../package.json");
 let publishBranchName = '';
@@ -41,9 +42,9 @@ function updateVersionsInFiles(patchVersionPrefix) {
     }
  
     pkgJson.version = releaseVersion;
-    fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
-    console.log(`Updating package.json to version ${releaseVersion}`);
-  
+    console.log(`Bumping files to version ${releaseVersion}`);
+    execSync(`node ./scripts/bump-oss-version.js --rnmpublish ${releaseVersion}`, {stdio: 'inherit', env: process.env});
+
     return {releaseVersion, branchVersionSuffix};
 }
 
