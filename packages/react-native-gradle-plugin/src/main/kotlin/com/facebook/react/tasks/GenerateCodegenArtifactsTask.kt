@@ -68,10 +68,15 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
         windowsAwareYarn(
             *nodeExecutableAndArgs.get().toTypedArray(),
             reactRoot.file("scripts/generate-specs-cli.js").get().asFile.absolutePath,
+            "--platform",
             "android",
+            "--schemaPath",
             generatedSchemaFile.get().asFile.absolutePath,
+            "--outputDir",
             generatedSrcDir.get().asFile.absolutePath,
+            "--libraryName",
             libraryName.get(),
+            "--javaPackageName",
             codegenJavaPackageName.get()))
   }
 }

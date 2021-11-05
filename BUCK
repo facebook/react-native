@@ -409,6 +409,7 @@ rn_xplat_cxx_library2(
         "//xplat/js/react-native-github/ReactCommon/react/nativemodule/core:",
         "//xplat/js/react-native-github/ReactCommon/react/nativemodule/samples:",
         "//xplat/js/react-native-github/packages/rn-tester:",
+        "//xplat/rtc/manul/...",
     ],
     deps = [
         YOGA_CXX_TARGET,
@@ -549,6 +550,7 @@ rn_apple_library(
         ],
     ),
     autoglob = False,
+    complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
     extension_api_only = True,
     frameworks = [
@@ -690,6 +692,7 @@ rn_library(
         "//xplat/js:node_modules__abort_19controller",
         "//xplat/js:node_modules__anser",
         "//xplat/js:node_modules__base64_19js",
+        "//xplat/js:node_modules__deprecated_19react_19native_19prop_19types",
         "//xplat/js:node_modules__event_19target_19shim",
         "//xplat/js:node_modules__invariant",
         "//xplat/js:node_modules__nullthrows",

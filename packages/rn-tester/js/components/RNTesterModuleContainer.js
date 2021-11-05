@@ -124,7 +124,12 @@ function Header(props: {
       style={[
         styles.headerContainer,
         props.noBottomPadding === true ? styles.headerNoBottomPadding : null,
-        {backgroundColor: props.theme.BackgroundColor},
+        {
+          backgroundColor:
+            Platform.OS === 'ios'
+              ? props.theme.SystemBackgroundColor
+              : props.theme.BackgroundColor,
+        },
       ]}>
       <Text style={styles.headerDescription}>{props.description}</Text>
     </View>

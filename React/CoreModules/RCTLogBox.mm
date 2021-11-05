@@ -72,6 +72,7 @@ RCT_EXPORT_METHOD(hide)
       if (!strongSelf) {
         return;
       }
+      [strongSelf->_view setHidden:YES];
       strongSelf->_view = nil;
     });
   }

@@ -327,9 +327,7 @@ class TokenizedTextExample extends React.Component<
         index = 1;
       }
       parts.push(_text.substr(0, index));
-      // $FlowFixMe[incompatible-use]
       parts.push(token[0]);
-      // $FlowFixMe[incompatible-use]
       index = index + token[0].length;
       _text = _text.slice(index);
     }
@@ -473,7 +471,7 @@ class SelectionExample extends React.Component<
 module.exports = ([
   {
     title: 'Auto-focus',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <TextInput
           autoFocus={true}
@@ -486,27 +484,27 @@ module.exports = ([
   {
     name: 'maxLength',
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteExample />;
     },
   },
   {
     title: 'Live Re-Write (no spaces allowed)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteExampleInvalidCharacters />;
     },
   },
   {
     name: 'clearButton',
     title: 'Live Re-Write (no spaces allowed) and clear',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <RewriteInvalidCharactersAndClearExample />;
     },
   },
   {
     title: 'Auto-capitalize',
     name: 'autoCapitalize',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="none">
@@ -543,7 +541,7 @@ module.exports = ([
   },
   {
     title: 'Auto-correct',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <WithLabel label="true">
@@ -559,7 +557,7 @@ module.exports = ([
   {
     title: 'Keyboard types',
     name: 'keyboardTypes',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const keyboardTypes = [
         'default',
         'ascii-capable',
@@ -587,19 +585,19 @@ module.exports = ([
   },
   {
     title: 'Blur on submit',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <BlurOnSubmitExample />;
     },
   },
   {
     title: 'Event handling',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TextEventsExample />;
     },
   },
   {
     title: 'fontFamily, fontWeight and fontStyle',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const fontFamilyA = Platform.OS === 'ios' ? 'Cochin' : 'sans-serif';
       const fontFamilyB = Platform.OS === 'ios' ? 'Courier' : 'serif';
 
@@ -641,14 +639,14 @@ module.exports = ([
   {
     title: 'Attributed text',
     name: 'attributedText',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TokenizedTextExample />;
     },
   },
   {
     title: 'Text selection & cursor placement',
     name: 'cursorPlacement',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <View>
           <SelectionExample

@@ -184,10 +184,8 @@ function translateParamTypeToJniType(
   resolveAlias: AliasResolver,
 ): string {
   const {optional, typeAnnotation: nullableTypeAnnotation} = param;
-  const [
-    typeAnnotation,
-    nullable,
-  ] = unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
+  const [typeAnnotation, nullable] =
+    unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
   const isRequired = !optional && !nullable;
 
   let realTypeAnnotation = typeAnnotation;
@@ -291,9 +289,8 @@ function translateMethodTypeToJniSignature(
   resolveAlias: AliasResolver,
 ): string {
   const {name, typeAnnotation} = property;
-  let [
-    {returnTypeAnnotation, params},
-  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(typeAnnotation);
+  let [{returnTypeAnnotation, params}] =
+    unwrapNullable<NativeModuleFunctionTypeAnnotation>(typeAnnotation);
 
   params = [...params];
   let processedReturnTypeAnnotation = returnTypeAnnotation;
@@ -330,11 +327,8 @@ function translateMethodForImplementation(
   property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
-  const [
-    propertyTypeAnnotation,
-  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
-    property.typeAnnotation,
-  );
+  const [propertyTypeAnnotation] =
+    unwrapNullable<NativeModuleFunctionTypeAnnotation>(property.typeAnnotation);
   const {returnTypeAnnotation} = propertyTypeAnnotation;
 
   if (
@@ -395,11 +389,10 @@ module.exports = {
             hasteModuleName,
             methods: properties
               .map(({name: propertyName, typeAnnotation}) => {
-                const [
-                  {returnTypeAnnotation, params},
-                ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
-                  typeAnnotation,
-                );
+                const [{returnTypeAnnotation, params}] =
+                  unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+                    typeAnnotation,
+                  );
 
                 if (
                   propertyName === 'getConstants' &&

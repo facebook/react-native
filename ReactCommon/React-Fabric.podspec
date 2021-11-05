@@ -147,15 +147,6 @@ Pod::Spec.new do |s|
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
     end
 
-    ss.subspec "rncore" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/rncore/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/rncore/tests"
-      sss.header_dir           = "react/renderer/components/rncore"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
-    end
-
     ss.subspec "root" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
@@ -342,11 +333,4 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
   end
 
-  use_react_native_codegen!(s, {
-    :react_native_path => react_native_path,
-    :js_srcs_dir => "#{react_native_path}/Libraries",
-    :library_name => "rncore",
-    :library_type => "components",
-    :output_dir => "#{react_native_path}/ReactCommon",
-  })
 end

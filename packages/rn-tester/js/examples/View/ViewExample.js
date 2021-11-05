@@ -519,7 +519,7 @@ exports.examples = [
   },
   {
     title: 'BackfaceVisibility',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <>
           <Text style={{paddingBottom: 10}}>

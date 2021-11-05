@@ -1,5 +1,5 @@
 name: Upgrade Regression
-description: If you are upgrading/upgraded to a [stable release](https://github.com/facebook/react-native/releases/latest) and encounter a regression.
+description: If you are upgrading to a stable release and encounter a regression.
 labels: ["Needs: Triage :mag:", "Type: Upgrade Issue"]
 body:
   - type: markdown
@@ -31,10 +31,10 @@ body:
     validations:
       required: true
   - type: textarea
-    id: environment
+    id: react-native-info
     attributes:
-      label: Developer Environment
-      description: Please list relevant versions of system, tooling. Ex. OS, processor, Xcode, etc.
+      label: Output of `react-native info`
+      description: Run `react-native info` in your terminal, copy and paste the results here.
     validations:
       required: true
   - type: textarea

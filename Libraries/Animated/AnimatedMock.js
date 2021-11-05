@@ -27,8 +27,38 @@ import type {SpringAnimationConfig} from './animations/SpringAnimation';
 /**
  * Animations are a source of flakiness in snapshot testing. This mock replaces
  * animation functions from AnimatedImplementation with empty animations for
- * predictability in tests.
+ * predictability in tests. When possible the animation will run immediately
+ * to the final state.
  */
+
+// Prevent any callback invocation from recursively triggering another
+// callback, which may trigger another animation
+let inAnimationCallback = false;
+function mockAnimationStart(
+  start: (callback?: ?EndCallback) => void,
+): (callback?: ?EndCallback) => void {
+  return callback => {
+    const guardedCallback =
+      callback == null
+        ? callback
+        : (...args) => {
+            if (inAnimationCallback) {
+              console.warn(
+                'Ignoring recursive animation callback when running mock animations',
+              );
+              return;
+            }
+            inAnimationCallback = true;
+            try {
+              callback(...args);
+            } finally {
+              inAnimationCallback = false;
+            }
+          };
+    start(guardedCallback);
+  };
+}
+
 export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
@@ -48,64 +78,74 @@ const emptyAnimation = {
   },
 };
 
-const spring = function(
+const mockCompositeAnimation = (
+  animations: Array<CompositeAnimation>,
+): CompositeAnimation => ({
+  ...emptyAnimation,
+  start: mockAnimationStart((callback?: ?EndCallback): void => {
+    animations.forEach(animation => animation.start());
+    callback?.({finished: true});
+  }),
+});
+
+const spring = function (
   value: AnimatedValue | AnimatedValueXY,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
   const anyValue: any = value;
   return {
     ...emptyAnimation,
-    start: (callback?: ?EndCallback): void => {
+    start: mockAnimationStart((callback?: ?EndCallback): void => {
       anyValue.setValue(config.toValue);
-      callback && callback({finished: true});
-    },
+      callback?.({finished: true});
+    }),
   };
 };
 
-const timing = function(
+const timing = function (
   value: AnimatedValue | AnimatedValueXY,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
   const anyValue: any = value;
   return {
     ...emptyAnimation,
-    start: (callback?: ?EndCallback): void => {
+    start: mockAnimationStart((callback?: ?EndCallback): void => {
       anyValue.setValue(config.toValue);
-      callback && callback({finished: true});
-    },
+      callback?.({finished: true});
+    }),
   };
 };
 
-const decay = function(
+const decay = function (
   value: AnimatedValue | AnimatedValueXY,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
   return emptyAnimation;
 };
 
-const sequence = function(
+const sequence = function (
   animations: Array<CompositeAnimation>,
 ): CompositeAnimation {
-  return emptyAnimation;
+  return mockCompositeAnimation(animations);
 };
 
 type ParallelConfig = {stopTogether?: boolean, ...};
-const parallel = function(
+const parallel = function (
   animations: Array<CompositeAnimation>,
   config?: ?ParallelConfig,
 ): CompositeAnimation {
+  return mockCompositeAnimation(animations);
+};
+
+const delay = function (time: number): CompositeAnimation {
   return emptyAnimation;
 };
 
-const delay = function(time: number): CompositeAnimation {
-  return emptyAnimation;
-};
-
-const stagger = function(
+const stagger = function (
   time: number,
   animations: Array<CompositeAnimation>,
 ): CompositeAnimation {
-  return emptyAnimation;
+  return mockCompositeAnimation(animations);
 };
 
 type LoopAnimationConfig = {
@@ -114,7 +154,7 @@ type LoopAnimationConfig = {
   ...
 };
 
-const loop = function(
+const loop = function (
   animation: CompositeAnimation,
   {iterations = -1}: LoopAnimationConfig = {},
 ): CompositeAnimation {

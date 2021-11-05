@@ -241,7 +241,7 @@ class AnExApp extends React.Component<any, any> {
       } else {
         let onLayout = null;
         if (!this.state.restLayouts[idx]) {
-          onLayout = function(index, e) {
+          onLayout = function (index, e) {
             const layout = e.nativeEvent.layout;
             this.setState(state => {
               state.restLayouts[index] = layout;

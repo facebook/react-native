@@ -110,7 +110,6 @@ class PanResponderExample extends React.Component<Props, State> {
             }}
             style={[
               styles.circle,
-              // $FlowFixMe[incompatible-type]
               {
                 transform: [
                   {translateX: this.state.left},
@@ -151,7 +150,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Basic gesture handling',
-    render: function(): React.Element<typeof PanResponderExample> {
+    render: function (): React.Element<typeof PanResponderExample> {
       return <PanResponderExample />;
     },
   },

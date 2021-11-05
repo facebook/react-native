@@ -466,7 +466,6 @@ module.exports = {
    *
    * [Styles](docs/style.html)
    */
-  // $FlowFixMe[incompatible-use]
   style: DeprecatedTextPropTypes.style,
   /**
    * The color of the `TextInput` underline.

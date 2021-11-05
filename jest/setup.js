@@ -25,10 +25,10 @@ global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 global.window = global;
 
-global.requestAnimationFrame = function(callback) {
+global.requestAnimationFrame = function (callback) {
   return setTimeout(callback, 0);
 };
-global.cancelAnimationFrame = function(id) {
+global.cancelAnimationFrame = function (id) {
   clearTimeout(id);
 };
 
@@ -123,6 +123,7 @@ jest
     default: {
       addEventListener: jest.fn(),
       announceForAccessibility: jest.fn(),
+      isAccessibilityServiceEnabled: jest.fn(),
       isBoldTextEnabled: jest.fn(),
       isGrayscaleEnabled: jest.fn(),
       isInvertColorsEnabled: jest.fn(),
@@ -352,7 +353,7 @@ jest
   })
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',
-    () => function() {},
+    () => function () {},
   )
   .mock('../Libraries/Components/View/ViewNativeComponent', () => {
     const React = require('react');

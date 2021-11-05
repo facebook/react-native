@@ -71,7 +71,7 @@ let updateTimeout = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
-let warningFilter: WarningFilter = function(format) {
+let warningFilter: WarningFilter = function (format) {
   return {
     finalFormat: format,
     forceDialogImmediately: false,

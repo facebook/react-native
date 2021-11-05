@@ -39,12 +39,10 @@ function ModalPresentation() {
   const [visible, setVisible] = React.useState(false);
   const [hardwareAccelerated, setHardwareAccelerated] = React.useState(false);
   const [statusBarTranslucent, setStatusBarTranslucent] = React.useState(false);
-  const [presentationStyle, setPresentationStyle] = React.useState(
-    'fullScreen',
-  );
-  const [supportedOrientationKey, setSupportedOrientationKey] = React.useState(
-    'Portrait',
-  );
+  const [presentationStyle, setPresentationStyle] =
+    React.useState('fullScreen');
+  const [supportedOrientationKey, setSupportedOrientationKey] =
+    React.useState('Portrait');
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;

@@ -10,10 +10,6 @@
   comment: >
     Please report documentation issues in the [`react-native-website`](https://github.com/facebook/react-native-website/issues) repository.
   close: true
-"Type: Upgrade Issue":
-  comment: >
-    Do you need help upgrading to a newer React Native version? Visit the [Upgrade Support repository](https://github.com/react-native-community/upgrade-support) or use the [upgrade helper](https://react-native-community.github.io/upgrade-helper/) to see the changes that need to be made to upgrade your app.
-  close: true
 "Resolution: For Stack Overflow":
   comment: >
     We are using GitHub issues exclusively to track bugs in the core React Native library. Please try asking over on [Stack Overflow](http://stackoverflow.com/questions/tagged/react-native) as it is better suited for this type of question.

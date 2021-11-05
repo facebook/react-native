@@ -63,6 +63,11 @@ const PERMISSIONS = Object.freeze({
   BLUETOOTH_SCAN: 'android.permission.BLUETOOTH_SCAN',
   BLUETOOTH_ADVERTISE: 'android.permission.BLUETOOTH_ADVERTISE',
   ACCESS_MEDIA_LOCATION: 'android.permission.ACCESS_MEDIA_LOCATION',
+  ACCEPT_HANDOVER: 'android.permission.ACCEPT_HANDOVER',
+  ACTIVITY_RECOGNITION: 'android.permission.ACTIVITY_RECOGNITION',
+  ANSWER_PHONE_CALLS: 'android.permission.ANSWER_PHONE_CALLS',
+  READ_PHONE_NUMBERS: 'android.permission.READ_PHONE_NUMBERS',
+  UWB_RANGING: 'android.permission.UWB_RANGING',
 });
 
 /**
@@ -73,11 +78,14 @@ const PERMISSIONS = Object.freeze({
 
 class PermissionsAndroid {
   PERMISSIONS: {|
+    ACCEPT_HANDOVER: string,
     ACCESS_BACKGROUND_LOCATION: string,
     ACCESS_COARSE_LOCATION: string,
     ACCESS_FINE_LOCATION: string,
     ACCESS_MEDIA_LOCATION: string,
+    ACTIVITY_RECOGNITION: string,
     ADD_VOICEMAIL: string,
+    ANSWER_PHONE_CALLS: string,
     BLUETOOTH_ADVERTISE: string,
     BLUETOOTH_CONNECT: string,
     BLUETOOTH_SCAN: string,
@@ -90,6 +98,7 @@ class PermissionsAndroid {
     READ_CALL_LOG: string,
     READ_CONTACTS: string,
     READ_EXTERNAL_STORAGE: string,
+    READ_PHONE_NUMBERS: string,
     READ_PHONE_STATE: string,
     READ_SMS: string,
     RECEIVE_MMS: string,
@@ -98,6 +107,7 @@ class PermissionsAndroid {
     RECORD_AUDIO: string,
     SEND_SMS: string,
     USE_SIP: string,
+    UWB_RANGING: string,
     WRITE_CALENDAR: string,
     WRITE_CALL_LOG: string,
     WRITE_CONTACTS: string,
@@ -213,9 +223,10 @@ class PermissionsAndroid {
     );
 
     if (rationale) {
-      const shouldShowRationale = await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
-        permission,
-      );
+      const shouldShowRationale =
+        await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
+          permission,
+        );
 
       if (shouldShowRationale && !!NativeDialogManagerAndroid) {
         return new Promise((resolve, reject) => {

@@ -29,9 +29,10 @@ module.exports = {
   examples: [
     {
       title: 'SwipeableCardExample',
-      description: ('This example creates a swipeable card using PanResponder. ' +
-        'Under the hood, JSResponderHandler should prevent scroll when the card is being swiped.': string),
-      render: function(): React.Node {
+      description:
+        ('This example creates a swipeable card using PanResponder. ' +
+          'Under the hood, JSResponderHandler should prevent scroll when the card is being swiped.': string),
+      render: function (): React.Node {
         return <SwipeableCardExample />;
       },
     },

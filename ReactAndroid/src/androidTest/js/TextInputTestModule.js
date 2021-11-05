@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
 
 const TextInputTestModule = {
   TextInputTestApp,
-  setValueRef: function(ref, value) {
+  setValueRef: function (ref, value) {
     app.refs[ref].setNativeProps({
       text: value,
     });

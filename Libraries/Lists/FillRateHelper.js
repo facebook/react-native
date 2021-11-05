@@ -54,9 +54,10 @@ class FillRateHelper {
   _mostlyBlankStartTime = (null: ?number);
   _samplesStartTime = (null: ?number);
 
-  static addListener(
-    callback: FillRateInfo => void,
-  ): {remove: () => void, ...} {
+  static addListener(callback: FillRateInfo => void): {
+    remove: () => void,
+    ...
+  } {
     if (_sampleRate === null) {
       console.warn('Call `FillRateHelper.setSampleRate` before `addListener`.');
     }

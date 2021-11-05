@@ -42,8 +42,8 @@ if (Platform.OS === 'android') {
     },
   );
 } else {
-  const RCTSafeAreaViewNativeComponent = require('./RCTSafeAreaViewNativeComponent')
-    .default;
+  const RCTSafeAreaViewNativeComponent =
+    require('./RCTSafeAreaViewNativeComponent').default;
 
   exported = React.forwardRef<Props, React.ElementRef<HostComponent<mixed>>>(
     function SafeAreaView(props, forwardedRef) {

@@ -213,7 +213,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     ThemedReactContext reactContext =
         new ThemedReactContext(
             mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID(), rootTag);
-    mMountingManager.startSurface(rootTag, rootView, reactContext);
+    mMountingManager.startSurface(rootTag, reactContext, rootView);
     String moduleName = reactRootView.getJSModuleName();
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
@@ -271,7 +271,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
-    mMountingManager.startSurface(rootTag, rootView, reactContext);
+    mMountingManager.startSurface(rootTag, reactContext, rootView);
 
     // If startSurface is executed in the UIThread then, it uses the ViewportOffset from the View,
     // Otherwise Fabric relies on calling {@link Binding#setConstraints} method to update the
@@ -295,18 +295,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
-  public void startSurface(final SurfaceHandler surfaceHandler, final @Nullable View rootView) {
+  public void startSurface(
+      final SurfaceHandler surfaceHandler, final Context context, final @Nullable View rootView) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
 
-    if (rootView == null) {
-      mMountingManager.startSurface(rootTag);
-    } else {
-      Context context = rootView.getContext();
-      ThemedReactContext reactContext =
-          new ThemedReactContext(
-              mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
-      mMountingManager.startSurface(rootTag, rootView, reactContext);
-    }
+    ThemedReactContext reactContext =
+        new ThemedReactContext(
+            mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
+    mMountingManager.startSurface(rootTag, reactContext, rootView);
 
     surfaceHandler.setSurfaceId(rootTag);
     if (surfaceHandler instanceof SurfaceHandlerBinding) {

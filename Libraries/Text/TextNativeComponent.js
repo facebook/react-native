@@ -21,10 +21,8 @@ type NativeTextProps = $ReadOnly<{
   selectionColor?: ?ProcessedColorValue,
 }>;
 
-export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComponentClass(
-  'RCTText',
-  () => ({
-    // $FlowFixMe[incompatible-call]
+export const NativeText: HostComponent<NativeTextProps> =
+  (createReactNativeComponentClass('RCTText', () => ({
     validAttributes: {
       ...ReactNativeViewAttributes.UIView,
       isHighlighted: true,
@@ -52,14 +50,12 @@ export const NativeText: HostComponent<NativeTextProps> = (createReactNativeComp
       },
     },
     uiViewClassName: 'RCTText',
-  }),
-): any);
+  })): any);
 
 export const NativeVirtualText: HostComponent<NativeTextProps> =
   !global.RN$Bridgeless && !UIManager.hasViewManagerConfig('RCTVirtualText')
     ? NativeText
     : (createReactNativeComponentClass('RCTVirtualText', () => ({
-        // $FlowFixMe[incompatible-call]
         validAttributes: {
           ...ReactNativeViewAttributes.UIView,
           isHighlighted: true,

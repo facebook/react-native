@@ -10,7 +10,7 @@
 
 const deepFreezeAndThrowOnMutationInDev = require('../deepFreezeAndThrowOnMutationInDev');
 
-describe('deepFreezeAndThrowOnMutationInDev', function() {
+describe('deepFreezeAndThrowOnMutationInDev', function () {
   it('should be a noop on non object values', () => {
     __DEV__ = true;
     expect(() => deepFreezeAndThrowOnMutationInDev('')).not.toThrow();

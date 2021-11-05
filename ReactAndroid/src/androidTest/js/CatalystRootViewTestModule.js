@@ -41,7 +41,7 @@ class CatalystRootViewTestApp extends React.Component {
 }
 
 const ReactRootViewTestModule = {
-  setHeight: function(height) {
+  setHeight: function (height) {
     that.setState({height: height});
   },
 };

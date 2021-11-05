@@ -3,6 +3,10 @@ require_relative '../../scripts/react_native_pods'
 source 'https://cdn.cocoapods.org/'
 platform :ios, '11.0'
 
+# Temporary solution to suppress duplicated GUID error.
+# Can be removed once we move to generate files outside pod install.
+install! 'cocoapods', :deterministic_uuids => false
+
 USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
 
 if USE_FRAMEWORKS
@@ -17,8 +21,8 @@ end
 def pods()
   project 'RNTesterPods.xcodeproj'
 
-  puts "Building RNTester with Fabric enabled."
   fabric_enabled = true
+  puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
 
   prefix_path = "../.."
   use_react_native!(path: prefix_path, fabric_enabled: fabric_enabled, hermes_enabled: ENV['USE_HERMES'] == '1')
@@ -52,4 +56,5 @@ end
 
 post_install do |installer|
   react_native_post_install(installer)
+  __apply_Xcode_12_5_M1_post_install_workaround(installer)
 end

@@ -22,10 +22,11 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
 });
 
-const MultilineTextInputNativeComponent: HostComponent<mixed> = NativeComponentRegistry.get<mixed>(
-  'RCTMultilineTextInputView',
-  () => RCTTextInputViewConfig,
-);
+const MultilineTextInputNativeComponent: HostComponent<mixed> =
+  NativeComponentRegistry.get<mixed>(
+    'RCTMultilineTextInputView',
+    () => RCTTextInputViewConfig,
+  );
 
 // flowlint-next-line unclear-type:off
 export default ((MultilineTextInputNativeComponent: any): HostComponent<mixed>);

@@ -28,7 +28,6 @@ private const val REACT_GROUP = "react"
 @Suppress("SpreadOperator")
 internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExtension) {
   val targetName = variant.name.capitalize(Locale.ROOT)
-  val isRelease = variant.isRelease
   val targetPath = variant.dirName
 
   // React js bundle directories
@@ -50,7 +49,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
   val execCommand = nodeExecutableAndArgs + cliPath
   val enableHermes = config.enableHermesForVariant(variant)
   val cleanup = config.deleteDebugFilesForVariant(variant)
-  val bundleEnabled = variant.checkBundleEnabled(config)
+  val bundleEnabled = config.bundleForVariant(variant)
 
   val bundleTask =
       tasks.register("createBundle${targetName}JsAndAssets", BundleJsAndAssetsTask::class.java) {
@@ -64,7 +63,7 @@ internal fun Project.configureReactTasks(variant: BaseVariant, config: ReactExte
             }
         it.execCommand = execCommand
         it.bundleCommand = config.bundleCommand.get()
-        it.devEnabled = !(variant.name in config.devDisabledInVariants.get() || isRelease)
+        it.devEnabled = !config.disableDevForVariant(variant)
         it.entryFile = detectedEntryFile(config)
 
         val extraArgs = mutableListOf<String>()
@@ -256,18 +255,6 @@ private fun Project.cleanupVMFiles(
           visit.file.delete()
         }
       }
-}
-
-private fun BaseVariant.checkBundleEnabled(config: ReactExtension): Boolean {
-  if (config.bundleIn.getting(name).isPresent) {
-    return config.bundleIn.getting(name).get()
-  }
-
-  if (config.bundleIn.getting(buildType.name).isPresent) {
-    return config.bundleIn.getting(buildType.name).get()
-  }
-
-  return isRelease
 }
 
 internal val BaseVariant.isRelease: Boolean

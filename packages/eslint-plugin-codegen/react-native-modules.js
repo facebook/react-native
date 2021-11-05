@@ -99,7 +99,7 @@ function rule(context) {
   let isModule = false;
 
   return {
-    'Program:exit': function(node) {
+    'Program:exit': function (node) {
       if (!isModule) {
         return;
       }
@@ -112,10 +112,8 @@ function rule(context) {
         });
       }
 
-      const {
-        buildModuleSchema,
-        createParserErrorCapturer,
-      } = requireModuleParser();
+      const {buildModuleSchema, createParserErrorCapturer} =
+        requireModuleParser();
       const flowParser = require('flow-parser');
 
       const [parsingErrors, tryParse] = createParserErrorCapturer();

@@ -13,14 +13,8 @@
 require('react-native/Libraries/Core/InitializeCore');
 const React = require('react');
 const ReactNative = require('react-native');
-const {
-  AppRegistry,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} = ReactNative;
+const {AppRegistry, ScrollView, StyleSheet, Text, TouchableOpacity, View} =
+  ReactNative;
 
 // Keep this list in sync with RNTesterIntegrationTests.m
 const TESTS = [

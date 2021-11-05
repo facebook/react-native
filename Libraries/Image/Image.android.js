@@ -8,7 +8,6 @@
  * @format
  */
 
-import DeprecatedImagePropType from '../DeprecatedPropTypes/DeprecatedImagePropType';
 import ImageViewNativeComponent from './ImageViewNativeComponent';
 import * as React from 'react';
 import StyleSheet from '../StyleSheet/StyleSheet';
@@ -41,12 +40,12 @@ function getSize(
   failure?: (error: any) => void,
 ): any {
   return NativeImageLoaderAndroid.getSize(url)
-    .then(function(sizes) {
+    .then(function (sizes) {
       success(sizes.width, sizes.height);
     })
     .catch(
       failure ||
-        function() {
+        function () {
           console.warn('Failed to get size for image: ' + url);
         },
     );
@@ -65,12 +64,12 @@ function getSizeWithHeaders(
   failure?: (error: any) => void,
 ): any {
   return NativeImageLoaderAndroid.getSizeWithHeaders(url, headers)
-    .then(function(sizes) {
+    .then(function (sizes) {
       success(sizes.width, sizes.height);
     })
     .catch(
       failure ||
-        function() {
+        function () {
           console.warn('Failed to get size for image: ' + url);
         },
     );
@@ -115,7 +114,6 @@ type ImageComponentStatics = $ReadOnly<{|
   abortPrefetch: typeof abortPrefetch,
   queryCache: typeof queryCache,
   resolveAssetSource: typeof resolveAssetSource,
-  propTypes: typeof DeprecatedImagePropType,
 |}>;
 
 /**
@@ -299,10 +297,11 @@ Image.queryCache = queryCache;
  * comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
 
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
-Image.propTypes = DeprecatedImagePropType;
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {
