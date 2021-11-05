@@ -19,6 +19,7 @@
 const fs = require('fs');
 const {cat, echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
+const {parseVersion} = require('./version-utils');
 
 let argv = yargs
   .option('r', {
@@ -68,15 +69,16 @@ if (!nightlyBuild) {
   }
 }
 
-// Generate version files to detect mismatches between JS and native.
-let match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
-if (!match) {
-  echo(
-    `You must pass a correctly formatted version; couldn't parse ${version}`,
-  );
+let major,
+  minor,
+  patch,
+  prerelease = -1;
+try {
+  ({major, minor, patch, prerelease} = parseVersion(version));
+} catch (e) {
+  echo(e.message);
   exit(1);
 }
-let [, major, minor, patch, prerelease] = match;
 
 fs.writeFileSync(
   'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
@@ -228,7 +230,7 @@ if (!nightlyBuild) {
   exec(`git push ${remote} v${version}`);
 
   // Tag latest if doing stable release
-  if (version.indexOf('rc') === -1) {
+  if (prerelease == null) {
     exec('git tag -d latest');
     exec(`git push ${remote} :latest`);
     exec('git tag latest');
