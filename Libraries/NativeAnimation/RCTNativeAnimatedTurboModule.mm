@@ -29,7 +29,6 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   NSMutableDictionary<NSNumber *, NSNumber *> *_animIdIsManagedByFabric;
   // A set of nodeIDs managed by Fabric.
   NSMutableSet<NSNumber *> *_nodeIDsManagedByFabric;
-
 }
 
 RCT_EXPORT_MODULE();
@@ -52,15 +51,8 @@ RCT_EXPORT_MODULE();
 
 - (void)initialize
 {
-  if (self.bridge) {
-    _surfacePresenter = self.bridge.surfacePresenter;
-    _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge surfacePresenter:_surfacePresenter];
-    [self.bridge.uiManager.observerCoordinator addObserver:self];
-  } else {
-    // _surfacePresenter set in setSurfacePresenter:
-    _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:nil surfacePresenter:_surfacePresenter];
-  }
-
+  // _surfacePresenter set in setSurfacePresenter:
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:nil surfacePresenter:_surfacePresenter];
   [_surfacePresenter addObserver:self];
   [[self.moduleRegistry moduleForName:"EventDispatcher"] addDispatchObserver:self];
 }
@@ -70,7 +62,6 @@ RCT_EXPORT_MODULE();
   [super invalidate];
   [_nodesManager stopAnimationLoop];
   [[self.moduleRegistry moduleForName:"EventDispatcher"] removeDispatchObserver:self];
-  [self.bridge.uiManager.observerCoordinator removeObserver:self];
   [_surfacePresenter removeObserver:self];
 }
 
@@ -196,8 +187,8 @@ RCT_EXPORT_METHOD(connectAnimatedNodeToView:(double)nodeTag
   if (RCTUIManagerTypeForTagIsFabric(@(viewTag))) {
     [_nodeIDsManagedByFabric addObject:@(nodeTag)];
   }
-  NSString *viewName = [self.bridge.uiManager viewNameForReactTag:[NSNumber numberWithDouble:viewTag]];
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    NSString *viewName; // Not used when node is managed by Fabric. Nodes are always managed by Fabric in Bridgeless.
     [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag] viewTag:[NSNumber numberWithDouble:viewTag] viewName:viewName];
   }];
 }
@@ -334,33 +325,6 @@ RCT_EXPORT_METHOD(getValue:(double)nodeTag saveValueCallback:(RCTResponseSenderB
       }
     });
   });
-}
-
-#pragma mark - RCTUIManagerObserver
-
-- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager
-{
-  if (_preOperations.count == 0 && _operations.count == 0) {
-    return;
-  }
-
-  NSArray<AnimatedOperation> *preOperations = _preOperations;
-  NSArray<AnimatedOperation> *operations = _operations;
-  _preOperations = [NSMutableArray new];
-  _operations = [NSMutableArray new];
-
-  [uiManager prependUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    for (AnimatedOperation operation in preOperations) {
-      operation(self->_nodesManager);
-    }
-  }];
-  [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    for (AnimatedOperation operation in operations) {
-      operation(self->_nodesManager);
-    }
-
-    [self->_nodesManager updateAnimations];
-  }];
 }
 
 #pragma mark -- Events
