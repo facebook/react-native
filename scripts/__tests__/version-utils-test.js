@@ -21,17 +21,68 @@ describe('version-utils', () => {
     });
 
     it('should parse pre-release version with .', () => {
-      const {major, minor, patch, prerelease} = parseVersion('0.66.0-rc.4');
+      const {version, major, minor, patch, prerelease} =
+        parseVersion('0.66.0-rc.4');
+      expect(version).toBe('0.66.0-rc.4');
       expect(major).toBe('0');
       expect(minor).toBe('66');
       expect(patch).toBe('0');
       expect(prerelease).toBe('rc.4');
     });
 
-    it('should parse stable version', () => {
-      const {major, minor, patch, prerelease} = parseVersion('0.66.0');
+    it('should parse pre-release version with -', () => {
+      const {version, major, minor, patch, prerelease} =
+        parseVersion('0.66.0-rc-4');
+      expect(version).toBe('0.66.0-rc-4');
       expect(major).toBe('0');
       expect(minor).toBe('66');
+      expect(patch).toBe('0');
+      expect(prerelease).toBe('rc-4');
+    });
+
+    it('should parse stable version', () => {
+      const {version, major, minor, patch, prerelease} = parseVersion('0.66.0');
+      expect(version).toBe('0.66.0');
+      expect(major).toBe('0');
+      expect(minor).toBe('66');
+      expect(patch).toBe('0');
+      expect(prerelease).toBeUndefined();
+    });
+    it('should parse pre-release version from tag', () => {
+      const {version, major, minor, patch, prerelease} =
+        parseVersion('v0.66.1-rc.4');
+      expect(version).toBe('0.66.1-rc.4');
+      expect(major).toBe('0');
+      expect(minor).toBe('66');
+      expect(patch).toBe('1');
+      expect(prerelease).toBe('rc.4');
+    });
+
+    it('should parse stable version from tag', () => {
+      const {version, major, minor, patch, prerelease} =
+        parseVersion('v0.66.0');
+      expect(version).toBe('0.66.0');
+      expect(major).toBe('0');
+      expect(minor).toBe('66');
+      expect(patch).toBe('0');
+      expect(prerelease).toBeUndefined();
+    });
+
+    it('should parse nightly fake version', () => {
+      const {version, major, minor, patch, prerelease} = parseVersion('0.0.0');
+      expect(version).toBe('0.0.0');
+      expect(major).toBe('0');
+      expect(minor).toBe('0');
+      expect(patch).toBe('0');
+      expect(prerelease).toBeUndefined();
+    });
+
+    it('should parse dryrun fake version', () => {
+      const {version, major, minor, patch, prerelease} =
+        parseVersion('1000.0.0');
+      expect(version).toBe('1000.0.0');
+      expect(major).toBe('1000');
+      expect(minor).toBe('0');
       expect(patch).toBe('0');
       expect(prerelease).toBeUndefined();
     });
