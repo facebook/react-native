@@ -146,10 +146,11 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
 
 - (void)connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
                           viewTag:(nonnull NSNumber *)viewTag
-                         viewName:(nonnull NSString *)viewName
+                         viewName:(NSString *)viewName
 {
   RCTAnimatedNode *node = _animationNodes[nodeTag];
   if ([node isKindOfClass:[RCTPropsAnimatedNode class]]) {
+    // viewName is not used when node is managed by Fabric
     [(RCTPropsAnimatedNode *)node connectToView:viewTag
                                        viewName:viewName
                                          bridge:_bridge

@@ -188,8 +188,8 @@ RCT_EXPORT_METHOD(connectAnimatedNodeToView:(double)nodeTag
     [_nodeIDsManagedByFabric addObject:@(nodeTag)];
   }
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    NSString *viewName; // Not used when node is managed by Fabric. Nodes are always managed by Fabric in Bridgeless.
-    [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag] viewTag:[NSNumber numberWithDouble:viewTag] viewName:viewName];
+    // viewName is not used when node is managed by Fabric, and nodes are always managed by Fabric in Bridgeless.
+    [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag] viewTag:[NSNumber numberWithDouble:viewTag] viewName:nil];
   }];
 }
 
