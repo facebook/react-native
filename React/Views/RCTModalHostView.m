@@ -116,12 +116,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 
 - (void)dismissModalViewController
 {
-  if (_isPresented) {
-      dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (_isPresented) {
         [self->_delegate dismissModalHostView:self withViewController:self->_modalViewController animated:[self hasAnimationType]];
         self->_isPresented = NO;
+      }
     });
-  }
 }
 
 - (void)didMoveToWindow
