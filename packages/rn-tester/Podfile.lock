@@ -748,7 +748,7 @@ DEPENDENCIES:
   - RCTTypeSafety (from `../../Libraries/TypeSafety`)
   - React (from `../../`)
   - React-callinvoker (from `../../ReactCommon/callinvoker`)
-  - React-Codegen (from `./build/generated/ios`)
+  - React-Codegen (from `build/generated/ios`)
   - React-Core (from `../../`)
   - React-Core/DevSupport (from `../../`)
   - React-Core/RCTWebSocket (from `../../`)
@@ -820,7 +820,7 @@ EXTERNAL SOURCES:
   React-callinvoker:
     :path: "../../ReactCommon/callinvoker"
   React-Codegen:
-    :path: "./build/generated/ios"
+    :path: build/generated/ios
   React-Core:
     :path: "../../"
   React-CoreModules:
@@ -930,6 +930,6 @@ SPEC CHECKSUMS:
   Yoga: c0d06f5380d34e939f55420669a60fe08b79bd75
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: b0db53c7196aa798709ee467d4d93e7300f7eacf
+PODFILE CHECKSUM: eb8cf8c55af63e11cb1907f2ae6b457739f4f0af
 
 COCOAPODS: 1.11.2

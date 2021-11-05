@@ -279,14 +279,30 @@ def generate_temp_pod_spec_for_codegen!(fabric_enabled)
 end
 
 
-def use_react_native_codegen!(spec, options={})
+def use_react_native_codegen_discovery!(options={})
   return if ENV['DISABLE_CODEGEN'] == '1'
+
+  Pod::UI.warn '[Codegen] warn: using experimental new codegen integration'
+  react_native_path = options[:react_native_path] ||= "../node_modules/react-native"
+  app_path = options[:app_path]
+  if app_path
+    Pod::Executable.execute_command('node', ["#{react_native_path}/scripts/generate-artifacts.js", "-p", "#{app_path}", "-o", Pod::Config.instance.installation_root])
+  else
+    Pod::UI.warn '[Codegen] error: no app_path was provided'
+    exit 1
+  end
+end
+
+def use_react_native_codegen!(spec, options={})
+  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+  # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native
   prefix = options[:react_native_path] ||= "../.."
 
   # Library name (e.g. FBReactNativeSpec)
   library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"
+  Pod::UI.puts "[Codegen] Found #{library_name}"
 
   # Output dir, relative to podspec that invoked this method
   output_dir = options[:output_dir] ||= "#{Pod::Config.instance.installation_root}/#{$CODEGEN_OUTPUT_DIR}/#{$CODEGEN_LIBRARY_DIR}"

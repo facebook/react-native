@@ -68,7 +68,9 @@ function main(appRootDir, outputPath) {
     const dependencies = {...pkgJson.dependencies, ...pkgJson.devDependencies};
 
     // 3. Determine which of these are codegen-enabled libraries
-    console.log('\n\n>>>>> Searching for codegen-enabled libraries...');
+    console.log(
+      `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${appRootDir}`,
+    );
     const libraries = [];
 
     // Handle react-native and third-party libraries
@@ -88,7 +90,7 @@ function main(appRootDir, outputPath) {
           configFile[CODEGEN_CONFIG_KEY] != null &&
           configFile[CODEGEN_CONFIG_KEY].libraries != null
         ) {
-          console.log(dependency);
+          console.log(`[Codegen] Found ${dependency}`);
           configFile[CODEGEN_CONFIG_KEY].libraries.forEach(config => {
             const libraryConfig = {
               library: dependency,
@@ -106,7 +108,7 @@ function main(appRootDir, outputPath) {
       pkgJson[CODEGEN_CONFIG_KEY] != null &&
       pkgJson[CODEGEN_CONFIG_KEY].libraries != null
     ) {
-      console.log(pkgJson.name);
+      console.log(`[Codegen] Found ${pkgJson.name}`);
       pkgJson[CODEGEN_CONFIG_KEY].libraries.forEach(config => {
         const libraryConfig = {
           library: pkgJson.name,
@@ -118,7 +120,7 @@ function main(appRootDir, outputPath) {
     }
 
     if (libraries.length === 0) {
-      console.log('No codegen-enabled libraries found.');
+      console.log('[Codegen] No codegen-enabled libraries found.');
       return;
     }
 
@@ -128,7 +130,9 @@ function main(appRootDir, outputPath) {
       codegenCliPath = CODEGEN_REPO_PATH;
 
       if (!fs.existsSync(path.join(CODEGEN_REPO_PATH, 'lib'))) {
-        console.log('\n\n>>>>> Building react-native-codegen package');
+        console.log(
+          '\n\n[Codegen] >>>>> Building react-native-codegen package',
+        );
         execSync('yarn install', {
           cwd: codegenCliPath,
           stdio: 'inherit',
@@ -162,7 +166,7 @@ function main(appRootDir, outputPath) {
       );
       const pathToTempOutputDir = path.join(tmpDir, 'out');
 
-      console.log(`\n\n>>>>> Processing ${library.config.name}`);
+      console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
       // Generate one schema for the entire library...
       execSync(
         `node ${path.join(
@@ -173,7 +177,7 @@ function main(appRootDir, outputPath) {
           'combine-js-to-schema-cli.js',
         )} ${pathToSchema} ${pathToJavaScriptSources}`,
       );
-      console.log(`Generated schema: ${pathToSchema}`);
+      console.log(`[Codegen] Generated schema: ${pathToSchema}`);
 
       // ...then generate native code artifacts.
       const libraryTypeArg = library.config.type
@@ -193,7 +197,7 @@ function main(appRootDir, outputPath) {
       // Finally, copy artifacts to the final output directory.
       fs.mkdirSync(pathToOutputDirIOS, {recursive: true});
       execSync(`cp -R ${pathToTempOutputDir}/* ${pathToOutputDirIOS}`);
-      console.log(`Generated artifacts: ${pathToOutputDirIOS}`);
+      console.log(`[Codegen] Generated artifacts: ${pathToOutputDirIOS}`);
     });
   } catch (err) {
     console.error(err);
@@ -201,7 +205,7 @@ function main(appRootDir, outputPath) {
   }
 
   // 5. Done!
-  console.log('\n\nDone.');
+  console.log('\n\n[Codegen] Done.');
   return;
 }
 
