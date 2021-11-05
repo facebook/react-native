@@ -5110,7 +5110,7 @@ function createTextInstance(
 ) {
   {
     if (!hostContext.isInAParentText) {
-      error("Text strings must be rendered within a <Text> component.");
+      error(`Text string "${text}" must be rendered within a <Text> component.`);
     }
   }
 

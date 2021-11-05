@@ -5258,7 +5258,7 @@ function createTextInstance(
   internalInstanceHandle
 ) {
   if (!hostContext.isInAParentText) {
-    throw new Error("Text strings must be rendered within a <Text> component.");
+    throw Error(`Text string "${text}" must be rendered within a <Text> component.`);
   }
 
   var tag = allocateTag();
