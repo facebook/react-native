@@ -10,7 +10,7 @@
 'use strict';
 
 /**
- * This script publishes a new version of react-native to NPM.
+ * This script prepares a release version of react-native and may publish to NPM.
  * It is supposed to run in CI environment, not on a developer's machine.
  *
  * To make it easier for developers it uses some logic to identify with which
@@ -49,67 +49,69 @@
  * If tag v0.XY.Z is present on the commit then publish to npm with version 0.XY.Z and no tag (npm will consider it latest)
  */
 
-/*eslint-disable no-undef */
-require('shelljs/global');
+const {exec, echo, exit, test} = require('shelljs');
 const yargs = require('yargs');
+const {parseVersion} = require('./version-utils');
 
-let argv = yargs.option('n', {
-  alias: 'nightly',
-  type: 'boolean',
-  default: false,
-}).argv;
-
-const nightlyBuild = argv.nightly;
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
 
-let branchVersion = 0;
-if (nightlyBuild) {
-  branchVersion = 0;
-} else {
-  if (!buildTag) {
-    echo('Error: We publish only from git tags');
-    exit(1);
-  }
-
-  let match = buildTag.match(/^v(\d+\.\d+)\.\d+(?:-.+)?$/);
-  if (!match) {
-    echo('Error: We publish only from release version git tags');
-    exit(1);
-  }
-  [, branchVersion] = match;
-}
-// 0.33
+const argv = yargs
+  .option('n', {
+    alias: 'nightly',
+    type: 'boolean',
+    default: false,
+  })
+  .option('d', {
+    alias: 'dry-run',
+    type: 'boolean',
+    default: false,
+  }).argv;
+const nightlyBuild = argv.nightly;
+const dryRunBuild = argv.dryRun;
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
-const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
-// [34c034298dc9cad5a4553964a5a324450fda0385, refs/heads/0.33-stable, refs/tags/latest, refs/tags/v0.33.1, refs/tags/v0.34.1-rc]
-const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
+const currentCommit = exec('git rev-parse HEAD', {
   silent: true,
-})
-  .stdout.split(/\s/)
-  // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2', 'refs/tags/v0.34.0']
-  .filter(
-    version =>
-      !!version && version.indexOf(`refs/tags/v${branchVersion}`) === 0,
-  )
-  // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2']
-  .filter(version => version.indexOf(branchVersion) !== -1)
-  // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2']
-  .map(version => version.slice('refs/tags/'.length));
+}).stdout.trim();
+const shortCommit = currentCommit.slice(0, 9);
 
-if (!nightlyBuild && tagsWithVersion.length === 0) {
-  echo(
-    'Error: Cannot find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit',
-  );
+const rawVersion =
+  // 0.0.0 triggers issues with cocoapods for codegen when building template project.
+  dryRunBuild
+    ? '1000.0.0'
+    : // For nightly we continue to use 0.0.0 for clarity for npm
+    nightlyBuild
+    ? '0.0.0'
+    : // For pre-release and stable releases, we use the git tag of the version we're releasing (set in bump-oss-version)
+      buildTag;
+
+let version,
+  prerelease = null;
+try {
+  ({version, prerelease} = parseVersion(rawVersion));
+} catch (e) {
+  echo(e.message);
   exit(1);
 }
 let releaseVersion;
+if (dryRunBuild) {
+  releaseVersion = `${version}-${shortCommit}`;
+} else if (nightlyBuild) {
+  // 2021-09-28T05:38:40.669Z -> 20210928-0538
+  const dateIdentifier = new Date()
+    .toISOString()
+    .slice(0, -8)
+    .replace(/[-:]/g, '')
+    .replace(/[T]/g, '-');
+  releaseVersion = `${version}-${dateIdentifier}-${shortCommit}`;
+} else {
+  releaseVersion = version;
+}
 
-if (nightlyBuild) {
-  releaseVersion = `0.0.0-${currentCommit.slice(0, 9)}`;
-
-  // Bump version number in various files (package.json, gradle.properties etc)
+// Bump version number in various files (package.json, gradle.properties etc)
+// For stable, pre-release releases, we manually call bump-oss-version on release branch
+if (nightlyBuild || dryRunBuild) {
   if (
     exec(
       `node scripts/bump-oss-version.js --nightly --to-version ${releaseVersion}`,
@@ -118,14 +120,6 @@ if (nightlyBuild) {
     echo('Failed to bump version number');
     exit(1);
   }
-} else if (tagsWithVersion[0].indexOf('-rc') === -1) {
-  // if first tag on this commit is non -rc then we are making a stable release
-  // '0.33.0'
-  releaseVersion = tagsWithVersion[0].slice(1);
-} else {
-  // otherwise pick last -rc tag alphabetically
-  // 0.33.0-rc2
-  releaseVersion = tagsWithVersion[tagsWithVersion.length - 1].slice(1);
 }
 
 // -------- Generating Android Artifacts with JavaDoc
@@ -155,12 +149,17 @@ artifacts.forEach(name => {
   }
 });
 
-// if version contains -rc, tag as prerelease
+if (dryRunBuild) {
+  echo('Skipping `npm publish` because --dry-run is set.');
+  exit(0);
+}
+
+// Set the right tag for nightly and prerelease builds
 const tagFlag = nightlyBuild
   ? '--tag nightly'
-  : releaseVersion.indexOf('-rc') === -1
-  ? ''
-  : '--tag next';
+  : prerelease != null
+  ? '--tag next'
+  : '';
 
 // use otp from envvars if available
 const otpFlag = otp ? `--otp ${otp}` : '';
@@ -172,5 +171,3 @@ if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
   echo(`Published to npm ${releaseVersion}`);
   exit(0);
 }
-
-/*eslint-enable no-undef */

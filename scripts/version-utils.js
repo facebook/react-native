@@ -7,15 +7,16 @@
  * @format
  */
 
-function parseVersion(version) {
-  const match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
+function parseVersion(versionStr) {
+  const match = versionStr.match(/^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/);
   if (!match) {
     throw new Error(
-      `You must pass a correctly formatted version; couldn't parse ${version}`,
+      `You must pass a correctly formatted version; couldn't parse ${versionStr}`,
     );
   }
-  const [, major, minor, patch, prerelease] = match;
+  const [, version, major, minor, patch, prerelease] = match;
   return {
+    version,
     major,
     minor,
     patch,
