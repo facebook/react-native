@@ -27,6 +27,10 @@ const argv = yargs
     alias: 'path',
     description: 'Path to React Native application',
   })
+  .option('o', {
+    alias: 'outputPath',
+    description: 'Path where generated artifacts will be output to',
+  })
   .option('f', {
     alias: 'configFilename',
     default: 'package.json',
@@ -47,7 +51,7 @@ const CODEGEN_CONFIG_KEY = argv.k;
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
 const CODEGEN_NPM_PATH = `${RN_ROOT}/../react-native-codegen`;
 
-function main(appRootDir) {
+function main(appRootDir, outputPath) {
   if (appRootDir == null) {
     console.error('Missing path to React Native application');
     process.exitCode = 1;
@@ -151,15 +155,15 @@ function main(appRootDir) {
         library.config.jsSrcsDir,
       );
       const pathToOutputDirIOS = path.join(
-        library.libraryPath,
-        library.config.ios._outputDir,
+        outputPath ? outputPath : appRootDir,
+        'build/generated/ios',
+        library.config.name,
+        'react/renderer/components',
       );
       const pathToTempOutputDir = path.join(tmpDir, 'out');
 
       console.log(`\n\n>>>>> Processing ${library.config.name}`);
       // Generate one schema for the entire library...
-      // TODO: We should use a glob here to grab modules or components -only sources, as with react_native_pods.rb.
-      // Otherwise, we'll generate unnecessary artifacts.
       execSync(
         `node ${path.join(
           codegenCliPath,
@@ -172,6 +176,9 @@ function main(appRootDir) {
       console.log(`Generated schema: ${pathToSchema}`);
 
       // ...then generate native code artifacts.
+      const libraryTypeArg = library.config.type
+        ? `--libraryType ${library.config.type}`
+        : '';
       fs.mkdirSync(pathToTempOutputDir, {recursive: true});
       execSync(
         `node ${path.join(
@@ -180,8 +187,10 @@ function main(appRootDir) {
           'generate-specs-cli.js',
         )} --platform ios --schemaPath ${pathToSchema} --outputDir ${pathToTempOutputDir} --libraryName ${
           library.config.name
-        }`,
+        } ${libraryTypeArg}`,
       );
+
+      // Finally, copy artifacts to the final output directory.
       fs.mkdirSync(pathToOutputDirIOS, {recursive: true});
       execSync(`cp -R ${pathToTempOutputDir}/* ${pathToOutputDirIOS}`);
       console.log(`Generated artifacts: ${pathToOutputDirIOS}`);
@@ -197,4 +206,5 @@ function main(appRootDir) {
 }
 
 const appRoot = argv.path;
-main(appRoot);
+const outputPath = argv.outputPath;
+main(appRoot, outputPath);
