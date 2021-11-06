@@ -355,6 +355,11 @@ function onEndReachedThresholdOrDefault(onEndReachedThreshold: ?number) {
   return onEndReachedThreshold ?? 2;
 }
 
+// getScrollingThreshold(visibleLength, onEndReachedThreshold)
+function getScrollingThreshold(visibleLength: number, threshold: number) {
+  return (threshold * visibleLength) / 2;
+}
+
 // scrollEventThrottleOrDefault(this.props.scrollEventThrottle)
 function scrollEventThrottleOrDefault(scrollEventThrottle: ?number) {
   return scrollEventThrottle ?? 50;
@@ -1668,16 +1673,22 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const {offset, visibleLength, velocity} = this._scrollMetrics;
     const itemCount = this.props.getItemCount(this.props.data);
     let hiPri = false;
+    const onStartReachedThreshold = onStartReachedThresholdOrDefault(
+      this.props.onStartReachedThreshold,
+    );
     const onEndReachedThreshold = onEndReachedThresholdOrDefault(
       this.props.onEndReachedThreshold,
     );
-    const scrollingThreshold = (onEndReachedThreshold * visibleLength) / 2;
     // Mark as high priority if we're close to the start of the first item
     // But only if there are items before the first rendered item
     if (first > 0) {
       const distTop = offset - this.__getFrameMetricsApprox(first).offset;
       hiPri =
-        hiPri || distTop < 0 || (velocity < -2 && distTop < scrollingThreshold);
+        hiPri ||
+        distTop < 0 ||
+        (velocity < -2 &&
+          distTop <
+            getScrollingThreshold(visibleLength, onStartReachedThreshold));
     }
     // Mark as high priority if we're close to the end of the last item
     // But only if there are items after the last rendered item
@@ -1687,7 +1698,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       hiPri =
         hiPri ||
         distBottom < 0 ||
-        (velocity > 2 && distBottom < scrollingThreshold);
+        (velocity > 2 &&
+          distBottom <
+            getScrollingThreshold(visibleLength, onEndReachedThreshold));
     }
     // Only trigger high-priority updates if we've actually rendered cells,
     // and with that size estimate, accurately compute how many cells we should render.
