@@ -363,6 +363,7 @@ describe('VirtualizedList', () => {
     let data = Array(20)
       .fill()
       .map((_, index) => ({key: `key-${index}`}));
+    const onStartReached = jest.fn();
     const onEndReached = jest.fn();
     const props = {
       data,
@@ -377,6 +378,7 @@ describe('VirtualizedList', () => {
         offset: ITEM_HEIGHT * index,
         index,
       }),
+      onStartReached,
       onEndReached,
     };
 
@@ -394,6 +396,7 @@ describe('VirtualizedList', () => {
     instance._onContentSizeChange(300, data.length * ITEM_HEIGHT);
     performAllBatches();
 
+    expect(onStartReached).not.toHaveBeenCalled();
     expect(onEndReached).not.toHaveBeenCalled();
 
     instance._onScroll({
