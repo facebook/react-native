@@ -222,6 +222,18 @@ type OptionalProps = {|
    */
   onEndReachedThreshold?: ?number,
   /**
+   * Called once when the scroll position gets within `onStartReachedThreshold` of the rendered
+   * content.
+   */
+  onStartReached?: ?(info: {distanceFromStart: number, ...}) => void,
+  /**
+   * How far from the start (in units of visible length of the list) the top edge of the
+   * list must be from the start of the content to trigger the `onStartReached` callback.
+   * Thus a value of 0.5 will trigger `onStartReached` when the end of the content is
+   * within half the visible length of the list.
+   */
+  onStartReachedThreshold?: ?number,
+  /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
    */
@@ -333,6 +345,11 @@ function maxToRenderPerBatchOrDefault(maxToRenderPerBatch: ?number) {
   return maxToRenderPerBatch ?? 10;
 }
 
+// onStartReachedThresholdOrDefault(this.props.onStartReachedThreshold)
+function onStartReachedThresholdOrDefault(onStartReachedThreshold: ?number) {
+  return onStartReachedThreshold ?? 2;
+}
+
 // onEndReachedThresholdOrDefault(this.props.onEndReachedThreshold)
 function onEndReachedThresholdOrDefault(onEndReachedThreshold: ?number) {
   return onEndReachedThreshold ?? 2;
@@ -441,9 +458,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
     invariant(
       index < getItemCount(data),
-      `scrollToIndex out of range: requested index ${index} is out of 0 to ${
-        getItemCount(data) - 1
-      }`,
+      `scrollToIndex out of range: requested index ${index} is out of 0 to ${getItemCount(
+        data,
+      ) - 1}`,
     );
     if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
       invariant(
@@ -882,8 +899,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         );
       }
     }
-    const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
-      this.props;
+    const {
+      ListEmptyComponent,
+      ListFooterComponent,
+      ListHeaderComponent,
+    } = this.props;
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle = this.props.inverted
@@ -908,13 +928,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       cells.push(
         <VirtualizedListCellContextProvider
           cellKey={this._getCellKey() + '-header'}
-          key="$header">
+          key="$header"
+        >
           <View
             onLayout={this._onLayoutHeader}
             style={StyleSheet.compose(
               inversionStyle,
               this.props.ListHeaderComponentStyle,
-            )}>
+            )}
+          >
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
@@ -1053,13 +1075,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       cells.push(
         <VirtualizedListCellContextProvider
           cellKey={this._getFooterCellKey()}
-          key="$footer">
+          key="$footer"
+        >
           <View
             onLayout={this._onLayoutFooter}
             style={StyleSheet.compose(
               inversionStyle,
               this.props.ListFooterComponentStyle,
-            )}>
+            )}
+          >
             {
               // $FlowFixMe[incompatible-type] - Typing ReactNativeComponent revealed errors
               element
@@ -1104,7 +1128,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           registerAsNestedChild: this._registerAsNestedChild,
           unregisterAsNestedChild: this._unregisterAsNestedChild,
           debugInfo: this._getDebugInfo(),
-        }}>
+        }}
+      >
         {React.cloneElement(
           (
             this.props.renderScrollComponent ||
@@ -1493,8 +1518,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    const {data, getItemCount, onEndReached, onEndReachedThreshold} =
-      this.props;
+    const {
+      data,
+      getItemCount,
+      onEndReached,
+      onEndReachedThreshold,
+    } = this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     const distanceFromEnd = contentLength - visibleLength - offset;
     const threshold =
@@ -1581,11 +1610,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // know our offset from our offset from our parent
         return;
       }
-      ({visibleLength, contentLength, offset, dOffset} =
-        this._convertParentScrollMetrics({
-          visibleLength,
-          offset,
-        }));
+      ({
+        visibleLength,
+        contentLength,
+        offset,
+        dOffset,
+      } = this._convertParentScrollMetrics({
+        visibleLength,
+        offset,
+      }));
     }
 
     const dt = this._scrollMetrics.timestamp
@@ -1721,7 +1754,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       data,
       getItemCount,
       onEndReachedThreshold: _onEndReachedThreshold,
+      onStartReachedThreshold: _onStartReachedThreshold,
     } = this.props;
+    const onStartReachedThreshold = onStartReachedThresholdOrDefault(
+      _onStartReachedThreshold,
+    );
     const onEndReachedThreshold = onEndReachedThresholdOrDefault(
       _onEndReachedThreshold,
     );
@@ -1756,13 +1793,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           }
         }
       } else {
+        const distanceFromStart = offset;
         const distanceFromEnd = contentLength - visibleLength - offset;
+        const renderBehind =
+          distanceFromStart < onStartReachedThreshold * visibleLength
+            ? maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
+            : 0;
         const renderAhead =
           distanceFromEnd < onEndReachedThreshold * visibleLength
             ? maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
             : 0;
         newState = {
-          first: 0,
+          first: Math.max(state.first - renderBehind, 0),
           last: Math.min(state.last + renderAhead, getItemCount(data) - 1),
         };
       }
@@ -2066,7 +2108,8 @@ class CellRenderer extends React.Component<
       <CellRendererComponent
         {...this.props}
         style={cellStyle}
-        onLayout={onLayout}>
+        onLayout={onLayout}
+      >
         {element}
         {itemSeparator}
       </CellRendererComponent>
