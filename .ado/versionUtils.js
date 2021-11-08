@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const semver = require('semver');
+const {execSync} = require('child_process');
 
 const pkgJsonPath = path.resolve(__dirname, "../package.json");
 let publishBranchName = '';
@@ -41,15 +42,34 @@ function updateVersionsInFiles(patchVersionPrefix) {
     }
  
     pkgJson.version = releaseVersion;
-    fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
-    console.log(`Updating package.json to version ${releaseVersion}`);
-  
+    console.log(`Bumping files to version ${releaseVersion}`);
+    execSync(`node ./scripts/bump-oss-version.js --rnmpublish ${releaseVersion}`, {stdio: 'inherit', env: process.env});
+
     return {releaseVersion, branchVersionSuffix};
+}
+
+const workspaceJsonPath = path.resolve(require('os').tmpdir(), 'rnpkg.json');
+
+function removeWorkspaceConfig() {
+  let {pkgJson} = gatherVersionInfo();
+  fs.writeFileSync(workspaceJsonPath, JSON.stringify(pkgJson, null, 2));
+  delete pkgJson.private;
+  delete pkgJson.workspaces;
+  fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
+  console.log(`Removing workspace config from package.json to prepare to publish.`);
+}
+
+function restoreWorkspaceConfig() {
+  let pkgJson = JSON.parse(fs.readFileSync(workspaceJsonPath, "utf8"));
+  fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
+  console.log(`Restoring workspace config from package.json`);
 }
 
 module.exports = {
     gatherVersionInfo,
     publishBranchName,
     pkgJsonPath,
+    removeWorkspaceConfig,
+    restoreWorkspaceConfig,
     updateVersionsInFiles
 }

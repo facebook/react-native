@@ -1,3 +1,6 @@
 # Ensure scripts always have Unix newlines, even on Windows.
 *.command  text eol=lf
 *.sh       text eol=lf
+# Windows files should use crlf line endings
+# https://help.github.com/articles/dealing-with-line-endings/
+*.bat text eol=crlf

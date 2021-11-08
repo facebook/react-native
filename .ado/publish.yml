@@ -16,11 +16,14 @@ trigger:
 
 pr: none
 
+variables:
+  - template: variables/mac.yml
+
 jobs:
   - job: RNGithubNpmJSPublish
     displayName: React-Native GitHub Publish to npmjs.org
     pool:
-      vmImage: vs2017-win2016
+      vmImage: $(VmImage)
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     steps:
@@ -47,6 +50,8 @@ jobs:
         displayName: Set dist-tag to v0.x-stable
         condition: and(ne(variables['Build.SourceBranchName'], 'master'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
 
+      - template: templates/apple-node-setup.yml
+
       - task: CmdLine@2
         displayName: yarn install
         inputs:
@@ -56,16 +61,36 @@ jobs:
         displayName: Bump stable package version
         inputs:
           script: node .ado/bumpFileVersions.js
-        condition: ne(variables['Build.SourceBranchName'], 'master')
+        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'master'))
+
+      - task: CmdLine@2
+        displayName: pod update React-TurboModuleCxx-RNW
+        inputs:
+          script: |
+            cd packages/rn-tester
+            pod update React-TurboModuleCxx-RNW
+        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'master'))
 
       - task: CmdLine@2
         displayName: Bump canary package version
         inputs:
           script: node scripts/bump-oss-version.js --nightly
-        condition: eq(variables['Build.SourceBranchName'], 'master')
+        condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+
+      # Publish will fail if package.json is marked as private
+      - task: CmdLine@2
+        displayName: Remove workspace config from package.json
+        inputs:
+          script: node .ado/removeWorkspaceConfig.js
 
       - script: npm publish --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
         displayName: Publish react-native-macos to npmjs.org
+
+      # Put the private flag back so that the removal does not get committed by the tag release step
+      - task: CmdLine@2
+        displayName: Restore package.json workspace config
+        inputs:
+          script: node .ado/restoreWorkspaceConfig.js
 
       - task: CmdLine@2
         displayName: 'Tag published release'
@@ -76,7 +101,7 @@ jobs:
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           githubApiToken: $(githubApiToken)
-        condition: ne(variables['Build.SourceBranchName'], 'master')
+        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'master'))
 
 
   - job: RNMacOSInitNpmJSPublish
@@ -136,6 +161,12 @@ jobs:
         displayName: Bump package version
         inputs:
           script: node .ado/bumpOfficeFileVersions.js
+
+      # Publish will fail if package.json is marked as private
+      - task: CmdLine@2
+        displayName: Remove workspace config from package.json
+        inputs:
+          script: node .ado/removeWorkspaceConfig.js
 
       - task: CmdLine@2
         displayName: gradlew installArchives
