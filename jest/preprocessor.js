@@ -147,6 +147,7 @@ module.exports = {
     const babelTransformResult = babelTransformFromAstSync(ast, src, {
       ast: true,
       retainLines: true,
+      filename: file,
       plugins: [
         [
           require('metro-transform-plugins').importExportPlugin,
