@@ -139,8 +139,8 @@ public class RNTesterApplication extends Application implements ReactApplication
 
                       @Override
                       public JSIModuleProvider<UIManager> getJSIModuleProvider() {
-                        final ComponentFactory ComponentFactory = new ComponentFactory();
-                        CoreComponentsRegistry.register(ComponentFactory);
+                        final ComponentFactory componentFactory = new ComponentFactory();
+                        CoreComponentsRegistry.register(componentFactory);
                         final ReactInstanceManager reactInstanceManager = getReactInstanceManager();
 
                         ViewManagerRegistry viewManagerRegistry =
@@ -150,7 +150,7 @@ public class RNTesterApplication extends Application implements ReactApplication
 
                         return new FabricJSIModuleProvider(
                             reactApplicationContext,
-                            ComponentFactory,
+                            componentFactory,
                             // TODO: T71362667 add ReactNativeConfig's support in RNTester
                             new ReactNativeConfig() {
                               @Override
