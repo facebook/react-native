@@ -123,9 +123,11 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 /**
  * Architectures to build native code for.
  */
-def nativeArchitectures = project.getProperties().get("reactNativeArchitectures") ?
-                          project.getProperties().get("reactNativeArchitectures").split(",")
-                          : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -143,7 +145,7 @@ android {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
-            include (*nativeArchitectures)
+            include (*reactNativeArchitectures())
         }
     }
     signingConfigs {
