@@ -232,9 +232,21 @@ def ndkBuildJobs() {
     return project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
 }
 
-tasks.register("packageReactNdkLibsForBuck", Copy) {
+tasks.register("packageReactNdkLibsForBuck") {
+    dependsOn("packageReactNdkDebugLibsForBuck")
+}
+
+tasks.register("packageReactNdkDebugLibsForBuck", Copy) {
     dependsOn("mergeDebugNativeLibs")
     from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
+    exclude("**/libjsc.so")
+    exclude("**/libhermes.so")
+    into("src/main/jni/prebuilt/lib")
+}
+
+tasks.register("packageReactNdkReleaseLibsForBuck", Copy) {
+    dependsOn("mergeReleaseNativeLibs")
+    from("$buildDir/intermediates/merged_native_libs/release/out/lib/")
     exclude("**/libjsc.so")
     exclude("**/libhermes.so")
     into("src/main/jni/prebuilt/lib")
