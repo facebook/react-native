@@ -50,6 +50,11 @@ public class JSTouchDispatcher {
     mTargetTag = -1;
   }
 
+  public void onChildEndedNativeGesture(MotionEvent androidEvent, EventDispatcher eventDispatcher) {
+    // There should be only one child gesture at any given time. We can safely turn off the flag.
+    mChildIsHandlingNativeGesture = false;
+  }
+
   /**
    * Main catalyst view is responsible for collecting and sending touch events to JS. This method
    * reacts for an incoming android native touch events ({@link MotionEvent}) and calls into {@link
