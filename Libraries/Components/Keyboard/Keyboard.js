@@ -142,9 +142,9 @@ class Keyboard {
   }
 
   /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
+   * @deprecated Use `remove` on the EventSubscription from `addListener`.
    */
-  removeEventListener<K: $Keys<KeyboardEventDefinitions>>(
+  removeListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
     listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
   ): void {
