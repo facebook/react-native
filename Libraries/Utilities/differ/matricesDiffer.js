@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict
  */
 
 'use strict';
@@ -18,7 +19,10 @@
  * @param {MatrixMath.Matrix} two Second matrix.
  * @return {boolean} Whether or not the two matrices differ.
  */
-const matricesDiffer = function (one, two) {
+const matricesDiffer = function (
+  one: ?Array<number>,
+  two: ?Array<number>,
+): boolean {
   if (one === two) {
     return false;
   }
