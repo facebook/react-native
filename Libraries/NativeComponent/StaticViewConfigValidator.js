@@ -10,9 +10,31 @@
 
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
-type Difference = {
-  path: $ReadOnlyArray<string>,
-  type: 'missing' | 'unequal' | 'unexpected',
+type Difference =
+  | {
+      type: 'missing',
+      path: Array<string>,
+      nativeValue: mixed,
+    }
+  | {
+      type: 'unequal',
+      path: Array<string>,
+      nativeValue: mixed,
+      staticValue: mixed,
+    }
+  | {
+      type: 'unexpected',
+      path: Array<string>,
+      staticValue: mixed,
+    };
+
+type ValidationResult = ValidResult | InvalidResult;
+type ValidResult = {
+  type: 'valid',
+};
+type InvalidResult = {
+  type: 'invalid',
+  differences: Array<Difference>,
 };
 
 /**
@@ -23,7 +45,7 @@ export function validate(
   name: string,
   nativeViewConfig: ViewConfig,
   staticViewConfig: ViewConfig,
-): ?string {
+): ValidationResult {
   const differences = [];
   accumulateDifferences(
     differences,
@@ -41,13 +63,27 @@ export function validate(
       validAttributes: staticViewConfig.validAttributes,
     },
   );
+
   if (differences.length === 0) {
-    return null;
+    return {type: 'valid'};
   }
+
+  return {
+    type: 'invalid',
+    differences,
+  };
+}
+
+export function stringifyValidationResult(
+  name: string,
+  validationResult: InvalidResult,
+): string {
+  const {differences} = validationResult;
   return [
     `StaticViewConfigValidator: Invalid static view config for '${name}'.`,
     '',
-    ...differences.map(({path, type}) => {
+    ...differences.map(difference => {
+      const {type, path} = difference;
       switch (type) {
         case 'missing':
           return `- '${path.join('.')}' is missing.`;
@@ -71,7 +107,11 @@ function accumulateDifferences(
     const nativeValue = nativeObject[nativeKey];
 
     if (!staticObject.hasOwnProperty(nativeKey)) {
-      differences.push({path: [...path, nativeKey], type: 'missing'});
+      differences.push({
+        path: [...path, nativeKey],
+        type: 'missing',
+        nativeValue,
+      });
       continue;
     }
 
@@ -94,13 +134,22 @@ function accumulateDifferences(
     }
 
     if (nativeValue !== staticValue) {
-      differences.push({path: [...path, nativeKey], type: 'unequal'});
+      differences.push({
+        path: [...path, nativeKey],
+        type: 'unequal',
+        nativeValue,
+        staticValue,
+      });
     }
   }
 
   for (const staticKey in staticObject) {
     if (!nativeObject.hasOwnProperty(staticKey)) {
-      differences.push({path: [...path, staticKey], type: 'unexpected'});
+      differences.push({
+        path: [...path, staticKey],
+        type: 'unexpected',
+        staticValue: staticObject[staticKey],
+      });
     }
   }
 }
