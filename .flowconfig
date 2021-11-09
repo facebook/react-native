@@ -30,7 +30,6 @@ flow/
 emoji=true
 
 exact_by_default=true
-indexed_access=false
 
 format.bracket_spacing=false
 
