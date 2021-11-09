@@ -3317,7 +3317,12 @@ flow-bin@^0.163.0:
   resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.163.0.tgz#c2cb62e336cfdeac035a4cc86e143e1e5ff4d1d0"
   integrity sha512-4rNdO/lT38/c+8SR4eZK+PthE9c3MFiDnr8TYBpIM77EkM2yl9Ug8N2oPPk0UJs6kG93Yb61G14s95dfSoUARA==
 
-flow-parser@0.*, flow-parser@^0.121.0:
+flow-parser@0.*:
+  version "0.163.0"
+  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.163.0.tgz#c2d5c77c57c53e8357016a837f3e3af04a0c87a6"
+  integrity sha512-txOsBcZ1nKsKtoAsBFnArFdq0cnPCmEHI5S2jQIgU1ZO1xtWpg64TsZSRktsaOyoWLpAvVxPap4Qbdd/TCJ3FQ==
+
+flow-parser@^0.121.0:
   version "0.121.0"
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.121.0.tgz#9f9898eaec91a9f7c323e9e992d81ab5c58e618f"
   integrity sha512-1gIBiWJNR0tKUNv8gZuk7l9rVX06OuLzY9AoGio7y/JT4V1IZErEMEq2TJS+PFcw/y0RshZ1J/27VfK1UQzYVg==
