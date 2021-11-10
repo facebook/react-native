@@ -168,7 +168,7 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       }
     };
 
-    _attachProps(nextProps) {
+    _attachProps(nextProps: any) {
       const oldPropsAnimated = this._propsAnimated;
 
       this._propsAnimated = new AnimatedProps(
@@ -234,12 +234,12 @@ function createAnimatedComponent<Props: {+[string]: mixed, ...}, Instance>(
       this._markUpdateComplete();
     }
 
-    UNSAFE_componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps: any) {
       this._waitForUpdate();
       this._attachProps(newProps);
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: any) {
       if (this._component !== this._prevComponent) {
         this._propsAnimated.setNativeView(this._component);
       }

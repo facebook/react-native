@@ -20,7 +20,11 @@ export default function useWindowDimensions():
   | DisplayMetricsAndroid {
   const [dimensions, setDimensions] = useState(() => Dimensions.get('window'));
   useEffect(() => {
-    function handleChange({window}) {
+    function handleChange({
+      window,
+    }:
+      | $FlowFixMe
+      | $TEMPORARY$object<{window: DisplayMetrics | DisplayMetricsAndroid}>) {
       if (
         dimensions.width !== window.width ||
         dimensions.height !== window.height ||

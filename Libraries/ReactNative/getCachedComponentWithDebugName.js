@@ -23,7 +23,9 @@ export default function getCachedComponentWithDisplayName(
   let ComponentWithDisplayName = cache.get(displayName);
 
   if (!ComponentWithDisplayName) {
-    ComponentWithDisplayName = ({children}) => children;
+    ComponentWithDisplayName = ({
+      children,
+    }: $TEMPORARY$object<{children: Node}>) => children;
     ComponentWithDisplayName.displayName = displayName;
     cache.set(displayName, ComponentWithDisplayName);
   }

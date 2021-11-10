@@ -60,7 +60,17 @@ function getImports(
     }
   });
 
-  function addImportsForNativeName(name) {
+  function addImportsForNativeName(
+    name:
+      | 'ColorPrimitive'
+      | 'EdgeInsetsPrimitive'
+      | 'ImageSourcePrimitive'
+      | 'PointPrimitive'
+      | $TEMPORARY$string<'ColorPrimitive'>
+      | $TEMPORARY$string<'EdgeInsetsPrimitive'>
+      | $TEMPORARY$string<'ImageSourcePrimitive'>
+      | $TEMPORARY$string<'PointPrimitive'>,
+  ) {
     switch (name) {
       case 'ColorPrimitive':
         if (type === 'delegate') {

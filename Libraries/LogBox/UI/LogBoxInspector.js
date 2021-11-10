@@ -92,7 +92,9 @@ const headerTitleMap = {
   component: 'Render Error',
 };
 
-function LogBoxInspectorBody(props) {
+function LogBoxInspectorBody(
+  props: $TEMPORARY$object<{log: LogBoxLog, onRetry: () => void}>,
+) {
   const [collapsed, setCollapsed] = React.useState(true);
 
   React.useEffect(() => {

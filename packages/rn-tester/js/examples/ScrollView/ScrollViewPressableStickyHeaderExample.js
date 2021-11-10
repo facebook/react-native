@@ -41,7 +41,7 @@ function StickyHeader() {
   );
 }
 
-function renderComponent1(i) {
+function renderComponent1(i: number) {
   return (
     <View
       key={i}

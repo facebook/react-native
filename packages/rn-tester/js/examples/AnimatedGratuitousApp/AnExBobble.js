@@ -35,7 +35,7 @@ class AnExBobble extends React.Component<Object, any> {
       return new Animated.ValueXY();
     });
     this.state.selectedBobble = null;
-    const bobblePanListener = (e, gestureState) => {
+    const bobblePanListener = (e: any, gestureState: any) => {
       // async events => change selection
       const newSelected = computeNewSelected(gestureState);
       if (this.state.selectedBobble !== newSelected) {

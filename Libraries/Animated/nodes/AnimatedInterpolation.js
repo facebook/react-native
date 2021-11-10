@@ -30,7 +30,7 @@ export type InterpolationConfigType = {
   extrapolateRight?: ExtrapolateType,
 };
 
-const linear = t => t;
+const linear = (t: number) => t;
 
 /**
  * Very handy helper to map input ranges to output ranges with an easing
@@ -248,7 +248,7 @@ function createInterpolationFromStringOutputRange(
   };
 }
 
-function isRgbOrRgba(range) {
+function isRgbOrRgba(range: string) {
   return typeof range === 'string' && range.startsWith('rgb');
 }
 

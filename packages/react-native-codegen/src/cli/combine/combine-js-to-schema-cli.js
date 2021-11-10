@@ -18,7 +18,7 @@ const path = require('path');
 
 const [outfile, ...fileList] = process.argv.slice(2);
 
-function filterJSFile(file) {
+function filterJSFile(file: string) {
   return (
     /^(Native.+|.+NativeComponent)/.test(path.basename(file)) &&
     // NativeUIManager will be deprecated by Fabric UIManager.

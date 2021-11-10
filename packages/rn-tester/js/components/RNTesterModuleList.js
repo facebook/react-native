@@ -97,7 +97,7 @@ const ExampleModuleRow = ({
   );
 };
 
-const renderSectionHeader = ({section}) => (
+const renderSectionHeader = ({section}: {section: any, ...}) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
       return (
@@ -118,7 +118,7 @@ const renderSectionHeader = ({section}) => (
 
 const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
   ({sections, toggleBookmark, handleModuleCardPress}) => {
-    const filter = ({example, filterRegex, category}) =>
+    const filter = ({example, filterRegex, category}: any) =>
       filterRegex.test(example.module.title) &&
       (!category || example.category === category) &&
       (!Platform.isTV || example.supportsTVOS);

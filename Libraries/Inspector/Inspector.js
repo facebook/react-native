@@ -167,7 +167,7 @@ class Inspector extends React.Component<
     }, 100);
   };
 
-  _onAgentShowNativeHighlight = node => {
+  _onAgentShowNativeHighlight = (node: any) => {
     clearTimeout(this._hideTimeoutID);
 
     // Shape of `node` is different in Fabric.

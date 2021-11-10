@@ -205,7 +205,23 @@ const styles = StyleSheet.create({
   },
 });
 
-function getHeight(pickerStyle, mode) {
+function getHeight(
+  pickerStyle: ?(
+    | 'compact'
+    | 'inline'
+    | 'spinner'
+    | $TEMPORARY$string<'compact'>
+    | $TEMPORARY$string<'inline'>
+    | $TEMPORARY$string<'spinner'>
+  ),
+  mode:
+    | 'date'
+    | 'datetime'
+    | 'time'
+    | $TEMPORARY$string<'date'>
+    | $TEMPORARY$string<'datetime'>
+    | $TEMPORARY$string<'time'>,
+) {
   if (pickerStyle === 'compact') {
     return styles.datePickerIOSCompact;
   }

@@ -121,7 +121,11 @@ function getData(element: Object): Object {
   };
 }
 
-function setInProps(internalInst, path: Array<string | number>, value: any) {
+function setInProps(
+  internalInst: any,
+  path: Array<string | number>,
+  value: any,
+) {
   const element = internalInst._currentElement;
   internalInst._currentElement = {
     ...element,
@@ -130,12 +134,12 @@ function setInProps(internalInst, path: Array<string | number>, value: any) {
   internalInst._instance.forceUpdate();
 }
 
-function setInState(inst, path: Array<string | number>, value: any) {
+function setInState(inst: any, path: Array<string | number>, value: any) {
   setIn(inst.state, path, value);
   inst.forceUpdate();
 }
 
-function setInContext(inst, path: Array<string | number>, value: any) {
+function setInContext(inst: any, path: Array<string | number>, value: any) {
   setIn(inst.context, path, value);
   inst.forceUpdate();
 }
@@ -148,7 +152,7 @@ function setIn(obj: Object, path: Array<string | number>, value: any) {
   }
 }
 
-function childrenList(children) {
+function childrenList(children: any) {
   const res = [];
   for (const name in children) {
     res.push(children[name]);
@@ -156,7 +160,12 @@ function childrenList(children) {
   return res;
 }
 
-function copyWithSetImpl(obj, path, idx, value) {
+function copyWithSetImpl(
+  obj: any | Array<any>,
+  path: Array<string | number>,
+  idx: number,
+  value: any,
+) {
   if (idx >= path.length) {
     return value;
   }

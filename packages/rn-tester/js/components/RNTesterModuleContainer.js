@@ -27,14 +27,14 @@ type Props = {
   onExampleCardPress?: ?(exampleName: string) => mixed,
 };
 
-function getExampleTitle(title, platform) {
+function getExampleTitle(title: $FlowFixMe, platform: $FlowFixMe) {
   return platform != null ? `${title} (${platform} only)` : title;
 }
 
 export default function RNTesterModuleContainer(props: Props): React.Node {
   const {module, example, onExampleCardPress} = props;
   const theme = React.useContext(RNTesterThemeContext);
-  const renderExample = (e, i) => {
+  const renderExample = (e: $FlowFixMe, i: $FlowFixMe) => {
     // Filter platform-specific es
     const {title, description, platform, render: ExampleComponent} = e;
     if (platform != null && Platform.OS !== platform) {
@@ -73,7 +73,8 @@ export default function RNTesterModuleContainer(props: Props): React.Node {
     );
   }
 
-  const filter = ({example: e, filterRegex}) => filterRegex.test(e.title);
+  const filter = ({example: e, filterRegex}: $FlowFixMe) =>
+    filterRegex.test(e.title);
 
   const sections = [
     {

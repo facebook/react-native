@@ -52,7 +52,7 @@ class RNTesterExampleFilter<T> extends React.Component<Props<T>, State> {
       );
     }
 
-    const filter = example => {
+    const filter = (example: T) => {
       const category = this.state.category;
       return (
         this.props.disableSearch ||
@@ -79,7 +79,11 @@ class RNTesterExampleFilter<T> extends React.Component<Props<T>, State> {
     );
   }
 
-  _renderFilteredSections(filteredSections): ?React.Element<any> {
+  _renderFilteredSections(
+    filteredSections: Array<
+      $TEMPORARY$object<{data: Array<T>, key: string, title: string}>,
+    >,
+  ): ?React.Element<any> {
     if (this.props.page === 'examples_page') {
       return (
         <ScrollView
