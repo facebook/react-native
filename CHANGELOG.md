@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.66.3
+
+### Changed
+
+- Rename deprecated `Keyboard.removeEventListener` to `Keyboard.removeListener`. ([8880c09076](https://github.com/facebook/react-native/commit/8880c09076e4727768ace26a74766cbe6f64021c) by [@yungsters](https://github.com/yungsters))
+
+### Fixed
+
+- Revert changes in Jest preprocessor to fix tests in external projects ([142090a5f3fa7](https://github.com/facebook/react-native/commit/142090a5f3fa7c3ab2ed4c536792e3f26582bd3b) by [@rubennorte](https://github.com/rubennorte))
+
 ## v0.66.2
 
 ### Fixed
