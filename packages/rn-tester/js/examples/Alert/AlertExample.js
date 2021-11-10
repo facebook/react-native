@@ -204,7 +204,7 @@ const AlertWithStylesPreferred = () => {
           Alert.alert('Foo Title', alertMessage, [
             {
               text: 'OK',
-              style: 'preferred',
+              isPreferred: 'preferred',
               onPress: () => setMessage('OK Pressed!'),
             },
             {
@@ -290,7 +290,7 @@ exports.examples = [
     title: 'Alert with styles',
     platform: 'ios',
     description:
-      "Alert buttons can be styled. Three button button styles are shown here - 'default' | 'cancel' | 'destructive'.",
+      "Alert buttons can be styled. There are three button styles - 'default' | 'cancel' | 'destructive'.",
     render(): React.Node {
       return <AlertWithStyles />;
     },
@@ -299,7 +299,7 @@ exports.examples = [
     title: 'Alert with styles + preferred',
     platform: 'ios',
     description:
-      "Alert buttons can be styled. Setting the style of a button as 'preferred' will give it emphasis over cancel buttons",
+      "Alert buttons with 'isPreferred' will be emphasized, even over cancel buttons",
     render(): React.Node {
       return <AlertWithStylesPreferred />;
     },

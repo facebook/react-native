@@ -17,14 +17,11 @@ export type AlertType =
   | 'plain-text'
   | 'secure-text'
   | 'login-password';
-export type AlertButtonStyle =
-  | 'default'
-  | 'cancel'
-  | 'destructive'
-  | 'preferred';
+export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
 export type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
+  isPreferred?: boolean,
   style?: AlertButtonStyle,
   ...
 }>;
@@ -127,7 +124,7 @@ class Alert {
             cancelButtonKey = String(index);
           } else if (btn.style === 'destructive') {
             destructiveButtonKey = String(index);
-          } else if (btn.style === 'preferred') {
+          } else if (btn.isPreferred) {
             preferredButtonKey = String(index);
           }
           if (btn.text || index < (callbackOrButtons || []).length - 1) {
