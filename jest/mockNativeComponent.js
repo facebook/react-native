@@ -11,8 +11,12 @@
 
 const React = require('react');
 
+let nativeTag = 1;
+
 module.exports = viewName => {
   const Component = class extends React.Component {
+    _nativeTag = nativeTag++;
+
     render() {
       return React.createElement(viewName, this.props, this.props.children);
     }

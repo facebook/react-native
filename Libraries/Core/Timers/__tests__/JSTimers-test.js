@@ -28,7 +28,7 @@ const JSTimers = require('../JSTimers');
 
 describe('JSTimers', function () {
   beforeEach(function () {
-    jest.spyOn(console, 'warn');
+    jest.spyOn(console, 'warn').mockReturnValue(undefined);
     global.setTimeout = JSTimers.setTimeout;
   });
 
