@@ -35,11 +35,6 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
                    updateOffset:(BOOL)updateOffset;
 
 /**
- * Find the first view controller whose view, or any subview is the specified view.
- */
-+ (UIEdgeInsets)contentInsetsForView:(UIView *)curView;
-
-/**
  * Layout direction of the view.
  * This is inherited from UIView+React, but we override it here
  * to improve performance and make subclassing/overriding possible/easier.

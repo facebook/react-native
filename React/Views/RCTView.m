@@ -11,6 +11,7 @@
 #import "RCTBorderDrawing.h"
 #import "RCTI18nUtil.h"
 #import "RCTLog.h"
+#import "RCTViewUtils.h"
 #import "UIView+React.h"
 
 UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
@@ -456,7 +457,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   CGPoint contentOffset = scrollView.contentOffset;
 
   if (parentView.automaticallyAdjustContentInsets) {
-    UIEdgeInsets autoInset = [self contentInsetsForView:parentView];
+    UIEdgeInsets autoInset = RCTContentInsets(parentView);
     baseInset.top += autoInset.top;
     baseInset.bottom += autoInset.bottom;
     baseInset.left += autoInset.left;
@@ -476,18 +477,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
       scrollView.contentOffset = contentOffset;
     }
   }
-}
-
-+ (UIEdgeInsets)contentInsetsForView:(UIView *)view
-{
-  while (view) {
-    UIViewController *controller = view.reactViewController;
-    if (controller) {
-      return controller.view.safeAreaInsets;
-    }
-    view = view.superview;
-  }
-  return UIEdgeInsetsZero;
 }
 
 #pragma mark - View Unmounting
