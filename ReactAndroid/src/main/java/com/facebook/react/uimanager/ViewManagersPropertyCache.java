@@ -45,7 +45,7 @@ import java.util.Map;
     protected final Method mSetter;
     protected final @Nullable Integer mIndex; /* non-null only for group setters */
 
-    // use ThreadLocal for every shadow thread
+    // The following Object arrays are used to prevent extra allocations from varargs when we call.
     private static final ThreadLocal<Object[]> VIEW_MGR_ARGS = createThreadLocalArray(2);
     private static final ThreadLocal<Object[]> VIEW_MGR_GROUP_ARGS = createThreadLocalArray(3);
     private static final ThreadLocal<Object[]> SHADOW_ARGS = createThreadLocalArray(1);
@@ -575,7 +575,7 @@ import java.util.Map;
     }
   }
 
-  private static ThreadLocal<Object[]> createThreadLocalArray(int size) {
+  private static ThreadLocal<Object[]> createThreadLocalArray(final int size) {
 
     if (size <= 0) {
       return null;
