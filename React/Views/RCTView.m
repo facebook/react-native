@@ -9,10 +9,8 @@
 
 #import "RCTAutoInsetsProtocol.h"
 #import "RCTBorderDrawing.h"
-#import "RCTConvert.h"
 #import "RCTI18nUtil.h"
 #import "RCTLog.h"
-#import "RCTUtils.h"
 #import "UIView+React.h"
 
 UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;

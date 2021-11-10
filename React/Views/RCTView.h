@@ -10,13 +10,10 @@
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
 #import <React/RCTPointerEvents.h>
-#import <React/RCTView.h>
 
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 
 @protocol RCTAutoInsetsProtocol;
-
-@class RCTView;
 
 @interface RCTView : UIView
 
