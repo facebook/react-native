@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-/* globals window: true */
-
 /**
  * Sets up global variables typical in most JavaScript environments.
  *

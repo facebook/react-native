@@ -140,21 +140,6 @@ describe('Animated tests', () => {
       expect(callback).toBeCalled();
     });
 
-    // This test is flaky and we are asking open source to fix it
-    // https://github.com/facebook/react-native/issues/21517
-    it.skip('send toValue when an underdamped spring stops', () => {
-      const anim = new Animated.Value(0);
-      const listener = jest.fn();
-      anim.addListener(listener);
-      Animated.spring(anim, {toValue: 15, useNativeDriver: false}).start();
-      jest.runAllTimers();
-      const lastValue =
-        listener.mock.calls[listener.mock.calls.length - 2][0].value;
-      expect(lastValue).not.toBe(15);
-      expect(lastValue).toBeCloseTo(15);
-      expect(anim.__getValue()).toBe(15);
-    });
-
     it('send toValue when a critically damped spring stops', () => {
       const anim = new Animated.Value(0);
       const listener = jest.fn();

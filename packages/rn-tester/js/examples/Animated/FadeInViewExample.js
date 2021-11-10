@@ -35,7 +35,7 @@ function FadeInView({
   children: React.Node,
 }) {
   //opacity 0
-  const [fadeAnim, setFadeAnim] = React.useState(() => new Animated.Value(0));
+  const [fadeAnim] = React.useState(() => new Animated.Value(0));
   React.useEffect(() => {
     Animated.timing(
       // Uses easing functions

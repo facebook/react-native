@@ -185,49 +185,51 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
 }
 
 class BlurOnSubmitExample extends React.Component<{...}> {
-  focusNextField = nextField => {
-    this.refs[nextField].focus();
-  };
+  ref1 = React.createRef();
+  ref2 = React.createRef();
+  ref3 = React.createRef();
+  ref4 = React.createRef();
+  ref5 = React.createRef();
 
   render() {
     return (
       <View>
         <TextInput
-          ref="1"
+          ref={this.ref1}
           style={styles.singleLine}
           placeholder="blurOnSubmit = false"
           returnKeyType="next"
           blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('2')}
+          onSubmitEditing={() => this.ref2.current?.focus()}
         />
         <TextInput
-          ref="2"
+          ref={this.ref2}
           style={styles.singleLine}
           keyboardType="email-address"
           placeholder="blurOnSubmit = false"
           returnKeyType="next"
           blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('3')}
+          onSubmitEditing={() => this.ref3.current?.focus()}
         />
         <TextInput
-          ref="3"
+          ref={this.ref3}
           style={styles.singleLine}
           keyboardType="url"
           placeholder="blurOnSubmit = false"
           returnKeyType="next"
           blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('4')}
+          onSubmitEditing={() => this.ref4.current?.focus()}
         />
         <TextInput
-          ref="4"
+          ref={this.ref4}
           style={styles.singleLine}
           keyboardType="numeric"
           placeholder="blurOnSubmit = false"
           blurOnSubmit={false}
-          onSubmitEditing={() => this.focusNextField('5')}
+          onSubmitEditing={() => this.ref5.current?.focus()}
         />
         <TextInput
-          ref="5"
+          ref={this.ref5}
           style={styles.singleLine}
           keyboardType="numbers-and-punctuation"
           placeholder="blurOnSubmit = true"

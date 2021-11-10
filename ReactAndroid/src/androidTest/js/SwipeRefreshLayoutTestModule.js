@@ -51,7 +51,7 @@ class SwipeRefreshLayoutTestApp extends React.Component {
   };
 
   componentDidMount() {
-    app = this;
+    app = this; // eslint-disable-line consistent-this
   }
 
   render() {

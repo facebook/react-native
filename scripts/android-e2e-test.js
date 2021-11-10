@@ -94,6 +94,7 @@ describe('Android Test App', function () {
           elem.click();
           driver.sleep(2000);
         },
+        // eslint-disable-next-line handle-callback-err
         err => {
           // ignoring if Reload JS button can't be located
         },
