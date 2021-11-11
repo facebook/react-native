@@ -22,7 +22,7 @@ extern "C" void react_native_assert_fail(
     const char *file,
     int line,
     const char *expr) {
-  // Print as an error so it shows up in logcat before crash....
+  // Print as an error so it shows up in logcat before crash...
   __android_log_print(
       ANDROID_LOG_ERROR,
       "ReactNative",
@@ -31,9 +31,9 @@ extern "C" void react_native_assert_fail(
       line,
       func,
       expr);
-  // Print as a fatal so it crashes and shows up in uploaded logs
-  __android_log_print(
-      ANDROID_LOG_FATAL,
+  // ...and trigger an abort so it crashes and shows up in uploaded logs.
+  __android_log_assert(
+      nullptr,
       "ReactNative",
       "%s:%d: function %s: assertion failed (%s)",
       file,
