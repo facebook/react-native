@@ -420,7 +420,7 @@ using namespace facebook::react;
     return;
   }
   _comingFromJS = YES;
-  if (![value isEqualToString:_backedTextInputView.attributedText.string]) {
+  if (value && ![value isEqualToString:_backedTextInputView.attributedText.string]) {
     NSAttributedString *attributedString =
         [[NSAttributedString alloc] initWithString:value attributes:_backedTextInputView.defaultTextAttributes];
     [self _setAttributedString:attributedString];
