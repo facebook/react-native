@@ -772,34 +772,55 @@ jobs:
                 git config --global user.email "react-native-bot@users.noreply.github.com"
                 git config --global user.name "npm Deployment Script"
                 echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
-      - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
-      - when:
-          condition:
-            equal: [ --dry-run, << parameters.publish_npm_args >> ]
-          steps:
-            - run:
-                name: Build release package as a job artifact
-                command: |
-                  mkdir -p build
-                  FILENAME=$(npm pack)
-                  mv $FILENAME build/
-                  echo $FILENAME > build/react-native-package-version
-            - store_artifacts:
-                path: ~/react-native/build/
-                destination: build
-            - persist_to_workspace:
-                root: .
-                paths:
-                  - build/*
+      # - run: node ./scripts/publish-npm.js << parameters.publish_npm_args >>
+      # - when:
+      #     condition:
+      #       equal: [ --dry-run, << parameters.publish_npm_args >> ]
+      #     steps:
+      #       - run:
+      #           name: Build release package as a job artifact
+      #           command: |
+      #             mkdir -p build
+      #             FILENAME=$(npm pack)
+      #             mv $FILENAME build/
+      #             echo $FILENAME > build/react-native-package-version
+      #       - store_artifacts:
+      #           path: ~/react-native/build/
+      #           destination: build
+      #       - persist_to_workspace:
+      #           root: .
+      #           paths:
+      #             - build/*
+
+      # - when:
+      #     condition:
+      #       matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
+      #     steps:
+      #       - install_github_bot_deps
+      #       - run:
+      #           name: Post link to PR build artifacts (pull-bot)
+      #           command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh || true
 
       - when:
           condition:
             matches: { pattern: '^pull\/.*$', value: << pipeline.git.branch >> }
           steps:
-            - install_github_bot_deps
             - run:
-                name: Post link to PR build artifacts (pull-bot)
-                command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh || true
+                name: Temporary test and update to 0.67.0-rc.3
+                command: |
+                  echo $PAT_USERNAME
+
+      - when:
+          condition:
+            equal: [ --release, << parameters.publish_npm_args >> ]
+          steps:
+            - run:
+                name: Update rn-diff-purge to generate upgrade-support diff
+                command: |
+                  curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    -u "$PAT_USERNAME:$PAT_TOKEN" \
+                    -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
 
   # -------------------------
   #    JOBS: Nightly
@@ -824,6 +845,7 @@ workflows:
       - build_npm_package:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
+          context: react-native-bot
           filters:
             branches:
               only:
@@ -899,6 +921,7 @@ workflows:
     jobs:
       - build_npm_package:
           name: build_and_publish_npm_package
+          context: react-native-bot
           publish_npm_args: --release
           filters:
             # Both of the following conditions must be included!
