@@ -801,6 +801,18 @@ jobs:
                 name: Post link to PR build artifacts (pull-bot)
                 command: GITHUB_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" scripts/circleci/post-artifacts-link.sh || true
 
+      - when:
+          condition:
+            equal: [ --release, << parameters.publish_npm_args >> ]
+          steps:
+            - run:
+                name: Update rn-diff-purge to generate upgrade-support diff
+                command: |
+                  curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    -u "$PAT_USERNAME:$PAT_TOKEN" \
+                    -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
+
   # -------------------------
   #    JOBS: Nightly
   # -------------------------
@@ -899,6 +911,7 @@ workflows:
     jobs:
       - build_npm_package:
           name: build_and_publish_npm_package
+          context: react-native-bot
           publish_npm_args: --release
           filters:
             # Both of the following conditions must be included!
