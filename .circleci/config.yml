@@ -846,12 +846,12 @@ workflows:
           # Build a release package on every untagged commit, but do not publish to npm.
           publish_npm_args: --dry-run
           context: react-native-bot
-          filters:
-            branches:
-              only:
-                - main
-                - /^pull\/.*$/
-                - /^(\d+)\.(\d+)-stable$/
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
+          #       - /^pull\/.*$/
+          #       - /^(\d+)\.(\d+)-stable$/
       - test_js:
           run_disabled_tests: false
           filters:
