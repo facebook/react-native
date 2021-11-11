@@ -966,15 +966,13 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode);
 
 #if !TARGET_OS_OSX && RCT_DEV // TODO(macOS GH#774)
-          if ([[self->_bridge devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
-            CGSize imagePixelSize = RCTSizeInPixels(image.size, UIImageGetScale(image)); // TODO(macOS GH#774)
-            CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
-            if (imagePixelSize.width * imagePixelSize.height >
-                screenPixelSize.width * screenPixelSize.height) {
-              RCTLogInfo(@"[PERF ASSETS] Loading image at size %@, which is larger "
-                        "than the screen size %@", NSStringFromCGSize(imagePixelSize),
-                        NSStringFromCGSize(screenPixelSize));
-            }
+          CGSize imagePixelSize = RCTSizeInPixels(image.size, UIImageGetScale(image)); // TODO(macOS GH#774)
+          CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
+          if (imagePixelSize.width * imagePixelSize.height >
+              screenPixelSize.width * screenPixelSize.height) {
+            RCTLogInfo(@"[PERF ASSETS] Loading image at size %@, which is larger "
+                      "than the screen size %@", NSStringFromCGSize(imagePixelSize),
+                      NSStringFromCGSize(screenPixelSize));
           }
 #endif
 

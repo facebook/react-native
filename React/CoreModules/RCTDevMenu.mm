@@ -511,7 +511,6 @@ RCT_EXPORT_METHOD(show)
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
 - (NSMenu *)menu
 {
-  NSMenu *menu = nil;
   if ([_bridge.devSettings isSecondaryClickToShowDevMenuEnabled]) {
     NSMenu *menu = nil;
     if (_bridge) {

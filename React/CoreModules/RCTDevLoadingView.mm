@@ -71,7 +71,7 @@ RCT_EXPORT_MODULE()
                                                name:RCTJavaScriptDidFailToLoadNotification
                                              object:nil];
 
-  if ([[bridge devSettings] isDevModeEnabled] && bridge.loading) { // TODO(OSS Candidate ISS#2710739)
+  if (bridge.loading) {
     [self showWithURL:bridge.bundleURL];
   }
 }
@@ -339,7 +339,7 @@ RCT_EXPORT_METHOD(hide)
 + (void)setEnabled:(BOOL)enabled
 {
 }
-- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor
+- (void)showMessage:(NSString *)message color:(RCTUIColor *)color backgroundColor:(RCTUIColor *)backgroundColor // TODO(macOS GH#774) RCTUIColor
 {
 }
 - (void)showMessage:(NSString *)message withColor:(NSNumber *)color withBackgroundColor:(NSNumber *)backgroundColor

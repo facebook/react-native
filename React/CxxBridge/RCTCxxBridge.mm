@@ -470,7 +470,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 #if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
         // [TODO(OSS Candidate ISS#2710739)
         // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
-        if ([weakSelf isValid] && [[weakSelf devSettings] isDevModeEnabled]) {
+        if ([weakSelf isValid]) {
           id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView"
                                                         lazilyLoadIfNecessary:YES];
           [loadingView updateProgress:progressData];
@@ -673,9 +673,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   // This can only be false if the bridge was invalidated before startup completed
   if (_reactInstance) {
 #if RCT_DEV
-    if ([[self devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
-      executorFactory = std::make_shared<GetDescAdapter>(self, executorFactory);
-    } // TODO(OSS Candidate ISS#2710739)
+    executorFactory = std::make_shared<GetDescAdapter>(self, executorFactory);
 #endif
 
     [self _initializeBridgeLocked:executorFactory];
@@ -1037,9 +1035,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
   }
 
-  if (self.devSettings.isDevModeEnabled) { // TODO(OSS Candidate ISS#2710739)
-    [self.devSettings setupHMRClientWithBundleURL:self.bundleURL];
-  }
+  [self.devSettings setupHMRClientWithBundleURL:self.bundleURL];
 }
 
 #if RCT_DEV_MENU

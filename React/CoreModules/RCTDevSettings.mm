@@ -250,18 +250,6 @@ RCT_EXPORT_MODULE()
 #endif // RCT_ENABLE_INSPECTOR
 }
 
-// [TODO(OSS Candidate ISS#2710739)
-RCT_EXPORT_METHOD(setDevModeEnabled:(BOOL)enabled)
-{
-  [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingDevModeEnabled];
-}
-
-- (BOOL)isDevModeEnabled
-{
-  return [[self settingForKey:kRCTDevSettingDevModeEnabled] boolValue];
-}
-// ]TODO(OSS Candidate ISS#2710739)
-
 - (BOOL)isRemoteDebuggingAvailable
 {
   if (RCTTurboModuleEnabled()) {

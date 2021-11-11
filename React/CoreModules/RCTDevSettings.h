@@ -41,14 +41,6 @@
 
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource;
 
-// [TODO(OSS Candidate ISS#2710739)
-/**
- * Whether Dev Mode is enabled meaning the development tools
- * such as the debug executors, dev menu, red box, etc. are available.
- */
-@property (nonatomic, assign, setter=setDevModeEnabled:) BOOL isDevModeEnabled;
-// ]TODO(OSS Candidate ISS#2710739)
-
 @property (nonatomic, readonly) BOOL isHotLoadingAvailable;
 @property (nonatomic, readonly) BOOL isLiveReloadAvailable;
 @property (nonatomic, readonly) BOOL isRemoteDebuggingAvailable;

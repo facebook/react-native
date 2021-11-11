@@ -467,9 +467,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   NSMenu *menu = nil;
 #if __has_include("RCTDevMenu.h") && RCT_DEV
-  if ([[_bridge devSettings] isDevModeEnabled]) {
-    menu = [[_bridge devMenu] menu];
-  }
+  menu = [[_bridge devMenu] menu];
 #endif
   if (menu == nil) {
     menu = [super menuForEvent:event];
