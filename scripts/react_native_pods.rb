@@ -286,8 +286,9 @@ def use_react_native_codegen_discovery!(options={})
   Pod::UI.warn '[Codegen] warn: using experimental new codegen integration'
   react_native_path = options[:react_native_path] ||= "../node_modules/react-native"
   app_path = options[:app_path]
+  fabric_enabled = options[:fabric_enabled] ||= false
   if app_path
-    Pod::Executable.execute_command('node', ["#{react_native_path}/scripts/generate-artifacts.js", "-p", "#{app_path}", "-o", Pod::Config.instance.installation_root])
+    Pod::Executable.execute_command('node', ["#{react_native_path}/scripts/generate-artifacts.js", "-p", "#{app_path}", "-o", Pod::Config.instance.installation_root, "-e", "#{fabric_enabled}"])
   else
     Pod::UI.warn '[Codegen] error: no app_path was provided'
     exit 1

@@ -42,12 +42,19 @@ const argv = yargs
     description:
       'The key that contains the codegen configuration in the config file.',
   })
+  .option('e', {
+    alias: 'fabricEnabled',
+    default: true,
+    description: 'A flag to control whether to generate fabric components.',
+    boolean: 'e',
+  })
   .usage('Usage: $0 -p [path to app]')
   .demandOption(['p']).argv;
 
 const RN_ROOT = path.join(__dirname, '..');
 const CODEGEN_CONFIG_FILENAME = argv.f;
 const CODEGEN_CONFIG_KEY = argv.k;
+const CODEGEN_FABRIC_ENABLED = argv.e;
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
 const CODEGEN_NPM_PATH = `${RN_ROOT}/../react-native-codegen`;
 const CORE_LIBRARIES = new Set(['rncore', 'FBReactNativeSpec']);
@@ -157,6 +164,9 @@ function main(appRootDir, outputPath) {
 
     // 5. For each codegen-enabled library, generate the native code spec files
     libraries.forEach(library => {
+      if (!CODEGEN_FABRIC_ENABLED && library.config.type === 'components') {
+        return;
+      }
       const tmpDir = fs.mkdtempSync(
         path.join(os.tmpdir(), library.config.name),
       );
