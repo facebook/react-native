@@ -168,8 +168,10 @@ function main(appRootDir, outputPath) {
       const pathToOutputDirIOS = path.join(
         outputPath ? outputPath : appRootDir,
         'build/generated/ios',
+        library.config.type === 'components'
+          ? 'react/renderer/components'
+          : './',
         library.config.name,
-        'react/renderer/components',
       );
       const pathToTempOutputDir = path.join(tmpDir, 'out');
 
