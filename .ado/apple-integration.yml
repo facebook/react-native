@@ -1,0 +1,97 @@
+name: Integrate $(Date:yyyyMMdd).$(Rev:.r)
+variables:
+  - template: variables/mac.yml
+trigger:
+  branches:
+    include:
+      - master
+      - '*-stable'
+  paths:
+    exclude:
+      - '*.md'
+pr:
+  branches:
+    include:
+      - master
+      - '*-stable'
+  paths:
+    exclude:
+      - '*.md'
+jobs:
+  - job: react_native_test_app
+    displayName: react-native-test-app
+    pool:
+      vmImage: $(VmImage)
+      demands: ['npm', 'sh', 'xcode']
+    workspace:
+      clean: all
+    timeoutInMinutes: 60
+    cancelTimeoutInMinutes: 5
+    steps:
+      - template: templates/apple-node-setup.yml
+      - template: templates/apple-xcode-select.yml
+        parameters:
+          slice_name: $(slice_name)
+          xcode_version: $(xcode_version)
+      - bash: |
+          echo "##vso[task.setvariable variable=package_version]$(cat package.json | jq .version | awk '{ print substr($0, 2, length($0) - 2) }')"
+          echo "##vso[task.setvariable variable=react_version]$(cat package.json | jq .peerDependencies.react)"
+          echo "##vso[task.setvariable variable=rncli_version]$(cat package.json | jq '.dependencies."@react-native-community/cli"')"
+        displayName: 'Determine react-native-macos version'
+      - bash: |
+          npm pack
+        displayName: 'Pack react-native-macos'
+      - bash: |
+          git clone --progress https://github.com/microsoft/react-native-test-app.git
+        displayName: Checkout react-native-test-app
+      - bash: |
+          set -eo pipefail
+          cat package.json |
+            jq '.devDependencies["react"] = $(react_version)' |
+            jq '.devDependencies["react-native"] = "^0.64"' |
+            jq '.devDependencies["react-native-macos"] = "../react-native-macos-$(package_version).tgz"' |
+            jq 'del(.devDependencies["@react-native-community/cli"])' |
+            jq 'del(.devDependencies["@react-native-community/cli-platform-android"])' |
+            jq 'del(.devDependencies["@react-native-community/cli-platform-ios"])' |
+            jq 'del(.devDependencies["react-native-windows"])' > .package.json
+          mv .package.json package.json
+          cat package.json | jq .devDependencies
+        displayName: Modify react-native-test-app dependencies
+        workingDirectory: react-native-test-app
+      - bash: |
+          set -eo pipefail
+          cat package.json |
+            jq '.devDependencies["@react-native-community/cli"] = $(rncli_version)' |
+            jq '.devDependencies["@react-native-community/cli-platform-android"] = $(rncli_version)' |
+            jq '.devDependencies["@react-native-community/cli-platform-ios"] = $(rncli_version)' |
+            jq '.devDependencies["react"] = $(react_version)' |
+            jq '.devDependencies["react-native"] = "^0.64"' |
+            jq '.devDependencies["react-native-macos"] = "../../react-native-macos-$(package_version).tgz"' |
+            jq 'del(.devDependencies["react-native-windows"])' > .package.json
+          mv .package.json package.json
+          cat package.json | jq .devDependencies
+        displayName: Modify example app dependencies
+        workingDirectory: react-native-test-app/example
+      - bash: |
+          yarn --no-immutable
+        displayName: Install npm dependencies
+        workingDirectory: react-native-test-app
+      - bash: |
+          yarn build:macos || yarn build:macos
+        displayName: Bundle JavaScript
+        workingDirectory: react-native-test-app/example
+      - bash: |
+          pod install --project-directory=macos
+        displayName: Install Pods
+        workingDirectory: react-native-test-app/example
+      - bash: |
+          set -eo pipefail
+          ../scripts/xcodebuild.sh macos/Example.xcworkspace build
+        displayName: Build Intel
+        workingDirectory: react-native-test-app/example
+      - bash: |
+          set -eo pipefail
+          ../scripts/xcodebuild.sh macos/Example.xcworkspace clean
+          ../scripts/xcodebuild.sh macos/Example.xcworkspace build ARCHS=arm64
+        displayName: Build ARM
+        workingDirectory: react-native-test-app/example
