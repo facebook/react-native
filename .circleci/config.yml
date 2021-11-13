@@ -166,7 +166,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v1-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
+            - v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
       - run:
           name: Download Dependencies Using Gradle
           command: ./scripts/circleci/gradle_download_deps.sh
@@ -175,7 +175,7 @@ commands:
             - ~/.gradle
             - ReactAndroid/build/downloads
             - ReactAndroid/build/third-party-ndk
-          key: v1-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
+          key: v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
 
   download_buck_dependencies:
     steps:
