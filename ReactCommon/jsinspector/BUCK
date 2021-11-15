@@ -32,4 +32,5 @@ rn_xplat_cxx_library(
     visibility = [
         "PUBLIC",
     ],
+    windows_compiler_flags = ["/WX-"],  # Do not treat all warnings as errors
 )
