@@ -165,7 +165,7 @@ const SwitchWithForwardedRef: React.AbstractComponent<
     setNative({value: event.nativeEvent.value});
   };
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     // This is necessary in case native updates the switch and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
