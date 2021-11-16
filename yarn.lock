@@ -3627,10 +3627,10 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-hermes-engine@~0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.9.0.tgz#84d9cfe84e8f6b1b2020d6e71b350cec84ed982f"
-  integrity sha512-r7U+Y4P2Qg/igFVZN+DpT7JFfXUn1MM4dFne8aW+cCrF6RRymof+VqrUHs1kl07j8h8V2CNesU19RKgWbr3qPw==
+hermes-engine@~0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.10.0.tgz#3a8eca6bbde31e0a2881f265f7c3216ae44c4015"
+  integrity sha512-SiBo9rvuWetTIQGPPYwRHP0Omo/Iw/yd0sujWR0bW08+syIO0qDpo/fgx7GrY5PEy8wLcVz8v7adET2i5DOmJg==
 
 hermes-parser@0.4.7:
   version "0.4.7"
