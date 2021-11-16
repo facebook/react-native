@@ -221,17 +221,7 @@
     [_customRefreshControl removeFromSuperview];
   }
   _customRefreshControl = refreshControl;
-  // We have to set this because we can't always guarantee the
-  // `RCTCustomRefreshContolProtocol`'s superview will always be of class
-  // `UIScrollView` like we were previously
-  if ([_customRefreshControl respondsToSelector:@selector(setScrollView:)]) {
-    _customRefreshControl.scrollView = self;
-  }
-  if ([refreshControl isKindOfClass:UIRefreshControl.class]) {
-    self.refreshControl = (UIRefreshControl *)refreshControl;
-  } else {
-    [self addSubview:_customRefreshControl];
-  }
+  [self addSubview:_customRefreshControl];
 }
 
 - (void)setPinchGestureEnabled:(BOOL)pinchGestureEnabled
@@ -407,7 +397,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 #if !TARGET_OS_TV
   // Adjust the refresh control frame if the scrollview layout changes.
   UIView<RCTCustomRefreshContolProtocol> *refreshControl = _scrollView.customRefreshControl;
-  if (refreshControl && refreshControl.isRefreshing && ![refreshControl isKindOfClass:UIRefreshControl.class]) {
+  if (refreshControl && refreshControl.isRefreshing) {
     refreshControl.frame =
         (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
   }
