@@ -149,9 +149,6 @@ android {
         ndkPath project.property("ANDROID_NDK_PATH")
     }
 
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
     flavorDimensions "vm"
     productFlavors {
         hermes {
