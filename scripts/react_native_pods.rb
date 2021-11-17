@@ -73,6 +73,7 @@ def use_react_native! (options={})
   pod temp_podinfo['spec']['name'], :path => temp_podinfo['path']
 
   if fabric_enabled
+    checkAndGenerateEmptyThirdPartyProvider!(prefix)
     pod 'React-Fabric', :path => "#{prefix}/ReactCommon"
     pod 'React-rncore', :path => "#{prefix}/ReactCommon"
     pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
@@ -201,6 +202,36 @@ def react_native_post_install(installer)
   fix_library_search_paths(installer)
 end
 
+# This is a temporary supporting function until we enable use_react_native_codegen_discovery by default.
+def checkAndGenerateEmptyThirdPartyProvider!(react_native_path)
+  return if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+
+  relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+  output_dir = "#{relative_installation_root}/#{$CODEGEN_OUTPUT_DIR}"
+
+  provider_h_path = "#{output_dir}/RCTThirdPartyFabricComponentsProvider.h"
+  provider_cpp_path ="#{output_dir}/RCTThirdPartyFabricComponentsProvider.cpp"
+
+  if(!File.exist?(provider_h_path) || !File.exist?(provider_cpp_path))
+    # Just use a temp empty schema list.
+    temp_schema_list_path = "#{output_dir}/tmpSchemaList.txt"
+    File.open(temp_schema_list_path, 'w') do |f|
+      f.write('[]')
+      f.fsync
+    end
+
+    Pod::UI.puts '[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider'
+    Pod::Executable.execute_command(
+      'node',
+      [
+        "#{react_native_path}/scripts/generate-provider-cli.js",
+        "--platform", 'ios',
+        "--schemaListPath", temp_schema_list_path,
+        "--outputDir", "#{output_dir}"
+      ])
+    File.delete(temp_schema_list_path) if File.exist?(temp_schema_list_path)
+  end
+end
 
 def generate_temp_pod_spec_for_codegen!(fabric_enabled)
   relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
@@ -243,7 +274,8 @@ def generate_temp_pod_spec_for_codegen!(fabric_enabled)
         "\"$(PODS_ROOT)/boost\"",
         "\"$(PODS_ROOT)/RCT-Folly\"",
         "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
-        "\"$(PODS_ROOT)/Headers/Private/React-Fabric\""
+        "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
+        "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
       ].join(' ')
     },
     'dependencies': {
