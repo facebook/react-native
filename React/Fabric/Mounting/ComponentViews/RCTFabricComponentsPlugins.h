@@ -17,6 +17,7 @@
 // OSS-compatibility layer
 
 #import <Foundation/Foundation.h>
+#import <RCTThirdPartyFabricComponentsProvider.h>
 #import <React/RCTComponentViewProtocol.h>
 
 #pragma GCC diagnostic push
