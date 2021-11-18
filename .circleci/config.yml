@@ -93,6 +93,7 @@ commands:
           key: v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
 
   build_codegen:
+    steps:
       - run:
           name: "Codegen: Build react-native-codegen package"
           command: cd packages/react-native-codegen && yarn build
