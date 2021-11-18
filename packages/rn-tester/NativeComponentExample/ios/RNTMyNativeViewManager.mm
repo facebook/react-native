@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTViewManager.h>
-#import <React/RCTUIManager.h>
 #import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTViewManager.h>
 
 @interface RNTMyNativeViewManager : RCTViewManager
 @end
@@ -18,15 +18,14 @@ RCT_EXPORT_MODULE(RNTMyNativeView)
 
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 
-RCT_EXPORT_METHOD(callNativeMethodToChangeBackgroundColor:(nonnull NSNumber *)reactTag
-                                                   color:(NSString *)color
-) {
-    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-      UIView *view = viewRegistry[reactTag];
-      if (!view || ![view isKindOfClass:[UIView class]]) {
-          RCTLogError(@"Cannot find NativeView with tag #%@", reactTag);
-          return;
-      }
+RCT_EXPORT_METHOD(callNativeMethodToChangeBackgroundColor : (nonnull NSNumber *)reactTag color : (NSString *)color)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    if (!view || ![view isKindOfClass:[UIView class]]) {
+      RCTLogError(@"Cannot find NativeView with tag #%@", reactTag);
+      return;
+    }
 
     unsigned rgbValue = 0;
     NSString *colorString = [NSString stringWithCString:std::string([color UTF8String]).c_str()
@@ -35,9 +34,11 @@ RCT_EXPORT_METHOD(callNativeMethodToChangeBackgroundColor:(nonnull NSNumber *)re
     [scanner setScanLocation:1]; // bypass '#' character
     [scanner scanHexInt:&rgbValue];
 
-      view.backgroundColor = [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
-    }];
-
+    view.backgroundColor = [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255.0
+                                           green:((rgbValue & 0xFF00) >> 8) / 255.0
+                                            blue:(rgbValue & 0xFF) / 255.0
+                                           alpha:1.0];
+  }];
 }
 
 - (UIView *)view

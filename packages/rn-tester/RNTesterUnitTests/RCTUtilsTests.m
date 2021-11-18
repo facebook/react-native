@@ -10,24 +10,25 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-static NSString * RCTLogsError(void (^block)(void))
+static NSString *RCTLogsError(void (^block)(void))
 {
-  __block NSString* loggedMessage = @"";
+  __block NSString *loggedMessage = @"";
   __block BOOL loggedError = NO;
-  RCTPerformBlockWithLogFunction(block, ^(RCTLogLevel level,
-                                          __unused RCTLogSource source,
-                                          __unused NSString *fileName,
-                                          __unused NSNumber *lineNumber,
-                                          NSString *message) {
-    loggedError = (level == RCTLogLevelError);
-    loggedMessage = message;
-  });
+  RCTPerformBlockWithLogFunction(
+      block,
+      ^(RCTLogLevel level,
+        __unused RCTLogSource source,
+        __unused NSString *fileName,
+        __unused NSNumber *lineNumber,
+        NSString *message) {
+        loggedError = (level == RCTLogLevelError);
+        loggedMessage = message;
+      });
   if (loggedError) {
     return loggedMessage;
   }
   return nil;
 }
-
 
 @interface RCTUtilsTests : XCTestCase
 
@@ -51,13 +52,17 @@ static NSString * RCTLogsError(void (^block)(void))
 
 - (void)testRCTValidateTypeOfViewCommandArgument
 {
-  XCTAssertEqualObjects(RCTLogsError(^{
-    RCTValidateTypeOfViewCommandArgument(@"str", [NSNumber class], @"number", @"ScrollView", @"scrollTo", @"2nd");
-  }), @"ScrollView command scrollTo received 2nd argument of type string, expected number.");
+  XCTAssertEqualObjects(
+      RCTLogsError(^{
+        RCTValidateTypeOfViewCommandArgument(@"str", [NSNumber class], @"number", @"ScrollView", @"scrollTo", @"2nd");
+      }),
+      @"ScrollView command scrollTo received 2nd argument of type string, expected number.");
 
-  XCTAssertEqualObjects(RCTLogsError(^{
-    RCTValidateTypeOfViewCommandArgument(@"str", [NSString class], @"string", @"ScrollView", @"scrollTo", @"1st");
-  }), nil);
+  XCTAssertEqualObjects(
+      RCTLogsError(^{
+        RCTValidateTypeOfViewCommandArgument(@"str", [NSString class], @"string", @"ScrollView", @"scrollTo", @"1st");
+      }),
+      nil);
 }
 
 @end

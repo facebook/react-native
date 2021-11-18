@@ -9,6 +9,6 @@
 
 // TODO: Import every prop and event to asset they're generated
 
-int main(){
-    return 0;
+int main() {
+  return 0;
 }
