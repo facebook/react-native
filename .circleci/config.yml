@@ -92,6 +92,11 @@ commands:
             - ~/.cache/yarn
           key: v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
 
+  build_codegen:
+      - run:
+          name: "Yarn: Install dependencies (GitHub bots)"
+          command: cd packages/react-native-codegen && yarn build
+
   install_buck_tooling:
     steps:
       - restore_cache:
@@ -367,6 +372,7 @@ jobs:
       - setup_artifacts
       - setup_ruby
       - run_yarn
+      - build_codegen
 
       - run: |
           cd packages/rn-tester
