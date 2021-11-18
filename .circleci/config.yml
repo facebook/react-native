@@ -94,7 +94,7 @@ commands:
 
   build_codegen:
       - run:
-          name: "Yarn: Install dependencies (GitHub bots)"
+          name: "Codegen: Build react-native-codegen package"
           command: cd packages/react-native-codegen && yarn build
 
   install_buck_tooling:
