@@ -21,7 +21,7 @@ const DeprecatedImagePropType = {
     DeprecatedImageStylePropTypes,
   ): ReactPropsCheckType),
   /**
-   * See https://reactnative.dev/docs/image.html#source
+   * See https://reactnative.dev/docs/image#source
    */
   source: (PropTypes.oneOfType([
     PropTypes.shape({
@@ -57,15 +57,15 @@ const DeprecatedImagePropType = {
   /**
    * blurRadius: the blur radius of the blur filter added to the image
    *
-   * See https://reactnative.dev/docs/image.html#blurradius
+   * See https://reactnative.dev/docs/image#blurradius
    */
   blurRadius: PropTypes.number,
   /**
-   * See https://reactnative.dev/docs/image.html#defaultsource
+   * See https://reactnative.dev/docs/image#defaultsource
    */
   defaultSource: PropTypes.number,
   /**
-   * See https://reactnative.dev/docs/image.html#loadingindicatorsource
+   * See https://reactnative.dev/docs/image#loadingindicatorsource
    */
   loadingIndicatorSource: (PropTypes.oneOfType([
     PropTypes.shape({
@@ -104,7 +104,7 @@ const DeprecatedImagePropType = {
    * The mechanism that should be used to resize the image when the image's dimensions
    * differ from the image view's dimensions. Defaults to `auto`.
    *
-   * See https://reactnative.dev/docs/image.html#resizemethod
+   * See https://reactnative.dev/docs/image#resizemethod
    */
   resizeMethod: (PropTypes.oneOf([
     'auto',
@@ -115,7 +115,7 @@ const DeprecatedImagePropType = {
    * Determines how to resize the image when the frame doesn't match the raw
    * image dimensions.
    *
-   * See https://reactnative.dev/docs/image.html#resizemode
+   * See https://reactnative.dev/docs/image#resizemode
    */
   resizeMode: (PropTypes.oneOf([
     'cover',

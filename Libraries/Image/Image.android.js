@@ -32,7 +32,7 @@ function generateRequestId() {
 /**
  * Retrieve the width and height (in pixels) of an image prior to displaying it
  *
- * See https://reactnative.dev/docs/image.html#getsize
+ * See https://reactnative.dev/docs/image#getsize
  */
 function getSize(
   url: string,
@@ -55,7 +55,7 @@ function getSize(
  * Retrieve the width and height (in pixels) of an image prior to displaying it
  * with the ability to provide the headers for the request
  *
- * See https://reactnative.dev/docs/image.html#getsizewithheaders
+ * See https://reactnative.dev/docs/image#getsizewithheaders
  */
 function getSizeWithHeaders(
   url: string,
@@ -98,7 +98,7 @@ function abortPrefetch(requestId: number) {
 /**
  * Perform cache interrogation.
  *
- * See https://reactnative.dev/docs/image.html#querycache
+ * See https://reactnative.dev/docs/image#querycache
  */
 async function queryCache(
   urls: Array<string>,
@@ -121,7 +121,7 @@ type ImageComponentStatics = $ReadOnly<{|
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * See https://reactnative.dev/docs/image.html
+ * See https://reactnative.dev/docs/image
  */
 let Image = (props: ImagePropsType, forwardedRef) => {
   let source = resolveAssetSource(props.source);
@@ -227,7 +227,7 @@ Image.displayName = 'Image';
 /**
  * Retrieve the width and height (in pixels) of an image prior to displaying it
  *
- * See https://reactnative.dev/docs/image.html#getsize
+ * See https://reactnative.dev/docs/image#getsize
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -238,7 +238,7 @@ Image.getSize = getSize;
  * Retrieve the width and height (in pixels) of an image prior to displaying it
  * with the ability to provide the headers for the request
  *
- * See https://reactnative.dev/docs/image.html#getsizewithheaders
+ * See https://reactnative.dev/docs/image#getsizewithheaders
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -249,7 +249,7 @@ Image.getSizeWithHeaders = getSizeWithHeaders;
  * Prefetches a remote image for later use by downloading it to the disk
  * cache
  *
- * See https://reactnative.dev/docs/image.html#prefetch
+ * See https://reactnative.dev/docs/image#prefetch
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -260,7 +260,7 @@ Image.prefetch = prefetch;
  * Prefetches a remote image for later use by downloading it to the disk
  * cache, and adds metadata for queryRootName and rootTag.
  *
- * See https://reactnative.dev/docs/image.html#prefetch
+ * See https://reactnative.dev/docs/image#prefetch
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -270,7 +270,7 @@ Image.prefetchWithMetadata = prefetchWithMetadata;
 /**
  * Abort prefetch request.
  *
- * See https://reactnative.dev/docs/image.html#abortprefetch
+ * See https://reactnative.dev/docs/image#abortprefetch
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -280,7 +280,7 @@ Image.abortPrefetch = abortPrefetch;
 /**
  * Perform cache interrogation.
  *
- * See https://reactnative.dev/docs/image.html#querycache
+ * See https://reactnative.dev/docs/image#querycache
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
@@ -290,7 +290,7 @@ Image.queryCache = queryCache;
 /**
  * Resolves an asset reference into an object.
  *
- * See https://reactnative.dev/docs/image.html#resolveassetsource
+ * See https://reactnative.dev/docs/image#resolveassetsource
  */
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
