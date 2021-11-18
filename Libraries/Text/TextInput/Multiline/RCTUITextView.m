@@ -145,6 +145,12 @@ static UIColor *defaultPlaceholderColor()
   _placeholderView.textAlignment = textAlignment;
 }
 
+- (void)setAttributedText:(NSAttributedString *)attributedText
+{
+  [super setAttributedText:attributedText];
+  [self textDidChange];
+}
+
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
 {
   if (!notifyDelegate) {
