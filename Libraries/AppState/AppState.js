@@ -91,7 +91,7 @@ class AppState {
    * Add a handler to AppState changes by listening to the `change` event type
    * and providing the handler.
    *
-   * See https://reactnative.dev/docs/appstate.html#addeventlistener
+   * See https://reactnative.dev/docs/appstate#addeventlistener
    */
   addEventListener<K: $Keys<AppStateEventDefinitions>>(
     type: K,
