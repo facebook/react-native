@@ -110,6 +110,11 @@ void TextInputEventEmitter::onKeyPress(
       EventPriority::AsynchronousBatched);
 }
 
+void TextInputEventEmitter::onScroll(
+    TextInputMetrics const &textInputMetrics) const {
+  dispatchTextInputEvent("onScroll", textInputMetrics);
+}
+
 void TextInputEventEmitter::dispatchTextInputEvent(
     std::string const &name,
     TextInputMetrics const &textInputMetrics,
