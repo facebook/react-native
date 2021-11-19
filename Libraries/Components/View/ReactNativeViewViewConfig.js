@@ -104,6 +104,15 @@ const ReactNativeViewConfig: ViewConfig = {
     topMagicTap: {
       registrationName: 'onMagicTap',
     },
+    topPointerEnter: {
+      registrationName: 'pointerenter',
+    },
+    topPointerLeave: {
+      registrationName: 'pointerleave',
+    },
+    topPointerMove: {
+      registrationName: 'pointermove',
+    },
     // Events for react-native-gesture-handler (T45765076)
     // Remove once this library can handle JS View Configs
     onGestureHandlerEvent: {
@@ -192,6 +201,9 @@ const ReactNativeViewConfig: ViewConfig = {
     onAccessibilityAction: true,
     onAccessibilityEscape: true,
     onAccessibilityTap: true,
+    pointerenter: true,
+    pointerleave: true,
+    pointermove: true,
     onLayout: true,
     onMagicTap: true,
     opacity: true,
