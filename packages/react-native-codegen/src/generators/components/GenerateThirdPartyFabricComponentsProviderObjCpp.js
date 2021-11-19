@@ -15,7 +15,7 @@ import type {SchemaType} from '../../CodegenSchema';
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
-const template = `
+const FileTemplate = ({lookupMap}: {lookupMap: string}) => `
 /**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -34,7 +34,7 @@ const template = `
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name) {
   static std::unordered_map<std::string, Class (*)(void)> sFabricComponentsClassMap = {
-::_LOOKUP_MAP_::
+${lookupMap}
   };
 
   auto p = sFabricComponentsClassMap.find(name);
@@ -46,8 +46,14 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 }
 `;
 
-const lookupMapTemplate = `
-    {"::_CLASSNAME_::", ::_CLASSNAME_::Cls}, // ::_LIBRARY_NAME_::`;
+const LookupMapTemplate = ({
+  className,
+  libraryName,
+}: {
+  className: string,
+  libraryName: string,
+}) => `
+    {"${className}", ${className}Cls}, // ${libraryName}`;
 
 module.exports = {
   generate(schemas: {[string]: SchemaType}): FilesOutput {
@@ -81,9 +87,10 @@ module.exports = {
                 if (components[componentName].interfaceOnly === true) {
                   return;
                 }
-                const replacedTemplate = lookupMapTemplate
-                  .replace(/::_CLASSNAME_::/g, componentName)
-                  .replace(/::_LIBRARY_NAME_::/g, libraryName);
+                const replacedTemplate = LookupMapTemplate({
+                  className: componentName,
+                  libraryName,
+                });
 
                 return replacedTemplate;
               });
@@ -92,7 +99,7 @@ module.exports = {
       })
       .join('\n');
 
-    const replacedTemplate = template.replace(/::_LOOKUP_MAP_::/g, lookupMap);
+    const replacedTemplate = FileTemplate({lookupMap});
 
     return new Map([[fileName, replacedTemplate]]);
   },
