@@ -400,6 +400,12 @@ react {
 }
 
 afterEvaluate {
+
+    // Needed as some of the native sources needs to be downloaded
+    // before configureNdkBuildDebug could be executed.
+    configureNdkBuildDebug.dependsOn(preBuild)
+    configureNdkBuildRelease.dependsOn(preBuild)
+
     publishing {
         publications {
             release(MavenPublication) {
