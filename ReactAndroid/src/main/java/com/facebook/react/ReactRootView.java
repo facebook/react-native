@@ -44,6 +44,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -439,7 +440,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mInitialUITemplate = initialUITemplate;
 
       mReactInstanceManager.createReactContextInBackground();
-
+      // if in this experiment, we initialize the root earlier in startReactApplication
+      // instead of waiting for the initial measure
+      if (ReactFeatureFlags.enableEagerRootViewAttachment) {
+        attachToReactInstanceManager();
+      }
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
