@@ -558,7 +558,7 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
 
   # But... doing so caused another issue in Flipper:
   #   "Time.h:52:17: error: typedef redefinition with different types"
-  # We need to make a patch to RCT-Folly - set `__IPHONE_10_0` to our iOS target + 1.
+  # We need to make a patch to RCT-Folly - remove the `__IPHONE_OS_VERSION_MIN_REQUIRED` check.
   # See https://github.com/facebook/flipper/issues/834 for more details.
-  `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_12_0/' Pods/RCT-Folly/folly/portability/Time.h`
+  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' Pods/RCT-Folly/folly/portability/Time.h`
 end
