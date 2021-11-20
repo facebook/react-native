@@ -548,8 +548,12 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+      # ensure IPHONEOS_DEPLOYMENT_TARGET is at least 11.0
+      should_upgrade = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].split('.')[0].to_i < 11
+      if should_upgrade
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
       end
+    end
   end
 
   # But... doing so caused another issue in Flipper:
