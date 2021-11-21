@@ -850,10 +850,8 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
     Array [
       0,
       2,
-      4,
-      7,
-      10,
-      13,
+      5,
+      8,
     ]
   }
   windowSize={1}
@@ -870,47 +868,10 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
     <View
       style={
         Object {
-          "height": 50,
+          "height": 110,
         }
       }
     />
-    <View
-      style={null}
-    >
-      <MockCellItem
-        sticky={true}
-        value={6}
-      />
-    </View>
-    <View
-      style={
-        Object {
-          "height": 20,
-        }
-      }
-    />
-    <View
-      style={null}
-    >
-      <MockCellItem
-        sticky={true}
-        value={9}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={10}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={11}
-      />
-    </View>
     <View
       style={null}
     >
@@ -920,12 +881,12 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
       />
     </View>
     <View
-      style={null}
-    >
-      <MockCellItem
-        value={13}
-      />
-    </View>
+      style={
+        Object {
+          "height": 10,
+        }
+      }
+    />
     <View
       style={null}
     >
@@ -1993,45 +1954,10 @@ exports[`discards intitial render if initialScrollIndex != 0 1`] = `
     <View
       style={
         Object {
-          "height": 90,
+          "height": 140,
         }
       }
     />
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={9}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={10}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={11}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={12}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={13}
-      />
-    </View>
     <View
       style={null}
     >
@@ -2399,33 +2325,12 @@ exports[`does not over-render when there is less than initialNumToRender cells 1
 >
   <View>
     <View
-      style={null}
-    >
-      <MockCellItem
-        value={0}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={1}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={2}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={3}
-      />
-    </View>
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
     <View
       style={null}
     >
@@ -2598,113 +2503,6 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
         value={9}
       />
     </View>
-  </View>
-</RCTScrollView>
-`;
-
-exports[`expands first in viewport to render up to maxToRenderPerBatch on initial render 1`] = `
-<RCTScrollView
-  data={
-    Array [
-      Object {
-        "key": 0,
-      },
-      Object {
-        "key": 1,
-      },
-      Object {
-        "key": 2,
-      },
-      Object {
-        "key": 3,
-      },
-      Object {
-        "key": 4,
-      },
-      Object {
-        "key": 5,
-      },
-      Object {
-        "key": 6,
-      },
-      Object {
-        "key": 7,
-      },
-      Object {
-        "key": 8,
-      },
-      Object {
-        "key": 9,
-      },
-    ]
-  }
-  getItem={[Function]}
-  getItemCount={[Function]}
-  getItemLayout={[Function]}
-  initialNumToRender={2}
-  initialScrollIndex={4}
-  maxToRenderPerBatch={10}
-  onContentSizeChange={[Function]}
-  onLayout={[Function]}
-  onMomentumScrollBegin={[Function]}
-  onMomentumScrollEnd={[Function]}
-  onScroll={[Function]}
-  onScrollBeginDrag={[Function]}
-  onScrollEndDrag={[Function]}
-  renderItem={[Function]}
-  scrollEventThrottle={50}
-  stickyHeaderIndices={Array []}
->
-  <View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={0}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={1}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={2}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={3}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={4}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={5}
-      />
-    </View>
-    <View
-      style={
-        Object {
-          "height": 40,
-        }
-      }
-    />
   </View>
 </RCTScrollView>
 `;
@@ -3100,13 +2898,6 @@ exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
       style={null}
     >
       <MockCellItem
-        value={0}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
         value={1}
       />
     </View>
@@ -3138,6 +2929,92 @@ exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
         value={5}
       />
     </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`renders initialNumToRender when initialScrollIndex is offset 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={2}
+  initialScrollIndex={4}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+>
+  <View>
+    <View
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
   </View>
 </RCTScrollView>
 `;
@@ -3377,33 +3254,12 @@ exports[`renders offset cells in initial render when initialScrollIndex set 1`] 
 >
   <View>
     <View
-      style={null}
-    >
-      <MockCellItem
-        value={0}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={1}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={2}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={3}
-      />
-    </View>
+      style={
+        Object {
+          "height": 40,
+        }
+      }
+    />
     <View
       style={null}
     >
@@ -3635,7 +3491,7 @@ exports[`renders tail spacer up to last measured with irregular layout when getI
     <View
       style={
         Object {
-          "height": 18,
+          "height": 17,
         }
       }
     />
@@ -4405,45 +4261,10 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
     <View
       style={
         Object {
-          "height": 40,
+          "height": 90,
         }
       }
     />
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={9}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={10}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={11}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={12}
-      />
-    </View>
-    <View
-      style={null}
-    >
-      <MockCellItem
-        value={13}
-      />
-    </View>
     <View
       style={null}
     >

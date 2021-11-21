@@ -92,7 +92,6 @@ export function computeWindowedRenderLimits(
   prev: {
     first: number,
     last: number,
-    ...
   },
   getFrameMetricsApprox: (index: number) => {
     length: number,
@@ -109,7 +108,6 @@ export function computeWindowedRenderLimits(
 ): {
   first: number,
   last: number,
-  ...
 } {
   const itemCount = getItemCount(data);
   if (itemCount === 0) {
