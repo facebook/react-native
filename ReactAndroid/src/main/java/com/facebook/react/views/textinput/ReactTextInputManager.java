@@ -574,6 +574,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "contextMenuHidden", defaultBoolean = false)
   public void setContextMenuHidden(ReactEditText view, boolean contextMenuHidden) {
     final boolean _contextMenuHidden = contextMenuHidden;
+    view.setOnLongClickListener(
+        new View.OnLongClickListener() {
+          public boolean onLongClick(View v) {
+            return _contextMenuHidden;
+          };
+        });
     if(_contextMenuHidden){
       view.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
         @Override
@@ -597,8 +603,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       });
     }
-
-    view.setOnLongClickListener( v -> _contextMenuHidden);
   }
 
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
