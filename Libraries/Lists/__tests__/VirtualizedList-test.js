@@ -965,13 +965,12 @@ it('renders no spacers up to initialScrollIndex on first render when virtualizat
     );
   });
 
-  // There should be no spacers present in an offset initial render with
-  // virtualiztion disabled. Only initialNumToRender items starting at
-  // initialScrollIndex.
+  // We should render initialNumToRender items with no spacers on initial render
+  // when virtualization is disabled
   expect(component).toMatchSnapshot();
 });
 
-it('expands first in viewport to render up to maxToRenderPerBatch on initial render', () => {
+it('renders initialNumToRender when initialScrollIndex is offset', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -988,9 +987,7 @@ it('expands first in viewport to render up to maxToRenderPerBatch on initial ren
     );
   });
 
-  // When virtualization is disabled we may render items before initialItemIndex
-  // if initialItemIndex + initialNumToRender < maToRenderPerBatch. Expect cells
-  // 0-3 to be rendered in this example, even though initialScrollIndex is 4.
+  // We should render initialNumToRender items starting at initialScrollIndex.
   expect(component).toMatchSnapshot();
 });
 

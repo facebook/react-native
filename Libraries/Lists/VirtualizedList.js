@@ -313,7 +313,7 @@ let _keylessItemComponentName: string = '';
 
 type State = {
   renderMask: CellRenderMask,
-  viewportWindow: {first: number, last: number},
+  cellsAroundViewport: {first: number, last: number},
 };
 
 /**
@@ -352,11 +352,11 @@ function windowSizeOrDefault(windowSize: ?number) {
 }
 
 function findLastWhere<T>(
-  arr: Array<T>,
-  pred: (element: T) => boolean,
+  arr: $ReadOnlyArray<T>,
+  predicate: (element: T) => boolean,
 ): T | null {
   for (let i = arr.length - 1; i >= 0; i--) {
-    if (pred(arr[i])) {
+    if (predicate(arr[i])) {
       return arr[i];
     }
   }
@@ -732,10 +732,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       });
     }
 
-    let initialState = VirtualizedList._prepareState(
-      props,
-      VirtualizedList._initialRenderRegion(props),
-    );
+    const initialRenderRegion = VirtualizedList._initialRenderRegion(props);
+
+    let initialState: State = {
+      cellsAroundViewport: initialRenderRegion,
+      renderMask: VirtualizedList._createRenderMask(props, initialRenderRegion),
+    };
 
     if (this._isNestedWithSameOrientation()) {
       const storedState = this.context.getNestedChildState(this._getListKey());
@@ -749,42 +751,44 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this.state = initialState;
   }
 
-  static _prepareState(
+  static _createRenderMask(
     props: Props,
-    viewportWindow: {first: number, last: number},
-  ): State {
+    cellsAroundViewport: {first: number, last: number},
+  ): CellRenderMask {
     const itemCount = props.getItemCount(props.data);
 
     invariant(
-      viewportWindow.first >= 0 &&
-        viewportWindow.last >= viewportWindow.first - 1 &&
-        viewportWindow.last < itemCount,
-      `Invalid viewport window "${JSON.stringify(
-        viewportWindow,
-      )}" was passed to VirtualizedList._prepareState`,
+      cellsAroundViewport.first >= 0 &&
+        cellsAroundViewport.last >= cellsAroundViewport.first - 1 &&
+        cellsAroundViewport.last < itemCount,
+      `Invalid cells around viewport "[${cellsAroundViewport.first}, ${cellsAroundViewport.last}]" was passed to VirtualizedList._createRenderMask`,
     );
 
     const renderMask = new CellRenderMask(itemCount);
 
     if (itemCount > 0) {
-      renderMask.addCells(viewportWindow);
+      renderMask.addCells(cellsAroundViewport);
 
-      const scrollIndex = props.initialScrollIndex || 0;
-      if (scrollIndex === 0) {
+      // The initially rendered cells are retained as part of the
+      // "scroll-to-top" optimization
+      if (props.initialScrollIndex == null || props.initialScrollIndex === 0) {
         const initialRegion = VirtualizedList._initialRenderRegion(props);
         renderMask.addCells(initialRegion);
       }
 
+      // The layout coordinates of sticker headers may be off-screen while the
+      // actual header is on-screen. Keep the most recent before the viewport
+      // rendered, even if its layout coordinates are not in viewport.
       const stickyIndicesSet = new Set(props.stickyHeaderIndices);
-      VirtualizedList._ensureStickyHeadersBefore(
+      VirtualizedList._ensureClosestStickyHeader(
         props,
         stickyIndicesSet,
         renderMask,
-        viewportWindow.first,
+        cellsAroundViewport.first,
       );
     }
 
-    return {renderMask, viewportWindow};
+    return renderMask;
   }
 
   static _initialRenderRegion(props: Props): {first: number, last: number} {
@@ -801,7 +805,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     };
   }
 
-  static _ensureStickyHeadersBefore(
+  static _ensureClosestStickyHeader(
     props: Props,
     stickyIndicesSet: Set<number>,
     renderMask: CellRenderMask,
@@ -816,9 +820,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  _adjustViewportWindow(
+  _adjustCellsAroundViewport(
     props: Props,
-    viewportWindow: {first: number, last: number},
+    cellsAroundViewport: {first: number, last: number},
   ): {first: number, last: number} {
     const {data, getItemCount} = props;
     const onEndReachedThreshold = onEndReachedThresholdOrDefault(
@@ -831,10 +835,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Wait until the scroll view metrics have been set up. And until then,
     // we will trust the initialNumToRender suggestion
     if (visibleLength <= 0 || contentLength <= 0) {
-      return viewportWindow;
+      return cellsAroundViewport;
     }
 
-    let newviewportWindow: {first: number, last: number};
+    let newCellsAroundViewport: {first: number, last: number};
     if (this._isVirtualizationDisabled()) {
       const distanceFromEnd = contentLength - visibleLength - offset;
       const renderAhead =
@@ -842,10 +846,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ? maxToRenderPerBatchOrDefault(props.maxToRenderPerBatch)
           : 0;
 
-      newviewportWindow = {
+      newCellsAroundViewport = {
         first: 0,
         last: Math.min(
-          this.state.viewportWindow.last + renderAhead,
+          this.state.cellsAroundViewport.last + renderAhead,
           getItemCount(data) - 1,
         ),
       };
@@ -854,15 +858,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       // wait until we've scrolled the view to the right place. And until then,
       // we will trust the initialScrollIndex suggestion.
       if (this.props.initialScrollIndex && !this._scrollMetrics.offset) {
-        return viewportWindow;
+        return cellsAroundViewport;
       }
 
-      newviewportWindow = computeWindowedRenderLimits(
+      newCellsAroundViewport = computeWindowedRenderLimits(
         props.data,
         props.getItemCount,
         maxToRenderPerBatchOrDefault(props.maxToRenderPerBatch),
         windowSizeOrDefault(props.windowSize),
-        viewportWindow,
+        cellsAroundViewport,
         this._getFrameMetricsApprox,
         this._scrollMetrics,
       );
@@ -876,14 +880,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
       // Will this prevent rendering if the nested list doesn't realize the end?
       const childIdx = this._findFirstChildWithMore(
-        newviewportWindow.first,
-        newviewportWindow.last,
+        newCellsAroundViewport.first,
+        newCellsAroundViewport.last,
       );
 
-      newviewportWindow.last = childIdx || newviewportWindow.last;
+      newCellsAroundViewport.last = childIdx ?? newCellsAroundViewport.last;
     }
 
-    return newviewportWindow;
+    return newCellsAroundViewport;
   }
 
   _findFirstChildWithMore(first: number, last: number): number | null {
@@ -940,10 +944,22 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State): State {
-    return VirtualizedList._prepareState(
+    // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
+    // sure we're rendering a reasonable range here.
+    const itemCount = newProps.getItemCount(newProps.data);
+    if (itemCount === prevState.renderMask.numCells()) {
+      return prevState;
+    }
+
+    const constrainedCells = VirtualizedList._constrainToItemCount(
+      prevState.cellsAroundViewport,
       newProps,
-      VirtualizedList._constrainWindow(prevState, newProps),
     );
+
+    return {
+      cellsAroundViewport: prevState.cellsAroundViewport,
+      renderMask: VirtualizedList._createRenderMask(newProps, constrainedCells),
+    };
   }
 
   _pushCells(
@@ -998,26 +1014,20 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  static _constrainWindow(
-    prevState: State,
+  static _constrainToItemCount(
+    cells: {first: number, last: number},
     props: Props,
   ): {first: number, last: number} {
-    // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
-    // sure we're rendering a reasonable range here.
-    const prevWindow = prevState.viewportWindow;
-
     const itemCount = props.getItemCount(props.data);
+    const last = Math.min(itemCount - 1, cells.last);
+
+    const maxToRenderPerBatch = maxToRenderPerBatchOrDefault(
+      props.maxToRenderPerBatch,
+    );
+
     return {
-      first: Math.max(
-        0,
-        Math.min(
-          prevWindow.first,
-          itemCount -
-            1 -
-            maxToRenderPerBatchOrDefault(props.maxToRenderPerBatch),
-        ),
-      ),
-      last: Math.min(itemCount - 1, prevWindow.last),
+      first: clamp(0, itemCount - 1 - maxToRenderPerBatch, cells.first),
+      last,
     };
   }
 
@@ -1137,7 +1147,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
     }
 
-    // 2b. Add cells and gaps for each item
+    // 2b. Add cells and spacers for each item
     if (itemCount > 0) {
       _usedIndexForKey = false;
       _keylessItemComponentName = '';
@@ -1250,7 +1260,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         : this.props.style,
     };
 
-    this._hasMore = this.state.viewportWindow.last < itemCount - 1;
+    this._hasMore = this.state.cellsAroundViewport.last < itemCount - 1;
 
     const innerRet = (
       <VirtualizedListContextProvider
@@ -1385,7 +1395,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _computeBlankness() {
     this._fillRateHelper.computeBlankness(
       this.props,
-      this.state.viewportWindow,
+      this.state.cellsAroundViewport,
       this._scrollMetrics,
     );
   }
@@ -1585,10 +1595,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       }
     }
     const windowTop = this._getFrameMetricsApprox(
-      this.state.viewportWindow.first,
+      this.state.cellsAroundViewport.first,
     ).offset;
     const frameLast = this._getFrameMetricsApprox(
-      this.state.viewportWindow.last,
+      this.state.cellsAroundViewport.last,
     );
     const windowLen = frameLast.offset + frameLast.length - windowTop;
     const visTop = this._scrollMetrics.offset;
@@ -1664,7 +1674,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onEndReachedThreshold != null ? onEndReachedThreshold * visibleLength : 2;
     if (
       onEndReached &&
-      this.state.viewportWindow.last === getItemCount(data) - 1 &&
+      this.state.cellsAroundViewport.last === getItemCount(data) - 1 &&
       distanceFromEnd < threshold &&
       this._scrollMetrics.contentLength !== this._sentEndForContentLength
     ) {
@@ -1792,7 +1802,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _scheduleCellsToRenderUpdate() {
-    const {first, last} = this.state.viewportWindow;
+    const {first, last} = this.state.cellsAroundViewport;
     const {offset, visibleLength, velocity} = this._scrollMetrics;
     const itemCount = this.props.getItemCount(this.props.data);
     let hiPri = false;
@@ -1881,23 +1891,24 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _updateCellsToRender = () => {
     this.setState((state, props) => {
-      const nextState = VirtualizedList._prepareState(
+      const cellsAroundViewport = this._adjustCellsAroundViewport(
         props,
-        this._adjustViewportWindow(props, state.viewportWindow),
+        state.cellsAroundViewport,
+      );
+      const renderMask = VirtualizedList._createRenderMask(
+        props,
+        cellsAroundViewport,
       );
 
-      const viewportWindow = state.viewportWindow;
-      const nextviewportWindow = nextState.viewportWindow;
-
       if (
-        nextviewportWindow.first === viewportWindow.first &&
-        nextviewportWindow.last === viewportWindow.last &&
-        nextState.renderMask.equals(state.renderMask)
+        cellsAroundViewport.first === state.cellsAroundViewport.first &&
+        cellsAroundViewport.last === state.cellsAroundViewport.last &&
+        renderMask.equals(state.renderMask)
       ) {
         return null;
       }
 
-      return nextState;
+      return {cellsAroundViewport, renderMask};
     });
   };
 
@@ -1969,7 +1980,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._getFrameMetrics,
         this._createViewToken,
         tuple.onViewableItemsChanged,
-        this.state.viewportWindow,
+        this.state.cellsAroundViewport,
       );
     });
   }

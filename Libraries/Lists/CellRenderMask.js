@@ -110,6 +110,10 @@ export class CellRenderMask {
     );
   }
 
+  numCells(): number {
+    return this._numCells;
+  }
+
   equals(other: CellRenderMask): boolean {
     return (
       this._numCells === other._numCells &&
