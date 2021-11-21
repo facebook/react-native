@@ -75,7 +75,7 @@ const XHRInterceptor = {
     }
     // Override `open` method for all XHR requests to intercept the request
     // method and url, then pass them through the `openCallback`.
-    XMLHttpRequest.prototype.open = function(method, url) {
+    XMLHttpRequest.prototype.open = function (method, url) {
       if (openCallback) {
         openCallback(method, url, this);
       }
@@ -84,7 +84,7 @@ const XHRInterceptor = {
 
     // Override `setRequestHeader` method for all XHR requests to intercept
     // the request headers, then pass them through the `requestHeaderCallback`.
-    XMLHttpRequest.prototype.setRequestHeader = function(header, value) {
+    XMLHttpRequest.prototype.setRequestHeader = function (header, value) {
       if (requestHeaderCallback) {
         requestHeaderCallback(header, value, this);
       }
@@ -93,7 +93,7 @@ const XHRInterceptor = {
 
     // Override `send` method of all XHR requests to intercept the data sent,
     // register listeners to intercept the response, and invoke the callbacks.
-    XMLHttpRequest.prototype.send = function(data) {
+    XMLHttpRequest.prototype.send = function (data) {
       if (sendCallback) {
         sendCallback(data, this);
       }
@@ -106,9 +106,8 @@ const XHRInterceptor = {
             }
             if (this.readyState === this.HEADERS_RECEIVED) {
               const contentTypeString = this.getResponseHeader('Content-Type');
-              const contentLengthString = this.getResponseHeader(
-                'Content-Length',
-              );
+              const contentLengthString =
+                this.getResponseHeader('Content-Length');
               let responseContentType, responseSize;
               if (contentTypeString) {
                 responseContentType = contentTypeString.split(';')[0];

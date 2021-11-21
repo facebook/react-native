@@ -11,7 +11,7 @@
 'use strict';
 
 const SamplingProfiler = {
-  poke: function(token: number): void {
+  poke: function (token: number): void {
     let error = null;
     let result = null;
     try {
@@ -28,8 +28,8 @@ const SamplingProfiler = {
       error = e.toString();
     }
 
-    const NativeJSCSamplingProfiler = require('./NativeJSCSamplingProfiler')
-      .default;
+    const NativeJSCSamplingProfiler =
+      require('./NativeJSCSamplingProfiler').default;
     if (NativeJSCSamplingProfiler) {
       NativeJSCSamplingProfiler.operationComplete(token, result, error);
     }

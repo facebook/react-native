@@ -124,6 +124,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
@@ -137,11 +138,10 @@ module.exports = {
 
         const traversedProperties = properties
           .map(prop => {
-            const [
-              propTypeAnnotation,
-            ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
-              prop.typeAnnotation,
-            );
+            const [propTypeAnnotation] =
+              unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+                prop.typeAnnotation,
+              );
             const traversedArgs = propTypeAnnotation.params
               .map(param => {
                 const translatedParam = translatePrimitiveJSTypeToCpp(

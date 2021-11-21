@@ -12,9 +12,10 @@ import {type PressabilityTouchSignal as TouchSignal} from './PressabilityTypes.j
 
 export type PressabilityPerformanceEvent = $ReadOnly<{|
   signal: TouchSignal,
-  touchDelayMs: number,
+  nativeTimestamp: number,
 |}>;
-export type PressabilityPerformanceEventListener = PressabilityPerformanceEvent => void;
+export type PressabilityPerformanceEventListener =
+  PressabilityPerformanceEvent => void;
 
 class PressabilityPerformanceEventEmitter {
   _listeners: Array<PressabilityPerformanceEventListener> = [];
@@ -42,6 +43,7 @@ class PressabilityPerformanceEventEmitter {
   }
 }
 
-const PressabilityPerformanceEventEmitterSingleton: PressabilityPerformanceEventEmitter = new PressabilityPerformanceEventEmitter();
+const PressabilityPerformanceEventEmitterSingleton: PressabilityPerformanceEventEmitter =
+  new PressabilityPerformanceEventEmitter();
 
 export default PressabilityPerformanceEventEmitterSingleton;

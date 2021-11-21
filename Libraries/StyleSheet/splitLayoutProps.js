@@ -10,9 +10,7 @@
 
 import type {____ViewStyle_Internal} from './StyleSheetTypes';
 
-export default function splitLayoutProps(
-  props: ?____ViewStyle_Internal,
-): {
+export default function splitLayoutProps(props: ?____ViewStyle_Internal): {
   outer: ?____ViewStyle_Internal,
   inner: ?____ViewStyle_Internal,
 } {

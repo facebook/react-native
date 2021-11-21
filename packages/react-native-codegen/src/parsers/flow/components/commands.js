@@ -20,7 +20,7 @@ const {getValueFromTypes} = require('../utils.js');
 
 type EventTypeAST = Object;
 
-function buildCommandSchema(property, types: TypeDeclarationMap) {
+function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
   const name = property.key.name;
   const optional = property.optional;
   const value = getValueFromTypes(property.value, types);
@@ -74,6 +74,11 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
       case 'Float':
         returnType = {
           type: 'FloatTypeAnnotation',
+        };
+        break;
+      case 'StringTypeAnnotation':
+        returnType = {
+          type: 'StringTypeAnnotation',
         };
         break;
       default:

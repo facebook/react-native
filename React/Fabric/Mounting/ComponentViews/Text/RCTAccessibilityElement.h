@@ -11,6 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTAccessibilityElement : UIAccessibilityElement
 
+/*
+ * Frame of the accessibility element in parent coordinate system.
+ * Set to `CGRectZero` to use size of the container.
+ *
+ * Default value: `CGRectZero`.
+ */
+@property (nonatomic, assign) CGRect frame;
 @end
 
 NS_ASSUME_NONNULL_END

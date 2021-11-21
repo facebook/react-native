@@ -86,9 +86,7 @@ const InteractionManager = {
    * Schedule a function to run after all interactions have completed. Returns a cancellable
    * "promise".
    */
-  runAfterInteractions(
-    task: ?Task,
-  ): {
+  runAfterInteractions(task: ?Task): {
     then: <U>(
       onFulfill?: ?(void) => ?(Promise<U> | U),
       onReject?: ?(error: mixed) => ?(Promise<U> | U),
@@ -110,8 +108,10 @@ const InteractionManager = {
       _taskQueue.enqueueTasks(tasks);
     });
     return {
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       then: promise.then.bind(promise),
       done: (...args) => {
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         if (promise.done) {
           return promise.done(...args);
         } else {
@@ -120,7 +120,7 @@ const InteractionManager = {
           );
         }
       },
-      cancel: function() {
+      cancel: function () {
         _taskQueue.cancelTasks(tasks);
       },
     };
@@ -148,6 +148,7 @@ const InteractionManager = {
     _deleteInteractionSet.add(handle);
   },
 
+  // $FlowFixMe[method-unbinding] added when improving typing for this parameters
   addListener: (_emitter.addListener.bind(_emitter): $FlowFixMe),
 
   /**

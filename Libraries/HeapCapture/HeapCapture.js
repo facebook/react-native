@@ -11,7 +11,7 @@
 import NativeJSCHeapCapture from './NativeJSCHeapCapture';
 
 const HeapCapture = {
-  captureHeap: function(path: string) {
+  captureHeap: function (path: string) {
     let error = null;
     try {
       global.nativeCaptureHeap(path);

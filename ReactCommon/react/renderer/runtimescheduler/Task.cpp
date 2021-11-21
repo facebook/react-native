@@ -7,36 +7,31 @@
 
 #include "RuntimeScheduler.h"
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 Task::Task(
     SchedulerPriority priority,
     jsi::Function callback,
     std::chrono::steady_clock::time_point expirationTime)
-    : priority_(priority),
-      callback_(std::move(callback)),
-      expirationTime_(expirationTime) {}
+    : priority(priority),
+      callback(std::move(callback)),
+      expirationTime(expirationTime) {}
 
-SchedulerPriority Task::getPriority() const {
-  return priority_;
-}
+jsi::Value Task::execute(jsi::Runtime &runtime) {
+  auto result = jsi::Value::undefined();
+  // Cancelled task doesn't have a callback.
+  if (callback) {
+    // Callback in JavaScript is expecting a single bool parameter.
+    // React team plans to remove it and it is safe to pass in
+    // hardcoded false value.
+    result = callback.value().call(runtime, {false});
 
-RuntimeSchedulerClock::time_point Task::getExpirationTime() const {
-  return expirationTime_;
-}
-
-void Task::cancel() {
-  // Null out the callback to indicate the task has been canceled. (Can't
-  // remove from the priority_queue because you can't remove arbitrary nodes
-  // from an array based heap, only the first one.)
-  callback_.reset();
-}
-
-void Task::operator()(jsi::Runtime &runtime) const {
-  if (callback_) {
-    // Cancelled task doesn't have a callback.
-    callback_.value().call(runtime, {});
+    // Destroying callback to prevent calling it twice.
+    callback.reset();
   }
+  return result;
 }
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

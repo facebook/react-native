@@ -5,9 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
 'use strict';
+
+import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 const React = require('react');
 const {
@@ -21,8 +24,10 @@ const {
   TouchableWithoutFeedback,
   Alert,
   StyleSheet,
+  Slider,
   Platform,
 } = require('react-native');
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
 
@@ -53,6 +58,10 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginRight: 10,
   },
+  disabledImage: {
+    width: 120,
+    height: 120,
+  },
   containerAlignCenter: {
     display: 'flex',
     flexDirection: 'column',
@@ -60,8 +69,8 @@ const styles = StyleSheet.create({
   },
 });
 
-class AccessibilityExample extends React.Component {
-  render() {
+class AccessibilityExample extends React.Component<{}> {
+  render(): React.Node {
     return (
       <View>
         <RNTesterBlock title="TextView without label">
@@ -101,7 +110,7 @@ class AccessibilityExample extends React.Component {
         </RNTesterBlock>
 
         {/* Android screen readers will say the accessibility hint instead of the text
-        since the view doesn't have a label. */}
+           since the view doesn't have a label. */}
         <RNTesterBlock title="Accessible view with TextViews with hint">
           <View accessibilityHint="Accessibility hint." accessible={true}>
             <Text style={{color: 'green'}}>This is text one.</Text>
@@ -155,6 +164,18 @@ class AccessibilityExample extends React.Component {
           </TouchableOpacity>
         </RNTesterBlock>
 
+        <RNTesterBlock title="Disabled TouchableOpacity">
+          <TouchableOpacity
+            onPress={() => Alert.alert('Disabled Button has been pressed!')}
+            accessibilityLabel={'You are pressing Disabled TouchableOpacity'}
+            accessibilityState={{disabled: true}}>
+            <View>
+              <Text>
+                I am disabled. Clicking me will not trigger any action.
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </RNTesterBlock>
         <RNTesterBlock title="View with multiple states">
           <View
             accessible={true}
@@ -178,7 +199,12 @@ class AccessibilityExample extends React.Component {
   }
 }
 
-class CheckboxExample extends React.Component {
+class CheckboxExample extends React.Component<
+  {},
+  {
+    checkboxState: boolean | 'mixed',
+  },
+> {
   state = {
     checkboxState: true,
   };
@@ -212,7 +238,12 @@ class CheckboxExample extends React.Component {
   }
 }
 
-class SwitchExample extends React.Component {
+class SwitchExample extends React.Component<
+  {},
+  {
+    switchState: boolean,
+  },
+> {
   state = {
     switchState: true,
   };
@@ -239,18 +270,27 @@ class SwitchExample extends React.Component {
   }
 }
 
-class SelectionExample extends React.Component {
-  constructor(props) {
+class SelectionExample extends React.Component<
+  {},
+  {
+    isSelected: boolean,
+    isEnabled: boolean,
+  },
+> {
+  constructor(props: {}) {
     super(props);
-    this.selectableElement = React.createRef();
+    this.selectableElement = createRef();
   }
+  selectableElement: {
+    current: React.ElementRef<typeof TouchableOpacity> | null,
+  };
 
   state = {
     isSelected: true,
     isEnabled: false,
   };
 
-  render() {
+  render(): React.Node {
     const {isSelected, isEnabled} = this.state;
     let accessibilityHint = 'click me to select';
     if (isSelected) {
@@ -311,7 +351,12 @@ class SelectionExample extends React.Component {
   }
 }
 
-class ExpandableElementExample extends React.Component {
+class ExpandableElementExample extends React.Component<
+  {},
+  {
+    expandState: boolean,
+  },
+> {
   state = {
     expandState: false,
   };
@@ -337,7 +382,14 @@ class ExpandableElementExample extends React.Component {
   }
 }
 
-class NestedCheckBox extends React.Component {
+class NestedCheckBox extends React.Component<
+  {},
+  {
+    checkbox1: boolean | 'mixed',
+    checkbox2: boolean | 'mixed',
+    checkbox3: boolean | 'mixed',
+  },
+> {
   state = {
     checkbox1: false,
     checkbox2: false,
@@ -446,7 +498,7 @@ class NestedCheckBox extends React.Component {
 }
 
 class AccessibilityRoleAndStateExample extends React.Component<{}> {
-  render() {
+  render(): React.Node {
     return (
       <View>
         <View
@@ -551,8 +603,8 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
   }
 }
 
-class AccessibilityActionsExample extends React.Component {
-  render() {
+class AccessibilityActionsExample extends React.Component<{}> {
+  render(): React.Node {
     return (
       <View>
         <RNTesterBlock title="Non-touchable with activate action">
@@ -614,7 +666,7 @@ class AccessibilityActionsExample extends React.Component {
           </View>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Button with custom accessibility actions">
+        <RNTesterBlock title="TouchableWithoutFeedback with custom accessibility actions">
           <TouchableWithoutFeedback
             accessible={true}
             accessibilityActions={[
@@ -642,18 +694,97 @@ class AccessibilityActionsExample extends React.Component {
             </View>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
+
+        <RNTesterBlock title="Button with accessibility actions">
+          <Button
+            accessible={true}
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessiblity action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}
+            onPress={() => Alert.alert('Button has been pressed!')}
+            title="Button with accessiblity action"
+          />
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Text with custom accessibility actions">
+          <Text
+            accessible={true}
+            accessibilityActions={[
+              {name: 'activate', label: 'activate label'},
+              {name: 'copy', label: 'copy label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'activate':
+                  Alert.alert('Alert', 'Activate accessiblity action');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+              }
+            }}>
+            Text
+          </Text>
+        </RNTesterBlock>
       </View>
     );
   }
 }
 
-class FakeSliderExample extends React.Component {
-  state = {
+function SliderAccessibilityExample(): React.Node {
+  return (
+    <View>
+      <RNTesterBlock
+        title="Disabled Slider via disabled"
+        description="Verify with TalkBack/VoiceOver announces Slider as disabled">
+        <Slider value={25} maximumValue={100} minimumValue={0} disabled />
+      </RNTesterBlock>
+      <RNTesterBlock
+        title="Disabled Slider via accessibiltyState"
+        description="Verify with TalkBack/VoiceOver announces Slider as disabled">
+        <Slider
+          value={75}
+          maximumValue={100}
+          minimumValue={0}
+          accessibilityState={{disabled: true}}
+        />
+      </RNTesterBlock>
+      <RNTesterBlock
+        title="Selected Slider"
+        description="Verify with TalkBack/VoiceOver announces Slider as selected">
+        <Slider
+          value={75}
+          maximumValue={100}
+          minimumValue={0}
+          accessibilityState={{selected: true}}
+        />
+      </RNTesterBlock>
+    </View>
+  );
+}
+
+type FakeSliderExampleState = {
+  current: number,
+  textualValue: 'center' | 'left' | 'right',
+};
+class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
+  state: FakeSliderExampleState = {
     current: 50,
     textualValue: 'center',
   };
 
-  increment = () => {
+  increment: () => void = () => {
     let newValue = this.state.current + 2;
     if (newValue > 100) {
       newValue = 100;
@@ -663,7 +794,7 @@ class FakeSliderExample extends React.Component {
     });
   };
 
-  decrement = () => {
+  decrement: () => void = () => {
     let newValue = this.state.current - 2;
     if (newValue < 0) {
       newValue = 0;
@@ -673,7 +804,7 @@ class FakeSliderExample extends React.Component {
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <View
@@ -735,7 +866,7 @@ class AnnounceForAccessibility extends React.Component<{}> {
   _handleOnPress = () =>
     AccessibilityInfo.announceForAccessibility('Announcement Test');
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Button
@@ -748,8 +879,8 @@ class AnnounceForAccessibility extends React.Component<{}> {
 }
 
 class SetAccessibilityFocusExample extends React.Component<{}> {
-  render() {
-    const myRef = createRef();
+  render(): React.Node {
+    const myRef: {current: React.ElementRef<any> | null} = createRef();
 
     const onClose = () => {
       if (myRef && myRef.current) {
@@ -781,7 +912,7 @@ class SetAccessibilityFocusExample extends React.Component<{}> {
 }
 
 class EnabledExamples extends React.Component<{}> {
-  render() {
+  render(): React.Node {
     return (
       <View>
         {Platform.OS === 'ios' ? (
@@ -813,6 +944,19 @@ class EnabledExamples extends React.Component<{}> {
           </>
         ) : null}
 
+        {Platform.OS === 'android' ? (
+          <RNTesterBlock
+            title="isAccessibilityServiceEnabled()"
+            description={
+              'Event emitted whenever an accessibility service is enabled. This includes TalkBack as well as assistive technologies such as "Select to Speak".'
+            }>
+            <EnabledExample
+              test="any accessibility service"
+              eventListener="accessibilityServiceChanged"
+            />
+          </RNTesterBlock>
+        ) : null}
+
         <RNTesterBlock title="isReduceMotionEnabled()">
           <EnabledExample
             test="reduce motion"
@@ -831,11 +975,27 @@ class EnabledExamples extends React.Component<{}> {
   }
 }
 
-class EnabledExample extends React.Component<{}> {
+class EnabledExample extends React.Component<
+  {
+    eventListener:
+      | 'reduceMotionChanged'
+      | 'boldTextChanged'
+      | 'grayscaleChanged'
+      | 'invertColorsChanged'
+      | 'reduceTransparencyChanged'
+      | 'reduceMotionChanged'
+      | 'screenReaderChanged'
+      | 'accessibilityServiceChanged',
+    test: string,
+  },
+  {
+    isEnabled: boolean,
+  },
+> {
   state = {
     isEnabled: false,
   };
-
+  _subscription: EventSubscription;
   componentDidMount() {
     this._subscription = AccessibilityInfo.addEventListener(
       this.props.eventListener,
@@ -847,6 +1007,10 @@ class EnabledExample extends React.Component<{}> {
         return AccessibilityInfo.isReduceMotionEnabled().then(state => {
           this.setState({isEnabled: state});
         });
+      case 'accessibilityServiceChanged':
+        return AccessibilityInfo.isAccessibilityServiceEnabled().then(state => {
+          this.setState({isEnabled: state});
+        });
       default:
         return null;
     }
@@ -856,15 +1020,15 @@ class EnabledExample extends React.Component<{}> {
     this._subscription?.remove();
   }
 
-  _handleToggled = isEnabled => {
+  _handleToggled = (isEnabled: void | PressEvent | boolean) => {
     if (!this.state.isEnabled) {
-      this.setState({isEnabled});
+      this.setState({isEnabled: true});
     } else {
       this.setState({isEnabled: false});
     }
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>
@@ -880,6 +1044,72 @@ class EnabledExample extends React.Component<{}> {
   }
 }
 
+class DisplayOptionsStatusExample extends React.Component<{}> {
+  render(): React.Node {
+    const isAndroid = Platform.OS === 'android';
+    return (
+      <View>
+        <DisplayOptionStatusExample
+          optionName={'Reduce Motion'}
+          optionChecker={AccessibilityInfo.isReduceMotionEnabled}
+          notification={'reduceMotionChanged'}
+        />
+        <DisplayOptionStatusExample
+          optionName={'Screen Reader'}
+          optionChecker={AccessibilityInfo.isScreenReaderEnabled}
+          notification={'reduceMotionChanged'}
+        />
+        {isAndroid ? null : (
+          <>
+            <DisplayOptionStatusExample
+              optionName={'Bold Text'}
+              optionChecker={AccessibilityInfo.isBoldTextEnabled}
+              notification={'boldTextChanged'}
+            />
+            <DisplayOptionStatusExample
+              optionName={'Grayscale'}
+              optionChecker={AccessibilityInfo.isGrayscaleEnabled}
+              notification={'grayscaleChanged'}
+            />
+            <DisplayOptionStatusExample
+              optionName={'Invert Colors'}
+              optionChecker={AccessibilityInfo.isInvertColorsEnabled}
+              notification={'invertColorsChanged'}
+            />
+            <DisplayOptionStatusExample
+              optionName={'Reduce Transparency'}
+              optionChecker={AccessibilityInfo.isReduceTransparencyEnabled}
+              notification={'reduceTransparencyChanged'}
+            />
+          </>
+        )}
+      </View>
+    );
+  }
+}
+
+function DisplayOptionStatusExample({optionName, optionChecker, notification}) {
+  const [statusEnabled, setStatusEnabled] = React.useState(false);
+  React.useEffect(() => {
+    AccessibilityInfo.addEventListener(notification, setStatusEnabled);
+    optionChecker().then(isEnabled => {
+      setStatusEnabled(isEnabled);
+    });
+    return function cleanup() {
+      AccessibilityInfo.removeEventListener(notification, setStatusEnabled);
+    };
+  }, [optionChecker, notification]);
+  return (
+    <View>
+      <Text>
+        {optionName}
+        {' is '}
+        {statusEnabled ? 'enabled' : 'disabled'}.
+      </Text>
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -892,7 +1122,7 @@ exports.examples = [
   },
   {
     title: 'New accessibility roles and states',
-    render(): React.Element<typeof AccessibilityRoleAndStateExamples> {
+    render(): React.Element<typeof AccessibilityRoleAndStateExample> {
       return <AccessibilityRoleAndStateExample />;
     },
   },
@@ -903,9 +1133,21 @@ exports.examples = [
     },
   },
   {
+    title: 'Slider Accessibility Examples',
+    render(): React.Element<typeof SliderAccessibilityExample> {
+      return <SliderAccessibilityExample />;
+    },
+  },
+  {
     title: 'Fake Slider Example',
     render(): React.Element<typeof FakeSliderExample> {
       return <FakeSliderExample />;
+    },
+  },
+  {
+    title: 'Check if the display options are enabled',
+    render(): React.Element<typeof DisplayOptionsStatusExample> {
+      return <DisplayOptionsStatusExample />;
     },
   },
   {
@@ -924,6 +1166,21 @@ exports.examples = [
     title: 'Check if these properties are enabled',
     render(): React.Element<typeof EnabledExamples> {
       return <EnabledExamples />;
+    },
+  },
+  {
+    title:
+      'Check if accessibilityState disabled is announced when the screenreader focus moves on the image',
+    render(): React.Element<typeof Image> {
+      return (
+        <Image
+          accessible={true}
+          accessibilityLabel="plain local image"
+          accessibilityState={{disabled: true}}
+          source={require('../../assets/like.png')}
+          style={styles.disabledImage}
+        />
+      );
     },
   },
 ];

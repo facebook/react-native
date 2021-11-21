@@ -41,7 +41,7 @@ class MoreThanOneModuleFlowInterfaceParserError extends ParserError {
   ) {
     const finalName = names[names.length - 1];
     const allButLastName = names.slice(0, -1);
-    const quote = x => `'${x}'`;
+    const quote = (x: string) => `'${x}'`;
 
     const nameStr =
       allButLastName.map(quote).join(', ') + ', and ' + quote(finalName);

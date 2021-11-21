@@ -2,7 +2,11 @@ load("//tools/build_defs/oss:rn_defs.bzl", "fb_apple_library")
 
 fb_apple_library(
     name = "FBLazyVector",
-    autoglob = True,
+    exported_headers = [
+        "FBLazyVector/FBLazyIterator.h",
+        "FBLazyVector/FBLazyVector.h",
+    ],
+    autoglob = False,
     complete_nullability = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
     enable_exceptions = False,

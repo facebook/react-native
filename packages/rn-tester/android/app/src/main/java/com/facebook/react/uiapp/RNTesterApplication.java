@@ -28,8 +28,8 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.CoreComponentsRegistry;
+import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
-import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
@@ -139,8 +139,8 @@ public class RNTesterApplication extends Application implements ReactApplication
 
                       @Override
                       public JSIModuleProvider<UIManager> getJSIModuleProvider() {
-                        final ComponentFactory ComponentFactory = new ComponentFactory();
-                        CoreComponentsRegistry.register(ComponentFactory);
+                        final ComponentFactory componentFactory = new ComponentFactory();
+                        CoreComponentsRegistry.register(componentFactory);
                         final ReactInstanceManager reactInstanceManager = getReactInstanceManager();
 
                         ViewManagerRegistry viewManagerRegistry =
@@ -150,29 +150,9 @@ public class RNTesterApplication extends Application implements ReactApplication
 
                         return new FabricJSIModuleProvider(
                             reactApplicationContext,
-                            ComponentFactory,
+                            componentFactory,
                             // TODO: T71362667 add ReactNativeConfig's support in RNTester
-                            new ReactNativeConfig() {
-                              @Override
-                              public boolean getBool(final String s) {
-                                return false;
-                              }
-
-                              @Override
-                              public int getInt64(final String s) {
-                                return 0;
-                              }
-
-                              @Override
-                              public String getString(final String s) {
-                                return "";
-                              }
-
-                              @Override
-                              public double getDouble(final String s) {
-                                return 0;
-                              }
-                            },
+                            new EmptyReactNativeConfig(),
                             viewManagerRegistry);
                       }
                     });

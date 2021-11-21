@@ -29,12 +29,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/components/image",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     fbandroid_deps = [
         react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],

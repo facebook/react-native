@@ -22,6 +22,7 @@ import {coerceDisplayMode} from './DisplayMode';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 type Task = (taskData: any) => Promise<void>;
 export type TaskProvider = () => Task;
@@ -51,16 +52,15 @@ export type Registry = {
   runnables: Runnables,
   ...
 };
-export type WrapperComponentProvider = any => React$ComponentType<*>;
+export type WrapperComponentProvider = any => React$ComponentType<any>;
 
 const runnables: Runnables = {};
 let runCount = 1;
 const sections: Runnables = {};
 const taskProviders: Map<string, TaskProvider> = new Map();
 const taskCancelProviders: Map<string, TaskCancelProvider> = new Map();
-let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook = (
-  component: ComponentProvider,
-) => component();
+let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
+  (component: ComponentProvider) => component();
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
 let showArchitectureIndicator = false;
@@ -127,6 +127,7 @@ const AppRegistry = {
           appKey === 'LogBox',
           appKey,
           coerceDisplayMode(displayMode),
+          appParameters.concurrentRoot,
         );
       },
     };
@@ -187,8 +188,10 @@ const AppRegistry = {
     displayMode?: number,
   ): void {
     if (appKey !== 'LogBox') {
-      const msg =
-        'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
+      const logParams = __DEV__
+        ? '" with ' + JSON.stringify(appParameters)
+        : '';
+      const msg = 'Running "' + appKey + logParams;
       infoLog(msg);
       BugReporting.addSource(
         'AppRegistry.runApplication' + runCount++,
@@ -243,7 +246,9 @@ const AppRegistry = {
    *
    * See https://reactnative.dev/docs/appregistry.html#unmountapplicationcomponentatroottag
    */
-  unmountApplicationComponentAtRootTag(rootTag: number): void {
+  unmountApplicationComponentAtRootTag(rootTag: RootTag): void {
+    // NOTE: RootTag type
+    // $FlowFixMe[incompatible-call] RootTag: RootTag is incompatible with number, needs an updated synced version of the ReactNativeTypes.js file
     ReactNative.unmountComponentAtNodeAndRemoveContainer(rootTag);
   },
 
@@ -253,6 +258,7 @@ const AppRegistry = {
    * See https://reactnative.dev/docs/appregistry.html#registerheadlesstask
    */
   registerHeadlessTask(taskKey: string, taskProvider: TaskProvider): void {
+    // $FlowFixMe[object-this-reference]
     this.registerCancellableHeadlessTask(taskKey, taskProvider, () => () => {
       /* Cancel is no-op */
     });

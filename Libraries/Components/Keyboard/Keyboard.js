@@ -13,7 +13,7 @@ import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
 import NativeKeyboardObserver from './NativeKeyboardObserver';
-import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 
 export type KeyboardEventName = $Keys<KeyboardEventDefinitions>;
 
@@ -103,11 +103,12 @@ type KeyboardEventDefinitions = {
  */
 
 class Keyboard {
-  _emitter: NativeEventEmitter<KeyboardEventDefinitions> = new NativeEventEmitter(
-    // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
-    // If you want to use the native module on other platforms, please remove this condition and test its behavior
-    Platform.OS !== 'ios' ? null : NativeKeyboardObserver,
-  );
+  _emitter: NativeEventEmitter<KeyboardEventDefinitions> =
+    new NativeEventEmitter(
+      // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+      // If you want to use the native module on other platforms, please remove this condition and test its behavior
+      Platform.OS !== 'ios' ? null : NativeKeyboardObserver,
+    );
 
   /**
    * The `addListener` function connects a JavaScript function to an identified native
@@ -141,9 +142,9 @@ class Keyboard {
   }
 
   /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
+   * @deprecated Use `remove` on the EventSubscription from `addListener`.
    */
-  removeEventListener<K: $Keys<KeyboardEventDefinitions>>(
+  removeListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
     listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
   ): void {

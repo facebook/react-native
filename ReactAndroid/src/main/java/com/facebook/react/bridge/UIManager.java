@@ -118,6 +118,16 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   void removeUIManagerEventListener(UIManagerListener listener);
 
   /**
+   * Resolves a view based on its reactTag. Do not mutate properties on this view that are already
+   * managed by React, as there are no guarantees this changes will be preserved.
+   *
+   * @throws IllegalViewOperationException if tag could not be resolved.
+   * @param reactTag tag
+   * @return view if found
+   */
+  View resolveView(int reactTag);
+
+  /**
    * This method dispatches events from RN Android code to JS. The delivery of this event will not
    * be queued in EventDispatcher class.
    *

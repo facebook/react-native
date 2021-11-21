@@ -192,16 +192,16 @@ std::string getDebugChildrenDescription(
     return "";
   }
 
-  auto trailing = options.format ? std::string{"\n"} : std::string{""};
+  auto separator = options.format ? std::string{"\n"} : std::string{""};
   auto childrenString = std::string{""};
   options.depth++;
 
   for (auto child : getDebugChildren(object, options)) {
-    childrenString += getDebugDescription(child, options) + trailing;
+    childrenString += getDebugDescription(child, options) + separator;
   }
 
-  if (!childrenString.empty() && !trailing.empty()) {
-    // Removing trailing fragment.
+  if (!childrenString.empty() && !separator.empty()) {
+    // Removing separator fragment.
     childrenString.erase(childrenString.end() - 1);
   }
 
@@ -230,16 +230,16 @@ std::string getDebugDescription(
   auto childrenString = getDebugChildrenDescription(object, options);
   auto propsString = getDebugPropsDescription(object, options);
 
-  auto leading =
+  auto prefix =
       options.format ? std::string(options.depth * 2, ' ') : std::string{""};
-  auto trailing = options.format ? std::string{"\n"} : std::string{""};
+  auto separator = options.format ? std::string{"\n"} : std::string{""};
 
-  return leading + "<" + nameString +
+  return prefix + "<" + nameString +
       (valueString.empty() ? "" : "=" + valueString) +
       (propsString.empty() ? "" : " " + propsString) +
       (childrenString.empty() ? "/>"
-                              : ">" + trailing + childrenString + trailing +
-               leading + "</" + nameString + ">");
+                              : ">" + separator + childrenString + separator +
+               prefix + "</" + nameString + ">");
 }
 
 /*

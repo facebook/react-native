@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-/* globals window: true */
-
 /**
  * Sets up global variables typical in most JavaScript environments.
  *
@@ -43,6 +41,7 @@ require('./setUpSegmentFetcher');
 if (__DEV__) {
   require('./checkNativeVersion');
   require('./setUpDeveloperTools');
+  require('../LogBox/LogBox').install();
 }
 
 const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');

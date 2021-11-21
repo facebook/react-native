@@ -162,11 +162,8 @@ function serializePropertyIntoHostFunction(
   property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
-  const [
-    propertyTypeAnnotation,
-  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
-    property.typeAnnotation,
-  );
+  const [propertyTypeAnnotation] =
+    unwrapNullable<NativeModuleFunctionTypeAnnotation>(property.typeAnnotation);
   const isVoid =
     propertyTypeAnnotation.returnTypeAnnotation.type === 'VoidTypeAnnotation';
 
@@ -185,6 +182,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 

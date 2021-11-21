@@ -8,10 +8,7 @@
  * @flow strict-local
  */
 
-import type {
-  PointValue,
-  EdgeInsetsValue,
-} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
+import type {PointValue} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
 import type {ColorValue} from '../../../../../Libraries/StyleSheet/StyleSheet';
 import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {
@@ -34,7 +31,8 @@ type NativeProps = $ReadOnly<{|
   colors?: $ReadOnlyArray<ColorValue>,
   srcs?: $ReadOnlyArray<ImageSource>,
   points?: $ReadOnlyArray<PointValue>,
-  edgeInsets?: $ReadOnlyArray<EdgeInsetsValue>,
+  // TODO(T104760003) Fix EdgeInsetsValue in codegen
+  // edgeInsets?: $ReadOnlyArray<EdgeInsetsValue>,
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
   object?: $ReadOnlyArray<$ReadOnly<{|prop: string|}>>,
 |}>;

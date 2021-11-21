@@ -11,7 +11,7 @@
 
 const normalizeColor = require('../StyleSheet/normalizeColor');
 
-const colorPropType = function(
+const colorPropType = function (
   isRequired,
   props,
   propName,

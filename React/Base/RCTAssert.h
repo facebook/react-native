@@ -20,17 +20,17 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
  * assert handler through `RCTSetAssertFunction`.
  */
 #ifndef NS_BLOCK_ASSERTIONS
-#define RCTAssert(condition, ...)                                                                      \
-  do {                                                                                                 \
-    if ((condition) == 0) {                                                                            \
-      _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__);                         \
-      if (RCT_NSASSERT) {                                                                              \
-        [[NSAssertionHandler currentHandler] handleFailureInFunction:(NSString * _Nonnull) @(__func__) \
-                                                                file:(NSString * _Nonnull) @(__FILE__) \
-                                                          lineNumber:__LINE__                          \
-                                                         description:__VA_ARGS__];                     \
-      }                                                                                                \
-    }                                                                                                  \
+#define RCTAssert(condition, ...)                                                                    \
+  do {                                                                                               \
+    if ((condition) == 0) {                                                                          \
+      _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__);                       \
+      if (RCT_NSASSERT) {                                                                            \
+        [[NSAssertionHandler currentHandler] handleFailureInFunction:(NSString *_Nonnull)@(__func__) \
+                                                                file:(NSString *_Nonnull)@(__FILE__) \
+                                                          lineNumber:__LINE__                        \
+                                                         description:__VA_ARGS__];                   \
+      }                                                                                              \
+    }                                                                                                \
   } while (false)
 #else
 #define RCTAssert(condition, ...) \

@@ -8,7 +8,7 @@
  * @format
  */
 
-import {type ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+import type {ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
 import {Platform} from 'react-native';
 
@@ -104,6 +104,15 @@ const ReactNativeViewConfig: ViewConfig = {
     topMagicTap: {
       registrationName: 'onMagicTap',
     },
+    topPointerEnter: {
+      registrationName: 'pointerenter',
+    },
+    topPointerLeave: {
+      registrationName: 'pointerleave',
+    },
+    topPointerMove: {
+      registrationName: 'pointermove',
+    },
     // Events for react-native-gesture-handler (T45765076)
     // Remove once this library can handle JS View Configs
     onGestureHandlerEvent: {
@@ -122,7 +131,6 @@ const ReactNativeViewConfig: ViewConfig = {
     accessibilityLabel: true,
     accessibilityLiveRegion: true,
     accessibilityRole: true,
-    accessibilityStates: true, // TODO: Can be removed after next release
     accessibilityState: true,
     accessibilityValue: true,
     accessibilityViewIsModal: true,
@@ -193,6 +201,9 @@ const ReactNativeViewConfig: ViewConfig = {
     onAccessibilityAction: true,
     onAccessibilityEscape: true,
     onAccessibilityTap: true,
+    pointerenter: true,
+    pointerleave: true,
+    pointermove: true,
     onLayout: true,
     onMagicTap: true,
     opacity: true,

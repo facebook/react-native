@@ -17,7 +17,7 @@
 
 RCT_EXPORT_MODULE(RNTesterTestModule)
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(echoString:(NSString *)input)
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(echoString : (NSString *)input)
 {
   return input;
 }
@@ -27,9 +27,11 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(methodThatReturnsNil)
   return nil;
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(methodThatCallsCallbackWithString:(NSString *)input callback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(methodThatCallsCallbackWithString
+                                       : (NSString *)input callback
+                                       : (RCTResponseSenderBlock)callback)
 {
-  callback(@[input]);
+  callback(@[ input ]);
   return nil;
 }
 

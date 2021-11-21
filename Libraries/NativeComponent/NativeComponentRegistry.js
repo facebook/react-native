@@ -8,6 +8,7 @@
  * @format
  */
 
+import * as StaticViewConfigValidator from './StaticViewConfigValidator';
 import {createViewConfig} from './ViewConfig';
 import UIManager from '../ReactNative/UIManager';
 import type {
@@ -32,10 +33,9 @@ let componentNameToExists: Map<string, boolean> = new Map();
  * the current environment.
  */
 export function setRuntimeConfigProvider(
-  runtimeConfigProvider: (
-    name: string,
-  ) => ?{
+  runtimeConfigProvider: (name: string) => ?{
     native: boolean,
+    strict: boolean,
     verify: boolean,
   },
 ): void {
@@ -57,8 +57,9 @@ export function get<Config>(
   viewConfigProvider: () => PartialViewConfig,
 ): HostComponent<Config> {
   ReactNativeViewConfigRegistry.register(name, () => {
-    const {native, verify} = getRuntimeConfig?.(name) ?? {
+    const {native, strict, verify} = getRuntimeConfig?.(name) ?? {
       native: true,
+      strict: false,
       verify: false,
     };
 
@@ -67,16 +68,30 @@ export function get<Config>(
       : createViewConfig(viewConfigProvider());
 
     if (verify) {
-      if (native) {
-        verifyComponentAttributeEquivalence(
-          viewConfig,
-          createViewConfig(viewConfigProvider()),
+      const nativeViewConfig = native
+        ? viewConfig
+        : getNativeComponentAttributes(name);
+      const staticViewConfig = native
+        ? createViewConfig(viewConfigProvider())
+        : viewConfig;
+
+      if (strict) {
+        const validationOutput = StaticViewConfigValidator.validate(
+          name,
+          nativeViewConfig,
+          staticViewConfig,
         );
+
+        if (validationOutput.type === 'invalid') {
+          console.error(
+            StaticViewConfigValidator.stringifyValidationResult(
+              name,
+              validationOutput,
+            ),
+          );
+        }
       } else {
-        verifyComponentAttributeEquivalence(
-          getNativeComponentAttributes(name),
-          viewConfig,
-        );
+        verifyComponentAttributeEquivalence(nativeViewConfig, staticViewConfig);
       }
     }
 
@@ -112,7 +127,7 @@ export function getWithFallback_DEPRECATED<Config>(
     }
   }
 
-  const FallbackNativeComponent = function(props: Config): React.Node {
+  const FallbackNativeComponent = function (props: Config): React.Node {
     return null;
   };
   FallbackNativeComponent.displayName = `Fallback(${name})`;

@@ -20,10 +20,7 @@ function upperCaseFirst(inString: string): string {
 }
 
 function toSafeCppString(input: string): string {
-  return input
-    .split('-')
-    .map(upperCaseFirst)
-    .join('');
+  return input.split('-').map(upperCaseFirst).join('');
 }
 
 function toIntEnumValueName(propName: string, value: number): string {
@@ -93,6 +90,7 @@ function getImports(
 
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       const objectImports = getImports(typeAnnotation.properties);
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       objectImports.forEach(imports.add, imports);
     }
   });

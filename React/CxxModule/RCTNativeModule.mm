@@ -100,7 +100,9 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
 #else
     (void)(callId);
 #endif
-    invokeInner(weakBridge, weakModuleData, methodId, std::move(params), callId, isSyncModule ? Sync : Async);
+    @autoreleasepool {
+      invokeInner(weakBridge, weakModuleData, methodId, std::move(params), callId, isSyncModule ? Sync : Async);
+    }
   };
 
   if (isSyncModule) {

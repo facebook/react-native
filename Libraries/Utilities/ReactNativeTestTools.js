@@ -21,19 +21,19 @@ const shallowRenderer = new ShallowRenderer();
 
 import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-renderer';
 
-// $FlowFixMe[value-as-type]
 export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;
 
 export type Predicate = (node: ReactTestInstance) => boolean;
 
 type $ReturnType<Fn> = $Call<<Ret, A>((...A) => Ret) => Ret, Fn>;
-/* $FlowFixMe[prop-missing] (>=0.125.1 site=react_native_fb) This comment
- * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
- * delete this comment and run Flow. */
 /* $FlowFixMe[value-as-type] (>=0.125.1 site=react_native_fb) This comment
  * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
  * delete this comment and run Flow. */
-export type ReactTestRendererJSON = $ReturnType<ReactTestRenderer.create.toJSON>;
+export type ReactTestRendererJSON =
+  /* $FlowFixMe[prop-missing] (>=0.125.1 site=react_native_fb) This comment
+   * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
+   * delete this comment and run Flow. */
+  $ReturnType<ReactTestRenderer.create.toJSON>;
 
 const {
   Switch,
@@ -87,7 +87,6 @@ function enter(instance: ReactTestInstance, text: string) {
 
 // Returns null if there is no error, otherwise returns an error message string.
 function maximumDepthError(
-  // $FlowFixMe[value-as-type]
   tree: ReactTestRendererType,
   maxDepthLimit: number,
 ): ?string {
@@ -179,7 +178,6 @@ function renderAndEnforceStrictMode(element: React.Node): any {
   return renderWithStrictMode(element);
 }
 
-// $FlowFixMe[value-as-type]
 function renderWithStrictMode(element: React.Node): ReactTestRendererType {
   const WorkAroundBugWithStrictModeInTestRenderer = prps => prps.children;
   const StrictMode = (React: $FlowFixMe).StrictMode;
@@ -202,10 +200,8 @@ function tap(instance: ReactTestInstance) {
   } else if (
     touchable?.props?.onStartShouldSetResponder?.testOnly_pressabilityConfig
   ) {
-    const {
-      onPress,
-      disabled,
-    } = touchable.props.onStartShouldSetResponder.testOnly_pressabilityConfig();
+    const {onPress, disabled} =
+      touchable.props.onStartShouldSetResponder.testOnly_pressabilityConfig();
     if (!disabled) {
       onPress({nativeEvent: {}});
     }

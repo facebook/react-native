@@ -193,6 +193,7 @@ class Modal extends React.Component<Props> {
   }
 
   componentDidMount() {
+    // 'modalDismissed' is for the old renderer in iOS only
     if (ModalEventEmitter) {
       this._eventSubscription = ModalEventEmitter.addListener(
         'modalDismissed',
@@ -251,12 +252,20 @@ class Modal extends React.Component<Props> {
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
+        onDismiss={() => {
+          if (this.props.onDismiss) {
+            this.props.onDismiss();
+          }
+        }}
+        visible={this.props.visible}
         statusBarTranslucent={this.props.statusBarTranslucent}
         identifier={this._identifier}
         style={styles.modal}
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
-        onOrientationChange={this.props.onOrientationChange}>
+        onOrientationChange={this.props.onOrientationChange}
+        testID={this.props.testID}>
         <VirtualizedListContextResetter>
           <ScrollView.Context.Provider value={null}>
             <View

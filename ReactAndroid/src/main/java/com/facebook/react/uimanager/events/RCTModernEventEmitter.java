@@ -21,4 +21,13 @@ import com.facebook.react.bridge.WritableMap;
  */
 public interface RCTModernEventEmitter extends RCTEventEmitter {
   void receiveEvent(int surfaceId, int targetTag, String eventName, @Nullable WritableMap event);
+
+  void receiveEvent(
+      int surfaceId,
+      int targetTag,
+      String eventName,
+      boolean canCoalesceEvent,
+      int customCoalesceKey,
+      @Nullable WritableMap event,
+      @EventCategoryDef int category);
 }

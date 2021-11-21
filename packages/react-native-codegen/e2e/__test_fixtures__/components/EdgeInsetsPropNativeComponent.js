@@ -8,7 +8,6 @@
  * @flow strict-local
  */
 
-import type {EdgeInsetsValue} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
@@ -17,7 +16,8 @@ type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  contentInset?: EdgeInsetsValue,
+  // TODO(T104760003) Fix EdgeInsetsValue in codegen
+  // contentInset?: EdgeInsetsValue,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(

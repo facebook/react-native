@@ -12,7 +12,6 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTDevSettings.h>
-#import <React/RCTJSInvokerModule.h>
 #import <React/RCTKeyCommands.h>
 #import <React/RCTLog.h>
 #import <React/RCTReloadCommand.h>
@@ -86,7 +85,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, NativeDevMenuSpec, RCTJSInvokerModule>
+@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, NativeDevMenuSpec>
 
 @end
 
@@ -97,7 +96,8 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
 @synthesize bridge = _bridge;
 @synthesize moduleRegistry = _moduleRegistry;
-@synthesize invokeJS = _invokeJS;
+@synthesize callableJSModules = _callableJSModules;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
 
@@ -210,8 +210,8 @@ RCT_EXPORT_MODULE()
 - (void)setDefaultJSBundle
 {
   [[RCTBundleURLProvider sharedSettings] resetToDefaults];
-  self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil
-                                                                                fallbackExtension:nil];
+  self->_bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil
+                                                                                       fallbackExtension:nil];
   RCTTriggerReloadCommandListeners(@"Dev menu - reset to default");
 }
 
@@ -220,9 +220,9 @@ RCT_EXPORT_MODULE()
   NSMutableArray<RCTDevMenuItem *> *items = [NSMutableArray new];
 
   // Add built-in items
-  __weak RCTBridge *bridge = _bridge;
   __weak RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
   __weak RCTDevMenu *weakSelf = self;
+  __weak RCTBundleManager *bundleManager = _bundleManager;
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload"
                                                handler:^{
@@ -242,7 +242,7 @@ RCT_EXPORT_MODULE()
                            handler:^{
                              [RCTInspectorDevServerHelper
                                           openURL:@"flipper://null/Hermesdebuggerrn?device=React%20Native"
-                                    withBundleURL:bridge.bundleURL
+                                    withBundleURL:bundleManager.bundleURL
                                  withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
                            }]];
 
@@ -253,7 +253,7 @@ RCT_EXPORT_MODULE()
                            handler:^{
                              [RCTInspectorDevServerHelper
                                           openURL:@"flipper://null/React?device=React%20Native"
-                                    withBundleURL:bridge.bundleURL
+                                    withBundleURL:bundleManager.bundleURL
                                  withErrorMessage:@"Failed to open Flipper. Please check that Metro is runnning."];
                            }]];
     } else if (devSettings.isRemoteDebuggingAvailable) {
@@ -350,7 +350,7 @@ RCT_EXPORT_MODULE()
                                                     [weakSelf setDefaultJSBundle];
                                                     return;
                                                   }
-                                                  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+                                                  NSNumberFormatter *formatter = [NSNumberFormatter new];
                                                   formatter.numberStyle = NSNumberFormatterDecimalStyle;
                                                   NSNumber *portNumber =
                                                       [formatter numberFromString:portTextField.text];
@@ -359,16 +359,15 @@ RCT_EXPORT_MODULE()
                                                   }
                                                   [RCTBundleURLProvider sharedSettings].jsLocation = [NSString
                                                       stringWithFormat:@"%@:%d", ipTextField.text, portNumber.intValue];
-                                                  __strong RCTBridge *strongBridge = bridge;
-                                                  if (strongBridge) {
-                                                    NSURL *bundleURL = bundleRoot.length
-                                                        ? [[RCTBundleURLProvider sharedSettings]
-                                                              jsBundleURLForBundleRoot:bundleRoot
-                                                                      fallbackResource:nil]
-                                                        : [strongBridge.delegate sourceURLForBridge:strongBridge];
-                                                    strongBridge.bundleURL = bundleURL;
-                                                    RCTTriggerReloadCommandListeners(@"Dev menu - apply changes");
+                                                  if (bundleRoot.length == 0) {
+                                                    [bundleManager resetBundleURL];
+                                                  } else {
+                                                    bundleManager.bundleURL = [[RCTBundleURLProvider sharedSettings]
+                                                        jsBundleURLForBundleRoot:bundleRoot
+                                                                fallbackResource:nil];
                                                   }
+
+                                                  RCTTriggerReloadCommandListeners(@"Dev menu - apply changes");
                                                 }]];
                       [alertController addAction:[UIAlertAction actionWithTitle:@"Reset to Default"
                                                                           style:UIAlertActionStyleDefault
@@ -401,9 +400,11 @@ RCT_EXPORT_METHOD(show)
   UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone
       ? UIAlertControllerStyleActionSheet
       : UIAlertControllerStyleAlert;
-  _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native Debug Menu"
-                                                     message:description
-                                              preferredStyle:style];
+
+  NSString *debugMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
+  NSString *debugMenuTitle = [NSString stringWithFormat:@"React Native Debug Menu (%@)", debugMenuType];
+
+  _actionSheet = [UIAlertController alertControllerWithTitle:debugMenuTitle message:description preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
   for (RCTDevMenuItem *item in items) {
@@ -419,11 +420,7 @@ RCT_EXPORT_METHOD(show)
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
 
-  if (_bridge) {
-    [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter" method:@"emit" args:@[ @"RCTDevMenuShown" ] completion:NULL];
-  } else {
-    _invokeJS(@"RCTNativeAppEventEmitter", @"emit", @[ @"RCTDevMenuShown" ]);
-  }
+  [_callableJSModules invokeModule:@"RCTNativeAppEventEmitter" method:@"emit" withArgs:@[ @"RCTDevMenuShown" ]];
 }
 
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item

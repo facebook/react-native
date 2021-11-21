@@ -14,7 +14,7 @@
 # and build a Android application that can be used to run the
 # tests specified in the scripts/ directory.
 #
-FROM reactnativecommunity/react-native-android:3.2
+FROM reactnativecommunity/react-native-android:5.1
 
 LABEL Description="React Native Android Test Image"
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
@@ -25,6 +25,7 @@ ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
 
 ADD .buckconfig /app/.buckconfig
 ADD .buckjavaargs /app/.buckjavaargs
+ADD BUCK /app/BUCK
 ADD Libraries /app/Libraries
 ADD ReactAndroid /app/ReactAndroid
 ADD ReactCommon /app/ReactCommon

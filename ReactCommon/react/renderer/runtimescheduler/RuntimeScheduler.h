@@ -14,24 +14,52 @@
 #include <memory>
 #include <queue>
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 class RuntimeScheduler final {
  public:
-  RuntimeScheduler(RuntimeExecutor const &runtimeExecutor);
   RuntimeScheduler(
       RuntimeExecutor const &runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now);
+      std::function<RuntimeSchedulerTimePoint()> now =
+          RuntimeSchedulerClock::now);
+  /*
+   * Not copyable.
+   */
+  RuntimeScheduler(RuntimeScheduler const &) = delete;
+  RuntimeScheduler &operator=(RuntimeScheduler const &) = delete;
+
+  /*
+   * Not movable.
+   */
+  RuntimeScheduler(RuntimeScheduler &&) = delete;
+  RuntimeScheduler &operator=(RuntimeScheduler &&) = delete;
+
+  void scheduleWork(std::function<void(jsi::Runtime &)> callback) const;
+
+  /*
+   * Grants access to the runtime synchronously on the caller's thread.
+   *
+   * Shouldn't be called directly. it is expected to be used
+   * by dispatching a synchronous event via event emitter in your native
+   * component.
+   */
+  void executeNowOnTheSameThread(
+      std::function<void(jsi::Runtime &runtime)> callback) const;
 
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       jsi::Function callback);
 
-  void cancelTask(std::shared_ptr<Task> const &task);
+  void cancelTask(std::shared_ptr<Task> const &task) noexcept;
 
-  bool getShouldYield() const;
+  bool getShouldYield() const noexcept;
 
-  RuntimeSchedulerTimePoint now() const;
+  SchedulerPriority getCurrentPriorityLevel() const noexcept;
+
+  RuntimeSchedulerTimePoint now() const noexcept;
+
+  void setEnableYielding(bool enableYielding);
 
  private:
   mutable std::priority_queue<
@@ -39,8 +67,17 @@ class RuntimeScheduler final {
       std::vector<std::shared_ptr<Task>>,
       TaskPriorityComparer>
       taskQueue_;
+
   RuntimeExecutor const runtimeExecutor_;
-  std::atomic_bool shouldYield_{false};
+  mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
+  mutable std::atomic_bool shouldYield_{false};
+
+  void startWorkLoop(jsi::Runtime &runtime) const;
+
+  /*
+   * Returns a time point representing the current point in time. May be called
+   * from multiple threads.
+   */
   std::function<RuntimeSchedulerTimePoint()> now_;
 
   /*
@@ -48,6 +85,21 @@ class RuntimeScheduler final {
    * scheduled.
    */
   std::atomic_bool isCallbackScheduled_{false};
+
+  /*
+   * Flag indicating if yielding is enabled.
+   *
+   * If set to true and Concurrent Mode is enabled on the surface,
+   * React Native will ask React to yield in case any work has been scheduled.
+   * Default value is false
+   */
+  bool enableYielding_{false};
+
+  /*
+   * This flag is set while performing work, to prevent re-entrancy.
+   */
+  mutable bool isPerformingWork_{false};
 };
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

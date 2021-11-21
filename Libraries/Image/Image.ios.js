@@ -8,14 +8,13 @@
  * @format
  */
 
-const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');
-const React = require('react');
-const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('../StyleSheet/StyleSheet');
+import * as React from 'react';
+import StyleSheet from '../StyleSheet/StyleSheet';
 
-const ImageAnalyticsTagContext = require('./ImageAnalyticsTagContext').default;
-const flattenStyle = require('../StyleSheet/flattenStyle');
-const resolveAssetSource = require('./resolveAssetSource');
+import ImageInjection from './ImageInjection';
+import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
+import flattenStyle from '../StyleSheet/flattenStyle';
+import resolveAssetSource from './resolveAssetSource';
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 
@@ -23,6 +22,7 @@ import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
 import ImageViewNativeComponent from './ImageViewNativeComponent';
+import type {RootTag} from 'react-native/Libraries/Types/RootTagTypes';
 
 function getSize(
   uri: string,
@@ -33,7 +33,7 @@ function getSize(
     .then(([width, height]) => success(width, height))
     .catch(
       failure ||
-        function() {
+        function () {
           console.warn('Failed to get size for image ' + uri);
         },
     );
@@ -46,12 +46,12 @@ function getSizeWithHeaders(
   failure?: (error: any) => void,
 ): any {
   return NativeImageLoaderIOS.getSizeWithHeaders(uri, headers)
-    .then(function(sizes) {
+    .then(function (sizes) {
       success(sizes.width, sizes.height);
     })
     .catch(
       failure ||
-        function() {
+        function () {
           console.warn('Failed to get size for image: ' + uri);
         },
     );
@@ -60,13 +60,15 @@ function getSizeWithHeaders(
 function prefetchWithMetadata(
   url: string,
   queryRootName: string,
-  rootTag?: ?number,
+  rootTag?: ?RootTag,
 ): any {
   if (NativeImageLoaderIOS.prefetchImageWithMetadata) {
     // number params like rootTag cannot be nullable before TurboModules is available
     return NativeImageLoaderIOS.prefetchImageWithMetadata(
       url,
       queryRootName,
+      // NOTE: RootTag type
+      // $FlowFixMe[incompatible-call] RootTag: number is incompatible with RootTag
       rootTag ? rootTag : 0,
     );
   } else {
@@ -91,7 +93,6 @@ type ImageComponentStatics = $ReadOnly<{|
   prefetchWithMetadata: typeof prefetchWithMetadata,
   queryCache: typeof queryCache,
   resolveAssetSource: typeof resolveAssetSource,
-  propTypes: typeof DeprecatedImagePropType,
 |}>;
 
 /**
@@ -123,11 +124,7 @@ let Image = (props: ImagePropsType, forwardedRef) => {
     }
   }
 
-  // $FlowFixMe[incompatible-use]
-  // $FlowFixMe[incompatible-type]
   const resizeMode = props.resizeMode || style.resizeMode || 'cover';
-  // $FlowFixMe[prop-missing]
-  // $FlowFixMe[incompatible-use]
   const tintColor = style.tintColor;
 
   if (props.src != null) {
@@ -150,7 +147,6 @@ let Image = (props: ImagePropsType, forwardedRef) => {
             {...props}
             ref={forwardedRef}
             style={style}
-            // $FlowFixMe[incompatible-type]
             resizeMode={resizeMode}
             tintColor={tintColor}
             source={sources}
@@ -166,6 +162,11 @@ Image = React.forwardRef<
   ImagePropsType,
   React.ElementRef<typeof ImageViewNativeComponent>,
 >(Image);
+
+if (ImageInjection.unstable_createImageComponent != null) {
+  Image = ImageInjection.unstable_createImageComponent(Image);
+}
+
 Image.displayName = 'Image';
 
 /**
@@ -231,7 +232,11 @@ Image.queryCache = queryCache;
  * delete this comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
 
-Image.propTypes = DeprecatedImagePropType;
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+Image.propTypes = require('deprecated-react-native-prop-types').ImagePropTypes;
 
 const styles = StyleSheet.create({
   base: {

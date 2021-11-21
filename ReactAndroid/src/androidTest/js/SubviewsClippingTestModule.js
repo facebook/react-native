@@ -327,7 +327,7 @@ class SubviewsClippingTestApp extends React.Component {
   state = {};
 
   UNSAFE_componentWillMount() {
-    appInstance = this;
+    appInstance = this; // eslint-disable-line consistent-this
   }
 
   setComponent = component => {
@@ -342,21 +342,21 @@ class SubviewsClippingTestApp extends React.Component {
 
 const SubviewsClippingTestModule = {
   App: SubviewsClippingTestApp,
-  renderClippingSample1: function() {
+  renderClippingSample1: function () {
     appInstance.setComponent(<ClippingSample1 />);
   },
-  renderClippingSample2: function() {
+  renderClippingSample2: function () {
     appInstance.setComponent(<ClippingSample2 />);
   },
-  renderUpdatingSample1: function(update1, update2) {
+  renderUpdatingSample1: function (update1, update2) {
     appInstance.setComponent(
       <UpdatingSample1 update1={update1} update2={update2} />,
     );
   },
-  renderUpdatingSample2: function(update) {
+  renderUpdatingSample2: function (update) {
     appInstance.setComponent(<UpdatingSample2 update={update} />);
   },
-  renderScrollViewTest: function() {
+  renderScrollViewTest: function () {
     appInstance.setComponent(<ScrollViewTest />);
   },
 };

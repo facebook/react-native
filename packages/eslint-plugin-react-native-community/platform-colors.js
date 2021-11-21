@@ -29,9 +29,9 @@ module.exports = {
     schema: [],
   },
 
-  create: function(context) {
+  create: function (context) {
     return {
-      CallExpression: function(node) {
+      CallExpression: function (node) {
         if (node.callee.name === 'PlatformColor') {
           const args = node.arguments;
           if (args.length === 0) {
@@ -60,7 +60,6 @@ module.exports = {
           const properties = args[0].properties;
           if (
             !(
-              properties.length === 2 &&
               properties[0].type === 'Property' &&
               properties[0].key.name === 'light' &&
               properties[1].type === 'Property' &&

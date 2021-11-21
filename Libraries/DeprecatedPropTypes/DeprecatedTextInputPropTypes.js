@@ -11,9 +11,9 @@
 'use strict';
 
 const DeprecatedColorPropType = require('./DeprecatedColorPropType');
+const DeprecatedTextPropTypes = require('./DeprecatedTextPropTypes');
 const DeprecatedViewPropTypes = require('./DeprecatedViewPropTypes');
 const PropTypes = require('prop-types');
-const Text = require('../Text/Text');
 
 const DataDetectorTypes = [
   'phoneNumber',
@@ -41,56 +41,128 @@ module.exports = {
     'characters',
   ]): React$PropType$Primitive<'none' | 'sentences' | 'words' | 'characters'>),
   /**
-   * Determines which content to suggest on auto complete, e.g.`username`.
-   * To disable auto complete, use `off`.
+   * Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
+   * To disable autocomplete, set `autoComplete` to `off`.
    *
    * *Android Only*
    *
-   * The following values work on Android only:
+   * Possible values for `autoComplete` are:
    *
-   * - `username`
-   * - `password`
-   * - `email`
-   * - `name`
-   * - `tel`
-   * - `street-address`
-   * - `postal-code`
-   * - `cc-number`
+   * - `birthdate-day`
+   * - `birthdate-full`
+   * - `birthdate-month`
+   * - `birthdate-year`
    * - `cc-csc`
    * - `cc-exp`
+   * - `cc-exp-day`
    * - `cc-exp-month`
    * - `cc-exp-year`
+   * - `cc-number`
+   * - `email`
+   * - `gender`
+   * - `name`
+   * - `name-family`
+   * - `name-given`
+   * - `name-middle`
+   * - `name-middle-initial`
+   * - `name-prefix`
+   * - `name-suffix`
+   * - `password`
+   * - `password-new`
+   * - `postal-address`
+   * - `postal-address-country`
+   * - `postal-address-extended`
+   * - `postal-address-extended-postal-code`
+   * - `postal-address-locality`
+   * - `postal-address-region`
+   * - `postal-code`
+   * - `street-address`
+   * - `sms-otp`
+   * - `tel`
+   * - `tel-country-code`
+   * - `tel-national`
+   * - `tel-device`
+   * - `username`
+   * - `username-new`
    * - `off`
    *
    * @platform android
    */
-  autoCompleteType: (PropTypes.oneOf([
+  autoComplete: (PropTypes.oneOf([
+    'birthdate-day',
+    'birthdate-full',
+    'birthdate-month',
+    'birthdate-year',
     'cc-csc',
     'cc-exp',
+    'cc-exp-day',
     'cc-exp-month',
     'cc-exp-year',
     'cc-number',
     'email',
+    'gender',
     'name',
+    'name-family',
+    'name-given',
+    'name-middle',
+    'name-middle-initial',
+    'name-prefix',
+    'name-suffix',
     'password',
+    'password-new',
+    'postal-address',
+    'postal-address-country',
+    'postal-address-extended',
+    'postal-address-extended-postal-code',
+    'postal-address-locality',
+    'postal-address-region',
     'postal-code',
     'street-address',
+    'sms-otp',
     'tel',
+    'tel-country-code',
+    'tel-national',
+    'tel-device',
     'username',
+    'username-new',
     'off',
   ]): React$PropType$Primitive<
+    | 'birthdate-day'
+    | 'birthdate-full'
+    | 'birthdate-month'
+    | 'birthdate-year'
     | 'cc-csc'
     | 'cc-exp'
+    | 'cc-exp-day'
     | 'cc-exp-month'
     | 'cc-exp-year'
     | 'cc-number'
     | 'email'
+    | 'gender'
     | 'name'
+    | 'name-family'
+    | 'name-given'
+    | 'name-middle'
+    | 'name-middle-initial'
+    | 'name-prefix'
+    | 'name-suffix'
     | 'password'
+    | 'password-new'
+    | 'postal-address'
+    | 'postal-address-country'
+    | 'postal-address-extended'
+    | 'postal-address-extended-postal-code'
+    | 'postal-address-locality'
+    | 'postal-address-region'
     | 'postal-code'
     | 'street-address'
+    | 'sms-otp'
     | 'tel'
+    | 'tel-country-code'
+    | 'tel-national'
+    | 'tel-device'
     | 'username'
+    | 'username-new'
     | 'off',
   >),
   /**
@@ -136,6 +208,7 @@ module.exports = {
    * - `decimal-pad`
    * - `email-address`
    * - `phone-pad`
+   * - `url`
    *
    * *iOS Only*
    *
@@ -143,7 +216,6 @@ module.exports = {
    *
    * - `ascii-capable`
    * - `numbers-and-punctuation`
-   * - `url`
    * - `name-phone-pad`
    * - `twitter`
    * - `web-search`
@@ -162,10 +234,10 @@ module.exports = {
     'numeric',
     'phone-pad',
     'number-pad',
+    'url',
     // iOS-only
     'ascii-capable',
     'numbers-and-punctuation',
-    'url',
     'name-phone-pad',
     'decimal-pad',
     'twitter',
@@ -466,8 +538,7 @@ module.exports = {
    *
    * [Styles](docs/style.html)
    */
-  // $FlowFixMe[incompatible-use]
-  style: Text.propTypes.style,
+  style: DeprecatedTextPropTypes.style,
   /**
    * The color of the `TextInput` underline.
    * @platform android

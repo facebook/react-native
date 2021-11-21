@@ -15,6 +15,7 @@
 #import "RCTInspectorDevServerHelper.h"
 #endif
 #import "RCTDevLoadingViewProtocol.h"
+#import "RCTJSThread.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
@@ -138,15 +139,27 @@ void RCTEnableTurboModuleSharedMutexInit(BOOL enabled)
   turboModuleSharedMutexInitEnabled = enabled;
 }
 
-static BOOL turboModuleBlockGuardEnabled = NO;
-BOOL RCTTurboModuleBlockGuardEnabled(void)
+static RCTTurboModuleCleanupMode turboModuleCleanupMode = kRCTGlobalScope;
+RCTTurboModuleCleanupMode RCTGetTurboModuleCleanupMode(void)
 {
-  return turboModuleBlockGuardEnabled;
+  return turboModuleCleanupMode;
 }
 
-void RCTEnableTurboModuleBlockGuard(BOOL enabled)
+void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode)
 {
-  turboModuleBlockGuardEnabled = enabled;
+  turboModuleCleanupMode = mode;
+}
+
+// Turn off TurboModule delegate locking
+static BOOL turboModuleManagerDelegateLockingDisabled = YES;
+BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)
+{
+  return turboModuleManagerDelegateLockingDisabled;
+}
+
+void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
+{
+  turboModuleManagerDelegateLockingDisabled = disabled;
 }
 
 @interface RCTBridge () <RCTReloadListener>
@@ -156,15 +169,9 @@ void RCTEnableTurboModuleBlockGuard(BOOL enabled)
   NSURL *_delegateBundleURL;
 }
 
-dispatch_queue_t RCTJSThread;
-
 + (void)initialize
 {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // Set up JS thread
-    RCTJSThread = (id)kCFNull;
-  });
+  _RCTInitializeJSThreadConstantInternal();
 }
 
 static RCTBridge *RCTCurrentBridgeInstance = nil;
@@ -230,6 +237,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+{
+  [self.batchedBridge attachBridgeAPIsToTurboModule:module];
+}
+
 - (void)didReceiveReloadCommand
 {
 #if RCT_ENABLE_INSPECTOR
@@ -250,6 +262,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     self->_launchOptions = nil;
     [self setUp];
   });
+}
+
+- (RCTModuleRegistry *)moduleRegistry
+{
+  return self.batchedBridge.moduleRegistry;
 }
 
 - (NSArray<Class> *)moduleClasses

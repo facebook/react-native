@@ -22,8 +22,8 @@ function createViewToken(index: number, isViewable: boolean) {
   return {key: data[index].key, isViewable};
 }
 
-describe('computeViewableItems', function() {
-  it('returns all 4 entirely visible rows as viewable', function() {
+describe('computeViewableItems', function () {
+  it('returns all 4 entirely visible rows as viewable', function () {
     const helper = new ViewabilityHelper({
       viewAreaCoveragePercentThreshold: 50,
     });
@@ -39,7 +39,7 @@ describe('computeViewableItems', function() {
     ).toEqual([0, 1, 2, 3]);
   });
 
-  it('returns top 2 rows as viewable (1. entirely visible and 2. majority)', function() {
+  it('returns top 2 rows as viewable (1. entirely visible and 2. majority)', function () {
     const helper = new ViewabilityHelper({
       viewAreaCoveragePercentThreshold: 50,
     });
@@ -55,7 +55,7 @@ describe('computeViewableItems', function() {
     ).toEqual([0, 1]);
   });
 
-  it('returns only 2nd row as viewable (majority)', function() {
+  it('returns only 2nd row as viewable (majority)', function () {
     const helper = new ViewabilityHelper({
       viewAreaCoveragePercentThreshold: 50,
     });
@@ -71,7 +71,7 @@ describe('computeViewableItems', function() {
     ).toEqual([1]);
   });
 
-  it('handles empty input', function() {
+  it('handles empty input', function () {
     const helper = new ViewabilityHelper({
       viewAreaCoveragePercentThreshold: 50,
     });
@@ -82,7 +82,7 @@ describe('computeViewableItems', function() {
     ).toEqual([]);
   });
 
-  it('handles different view area coverage percent thresholds', function() {
+  it('handles different view area coverage percent thresholds', function () {
     rowFrames = {
       a: {y: 0, height: 50},
       b: {y: 50, height: 150},
@@ -128,7 +128,7 @@ describe('computeViewableItems', function() {
     ).toEqual([1, 2]);
   });
 
-  it('handles different item visible percent thresholds', function() {
+  it('handles different item visible percent thresholds', function () {
     rowFrames = {
       a: {y: 0, height: 50},
       b: {y: 50, height: 150},
@@ -165,8 +165,8 @@ describe('computeViewableItems', function() {
   });
 });
 
-describe('onUpdate', function() {
-  it('returns 1 visible row as viewable then scrolls away', function() {
+describe('onUpdate', function () {
+  it('returns 1 visible row as viewable then scrolls away', function () {
     const helper = new ViewabilityHelper();
     rowFrames = {
       a: {y: 0, height: 50},
@@ -212,7 +212,7 @@ describe('onUpdate', function() {
     });
   });
 
-  it('returns 1st visible row then 1st and 2nd then just 2nd', function() {
+  it('returns 1st visible row then 1st and 2nd then just 2nd', function () {
     const helper = new ViewabilityHelper();
     rowFrames = {
       a: {y: 0, height: 200},
@@ -268,7 +268,7 @@ describe('onUpdate', function() {
     });
   });
 
-  it('minimumViewTime delays callback', function() {
+  it('minimumViewTime delays callback', function () {
     const helper = new ViewabilityHelper({
       minimumViewTime: 350,
       viewAreaCoveragePercentThreshold: 0,
@@ -302,7 +302,7 @@ describe('onUpdate', function() {
     });
   });
 
-  it('minimumViewTime skips briefly visible items', function() {
+  it('minimumViewTime skips briefly visible items', function () {
     const helper = new ViewabilityHelper({
       minimumViewTime: 350,
       viewAreaCoveragePercentThreshold: 0,
@@ -343,7 +343,7 @@ describe('onUpdate', function() {
     });
   });
 
-  it('waitForInteraction blocks callback until interaction', function() {
+  it('waitForInteraction blocks callback until interaction', function () {
     const helper = new ViewabilityHelper({
       waitForInteraction: true,
       viewAreaCoveragePercentThreshold: 0,
@@ -385,7 +385,7 @@ describe('onUpdate', function() {
     });
   });
 
-  it('returns the right visible row after the underlying data changed', function() {
+  it('returns the right visible row after the underlying data changed', function () {
     const helper = new ViewabilityHelper();
     rowFrames = {
       a: {y: 0, height: 200},

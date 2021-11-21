@@ -34,20 +34,28 @@ const generatePropsJavaDelegate = require('./components/GeneratePropsJavaDelegat
 const generateTests = require('./components/GenerateTests.js');
 const generateShadowNodeCpp = require('./components/GenerateShadowNodeCpp.js');
 const generateShadowNodeH = require('./components/GenerateShadowNodeH.js');
+const generateThirdPartyFabricComponentsProviderObjCpp = require('./components/GenerateThirdPartyFabricComponentsProviderObjCpp.js');
+const generateThirdPartyFabricComponentsProviderH = require('./components/GenerateThirdPartyFabricComponentsProviderH.js');
 const generateViewConfigJs = require('./components/GenerateViewConfigJs.js');
 const path = require('path');
 const schemaValidator = require('../SchemaValidator.js');
 
 import type {SchemaType} from '../CodegenSchema';
 
-type Options = $ReadOnly<{
+type LibraryOptions = $ReadOnly<{
   libraryName: string,
   schema: SchemaType,
   outputDirectory: string,
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
+  assumeNonnull: boolean,
 }>;
 
-type Generators =
+type SchemasOptions = $ReadOnly<{
+  schemas: {[string]: SchemaType},
+  outputDirectory: string,
+}>;
+
+type LibraryGenerators =
   | 'componentsAndroid'
   | 'componentsIOS'
   | 'descriptors'
@@ -59,12 +67,19 @@ type Generators =
   | 'modulesCxx'
   | 'modulesIOS';
 
-type Config = $ReadOnly<{
-  generators: Array<Generators>,
+type SchemasGenerators = 'providerIOS';
+
+type LibraryConfig = $ReadOnly<{
+  generators: Array<LibraryGenerators>,
   test?: boolean,
 }>;
 
-const GENERATORS = {
+type SchemasConfig = $ReadOnly<{
+  generators: Array<SchemasGenerators>,
+  test?: boolean,
+}>;
+
+const LIBRARY_GENERATORS = {
   descriptors: [generateComponentDescriptorH.generate],
   events: [generateEventEmitterCpp.generate, generateEventEmitterH.generate],
   props: [
@@ -112,6 +127,13 @@ const GENERATORS = {
   ],
 };
 
+const SCHEMAS_GENERATORS = {
+  providerIOS: [
+    generateThirdPartyFabricComponentsProviderObjCpp.generate,
+    generateThirdPartyFabricComponentsProviderH.generate,
+  ],
+};
+
 function writeMapToFiles(map: Map<string, string>, outputDir: string) {
   let success = true;
   map.forEach((contents: string, fileName: string) => {
@@ -152,15 +174,23 @@ function checkFilesForChanges(
 
 module.exports = {
   generate(
-    {libraryName, schema, outputDirectory, packageName}: Options,
-    {generators, test}: Config,
+    {
+      libraryName,
+      schema,
+      outputDirectory,
+      packageName,
+      assumeNonnull,
+    }: LibraryOptions,
+    {generators, test}: LibraryConfig,
   ): boolean {
     schemaValidator.validate(schema);
 
     const generatedFiles = [];
     for (const name of generators) {
-      for (const generator of GENERATORS[name]) {
-        generatedFiles.push(...generator(libraryName, schema, packageName));
+      for (const generator of LIBRARY_GENERATORS[name]) {
+        generatedFiles.push(
+          ...generator(libraryName, schema, packageName, assumeNonnull),
+        );
       }
     }
 
@@ -172,7 +202,30 @@ module.exports = {
 
     return writeMapToFiles(filesToUpdate, outputDirectory);
   },
-  generateViewConfig({libraryName, schema}: Options): string {
+  generateFromSchemas(
+    {schemas, outputDirectory}: SchemasOptions,
+    {generators, test}: SchemasConfig,
+  ): boolean {
+    Object.keys(schemas).forEach(libraryName =>
+      schemaValidator.validate(schemas[libraryName]),
+    );
+
+    const generatedFiles = [];
+    for (const name of generators) {
+      for (const generator of SCHEMAS_GENERATORS[name]) {
+        generatedFiles.push(...generator(schemas));
+      }
+    }
+
+    const filesToUpdate = new Map([...generatedFiles]);
+
+    if (test === true) {
+      return checkFilesForChanges(filesToUpdate, outputDirectory);
+    }
+
+    return writeMapToFiles(filesToUpdate, outputDirectory);
+  },
+  generateViewConfig({libraryName, schema}: LibraryOptions): string {
     schemaValidator.validate(schema);
 
     const result = generateViewConfigJs

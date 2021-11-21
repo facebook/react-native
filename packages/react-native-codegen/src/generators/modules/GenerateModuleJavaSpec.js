@@ -100,10 +100,8 @@ function translateFunctionParamToJavaType(
   imports: Set<string>,
 ): string {
   const {optional, typeAnnotation: nullableTypeAnnotation} = param;
-  const [
-    typeAnnotation,
-    nullable,
-  ] = unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
+  const [typeAnnotation, nullable] =
+    unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
   const isRequired = !optional && !nullable;
 
   function wrapIntoNullableIfNeeded(generatedType: string) {
@@ -169,12 +167,10 @@ function translateFunctionReturnTypeToJavaType(
   resolveAlias: AliasResolver,
   imports: Set<string>,
 ): string {
-  const [
-    returnTypeAnnotation,
-    nullable,
-  ] = unwrapNullable<NativeModuleReturnTypeAnnotation>(
-    nullableReturnTypeAnnotation,
-  );
+  const [returnTypeAnnotation, nullable] =
+    unwrapNullable<NativeModuleReturnTypeAnnotation>(
+      nullableReturnTypeAnnotation,
+    );
 
   function wrapIntoNullableIfNeeded(generatedType: string) {
     if (nullable) {
@@ -234,12 +230,10 @@ function getFalsyReturnStatementFromReturnType(
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
 ): string {
-  const [
-    returnTypeAnnotation,
-    nullable,
-  ] = unwrapNullable<NativeModuleReturnTypeAnnotation>(
-    nullableReturnTypeAnnotation,
-  );
+  const [returnTypeAnnotation, nullable] =
+    unwrapNullable<NativeModuleReturnTypeAnnotation>(
+      nullableReturnTypeAnnotation,
+    );
 
   let realTypeAnnotation = returnTypeAnnotation;
   if (realTypeAnnotation.type === 'TypeAliasTypeAnnotation') {
@@ -288,9 +282,8 @@ function buildGetConstantsMethod(
   method: NativeModulePropertyShape,
   imports: Set<string>,
 ): string {
-  const [
-    methodTypeAnnotation,
-  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(method.typeAnnotation);
+  const [methodTypeAnnotation] =
+    unwrapNullable<NativeModuleFunctionTypeAnnotation>(method.typeAnnotation);
   if (
     methodTypeAnnotation.returnTypeAnnotation.type === 'ObjectTypeAnnotation'
   ) {
@@ -369,6 +362,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const files = new Map();
     const nativeModules = getModules(schema);
@@ -404,11 +398,10 @@ module.exports = {
           return buildGetConstantsMethod(method, imports);
         }
 
-        const [
-          methodTypeAnnotation,
-        ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
-          method.typeAnnotation,
-        );
+        const [methodTypeAnnotation] =
+          unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+            method.typeAnnotation,
+          );
 
         // Handle return type
         const translatedReturnType = translateFunctionReturnTypeToJavaType(

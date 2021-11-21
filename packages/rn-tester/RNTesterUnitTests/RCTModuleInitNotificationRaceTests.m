@@ -12,6 +12,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
@@ -28,15 +29,14 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)customBubblingEventTypes
 {
-  return @[@"foo"];
+  return @[ @"foo" ];
 }
 
 #pragma clang diagnostic pop
 
 @end
 
-
-@interface RCTNotificationObserverModule : NSObject <RCTBridgeModule>
+@interface RCTNotificationObserverModule : NSObject <RCTBridgeModule, RCTInitializing>
 
 @property (nonatomic, assign) BOOL didDetectViewManagerInit;
 
@@ -48,10 +48,12 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_MODULE()
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)initialize
 {
-  _bridge = bridge;
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitViewManager:) name:RCTDidInitializeModuleNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(didInitViewManager:)
+                                               name:RCTDidInitializeModuleNotification
+                                             object:nil];
 }
 
 - (void)didInitViewManager:(NSNotification *)note
@@ -64,8 +66,7 @@ RCT_EXPORT_MODULE()
 
 @end
 
-@interface RCTModuleInitNotificationRaceTests : XCTestCase <RCTBridgeDelegate>
-{
+@interface RCTModuleInitNotificationRaceTests : XCTestCase <RCTBridgeDelegate> {
   RCTBridge *_bridge;
   RCTNotificationObserverModule *_notificationObserver;
 }
@@ -81,7 +82,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray *)extraModulesForBridge:(__unused RCTBridge *)bridge
 {
-  return @[[RCTTestViewManager new], _notificationObserver];
+  return @[ [RCTTestViewManager new], _notificationObserver ];
 }
 
 - (void)setUp

@@ -17,7 +17,7 @@ import {
   FlatList,
   Platform,
   TouchableOpacity,
-  unstable_RootTagContext,
+  RootTagContext,
 } from 'react-native';
 import * as React from 'react';
 
@@ -28,12 +28,12 @@ type State = {|
       value: mixed,
       ...
     },
-    ...,
+    ...
   },
 |};
 
 class SampleTurboModuleExample extends React.Component<{||}, State> {
-  static contextType: React$Context<RootTag> = unstable_RootTagContext;
+  static contextType: React$Context<RootTag> = RootTagContext;
 
   state: State = {
     testResults: {},

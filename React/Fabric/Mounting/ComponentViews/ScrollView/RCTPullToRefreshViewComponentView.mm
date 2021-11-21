@@ -39,7 +39,7 @@ using namespace facebook::react;
     static auto const defaultProps = std::make_shared<PullToRefreshViewProps const>();
     _props = defaultProps;
 
-    _refreshControl = [[UIRefreshControl alloc] init];
+    _refreshControl = [UIRefreshControl new];
     [_refreshControl addTarget:self
                         action:@selector(handleUIControlEventValueChanged)
               forControlEvents:UIControlEventValueChanged];

@@ -20,7 +20,6 @@ const ViewabilityHelper = require('./ViewabilityHelper');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
-import VirtualizedListInjection from './VirtualizedListInjection';
 
 import {
   keyExtractor as defaultKeyExtractor,
@@ -458,9 +457,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
     invariant(
       index < getItemCount(data),
-      `scrollToIndex out of range: requested index ${index} is out of 0 to ${getItemCount(
-        data,
-      ) - 1}`,
+      `scrollToIndex out of range: requested index ${index} is out of 0 to ${
+        getItemCount(data) - 1
+      }`,
     );
     if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
       invariant(
@@ -1069,11 +1068,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         );
       }
     }
-    const {
-      ListEmptyComponent,
-      ListFooterComponent,
-      ListHeaderComponent,
-    } = this.props;
+    const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
+      this.props;
     const {data, horizontal} = this.props;
     const inversionStyle = this.props.inverted
       ? horizontalOrDefault(this.props.horizontal)
@@ -1512,22 +1508,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             this._scrollMetrics.visibleLength = scrollMetrics.visibleLength;
             this._scrollMetrics.offset = scrollMetrics.offset;
 
-            if (
-              VirtualizedListInjection?.unstable_enableVirtualizedListRemeasureChildrenIfNeeded
-            ) {
-              // If metrics of the scrollView changed, then we triggered remeasure for child list
-              // to ensure VirtualizedList has the right information.
-              this._cellKeysToChildListKeys.forEach(childListKeys => {
-                if (childListKeys) {
-                  for (let childKey of childListKeys) {
-                    const childList = this._nestedChildLists.get(childKey);
-                    childList &&
-                      childList.ref &&
-                      childList.ref.measureLayoutRelativeToContainingList();
-                  }
+            // If metrics of the scrollView changed, then we triggered remeasure for child list
+            // to ensure VirtualizedList has the right information.
+            this._cellKeysToChildListKeys.forEach(childListKeys => {
+              if (childListKeys) {
+                for (let childKey of childListKeys) {
+                  const childList = this._nestedChildLists.get(childKey);
+                  childList &&
+                    childList.ref &&
+                    childList.ref.measureLayoutRelativeToContainingList();
                 }
-              });
-            }
+              }
+            });
           }
         },
         error => {
@@ -1664,12 +1656,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    const {
-      data,
-      getItemCount,
-      onEndReached,
-      onEndReachedThreshold,
-    } = this.props;
+    const {data, getItemCount, onEndReached, onEndReachedThreshold} =
+      this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     const distanceFromEnd = contentLength - visibleLength - offset;
     const threshold =
@@ -1756,15 +1744,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // know our offset from our offset from our parent
         return;
       }
-      ({
-        visibleLength,
-        contentLength,
-        offset,
-        dOffset,
-      } = this._convertParentScrollMetrics({
-        visibleLength,
-        offset,
-      }));
+      ({visibleLength, contentLength, offset, dOffset} =
+        this._convertParentScrollMetrics({
+          visibleLength,
+          offset,
+        }));
     }
 
     const dt = this._scrollMetrics.timestamp
@@ -1993,7 +1977,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
 type CellRendererProps = {
   CellRendererComponent?: ?React.ComponentType<any>,
-  ItemSeparatorComponent: ?React.ComponentType<*>,
+  ItemSeparatorComponent: ?React.ComponentType<
+    any | {highlighted: boolean, leadingItem: ?Item},
+  >,
   cellKey: string,
   fillRateHelper: FillRateHelper,
   horizontal: ?boolean,

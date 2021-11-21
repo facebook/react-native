@@ -8,13 +8,12 @@
  * @format
  */
 
-import {type ScrollViewNativeProps as Props} from './ScrollViewNativeComponentType';
-import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {ScrollViewNativeProps as Props} from './ScrollViewNativeComponentType';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
-const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
-  'AndroidHorizontalScrollView',
-  () => ({
+const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> =
+  NativeComponentRegistry.get<Props>('AndroidHorizontalScrollView', () => ({
     uiViewClassName: 'AndroidHorizontalScrollView',
     bubblingEventTypes: {},
     directEventTypes: {},
@@ -31,13 +30,13 @@ const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> = NativeC
       scrollPerfTag: true,
       sendMomentumEvents: true,
       showsHorizontalScrollIndicator: true,
+      snapToAlignment: true,
       snapToEnd: true,
       snapToInterval: true,
       snapToStart: true,
       snapToOffsets: true,
       contentOffset: true,
     },
-  }),
-);
+  }));
 
 export default AndroidHorizontalScrollViewNativeComponent;

@@ -8,7 +8,6 @@
  * @format
  */
 
-import DeprecatedTextPropTypes from '../DeprecatedPropTypes/DeprecatedTextPropTypes';
 import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import StyleSheet from '../StyleSheet/StyleSheet';
@@ -34,6 +33,8 @@ const Text: React.AbstractComponent<
     ellipsizeMode,
     onLongPress,
     onPress,
+    onPressIn,
+    onPressOut,
     onResponderGrant,
     onResponderMove,
     onResponderRelease,
@@ -64,11 +65,14 @@ const Text: React.AbstractComponent<
             onPress,
             onPressIn(event) {
               setHighlighted(!suppressHighlighting);
+              onPressIn?.(event);
             },
             onPressOut(event) {
               setHighlighted(false);
+              onPressOut?.(event);
             },
-            onResponderTerminationRequest_DEPRECATED: onResponderTerminationRequest,
+            onResponderTerminationRequest_DEPRECATED:
+              onResponderTerminationRequest,
             onStartShouldSetResponder_DEPRECATED: onStartShouldSetResponder,
           }
         : null,
@@ -78,6 +82,8 @@ const Text: React.AbstractComponent<
       pressRetentionOffset,
       onLongPress,
       onPress,
+      onPressIn,
+      onPressOut,
       onResponderTerminationRequest,
       onStartShouldSetResponder,
       suppressHighlighting,
@@ -142,6 +148,14 @@ const Text: React.AbstractComponent<
     }
   }
 
+  let numberOfLines = restProps.numberOfLines;
+  if (numberOfLines != null && !(numberOfLines >= 0)) {
+    console.error(
+      `'numberOfLines' in <Text> must be a non-negative number, received: ${numberOfLines}. The value will be set to 0.`,
+    );
+    numberOfLines = 0;
+  }
+
   const hasTextAncestor = useContext(TextAncestor);
 
   return hasTextAncestor ? (
@@ -149,6 +163,7 @@ const Text: React.AbstractComponent<
       {...restProps}
       {...eventHandlersForText}
       isHighlighted={isHighlighted}
+      numberOfLines={numberOfLines}
       selectionColor={selectionColor}
       style={style}
       ref={forwardedRef}
@@ -162,6 +177,7 @@ const Text: React.AbstractComponent<
         allowFontScaling={allowFontScaling !== false}
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
+        numberOfLines={numberOfLines}
         selectionColor={selectionColor}
         style={style}
         ref={forwardedRef}
@@ -172,8 +188,11 @@ const Text: React.AbstractComponent<
 
 Text.displayName = 'Text';
 
-// TODO: Delete this.
-Text.propTypes = DeprecatedTextPropTypes;
+/**
+ * Switch to `deprecated-react-native-prop-types` for compatibility with future
+ * releases. This is deprecated and will be removed in the future.
+ */
+Text.propTypes = require('deprecated-react-native-prop-types').TextPropTypes;
 
 /**
  * Returns false until the first time `newValue` is true, after which this will
@@ -188,8 +207,4 @@ function useLazyInitialization(newValue: boolean): boolean {
   return oldValue;
 }
 
-// $FlowFixMe[incompatible-cast] - No good way to type a React.AbstractComponent with statics.
-module.exports = (Text: typeof Text &
-  $ReadOnly<{
-    propTypes: typeof DeprecatedTextPropTypes,
-  }>);
+module.exports = Text;

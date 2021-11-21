@@ -9,6 +9,7 @@
 
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/JavaTurboModule.h>
+#include <ReactCommon/LongLivedObject.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModuleManagerDelegate.h>
@@ -33,7 +34,8 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
       jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
-      bool useTurboModulesRAIICallbackManager);
+      bool useGlobalCallbackCleanupScopeUsingRetainJSCallback,
+      bool useTurboModuleManagerCallbackCleanupScope);
   static void registerNatives();
 
  private:
@@ -43,6 +45,9 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   std::shared_ptr<CallInvoker> jsCallInvoker_;
   std::shared_ptr<CallInvoker> nativeCallInvoker_;
   jni::global_ref<TurboModuleManagerDelegate::javaobject> delegate_;
+
+  JSCallbackRetainer retainJSCallback_;
+  std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection_;
 
   using TurboModuleCache =
       std::unordered_map<std::string, std::shared_ptr<react::TurboModule>>;
@@ -61,7 +66,9 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       RuntimeExecutor runtimeExecutor,
       std::shared_ptr<CallInvoker> jsCallInvoker,
       std::shared_ptr<CallInvoker> nativeCallInvoker,
-      jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
+      jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate,
+      bool useGlobalCallbackCleanupScopeUsingRetainJSCallback,
+      bool useTurboModuleManagerCallbackCleanupScope);
 };
 
 } // namespace react

@@ -8,8 +8,7 @@
  * @format
  */
 
-import ReactNativeViewViewConfig from '../../Components/View/ReactNativeViewViewConfig';
-import {type ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 
 const RCTTextInputViewConfig = {
   uiViewClassName: 'RCTSinglelineTextInputView',
@@ -72,7 +71,6 @@ const RCTTextInputViewConfig = {
   },
   directEventTypes: {},
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     fontSize: true,
     fontWeight: true,
     fontVariant: true,
@@ -129,4 +127,4 @@ const RCTTextInputViewConfig = {
   },
 };
 
-module.exports = (RCTTextInputViewConfig: ViewConfig);
+module.exports = (RCTTextInputViewConfig: PartialViewConfig);
