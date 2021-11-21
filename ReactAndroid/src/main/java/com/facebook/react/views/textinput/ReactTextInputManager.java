@@ -25,6 +25,9 @@ import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -571,12 +574,31 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "contextMenuHidden", defaultBoolean = false)
   public void setContextMenuHidden(ReactEditText view, boolean contextMenuHidden) {
     final boolean _contextMenuHidden = contextMenuHidden;
-    view.setOnLongClickListener(
-        new View.OnLongClickListener() {
-          public boolean onLongClick(View v) {
-            return _contextMenuHidden;
-          };
-        });
+    if(_contextMenuHidden){
+      view.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+          menu.clear();
+          return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+          return false;
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+          return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) { return; }
+
+      });
+    }
+
+    view.setOnLongClickListener( v -> _contextMenuHidden);
   }
 
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
