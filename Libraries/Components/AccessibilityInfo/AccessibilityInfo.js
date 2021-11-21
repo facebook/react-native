@@ -333,11 +333,17 @@ const AccessibilityInfo = {
    *
    * See https://reactnative.dev/docs/accessibilityinfo#announceforaccessibility
    */
-  announceForAccessibility(announcement: string): void {
+  announceForAccessibility(
+    announcement: string,
+    queue?: boolean = false,
+  ): void {
     if (Platform.OS === 'android') {
       NativeAccessibilityInfoAndroid?.announceForAccessibility(announcement);
     } else {
-      NativeAccessibilityManagerIOS?.announceForAccessibility(announcement);
+      NativeAccessibilityManagerIOS?.announceForAccessibility(
+        announcement,
+        queue,
+      );
     }
   },
 

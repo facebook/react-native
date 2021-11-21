@@ -296,9 +296,17 @@ RCT_EXPORT_METHOD(setAccessibilityFocus : (double)reactTag)
   });
 }
 
-RCT_EXPORT_METHOD(announceForAccessibility : (NSString *)announcement)
+RCT_EXPORT_METHOD(announceForAccessibility : (NSString *)announcement queue : (BOOL)queue)
 {
-  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
+  if (@available(iOS 11.0, *)) {
+    NSDictionary *attrsDictionary = [NSDictionary dictionaryWithObject:@(queue)
+                                                                forKey:UIAccessibilitySpeechAttributeQueueAnnouncement];
+    NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString:announcement
+                                                                                attributes:attrsDictionary];
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
+  } else {
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
+  }
 }
 
 RCT_EXPORT_METHOD(getMultiplier : (RCTResponseSenderBlock)callback)

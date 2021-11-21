@@ -864,10 +864,65 @@ class FakeSliderExample extends React.Component<{}, FakeSliderExampleState> {
 
 class AnnounceForAccessibility extends React.Component<{}> {
   _handleOnPress = () =>
-    AccessibilityInfo.announceForAccessibility('Announcement Test');
+    setTimeout(
+      () => AccessibilityInfo.announceForAccessibility('Announcement Test'),
+      1000,
+    );
+
+  _handleOnPressQueued = () =>
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibility(
+          'Queued Announcement Test',
+          true,
+        ),
+      1000,
+    );
+
+  _handleOnPressQueueMultiple = () => {
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibility(
+          'First Queued Announcement Test',
+          true,
+        ),
+      1000,
+    );
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibility(
+          'Second Queued Announcement Test',
+          true,
+        ),
+      1100,
+    );
+    setTimeout(
+      () =>
+        AccessibilityInfo.announceForAccessibility(
+          'Third Queued Announcement Test',
+          true,
+        ),
+      1200,
+    );
+  };
 
   render(): React.Node {
-    return (
+    return Platform.OS === 'ios' ? (
+      <View>
+        <Button
+          onPress={this._handleOnPress}
+          title="Announce for Accessibility Immediately"
+        />
+        <Button
+          onPress={this._handleOnPressQueued}
+          title="Announce for Accessibility Queued"
+        />
+        <Button
+          onPress={this._handleOnPressQueueMultiple}
+          title="Announce for Accessibility Queue Multiple"
+        />
+      </View>
+    ) : (
       <View>
         <Button
           onPress={this._handleOnPress}
