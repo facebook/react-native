@@ -25,7 +25,7 @@ type LinkingEventDefinitions = {
  * `Linking` gives you a general interface to interact with both incoming
  * and outgoing app links.
  *
- * See https://reactnative.dev/docs/linking.html
+ * See https://reactnative.dev/docs/linking
  */
 class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor() {
@@ -36,7 +36,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
    * Add a handler to Linking changes by listening to the `url` event type
    * and providing the handler
    *
-   * See https://reactnative.dev/docs/linking.html#addeventlistener
+   * See https://reactnative.dev/docs/linking#addeventlistener
    */
   addEventListener<K: $Keys<LinkingEventDefinitions>>(
     eventType: K,
@@ -60,7 +60,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   /**
    * Try to open the given `url` with any of the installed apps.
    *
-   * See https://reactnative.dev/docs/linking.html#openurl
+   * See https://reactnative.dev/docs/linking#openurl
    */
   openURL(url: string): Promise<void> {
     this._validateURL(url);
@@ -74,7 +74,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   /**
    * Determine whether or not an installed app can handle a given URL.
    *
-   * See https://reactnative.dev/docs/linking.html#canopenurl
+   * See https://reactnative.dev/docs/linking#canopenurl
    */
   canOpenURL(url: string): Promise<boolean> {
     this._validateURL(url);
@@ -88,7 +88,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   /**
    * Open app settings.
    *
-   * See https://reactnative.dev/docs/linking.html#opensettings
+   * See https://reactnative.dev/docs/linking#opensettings
    */
   openSettings(): Promise<void> {
     if (Platform.OS === 'android') {
@@ -102,7 +102,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
    * If the app launch was triggered by an app link,
    * it will give the link url, otherwise it will give `null`
    *
-   * See https://reactnative.dev/docs/linking.html#getinitialurl
+   * See https://reactnative.dev/docs/linking#getinitialurl
    */
   getInitialURL(): Promise<?string> {
     return Platform.OS === 'android'
@@ -117,7 +117,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
    *
    * @platform android
    *
-   * See https://reactnative.dev/docs/linking.html#sendintent
+   * See https://reactnative.dev/docs/linking#sendintent
    */
   sendIntent(
     action: string,
