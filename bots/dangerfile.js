@@ -12,13 +12,18 @@
 const {danger, fail, message, warn} = require('danger');
 const includes = require('lodash.includes');
 
+const isFromPhabricator =
+  danger.github.pr.body &&
+  danger.github.pr.body.toLowerCase().includes('differential revision:');
+
 // Provides advice if a summary section is missing, or body is too short
 const includesSummary =
   danger.github.pr.body &&
   danger.github.pr.body.toLowerCase().includes('## summary');
 if (!danger.github.pr.body || danger.github.pr.body.length < 50) {
   fail(':grey_question: This pull request needs a description.');
-} else if (!includesSummary) {
+} else if (!includesSummary && !isFromPhabricator) {
+  // PRs from Phabricator always includes the Summary by default.
   const title = ':clipboard: Missing Summary';
   const idea =
     'Can you add a Summary? ' +
@@ -41,7 +46,8 @@ if (packageChanged) {
 const includesTestPlan =
   danger.github.pr.body &&
   danger.github.pr.body.toLowerCase().includes('## test plan');
-if (!includesTestPlan) {
+if (!includesTestPlan && !isFromPhabricator) {
+  // PRs from Phabricator never exports the Test Plan so let's disable this check.
   const title = ':clipboard: Missing Test Plan';
   const idea =
     'Can you add a Test Plan? ' +
@@ -57,7 +63,9 @@ const internalChangelogRegex = /\[\s?(INTERNAL)\s?\].*/gi;
 const includesChangelog =
   danger.github.pr.body &&
   (danger.github.pr.body.toLowerCase().includes('## changelog') ||
-    danger.github.pr.body.toLowerCase().includes('release notes'));
+    danger.github.pr.body.toLowerCase().includes('release notes') ||
+    // PR exports from Phabricator have a `Changelog:` entry for the changelog.
+    danger.github.pr.body.toLowerCase().includes('changelog:'));
 const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
 const containsInternalChangelog = internalChangelogRegex.test(
   danger.github.pr.body,
