@@ -68,12 +68,16 @@ def use_react_native! (options={})
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
 
-  # Generate a podspec file for generated files.
-  temp_podinfo = generate_temp_pod_spec_for_codegen!(fabric_enabled)
-  pod temp_podinfo['spec']['name'], :path => temp_podinfo['path']
+  unless defined?($folly_update_is_running)
+    # Generate a podspec file for generated files.
+    temp_podinfo = generate_temp_pod_spec_for_codegen!(fabric_enabled)
+    pod temp_podinfo['spec']['name'], :path => temp_podinfo['path']
+  end
 
   if fabric_enabled
-    checkAndGenerateEmptyThirdPartyProvider!(prefix)
+    unless defined?($folly_update_is_running)
+      checkAndGenerateEmptyThirdPartyProvider!(prefix)
+    end
     pod 'React-Fabric', :path => "#{prefix}/ReactCommon"
     pod 'React-rncore', :path => "#{prefix}/ReactCommon"
     pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
@@ -87,6 +91,8 @@ def use_react_native! (options={})
     pod 'hermes-engine', '~> 0.9.0'
     pod 'libevent', '~> 2.1.12'
   end
+
+  update_folly_if_needed(options)
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
@@ -557,4 +563,35 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # We need to make a patch to RCT-Folly - set `__IPHONE_10_0` to our iOS target + 1.
   # See https://github.com/facebook/flipper/issues/834 for more details.
   `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_12_0/' Pods/RCT-Folly/folly/portability/Time.h`
+end
+
+# When upgrading `react-native`, `RCT-Folly` is not updated since it is a local podspec.
+# Users then have to run `pod update RCT-Folly --no-repo-update` manually.
+# This runs that command automatically if `RCT-Folly`'s version in the `react-native` package is different from the version in `Local Podspecs` folder
+def update_folly_if_needed(options={})
+  # Do not run this function if we are not running `install`
+  return if defined?($folly_update_is_running)
+  # Read local podspec of `RCT-Folly` to determine the cached version
+  local_podspec_path = File.join(
+    Dir.pwd, "Pods/Local Podspecs/RCT-Folly.podspec.json"
+  )
+
+  # Local podspec cannot be outdated if it does not exist, yet
+  return if !File.file?(local_podspec_path)
+  local_podspec = File.read(local_podspec_path)
+  local_podspec_json = JSON.parse(local_podspec)
+  local_version = local_podspec_json["version"]
+
+  # Read the version from a podspec from the `react-native` package
+  prefix = options[:path] ||= "../node_modules/react-native"
+  podspec_path = "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
+  folly = eval(File.read(podspec_path))
+  current_version = folly.version.to_s + "-v2"
+
+  # Update RCT-Folly if the versions are not equal
+  if current_version != local_version
+    $folly_update_is_running = true
+    Pod::Command::Update.new(CLAide::ARGV.new(["RCT-Folly", "--no-repo-update"])).run
+    $folly_update_is_running = nil
+  end
 end
