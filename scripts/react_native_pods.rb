@@ -586,8 +586,8 @@ def update_folly_if_needed(options={})
   prefix = options[:path] ||= "../node_modules/react-native"
   podspec_path = "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
   folly = eval(File.read(podspec_path))
-  current_version = folly.version.to_s + "-v2"
 
+  current_version = folly.version.to_s
   # Update RCT-Folly if the versions are not equal
   if current_version != local_version
     $folly_update_is_running = true
