@@ -56,8 +56,8 @@ module.exports = {
           {argsIgnorePattern: '^_'},
         ],
         'no-unused-vars': 'off',
-        "no-shadow": "off",
-        "@typescript-eslint/no-shadow": 1,
+        'no-shadow': 'off',
+        '@typescript-eslint/no-shadow': 1,
       },
     },
     {
