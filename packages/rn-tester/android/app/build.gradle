@@ -313,6 +313,8 @@ if (enableCodegen) {
     }
 
     afterEvaluate {
+        configureNdkBuildDebug.dependsOn(packageReactReleaseNdkLibs)
+        configureNdkBuildRelease.dependsOn(packageReactReleaseNdkLibs)
         preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
         preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
         preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
