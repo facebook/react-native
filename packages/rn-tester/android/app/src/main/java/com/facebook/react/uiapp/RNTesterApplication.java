@@ -9,6 +9,7 @@ package com.facebook.react.uiapp;
 
 import android.app.Application;
 import android.content.Context;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.SampleTurboModule;
 import com.facebook.react.ReactApplication;
@@ -33,12 +34,15 @@ import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.uiapp.component.MyNativeViewManager;
+import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +108,21 @@ public class RNTesterApplication extends Application implements ReactApplication
                     }
                   };
                 }
+              },
+              new ReactPackage() {
+                @NonNull
+                @Override
+                public List<NativeModule> createNativeModules(
+                    @NonNull ReactApplicationContext reactContext) {
+                  return Collections.emptyList();
+                }
+
+                @NonNull
+                @Override
+                public List<ViewManager> createViewManagers(
+                    @NonNull ReactApplicationContext reactContext) {
+                  return Collections.singletonList(new MyNativeViewManager());
+                }
               });
         }
 
@@ -141,6 +160,7 @@ public class RNTesterApplication extends Application implements ReactApplication
                       public JSIModuleProvider<UIManager> getJSIModuleProvider() {
                         final ComponentFactory componentFactory = new ComponentFactory();
                         CoreComponentsRegistry.register(componentFactory);
+                        RNTesterComponentsRegistry.register(componentFactory);
                         final ReactInstanceManager reactInstanceManager = getReactInstanceManager();
 
                         ViewManagerRegistry viewManagerRegistry =

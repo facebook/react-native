@@ -88,6 +88,7 @@ react {
 
     // Codegen Configs
     jsRootDir = file("$rootDir/packages/rn-tester")
+    libraryName = "rntester"
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
 }
 
@@ -275,7 +276,7 @@ if (enableCodegen) {
                             "REACT_ANDROID_DIR=$reactAndroidProjectDir",
                             "REACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
-                    cppFlags "-std=c++1y"
+                    cppFlags "-std=c++17"
                     targets "rntester_appmodules"
                 }
             }

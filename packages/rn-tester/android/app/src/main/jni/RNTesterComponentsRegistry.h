@@ -7,29 +7,29 @@
 
 #pragma once
 
+#include <ComponentFactory.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
-#include "ComponentFactory.h"
 
 namespace facebook {
 namespace react {
 
-class CoreComponentsRegistry
-    : public facebook::jni::HybridClass<CoreComponentsRegistry> {
+class RNTesterComponentsRegistry
+    : public facebook::jni::HybridClass<RNTesterComponentsRegistry> {
  public:
   constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/react/fabric/CoreComponentsRegistry;";
+      "Lcom/facebook/react/uiapp/RNTesterComponentsRegistry;";
 
   static void registerNatives();
 
-  CoreComponentsRegistry(ComponentFactory *delegate);
-
-  static std::shared_ptr<ComponentDescriptorProviderRegistry const>
-  sharedProviderRegistry();
+  RNTesterComponentsRegistry(ComponentFactory *delegate);
 
  private:
   friend HybridBase;
+
+  static std::shared_ptr<ComponentDescriptorProviderRegistry const>
+  sharedProviderRegistry();
 
   const ComponentFactory *delegate_;
 
