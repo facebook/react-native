@@ -188,7 +188,7 @@ function toObjCValue(
         depth + 1,
       );
 
-      const RCTConvertVecToArray = transformer => {
+      const RCTConvertVecToArray = (transformer: string) => {
         return `RCTConvert${
           !isRequired ? 'Optional' : ''
         }VecToArray(${value}, ${transformer})`;

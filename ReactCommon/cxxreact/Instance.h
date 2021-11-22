@@ -134,7 +134,7 @@ class RN_EXPORT Instance {
   /**
    * RuntimeExecutor is used by Fabric to access the jsi::Runtime.
    */
-  RuntimeExecutor getRuntimeExecutor(bool shouldFlush);
+  RuntimeExecutor getRuntimeExecutor();
 
  private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);

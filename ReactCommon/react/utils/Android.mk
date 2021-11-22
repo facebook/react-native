@@ -20,9 +20,11 @@ LOCAL_CFLAGS := \
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_STATIC_LIBRARIES :=
-LOCAL_SHARED_LIBRARIES := libreact_debug libreact_render_mapbuffer
+LOCAL_SHARED_LIBRARIES := libreact_debug libreact_render_mapbuffer libglog libglog_init
 
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,react/debug)
+$(call import-module,fbgloginit)
+$(call import-module,glog)
 $(call import-module,react/renderer/mapbuffer)

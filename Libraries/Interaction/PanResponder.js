@@ -121,7 +121,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  * ### Working Example
  *
  * To see it in action, try the
- * [PanResponder example in RNTester](https://github.com/facebook/react-native/blob/master/packages/rn-tester/js/examples/PanResponder/PanResponderExample.js)
+ * [PanResponder example in RNTester](https://github.com/facebook/react-native/blob/HEAD/packages/rn-tester/js/examples/PanResponder/PanResponderExample.js)
  */
 
 export type GestureState = {|
@@ -383,9 +383,7 @@ const PanResponder = {
    *  accordingly. (numberActiveTouches) may not be totally accurate unless you
    *  are the responder.
    */
-  create(
-    config: PanResponderConfig,
-  ): $TEMPORARY$object<{|
+  create(config: PanResponderConfig): $TEMPORARY$object<{|
     getInteractionHandle: () => ?number,
     panHandlers: $TEMPORARY$object<{|
       onMoveShouldSetResponder: (event: PressEvent) => boolean,
@@ -462,7 +460,8 @@ const PanResponder = {
 
       onResponderGrant(event: PressEvent): boolean {
         if (!interactionState.handle) {
-          interactionState.handle = InteractionManager.createInteractionHandle();
+          interactionState.handle =
+            InteractionManager.createInteractionHandle();
         }
         gestureState.x0 = currentCentroidX(event.touchHistory);
         gestureState.y0 = currentCentroidY(event.touchHistory);

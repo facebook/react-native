@@ -14,7 +14,7 @@ const invariant = require('invariant');
 
 function deprecatedCreateStrictShapeTypeChecker(shapeTypes: {
   [key: string]: ReactPropsCheckType,
-  ...,
+  ...
 }): ReactPropsChainableTypeChecker {
   function checkType(
     isRequired,

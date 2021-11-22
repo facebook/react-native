@@ -16,48 +16,80 @@ namespace facebook {
 namespace react {
 
 TextInputProps::TextInputProps(
+    const PropsParserContext &context,
     TextInputProps const &sourceProps,
     RawProps const &rawProps)
-    : ViewProps(sourceProps, rawProps),
-      BaseTextProps(sourceProps, rawProps),
-      traits(convertRawProp(rawProps, sourceProps.traits, {})),
-      paragraphAttributes(
-          convertRawProp(rawProps, sourceProps.paragraphAttributes, {})),
+    : ViewProps(context, sourceProps, rawProps),
+      BaseTextProps(context, sourceProps, rawProps),
+      traits(convertRawProp(context, rawProps, sourceProps.traits, {})),
+      paragraphAttributes(convertRawProp(
+          context,
+          rawProps,
+          sourceProps.paragraphAttributes,
+          {})),
       defaultValue(convertRawProp(
+          context,
           rawProps,
           "defaultValue",
           sourceProps.defaultValue,
           {})),
-      placeholder(
-          convertRawProp(rawProps, "placeholder", sourceProps.placeholder, {})),
+      placeholder(convertRawProp(
+          context,
+          rawProps,
+          "placeholder",
+          sourceProps.placeholder,
+          {})),
       placeholderTextColor(convertRawProp(
+          context,
           rawProps,
           "placeholderTextColor",
           sourceProps.placeholderTextColor,
           {})),
-      maxLength(
-          convertRawProp(rawProps, "maxLength", sourceProps.maxLength, {})),
-      cursorColor(
-          convertRawProp(rawProps, "cursorColor", sourceProps.cursorColor, {})),
+      maxLength(convertRawProp(
+          context,
+          rawProps,
+          "maxLength",
+          sourceProps.maxLength,
+          {})),
+      cursorColor(convertRawProp(
+          context,
+          rawProps,
+          "cursorColor",
+          sourceProps.cursorColor,
+          {})),
       selectionColor(convertRawProp(
+          context,
           rawProps,
           "selectionColor",
           sourceProps.selectionColor,
           {})),
       underlineColorAndroid(convertRawProp(
+          context,
           rawProps,
           "underlineColorAndroid",
           sourceProps.underlineColorAndroid,
           {})),
-      text(convertRawProp(rawProps, "text", sourceProps.text, {})),
+      text(convertRawProp(context, rawProps, "text", sourceProps.text, {})),
       mostRecentEventCount(convertRawProp(
+          context,
           rawProps,
           "mostRecentEventCount",
           sourceProps.mostRecentEventCount,
           {})),
-      autoFocus(
-          convertRawProp(rawProps, "autoFocus", sourceProps.autoFocus, {})),
+      autoFocus(convertRawProp(
+          context,
+          rawProps,
+          "autoFocus",
+          sourceProps.autoFocus,
+          {})),
+      selection(convertRawProp(
+          context,
+          rawProps,
+          "selection",
+          sourceProps.selection,
+          better::optional<Selection>())),
       inputAccessoryViewID(convertRawProp(
+          context,
           rawProps,
           "inputAccessoryViewID",
           sourceProps.inputAccessoryViewID,
@@ -88,14 +120,6 @@ ParagraphAttributes TextInputProps::getEffectiveParagraphAttributes() const {
 
   return result;
 }
-
-#ifdef ANDROID
-folly::dynamic TextInputProps::getDynamic() const {
-  folly::dynamic props = folly::dynamic::object();
-  props["value"] = value;
-  return props;
-}
-#endif
 
 } // namespace react
 } // namespace facebook

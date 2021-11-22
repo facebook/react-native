@@ -138,6 +138,7 @@ class DatePickerIOS extends React.Component<Props> {
 
   render(): React.Node {
     const props = this.props;
+    const mode = props.mode ?? 'datetime';
     invariant(
       props.date || props.initialDate,
       'A selected date or initial date should be specified.',
@@ -149,7 +150,7 @@ class DatePickerIOS extends React.Component<Props> {
           ref={picker => {
             this._picker = picker;
           }}
-          style={getHeight(props.pickerStyle, props.mode)}
+          style={getHeight(props.pickerStyle, mode)}
           date={
             props.date
               ? props.date.getTime()
@@ -168,7 +169,7 @@ class DatePickerIOS extends React.Component<Props> {
           minimumDate={
             props.minimumDate ? props.minimumDate.getTime() : undefined
           }
-          mode={props.mode}
+          mode={mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
@@ -204,7 +205,23 @@ const styles = StyleSheet.create({
   },
 });
 
-function getHeight(pickerStyle, mode) {
+function getHeight(
+  pickerStyle: ?(
+    | 'compact'
+    | 'inline'
+    | 'spinner'
+    | $TEMPORARY$string<'compact'>
+    | $TEMPORARY$string<'inline'>
+    | $TEMPORARY$string<'spinner'>
+  ),
+  mode:
+    | 'date'
+    | 'datetime'
+    | 'time'
+    | $TEMPORARY$string<'date'>
+    | $TEMPORARY$string<'datetime'>
+    | $TEMPORARY$string<'time'>,
+) {
   if (pickerStyle === 'compact') {
     return styles.datePickerIOSCompact;
   }

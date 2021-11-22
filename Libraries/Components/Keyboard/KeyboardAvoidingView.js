@@ -22,7 +22,7 @@ import type {
   ViewLayout,
   ViewLayoutEvent,
 } from '../View/ViewPropTypes';
-import type {KeyboardEvent} from './Keyboard';
+import type {KeyboardEvent, KeyboardEventCoordinates} from './Keyboard';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
@@ -71,7 +71,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     this.viewRef = React.createRef();
   }
 
-  _relativeKeyboardHeight(keyboardFrame): number {
+  _relativeKeyboardHeight(keyboardFrame: KeyboardEventCoordinates): number {
     const frame = this._frame;
     if (!frame || !keyboardFrame) {
       return 0;
@@ -224,4 +224,4 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   }
 }
 
-module.exports = KeyboardAvoidingView;
+export default KeyboardAvoidingView;

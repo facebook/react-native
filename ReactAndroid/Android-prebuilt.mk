@@ -3,10 +3,10 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# This configuration provides access to most common React Native prebuilt .so files
+# This configuration provides access to most common React Native prebuilt .so and .a files
 # to avoid recompiling each of the libraries outside of ReactAndroid NDK compilation.
 # Hosting app's/library's Android.mk can include this Android-prebuilt.mk file to
-# get access to those .so to depend on.
+# get access to those libraries to depend on.
 # NOTES:
 # * Currently, it assumes building React Native from source.
 # * Not every .so is listed here (yet).
@@ -19,7 +19,7 @@ THIRD_PARTY_NDK_DIR := $(REACT_ANDROID_BUILD_DIR)/third-party-ndk
 REACT_ANDROID_SRC_DIR := $(REACT_ANDROID_DIR)/src/main
 REACT_COMMON_DIR := $(REACT_ANDROID_DIR)/../ReactCommon
 REACT_GENERATED_SRC_DIR := $(REACT_ANDROID_BUILD_DIR)/generated/source
-# Note: this only have .so, not .a
+# Note: this have both .so and .a files
 REACT_NDK_EXPORT_DIR := $(PROJECT_BUILD_DIR)/react-ndk/exported
 
 # fb
@@ -114,6 +114,15 @@ LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_COMMON_DIR)/react/renderer/debug
 include $(PREBUILT_SHARED_LIBRARY)
 
+# react_debug
+include $(CLEAR_VARS)
+LOCAL_MODULE := react_debug
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_debug.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_COMMON_DIR)/react/debug
+LOCAL_SHARED_LIBRARIES := libfolly_json
+include $(PREBUILT_SHARED_LIBRARY)
+
 # react_render_graphics
 include $(CLEAR_VARS)
 LOCAL_MODULE := react_render_graphics
@@ -156,6 +165,30 @@ LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_COMMON_DIR)/react/renderer/components/view
 include $(PREBUILT_SHARED_LIBRARY)
 
+# fabricjni
+include $(CLEAR_VARS)
+LOCAL_MODULE := fabricjni
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libfabricjni.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_ANDROID_SRC_DIR)/java/com/facebook/react/fabric/jni
+include $(PREBUILT_SHARED_LIBRARY)
+
+# react_render_componentregistry
+include $(CLEAR_VARS)
+LOCAL_MODULE := react_render_componentregistry
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libreact_render_componentregistry.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_COMMON_DIR)/react/renderer/componentregistry
+include $(PREBUILT_SHARED_LIBRARY)
+
+# jsi
+include $(CLEAR_VARS)
+LOCAL_MODULE := jsi
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libjsi.so
+LOCAL_EXPORT_C_INCLUDES := \
+  $(REACT_COMMON_DIR)/jsi
+include $(PREBUILT_SHARED_LIBRARY)
+
 # react_codegen_rncore
 include $(CLEAR_VARS)
 LOCAL_MODULE := react_codegen_rncore
@@ -166,3 +199,13 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 # fbjni
 include $(FIRST_PARTY_NDK_DIR)/fbjni/Android.mk
+
+#### Static Libraries
+
+# runtimeexecutor
+include $(CLEAR_VARS)
+LOCAL_MODULE := runtimeexecutor
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libruntimeexecutor.a
+LOCAL_C_INCLUDES := $(REACT_COMMON_DIR)/runtimeexecutor
+LOCAL_EXPORT_C_INCLUDES := $(REACT_COMMON_DIR)/runtimeexecutor
+include $(PREBUILT_STATIC_LIBRARY)

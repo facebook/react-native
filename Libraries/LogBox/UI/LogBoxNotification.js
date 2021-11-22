@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {Message as MessageType} from '../Data/parseLogBoxLog';
 import * as React from 'react';
 import Image from '../../Image/Image';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -54,7 +55,9 @@ function LogBoxLogNotification(props: Props): React.Node {
   );
 }
 
-function CountBadge(props) {
+function CountBadge(
+  props: $TEMPORARY$object<{count: number, level: 'error' | 'warn'}>,
+) {
   return (
     <View style={countStyles.outside}>
       {/* $FlowFixMe[incompatible-type] (>=0.114.0) This suppression was added
@@ -69,7 +72,7 @@ function CountBadge(props) {
   );
 }
 
-function Message(props) {
+function Message(props: $TEMPORARY$object<{message: MessageType}>) {
   return (
     <View style={messageStyles.container}>
       <Text numberOfLines={1} style={messageStyles.text}>
@@ -85,7 +88,7 @@ function Message(props) {
   );
 }
 
-function DismissButton(props) {
+function DismissButton(props: $TEMPORARY$object<{onPress: () => void}>) {
   return (
     <View style={dismissStyles.container}>
       <LogBoxButton

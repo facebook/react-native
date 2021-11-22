@@ -52,6 +52,7 @@ public class ReactTestHelper {
     when(reactInstance.getReactQueueConfiguration()).thenReturn(ReactQueueConfiguration);
     when(reactInstance.getNativeModule(UIManagerModule.class))
         .thenReturn(mock(UIManagerModule.class));
+    when(reactInstance.isDestroyed()).thenReturn(false);
 
     return reactInstance;
   }

@@ -16,10 +16,7 @@ module.exports = {
     sourceType: 'module',
   },
 
-  extends: [
-    'plugin:prettier/recommended', // https://github.com/prettier/eslint-plugin-prettier#recommended-configuration
-    'prettier/react',
-  ],
+  extends: ['plugin:prettier/recommended'],
 
   plugins: [
     'eslint-comments',
@@ -114,6 +111,7 @@ module.exports = {
     setImmediate: true,
     setInterval: false,
     setTimeout: false,
+    queueMicrotask: true,
     URL: false,
     URLSearchParams: false,
     WebSocket: true,

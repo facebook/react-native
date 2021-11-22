@@ -19,6 +19,7 @@ import * as React from 'react';
 type Props = $ReadOnly<{|
   children?: React.Node,
   fabric?: boolean,
+  useConcurrentRoot?: boolean,
   rootTag: number | RootTag,
   initialProps?: {...},
   showArchitectureIndicator?: boolean,
@@ -81,8 +82,8 @@ class AppContainer extends React.Component<Props, State> {
         !global.__RCTProfileIsProfiling &&
         !this.props.internal_excludeLogBox
       ) {
-        const LogBoxNotificationContainer = require('../LogBox/LogBoxNotificationContainer')
-          .default;
+        const LogBoxNotificationContainer =
+          require('../LogBox/LogBoxNotificationContainer').default;
         logBox = <LogBoxNotificationContainer />;
       }
     }

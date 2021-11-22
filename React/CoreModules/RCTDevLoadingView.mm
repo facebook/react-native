@@ -114,16 +114,11 @@ RCT_EXPORT_MODULE()
     if (!self->_window && !RCTRunningInTestEnvironment()) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
 
-      if (@available(iOS 11.0, *)) {
-        UIWindow *window = RCTSharedApplication().keyWindow;
-        self->_window =
-            [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 10)];
-        self->_label =
-            [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, screenSize.width, 20)];
-      } else {
-        self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 20)];
-        self->_label = [[UILabel alloc] initWithFrame:self->_window.bounds];
-      }
+      UIWindow *window = RCTSharedApplication().keyWindow;
+      self->_window =
+          [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 10)];
+      self->_label =
+          [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top - 10, screenSize.width, 20)];
       [self->_window addSubview:self->_label];
 
       self->_window.windowLevel = UIWindowLevelStatusBar + 1;

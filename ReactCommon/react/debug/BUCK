@@ -29,12 +29,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/debug",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
     exported_platform_linker_flags = [
         (
             "^android.*",

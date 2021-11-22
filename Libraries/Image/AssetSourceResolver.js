@@ -159,10 +159,8 @@ class AssetSourceResolver {
     };
   }
 
-  static pickScale: (
-    scales: Array<number>,
-    deviceScale?: number,
-  ) => number = pickScale;
+  static pickScale: (scales: Array<number>, deviceScale?: number) => number =
+    pickScale;
 }
 
 module.exports = AssetSourceResolver;

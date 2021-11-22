@@ -183,7 +183,7 @@ TransformOperation Transform::DefaultTransformOperation(
 }
 
 Transform Transform::Interpolate(
-    float animationProgress,
+    Float animationProgress,
     Transform const &lhs,
     Transform const &rhs) {
   // Iterate through operations and reconstruct an interpolated resulting

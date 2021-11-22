@@ -34,12 +34,12 @@ function getConstants(): Object {
 function getViewManagerConfig(viewManagerName: string): any {
   if (
     viewManagerConfigs[viewManagerName] === undefined &&
+    global.nativeCallSyncHook && // If we're in the Chrome Debugger, let's not even try calling the sync method
     NativeUIManager.getConstantsForViewManager
   ) {
     try {
-      viewManagerConfigs[
-        viewManagerName
-      ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
+      viewManagerConfigs[viewManagerName] =
+        NativeUIManager.getConstantsForViewManager(viewManagerName);
     } catch (e) {
       console.error(
         "NativeUIManager.getConstantsForViewManager('" +

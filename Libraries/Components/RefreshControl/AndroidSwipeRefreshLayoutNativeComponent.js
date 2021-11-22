@@ -17,7 +17,6 @@ import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {
   DirectEventHandler,
   Float,
-  Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';

@@ -12,7 +12,8 @@
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/SchedulerPriority.h>
 
-namespace facebook::react {
+namespace facebook {
+namespace react {
 
 class RuntimeScheduler;
 class TaskPriorityComparer;
@@ -31,7 +32,7 @@ struct Task final {
   better::optional<jsi::Function> callback;
   RuntimeSchedulerClock::time_point expirationTime;
 
-  jsi::Value execute(jsi::Runtime &runtime) const;
+  jsi::Value execute(jsi::Runtime &runtime);
 };
 
 class TaskPriorityComparer {
@@ -43,4 +44,5 @@ class TaskPriorityComparer {
   }
 };
 
-} // namespace facebook::react
+} // namespace react
+} // namespace facebook

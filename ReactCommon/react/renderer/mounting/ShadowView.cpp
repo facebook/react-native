@@ -25,6 +25,7 @@ ShadowView::ShadowView(const ShadowNode &shadowNode)
       componentHandle(shadowNode.getComponentHandle()),
       surfaceId(shadowNode.getSurfaceId()),
       tag(shadowNode.getTag()),
+      traits(shadowNode.getTraits()),
       props(shadowNode.getProps()),
       eventEmitter(shadowNode.getEventEmitter()),
       layoutMetrics(layoutMetricsFromShadowNode(shadowNode)),
@@ -65,6 +66,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
   return {
       {"surfaceId", getDebugDescription(object.surfaceId, options)},
       {"tag", getDebugDescription(object.tag, options)},
+      {"traits", getDebugDescription(object.traits, options)},
       {"componentName", object.componentName},
       {"props", getDebugDescription(object.props, options)},
       {"eventEmitter", getDebugDescription(object.eventEmitter, options)},

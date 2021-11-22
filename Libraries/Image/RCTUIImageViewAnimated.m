@@ -130,7 +130,7 @@ static NSUInteger RCTDeviceFreeMemory() {
 - (NSOperationQueue *)fetchQueue
 {
   if (!_fetchQueue) {
-    _fetchQueue = [[NSOperationQueue alloc] init];
+    _fetchQueue = [NSOperationQueue new];
     _fetchQueue.maxConcurrentOperationCount = 1;
   }
   return _fetchQueue;

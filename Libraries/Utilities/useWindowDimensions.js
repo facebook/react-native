@@ -9,13 +9,22 @@
  */
 
 import Dimensions from './Dimensions';
-import {type DisplayMetrics} from './NativeDeviceInfo';
+import {
+  type DisplayMetrics,
+  type DisplayMetricsAndroid,
+} from './NativeDeviceInfo';
 import {useEffect, useState} from 'react';
 
-export default function useWindowDimensions(): DisplayMetrics {
+export default function useWindowDimensions():
+  | DisplayMetrics
+  | DisplayMetricsAndroid {
   const [dimensions, setDimensions] = useState(() => Dimensions.get('window'));
   useEffect(() => {
-    function handleChange({window}) {
+    function handleChange({
+      window,
+    }:
+      | $FlowFixMe
+      | $TEMPORARY$object<{window: DisplayMetrics | DisplayMetricsAndroid}>) {
       if (
         dimensions.width !== window.width ||
         dimensions.height !== window.height ||

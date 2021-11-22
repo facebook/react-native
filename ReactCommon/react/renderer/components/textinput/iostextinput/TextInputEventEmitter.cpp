@@ -72,8 +72,7 @@ void TextInputEventEmitter::onBlur(
 
 void TextInputEventEmitter::onChange(
     TextInputMetrics const &textInputMetrics) const {
-  dispatchTextInputEvent(
-      "change", textInputMetrics, EventPriority::SynchronousUnbatched);
+  dispatchTextInputEvent("change", textInputMetrics);
 }
 
 void TextInputEventEmitter::onChangeText(
@@ -109,6 +108,11 @@ void TextInputEventEmitter::onKeyPress(
         return keyPressMetricsPayload(runtime, keyPressMetrics);
       },
       EventPriority::AsynchronousBatched);
+}
+
+void TextInputEventEmitter::onScroll(
+    TextInputMetrics const &textInputMetrics) const {
+  dispatchTextInputEvent("onScroll", textInputMetrics);
 }
 
 void TextInputEventEmitter::dispatchTextInputEvent(

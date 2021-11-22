@@ -122,6 +122,13 @@ const UserFlow = {
     }
   },
 
+  /**
+   * Completes flow as failed
+   *
+   * ErrorName should be short and easily categorazable (it is attached as point to the UserFlow and can be used for aggregations).
+   * For example: io_error, network_error, parse_error, validation_error.
+   * DebugInfo is free-form string, where you can attach detailed error message. It is attached as data to the point (see ErrorName).
+   */
   endFailure(
     flowId: FlowId,
     errorName: string,

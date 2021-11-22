@@ -30,7 +30,7 @@
       android:banner="@drawable/tv_banner"
       android:icon="@drawable/launcher_icon"
       android:label="@string/app_name"
-      android:theme="@style/Theme.ReactNative.AppCompat.Light" >
+      android:theme="@style/AppTheme">
     <activity
         android:name=".RNTesterActivity"
         android:label="@string/app_name"
@@ -52,6 +52,11 @@
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+    <provider
+      android:name="com.facebook.react.modules.blob.BlobProvider"
+      android:authorities="@string/blob_provider_authority"
+      android:exported="false"
+    />
   </application>
 
 </manifest>

@@ -65,7 +65,7 @@ class AnimatedNode {
    * animations.  This is useful because there is no way to
    * synchronously read the value because it might be driven natively.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#addlistener
+   * See https://reactnative.dev/docs/animatedvalue#addlistener
    */
   addListener(callback: (value: any) => mixed): string {
     const id = String(_uniqueId++);
@@ -80,7 +80,7 @@ class AnimatedNode {
    * Unregister a listener. The `id` param shall match the identifier
    * previously returned by `addListener()`.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#removelistener
+   * See https://reactnative.dev/docs/animatedvalue#removelistener
    */
   removeListener(id: string): void {
     delete this._listeners[id];
@@ -92,7 +92,7 @@ class AnimatedNode {
   /**
    * Remove all registered listeners.
    *
-   * See https://reactnative.dev/docs/animatedvalue.html#removealllisteners
+   * See https://reactnative.dev/docs/animatedvalue#removealllisteners
    */
   removeAllListeners(): void {
     this._listeners = {};
@@ -119,15 +119,16 @@ class AnimatedNode {
     }
 
     NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
-    this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
-      'onAnimatedValueUpdate',
-      data => {
-        if (data.tag !== this.__getNativeTag()) {
-          return;
-        }
-        this._onAnimatedValueUpdateReceived(data.value);
-      },
-    );
+    this.__nativeAnimatedValueListener =
+      NativeAnimatedHelper.nativeEventEmitter.addListener(
+        'onAnimatedValueUpdate',
+        data => {
+          if (data.tag !== this.__getNativeTag()) {
+            return;
+          }
+          this._onAnimatedValueUpdateReceived(data.value);
+        },
+      );
   }
 
   _onAnimatedValueUpdateReceived(value: number) {

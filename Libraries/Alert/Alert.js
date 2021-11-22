@@ -34,7 +34,7 @@ type Options = {
 /**
  * Launches an alert dialog with the specified title and message.
  *
- * See https://reactnative.dev/docs/alert.html
+ * See https://reactnative.dev/docs/alert
  */
 class Alert {
   static alert(
@@ -46,8 +46,8 @@ class Alert {
     if (Platform.OS === 'ios') {
       Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
-      const NativeDialogManagerAndroid = require('../NativeModules/specs/NativeDialogManagerAndroid')
-        .default;
+      const NativeDialogManagerAndroid =
+        require('../NativeModules/specs/NativeDialogManagerAndroid').default;
       if (!NativeDialogManagerAndroid) {
         return;
       }

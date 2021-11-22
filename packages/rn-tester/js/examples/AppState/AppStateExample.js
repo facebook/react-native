@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {AppStateValues} from 'react-native/Libraries/AppState/AppState';
+
 const React = require('react');
 
 import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
@@ -65,7 +67,7 @@ class AppStateSubscription extends React.Component<
     this.setState({eventsDetected});
   };
 
-  _handleAppStateChange = appState => {
+  _handleAppStateChange = (appState: AppStateValues) => {
     const previousAppStates = this.state.previousAppStates.slice();
     previousAppStates.push(this.state.appState);
     this.setState({

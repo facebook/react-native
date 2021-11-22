@@ -83,7 +83,7 @@ function buildGraph(desc: Descriptor): Graph {
   const commands = desc.commands;
   const events = desc.events;
 
-  const maybeAddPropEdges = function(nodeId: string, props: ?Array<Property>) {
+  const maybeAddPropEdges = function (nodeId: string, props: ?Array<Property>) {
     if (props) {
       for (const prop of props) {
         const refId = prop.getRefDebuggerName();

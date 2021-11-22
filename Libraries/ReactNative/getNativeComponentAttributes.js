@@ -35,6 +35,10 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
   // native component that can be either avoided or simplified.
   let {baseModuleName, bubblingEventTypes, directEventTypes} = viewConfig;
   let nativeProps = viewConfig.NativeProps;
+
+  bubblingEventTypes = bubblingEventTypes ?? {};
+  directEventTypes = directEventTypes ?? {};
+
   while (baseModuleName) {
     const baseModule = UIManager.getViewManagerConfig(baseModuleName);
     if (!baseModule) {
@@ -63,8 +67,18 @@ function getNativeComponentAttributes(uiViewClassName: string): any {
     const diff = getDifferForType(typeName);
     const process = getProcessorForType(typeName);
 
+    // If diff or process == null, omit the corresponding property from the Attribute
+    // Why:
+    //  1. Consistency with AttributeType flow type
+    //  2. Consistency with Static View Configs, which omit the null properties
     validAttributes[key] =
-      diff == null && process == null ? true : {diff, process};
+      diff == null
+        ? process == null
+          ? true
+          : {process}
+        : process == null
+        ? {diff}
+        : {diff, process};
   }
 
   // Unfortunately, the current setup declares style properties as top-level

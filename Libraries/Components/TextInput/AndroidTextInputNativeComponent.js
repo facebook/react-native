@@ -23,7 +23,6 @@ import type {
   ViewStyleProp,
   ColorValue,
 } from '../../StyleSheet/StyleSheet';
-import requireNativeComponent from '../../ReactNative/requireNativeComponent';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 import AndroidTextInputViewConfig from './AndroidTextInputViewConfig';
@@ -37,10 +36,10 @@ export type KeyboardType =
   | 'phone-pad'
   | 'number-pad'
   | 'decimal-pad'
+  | 'url'
   // iOS-only
   | 'ascii-capable'
   | 'numbers-and-punctuation'
-  | 'url'
   | 'name-phone-pad'
   | 'twitter'
   | 'web-search'
@@ -74,42 +73,90 @@ export type NativeProps = $ReadOnly<{|
    * Android props after this
    */
   /**
-   * Determines which content to suggest on auto complete, e.g.`username`.
-   * To disable auto complete, use `off`.
+   * Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
+   * To disable autocomplete, set `autoComplete` to `off`.
    *
    * *Android Only*
    *
-   * The following values work on Android only:
+   * Possible values for `autoComplete` are:
    *
-   * - `username`
-   * - `password`
-   * - `email`
-   * - `name`
-   * - `tel`
-   * - `street-address`
-   * - `postal-code`
-   * - `cc-number`
+   * - `birthdate-day`
+   * - `birthdate-full`
+   * - `birthdate-month`
+   * - `birthdate-year`
    * - `cc-csc`
    * - `cc-exp`
+   * - `cc-exp-day`
    * - `cc-exp-month`
    * - `cc-exp-year`
+   * - `cc-number`
+   * - `email`
+   * - `gender`
+   * - `name`
+   * - `name-family`
+   * - `name-given`
+   * - `name-middle`
+   * - `name-middle-initial`
+   * - `name-prefix`
+   * - `name-suffix`
+   * - `password`
+   * - `password-new`
+   * - `postal-address`
+   * - `postal-address-country`
+   * - `postal-address-extended`
+   * - `postal-address-extended-postal-code`
+   * - `postal-address-locality`
+   * - `postal-address-region`
+   * - `postal-code`
+   * - `street-address`
+   * - `sms-otp`
+   * - `tel`
+   * - `tel-country-code`
+   * - `tel-national`
+   * - `tel-device`
+   * - `username`
+   * - `username-new`
    * - `off`
    *
    * @platform android
    */
-  autoCompleteType?: WithDefault<
+  autoComplete?: WithDefault<
+    | 'birthdate-day'
+    | 'birthdate-full'
+    | 'birthdate-month'
+    | 'birthdate-year'
     | 'cc-csc'
     | 'cc-exp'
+    | 'cc-exp-day'
     | 'cc-exp-month'
     | 'cc-exp-year'
     | 'cc-number'
     | 'email'
+    | 'gender'
     | 'name'
+    | 'name-family'
+    | 'name-given'
+    | 'name-middle'
+    | 'name-middle-initial'
+    | 'name-prefix'
+    | 'name-suffix'
     | 'password'
+    | 'password-new'
+    | 'postal-address'
+    | 'postal-address-country'
+    | 'postal-address-extended'
+    | 'postal-address-extended-postal-code'
+    | 'postal-address-locality'
+    | 'postal-address-region'
     | 'postal-code'
     | 'street-address'
+    | 'sms-otp'
     | 'tel'
+    | 'tel-country-code'
+    | 'tel-national'
+    | 'tel-device'
     | 'username'
+    | 'username-new'
     | 'off',
     'off',
   >,
@@ -244,6 +291,7 @@ export type NativeProps = $ReadOnly<{|
    * - `decimal-pad`
    * - `email-address`
    * - `phone-pad`
+   * - `url`
    *
    * *Android Only*
    *
@@ -414,7 +462,7 @@ export type NativeProps = $ReadOnly<{|
   /**
    * The string that will be rendered before text input has been entered.
    */
-  placeholder?: ?string,
+  placeholder?: ?Stringish,
 
   /**
    * The text color of the placeholder string.

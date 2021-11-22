@@ -17,6 +17,7 @@
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
+#import "RCTViewUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
 
@@ -197,10 +198,8 @@
   if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
     self.contentOffset = originalOffset;
   } else {
-    if (@available(iOS 11.0, *)) {
-      if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
-        contentInset = self.adjustedContentInset;
-      }
+    if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
+      contentInset = self.adjustedContentInset;
     }
     CGSize boundsSize = self.bounds.size;
     CGFloat xMaxOffset = contentSize.width - boundsSize.width + contentInset.right;
@@ -287,17 +286,10 @@
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-    // `contentInsetAdjustmentBehavior` is only available since iOS 11.
     // We set the default behavior to "never" so that iOS
     // doesn't do weird things to UIScrollView insets automatically
     // and keeps it as an opt-in behavior.
-    if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-      if (@available(iOS 11.0, *)) {
-        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      }
-    }
-#endif
+    _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
 
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
@@ -802,7 +794,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 {
   CGSize viewportSize = self.bounds.size;
   if (_automaticallyAdjustContentInsets) {
-    UIEdgeInsets contentInsets = [RCTView contentInsetsForView:self];
+    UIEdgeInsets contentInsets = RCTContentInsets(self);
     viewportSize = CGSizeMake(
         self.bounds.size.width - contentInsets.left - contentInsets.right,
         self.bounds.size.height - contentInsets.top - contentInsets.bottom);
@@ -928,19 +920,24 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScroll
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior API_AVAILABLE(ios(11.0))
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
+- (void)setAutomaticallyAdjustsScrollIndicatorInsets:(BOOL)automaticallyAdjusts API_AVAILABLE(ios(13.0))
 {
-  // `contentInsetAdjustmentBehavior` is available since iOS 11.
-  if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-    CGPoint contentOffset = _scrollView.contentOffset;
-    if (@available(iOS 11.0, *)) {
-      _scrollView.contentInsetAdjustmentBehavior = behavior;
+  // `automaticallyAdjustsScrollIndicatorInsets` is available since iOS 13.
+  if ([_scrollView respondsToSelector:@selector(setAutomaticallyAdjustsScrollIndicatorInsets:)]) {
+    if (@available(iOS 13.0, *)) {
+      _scrollView.automaticallyAdjustsScrollIndicatorInsets = automaticallyAdjusts;
     }
-    _scrollView.contentOffset = contentOffset;
   }
 }
 #endif
+
+- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
+{
+  CGPoint contentOffset = _scrollView.contentOffset;
+  _scrollView.contentInsetAdjustmentBehavior = behavior;
+  _scrollView.contentOffset = contentOffset;
+}
 
 - (void)sendScrollEventWithName:(NSString *)eventName
                      scrollView:(UIScrollView *)scrollView

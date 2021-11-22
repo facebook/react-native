@@ -5,26 +5,37 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import org.gradle.api.internal.classpath.ModuleRegistry
+import org.gradle.configurationcache.extensions.serviceOf
+
 plugins {
-  `java-gradle-plugin`
-  `kotlin-dsl`
-  kotlin("jvm") version "1.4.21"
+  kotlin("jvm") version "1.5.31"
+  id("java-gradle-plugin")
 }
 
 repositories {
   google()
-  jcenter()
+  mavenCentral()
 }
 
 gradlePlugin {
   plugins {
-    create("reactApp") {
-      id = "com.facebook.react.app"
-      implementationClass = "com.facebook.react.ReactAppPlugin"
+    create("react") {
+      id = "com.facebook.react"
+      implementationClass = "com.facebook.react.ReactPlugin"
     }
   }
 }
 
 dependencies {
-  implementation("com.android.tools.build:gradle:4.1.0")
+  implementation(gradleApi())
+  implementation("com.android.tools.build:gradle:4.2.2")
+
+  testImplementation("junit:junit:4.13.2")
+
+  testRuntimeOnly(
+    files(
+      serviceOf<ModuleRegistry>().getModule("gradle-tooling-api-builders").classpath.asFiles.first()
+    )
+  )
 }

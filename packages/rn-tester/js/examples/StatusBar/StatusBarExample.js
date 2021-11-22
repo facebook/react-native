@@ -151,8 +151,8 @@ class StatusBarNetworkActivityExample extends React.Component<
 
   _onChangeNetworkIndicatorVisible = () => {
     this.setState({
-      networkActivityIndicatorVisible: !this.state
-        .networkActivityIndicatorVisible,
+      networkActivityIndicatorVisible:
+        !this.state.networkActivityIndicatorVisible,
     });
   };
 

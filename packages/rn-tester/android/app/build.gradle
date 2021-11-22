@@ -7,8 +7,7 @@
 
 plugins {
     id("com.android.application")
-    id("com.facebook.react.codegen")
-    id("com.facebook.react.app")
+    id("com.facebook.react")
 }
 
 /**
@@ -76,8 +75,9 @@ plugins {
  * ]
  */
 
-reactApp {
-    cliPath = "$rootDir/cli.js"
+react {
+    applyAppPlugin = true
+    cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
     reactRoot = rootDir
@@ -85,6 +85,11 @@ reactApp {
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
     enableHermesForVariant { def v -> v.name.contains("hermes") }
+
+    // Codegen Configs
+    jsRootDir = file("$rootDir/packages/rn-tester")
+    libraryName = "rntester"
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
 }
 
 project.ext.react = [
@@ -128,13 +133,23 @@ def enableFabric = project.ext.react.enableFabric
  */
 def useIntlJsc = false
 
+/**
+ * Architectures to build native code for.
+ */
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
     compileSdkVersion 29
-    ndkVersion ANDROID_NDK_VERSION
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    if (project.hasProperty("ANDROID_NDK_VERSION")) {
+        ndkVersion project.property("ANDROID_NDK_VERSION")
     }
+    if (project.hasProperty("ANDROID_NDK_PATH")) {
+        ndkPath project.property("ANDROID_NDK_PATH")
+    }
+
     dexOptions {
         javaMaxHeapSize "4g"
     }
@@ -172,7 +187,7 @@ android {
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false
             reset()
-            include "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
+            include (*reactNativeArchitectures())
         }
     }
     buildTypes {
@@ -196,6 +211,10 @@ android {
                 "$rootDir/ReactCommon/react/nativemodule/samples/platform/android",
             ]
         }
+    }
+    packagingOptions {
+        pickFirst '**/libhermes.so'
+        pickFirst '**/libjsc.so'
     }
 }
 
@@ -239,12 +258,6 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
 }
 
-react {
-    jsRootDir = file("$rootDir/packages/rn-tester")
-    reactNativeRootDir = file("$rootDir")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
-}
-
 if (enableCodegen) {
     // TODO: Move all this logic to CodegenPlugin.java.
     def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
@@ -254,7 +267,6 @@ if (enableCodegen) {
         defaultConfig {
             externalNativeBuild {
                 ndkBuild {
-                    abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
                     arguments "APP_PLATFORM=android-21",
                             "APP_STL=c++_shared",
                             "NDK_TOOLCHAIN_VERSION=clang",
@@ -264,7 +276,7 @@ if (enableCodegen) {
                             "REACT_ANDROID_DIR=$reactAndroidProjectDir",
                             "REACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
-                    cppFlags "-std=c++1y"
+                    cppFlags "-std=c++17"
                     targets "rntester_appmodules"
                 }
             }
@@ -276,10 +288,18 @@ if (enableCodegen) {
         }
     }
 
-    def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
+    def packageReactDebugNdkLibs = tasks.register("packageReactDebugNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
-        dependsOn(":ReactAndroid:packageReactNdkLibs")
-        from("$reactAndroidBuildDir/react-ndk/exported")
+        dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
+        dependsOn("generateCodegenSchemaFromJavaScript")
+        from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
+        into("$buildDir/react-ndk/exported")
+    }
+    def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Copy) {
+        // TODO: handle extracting .so from prebuilt :ReactAndroid.
+        dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
+        dependsOn("generateCodegenSchemaFromJavaScript")
+        from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
         into("$buildDir/react-ndk/exported")
     }
 
@@ -297,7 +317,10 @@ if (enableCodegen) {
     }
 
     afterEvaluate {
-        preBuild.dependsOn(packageReactNdkLibs)
+        preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+        preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+        preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
+        preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
         clean.dependsOn(cleanProjectNdkBuild)
     }
 }

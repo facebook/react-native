@@ -51,7 +51,7 @@ class Item extends React.Component<ItemProps, ItemState> {
   }
 }
 
-const getInitialState = function() {
+const getInitialState = function () {
   const data = [];
   for (let i = 0; i < NUM_ITEMS; i++) {
     data[i] = {text: 'Item ' + i + '!'};
@@ -61,28 +61,28 @@ const getInitialState = function() {
   };
 };
 
-const onScroll = function(e) {
+const onScroll = function (e) {
   ScrollListener.onScroll(
     e.nativeEvent.contentOffset.x,
     e.nativeEvent.contentOffset.y,
   );
 };
 
-const onScrollBeginDrag = function(e) {
+const onScrollBeginDrag = function (e) {
   ScrollListener.onScrollBeginDrag(
     e.nativeEvent.contentOffset.x,
     e.nativeEvent.contentOffset.y,
   );
 };
 
-const onScrollEndDrag = function(e) {
+const onScrollEndDrag = function (e) {
   ScrollListener.onScrollEndDrag(
     e.nativeEvent.contentOffset.x,
     e.nativeEvent.contentOffset.y,
   );
 };
 
-const onItemPress = function(itemNumber) {
+const onItemPress = function (itemNumber) {
   ScrollListener.onItemPress(itemNumber);
 };
 
@@ -105,7 +105,7 @@ class ScrollViewTestApp extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    scrollViewApp = this;
+    scrollViewApp = this; // eslint-disable-line consistent-this
     const children = this.state.data.map((item, index) => (
       <Item
         key={index}
@@ -139,7 +139,7 @@ class HorizontalScrollViewTestApp extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    scrollViewApp = this;
+    scrollViewApp = this; // eslint-disable-line consistent-this
     const children = this.state.data.map((item, index) => (
       <Item
         key={index}

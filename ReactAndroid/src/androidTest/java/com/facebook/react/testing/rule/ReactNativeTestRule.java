@@ -10,6 +10,7 @@ package com.facebook.react.testing.rule;
 import android.app.Activity;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import androidx.test.rule.ActivityTestRule;
+import com.facebook.react.ReactInstanceEventListener;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactRootView;
@@ -90,7 +91,7 @@ public class ReactNativeTestRule implements TestRule {
             // This threading garbage will be replaced by Surface
             final AtomicBoolean isLayoutUpdated = new AtomicBoolean(false);
             mReactInstanceManager.addReactInstanceEventListener(
-                new ReactInstanceManager.ReactInstanceEventListener() {
+                new ReactInstanceEventListener() {
                   @Override
                   public void onReactContextInitialized(ReactContext reactContext) {
                     final UIManagerModule uiManagerModule =

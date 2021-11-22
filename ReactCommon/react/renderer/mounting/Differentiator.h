@@ -47,8 +47,7 @@ using ViewNodePairScope = std::deque<ShadowViewNodePair>;
  */
 ShadowViewMutation::List calculateShadowViewMutations(
     ShadowNode const &oldRootShadowNode,
-    ShadowNode const &newRootShadowNode,
-    bool useNewDiffer);
+    ShadowNode const &newRootShadowNode);
 
 /**
  * Generates a list of `ShadowViewNodePair`s that represents a layer of a

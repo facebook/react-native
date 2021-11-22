@@ -140,21 +140,6 @@ describe('Animated tests', () => {
       expect(callback).toBeCalled();
     });
 
-    // This test is flaky and we are asking open source to fix it
-    // https://github.com/facebook/react-native/issues/21517
-    it.skip('send toValue when an underdamped spring stops', () => {
-      const anim = new Animated.Value(0);
-      const listener = jest.fn();
-      anim.addListener(listener);
-      Animated.spring(anim, {toValue: 15, useNativeDriver: false}).start();
-      jest.runAllTimers();
-      const lastValue =
-        listener.mock.calls[listener.mock.calls.length - 2][0].value;
-      expect(lastValue).not.toBe(15);
-      expect(lastValue).toBeCloseTo(15);
-      expect(anim.__getValue()).toBe(15);
-    });
-
     it('send toValue when a critically damped spring stops', () => {
       const anim = new Animated.Value(0);
       const listener = jest.fn();
@@ -638,6 +623,16 @@ describe('Animated tests', () => {
       handler({bar: 'ignoreBar'}, {state: {baz: 'ignoreBaz', foo: 42}});
       expect(value.__getValue()).toBe(42);
     });
+
+    it('should validate AnimatedValueXY mappings', () => {
+      const value = new Animated.ValueXY({x: 0, y: 0});
+      const handler = Animated.event([{state: value}], {
+        useNativeDriver: false,
+      });
+      handler({state: {x: 1, y: 2}});
+      expect(value.__getValue()).toMatchObject({x: 1, y: 2});
+    });
+
     it('should call listeners', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
@@ -650,6 +645,7 @@ describe('Animated tests', () => {
       expect(listener.mock.calls.length).toBe(1);
       expect(listener).toBeCalledWith({foo: 42});
     });
+
     it('should call forked event listeners, with Animated.event() listener', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
@@ -666,6 +662,7 @@ describe('Animated tests', () => {
       expect(listener2.mock.calls.length).toBe(1);
       expect(listener2).toBeCalledWith({foo: 42});
     });
+
     it('should call forked event listeners, with js listener', () => {
       const listener = jest.fn();
       const listener2 = jest.fn();
@@ -676,6 +673,7 @@ describe('Animated tests', () => {
       expect(listener2.mock.calls.length).toBe(1);
       expect(listener2).toBeCalledWith({foo: 42});
     });
+
     it('should call forked event listeners, with undefined listener', () => {
       const listener = undefined;
       const listener2 = jest.fn();

@@ -349,8 +349,8 @@ function windowSizeOrDefault(windowSize: ?number) {
 }
 
 /**
- * Base implementation for the more convenient [`<FlatList>`](https://reactnative.dev/docs/flatlist.html)
- * and [`<SectionList>`](https://reactnative.dev/docs/sectionlist.html) components, which are also better
+ * Base implementation for the more convenient [`<FlatList>`](https://reactnative.dev/docs/flatlist)
+ * and [`<SectionList>`](https://reactnative.dev/docs/sectionlist) components, which are also better
  * documented. In general, this should only really be used if you need more flexibility than
  * `FlatList` provides, e.g. for use with immutable data instead of plain arrays.
  *
@@ -441,9 +441,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
     invariant(
       index < getItemCount(data),
-      `scrollToIndex out of range: requested index ${index} is out of 0 to ${getItemCount(
-        data,
-      ) - 1}`,
+      `scrollToIndex out of range: requested index ${index} is out of 0 to ${
+        getItemCount(data) - 1
+      }`,
     );
     if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
       invariant(
@@ -882,11 +882,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         );
       }
     }
-    const {
-      ListEmptyComponent,
-      ListFooterComponent,
-      ListHeaderComponent,
-    } = this.props;
+    const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
+      this.props;
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle = this.props.inverted
@@ -1496,12 +1493,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    const {
-      data,
-      getItemCount,
-      onEndReached,
-      onEndReachedThreshold,
-    } = this.props;
+    const {data, getItemCount, onEndReached, onEndReachedThreshold} =
+      this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     const distanceFromEnd = contentLength - visibleLength - offset;
     const threshold =
@@ -1588,15 +1581,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         // know our offset from our offset from our parent
         return;
       }
-      ({
-        visibleLength,
-        contentLength,
-        offset,
-        dOffset,
-      } = this._convertParentScrollMetrics({
-        visibleLength,
-        offset,
-      }));
+      ({visibleLength, contentLength, offset, dOffset} =
+        this._convertParentScrollMetrics({
+          visibleLength,
+          offset,
+        }));
     }
 
     const dt = this._scrollMetrics.timestamp
@@ -1802,7 +1791,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             }
           }
           if (someChildHasMore) {
-            // $FlowFixMe[incompatible-use]
             newState.last = ii;
             break;
           }
@@ -1895,7 +1883,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
 type CellRendererProps = {
   CellRendererComponent?: ?React.ComponentType<any>,
-  ItemSeparatorComponent: ?React.ComponentType<*>,
+  ItemSeparatorComponent: ?React.ComponentType<
+    any | {highlighted: boolean, leadingItem: ?Item},
+  >,
   cellKey: string,
   fillRateHelper: FillRateHelper,
   horizontal: ?boolean,

@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import type {NativeModulePropertyShape} from '../../../CodegenSchema';
 
 import type {SchemaType} from '../../../CodegenSchema';
 import type {MethodSerializationOutput} from './serializeMethod';
@@ -142,7 +143,7 @@ module.exports = {
       const structCollector = new StructCollector();
 
       const methodSerializations: Array<MethodSerializationOutput> = [];
-      const serializeProperty = property => {
+      const serializeProperty = (property: NativeModulePropertyShape) => {
         methodSerializations.push(
           ...serializeMethod(
             hasteModuleName,

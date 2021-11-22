@@ -4,9 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
+ * @noformat
  * @flow strict
- * @generated SignedSource<<e82e40c72e74c0f37676a3cae5cde60b>>
+ * @generated SignedSource<<ec11b46a06877b4f7f3f0b6c1f5d46c3>>
+ *
+ * This file was sync'd from the facebook/react repository.
  */
 
 import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
@@ -34,7 +36,7 @@ export type MeasureLayoutOnSuccessCallback = (
   height: number,
 ) => void;
 
-type AttributeType<T, V> =
+export type AttributeType<T, V> =
   | true
   | $ReadOnly<{|
       diff?: (arg1: T, arg2: T) => boolean,
@@ -43,7 +45,7 @@ type AttributeType<T, V> =
 
 // We either force that `diff` and `process` always use mixed,
 // or we allow them to define specific types and use this hack
-type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
+export type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
 
 export type AttributeConfiguration = $ReadOnly<{
   [propName: string]: AnyAttributeType,
@@ -54,7 +56,7 @@ export type AttributeConfiguration = $ReadOnly<{
   ...
 }>;
 
-type PartialAttributeConfiguration = $ReadOnly<{
+export type PartialAttributeConfiguration = $ReadOnly<{
   [propName: string]: AnyAttributeType,
   style?: $ReadOnly<{
     [propName: string]: AnyAttributeType,
@@ -211,6 +213,7 @@ export type ReactFabricType = {
     element: Element<ElementType>,
     containerTag: number,
     callback: ?() => void,
+    concurrentRoot: ?boolean,
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   ...

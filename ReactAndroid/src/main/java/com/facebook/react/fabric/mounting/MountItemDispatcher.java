@@ -13,6 +13,7 @@ import static com.facebook.react.fabric.FabricUIManager.ENABLE_FABRIC_LOGS;
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 
 import android.os.SystemClock;
+import android.view.View;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,7 +22,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.ReactIgnorableMountingException;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -30,6 +31,7 @@ import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MountItemDispatcher {
@@ -130,7 +132,7 @@ public class MountItemDispatcher {
     if (mReDispatchCounter < 10 && didDispatchItems) {
       // Executing twice in a row is normal. Only log after that point.
       if (mReDispatchCounter > 2) {
-        ReactSoftException.logSoftException(
+        ReactSoftExceptionLogger.logSoftException(
             TAG,
             new ReactNoCrashSoftException(
                 "Re-dispatched "
@@ -143,6 +145,32 @@ public class MountItemDispatcher {
     }
     mReDispatchCounter = 0;
     return didDispatchItems;
+  }
+
+  @UiThread
+  @ThreadConfined(UI)
+  public void dispatchMountItems(Queue<MountItem> mountItems) {
+    while (!mountItems.isEmpty()) {
+      MountItem item = mountItems.poll();
+      try {
+        item.execute(mMountingManager);
+      } catch (RetryableMountingLayerException e) {
+        if (item instanceof DispatchCommandMountItem) {
+          // Only DispatchCommandMountItem supports retries
+          DispatchCommandMountItem mountItem = (DispatchCommandMountItem) item;
+          // Retrying exactly once
+          if (mountItem.getRetries() == 0) {
+            mountItem.incrementRetries();
+            // In case we haven't retried executing this item yet, execute in the next batch of
+            // items
+            dispatchCommandMountItem(mountItem);
+          }
+        } else {
+          printMountItem(
+              item, "dispatchExternalMountItems: mounting failed with " + e.getMessage());
+        }
+      }
+    }
   }
 
   @UiThread
@@ -197,14 +225,14 @@ public class MountItemDispatcher {
             // exception but never crash in debug.
             // It's not clear that logging this is even useful, because these events are very
             // common, mundane, and there's not much we can do about them currently.
-            ReactSoftException.logSoftException(
+            ReactSoftExceptionLogger.logSoftException(
                 TAG,
                 new ReactNoCrashSoftException(
                     "Caught exception executing ViewCommand: " + command.toString(), e));
           }
         } catch (Throwable e) {
           // Non-Retryable exceptions are logged as soft exceptions in prod, but crash in Debug.
-          ReactSoftException.logSoftException(
+          ReactSoftExceptionLogger.logSoftException(
               TAG,
               new RuntimeException(
                   "Caught exception executing ViewCommand: " + command.toString(), e));
@@ -247,13 +275,20 @@ public class MountItemDispatcher {
           executeOrEnqueue(mountItem);
         } catch (Throwable e) {
           // If there's an exception, we want to log diagnostics in prod and rethrow.
-          FLog.e(TAG, "dispatchMountItems: caught exception, displaying all MountItems", e);
+          FLog.e(TAG, "dispatchMountItems: caught exception, displaying mount state", e);
           for (MountItem m : mountItemsToDispatch) {
             printMountItem(m, "dispatchMountItems: mountItem");
           }
+          if (mountItem.getSurfaceId() != View.NO_ID) {
+            SurfaceMountingManager surfaceManager =
+                mMountingManager.getSurfaceManager(mountItem.getSurfaceId());
+            if (surfaceManager != null) {
+              surfaceManager.printSurfaceState();
+            }
+          }
 
           if (ReactIgnorableMountingException.isIgnorable(e)) {
-            ReactSoftException.logSoftException(TAG, e);
+            ReactSoftExceptionLogger.logSoftException(TAG, e);
           } else {
             throw e;
           }

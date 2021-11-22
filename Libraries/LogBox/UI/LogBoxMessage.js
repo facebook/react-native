@@ -22,7 +22,7 @@ type Props = {
   ...
 };
 
-const cleanContent = content =>
+const cleanContent = (content: string) =>
   content.replace(/^(TransformError |Warning: (Warning: )?|Error: )/g, '');
 
 function LogBoxMessage(props: Props): React.Node {
@@ -36,7 +36,11 @@ function LogBoxMessage(props: Props): React.Node {
   const substitutionStyle: TextStyleProp = props.style;
   const elements = [];
   let length = 0;
-  const createUnderLength = (key, message, style) => {
+  const createUnderLength = (
+    key: string | $TEMPORARY$string<'-1'>,
+    message: string,
+    style: void | TextStyleProp,
+  ) => {
     let cleanMessage = cleanContent(message);
 
     if (props.maxLength != null) {

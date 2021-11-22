@@ -51,7 +51,7 @@ class SwipeRefreshLayoutTestApp extends React.Component {
   };
 
   componentDidMount() {
-    app = this;
+    app = this; // eslint-disable-line consistent-this
   }
 
   render() {
@@ -77,7 +77,7 @@ class SwipeRefreshLayoutTestApp extends React.Component {
 
 const SwipeRefreshLayoutTestModule = {
   SwipeRefreshLayoutTestApp,
-  setRows: function(rows) {
+  setRows: function (rows) {
     if (app != null) {
       app.setState({rows});
     }

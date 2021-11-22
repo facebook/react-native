@@ -17,7 +17,7 @@ jest.setMock('../../BatchedBridge/NativeModules', {
 const Blob = require('../Blob');
 const BlobManager = require('../BlobManager');
 
-describe('BlobManager', function() {
+describe('BlobManager', function () {
   it('should create blob from parts', () => {
     const blob = BlobManager.createFromParts([], {type: 'text/html'});
     expect(blob).toBeInstanceOf(Blob);

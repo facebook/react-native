@@ -12,7 +12,6 @@ LOCAL_SRC_FILES := event.c \
 	bufferevent_ratelim.c \
 	bufferevent_sock.c \
 	epoll.c \
-	event.c \
 	evmap.c \
 	evthread.c \
 	evthread_pthread.c \

@@ -14,7 +14,7 @@ const _backPressSubscriptions = new Set();
 const BackHandler = {
   exitApp: jest.fn(),
 
-  addEventListener: function(
+  addEventListener: function (
     eventName: BackPressEventName,
     handler: () => ?boolean,
   ): {remove: () => void} {
@@ -24,14 +24,14 @@ const BackHandler = {
     };
   },
 
-  removeEventListener: function(
+  removeEventListener: function (
     eventName: BackPressEventName,
     handler: () => ?boolean,
   ): void {
     _backPressSubscriptions.delete(handler);
   },
 
-  mockPressBack: function() {
+  mockPressBack: function () {
     let invokeDefault = true;
     const subscriptions = [..._backPressSubscriptions].reverse();
     for (let i = 0; i < subscriptions.length; ++i) {
