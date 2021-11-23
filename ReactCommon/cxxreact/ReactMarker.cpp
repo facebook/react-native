@@ -17,7 +17,7 @@ namespace ReactMarker {
 #endif
 
 LogTaggedMarker logTaggedMarker = nullptr;
-LogTaggedMarkerWithInstanceKey logTaggedMarkerWithInstanceKey = nullptr;
+LogTaggedMarker logTaggedMarkerBridgeless = nullptr;
 
 #if __clang__
 #pragma clang diagnostic pop
@@ -25,6 +25,10 @@ LogTaggedMarkerWithInstanceKey logTaggedMarkerWithInstanceKey = nullptr;
 
 void logMarker(const ReactMarkerId markerId) {
   logTaggedMarker(markerId, nullptr);
+}
+
+void logMarkerBridgeless(const ReactMarkerId markerId) {
+  logTaggedMarkerBridgeless(markerId, nullptr);
 }
 
 } // namespace ReactMarker

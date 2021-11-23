@@ -31,6 +31,9 @@ class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {
   static void logPerfMarker(
       const ReactMarker::ReactMarkerId markerId,
       const char *tag);
+  static void logPerfMarkerBridgeless(
+      const ReactMarker::ReactMarkerId markerId,
+      const char *tag);
   static void logPerfMarkerWithInstanceKey(
       const ReactMarker::ReactMarkerId markerId,
       const char *tag,
