@@ -68,16 +68,12 @@ def use_react_native! (options={})
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
 
-  unless defined?($folly_update_is_running)
-    # Generate a podspec file for generated files.
-    temp_podinfo = generate_temp_pod_spec_for_codegen!(fabric_enabled)
-    pod temp_podinfo['spec']['name'], :path => temp_podinfo['path']
-  end
+  # Generate a podspec file for generated files.
+  temp_podinfo = generate_temp_pod_spec_for_codegen!(fabric_enabled)
+  pod temp_podinfo['spec']['name'], :path => temp_podinfo['path']
 
   if fabric_enabled
-    unless defined?($folly_update_is_running)
-      checkAndGenerateEmptyThirdPartyProvider!(prefix)
-    end
+    checkAndGenerateEmptyThirdPartyProvider!(prefix)
     pod 'React-Fabric', :path => "#{prefix}/ReactCommon"
     pod 'React-rncore', :path => "#{prefix}/ReactCommon"
     pod 'React-graphics', :path => "#{prefix}/ReactCommon/react/renderer/graphics"
@@ -569,8 +565,6 @@ end
 # Users then have to run `pod update RCT-Folly --no-repo-update` manually.
 # This runs that command automatically if `RCT-Folly`'s version in the `react-native` package is different from the version in `Local Podspecs` folder
 def update_folly_if_needed(options={})
-  # Do not run this function if we are not running `install`
-  return if defined?($folly_update_is_running)
   # Read local podspec of `RCT-Folly` to determine the cached version
   local_podspec_path = File.join(
     Dir.pwd, "Pods/Local Podspecs/RCT-Folly.podspec.json"
@@ -590,8 +584,13 @@ def update_folly_if_needed(options={})
   current_version = folly.version.to_s
   # Update RCT-Folly if the versions are not equal
   if current_version != local_version
-    $folly_update_is_running = true
-    Pod::Command::Update.new(CLAide::ARGV.new(["RCT-Folly", "--no-repo-update"])).run
-    $folly_update_is_running = nil
+    dependency = Pod::Dependency.new('RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec")
+    external_source = Pod::ExternalSources.from_dependency(dependency, nil, true)
+    sandbox = Pod::Sandbox.new(
+      File.join(
+        Dir.pwd, "Pods"
+      )
+    )
+    external_source.fetch(sandbox)
   end
 end
