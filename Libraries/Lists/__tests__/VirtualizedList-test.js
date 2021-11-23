@@ -1471,8 +1471,7 @@ it('keeps last focused item rendered', () => {
   });
 
   ReactTestRenderer.act(() => {
-    const cell3 = component.root.findByProps({value: 3});
-    cell3.parent.props.onFocusCapture(null);
+    component.getInstance()._onCellFocusCapture(3);
   });
 
   ReactTestRenderer.act(() => {
@@ -1484,8 +1483,7 @@ it('keeps last focused item rendered', () => {
   expect(component).toMatchSnapshot();
 
   ReactTestRenderer.act(() => {
-    const cell17 = component.root.findByProps({value: 17});
-    cell17.parent.props.onFocusCapture(null);
+    component.getInstance()._onCellFocusCapture(17);
   });
 
   // Cells 2-4 should no longer be rendered after focus is moved to the end of
