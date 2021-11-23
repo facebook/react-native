@@ -70,6 +70,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
       <Header />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -78,6 +79,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -85,6 +87,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -92,6 +95,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -100,6 +104,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -107,6 +112,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -114,6 +120,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -122,6 +129,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -129,6 +137,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -136,6 +145,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when ListHeaderCom
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -211,6 +221,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -219,6 +230,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -226,6 +238,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -233,6 +246,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -241,6 +255,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -248,6 +263,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -255,6 +271,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -263,6 +280,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -270,6 +288,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -277,6 +296,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when all in initia
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -350,6 +370,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in 
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -358,6 +379,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in 
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -365,6 +387,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in 
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -372,6 +395,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in 
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -380,6 +404,7 @@ exports[`VirtualizedList forwards correct stickyHeaderIndices when partially in 
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -424,6 +449,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -453,6 +479,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
         stickyHeaderIndices={Array []}
       >
         <View
+          onFocusCapture={[Function]}
           onLayout={[Function]}
           style={null}
         >
@@ -461,6 +488,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
           />
         </View>
         <View
+          onFocusCapture={[Function]}
           onLayout={[Function]}
           style={null}
         >
@@ -471,6 +499,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
       </View>
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -501,6 +530,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
       >
         <View>
           <View
+            onFocusCapture={[Function]}
             onLayout={[Function]}
             style={
               Array [
@@ -516,6 +546,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
             />
           </View>
           <View
+            onFocusCapture={[Function]}
             onLayout={[Function]}
             style={
               Array [
@@ -568,6 +599,7 @@ exports[`VirtualizedList handles separators correctly 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -584,6 +616,7 @@ exports[`VirtualizedList handles separators correctly 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -600,6 +633,7 @@ exports[`VirtualizedList handles separators correctly 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -642,6 +676,7 @@ exports[`VirtualizedList handles separators correctly 2`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -658,6 +693,7 @@ exports[`VirtualizedList handles separators correctly 2`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -674,6 +710,7 @@ exports[`VirtualizedList handles separators correctly 2`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -716,6 +753,7 @@ exports[`VirtualizedList handles separators correctly 3`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -732,6 +770,7 @@ exports[`VirtualizedList handles separators correctly 3`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -749,6 +788,7 @@ exports[`VirtualizedList handles separators correctly 3`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -858,6 +898,7 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -873,6 +914,7 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
       }
     />
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -888,6 +930,7 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
       }
     />
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -895,6 +938,7 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -903,6 +947,7 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -910,6 +955,7 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -917,6 +963,7 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -925,6 +972,7 @@ exports[`VirtualizedList keeps sticky headers above viewport visualized 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1014,6 +1062,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       <header />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={
         Array [
           Object {
@@ -1035,6 +1084,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={
         Array [
           Object {
@@ -1056,6 +1106,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={
         Array [
           Object {
@@ -1077,6 +1128,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={
         Array [
           Object {
@@ -1098,6 +1150,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={
         Array [
           Object {
@@ -1235,6 +1288,7 @@ exports[`VirtualizedList renders list with empty component 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -1295,6 +1349,7 @@ exports[`VirtualizedList renders simple list 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -1303,6 +1358,7 @@ exports[`VirtualizedList renders simple list 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -1311,6 +1367,7 @@ exports[`VirtualizedList renders simple list 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -1352,6 +1409,7 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -1360,6 +1418,7 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -1368,6 +1427,7 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -1442,6 +1502,7 @@ exports[`VirtualizedList renders sticky headers in viewport on batched render 1`
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1450,6 +1511,7 @@ exports[`VirtualizedList renders sticky headers in viewport on batched render 1`
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1457,6 +1519,7 @@ exports[`VirtualizedList renders sticky headers in viewport on batched render 1`
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1464,6 +1527,7 @@ exports[`VirtualizedList renders sticky headers in viewport on batched render 1`
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1472,6 +1536,7 @@ exports[`VirtualizedList renders sticky headers in viewport on batched render 1`
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1513,6 +1578,7 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -1549,6 +1615,7 @@ exports[`VirtualizedList warns if both renderItem or ListItemComponent are speci
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -1647,6 +1714,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1654,6 +1722,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1661,6 +1730,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1668,6 +1738,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1675,6 +1746,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1682,6 +1754,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1689,6 +1762,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1696,6 +1770,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1703,6 +1778,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1710,6 +1786,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1717,6 +1794,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1724,6 +1802,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1731,6 +1810,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1738,6 +1818,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1745,6 +1826,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1752,6 +1834,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1759,6 +1842,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1766,6 +1850,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1773,6 +1858,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1780,6 +1866,7 @@ exports[`adjusts render area with non-zero initialScrollIndex after scrolled 1`]
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1829,6 +1916,7 @@ exports[`constrains batch render region when an item is removed 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1836,6 +1924,7 @@ exports[`constrains batch render region when an item is removed 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1843,6 +1932,7 @@ exports[`constrains batch render region when an item is removed 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1850,6 +1940,7 @@ exports[`constrains batch render region when an item is removed 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1857,6 +1948,7 @@ exports[`constrains batch render region when an item is removed 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1959,6 +2051,7 @@ exports[`discards intitial render if initialScrollIndex != 0 1`] = `
       }
     />
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1966,6 +2059,7 @@ exports[`discards intitial render if initialScrollIndex != 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1973,6 +2067,7 @@ exports[`discards intitial render if initialScrollIndex != 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1980,6 +2075,7 @@ exports[`discards intitial render if initialScrollIndex != 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1987,6 +2083,7 @@ exports[`discards intitial render if initialScrollIndex != 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -1994,6 +2091,7 @@ exports[`discards intitial render if initialScrollIndex != 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2088,6 +2186,7 @@ exports[`does not adjust render area until content area layed out 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2095,6 +2194,7 @@ exports[`does not adjust render area until content area layed out 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2102,6 +2202,7 @@ exports[`does not adjust render area until content area layed out 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2109,6 +2210,7 @@ exports[`does not adjust render area until content area layed out 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2116,6 +2218,7 @@ exports[`does not adjust render area until content area layed out 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2226,6 +2329,7 @@ exports[`does not adjust render area with non-zero initialScrollIndex until scro
       }
     />
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2233,6 +2337,7 @@ exports[`does not adjust render area with non-zero initialScrollIndex until scro
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2240,6 +2345,7 @@ exports[`does not adjust render area with non-zero initialScrollIndex until scro
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2247,6 +2353,7 @@ exports[`does not adjust render area with non-zero initialScrollIndex until scro
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2254,6 +2361,7 @@ exports[`does not adjust render area with non-zero initialScrollIndex until scro
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2332,6 +2440,7 @@ exports[`does not over-render when there is less than initialNumToRender cells 1
       }
     />
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2339,6 +2448,7 @@ exports[`does not over-render when there is less than initialNumToRender cells 1
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2346,6 +2456,7 @@ exports[`does not over-render when there is less than initialNumToRender cells 1
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2353,6 +2464,7 @@ exports[`does not over-render when there is less than initialNumToRender cells 1
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2360,6 +2472,7 @@ exports[`does not over-render when there is less than initialNumToRender cells 1
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2367,6 +2480,7 @@ exports[`does not over-render when there is less than initialNumToRender cells 1
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2434,6 +2548,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2441,6 +2556,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2448,6 +2564,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2455,6 +2572,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2462,6 +2580,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2469,6 +2588,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2476,6 +2596,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2483,6 +2604,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2490,6 +2612,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2497,6 +2620,7 @@ exports[`eventually renders all items when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2591,6 +2715,7 @@ exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2598,6 +2723,7 @@ exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2605,6 +2731,7 @@ exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2612,6 +2739,7 @@ exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2619,6 +2747,7 @@ exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2626,6 +2755,7 @@ exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2633,6 +2763,7 @@ exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2643,6 +2774,502 @@ exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
       style={
         Object {
           "height": 130,
+        }
+      }
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`keeps last focused item rendered 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 10,
+        }
+      }
+    />
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 90,
+        }
+      }
+    />
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={14}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={15}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={16}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={17}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={18}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={19}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`keeps last focused item rendered 2`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 130,
+        }
+      }
+    />
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={14}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={15}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={16}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={17}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={18}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={19}
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`keeps last focused item rendered 3`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": 0,
+      },
+      Object {
+        "key": 1,
+      },
+      Object {
+        "key": 2,
+      },
+      Object {
+        "key": 3,
+      },
+      Object {
+        "key": 4,
+      },
+      Object {
+        "key": 5,
+      },
+      Object {
+        "key": 6,
+      },
+      Object {
+        "key": 7,
+      },
+      Object {
+        "key": 8,
+      },
+      Object {
+        "key": 9,
+      },
+      Object {
+        "key": 10,
+      },
+      Object {
+        "key": 11,
+      },
+      Object {
+        "key": 12,
+      },
+      Object {
+        "key": 13,
+      },
+      Object {
+        "key": 14,
+      },
+      Object {
+        "key": 15,
+      },
+      Object {
+        "key": 16,
+      },
+      Object {
+        "key": 17,
+      },
+      Object {
+        "key": 18,
+      },
+      Object {
+        "key": 19,
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  getItemLayout={[Function]}
+  initialNumToRender={1}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  windowSize={1}
+>
+  <View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={0}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={1}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={2}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={3}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 110,
+        }
+      }
+    />
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={16}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={17}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={18}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "height": 10,
         }
       }
     />
@@ -2702,6 +3329,7 @@ exports[`renders a zero-height tail spacer on initial render if getItemLayout no
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -2710,6 +3338,7 @@ exports[`renders a zero-height tail spacer on initial render if getItemLayout no
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -2718,6 +3347,7 @@ exports[`renders a zero-height tail spacer on initial render if getItemLayout no
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -2790,6 +3420,7 @@ exports[`renders full tail spacer if all cells measured 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -2798,6 +3429,7 @@ exports[`renders full tail spacer if all cells measured 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -2806,6 +3438,7 @@ exports[`renders full tail spacer if all cells measured 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -2814,6 +3447,7 @@ exports[`renders full tail spacer if all cells measured 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -2822,6 +3456,7 @@ exports[`renders full tail spacer if all cells measured 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -2895,6 +3530,7 @@ exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2902,6 +3538,7 @@ exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2909,6 +3546,7 @@ exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2916,6 +3554,7 @@ exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2923,6 +3562,7 @@ exports[`renders initialNumToRender cells when virtualization disabled 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -2995,6 +3635,7 @@ exports[`renders initialNumToRender when initialScrollIndex is offset 1`] = `
       }
     />
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3002,6 +3643,7 @@ exports[`renders initialNumToRender when initialScrollIndex is offset 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3075,6 +3717,7 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3082,6 +3725,7 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3089,6 +3733,7 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3096,6 +3741,7 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3103,6 +3749,7 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3110,6 +3757,7 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3117,6 +3765,7 @@ exports[`renders items before initialScrollIndex on first batch tick when virtua
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3183,6 +3832,7 @@ exports[`renders no spacers up to initialScrollIndex on first render when virtua
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3190,6 +3840,7 @@ exports[`renders no spacers up to initialScrollIndex on first render when virtua
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3261,6 +3912,7 @@ exports[`renders offset cells in initial render when initialScrollIndex set 1`] 
       }
     />
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3268,6 +3920,7 @@ exports[`renders offset cells in initial render when initialScrollIndex set 1`] 
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3275,6 +3928,7 @@ exports[`renders offset cells in initial render when initialScrollIndex set 1`] 
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3282,6 +3936,7 @@ exports[`renders offset cells in initial render when initialScrollIndex set 1`] 
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3353,6 +4008,7 @@ exports[`renders tail spacer up to last measured index if getItemLayout not defi
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3361,6 +4017,7 @@ exports[`renders tail spacer up to last measured index if getItemLayout not defi
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3369,6 +4026,7 @@ exports[`renders tail spacer up to last measured index if getItemLayout not defi
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3377,6 +4035,7 @@ exports[`renders tail spacer up to last measured index if getItemLayout not defi
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3385,6 +4044,7 @@ exports[`renders tail spacer up to last measured index if getItemLayout not defi
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3457,6 +4117,7 @@ exports[`renders tail spacer up to last measured with irregular layout when getI
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3465,6 +4126,7 @@ exports[`renders tail spacer up to last measured with irregular layout when getI
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3473,6 +4135,7 @@ exports[`renders tail spacer up to last measured with irregular layout when getI
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3481,6 +4144,7 @@ exports[`renders tail spacer up to last measured with irregular layout when getI
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3554,6 +4218,7 @@ exports[`renders windowSize derived region at bottom 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3568,6 +4233,7 @@ exports[`renders windowSize derived region at bottom 1`] = `
       }
     />
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3575,6 +4241,7 @@ exports[`renders windowSize derived region at bottom 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3582,6 +4249,7 @@ exports[`renders windowSize derived region at bottom 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3589,6 +4257,7 @@ exports[`renders windowSize derived region at bottom 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3596,6 +4265,7 @@ exports[`renders windowSize derived region at bottom 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3661,6 +4331,7 @@ exports[`renders windowSize derived region at top 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3668,6 +4339,7 @@ exports[`renders windowSize derived region at top 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3675,6 +4347,7 @@ exports[`renders windowSize derived region at top 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3682,6 +4355,7 @@ exports[`renders windowSize derived region at top 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3754,6 +4428,7 @@ exports[`renders windowSize derived region in middle 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3768,6 +4443,7 @@ exports[`renders windowSize derived region in middle 1`] = `
       }
     />
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3775,6 +4451,7 @@ exports[`renders windowSize derived region in middle 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3782,6 +4459,7 @@ exports[`renders windowSize derived region in middle 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3789,6 +4467,7 @@ exports[`renders windowSize derived region in middle 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3796,6 +4475,7 @@ exports[`renders windowSize derived region in middle 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3803,6 +4483,7 @@ exports[`renders windowSize derived region in middle 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3810,6 +4491,7 @@ exports[`renders windowSize derived region in middle 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3881,6 +4563,7 @@ exports[`renders zero-height tail spacer on batch render if cells not yet measur
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3889,6 +4572,7 @@ exports[`renders zero-height tail spacer on batch render if cells not yet measur
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3897,6 +4581,7 @@ exports[`renders zero-height tail spacer on batch render if cells not yet measur
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
@@ -3972,6 +4657,7 @@ exports[`retains batch render region when an item is appended 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3979,6 +4665,7 @@ exports[`retains batch render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3986,6 +4673,7 @@ exports[`retains batch render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -3993,6 +4681,7 @@ exports[`retains batch render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4000,6 +4689,7 @@ exports[`retains batch render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4007,6 +4697,7 @@ exports[`retains batch render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4014,6 +4705,7 @@ exports[`retains batch render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4021,6 +4713,7 @@ exports[`retains batch render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4028,6 +4721,7 @@ exports[`retains batch render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4035,6 +4729,7 @@ exports[`retains batch render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4108,6 +4803,7 @@ exports[`retains initial render region when an item is appended 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4115,6 +4811,7 @@ exports[`retains initial render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4122,6 +4819,7 @@ exports[`retains initial render region when an item is appended 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4224,6 +4922,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4231,6 +4930,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4238,6 +4938,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4245,6 +4946,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4252,6 +4954,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4266,6 +4969,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
       }
     />
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4273,6 +4977,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4280,6 +4985,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4287,6 +4993,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4294,6 +5001,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4301,6 +5009,7 @@ exports[`retains intitial render if initialScrollIndex == 0 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4407,6 +5116,7 @@ exports[`unmounts sticky headers moved below viewport 1`] = `
 >
   <View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4415,6 +5125,7 @@ exports[`unmounts sticky headers moved below viewport 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4422,6 +5133,7 @@ exports[`unmounts sticky headers moved below viewport 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4429,6 +5141,7 @@ exports[`unmounts sticky headers moved below viewport 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem
@@ -4437,6 +5150,7 @@ exports[`unmounts sticky headers moved below viewport 1`] = `
       />
     </View>
     <View
+      onFocusCapture={[Function]}
       style={null}
     >
       <MockCellItem

@@ -32,9 +32,11 @@ import type {
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
-type BubblingEventProps = $ReadOnly<{|
+type FocusEventProps = $ReadOnly<{|
   onBlur?: ?(event: BlurEvent) => mixed,
+  onBlurCapture?: ?(event: BlurEvent) => mixed,
   onFocus?: ?(event: FocusEvent) => mixed,
+  onFocusCapture?: ?(event: FocusEvent) => mixed,
 |}>;
 
 type DirectEventProps = $ReadOnly<{|
@@ -377,7 +379,7 @@ type IOSViewProps = $ReadOnly<{|
 |}>;
 
 export type ViewProps = $ReadOnly<{|
-  ...BubblingEventProps,
+  ...FocusEventProps,
   ...DirectEventProps,
   ...GestureResponderEventProps,
   ...MouseEventProps,

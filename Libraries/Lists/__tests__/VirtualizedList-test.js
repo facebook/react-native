@@ -1445,6 +1445,63 @@ it('renders windowSize derived region at bottom', () => {
   expect(component).toMatchSnapshot();
 });
 
+it('keeps last focused item rendered', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={1}
+        windowSize={1}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 200},
+    });
+
+    performAllBatches();
+  });
+
+  ReactTestRenderer.act(() => {
+    const cell3 = component.root.findByProps({value: 3});
+    cell3.parent.props.onFocusCapture(null);
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateScroll(component, {x: 0, y: 150});
+    performAllBatches();
+  });
+
+  // Cells 1-4 should remain rendered after scrolling to the bottom of the list
+  expect(component).toMatchSnapshot();
+
+  ReactTestRenderer.act(() => {
+    const cell17 = component.root.findByProps({value: 17});
+    cell17.parent.props.onFocusCapture(null);
+  });
+
+  // Cells 2-4 should no longer be rendered after focus is moved to the end of
+  // the list
+  expect(component).toMatchSnapshot();
+
+  ReactTestRenderer.act(() => {
+    simulateScroll(component, {x: 0, y: 0});
+    performAllBatches();
+  });
+
+  // Cells 16-18 should remain rendered after scrolling back to the top of the
+  // list
+  expect(component).toMatchSnapshot();
+});
+
 function generateItems(count) {
   return Array(count)
     .fill()

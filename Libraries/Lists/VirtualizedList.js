@@ -41,6 +41,7 @@ import {
   type ChildListState,
   type ListDebugInfo,
 } from './VirtualizedListContext';
+import type {FocusEvent} from '../Types/CoreEventTypes';
 
 import {CellRenderMask} from './CellRenderMask';
 import clamp from '../Utilities/clamp';
@@ -314,6 +315,7 @@ let _keylessItemComponentName: string = '';
 type State = {
   renderMask: CellRenderMask,
   cellsAroundViewport: {first: number, last: number},
+  lastFocusedItem: ?number,
 };
 
 /**
@@ -739,6 +741,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     let initialState: State = {
       cellsAroundViewport: initialRenderRegion,
       renderMask: VirtualizedList._createRenderMask(props, initialRenderRegion),
+      lastFocusedItem: null,
     };
 
     if (this._isNestedWithSameOrientation()) {
@@ -756,6 +759,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   static _createRenderMask(
     props: Props,
     cellsAroundViewport: {first: number, last: number},
+    lastFocusedItem: ?number,
   ): CellRenderMask {
     const itemCount = props.getItemCount(props.data);
 
@@ -767,6 +771,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
 
     const renderMask = new CellRenderMask(itemCount);
+
+    // Keep the items around the last focused rendered, to allow for keyboard
+    // navigation
+    if (lastFocusedItem) {
+      const first = Math.max(0, lastFocusedItem - 1);
+      const last = Math.min(itemCount - 1, lastFocusedItem + 1);
+      renderMask.addCells({first, last});
+    }
 
     if (itemCount > 0) {
       renderMask.addCells(cellsAroundViewport);
@@ -962,6 +974,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return {
       cellsAroundViewport: prevState.cellsAroundViewport,
       renderMask: VirtualizedList._createRenderMask(newProps, constrainedCells),
+      lastFocusedItem: prevState.lastFocusedItem,
     };
   }
 
@@ -1006,6 +1019,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
           onLayout={e => this._onCellLayout(e, key, ii)}
+          onFocusCapture={e => this._onCellFocusCapture(ii)}
           onUnmount={this._onCellUnmount}
           parentProps={this.props}
           ref={ref => {
@@ -1473,6 +1487,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._updateViewableItems(this.props.data);
   }
 
+  _onCellFocusCapture(itemIndex: number) {
+    const renderMask = VirtualizedList._createRenderMask(
+      this.props,
+      this.state.cellsAroundViewport,
+      itemIndex,
+    );
+    this.setState({...this.state, renderMask, lastFocusedItem: itemIndex});
+  }
+
   _onCellUnmount = (cellKey: string) => {
     const curr = this._frames[cellKey];
     if (curr) {
@@ -1901,6 +1924,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       const renderMask = VirtualizedList._createRenderMask(
         props,
         cellsAroundViewport,
+        state.lastFocusedItem,
       );
 
       if (
@@ -2020,6 +2044,7 @@ type CellRendererProps = {
     ...
   },
   prevCellKey: ?string,
+  onFocusCapture: (event: FocusEvent) => mixed,
   ...
 };
 
@@ -2134,6 +2159,7 @@ class CellRenderer extends React.Component<
       index,
       inversionStyle,
       parentProps,
+      onFocusCapture,
     } = this.props;
     const {renderItem, getItemLayout, ListItemComponent} = parentProps;
     const element = this._renderElement(
@@ -2163,10 +2189,14 @@ class CellRenderer extends React.Component<
       ? [styles.row, inversionStyle]
       : inversionStyle;
     const result = !CellRendererComponent ? (
-      /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
+      <View
+        style={cellStyle}
+        onLayout={onLayout}
+        onFocusCapture={onFocusCapture}
+        /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
         This comment suppresses an error found when Flow v0.89 was deployed. *
         To see the error, delete this comment and run Flow. */
-      <View style={cellStyle} onLayout={onLayout}>
+      >
         {element}
         {itemSeparator}
       </View>
@@ -2174,7 +2204,8 @@ class CellRenderer extends React.Component<
       <CellRendererComponent
         {...this.props}
         style={cellStyle}
-        onLayout={onLayout}>
+        onLayout={onLayout}
+        onFocusCapture={onFocusCapture}>
         {element}
         {itemSeparator}
       </CellRendererComponent>
