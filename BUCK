@@ -441,7 +441,6 @@ rn_xplat_cxx_library2(
         "React/RCTComponentViewRegistry.h": "React/Fabric/Mounting/RCTComponentViewRegistry.h",
         "React/RCTFabricSurface.h": "React/Fabric/Surface/RCTFabricSurface.h",
         "React/RCTFabricSurfaceHostingProxyRootView.h": "React/Fabric/Surface/RCTFabricSurfaceHostingProxyRootView.h",
-        "React/RCTFabricSurfaceHostingView.h": "React/Fabric/Surface/RCTFabricSurfaceHostingView.h",
         "React/RCTGenericDelegateSplitter.h": "React/Fabric/Utils/RCTGenericDelegateSplitter.h",
         "React/RCTLegacyViewManagerInteropComponentView.h": "React/Fabric/Mounting/ComponentViews/LegacyViewManagerInterop/RCTLegacyViewManagerInteropComponentView.h",
         "React/RCTLocalizationProvider.h": "React/Fabric/RCTLocalizationProvider.h",
