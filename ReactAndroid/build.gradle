@@ -281,7 +281,7 @@ task installArchives {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     if (project.hasProperty("ANDROID_NDK_VERSION")) {
         ndkVersion project.property("ANDROID_NDK_VERSION")
     }
@@ -291,7 +291,7 @@ android {
 
     defaultConfig {
         minSdkVersion(21)
-        targetSdkVersion(28)
+        targetSdkVersion(31)
         versionCode(1)
         versionName("1.0")
 
