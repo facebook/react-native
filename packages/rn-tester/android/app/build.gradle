@@ -150,9 +150,6 @@ android {
         ndkPath project.property("ANDROID_NDK_PATH")
     }
 
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
     flavorDimensions "vm"
     productFlavors {
         hermes {
@@ -291,14 +288,14 @@ if (enableCodegen) {
     def packageReactDebugNdkLibs = tasks.register("packageReactDebugNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
         dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
-        dependsOn("generateCodegenSchemaFromJavaScript")
+        dependsOn("generateCodegenArtifactsFromSchema")
         from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
         into("$buildDir/react-ndk/exported")
     }
     def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
         dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
-        dependsOn("generateCodegenSchemaFromJavaScript")
+        dependsOn("generateCodegenArtifactsFromSchema")
         from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
         into("$buildDir/react-ndk/exported")
     }
@@ -317,8 +314,10 @@ if (enableCodegen) {
     }
 
     afterEvaluate {
+        configureNdkBuildRelease.dependsOn(packageReactReleaseNdkLibs)
         preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
         preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+        configureNdkBuildDebug.dependsOn(packageReactDebugNdkLibs)
         preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
         preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
         clean.dependsOn(cleanProjectNdkBuild)
