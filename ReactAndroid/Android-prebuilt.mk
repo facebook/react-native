@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# This configuration provides access to most common React Native prebuilt .so and .a files
+# This configuration provides access to most common React Native prebuilt .so files
 # to avoid recompiling each of the libraries outside of ReactAndroid NDK compilation.
 # Hosting app's/library's Android.mk can include this Android-prebuilt.mk file to
 # get access to those libraries to depend on.
@@ -19,7 +19,7 @@ THIRD_PARTY_NDK_DIR := $(REACT_ANDROID_BUILD_DIR)/third-party-ndk
 REACT_ANDROID_SRC_DIR := $(REACT_ANDROID_DIR)/src/main
 REACT_COMMON_DIR := $(REACT_ANDROID_DIR)/../ReactCommon
 REACT_GENERATED_SRC_DIR := $(REACT_ANDROID_BUILD_DIR)/generated/source
-# Note: this have both .so and .a files
+# Note: this have only .so files
 REACT_NDK_EXPORT_DIR := $(PROJECT_BUILD_DIR)/react-ndk/exported
 
 # fb
@@ -197,15 +197,13 @@ LOCAL_EXPORT_C_INCLUDES := \
   $(REACT_GENERATED_SRC_DIR)/codegen/jni
 include $(PREBUILT_SHARED_LIBRARY)
 
-# fbjni
-include $(FIRST_PARTY_NDK_DIR)/fbjni/Android.mk
-
-#### Static Libraries
-
 # runtimeexecutor
 include $(CLEAR_VARS)
 LOCAL_MODULE := runtimeexecutor
-LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libruntimeexecutor.a
+LOCAL_SRC_FILES := $(REACT_NDK_EXPORT_DIR)/$(TARGET_ARCH_ABI)/libruntimeexecutor.so
 LOCAL_C_INCLUDES := $(REACT_COMMON_DIR)/runtimeexecutor
 LOCAL_EXPORT_C_INCLUDES := $(REACT_COMMON_DIR)/runtimeexecutor
-include $(PREBUILT_STATIC_LIBRARY)
+include $(PREBUILT_SHARED_LIBRARY)
+
+# fbjni
+include $(FIRST_PARTY_NDK_DIR)/fbjni/Android.mk

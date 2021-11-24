@@ -238,10 +238,6 @@ tasks.register("packageReactNdkLibsForBuck") {
 
 tasks.register("packageReactNdkDebugLibsForBuck", Copy) {
     dependsOn("mergeDebugNativeLibs")
-    // Static libraries (.a) are copied from the obj/local folder
-    from("$buildDir/intermediates/ndkBuild/debug/obj/local/") {
-        include '**/*.a'
-    }
     // Shared libraries (.so) are copied from the merged_native_libs folder instead
     from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
     exclude("**/libjsc.so")
@@ -251,10 +247,6 @@ tasks.register("packageReactNdkDebugLibsForBuck", Copy) {
 
 tasks.register("packageReactNdkReleaseLibsForBuck", Copy) {
     dependsOn("mergeReleaseNativeLibs")
-    // Static libraries (.a) are copied from the obj/local folder
-    from("$buildDir/intermediates/ndkBuild/debug/obj/local/") {
-        include '**/*.a'
-    }
     // Shared libraries (.so) are copied from the merged_native_libs folder instead
     from("$buildDir/intermediates/merged_native_libs/release/out/lib/")
     exclude("**/libjsc.so")
