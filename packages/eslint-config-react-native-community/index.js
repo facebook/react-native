@@ -56,6 +56,7 @@ module.exports = {
           {argsIgnorePattern: '^_'},
         ],
         'no-unused-vars': 'off',
+        'no-undef': 'off',
       },
     },
     {
