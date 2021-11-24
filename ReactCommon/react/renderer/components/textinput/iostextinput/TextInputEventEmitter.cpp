@@ -112,7 +112,7 @@ void TextInputEventEmitter::onKeyPress(
 
 void TextInputEventEmitter::onScroll(
     TextInputMetrics const &textInputMetrics) const {
-  dispatchTextInputEvent("onScroll", textInputMetrics);
+  dispatchTextInputEvent("scroll", textInputMetrics);
 }
 
 void TextInputEventEmitter::dispatchTextInputEvent(
