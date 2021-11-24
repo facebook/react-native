@@ -1,3 +1,4 @@
+load("@fbsource//xplat/hermes/defs:hermes.bzl", "HERMES_BYTECODE_VERSION")
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs:fb_xplat_platform_specific_rule.bzl", "fb_xplat_platform_specific_rule")
 load("//tools/build_defs:fb_xplat_resource.bzl", "fb_xplat_resource")
@@ -121,7 +122,9 @@ fb_apple_test(
         "QuartzCore",
         "UIKit",
     ],
-    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + [
+        "-DHERMES_BYTECODE_VERSION={}".format(HERMES_BYTECODE_VERSION),
+    ] + get_preprocessor_flags_for_build_mode(),
     visibility = [
         "//fbobjc/Libraries/FBReactKit:workspace",
     ],
