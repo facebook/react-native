@@ -25,11 +25,6 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 @interface RCTBundleURLProvider : NSObject
 
 /**
- * Set default settings on NSUserDefaults.
- */
-- (void)setDefaults;
-
-/**
  * Reset every settings to default.
  */
 - (void)resetToDefaults;
@@ -137,13 +132,6 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                        packagerHost:(NSString *)packagerHost
-                          enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification
-                        modulesOnly:(BOOL)modulesOnly
-                          runModule:(BOOL)runModule;
-
-+ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
-                       packagerHost:(NSString *)packagerHost
                      packagerScheme:(NSString *)scheme
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
@@ -154,8 +142,6 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
  * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged
  * resource if it is not: -resourceURLForResourceRoot:resourceName:resourceExtension:offlineBundle:
  */
-+ (NSURL *)resourceURLForResourcePath:(NSString *)path packagerHost:(NSString *)packagerHost query:(NSString *)query;
-
 + (NSURL *)resourceURLForResourcePath:(NSString *)path
                          packagerHost:(NSString *)packagerHost
                                scheme:(NSString *)scheme
