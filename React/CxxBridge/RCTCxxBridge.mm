@@ -76,7 +76,7 @@ using namespace facebook::react;
 /**
  * Must be kept in sync with `MessageQueue.js`.
  */
-typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
+typedef NS_ENUM(NSInteger, RCTBridgeFields) {
   RCTBridgeFieldRequestModuleIDs = 0,
   RCTBridgeFieldMethodIDs,
   RCTBridgeFieldParams,

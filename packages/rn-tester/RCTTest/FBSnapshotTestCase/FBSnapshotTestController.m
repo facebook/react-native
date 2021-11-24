@@ -208,7 +208,7 @@ typedef struct RGBAPixel {
 
 #pragma mark - Private API
 
-typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
+typedef NS_ENUM(NSInteger, FBTestSnapshotFileNameType) {
   FBTestSnapshotFileNameTypeReference,
   FBTestSnapshotFileNameTypeFailedReference,
   FBTestSnapshotFileNameTypeFailedTest,

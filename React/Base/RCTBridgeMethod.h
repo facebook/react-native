@@ -9,7 +9,7 @@
 
 @class RCTBridge;
 
-typedef NS_ENUM(NSUInteger, RCTFunctionType) {
+typedef NS_ENUM(NSInteger, RCTFunctionType) {
   RCTFunctionTypeNormal,
   RCTFunctionTypePromise,
   RCTFunctionTypeSync,

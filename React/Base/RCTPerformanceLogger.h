@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 // Keep this in sync with _labelsForTags
-typedef NS_ENUM(NSUInteger, RCTPLTag) {
+typedef NS_ENUM(NSInteger, RCTPLTag) {
   RCTPLScriptDownload = 0,
   RCTPLScriptExecution,
   RCTPLRAMBundleLoad,

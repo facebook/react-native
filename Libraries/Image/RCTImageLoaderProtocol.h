@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Use PriorityPrefetch to prefetch images at a lower priority.
  * The priority logic is up to each @RCTImageLoaderProtocol implementation
  */
-typedef NS_ENUM(NSUInteger, RCTImageLoaderPriority) {
+typedef NS_ENUM(NSInteger, RCTImageLoaderPriority) {
   RCTImageLoaderPriorityImmediate,
   RCTImageLoaderPriorityPrefetch
 };
