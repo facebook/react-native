@@ -20,7 +20,7 @@ class ReactPluginTest {
     project.plugins.apply("com.android.application")
     project.plugins.apply("com.facebook.react")
 
-    project.extensions.getByType(AppExtension::class.java).apply { compileSdkVersion(30) }
+    project.extensions.getByType(AppExtension::class.java).apply { compileSdkVersion(31) }
     project.extensions.getByType(ReactExtension::class.java).apply {
       applyAppPlugin.set(true)
       cliPath.set(".")
@@ -36,7 +36,7 @@ class ReactPluginTest {
     project.plugins.apply("com.android.application")
     project.plugins.apply("com.facebook.react")
 
-    project.extensions.getByType(AppExtension::class.java).apply { compileSdkVersion(30) }
+    project.extensions.getByType(AppExtension::class.java).apply { compileSdkVersion(31) }
     project.extensions.getByType(ReactExtension::class.java).apply { applyAppPlugin.set(false) }
 
     assertTrue(project.getTasksByName("bundleDebugJsAndAssets", false).isEmpty())
@@ -48,7 +48,7 @@ class ReactPluginTest {
     project.plugins.apply("com.android.application")
     project.plugins.apply("com.facebook.react")
 
-    project.extensions.getByType(AppExtension::class.java).apply { compileSdkVersion(30) }
+    project.extensions.getByType(AppExtension::class.java).apply { compileSdkVersion(31) }
     project.extensions.getByType(ReactExtension::class.java).apply { applyAppPlugin.set(false) }
 
     assertTrue(project.getTasksByName("buildCodegenCLI", false).isNotEmpty())
