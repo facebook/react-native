@@ -121,7 +121,7 @@ module.exports = {
       [
         'jni/Android.mk',
         AndroidMkTemplate({
-          libraryName: `${libraryName.toLowerCase()}`,
+          libraryName: libraryName,
         }),
       ],
     ]);
