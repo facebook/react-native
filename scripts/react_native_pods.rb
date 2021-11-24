@@ -88,7 +88,13 @@ def use_react_native! (options={})
     pod 'libevent', '~> 2.1.12'
   end
 
-  update_folly_if_needed(options)
+  if FollyPatch.folly_update_necessary?(options)
+    if Pod::Lockfile.public_instance_methods.include?(:detect_changes_with_podfile)
+      Pod::Lockfile.prepend(FollyPatch)
+    else
+      Pod::UI.warn 'Automatically updating `RCT-Folly` has failed, please run `pod update RCT-Folly --no-repo-update` manually to fix the issue.'
+    end
+  end
 end
 
 def use_flipper!(versions = {}, configurations: ['Debug'])
@@ -561,36 +567,40 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_12_0/' Pods/RCT-Folly/folly/portability/Time.h`
 end
 
-# When upgrading `react-native`, `RCT-Folly` is not updated since it is a local podspec.
-# Users then have to run `pod update RCT-Folly --no-repo-update` manually.
-# This runs that command automatically if `RCT-Folly`'s version in the `react-native` package is different from the version in `Local Podspecs` folder
-def update_folly_if_needed(options={})
-  # Read local podspec of `RCT-Folly` to determine the cached version
-  local_podspec_path = File.join(
-    Dir.pwd, "Pods/Local Podspecs/RCT-Folly.podspec.json"
-  )
-
-  # Local podspec cannot be outdated if it does not exist, yet
-  return if !File.file?(local_podspec_path)
-  local_podspec = File.read(local_podspec_path)
-  local_podspec_json = JSON.parse(local_podspec)
-  local_version = local_podspec_json["version"]
-
-  # Read the version from a podspec from the `react-native` package
-  prefix = options[:path] ||= "../node_modules/react-native"
-  podspec_path = "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
-  folly = eval(File.read(podspec_path))
-
-  current_version = folly.version.to_s
-  # Update RCT-Folly if the versions are not equal
-  if current_version != local_version
-    dependency = Pod::Dependency.new('RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec")
-    external_source = Pod::ExternalSources.from_dependency(dependency, nil, true)
-    sandbox = Pod::Sandbox.new(
-      File.join(
-        Dir.pwd, "Pods"
-      )
+# Monkeypatch of `Pod::Lockfile` to ensure automatic update of `RCT-Folly` when its version changed.
+# This is necessary because `RCT-Folly` is a local podspec which users need to manually update.
+module FollyPatch
+  # Returns true if the cached version of `RCT-Folly` podspec differs from the one in the `react-native` package.
+  def self.folly_update_necessary?(react_native_options)
+    # Read local podspec of `RCT-Folly` to determine the cached version
+    local_podspec_path = File.join(
+      Dir.pwd, "Pods/Local Podspecs/RCT-Folly.podspec.json"
     )
-    external_source.fetch(sandbox)
+
+    # Local podspec cannot be outdated if it does not exist, yet
+    return false unless File.file?(local_podspec_path)
+
+    local_podspec = File.read(local_podspec_path)
+    local_podspec_json = JSON.parse(local_podspec)
+    local_version = local_podspec_json["version"]
+
+    # Read the version from a podspec from the `react-native` package
+    prefix = react_native_options[:path] ||= "../node_modules/react-native"
+    podspec_path = "#{prefix}/third-party-podspecs/RCT-Folly.podspec"
+    folly = eval(File.read(podspec_path))
+
+    current_version = folly.version.to_s
+
+    current_version != local_version
+  end
+
+  # Patched `detect_changes_with_podfile` method
+  def detect_changes_with_podfile(podfile)
+    changes = super(podfile)
+    return changes unless changes[:unchanged].include?('RCT-Folly')
+
+    changes[:unchanged].delete('RCT-Folly')
+    changes[:changed] << 'RCT-Folly'
+    changes
   end
 end
