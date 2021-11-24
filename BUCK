@@ -253,6 +253,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTLayoutAnimationGroup.h": RCTMODULES_PATH + "RCTLayoutAnimationGroup.h",
     "React/RCTLog.h": RCTBASE_PATH + "RCTLog.h",
     "React/RCTManagedPointer.h": RCTBASE_PATH + "RCTManagedPointer.h",
+    "React/RCTMockDef.h": RCTBASE_PATH + "RCTMockDef.h",
     "React/RCTModalHostViewController.h": RCTVIEWS_PATH + "RCTModalHostViewController.h",
     "React/RCTModalHostViewManager.h": RCTVIEWS_PATH + "RCTModalHostViewManager.h",
     "React/RCTModalManager.h": RCTVIEWS_PATH + "RCTModalManager.h",
