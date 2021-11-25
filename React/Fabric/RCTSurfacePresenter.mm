@@ -255,10 +255,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTExperimentSetPreemptiveViewAllocationDisabled(YES);
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_remove_clipped_subviews_ios")) {
-    RCTSetRemoveClippedSubviewsEnabled(YES);
-  }
-
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
