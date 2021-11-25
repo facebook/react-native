@@ -70,7 +70,8 @@ RCTDefineImageURLLoader(RCTImageLoaderTestsURLLoader1) RCTDefineImageURLLoader(R
         XCTAssertEqual(progress, 1);
         XCTAssertEqual(total, 1);
       }
-      partialLoadBlock:^(UIImage *loadedImage) {}
+      partialLoadBlock:^(UIImage *loadedImage) {
+      }
       completionBlock:^(NSError *loadError, id loadedImage) {
         XCTAssertEqualObjects(loadedImage, image);
         XCTAssertNil(loadError);
@@ -129,7 +130,8 @@ RCTDefineImageURLLoader(RCTImageLoaderTestsURLLoader1) RCTDefineImageURLLoader(R
         XCTAssertEqual(progress, 1);
         XCTAssertEqual(total, 1);
       }
-      partialLoadBlock:^(UIImage *loadedImage) {}
+      partialLoadBlock:^(UIImage *loadedImage) {
+      }
       completionBlock:^(NSError *loadError, id loadedImage) {
         XCTAssertEqualObjects(loadedImage, image);
         XCTAssertNil(loadError);
