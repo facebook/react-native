@@ -10,6 +10,9 @@ clear
 
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 
+# export packager environment variables
+source "$THIS_DIR/.packager.env"
+
 if [ -n "${RCT_PACKAGER_LOGS_DIR}" ] ; then
   echo "Writing logs to $RCT_PACKAGER_LOGS_DIR"
   # shellcheck source=/dev/null
