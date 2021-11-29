@@ -11,7 +11,16 @@ LOCAL_MODULE := uimanagerjni
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := libyoga libglog libfb libfbjni libglog_init libfolly_json libfolly_futures react_render_componentregistry librrc_native
+LOCAL_SHARED_LIBRARIES := \
+  libfb \
+  libfbjni \
+  libfolly_futures \
+  libfolly_json \
+  libglog \
+  libglog_init \
+  librrc_native \
+  libyoga \
+  react_render_componentregistry
 
 LOCAL_STATIC_LIBRARIES :=
 

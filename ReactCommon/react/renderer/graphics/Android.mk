@@ -11,7 +11,13 @@ LOCAL_MODULE := react_render_graphics
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/platform/cxx/react/renderer/graphics/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := libfolly_json libreact_debug libfb libfbjni libfolly_json glog
+LOCAL_SHARED_LIBRARIES := \
+  glog \
+  libfb \
+  libfbjni \
+  libfolly_json \
+  libfolly_json \
+  libreact_debug
 
 LOCAL_STATIC_LIBRARIES :=
 
