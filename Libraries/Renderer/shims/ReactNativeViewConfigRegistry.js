@@ -6,12 +6,10 @@
  *
  * @noformat
  * @flow strict-local
- * @generated SignedSource<<cfc4aafaa6b6af5b0a69d4463b8d214d>>
+ * @generated SignedSource<<a81ed33269e71024fedad145e843fab0>>
  *
  * This file was sync'd from the facebook/react repository.
  */
-
-/* eslint-disable react-internal/invariant-args */
 
 'use strict';
 

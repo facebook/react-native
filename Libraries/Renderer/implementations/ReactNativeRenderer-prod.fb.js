@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<6fc8d6b12f7d5605a1f7ab5894718cb3>>
+ * @generated SignedSource<<c587a7b3e41dfa079412f1481033cff7>>
  */
 
 "use strict";
@@ -2811,7 +2811,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     return current;
   }
   function createChild(returnFiber, newChild, lanes) {
-    if ("string" === typeof newChild || "number" === typeof newChild)
+    if (
+      ("string" === typeof newChild && "" !== newChild) ||
+      "number" === typeof newChild
+    )
       return (
         (newChild = createFiberFromText(
           "" + newChild,
@@ -2865,7 +2868,10 @@ function ChildReconciler(shouldTrackSideEffects) {
   }
   function updateSlot(returnFiber, oldFiber, newChild, lanes) {
     var key = null !== oldFiber ? oldFiber.key : null;
-    if ("string" === typeof newChild || "number" === typeof newChild)
+    if (
+      ("string" === typeof newChild && "" !== newChild) ||
+      "number" === typeof newChild
+    )
       return null !== key
         ? null
         : updateTextNode(returnFiber, oldFiber, "" + newChild, lanes);
@@ -2895,7 +2901,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild,
     lanes
   ) {
-    if ("string" === typeof newChild || "number" === typeof newChild)
+    if (
+      ("string" === typeof newChild && "" !== newChild) ||
+      "number" === typeof newChild
+    )
       return (
         (existingChildren = existingChildren.get(newIdx) || null),
         updateTextNode(returnFiber, existingChildren, "" + newChild, lanes)
@@ -3221,7 +3230,8 @@ function ChildReconciler(shouldTrackSideEffects) {
         );
       throwOnInvalidObjectType(returnFiber, newChild);
     }
-    return "string" === typeof newChild || "number" === typeof newChild
+    return ("string" === typeof newChild && "" !== newChild) ||
+      "number" === typeof newChild
       ? ((newChild = "" + newChild),
         null !== currentFirstChild && 6 === currentFirstChild.tag
           ? (deleteRemainingChildren(returnFiber, currentFirstChild.sibling),
@@ -8253,7 +8263,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_966 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "18.0.0-c0c71a868-20211112",
+    version: "18.0.0-c1220ebdd-20211123",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8295,7 +8305,7 @@ var internals$jscomp$inline_1230 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-c0c71a868-20211112"
+  reconcilerVersion: "18.0.0-c1220ebdd-20211123"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1231 = __REACT_DEVTOOLS_GLOBAL_HOOK__;

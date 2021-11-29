@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<86bcbed641a7044e773a303487a93758>>
+ * @generated SignedSource<<c63c5718d1b40bee38ff92020247d874>>
  */
 
 'use strict';
@@ -6008,7 +6008,7 @@ function flushSyncCallbacks() {
   return null;
 }
 
-var ReactVersion = "18.0.0-c0c71a868-20211112";
+var ReactVersion = "18.0.0-c1220ebdd-20211123";
 
 var SCHEDULING_PROFILER_VERSION = 1;
 
@@ -9441,7 +9441,10 @@ function ChildReconciler(shouldTrackSideEffects) {
   }
 
   function createChild(returnFiber, newChild, lanes) {
-    if (typeof newChild === "string" || typeof newChild === "number") {
+    if (
+      (typeof newChild === "string" && newChild !== "") ||
+      typeof newChild === "number"
+    ) {
       // Text nodes don't have keys. If the previous node is implicitly keyed
       // we can continue to replace it without aborting even if it is not a text
       // node.
@@ -9504,7 +9507,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     // Update the fiber if the keys match, otherwise return null.
     var key = oldFiber !== null ? oldFiber.key : null;
 
-    if (typeof newChild === "string" || typeof newChild === "number") {
+    if (
+      (typeof newChild === "string" && newChild !== "") ||
+      typeof newChild === "number"
+    ) {
       // Text nodes don't have keys. If the previous node is implicitly keyed
       // we can continue to replace it without aborting even if it is not a text
       // node.
@@ -9561,7 +9567,10 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChild,
     lanes
   ) {
-    if (typeof newChild === "string" || typeof newChild === "number") {
+    if (
+      (typeof newChild === "string" && newChild !== "") ||
+      typeof newChild === "number"
+    ) {
       // Text nodes don't have keys, so we neither have to check the old nor
       // new node for the key. If both are text nodes, they match.
       var matchedFiber = existingChildren.get(newIdx) || null;
@@ -10246,7 +10255,10 @@ function ChildReconciler(shouldTrackSideEffects) {
       throwOnInvalidObjectType(returnFiber, newChild);
     }
 
-    if (typeof newChild === "string" || typeof newChild === "number") {
+    if (
+      (typeof newChild === "string" && newChild !== "") ||
+      typeof newChild === "number"
+    ) {
       return placeSingleChild(
         reconcileSingleTextNode(
           returnFiber,
@@ -14562,7 +14574,7 @@ function completeWork(current, workInProgress, renderLanes) {
           // Schedule an effect to clear this container at the start of the next commit.
           // This handles the case of React rendering into a container with previous children.
           // It's also safe to do for updates too, because current.child would only be null
-          // if the previous render was null (so the the container would already be empty).
+          // if the previous render was null (so the container would already be empty).
           workInProgress.flags |= Snapshot;
         }
       }
@@ -20817,7 +20829,7 @@ function finishConcurrentRender(root, exitStatus, lanes) {
 
 function isRenderConsistentWithExternalStores(finishedWork) {
   // Search the rendered tree for external store reads, and check whether the
-  // stores were mutated in a concurrent event. Intentionally using a iterative
+  // stores were mutated in a concurrent event. Intentionally using an iterative
   // loop instead of recursion so we can exit early.
   var node = finishedWork;
 
