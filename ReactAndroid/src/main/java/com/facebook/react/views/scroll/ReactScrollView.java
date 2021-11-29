@@ -13,6 +13,8 @@ import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNME
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_END;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_START;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -40,7 +42,9 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowView;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollDirection;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
@@ -59,7 +63,8 @@ public class ReactScrollView extends ScrollView
         View.OnLayoutChangeListener,
         FabricViewStateManager.HasFabricViewStateManager,
         ReactOverflowView,
-        HasScrollState {
+        HasScrollState,
+        HasFlingAnimator {
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -97,7 +102,9 @@ public class ReactScrollView extends ScrollView
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
   private final ReactScrollViewScrollState mReactScrollViewScrollState =
-      new ReactScrollViewScrollState(ViewCompat.LAYOUT_DIRECTION_LTR);
+      new ReactScrollViewScrollState(
+          ViewCompat.LAYOUT_DIRECTION_LTR, ReactScrollViewScrollDirection.VERTICAL);
+  private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -684,6 +691,7 @@ public class ReactScrollView extends ScrollView
       return;
     }
 
+    boolean hasCustomizedFlingAnimator = getFlingAnimator() != DEFAULT_FLING_ANIMATOR;
     int maximumOffset = getMaxScrollY();
     int targetOffset = predictFinalScrollPosition(velocityY);
     if (mDisableIntervalMomentum) {
@@ -795,13 +803,19 @@ public class ReactScrollView extends ScrollView
         targetOffset = firstOffset;
       }
     } else if (velocityY > 0) {
-      // when snapping velocity can feel sluggish for slow swipes
-      velocityY += (int) ((largerOffset - targetOffset) * 10.0);
+      if (!hasCustomizedFlingAnimator) {
+        // The default animator requires boost on initial velocity as when snapping velocity can
+        // feel sluggish for slow swipes
+        velocityY += (int) ((largerOffset - targetOffset) * 10.0);
+      }
 
       targetOffset = largerOffset;
     } else if (velocityY < 0) {
-      // when snapping velocity can feel sluggish for slow swipes
-      velocityY -= (int) ((targetOffset - smallerOffset) * 10.0);
+      if (!hasCustomizedFlingAnimator) {
+        // The default animator requires boost on initial velocity as when snapping velocity can
+        // feel sluggish for slow swipes
+        velocityY -= (int) ((targetOffset - smallerOffset) * 10.0);
+      }
 
       targetOffset = smallerOffset;
     } else {
@@ -811,11 +825,13 @@ public class ReactScrollView extends ScrollView
     // Make sure the new offset isn't out of bounds
     targetOffset = Math.min(Math.max(0, targetOffset), maximumOffset);
 
-    // smoothScrollTo will always scroll over 250ms which is often *waaay*
-    // too short and will cause the scrolling to feel almost instant
-    // try to manually interact with OverScroller instead
-    // if velocity is 0 however, fling() won't work, so we want to use smoothScrollTo
-    if (mScroller != null) {
+    if (hasCustomizedFlingAnimator || mScroller == null) {
+      reactSmoothScrollTo(getScrollX(), targetOffset);
+    } else {
+      // smoothScrollTo will always scroll over 250ms which is often *waaay*
+      // too short and will cause the scrolling to feel almost instant
+      // try to manually interact with OverScroller instead
+      // if velocity is 0 however, fling() won't work, so we want to use smoothScrollTo
       mActivelyScrolling = true;
 
       mScroller.fling(
@@ -837,8 +853,6 @@ public class ReactScrollView extends ScrollView
           );
 
       postInvalidateOnAnimation();
-    } else {
-      reactSmoothScrollTo(getScrollX(), targetOffset);
     }
   }
 
@@ -1059,5 +1073,29 @@ public class ReactScrollView extends ScrollView
   @Override
   public ReactScrollViewScrollState getReactScrollViewScrollState() {
     return mReactScrollViewScrollState;
+  }
+
+  @Override
+  public void startFlingAnimator(int start, int end) {
+    // Always cancel existing animator before starting the new one. `smoothScrollTo` contains some
+    // logic that, if called multiple times in a short amount of time, will treat all calls as part
+    // of the same animation and will not lengthen the duration of the animation. This means that,
+    // for example, if the user is scrolling rapidly, multiple pages could be considered part of one
+    // animation, causing some page animations to be animated very rapidly - looking like they're
+    // not animated at all.
+    DEFAULT_FLING_ANIMATOR.cancel();
+
+    // Update the fling animator with new values
+    DEFAULT_FLING_ANIMATOR
+        .setDuration(ReactScrollViewHelper.getDefaultScrollAnimationDuration(getContext()))
+        .setIntValues(start, end);
+
+    // Start the animator
+    DEFAULT_FLING_ANIMATOR.start();
+  }
+
+  @Override
+  public ValueAnimator getFlingAnimator() {
+    return DEFAULT_FLING_ANIMATOR;
   }
 }

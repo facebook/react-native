@@ -13,6 +13,8 @@ import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNME
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_END;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_START;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -44,7 +46,9 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowView;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
+import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollDirection;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
@@ -56,7 +60,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     implements ReactClippingViewGroup,
         FabricViewStateManager.HasFabricViewStateManager,
         ReactOverflowView,
-        HasScrollState {
+        HasScrollState,
+        HasFlingAnimator {
 
   private static boolean DEBUG_MODE = false && ReactBuildConfig.DEBUG;
   private static String TAG = ReactHorizontalScrollView.class.getSimpleName();
@@ -101,6 +106,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
   private final ReactScrollViewScrollState mReactScrollViewScrollState;
+  private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
 
   private final Rect mTempRect = new Rect();
 
@@ -135,7 +141,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         new ReactScrollViewScrollState(
             I18nUtil.getInstance().isRTL(context)
                 ? ViewCompat.LAYOUT_DIRECTION_RTL
-                : ViewCompat.LAYOUT_DIRECTION_LTR);
+                : ViewCompat.LAYOUT_DIRECTION_LTR,
+            ReactScrollViewScrollDirection.HORIZONTAL);
   }
 
   @Nullable
@@ -899,6 +906,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       return;
     }
 
+    boolean hasCustomizedFlingAnimator = getFlingAnimator() != DEFAULT_FLING_ANIMATOR;
     int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
     int targetOffset = predictFinalScrollPosition(velocityX);
     if (mDisableIntervalMomentum) {
@@ -1008,13 +1016,19 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         targetOffset = firstOffset;
       }
     } else if (velocityX > 0) {
-      // when snapping velocity can feel sluggish for slow swipes
-      velocityX += (int) ((largerOffset - targetOffset) * 10.0);
+      if (!hasCustomizedFlingAnimator) {
+        // The default animator requires boost on initial velocity as when snapping velocity can
+        // feel sluggish for slow swipes
+        velocityX += (int) ((largerOffset - targetOffset) * 10.0);
+      }
 
       targetOffset = largerOffset;
     } else if (velocityX < 0) {
-      // when snapping velocity can feel sluggish for slow swipes
-      velocityX -= (int) ((targetOffset - smallerOffset) * 10.0);
+      if (!hasCustomizedFlingAnimator) {
+        // The default animator requires boost on initial velocity as when snapping velocity can
+        // feel sluggish for slow swipes
+        velocityX -= (int) ((targetOffset - smallerOffset) * 10.0);
+      }
 
       targetOffset = smallerOffset;
     } else {
@@ -1029,11 +1043,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       velocityX = -velocityX;
     }
 
-    // smoothScrollTo will always scroll over 250ms which is often *waaay*
-    // too short and will cause the scrolling to feel almost instant
-    // try to manually interact with OverScroller instead
-    // if velocity is 0 however, fling() won't work, so we want to use smoothScrollTo
-    if (mScroller != null) {
+    if (hasCustomizedFlingAnimator || mScroller == null) {
+      reactSmoothScrollTo(targetOffset, getScrollY());
+    } else {
+      // smoothScrollTo will always scroll over 250ms which is often *waaay*
+      // too short and will cause the scrolling to feel almost instant
+      // try to manually interact with OverScroller instead
+      // if velocity is 0 however, fling() won't work, so we want to use smoothScrollTo
       mActivelyScrolling = true;
 
       mScroller.fling(
@@ -1055,8 +1071,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
           );
 
       postInvalidateOnAnimation();
-    } else {
-      reactSmoothScrollTo(targetOffset, getScrollY());
     }
   }
 
@@ -1195,5 +1209,29 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   public ReactScrollViewScrollState getReactScrollViewScrollState() {
     return mReactScrollViewScrollState;
+  }
+
+  @Override
+  public void startFlingAnimator(int start, int end) {
+    // Always cancel existing animator before starting the new one. `smoothScrollTo` contains some
+    // logic that, if called multiple times in a short amount of time, will treat all calls as part
+    // of the same animation and will not lengthen the duration of the animation. This means that,
+    // for example, if the user is scrolling rapidly, multiple pages could be considered part of one
+    // animation, causing some page animations to be animated very rapidly - looking like they're
+    // not animated at all.
+    DEFAULT_FLING_ANIMATOR.cancel();
+
+    // Update the fling animator with new values
+    DEFAULT_FLING_ANIMATOR
+        .setDuration(ReactScrollViewHelper.getDefaultScrollAnimationDuration(getContext()))
+        .setIntValues(start, end);
+
+    // Start the animator
+    DEFAULT_FLING_ANIMATOR.start();
+  }
+
+  @Override
+  public ValueAnimator getFlingAnimator() {
+    return DEFAULT_FLING_ANIMATOR;
   }
 }
