@@ -36,7 +36,7 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_render_templateprocessor \
   libreact_render_uimanager \
   libreact_utils \
-  libreactconfig \
+  libreact_config \
   librrc_root \
   librrc_view \
   libyoga

@@ -34,7 +34,7 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_render_graphics \
   libreact_render_mounting \
   libreact_render_uimanager \
-  libreactconfig \
+  libreact_config \
   librrc_view \
   libruntimeexecutor \
   libyoga

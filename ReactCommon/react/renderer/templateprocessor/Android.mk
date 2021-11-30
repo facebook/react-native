@@ -30,7 +30,7 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_render_core \
   libreact_render_debug \
   libreact_utils \
-  libreactconfig \
+  libreact_config \
   react_render_uimanager
 
 include $(BUILD_SHARED_LIBRARY)

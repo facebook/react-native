@@ -38,7 +38,7 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_render_textlayoutmanager \
   libreact_render_uimanager \
   libreact_utils \
-  libreactconfig \
+  libreact_config \
   libreactnativeutilsjni \
   librrc_image \
   librrc_modal \

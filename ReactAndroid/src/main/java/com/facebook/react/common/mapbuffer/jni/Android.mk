@@ -21,7 +21,7 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_debug \
   libreact_render_mapbuffer \
   libreact_utils \
-  libreactconfig \
+  libreact_config \
   libyoga
 
 LOCAL_STATIC_LIBRARIES :=

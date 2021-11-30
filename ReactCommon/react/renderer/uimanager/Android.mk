@@ -33,7 +33,7 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_render_graphics \
   libreact_render_leakchecker \
   libreact_render_mounting \
-  libreactconfig \
+  libreact_config \
   librrc_root \
   librrc_view \
   libruntimeexecutor
