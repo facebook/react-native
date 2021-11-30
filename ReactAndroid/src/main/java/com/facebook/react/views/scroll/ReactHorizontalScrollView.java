@@ -432,13 +432,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         updateClippingRect();
       }
 
-      // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
-      // when JS processes the scroll event, the C++ ShadowNode representation will have a
-      // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
-      // the error as much as possible.
-      ReactScrollViewHelper.updateStateOnScroll(this);
-
-      ReactScrollViewHelper.emitScrollEvent(
+      ReactScrollViewHelper.updateStateOnScrollChanged(
           this,
           mOnScrollDispatchHelper.getXFlingVelocity(),
           mOnScrollDispatchHelper.getYFlingVelocity());
@@ -521,7 +515,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
-      ReactScrollViewHelper.updateStateOnScroll(this);
+      ReactScrollViewHelper.updateFabricScrollState(this);
 
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
@@ -769,7 +763,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
               mRunning = true;
             } else {
               // There has not been a scroll update since the last time this Runnable executed.
-              ReactScrollViewHelper.updateStateOnScroll(ReactHorizontalScrollView.this);
+              ReactScrollViewHelper.updateFabricScrollState(ReactHorizontalScrollView.this);
 
               // We keep checking for updates until the ScrollView has "stabilized" and hasn't
               // scrolled for N consecutive frames. This number is arbitrary: big enough to catch
@@ -1178,7 +1172,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // to the last item in the list, but that item cannot be move to the start position of the view.
     final int actualX = getScrollX();
     final int actualY = getScrollY();
-    ReactScrollViewHelper.updateStateOnScroll(this, actualX, actualY);
+    ReactScrollViewHelper.updateFabricScrollState(this, actualX, actualY);
     setPendingContentOffsets(actualX, actualY);
   }
 

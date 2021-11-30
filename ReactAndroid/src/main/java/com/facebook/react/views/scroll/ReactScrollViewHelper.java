@@ -342,7 +342,7 @@ public class ReactScrollViewHelper {
       scrollView.startFlingAnimator(scrollY, y);
     }
 
-    updateStateOnScroll(scrollView, x, y);
+    updateFabricScrollState(scrollView, x, y);
   }
 
   /** Get current (x, y) position or position after current animation finishes, if any. */
@@ -386,8 +386,8 @@ public class ReactScrollViewHelper {
           T extends
               ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
                   & HasFlingAnimator>
-      boolean updateStateOnScroll(final T scrollView) {
-    return updateStateOnScroll(scrollView, scrollView.getScrollX(), scrollView.getScrollY());
+      boolean updateFabricScrollState(final T scrollView) {
+    return updateFabricScrollState(scrollView, scrollView.getScrollX(), scrollView.getScrollY());
   }
 
   /**
@@ -397,11 +397,11 @@ public class ReactScrollViewHelper {
           T extends
               ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
                   & HasFlingAnimator>
-      boolean updateStateOnScroll(final T scrollView, final int scrollX, final int scrollY) {
+      boolean updateFabricScrollState(final T scrollView, final int scrollX, final int scrollY) {
     if (DEBUG_MODE) {
       FLog.i(
           TAG,
-          "updateStateOnScroll[%d] scrollX %d scrollY %d",
+          "updateFabricScrollState[%d] scrollX %d scrollY %d",
           scrollView.getId(),
           scrollX,
           scrollY);
@@ -448,7 +448,7 @@ public class ReactScrollViewHelper {
     if (DEBUG_MODE) {
       FLog.i(
           TAG,
-          "updateStateOnScroll[%d] scrollX %d scrollY %d fabricScrollX",
+          "updateFabricScrollState[%d] scrollX %d scrollY %d fabricScrollX",
           scrollView.getId(),
           scrollX,
           scrollY,
@@ -475,6 +475,20 @@ public class ReactScrollViewHelper {
           T extends
               ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
                   & HasFlingAnimator>
+      void updateStateOnScrollChanged(
+          final T scrollView, final float xVelocity, final float yVelocity) {
+    // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
+    // when JS processes the scroll event, the C++ ShadowNode representation will have a
+    // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
+    // the error as much as possible.
+    updateFabricScrollState(scrollView);
+    emitScrollEvent(scrollView, xVelocity, yVelocity);
+  }
+
+  public static <
+          T extends
+              ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
+                  & HasFlingAnimator>
       void registerFlingAnimator(final T scrollView) {
     scrollView
         .getFlingAnimator()
@@ -491,7 +505,7 @@ public class ReactScrollViewHelper {
               @Override
               public void onAnimationEnd(Animator animator) {
                 scrollView.getReactScrollViewScrollState().setIsFinished(true);
-                ReactScrollViewHelper.updateStateOnScroll(scrollView);
+                updateFabricScrollState(scrollView);
               }
 
               @Override
