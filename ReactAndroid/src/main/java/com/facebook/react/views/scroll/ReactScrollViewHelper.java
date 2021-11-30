@@ -215,24 +215,16 @@ public class ReactScrollViewHelper {
     sScrollListeners.remove(listener);
   }
 
-  public enum ReactScrollViewScrollDirection {
-    HORIZONTAL,
-    VERTICAL,
-  }
-
   public static class ReactScrollViewScrollState {
     private final int mLayoutDirection;
-    private final ReactScrollViewScrollDirection mScrollDirection;
     private final Point mFinalAnimatedPositionScroll = new Point();
     private int mScrollAwayPaddingTop = 0;
     private final Point mLastStateUpdateScroll = new Point(-1, -1);
     private boolean mIsCanceled = false;
     private boolean mIsFinished = true;
 
-    public ReactScrollViewScrollState(
-        final int layoutDirection, final ReactScrollViewScrollDirection scrollDirection) {
+    public ReactScrollViewScrollState(final int layoutDirection) {
       mLayoutDirection = layoutDirection;
-      mScrollDirection = scrollDirection;
     }
 
     /**
@@ -241,14 +233,6 @@ public class ReactScrollViewHelper {
      */
     public int getLayoutDirection() {
       return mLayoutDirection;
-    }
-
-    /**
-     * Get the scroll direction. Can be either ReactScrollViewScrollDirection.HORIZONTAL or
-     * ReactScrollViewScrollDirection.VERTICAL.
-     */
-    public ReactScrollViewScrollDirection getScrollDirection() {
-      return mScrollDirection;
     }
 
     /** Get the position after current animation is finished */
@@ -334,43 +318,32 @@ public class ReactScrollViewHelper {
 
     final int scrollX = scrollView.getScrollX();
     final int scrollY = scrollView.getScrollY();
-    final ReactScrollViewScrollDirection scrollDirection = scrollState.getScrollDirection();
-    if (scrollDirection == ReactScrollViewScrollDirection.HORIZONTAL && scrollX != x) {
+    // Only one fling animator will be started. For the horizontal scroll view, scrollY will always
+    // be the same to y. This is the same to the vertical scroll view.
+    if (scrollX != x) {
       scrollView.startFlingAnimator(scrollX, x);
     }
-    if (scrollDirection == ReactScrollViewScrollDirection.VERTICAL && scrollY != y) {
+    if (scrollY != y) {
       scrollView.startFlingAnimator(scrollY, y);
     }
 
     updateFabricScrollState(scrollView, x, y);
   }
 
-  /** Get current (x, y) position or position after current animation finishes, if any. */
+  /** Get current position or position after current animation finishes, if any. */
   public static <
           T extends
               ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
                   & HasFlingAnimator>
-      Point getPostAnimationScroll(final T scrollView, final boolean isPositiveVelocity) {
+      int getNextFlingStartValue(
+          final T scrollView,
+          final int currentValue,
+          final int postAnimationValue,
+          final boolean isPositiveVelocity) {
     final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
     final int velocityDirectionMask = isPositiveVelocity ? 1 : -1;
-    final Point animatedScrollPos = scrollState.getFinalAnimatedPositionScroll();
-    final Point currentScrollPos = new Point(scrollView.getScrollX(), scrollView.getScrollY());
-
-    boolean isMovingTowardsAnimatedValue = false;
-    switch (scrollState.getScrollDirection()) {
-      case HORIZONTAL:
-        isMovingTowardsAnimatedValue =
-            velocityDirectionMask * (animatedScrollPos.x - currentScrollPos.x) > 0;
-        break;
-
-      case VERTICAL:
-        isMovingTowardsAnimatedValue =
-            velocityDirectionMask * (animatedScrollPos.y - currentScrollPos.y) > 0;
-        break;
-
-      default:
-        throw new IllegalArgumentException("ScrollView has unexpected scroll direction.");
-    }
+    final boolean isMovingTowardsAnimatedValue =
+        velocityDirectionMask * (postAnimationValue - currentValue) > 0;
 
     // When the fling animation is not finished, or it was canceled and now we are moving towards
     // the final animated value, we will return the final animated value. This is because follow up
@@ -378,8 +351,8 @@ public class ReactScrollViewHelper {
     // scrolls are still working.
     return !scrollState.getIsFinished()
             || (scrollState.getIsCanceled() && isMovingTowardsAnimatedValue)
-        ? animatedScrollPos
-        : currentScrollPos;
+        ? postAnimationValue
+        : currentValue;
   }
 
   public static <

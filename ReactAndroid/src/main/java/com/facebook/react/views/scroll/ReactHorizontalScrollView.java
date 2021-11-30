@@ -18,7 +18,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -48,7 +47,6 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasFlingAnimator;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.HasScrollState;
-import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollDirection;
 import com.facebook.react.views.scroll.ReactScrollViewHelper.ReactScrollViewScrollState;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
@@ -141,8 +139,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         new ReactScrollViewScrollState(
             I18nUtil.getInstance().isRTL(context)
                 ? ViewCompat.LAYOUT_DIRECTION_RTL
-                : ViewCompat.LAYOUT_DIRECTION_LTR,
-            ReactScrollViewScrollDirection.HORIZONTAL);
+                : ViewCompat.LAYOUT_DIRECTION_LTR);
   }
 
   @Nullable
@@ -814,10 +811,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // predict where a fling would end up so we can scroll to the nearest snap offset
     int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
     int width = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
-    Point postAnimationScroll = ReactScrollViewHelper.getPostAnimationScroll(this, velocityX > 0);
     scroller.fling(
-        postAnimationScroll.x, // startX
-        postAnimationScroll.y, // startY
+        ReactScrollViewHelper.getNextFlingStartValue(
+            this,
+            getScrollX(),
+            getReactScrollViewScrollState().getFinalAnimatedPositionScroll().x,
+            velocityX > 0), // startX
+        getScrollY(), // startY
         velocityX, // velocityX
         0, // velocityY
         0, // minX
@@ -842,7 +842,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
     double interval = (double) getSnapInterval();
     double currentOffset =
-        (double) (ReactScrollViewHelper.getPostAnimationScroll(this, velocity > 0).x);
+        (double)
+            (ReactScrollViewHelper.getNextFlingStartValue(
+                this,
+                getScrollX(),
+                getReactScrollViewScrollState().getFinalAnimatedPositionScroll().x,
+                velocity > 0));
     double targetOffset = (double) predictFinalScrollPosition(velocity);
 
     int previousPage = (int) Math.floor(currentOffset / interval);
