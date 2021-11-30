@@ -47,3 +47,16 @@ allprojects {
         ext["ANDROID_NDK_PATH"] =  System.getenv("ANDROID_NDK")
     }
 }
+
+tasks.register("cleanAll", Delete::class.java) {
+    description = "Remove all the build files and intermediate build outputs"
+    dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":clean"))
+    delete(allprojects.map { it.buildDir })
+    delete(rootProject.file("./ReactAndroid/.cxx"))
+    delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/arm64-v8a/"))
+    delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/"))
+    delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/x86/"))
+    delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/x86_64/"))
+    delete(rootProject.file("./packages/react-native-codegen/lib"))
+    delete(rootProject.file("./packages/rn-tester/android/app/.cxx"))
+}
