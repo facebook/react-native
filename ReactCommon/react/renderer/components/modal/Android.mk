@@ -37,7 +37,7 @@ LOCAL_SHARED_LIBRARIES := \
   librrc_view \
   libyoga
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
 
 $(call import-module,glog)
 $(call import-module,folly)

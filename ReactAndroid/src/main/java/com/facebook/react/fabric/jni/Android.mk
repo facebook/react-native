@@ -41,20 +41,20 @@ LOCAL_SHARED_LIBRARIES := \
   libreact_config \
   libreactnativeutilsjni \
   librrc_image \
-  librrc_modal \
-  librrc_progressbar \
   librrc_root \
-  librrc_scrollview \
-  librrc_slider \
-  librrc_switch \
-  librrc_textinput \
   librrc_unimplementedview \
   librrc_view \
   libyoga \
   react_render_componentregistry \
   rrc_text
 
-LOCAL_STATIC_LIBRARIES :=
+LOCAL_STATIC_LIBRARIES := \
+  librrc_slider \
+  librrc_progressbar \
+  librrc_switch \
+  librrc_modal \
+  librrc_scrollview \
+  librrc_textinput
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/
 
