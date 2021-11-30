@@ -226,6 +226,8 @@ public class ReactScrollViewHelper {
     private final Point mFinalAnimatedPositionScroll = new Point();
     private int mScrollAwayPaddingTop = 0;
     private final Point mLastStateUpdateScroll = new Point(-1, -1);
+    private boolean mIsCanceled = false;
+    private boolean mIsFinished = true;
 
     public ReactScrollViewScrollState(
         final int layoutDirection, final ReactScrollViewScrollDirection scrollDirection) {
@@ -283,6 +285,28 @@ public class ReactScrollViewHelper {
       mScrollAwayPaddingTop = scrollAwayPaddingTop;
       return this;
     }
+
+    /** Get true if the previous animation was canceled */
+    public boolean getIsCanceled() {
+      return mIsCanceled;
+    }
+
+    /** Set the state of current animation is canceled or not */
+    public ReactScrollViewScrollState setIsCanceled(boolean isCanceled) {
+      mIsCanceled = isCanceled;
+      return this;
+    }
+
+    /** Get true if previous animation was finished */
+    public boolean getIsFinished() {
+      return mIsFinished;
+    }
+
+    /** Set the state of current animation is finished or not */
+    public ReactScrollViewScrollState setIsFinished(boolean isFinished) {
+      mIsFinished = isFinished;
+      return this;
+    }
   }
 
   /**
@@ -326,11 +350,36 @@ public class ReactScrollViewHelper {
           T extends
               ViewGroup & FabricViewStateManager.HasFabricViewStateManager & HasScrollState
                   & HasFlingAnimator>
-      Point getPostAnimationScroll(final T scrollView) {
-    final ValueAnimator flingAnimator = scrollView.getFlingAnimator();
-    return flingAnimator != null && flingAnimator.isRunning()
-        ? scrollView.getReactScrollViewScrollState().getFinalAnimatedPositionScroll()
-        : new Point(scrollView.getScrollX(), scrollView.getScrollY());
+      Point getPostAnimationScroll(final T scrollView, final boolean isPositiveVelocity) {
+    final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
+    final int velocityDirectionMask = isPositiveVelocity ? 1 : -1;
+    final Point animatedScrollPos = scrollState.getFinalAnimatedPositionScroll();
+    final Point currentScrollPos = new Point(scrollView.getScrollX(), scrollView.getScrollY());
+
+    boolean isMovingTowardsAnimatedValue = false;
+    switch (scrollState.getScrollDirection()) {
+      case HORIZONTAL:
+        isMovingTowardsAnimatedValue =
+            velocityDirectionMask * (animatedScrollPos.x - currentScrollPos.x) > 0;
+        break;
+
+      case VERTICAL:
+        isMovingTowardsAnimatedValue =
+            velocityDirectionMask * (animatedScrollPos.y - currentScrollPos.y) > 0;
+        break;
+
+      default:
+        throw new IllegalArgumentException("ScrollView has unexpected scroll direction.");
+    }
+
+    // When the fling animation is not finished, or it was canceled and now we are moving towards
+    // the final animated value, we will return the final animated value. This is because follow up
+    // animation should consider the "would be" animated location, so that previous quick small
+    // scrolls are still working.
+    return !scrollState.getIsFinished()
+            || (scrollState.getIsCanceled() && isMovingTowardsAnimatedValue)
+        ? animatedScrollPos
+        : currentScrollPos;
   }
 
   public static <
@@ -432,16 +481,23 @@ public class ReactScrollViewHelper {
         .addListener(
             new Animator.AnimatorListener() {
               @Override
-              public void onAnimationStart(Animator animator) {}
+              public void onAnimationStart(Animator animator) {
+                final ReactScrollViewScrollState scrollState =
+                    scrollView.getReactScrollViewScrollState();
+                scrollState.setIsCanceled(false);
+                scrollState.setIsFinished(false);
+              }
 
               @Override
               public void onAnimationEnd(Animator animator) {
-                scrollView.getReactScrollViewScrollState().setFinalAnimatedPositionScroll(-1, -1);
+                scrollView.getReactScrollViewScrollState().setIsFinished(true);
                 ReactScrollViewHelper.updateStateOnScroll(scrollView);
               }
 
               @Override
-              public void onAnimationCancel(Animator animator) {}
+              public void onAnimationCancel(Animator animator) {
+                scrollView.getReactScrollViewScrollState().setIsCanceled(true);
+              }
 
               @Override
               public void onAnimationRepeat(Animator animator) {}

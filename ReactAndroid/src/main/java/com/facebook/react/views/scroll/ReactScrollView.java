@@ -337,6 +337,7 @@ public class ReactScrollView extends ScrollView
         ReactScrollViewHelper.emitScrollBeginDragEvent(this);
         mDragging = true;
         enableFpsListener();
+        getFlingAnimator().cancel();
         return true;
       }
     } catch (IllegalArgumentException e) {
@@ -608,7 +609,7 @@ public class ReactScrollView extends ScrollView
     // predict where a fling would end up so we can scroll to the nearest snap offset
     int maximumOffset = getMaxScrollY();
     int height = getHeight() - getPaddingBottom() - getPaddingTop();
-    Point postAnimationScroll = ReactScrollViewHelper.getPostAnimationScroll(this);
+    Point postAnimationScroll = ReactScrollViewHelper.getPostAnimationScroll(this, velocityY > 0);
     scroller.fling(
         postAnimationScroll.x, // startX
         postAnimationScroll.y, // startY
@@ -635,7 +636,8 @@ public class ReactScrollView extends ScrollView
    */
   private void smoothScrollAndSnap(int velocity) {
     double interval = (double) getSnapInterval();
-    double currentOffset = (double) (ReactScrollViewHelper.getPostAnimationScroll(this).y);
+    double currentOffset =
+        (double) (ReactScrollViewHelper.getPostAnimationScroll(this, velocity > 0).y);
     double targetOffset = (double) predictFinalScrollPosition(velocity);
 
     int previousPage = (int) Math.floor(currentOffset / interval);
