@@ -449,10 +449,9 @@ void UIManager::stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const {
 void UIManager::animationTick() {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
-    shadowTreeRegistry_.enumerate(
-        [&](ShadowTree const &shadowTree, bool &stop) {
-          shadowTree.notifyDelegatesOfUpdates();
-        });
+    shadowTreeRegistry_.enumerate([](ShadowTree const &shadowTree) {
+      shadowTree.notifyDelegatesOfUpdates();
+    });
   }
 }
 

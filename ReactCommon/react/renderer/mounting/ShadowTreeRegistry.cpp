@@ -53,15 +53,10 @@ bool ShadowTreeRegistry::visit(
 }
 
 void ShadowTreeRegistry::enumerate(
-    std::function<void(const ShadowTree &shadowTree, bool &stop)> callback)
-    const {
+    std::function<void(const ShadowTree &shadowTree)> callback) const {
   std::shared_lock<better::shared_mutex> lock(mutex_);
-  bool stop = false;
   for (auto const &pair : registry_) {
-    callback(*pair.second, stop);
-    if (stop) {
-      break;
-    }
+    callback(*pair.second);
   }
 }
 
