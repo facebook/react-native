@@ -94,7 +94,7 @@ react {
 
 project.ext.react = [
     enableCodegen: true, // Keep this here until it's sync'ed to Android template.
-    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean()
+    enableFabric: (System.getenv('USE_FABRIC') ?: 'true').toBoolean()
 ]
 
 //apply from: "../../../../react.gradle"
