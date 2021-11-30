@@ -274,8 +274,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
         **kwargs
     )
 
-def cxx_library(allow_jni_merging = None, **kwargs):
-    _ignore = allow_jni_merging
+def cxx_library(**kwargs):
     args = {
         k: v
         for k, v in kwargs.items()
