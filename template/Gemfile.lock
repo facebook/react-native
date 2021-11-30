@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    CFPropertyList (3.0.4)
+    CFPropertyList (3.0.5)
       rexml
     activesupport (6.1.4.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
