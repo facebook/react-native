@@ -156,6 +156,7 @@ inline void fromRawValue(
   if (value.hasType<Float>()) {
     auto number = (Float)value;
     result = {number, number, number, number};
+    return;
   }
 
   if (value.hasType<better::map<std::string, Float>>()) {
