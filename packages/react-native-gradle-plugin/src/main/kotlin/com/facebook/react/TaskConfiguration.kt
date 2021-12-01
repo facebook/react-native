@@ -233,12 +233,10 @@ private fun Project.cleanupVMFiles(
         // Reduce size by deleting the debugger/inspector
         it.include("**/libhermes-inspector.so")
         it.include("**/libhermes-executor-debug.so")
-        it.include("**/libhermes-executor-common-debug.so")
       } else {
         // Release libs take precedence and must be removed
         // to allow debugging
         it.include("**/libhermes-executor-release.so")
-        it.include("**/libhermes-executor-common-release.so")
       }
     } else {
       // For JSC, delete all the libhermes* files

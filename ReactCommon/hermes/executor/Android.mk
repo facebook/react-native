@@ -19,7 +19,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_STATIC_LIBRARIES := libjsireact
 LOCAL_SHARED_LIBRARIES := libhermes libjsi
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 
@@ -34,4 +34,4 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_STATIC_LIBRARIES := libjsireact libhermes-inspector
 LOCAL_SHARED_LIBRARIES := libhermes libjsi
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
