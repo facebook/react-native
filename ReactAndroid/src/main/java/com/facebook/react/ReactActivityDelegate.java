@@ -82,7 +82,7 @@ public class ReactActivityDelegate {
             return ReactActivityDelegate.this.createRootView();
           }
         };
-    if (mMainComponentName != null) {
+    if (mainComponentName != null) {
       loadApp(mainComponentName);
     }
   }
