@@ -68,7 +68,21 @@ function getNextVersionFromTags(branch) {
   return `${major}.${minor}.${parseInt(patch, 10) + 1}`;
 }
 
+function isReleaseBranch(branch) {
+  return branch.endsWith('-stable');
+}
+
+function isTaggedLatest(commitSha) {
+  return (
+    exec(`git rev-list -1 latest | grep ${commitSha}`, {
+      silent: true,
+    }).stdout.trim() === commitSha
+  );
+}
+
 module.exports = {
+  isTaggedLatest,
   parseVersion,
   getNextVersionFromTags,
+  isReleaseBranch,
 };
