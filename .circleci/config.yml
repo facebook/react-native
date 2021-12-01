@@ -749,6 +749,17 @@ jobs:
   # -------------------------
   #      JOBS: Releases
   # -------------------------
+  prepare_package_for_release:
+    executor: reactnativeios
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "1c:98:e0:3a:52:79:95:29:12:cd:b4:87:5b:41:e2:bb"
+      - run:
+          name: "Set new react-native version and commit changes"
+          command: |
+            node ./scripts/prepare-package-for-release.js
+
   build_npm_package:
     parameters:
       publish_npm_args:
@@ -847,7 +858,6 @@ workflows:
               only:
                 - main
                 - /^pull\/.*$/
-                - /^(\d+)\.(\d+)-stable$/
       - test_js:
           run_disabled_tests: false
           filters:
@@ -915,6 +925,15 @@ workflows:
 
   releases:
     jobs:
+      # This job will trigger on pushes to release branch and commit a version tag to trigger `build_npm_package` for release
+      - prepare_package_for_release:
+          name: prepare_package_for_release
+          filters:
+            branches:
+              only:
+                - /^(\d+)\.(\d+)-stable$/
+
+      # This job will trigger when a version tag is pushed (by prepare_package_for_release)
       - build_npm_package:
           name: build_and_publish_npm_package
           context: react-native-bot
