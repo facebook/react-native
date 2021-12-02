@@ -94,7 +94,7 @@ type Props = $ReadOnly<{|
   /**
    * Minimum duration between `onPressIn` and `onPressOut` events.
    */
-  minPressDuration?: ?Number,
+  minPressDuration?: ?number,
 
   /**
    * Additional distance outside of this view in which a touch is considered a
