@@ -91,6 +91,10 @@ type Props = $ReadOnly<{|
    * Additional distance outside of this view in which a press is detected.
    */
   hitSlop?: ?RectOrSize,
+  /**
+   * Minimum duration between `onPressIn` and `onPressOut` events.
+   */
+  minPressDuration?: ?Number,
 
   /**
    * Additional distance outside of this view in which a touch is considered a
@@ -181,6 +185,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
     delayLongPress,
     disabled,
     focusable,
+    minPressDuration,
     onHoverIn,
     onHoverOut,
     onLongPress,
@@ -228,6 +233,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       delayHoverOut,
       delayLongPress,
       delayPressIn: unstable_pressDelay,
+      minPressDuration,
       onHoverIn,
       onHoverOut,
       onLongPress,
