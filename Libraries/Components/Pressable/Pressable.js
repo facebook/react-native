@@ -267,6 +267,7 @@ function Pressable(props: Props, forwardedRef): React.Node {
       delayLongPress,
       disabled,
       hitSlop,
+      minPressDuration,
       onHoverIn,
       onHoverOut,
       onLongPress,
