@@ -531,69 +531,48 @@ jsi::Value UIManagerBinding::get(
   }
 
   if (methodName == "completeRoot") {
-    if (uiManager->backgroundExecutor_) {
-      std::weak_ptr<UIManager> weakUIManager = uiManager_;
-      // Enhanced version of the method that uses `backgroundExecutor` and
-      // captures a shared pointer to `UIManager`.
-      return jsi::Function::createFromHostFunction(
-          runtime,
-          name,
-          2,
-          [weakUIManager, uiManager](
-              jsi::Runtime &runtime,
-              jsi::Value const &thisValue,
-              jsi::Value const *arguments,
-              size_t count) noexcept -> jsi::Value {
-            auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
-            auto weakShadowNodeList =
-                weakShadowNodeListFromValue(runtime, arguments[1]);
-            static std::atomic_uint_fast8_t completeRootEventCounter{0};
-            static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
-            completeRootEventCounter += 1;
-            mostRecentSurfaceId = surfaceId;
-            uiManager->backgroundExecutor_(
-                [weakUIManager,
-                 weakShadowNodeList,
-                 surfaceId,
-                 eventCount = completeRootEventCounter.load()] {
-                  auto shouldYield = [=]() -> bool {
-                    // If `completeRootEventCounter` was incremented, another
-                    // `completeSurface` call has been scheduled and current
-                    // `completeSurface` should yield to it.
-                    return completeRootEventCounter > eventCount &&
-                        mostRecentSurfaceId == surfaceId;
-                  };
-                  auto shadowNodeList =
-                      shadowNodeListFromWeakList(weakShadowNodeList);
-                  auto strongUIManager = weakUIManager.lock();
-                  if (shadowNodeList && strongUIManager) {
-                    strongUIManager->completeSurface(
-                        surfaceId, shadowNodeList, {true, shouldYield});
-                  }
-                });
+    std::weak_ptr<UIManager> weakUIManager = uiManager_;
+    // Enhanced version of the method that uses `backgroundExecutor` and
+    // captures a shared pointer to `UIManager`.
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [weakUIManager, uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const &thisValue,
+            jsi::Value const *arguments,
+            size_t count) noexcept -> jsi::Value {
+          auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
+          auto weakShadowNodeList =
+              weakShadowNodeListFromValue(runtime, arguments[1]);
+          static std::atomic_uint_fast8_t completeRootEventCounter{0};
+          static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
+          completeRootEventCounter += 1;
+          mostRecentSurfaceId = surfaceId;
+          uiManager->backgroundExecutor_(
+              [weakUIManager,
+               weakShadowNodeList,
+               surfaceId,
+               eventCount = completeRootEventCounter.load()] {
+                auto shouldYield = [=]() -> bool {
+                  // If `completeRootEventCounter` was incremented, another
+                  // `completeSurface` call has been scheduled and current
+                  // `completeSurface` should yield to it.
+                  return completeRootEventCounter > eventCount &&
+                      mostRecentSurfaceId == surfaceId;
+                };
+                auto shadowNodeList =
+                    shadowNodeListFromWeakList(weakShadowNodeList);
+                auto strongUIManager = weakUIManager.lock();
+                if (shadowNodeList && strongUIManager) {
+                  strongUIManager->completeSurface(
+                      surfaceId, shadowNodeList, {true, shouldYield});
+                }
+              });
 
-            return jsi::Value::undefined();
-          });
-    } else {
-      // Basic version of the method that does *not* use `backgroundExecutor`
-      // and does *not* capture a shared pointer to `UIManager`.
-      return jsi::Function::createFromHostFunction(
-          runtime,
-          name,
-          2,
-          [uiManager](
-              jsi::Runtime &runtime,
-              jsi::Value const &thisValue,
-              jsi::Value const *arguments,
-              size_t count) noexcept -> jsi::Value {
-            uiManager->completeSurface(
-                surfaceIdFromValue(runtime, arguments[0]),
-                shadowNodeListFromValue(runtime, arguments[1]),
-                {true, {}});
-
-            return jsi::Value::undefined();
-          });
-    }
+          return jsi::Value::undefined();
+        });
   }
 
   if (methodName == "registerEventHandler") {

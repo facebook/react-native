@@ -606,11 +606,8 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
-  if (reactNativeConfig_->getBool(
-          "react_fabric:enable_background_executor_android")) {
-    backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
-    toolbox.backgroundExecutor = backgroundExecutor_->get();
-  }
+  backgroundExecutor_ = std::make_unique<JBackgroundExecutor>();
+  toolbox.backgroundExecutor = backgroundExecutor_->get();
 
   animationDriver_ = std::make_shared<LayoutAnimationDriver>(
       runtimeExecutor, contextContainer, this);
