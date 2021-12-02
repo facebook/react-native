@@ -230,6 +230,7 @@ private fun Project.cleanupVMFiles(
       it.include("**/libjsc*.so")
 
       if (cleanup) {
+        // Reduce size by deleting the debugger/inspector
         it.include("**/libhermes-executor-debug.so")
       } else {
         // Release libs take precedence and must be removed
