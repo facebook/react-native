@@ -363,7 +363,6 @@ afterEvaluate {
 
                     if (cleanup) {
                         // Reduce size by deleting the debugger/inspector
-                        include '**/libhermes-inspector.so'
                         include '**/libhermes-executor-debug.so'
                     } else {
                         // Release libs take precedence and must be removed

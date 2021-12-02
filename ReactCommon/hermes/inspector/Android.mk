@@ -31,4 +31,4 @@ LOCAL_SHARED_LIBRARIES := \
   libhermes \
   libjsi
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
