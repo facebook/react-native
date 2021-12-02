@@ -18,13 +18,26 @@ if ENV['USE_HERMES'] == '1'
   puts "Using Hermes engine"
 end
 
-def pods()
+def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
   fabric_enabled = true
   puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}."
 
   prefix_path = "../.."
+
+  if options[:use_codegen]
+    Pod::UI.puts "[Codegen] Building target with codegen library discovery enabled."
+    pre_install do |installer|
+      use_react_native_codegen_discovery!({
+        react_native_path: prefix_path,
+        app_path: "#{Dir.pwd}",
+        fabric_enabled: fabric_enabled,
+        config_file_dir: "#{Dir.pwd}/node_modules",
+      })
+    end
+  end
+
   use_react_native!(path: prefix_path, fabric_enabled: fabric_enabled, hermes_enabled: ENV['USE_HERMES'] == '1')
   pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
 
@@ -38,7 +51,7 @@ def pods()
 end
 
 target 'RNTester' do
-  pods()
+  pods({ :use_codegen => ENV['USE_CODEGEN_DISCOVERY'] == '1' })
   if !USE_FRAMEWORKS
     use_flipper!
   end
