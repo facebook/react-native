@@ -342,6 +342,30 @@ const AccessibilityInfo = {
   },
 
   /**
+   * Post a string to be announced by the screen reader.
+   * - `announcement`: The string announced by the screen reader.
+   * - `options`: An object that configures the reading options.
+   *   - `queue`: The announcement will be queued behind existing announcements. iOS only.
+   */
+  announceForAccessibilityWithOptions(
+    announcement: string,
+    options: {queue?: boolean},
+  ): void {
+    if (Platform.OS === 'android') {
+      NativeAccessibilityInfoAndroid?.announceForAccessibility(announcement);
+    } else {
+      if (NativeAccessibilityManagerIOS?.announceForAccessibilityWithOptions) {
+        NativeAccessibilityManagerIOS?.announceForAccessibilityWithOptions(
+          announcement,
+          options,
+        );
+      } else {
+        NativeAccessibilityManagerIOS?.announceForAccessibility(announcement);
+      }
+    }
+  },
+
+  /**
    * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
    */
   removeEventListener<K: $Keys<AccessibilityEventDefinitions>>(

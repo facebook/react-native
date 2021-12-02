@@ -52,6 +52,10 @@ export interface Spec extends TurboModule {
   |}) => void;
   +setAccessibilityFocus: (reactTag: number) => void;
   +announceForAccessibility: (announcement: string) => void;
+  +announceForAccessibilityWithOptions?: (
+    announcement: string,
+    options: {queue?: boolean},
+  ) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('AccessibilityManager'): ?Spec);
