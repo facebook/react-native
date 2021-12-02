@@ -8,6 +8,7 @@
 #include "RCTJSIExecutorRuntimeInstaller.h"
 
 #import <React/RCTLog.h>
+#include <chrono>
 
 namespace facebook {
 namespace react {
@@ -21,8 +22,7 @@ JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(JSIExecutor::Runtim
     bindNativeLogger(runtime, iosLoggingBinder);
 
     PerformanceNow iosPerformanceNowBinder = []() {
-      // CACurrentMediaTime() returns the current absolute time, in seconds
-      return CACurrentMediaTime() * 1000;
+      return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
     };
     bindNativePerformanceNow(runtime, iosPerformanceNowBinder);
 
