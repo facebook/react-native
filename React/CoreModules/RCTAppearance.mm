@@ -30,6 +30,11 @@ void RCTOverrideAppearancePreference(NSString *const colorSchemeOverride)
   sColorSchemeOverride = colorSchemeOverride;
 }
 
+NSString *RCTCurrentOverrideAppearancePreference()
+{
+  return sColorSchemeOverride;
+}
+
 NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
