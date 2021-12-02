@@ -62,7 +62,7 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void stopSurfaceForAnimationDelegate(SurfaceId surfaceId) const;
 
-  void animationTick();
+  void animationTick() const;
 
   /*
    * Provides access to a UIManagerBindging.
