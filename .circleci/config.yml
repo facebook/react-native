@@ -713,6 +713,8 @@ jobs:
   prepare_package_for_release:
     executor: reactnativeios
     steps:
+      - checkout
+      - run_yarn
       - add_ssh_keys:
           fingerprints:
             - "1c:98:e0:3a:52:79:95:29:12:cd:b4:87:5b:41:e2:bb"
