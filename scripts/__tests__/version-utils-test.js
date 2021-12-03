@@ -11,6 +11,7 @@ const {
   parseVersion,
   getNextVersionFromTags,
   isTaggedLatest,
+  isTaggedVersion,
   isReleaseBranch,
 } = require('../version-utils');
 
@@ -24,6 +25,33 @@ jest.mock('shelljs', () => ({
 }));
 
 describe('version-utils', () => {
+  describe('isTaggedVersion', () => {
+    it('should return true on pre-release versions', () => {
+      execResult = 'v0.66.0-rc.3\nlatest\n\n';
+      expect(isTaggedVersion('6c19dc3266b84f47a076b647a1c93b3c3b69d2c5')).toBe(
+        true,
+      );
+    });
+    it('should return true on release versions', () => {
+      execResult = 'latest\nv0.66.2\n\n';
+      expect(isTaggedVersion('6c19dc3266b84f47a076b647a1c93b3c3b69d2c5')).toBe(
+        true,
+      );
+    });
+    it('should return false when no tags', () => {
+      execResult = '\n';
+      expect(isTaggedVersion('6c19dc3266b84f47a076b647a1c93b3c3b69d2c5')).toBe(
+        false,
+      );
+    });
+    it('should return false on tags that are not versions', () => {
+      execResult = 'latest\n0.someother-made-up-tag\n\n';
+      expect(isTaggedVersion('6c19dc3266b84f47a076b647a1c93b3c3b69d2c5')).toBe(
+        false,
+      );
+    });
+  });
+
   describe('isReleaseBranch', () => {
     it('should identify as release branch', () => {
       expect(isReleaseBranch('v0.66-stable')).toBe(true);
