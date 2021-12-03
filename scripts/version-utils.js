@@ -9,8 +9,10 @@
 
 const {exec} = require('shelljs');
 
+const VERSION_REGEX = /^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/;
+
 function parseVersion(versionStr) {
-  const match = versionStr.match(/^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/);
+  const match = versionStr.match(VERSION_REGEX);
   if (!match) {
     throw new Error(
       `You must pass a correctly formatted version; couldn't parse ${versionStr}`,
@@ -72,6 +74,15 @@ function isReleaseBranch(branch) {
   return branch.endsWith('-stable');
 }
 
+function isTaggedVersion(commitSha) {
+  const tags = exec(`git tag --points-at ${commitSha}`, {
+    silent: true,
+  })
+    .stdout.trim()
+    .split('\n');
+  return tags.some(tag => !!tag.match(VERSION_REGEX));
+}
+
 function isTaggedLatest(commitSha) {
   return (
     exec(`git rev-list -1 latest | grep ${commitSha}`, {
@@ -82,6 +93,7 @@ function isTaggedLatest(commitSha) {
 
 module.exports = {
   isTaggedLatest,
+  isTaggedVersion,
   parseVersion,
   getNextVersionFromTags,
   isReleaseBranch,
