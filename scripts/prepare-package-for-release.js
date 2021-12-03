@@ -50,7 +50,7 @@ if (!isReleaseBranch(branch)) {
 }
 
 // Progress the version by 1 using existing git tags
-const {version} = getNextVersionFromTags(branch);
+const version = getNextVersionFromTags(branch);
 
 if (exec(`node scripts/set-rn-version.js --to-version ${version}`).code) {
   echo(`Failed to set React Native version to ${version}`);
