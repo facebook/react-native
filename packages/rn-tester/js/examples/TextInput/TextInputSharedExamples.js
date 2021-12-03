@@ -377,7 +377,7 @@ class SelectionExample extends React.Component<
   $FlowFixMeProps,
   SelectionExampleState,
 > {
-  _textInput: any;
+  _textInput: React.ElementRef<typeof TextInput> | null = null;
 
   constructor(props) {
     super(props);
@@ -397,8 +397,11 @@ class SelectionExample extends React.Component<
   }
 
   select(start, end) {
-    this._textInput.focus();
+    this._textInput?.focus();
     this.setState({selection: {start, end}});
+    if (this.props.imperative) {
+      this._textInput?.setSelection(start, end);
+    }
   }
 
   selectRandom() {
@@ -430,7 +433,7 @@ class SelectionExample extends React.Component<
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onSelectionChange={this.onSelectionChange.bind(this)}
             ref={textInput => (this._textInput = textInput)}
-            selection={this.state.selection}
+            selection={this.props.imperative ? undefined : this.state.selection}
             style={this.props.style}
             value={this.state.value}
           />
@@ -661,6 +664,29 @@ module.exports = ([
             multiline
             style={styles.multiline}
             value={'multiline text selection\ncan also be changed'}
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Text selection & cursor placement (imperative)',
+    name: 'cursorPlacementImperative',
+    render: function (): React.Node {
+      return (
+        <View>
+          <SelectionExample
+            testID="singlelineImperative"
+            style={styles.default}
+            value="text selection can be changed imperatively"
+            imperative={true}
+          />
+          <SelectionExample
+            testID="multilineImperative"
+            multiline
+            style={styles.multiline}
+            value={'multiline text selection\ncan also be changed imperatively'}
+            imperative={true}
           />
         </View>
       );
