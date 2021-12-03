@@ -14,7 +14,6 @@ load(
     "YOGA_APPLE_TARGET",
     "js_glob",
     "make_resource_glob",
-    "react_fabric_component_plugin_provider",
     "react_module_plugin_providers",
     "rn_apple_library",
     "rn_extra_build_flags",
@@ -50,6 +49,7 @@ rn_library(
         [
             "js",
             "NativeModuleExample",
+            "NativeComponentExample",
             "RCTTest",
         ],
         excludes = [
@@ -63,7 +63,6 @@ rn_library(
     skip_processors = True,
     visibility = ["PUBLIC"],
     deps = [
-        ":MyNativeViewSpec",
         "//xplat/js:node_modules__nullthrows",
         "//xplat/js/RKJSModules/Libraries/Core:Core",
         "//xplat/js/RKJSModules/vendor/react:react",
@@ -77,9 +76,6 @@ fb_native.filegroup(
     srcs = glob(
         [
             "**/*NativeComponent.js",
-        ],
-        exclude = [
-            "NativeComponentExample/**/*",
         ],
     ),
     visibility = ["PUBLIC"],
@@ -276,59 +272,5 @@ rn_apple_library(
         "//xplat/js/react-native-github:ReactInternalApple",
         "//xplat/js/react-native-github/React/CoreModules:CoreModulesApple",
         YOGA_APPLE_TARGET,
-    ],
-)
-
-rn_xplat_cxx_library2(
-    name = "NativeComponentExample",
-    plugins_only = True,
-    srcs = glob(
-        [
-            "NativeComponentExample/**/*.m",
-            "NativeComponentExample/**/*.mm",
-        ],
-    ),
-    headers = glob(
-        [
-            "NativeComponentExample/**/*.h",
-        ],
-    ),
-    header_namespace = "",
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++17",
-        "-Wall",
-    ],
-    contacts = ["oncall+react_native@xmail.facebook.com"],
-    labels = [
-        "supermodule:xplat/default/public.react_native.infra",
-    ],
-    plugins = [
-        react_fabric_component_plugin_provider("RNTMyNativeView", "RNTMyNativeViewCls"),
-    ],
-    plugins_header = "RCTFabricComponentsPlugins.h",
-    reexport_all_header_dependencies = False,
-    visibility = ["PUBLIC"],
-    deps = [
-        ":generated_components-MyNativeViewSpec",
-        "//xplat/js/react-native-github:RCTFabricComponentViewsBase",
-        "//xplat/js/react-native-github:ReactInternal",
-    ],
-)
-
-rn_library(
-    name = "MyNativeViewSpec",
-    srcs = js_glob(
-        [
-            "NativeComponentExample",
-        ],
-    ),
-    codegen_components = True,
-    labels = ["supermodule:xplat/default/public.react_native.ui.misc"],
-    visibility = ["PUBLIC"],
-    deps = [
-        "//xplat/js/RKJSModules/vendor/react:react",
-        "//xplat/js/react-native-github:react-native",
     ],
 )
