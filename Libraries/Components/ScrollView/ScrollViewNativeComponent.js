@@ -25,6 +25,7 @@ const ScrollViewNativeComponent: HostComponent<Props> =
       alwaysBounceHorizontal: true,
       alwaysBounceVertical: true,
       automaticallyAdjustContentInsets: true,
+      automaticallyAdjustKeyboardInsets: true,
       automaticallyAdjustsScrollIndicatorInsets: true,
       bounces: true,
       bouncesZoom: true,
