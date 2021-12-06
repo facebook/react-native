@@ -606,7 +606,7 @@ public class ReactScrollView extends ScrollView
             this,
             getScrollY(),
             getReactScrollViewScrollState().getFinalAnimatedPositionScroll().y,
-            velocityY > 0), // startY
+            velocityY), // startY
         0, // velocityX
         velocityY, // velocityY
         0, // minX
@@ -636,7 +636,7 @@ public class ReactScrollView extends ScrollView
                 this,
                 getScrollY(),
                 getReactScrollViewScrollState().getFinalAnimatedPositionScroll().y,
-                velocity > 0));
+                velocity));
     double targetOffset = (double) predictFinalScrollPosition(velocity);
 
     int previousPage = (int) Math.floor(currentOffset / interval);

@@ -339,9 +339,9 @@ public class ReactScrollViewHelper {
           final T scrollView,
           final int currentValue,
           final int postAnimationValue,
-          final boolean isPositiveVelocity) {
+          final int velocity) {
     final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
-    final int velocityDirectionMask = isPositiveVelocity ? 1 : -1;
+    final int velocityDirectionMask = velocity != 0 ? velocity / Math.abs(velocity) : 0;
     final boolean isMovingTowardsAnimatedValue =
         velocityDirectionMask * (postAnimationValue - currentValue) > 0;
 

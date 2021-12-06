@@ -816,7 +816,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
             this,
             getScrollX(),
             getReactScrollViewScrollState().getFinalAnimatedPositionScroll().x,
-            velocityX > 0), // startX
+            velocityX), // startX
         getScrollY(), // startY
         velocityX, // velocityX
         0, // velocityY
@@ -847,7 +847,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 this,
                 getScrollX(),
                 getReactScrollViewScrollState().getFinalAnimatedPositionScroll().x,
-                velocity > 0));
+                velocity));
     double targetOffset = (double) predictFinalScrollPosition(velocity);
 
     int previousPage = (int) Math.floor(currentOffset / interval);
