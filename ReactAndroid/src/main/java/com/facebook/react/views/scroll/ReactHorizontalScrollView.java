@@ -93,7 +93,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private int mEndFillColor = Color.TRANSPARENT;
   private boolean mDisableIntervalMomentum = false;
   private int mSnapInterval = 0;
-  private float mDecelerationRate = 0.985f;
   private @Nullable List<Integer> mSnapOffsets;
   private boolean mSnapToStart = true;
   private boolean mSnapToEnd = true;
@@ -216,10 +215,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   public void setDecelerationRate(float decelerationRate) {
-    mDecelerationRate = decelerationRate;
+    getReactScrollViewScrollState().setDecelerationRate(decelerationRate);
 
     if (mScroller != null) {
-      mScroller.setFriction(1.0f - mDecelerationRate);
+      mScroller.setFriction(1.0f - decelerationRate);
     }
   }
 
@@ -802,32 +801,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   private int predictFinalScrollPosition(int velocityX) {
-    // ScrollView can *only* scroll for 250ms when using smoothScrollTo and there's
-    // no way to customize the scroll duration. So, we create a temporary OverScroller
-    // so we can predict where a fling would land and snap to nearby that point.
-    OverScroller scroller = new OverScroller(getContext());
-    scroller.setFriction(1.0f - mDecelerationRate);
-
     // predict where a fling would end up so we can scroll to the nearest snap offset
-    int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
-    int width = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
-    scroller.fling(
-        ReactScrollViewHelper.getNextFlingStartValue(
-            this,
-            getScrollX(),
-            getReactScrollViewScrollState().getFinalAnimatedPositionScroll().x,
-            velocityX), // startX
-        getScrollY(), // startY
-        velocityX, // velocityX
-        0, // velocityY
-        0, // minX
-        maximumOffset, // maxX
-        0, // minY
-        0, // maxY
-        width / 2, // overX
-        0 // overY
-        );
-    return scroller.getFinalX();
+    final int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
+    return ReactScrollViewHelper.predictFinalScrollPosition(this, velocityX, 0, maximumOffset, 0).x;
   }
 
   /**
