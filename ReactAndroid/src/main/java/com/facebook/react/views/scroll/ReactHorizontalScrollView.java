@@ -968,6 +968,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 maximumOffset);
       } else {
         ViewGroup contentView = (ViewGroup) getContentView();
+        int smallerChildOffset = largerOffset;
+        int largerChildOffset = smallerOffset;
         for (int i = 0; i < contentView.getChildCount(); i++) {
           View item = contentView.getChildAt(i);
           int itemStartOffset =
@@ -983,7 +985,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
               largerOffset = itemStartOffset;
             }
           }
+
+          smallerChildOffset = Math.min(smallerChildOffset, itemStartOffset);
+          largerChildOffset = Math.max(largerChildOffset, itemStartOffset);
         }
+
+        // For Recycler ViewGroup, the maximumOffset can be much larger than the total heights of
+        // items in the layout. In this case snapping is not possible beyond the currently rendered
+        // children.
+        smallerOffset = Math.max(smallerOffset, smallerChildOffset);
+        largerOffset = Math.min(largerOffset, largerChildOffset);
       }
     } else {
       double interval = getSnapInterval();
@@ -994,7 +1005,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
     // Calculate the nearest offset
     int nearestOffset =
-        targetOffset - smallerOffset < largerOffset - targetOffset ? smallerOffset : largerOffset;
+        Math.abs(targetOffset - smallerOffset) < Math.abs(largerOffset - targetOffset)
+            ? smallerOffset
+            : largerOffset;
 
     // if scrolling after the last snap offset and snapping to the
     // end of the list is disabled, then we allow free scrolling
