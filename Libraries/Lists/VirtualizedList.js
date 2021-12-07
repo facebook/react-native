@@ -779,7 +779,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     if (itemCount > 0) {
-      renderMask.addCells(cellsAroundViewport);
+      if (cellsAroundViewport.last >= cellsAroundViewport.first) {
+        renderMask.addCells(cellsAroundViewport);
+      }
 
       // The initially rendered cells are retained as part of the
       // "scroll-to-top" optimization
@@ -970,7 +972,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
 
     return {
-      cellsAroundViewport: prevState.cellsAroundViewport,
+      cellsAroundViewport: constrainedCells,
       renderMask: VirtualizedList._createRenderMask(newProps, constrainedCells),
     };
   }
