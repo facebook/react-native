@@ -45,6 +45,7 @@ class TextInputEventEmitter : public ViewEventEmitter {
   void onEndEditing(TextInputMetrics const &textInputMetrics) const;
   void onSubmitEditing(TextInputMetrics const &textInputMetrics) const;
   void onKeyPress(KeyPressMetrics const &textInputMetrics) const;
+  void onKeyPressSync(KeyPressMetrics const &textInputMetrics) const;
   void onScroll(TextInputMetrics const &textInputMetrics) const;
 
  private:

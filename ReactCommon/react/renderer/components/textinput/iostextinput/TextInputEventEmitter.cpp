@@ -105,6 +105,16 @@ void TextInputEventEmitter::onKeyPress(
       EventPriority::AsynchronousBatched);
 }
 
+void TextInputEventEmitter::onKeyPressSync(
+    KeyPressMetrics const &keyPressMetrics) const {
+  dispatchEvent(
+      "keyPressSync",
+      [keyPressMetrics](jsi::Runtime &runtime) {
+        return keyPressMetricsPayload(runtime, keyPressMetrics);
+      },
+      EventPriority::SynchronousBatched);
+}
+
 void TextInputEventEmitter::onScroll(
     TextInputMetrics const &textInputMetrics) const {
   dispatchTextInputEvent("scroll", textInputMetrics);

@@ -323,16 +323,23 @@ using namespace facebook::react;
 
 - (NSString *)textInputShouldChangeText:(NSString *)text inRange:(NSRange)range
 {
+  auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+
   if (!_backedTextInputView.textWasPasted) {
     if (_eventEmitter) {
       KeyPressMetrics keyPressMetrics;
       keyPressMetrics.text = RCTStringFromNSString(text);
       keyPressMetrics.eventCount = _mostRecentEventCount;
-      std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onKeyPress(keyPressMetrics);
+
+      auto const &textInputEventEmitter = *std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter);
+      if (props.onKeyPressSync) {
+        textInputEventEmitter.onKeyPressSync(keyPressMetrics);
+      } else {
+        textInputEventEmitter.onKeyPress(keyPressMetrics);
+      }
     }
   }
 
-  auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
   if (props.maxLength) {
     NSInteger allowedLength = props.maxLength - _backedTextInputView.attributedText.string.length + range.length;
 
