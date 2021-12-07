@@ -45,8 +45,14 @@ class RuntimeScheduler final {
    * component.
    */
   void executeNowOnTheSameThread(
-      std::function<void(jsi::Runtime &runtime)> callback) const;
+      std::function<void(jsi::Runtime &runtime)> callback);
 
+  /*
+   * Adds a JavaScript callback to priority queue with given priority.
+   * Triggers workloop if needed.
+   *
+   * Thread synchronization must be enforced externally.
+   */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       jsi::Function callback);
@@ -54,6 +60,8 @@ class RuntimeScheduler final {
   void cancelTask(std::shared_ptr<Task> const &task) noexcept;
 
   bool getShouldYield() const noexcept;
+
+  bool getIsSynchronous() const noexcept;
 
   SchedulerPriority getCurrentPriorityLevel() const noexcept;
 
@@ -71,6 +79,7 @@ class RuntimeScheduler final {
   RuntimeExecutor const runtimeExecutor_;
   mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
   mutable std::atomic_bool shouldYield_{false};
+  mutable std::atomic_bool isSynchronous_{false};
 
   void startWorkLoop(jsi::Runtime &runtime) const;
 
@@ -84,7 +93,7 @@ class RuntimeScheduler final {
    * Flag indicating if callback on JavaScript queue has been
    * scheduled.
    */
-  std::atomic_bool isCallbackScheduled_{false};
+  mutable std::atomic_bool isCallbackScheduled_{false};
 
   /*
    * Flag indicating if yielding is enabled.

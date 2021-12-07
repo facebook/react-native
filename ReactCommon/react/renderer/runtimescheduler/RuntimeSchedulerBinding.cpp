@@ -42,9 +42,27 @@ RuntimeSchedulerBinding::createAndInstallIfNeeded(
   return runtimeSchedulerObject.getHostObject<RuntimeSchedulerBinding>(runtime);
 }
 
+std::shared_ptr<RuntimeSchedulerBinding> RuntimeSchedulerBinding::getBinding(
+    jsi::Runtime &runtime) {
+  auto runtimeSchedulerModuleName = "nativeRuntimeScheduler";
+
+  auto runtimeSchedulerValue =
+      runtime.global().getProperty(runtime, runtimeSchedulerModuleName);
+  if (runtimeSchedulerValue.isUndefined()) {
+    return nullptr;
+  }
+
+  auto runtimeSchedulerObject = runtimeSchedulerValue.asObject(runtime);
+  return runtimeSchedulerObject.getHostObject<RuntimeSchedulerBinding>(runtime);
+}
+
 RuntimeSchedulerBinding::RuntimeSchedulerBinding(
     std::shared_ptr<RuntimeScheduler> const &runtimeScheduler)
     : runtimeScheduler_(runtimeScheduler) {}
+
+bool RuntimeSchedulerBinding::getIsSynchronous() const {
+  return runtimeScheduler_->getIsSynchronous();
+}
 
 jsi::Value RuntimeSchedulerBinding::get(
     jsi::Runtime &runtime,
