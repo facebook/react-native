@@ -510,10 +510,10 @@ public class ReactScrollViewHelper {
                   & HasFlingAnimator>
       Point predictFinalScrollPosition(
           final T scrollView,
-          int velocityX,
-          int velocityY,
-          int maximumOffsetX,
-          int maximumOffsetY) {
+          final int velocityX,
+          final int velocityY,
+          final int maximumOffsetX,
+          final int maximumOffsetY) {
     final ReactScrollViewScrollState scrollState = scrollView.getReactScrollViewScrollState();
     // ScrollView can *only* scroll for 250ms when using smoothScrollTo and there's
     // no way to customize the scroll duration. So, we create a temporary OverScroller
@@ -566,5 +566,8 @@ public class ReactScrollViewHelper {
 
     /** Get the fling animator that is reused for the ScrollView to handle fling animation. */
     ValueAnimator getFlingAnimator();
+
+    /** Get the fling distance with current velocity for prediction */
+    int getFlingExtrapolatedDistance(int velocity);
   }
 }
