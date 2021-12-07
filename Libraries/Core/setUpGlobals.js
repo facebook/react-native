@@ -10,6 +10,8 @@
 
 'use strict';
 
+const packageJson = require('../../package.json');
+
 /**
  * Sets up global variables for React Native.
  * You can use this module directly, or just require InitializeCore.
@@ -27,6 +29,7 @@ if (global.self === undefined) {
 // Set up process
 global.process = global.process || {};
 global.process.env = global.process.env || {};
+global.process.version = packageJson.version || global.process.version || undefined;
 if (!global.process.env.NODE_ENV) {
   global.process.env.NODE_ENV = __DEV__ ? 'development' : 'production';
 }
