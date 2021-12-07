@@ -237,13 +237,17 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+      # ensure IPHONEOS_DEPLOYMENT_TARGET is at least 11.0
+      should_upgrade = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].split('.')[0].to_i < 11
+      if should_upgrade
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
       end
+    end
   end
 
   # But... doing so caused another issue in Flipper:
   #   "Time.h:52:17: error: typedef redefinition with different types"
-  # We need to make a patch to RCT-Folly - set `__IPHONE_10_0` to our iOS target + 1.
+  # We need to make a patch to RCT-Folly - remove the `__IPHONE_OS_VERSION_MIN_REQUIRED` check.
   # See https://github.com/facebook/flipper/issues/834 for more details.
-  `sed -i -e  $'s/__IPHONE_10_0/__IPHONE_12_0/' #{installer.sandbox.root}/RCT-Folly/folly/portability/Time.h`
+  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' Pods/RCT-Folly/folly/portability/Time.h`
 end
