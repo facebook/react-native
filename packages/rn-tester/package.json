@@ -30,6 +30,13 @@
         "ios": {},
         "android": {},
         "jsSrcsDir": "NativeModuleExample"
+      },
+      {
+        "name": "MyNativeViewSpec",
+        "type": "components",
+        "ios": {},
+        "android": {},
+        "jsSrcsDir": "NativeComponentExample/js"
       }
     ]
   }

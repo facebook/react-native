@@ -14,7 +14,8 @@ import * as React from 'react';
 import MyNativeView from '../../../NativeComponentExample/js/MyNativeView';
 
 exports.title = 'New Architecture Examples';
-exports.description = 'Test a component in the New Architecture';
+exports.description =
+  'Simple component using the new architecture. Fabric must be enabled.';
 exports.examples = [
   {
     title: 'New Architecture Renderer',

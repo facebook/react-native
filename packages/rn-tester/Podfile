@@ -48,6 +48,9 @@ def pods(options = {})
 
   # RNTester native modules and components
   pod 'ScreenshotManager', :path => "NativeModuleExample"
+  if fabric_enabled
+    pod 'MyNativeView', :path => "NativeComponentExample"
+  end
 end
 
 target 'RNTester' do

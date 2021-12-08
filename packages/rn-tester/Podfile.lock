@@ -73,6 +73,13 @@ PODS:
   - fmt (6.2.1)
   - glog (0.3.5)
   - libevent (2.1.12)
+  - MyNativeView (0.0.1):
+    - RCTRequired
+    - RCTTypeSafety
+    - React
+    - React-Codegen
+    - React-RCTFabric
+    - ReactCommon/turbomodule/core
   - OpenSSL-Universal (1.1.180)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
@@ -741,6 +748,7 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.99.0)
   - FlipperKit/SKIOSNetworkPlugin (= 0.99.0)
   - glog (from `../../third-party-podspecs/glog.podspec`)
+  - MyNativeView (from `NativeComponentExample`)
   - OpenSSL-Universal (= 1.1.180)
   - RCT-Folly (from `../../third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../third-party-podspecs/RCT-Folly.podspec`)
@@ -809,6 +817,8 @@ EXTERNAL SOURCES:
     :path: "../../React/FBReactNativeSpec"
   glog:
     :podspec: "../../third-party-podspecs/glog.podspec"
+  MyNativeView:
+    :path: NativeComponentExample
   RCT-Folly:
     :podspec: "../../third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -894,6 +904,7 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: c10b67b343303f51715e5c5eedb18a41402f350a
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  MyNativeView: 4eaeecdc16568e81e702ef0a901127823d1ddc80
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
   RCTRequired: af2d6080a4b9ba0885b28ca78879a92066c71cab
@@ -930,6 +941,6 @@ SPEC CHECKSUMS:
   Yoga: c0d06f5380d34e939f55420669a60fe08b79bd75
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 56348fb590e835e25615af889a5cad2d5b227480
+PODFILE CHECKSUM: 5c08bc01a92babb1f26302f610931c69b5f5785d
 
 COCOAPODS: 1.11.2
