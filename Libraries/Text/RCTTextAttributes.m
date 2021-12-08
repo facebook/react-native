@@ -237,6 +237,23 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
+- (NSString *)capitalize:(NSString *)text
+{
+  NSArray *words = [text componentsSeparatedByString:@" "];
+  NSMutableArray *newWords = [NSMutableArray new];
+  NSNumberFormatter *num = [NSNumberFormatter new];
+  for (NSString *item in words) {
+    NSString *word; 
+    if ([num numberFromString:[item substringWithRange:NSMakeRange(0, 1)]] == nil) {
+      word = [item capitalizedString];
+    } else {
+      word = [item lowercaseString];
+    }
+    [newWords addObject:word];
+  }
+  return [newWords componentsJoinedByString:@" "];
+}
+
 - (NSString *)applyTextAttributesToText:(NSString *)text
 {
   switch (_textTransform) {
@@ -248,7 +265,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     case RCTTextTransformUppercase:
       return [text uppercaseString];
     case RCTTextTransformCapitalize:
-      return [text capitalizedString];
+      return [self capitalize:text];
   }
 }
 
