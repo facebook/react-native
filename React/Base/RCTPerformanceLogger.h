@@ -6,30 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
-
-// Keep this in sync with _labelsForTags
-typedef NS_ENUM(NSInteger, RCTPLTag) {
-  RCTPLScriptDownload = 0,
-  RCTPLScriptExecution,
-  RCTPLRAMBundleLoad,
-  RCTPLRAMStartupCodeSize,
-  RCTPLRAMStartupNativeRequires,
-  RCTPLRAMStartupNativeRequiresCount,
-  RCTPLRAMNativeRequires,
-  RCTPLRAMNativeRequiresCount,
-  RCTPLNativeModuleInit,
-  RCTPLNativeModuleMainThread,
-  RCTPLNativeModulePrepareConfig,
-  RCTPLNativeModuleMainThreadUsesCount,
-  RCTPLNativeModuleSetup,
-  RCTPLTurboModuleSetup,
-  RCTPLJSCWrapperOpenLibrary,
-  RCTPLBridgeStartup,
-  RCTPLTTI,
-  RCTPLBundleSize,
-  RCTPLReactInstanceInit,
-  RCTPLSize // This is used to count the size
-};
+#import "RCTPLTag.h"
 
 @interface RCTPerformanceLogger : NSObject
 
@@ -94,11 +71,5 @@ typedef NS_ENUM(NSInteger, RCTPLTag) {
  * Returns a value for given RCTPLTag.
  */
 - (int64_t)valueForTag:(RCTPLTag)tag;
-
-/**
- * Returns an array with values for all tags.
- * Use RCTPLTag to go over the array.
- */
-- (NSArray<NSString *> *)labelsForTags;
 
 @end
