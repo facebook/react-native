@@ -383,14 +383,9 @@ class MultipleSourcesExample extends React.Component<
                 height: 38,
               },
               {
-                uri: 'https://www.facebook.com/favicon.ico',
-                width: 76,
-                height: 76,
-              },
-              {
                 uri: 'https://www.facebook.com/ads/pics/successstories.png',
-                width: 400,
-                height: 400,
+                width: 100,
+                height: 100,
               },
             ]}
           />
@@ -596,8 +591,9 @@ const smallImage = {
 
 const styles = StyleSheet.create({
   base: {
-    width: 38,
-    height: 38,
+    width: 64,
+    height: 64,
+    margin: 4,
   },
   leftMargin: {
     marginLeft: 10,
@@ -627,9 +623,11 @@ const styles = StyleSheet.create({
   icon: {
     width: 15,
     height: 15,
+    margin: 4,
   },
   horizontal: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   gif: {
     flex: 1,
@@ -791,24 +789,7 @@ exports.examples = [
     platform: 'ios',
   },
   {
-    title: 'Border Color',
-    render: function (): React.Node {
-      return (
-        <View style={styles.horizontal}>
-          <Image
-            source={smallImage}
-            style={[
-              styles.base,
-              styles.background,
-              {borderWidth: 3, borderColor: '#f099f0'},
-            ]}
-          />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Border Width',
+    title: 'Borders',
     render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
@@ -830,20 +811,16 @@ exports.examples = [
       return (
         <View style={styles.horizontal}>
           <Image style={[styles.base, {borderRadius: 5}]} source={fullImage} />
+          <Image style={[styles.base, {borderRadius: 19}]} source={fullImage} />
           <Image
-            style={[styles.base, styles.leftMargin, {borderRadius: 19}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {borderTopLeftRadius: 20}]}
+            style={[styles.base, {borderTopLeftRadius: 20}]}
             source={fullImage}
           />
           <Image
             style={[
               styles.base,
-              styles.leftMargin,
               {
-                borderWidth: 10,
+                borderWidth: 4,
                 borderTopLeftRadius: 10,
                 borderBottomRightRadius: 20,
                 borderColor: 'green',
@@ -854,14 +831,49 @@ exports.examples = [
           <Image
             style={[
               styles.base,
-              styles.leftMargin,
               {
-                borderWidth: 5,
+                resizeMode: 'cover',
+                width: 90,
+                borderWidth: 4,
                 borderTopLeftRadius: 10,
                 borderTopRightRadius: 20,
                 borderBottomRightRadius: 30,
                 borderBottomLeftRadius: 40,
                 borderColor: 'red',
+              },
+            ]}
+            source={fullImage}
+          />
+          <Image
+            style={[
+              styles.base,
+              {
+                resizeMode: 'stretch',
+                width: 90,
+                borderWidth: 4,
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 20,
+                borderBottomRightRadius: 30,
+                borderBottomLeftRadius: 40,
+                borderColor: 'red',
+                backgroundColor: 'yellow',
+              },
+            ]}
+            source={fullImage}
+          />
+          <Image
+            style={[
+              styles.base,
+              {
+                resizeMode: 'contain',
+                width: 90,
+                borderWidth: 4,
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 20,
+                borderBottomRightRadius: 30,
+                borderBottomLeftRadius: 40,
+                borderColor: 'red',
+                backgroundColor: 'yellow',
               },
             ]}
             source={fullImage}
@@ -877,19 +889,23 @@ exports.examples = [
         <View style={styles.horizontal}>
           <Image source={smallImage} style={styles.base} />
           <Image
+            style={[styles.base, {backgroundColor: 'rgba(0, 0, 100, 0.25)'}]}
+            source={smallImage}
+          />
+          <Image
+            style={[styles.base, {backgroundColor: 'red'}]}
+            source={smallImage}
+          />
+          <Image
             style={[
               styles.base,
-              styles.leftMargin,
-              {backgroundColor: 'rgba(0, 0, 100, 0.25)'},
+              {
+                backgroundColor: 'red',
+                borderColor: 'green',
+                borderWidth: 3,
+                borderRadius: 25,
+              },
             ]}
-            source={smallImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {backgroundColor: 'red'}]}
-            source={smallImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {backgroundColor: 'black'}]}
             source={smallImage}
           />
         </View>
@@ -902,26 +918,11 @@ exports.examples = [
       return (
         <View style={styles.horizontal}>
           <Image style={[styles.base, {opacity: 1}]} source={fullImage} />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.8}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.6}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.4}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0.2}]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {opacity: 0}]}
-            source={fullImage}
-          />
+          <Image style={[styles.base, {opacity: 0.8}]} source={fullImage} />
+          <Image style={[styles.base, {opacity: 0.6}]} source={fullImage} />
+          <Image style={[styles.base, {opacity: 0.4}]} source={fullImage} />
+          <Image style={[styles.base, {opacity: 0.2}]} source={fullImage} />
+          <Image style={[styles.base, {opacity: 0}]} source={fullImage} />
         </View>
       );
     },
@@ -966,27 +967,15 @@ exports.examples = [
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[
-                styles.icon,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#4cd964'},
-              ]}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#4cd964'}]}
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[
-                styles.icon,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#ff2d55'},
-              ]}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#ff2d55'}]}
             />
             <Image
               source={require('../../assets/uie_thumb_normal.png')}
-              style={[
-                styles.icon,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#8e8e93'},
-              ]}
+              style={[styles.icon, {borderRadius: 5, tintColor: '#8e8e93'}]}
             />
           </View>
           <Text style={styles.sectionText}>
@@ -999,27 +988,15 @@ exports.examples = [
             />
             <Image
               source={smallImage}
-              style={[
-                styles.base,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#4cd964'},
-              ]}
+              style={[styles.base, {borderRadius: 5, tintColor: '#4cd964'}]}
             />
             <Image
               source={smallImage}
-              style={[
-                styles.base,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#ff2d55'},
-              ]}
+              style={[styles.base, {borderRadius: 5, tintColor: '#ff2d55'}]}
             />
             <Image
               source={smallImage}
-              style={[
-                styles.base,
-                styles.leftMargin,
-                {borderRadius: 5, tintColor: '#8e8e93'},
-              ]}
+              style={[styles.base, {borderRadius: 5, tintColor: '#8e8e93'}]}
             />
           </View>
         </View>
@@ -1038,19 +1015,15 @@ exports.examples = [
               <View key={index}>
                 <View style={styles.horizontal}>
                   <View>
-                    <Text style={[styles.resizeModeText]}>Contain</Text>
+                    <Text style={styles.resizeModeText}>Contain</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="contain"
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
-                   * native_fb) This comment suppresses an error found when
-                   * Flow v0.115 was deployed. To see the error, delete this
-                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>Cover</Text>
+                    <Text style={styles.resizeModeText}>Cover</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="cover"
@@ -1060,31 +1033,23 @@ exports.examples = [
                 </View>
                 <View style={styles.horizontal}>
                   <View>
-                    <Text style={[styles.resizeModeText]}>Stretch</Text>
+                    <Text style={styles.resizeModeText}>Stretch</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="stretch"
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
-                   * native_fb) This comment suppresses an error found when
-                   * Flow v0.115 was deployed. To see the error, delete this
-                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>Repeat</Text>
+                    <Text style={styles.resizeModeText}>Repeat</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="repeat"
                       source={image}
                     />
                   </View>
-                  {/* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_
-                   * native_fb) This comment suppresses an error found when
-                   * Flow v0.115 was deployed. To see the error, delete this
-                   * comment and run Flow. */}
                   <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>Center</Text>
+                    <Text style={styles.resizeModeText}>Center</Text>
                     <Image
                       style={styles.resizeMode}
                       resizeMode="center"
@@ -1135,12 +1100,6 @@ exports.examples = [
   {
     title: 'Image Size',
     render: function (): React.Node {
-      /* $FlowFixMe[prop-missing] (>=0.115.0 site=react_native_fb) This comment
-       * suppresses an error found when Flow v0.115 was deployed. To see the
-       * error, delete this comment and run Flow. */
-      /* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_native_fb) This
-       * comment suppresses an error found when Flow v0.115 was deployed. To
-       * see the error, delete this comment and run Flow. */
       return <ImageSizeExample source={fullImage} />;
     },
   },
@@ -1195,32 +1154,12 @@ exports.examples = [
     render: function (): React.Node {
       return (
         <View style={styles.horizontal}>
-          <Image style={[styles.base]} source={fullImage} blurRadius={0} />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={5}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={10}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={15}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={20}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin]}
-            source={fullImage}
-            blurRadius={25}
-          />
+          <Image style={styles.base} source={fullImage} blurRadius={0} />
+          <Image style={styles.base} source={fullImage} blurRadius={5} />
+          <Image style={styles.base} source={fullImage} blurRadius={10} />
+          <Image style={styles.base} source={fullImage} blurRadius={15} />
+          <Image style={styles.base} source={fullImage} blurRadius={20} />
+          <Image style={styles.base} source={fullImage} blurRadius={25} />
         </View>
       );
     },
