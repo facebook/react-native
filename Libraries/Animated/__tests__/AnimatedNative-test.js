@@ -928,6 +928,30 @@ describe('Native Animated', () => {
       animation.stop();
       expect(NativeAnimatedModule.stopAnimation).toBeCalledWith(animationId);
     });
+
+    it('calls stopAnimation callback with native value', () => {
+      NativeAnimatedModule.getValue = jest.fn((tag, saveCallback) => {
+        saveCallback(1);
+      });
+
+      const anim = new Animated.Value(0);
+      Animated.timing(anim, {
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
+
+      const tag = anim.__getNativeTag();
+
+      let currentValue = 0;
+      anim.stopAnimation(value => (currentValue = value));
+
+      expect(NativeAnimatedModule.getValue).toBeCalledWith(
+        tag,
+        expect.any(Function),
+      );
+
+      expect(currentValue).toEqual(1);
+    });
   });
 
   describe('Animated Components', () => {

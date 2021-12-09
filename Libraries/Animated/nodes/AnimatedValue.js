@@ -186,7 +186,13 @@ class AnimatedValue extends AnimatedWithChildren {
     this.stopTracking();
     this._animation && this._animation.stop();
     this._animation = null;
-    callback && callback(this.__getValue());
+    if (callback) {
+      if (this.__isNative) {
+        NativeAnimatedAPI.getValue(this.__getNativeTag(), callback);
+      } else {
+        callback(this.__getValue());
+      }
+    }
   }
 
   /**
