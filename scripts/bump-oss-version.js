@@ -142,7 +142,7 @@ packageJson.version = version;
 delete packageJson.workspaces;
 delete packageJson.private;
 
-// Copy dependencies over from repo-config/package.json
+// Copy repo-config/package.json dependencies as devDependencies
 const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
 packageJson.devDependencies = {
   ...packageJson.devDependencies,

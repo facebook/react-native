@@ -12,6 +12,7 @@
     "@babel/core": "^7.14.0",
     "@babel/generator": "^7.14.0",
     "@react-native-community/eslint-plugin": "*",
+    "@react-native/eslint-plugin-specs": ">0.0.2",
     "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
     "babel-eslint": "^10.1.0",
