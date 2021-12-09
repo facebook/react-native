@@ -73,13 +73,6 @@ PODS:
   - fmt (6.2.1)
   - glog (0.3.5)
   - libevent (2.1.12)
-  - MyNativeView (0.0.1):
-    - RCTRequired
-    - RCTTypeSafety
-    - React
-    - React-Codegen
-    - React-RCTFabric
-    - ReactCommon/turbomodule/core
   - OpenSSL-Universal (1.1.180)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
@@ -748,7 +741,6 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.99.0)
   - FlipperKit/SKIOSNetworkPlugin (= 0.99.0)
   - glog (from `../../third-party-podspecs/glog.podspec`)
-  - MyNativeView (from `NativeComponentExample`)
   - OpenSSL-Universal (= 1.1.180)
   - RCT-Folly (from `../../third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../third-party-podspecs/RCT-Folly.podspec`)
@@ -817,8 +809,6 @@ EXTERNAL SOURCES:
     :path: "../../React/FBReactNativeSpec"
   glog:
     :podspec: "../../third-party-podspecs/glog.podspec"
-  MyNativeView:
-    :path: NativeComponentExample
   RCT-Folly:
     :podspec: "../../third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -891,7 +881,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   FBLazyVector: b81a2b70c72d8b0aefb652cea22c11e9ffd02949
-  FBReactNativeSpec: 5bd61f19eb8d9ab489a9f89f6e862767fbb6cced
+  FBReactNativeSpec: 755b7fee1b08aefd74fb2fa9f7312b253719d536
   Flipper: 30e8eeeed6abdc98edaf32af0cda2f198be4b733
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 57ffbe81ef95306cc9e69c4aa3aeeeeb58a6a28c
@@ -904,7 +894,6 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: c10b67b343303f51715e5c5eedb18a41402f350a
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  MyNativeView: 68ba0ad4bcfc2bc9b776a346c70ca9d19a2f2542
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
   RCTRequired: af2d6080a4b9ba0885b28ca78879a92066c71cab
@@ -934,13 +923,13 @@ SPEC CHECKSUMS:
   React-RCTTest: 12bbd7fc2e72bd9920dc7286c5b8ef96639582b6
   React-RCTText: e9146b2c0550a83d1335bfe2553760070a2d75c7
   React-RCTVibration: 50be9c390f2da76045ef0dfdefa18b9cf9f35cfa
-  React-rncore: 03e9b66d28812371afe3e7f180968f8e2a4ea71e
+  React-rncore: d09af3a25cbff0b484776785676c28f3729e07f5
   React-runtimeexecutor: 4b0c6eb341c7d3ceb5e2385cb0fdb9bf701024f3
   ReactCommon: 7a2714d1128f965392b6f99a8b390e3aa38c9569
-  ScreenshotManager: 6923f27c7ce9505117b8c743c9f099fa3054df6a
+  ScreenshotManager: e8a3fc9b2e24b81127b36cb4ebe0eed65090c949
   Yoga: c0d06f5380d34e939f55420669a60fe08b79bd75
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 5c08bc01a92babb1f26302f610931c69b5f5785d
+PODFILE CHECKSUM: 6810c1f54b7ab3da57902075dc52d71735447464
 
 COCOAPODS: 1.11.2

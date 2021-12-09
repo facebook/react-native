@@ -36,6 +36,8 @@ def pods(options = {})
         config_file_dir: "#{Dir.pwd}/node_modules",
       })
     end
+    # Custom fabric component is only supported when using codegen discovery.
+    pod 'MyNativeView', :path => "NativeComponentExample"
   end
 
   use_react_native!(path: prefix_path, fabric_enabled: fabric_enabled, hermes_enabled: ENV['USE_HERMES'] == '1')
@@ -48,9 +50,6 @@ def pods(options = {})
 
   # RNTester native modules and components
   pod 'ScreenshotManager', :path => "NativeModuleExample"
-  if fabric_enabled
-    pod 'MyNativeView', :path => "NativeComponentExample"
-  end
 end
 
 target 'RNTester' do
