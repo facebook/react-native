@@ -17,6 +17,7 @@ load(
     "RCT_IMAGE_URL_LOADER_SOCKET",
     "RCT_URL_REQUEST_HANDLER_SOCKET",
     "YOGA_CXX_TARGET",
+    "get_react_native_ios_target_sdk_version",
     "react_fabric_component_plugin_provider",
     "react_module_plugin_providers",
     "react_native_root_target",
@@ -496,7 +497,7 @@ rn_xplat_cxx_library2(
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     fbobjc_enable_exceptions = True,
-    fbobjc_target_sdk_version = "11.0",
+    fbobjc_target_sdk_version = get_react_native_ios_target_sdk_version(),
     frameworks = [
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
         "$SDKROOT/System/Library/Frameworks/QuartzCore.framework",
