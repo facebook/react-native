@@ -137,7 +137,7 @@ class AnimatedNode {
 
   __callListeners(value: number): void {
     for (const key in this._listeners) {
-      this._listeners[key]({value});
+      this._listeners[key] && this._listeners[key]({value});
     }
   }
 
