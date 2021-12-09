@@ -13,6 +13,8 @@
 const path = require('path');
 const withBabelRegister = require('./with-babel-register');
 
+// We run yarn prepublish before publishing package which will set this value to true
+const PACKAGE_USAGE = false;
 const ERRORS = {
   misnamedHasteModule(hasteModuleName) {
     return `Module ${hasteModuleName}: All files using TurboModuleRegistry must start with Native.`;
@@ -24,15 +26,28 @@ let RNParserUtils;
 
 function requireModuleParser() {
   if (RNModuleParser == null || RNParserUtils == null) {
-    const config = {
-      only: [/react-native-codegen\/src\//],
-      plugins: [require('@babel/plugin-transform-flow-strip-types').default],
-    };
+    // If using this externally, we leverage react-native-codegen as published form
+    if (!PACKAGE_USAGE) {
+      const config = {
+        only: [/react-native-codegen\/src\//],
+        plugins: [require('@babel/plugin-transform-flow-strip-types').default],
+      };
 
-    withBabelRegister(config, () => {
-      RNModuleParser = require('react-native-codegen/src/parsers/flow/modules');
-      RNParserUtils = require('react-native-codegen/src/parsers/flow/utils');
-    });
+      withBabelRegister(config, () => {
+        RNModuleParser = require('react-native-codegen/src/parsers/flow/modules');
+        RNParserUtils = require('react-native-codegen/src/parsers/flow/utils');
+      });
+    } else {
+      const config = {
+        only: [/react-native-codegen\/lib\//],
+        plugins: [require('@babel/plugin-transform-flow-strip-types').default],
+      };
+
+      withBabelRegister(config, () => {
+        RNModuleParser = require('react-native-codegen/lib/parsers/flow/modules');
+        RNParserUtils = require('react-native-codegen/lib/parsers/flow/utils');
+      });
+    }
   }
 
   return {

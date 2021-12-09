@@ -1,12 +1,15 @@
 {
   "name": "@react-native/eslint-plugin-specs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "ESLint rules to validate NativeModule and Component Specs",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git",
     "directory": "packages/eslint-plugin-specs"
+  },
+  "scripts": {
+    "prepublish": "node prepublish.js"
   },
   "dependencies": {
     "@babel/core": "^7.14.0",
