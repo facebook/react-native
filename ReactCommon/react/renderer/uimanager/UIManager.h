@@ -167,7 +167,7 @@ class UIManager final : public ShadowTreeDelegate {
   void dispatchCommand(
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
-      folly::dynamic const args) const;
+      folly::dynamic const &args) const;
 
   void sendAccessibilityEvent(
       const ShadowNode::Shared &shadowNode,

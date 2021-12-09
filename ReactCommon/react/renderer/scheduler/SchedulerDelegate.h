@@ -47,7 +47,7 @@ class SchedulerDelegate {
   virtual void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,
-      folly::dynamic const args) = 0;
+      folly::dynamic const &args) = 0;
 
   virtual void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,

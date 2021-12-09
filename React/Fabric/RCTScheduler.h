@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)schedulerDidDispatchCommand:(facebook::react::ShadowView const &)shadowView
                         commandName:(std::string const &)commandName
-                               args:(folly::dynamic const)args;
+                               args:(folly::dynamic const &)args;
 
 - (void)schedulerDidSendAccessibilityEvent:(facebook::react::ShadowView const &)shadowView
                                  eventType:(std::string const &)eventType;

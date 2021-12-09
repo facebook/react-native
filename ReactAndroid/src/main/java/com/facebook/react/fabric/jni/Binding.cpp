@@ -1295,7 +1295,7 @@ void Binding::schedulerDidCloneShadowNode(
 void Binding::schedulerDidDispatchCommand(
     const ShadowView &shadowView,
     std::string const &commandName,
-    folly::dynamic const args) {
+    folly::dynamic const &args) {
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
     LOG(ERROR)

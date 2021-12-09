@@ -95,7 +95,7 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidDispatchCommand(
       const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
-      folly::dynamic const args) override;
+      folly::dynamic const &args) override;
   void uiManagerDidSendAccessibilityEvent(
       const ShadowNode::Shared &shadowNode,
       std::string const &eventType) override;

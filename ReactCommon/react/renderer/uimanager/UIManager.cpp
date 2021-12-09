@@ -333,7 +333,7 @@ void UIManager::updateState(StateUpdate const &stateUpdate) const {
 void UIManager::dispatchCommand(
     const ShadowNode::Shared &shadowNode,
     std::string const &commandName,
-    folly::dynamic const args) const {
+    folly::dynamic const &args) const {
   if (delegate_) {
     delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
   }
