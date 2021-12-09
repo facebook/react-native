@@ -86,9 +86,9 @@ struct ArrayPropsNativeComponentObjectStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentObjectStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto stringProp = map.find(\\"stringProp\\");
-  if (stringProp != map.end()) {
-    fromRawValue(context, stringProp->second, result.stringProp);
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
   }
 }
 
@@ -113,9 +113,9 @@ struct ArrayPropsNativeComponentArrayObjectStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayObjectStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto stringProp = map.find(\\"stringProp\\");
-  if (stringProp != map.end()) {
-    fromRawValue(context, stringProp->second, result.stringProp);
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
   }
 }
 
@@ -140,9 +140,9 @@ struct ArrayPropsNativeComponentArrayStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto object = map.find(\\"object\\");
-  if (object != map.end()) {
-    fromRawValue(context, object->second, result.object);
+  auto tmp_object = map.find(\\"object\\");
+  if (tmp_object != map.end()) {
+    fromRawValue(context, tmp_object->second, result.object);
   }
 }
 
@@ -167,9 +167,9 @@ struct ArrayPropsNativeComponentArrayOfArrayOfObjectStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto stringProp = map.find(\\"stringProp\\");
-  if (stringProp != map.end()) {
-    fromRawValue(context, stringProp->second, result.stringProp);
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
   }
 }
 
@@ -249,17 +249,17 @@ struct ArrayPropsNativeComponentNativePrimitivesStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentNativePrimitivesStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto colors = map.find(\\"colors\\");
-  if (colors != map.end()) {
-    fromRawValue(context, colors->second, result.colors);
+  auto tmp_colors = map.find(\\"colors\\");
+  if (tmp_colors != map.end()) {
+    fromRawValue(context, tmp_colors->second, result.colors);
   }
-  auto srcs = map.find(\\"srcs\\");
-  if (srcs != map.end()) {
-    fromRawValue(context, srcs->second, result.srcs);
+  auto tmp_srcs = map.find(\\"srcs\\");
+  if (tmp_srcs != map.end()) {
+    fromRawValue(context, tmp_srcs->second, result.srcs);
   }
-  auto points = map.find(\\"points\\");
-  if (points != map.end()) {
-    fromRawValue(context, points->second, result.points);
+  auto tmp_points = map.find(\\"points\\");
+  if (tmp_points != map.end()) {
+    fromRawValue(context, tmp_points->second, result.points);
   }
 }
 
@@ -1024,9 +1024,9 @@ struct ObjectPropsObjectPropObjectArrayPropStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectArrayPropStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto array = map.find(\\"array\\");
-  if (array != map.end()) {
-    fromRawValue(context, array->second, result.array);
+  auto tmp_array = map.find(\\"array\\");
+  if (tmp_array != map.end()) {
+    fromRawValue(context, tmp_array->second, result.array);
   }
 }
 
@@ -1043,17 +1043,17 @@ struct ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto image = map.find(\\"image\\");
-  if (image != map.end()) {
-    fromRawValue(context, image->second, result.image);
+  auto tmp_image = map.find(\\"image\\");
+  if (tmp_image != map.end()) {
+    fromRawValue(context, tmp_image->second, result.image);
   }
-  auto color = map.find(\\"color\\");
-  if (color != map.end()) {
-    fromRawValue(context, color->second, result.color);
+  auto tmp_color = map.find(\\"color\\");
+  if (tmp_color != map.end()) {
+    fromRawValue(context, tmp_color->second, result.color);
   }
-  auto point = map.find(\\"point\\");
-  if (point != map.end()) {
-    fromRawValue(context, point->second, result.point);
+  auto tmp_point = map.find(\\"point\\");
+  if (tmp_point != map.end()) {
+    fromRawValue(context, tmp_point->second, result.point);
   }
 }
 
@@ -1068,9 +1068,9 @@ struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropANestedPropBStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto nestedPropC = map.find(\\"nestedPropC\\");
-  if (nestedPropC != map.end()) {
-    fromRawValue(context, nestedPropC->second, result.nestedPropC);
+  auto tmp_nestedPropC = map.find(\\"nestedPropC\\");
+  if (tmp_nestedPropC != map.end()) {
+    fromRawValue(context, tmp_nestedPropC->second, result.nestedPropC);
   }
 }
 
@@ -1085,9 +1085,9 @@ struct ObjectPropsObjectPropNestedPropAStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropAStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto nestedPropB = map.find(\\"nestedPropB\\");
-  if (nestedPropB != map.end()) {
-    fromRawValue(context, nestedPropB->second, result.nestedPropB);
+  auto tmp_nestedPropB = map.find(\\"nestedPropB\\");
+  if (tmp_nestedPropB != map.end()) {
+    fromRawValue(context, tmp_nestedPropB->second, result.nestedPropB);
   }
 }
 
@@ -1102,9 +1102,9 @@ struct ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto stringProp = map.find(\\"stringProp\\");
-  if (stringProp != map.end()) {
-    fromRawValue(context, stringProp->second, result.stringProp);
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
   }
 }
 
@@ -1129,9 +1129,9 @@ struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto arrayProp = map.find(\\"arrayProp\\");
-  if (arrayProp != map.end()) {
-    fromRawValue(context, arrayProp->second, result.arrayProp);
+  auto tmp_arrayProp = map.find(\\"arrayProp\\");
+  if (tmp_arrayProp != map.end()) {
+    fromRawValue(context, tmp_arrayProp->second, result.arrayProp);
   }
 }
 
@@ -1155,45 +1155,45 @@ struct ObjectPropsObjectPropStruct {
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto stringProp = map.find(\\"stringProp\\");
-  if (stringProp != map.end()) {
-    fromRawValue(context, stringProp->second, result.stringProp);
+  auto tmp_stringProp = map.find(\\"stringProp\\");
+  if (tmp_stringProp != map.end()) {
+    fromRawValue(context, tmp_stringProp->second, result.stringProp);
   }
-  auto booleanProp = map.find(\\"booleanProp\\");
-  if (booleanProp != map.end()) {
-    fromRawValue(context, booleanProp->second, result.booleanProp);
+  auto tmp_booleanProp = map.find(\\"booleanProp\\");
+  if (tmp_booleanProp != map.end()) {
+    fromRawValue(context, tmp_booleanProp->second, result.booleanProp);
   }
-  auto floatProp = map.find(\\"floatProp\\");
-  if (floatProp != map.end()) {
-    fromRawValue(context, floatProp->second, result.floatProp);
+  auto tmp_floatProp = map.find(\\"floatProp\\");
+  if (tmp_floatProp != map.end()) {
+    fromRawValue(context, tmp_floatProp->second, result.floatProp);
   }
-  auto intProp = map.find(\\"intProp\\");
-  if (intProp != map.end()) {
-    fromRawValue(context, intProp->second, result.intProp);
+  auto tmp_intProp = map.find(\\"intProp\\");
+  if (tmp_intProp != map.end()) {
+    fromRawValue(context, tmp_intProp->second, result.intProp);
   }
-  auto stringEnumProp = map.find(\\"stringEnumProp\\");
-  if (stringEnumProp != map.end()) {
-    fromRawValue(context, stringEnumProp->second, result.stringEnumProp);
+  auto tmp_stringEnumProp = map.find(\\"stringEnumProp\\");
+  if (tmp_stringEnumProp != map.end()) {
+    fromRawValue(context, tmp_stringEnumProp->second, result.stringEnumProp);
   }
-  auto intEnumProp = map.find(\\"intEnumProp\\");
-  if (intEnumProp != map.end()) {
-    fromRawValue(context, intEnumProp->second, result.intEnumProp);
+  auto tmp_intEnumProp = map.find(\\"intEnumProp\\");
+  if (tmp_intEnumProp != map.end()) {
+    fromRawValue(context, tmp_intEnumProp->second, result.intEnumProp);
   }
-  auto objectArrayProp = map.find(\\"objectArrayProp\\");
-  if (objectArrayProp != map.end()) {
-    fromRawValue(context, objectArrayProp->second, result.objectArrayProp);
+  auto tmp_objectArrayProp = map.find(\\"objectArrayProp\\");
+  if (tmp_objectArrayProp != map.end()) {
+    fromRawValue(context, tmp_objectArrayProp->second, result.objectArrayProp);
   }
-  auto objectPrimitiveRequiredProp = map.find(\\"objectPrimitiveRequiredProp\\");
-  if (objectPrimitiveRequiredProp != map.end()) {
-    fromRawValue(context, objectPrimitiveRequiredProp->second, result.objectPrimitiveRequiredProp);
+  auto tmp_objectPrimitiveRequiredProp = map.find(\\"objectPrimitiveRequiredProp\\");
+  if (tmp_objectPrimitiveRequiredProp != map.end()) {
+    fromRawValue(context, tmp_objectPrimitiveRequiredProp->second, result.objectPrimitiveRequiredProp);
   }
-  auto nestedPropA = map.find(\\"nestedPropA\\");
-  if (nestedPropA != map.end()) {
-    fromRawValue(context, nestedPropA->second, result.nestedPropA);
+  auto tmp_nestedPropA = map.find(\\"nestedPropA\\");
+  if (tmp_nestedPropA != map.end()) {
+    fromRawValue(context, tmp_nestedPropA->second, result.nestedPropA);
   }
-  auto nestedArrayAsProperty = map.find(\\"nestedArrayAsProperty\\");
-  if (nestedArrayAsProperty != map.end()) {
-    fromRawValue(context, nestedArrayAsProperty->second, result.nestedArrayAsProperty);
+  auto tmp_nestedArrayAsProperty = map.find(\\"nestedArrayAsProperty\\");
+  if (tmp_nestedArrayAsProperty != map.end()) {
+    fromRawValue(context, tmp_nestedArrayAsProperty->second, result.nestedArrayAsProperty);
   }
 }
 
