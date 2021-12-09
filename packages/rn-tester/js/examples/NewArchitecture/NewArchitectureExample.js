@@ -15,7 +15,7 @@ import MyNativeView from '../../../NativeComponentExample/js/MyNativeView';
 
 exports.title = 'New Architecture Examples';
 exports.description =
-  'Simple component using the new architecture. Fabric must be enabled.';
+  'Codegen discovery must be enabled for iOS. See Podfile for more details. Simple component using the new architecture.';
 exports.examples = [
   {
     title: 'New Architecture Renderer',
