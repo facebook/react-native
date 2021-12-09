@@ -236,7 +236,7 @@ jobs:
           command: |
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             apt update && apt install -y shellcheck jq
-            apt-get install openssl ca-certificates
+            apt-get -y install openssl ca-certificates
             update-ca-certificates
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             apt update && apt install -y shellcheck jq
