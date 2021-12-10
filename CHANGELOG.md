@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.66.4
+
+### Fixed
+
+#### iOS specific
+
+- Revert "Fix Deadlock in RCTi18nUtil (iOS)" ([70ddf46](https://github.com/facebook/react-native/commit/70ddf46c8afcd720e188b6d82568eac6ac8125e6) by [@Saadnajmi](https://github.com/Saadnajmi))
+- `apply_Xcode_12_5_M1_post_install_workaround` causing pods targetting iOS 12 and above to fail ([a4a3e67554](https://github.com/facebook/react-native/commit/a4a3e675542827bb281a7ceccc7b8f5533eae29f) by [@Yonom](https://github.com/Yonom))
+
 ## v0.66.3
 
 ### Changed
