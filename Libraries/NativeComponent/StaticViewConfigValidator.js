@@ -9,7 +9,6 @@
  */
 
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
-import {isIgnored} from './ViewConfigIgnore';
 
 type Difference =
   | {
@@ -145,10 +144,7 @@ function accumulateDifferences(
   }
 
   for (const staticKey in staticObject) {
-    if (
-      !nativeObject.hasOwnProperty(staticKey) &&
-      !isIgnored(staticObject[staticKey])
-    ) {
+    if (!nativeObject.hasOwnProperty(staticKey)) {
       differences.push({
         path: [...path, staticKey],
         type: 'unexpected',
