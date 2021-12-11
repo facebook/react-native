@@ -9,7 +9,11 @@ package com.facebook.react.views.imagehelper
 
 import android.content.Context
 import android.net.Uri
+<<<<<<< HEAD
 import com.facebook.react.modules.fresco.ImageCacheControl
+=======
+import androidx.arch.core.util.Function
+>>>>>>> 946f3eaa576 (Update RNA ImageView to support forced cached property to fix GIF flicker.)
 import java.util.Objects
 
 /** Class describing an image source (network URI or resource) and size. */
@@ -18,10 +22,11 @@ public open class ImageSource
 constructor(
     context: Context,
     /** Get the source of this image, as it was passed to the constructor. */
-    public val source: String?,
+    public var source: String?,
     width: Double = 0.0,
     height: Double = 0.0,
     public val cacheControl: ImageCacheControl = ImageCacheControl.DEFAULT,
+    public val isForceCached: Boolean = false
 ) {
 
   /** Get the URI for this image - can be either a parsed network URI or a resource URI. */
@@ -55,6 +60,9 @@ constructor(
 
   private fun computeUri(context: Context): Uri =
       try {
+        sourceOverride?.let {
+          source = it.apply(source)
+        }
         val uri = Uri.parse(source)
         // Verify scheme is set, so that relative uri (used by static resources) are not handled.
         if (uri.scheme == null) computeLocalUri(context) else uri
@@ -68,6 +76,7 @@ constructor(
   }
 
   public companion object {
+    public var sourceOverride: Function<String, String>? = null
     private const val TRANSPARENT_BITMAP_URI =
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 

@@ -291,15 +291,32 @@ public class ReactImageView(
       for (idx in 0 until sources.size()) {
         val source = sources.getMap(idx) ?: continue
         val cacheControl = computeCacheControl(source.getString("cache"))
+        val uri = source.getString("uri")
+        val isForceCached = if (source.hasKey("isForceCached")) {
+          source.getBoolean("isForceCached")
+        } else {
+          false
+        }
+        val width = if (source.hasKey("width")) {
+          source.getDouble("width")
+        } else {
+          0.0
+        }
+        val height = if (source.hasKey("height")) {
+          source.getDouble("height")
+        } else {
+          0.0
+        }
         var imageSource =
             ImageSource(
                 context,
-                source.getString("uri"),
-                source.getDouble("width"),
-                source.getDouble("height"),
-                cacheControl)
+                uri,
+                width,
+                height,
+                cacheControl,
+                isForceCached)
         if (Uri.EMPTY == imageSource.uri) {
-          warnImageSource(source.getString("uri"))
+          warnImageSource(uri)
           imageSource = getTransparentBitmapImageSource(context)
         }
         tmpSources.add(imageSource)
