@@ -8,7 +8,7 @@
  * @flow
  */
 
-import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
+import PlatformBaseViewConfig from '../NativeComponent/PlatformBaseViewConfig';
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 const IGNORED_KEYS = ['transform', 'hitSlop'];
@@ -107,7 +107,7 @@ export function getConfigWithoutViewProps(
   }
 
   return Object.keys(viewConfig[propName])
-    .filter(prop => !ReactNativeViewViewConfig[propName][prop])
+    .filter(prop => !PlatformBaseViewConfig[propName][prop])
     .reduce((obj, prop) => {
       obj[prop] = viewConfig[propName][prop];
       return obj;
