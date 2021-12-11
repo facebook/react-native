@@ -10,18 +10,14 @@
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 import {type HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import Platform from '../../Utilities/Platform';
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
-import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
 import {type ViewProps as Props} from './ViewPropTypes';
 import * as React from 'react';
 
 const ViewNativeComponent: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>('RCTView', () =>
-    Platform.OS === 'android'
-      ? ReactNativeViewViewConfigAndroid
-      : {uiViewClassName: 'RCTView'},
-  );
+  NativeComponentRegistry.get<Props>('RCTView', () => ({
+    uiViewClassName: 'RCTView',
+  }));
 
 interface NativeCommands {
   +hotspotUpdate: (
