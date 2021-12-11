@@ -58,13 +58,12 @@ if (__DEV__) {
         isWebSocketOpen = true;
       });
 
-      const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-
+      const viewConfig = require('../Components/View/ReactNativeViewViewConfig');
       reactDevTools.connectToDevTools({
         isAppActive,
         resolveRNStyle: require('../StyleSheet/flattenStyle'),
         nativeStyleEditorValidAttributes: Object.keys(
-          ReactNativeStyleAttributes,
+          viewConfig.validAttributes.style,
         ),
         websocket: ws,
       });
