@@ -13,8 +13,8 @@ Pod::Spec.new do |spec|
   spec.homepage = 'http://www.boost.org'
   spec.summary = 'Boost provides free peer-reviewed portable C++ source libraries.'
   spec.authors = 'Rene Rivera'
-  spec.source = { :git => boost_git_url,
-                  :tag => "v1.84.0" }
+  spec.source = { :http => 'https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.gz',
+                  :sha256 => 'a5800f405508f5df8114558ca9855d2640a2de8f0445f051fa1c7c3383045724' }
 
   # Pinning to the same version as React.podspec.
   spec.platforms = min_supported_versions
