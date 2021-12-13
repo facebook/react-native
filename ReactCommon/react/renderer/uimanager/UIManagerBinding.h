@@ -24,13 +24,12 @@ class UIManagerBinding : public jsi::HostObject {
   /*
    * Installs UIManagerBinding into JavaScript runtime if needed.
    * Creates and sets `UIManagerBinding` into the global namespace.
-   * In case if the global namespace already has a `UIManagerBinding` installed,
-   * returns that.
    * Thread synchronization must be enforced externally.
    */
-  static std::shared_ptr<UIManagerBinding> createAndInstallIfNeeded(
+  static void createAndInstallIfNeeded(
       jsi::Runtime &runtime,
-      RuntimeExecutor const &runtimeExecutor);
+      RuntimeExecutor const &runtimeExecutor,
+      std::shared_ptr<UIManager> const &uiManager);
 
   /*
    * Returns a pointer to UIManagerBinding previously installed into a runtime.
@@ -38,16 +37,11 @@ class UIManagerBinding : public jsi::HostObject {
    */
   static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime &runtime);
 
-  UIManagerBinding(RuntimeExecutor const &runtimeExecutor);
+  UIManagerBinding(
+      std::shared_ptr<UIManager> const &uiManager,
+      RuntimeExecutor const &runtimeExecutor);
 
   ~UIManagerBinding();
-
-  /*
-   * Establish a relationship between `UIManager` and `UIManagerBinding` by
-   * setting internal pointers to each other.
-   * Must be called on JavaScript thread or during VM destruction.
-   */
-  void attach(std::shared_ptr<UIManager> const &uiManager);
 
   /*
    * Starts React Native Surface with given id, moduleName, and props.

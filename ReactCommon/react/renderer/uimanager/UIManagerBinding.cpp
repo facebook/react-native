@@ -58,9 +58,10 @@ static bool checkGetCallableModuleIsActive(jsi::Runtime &runtime) {
   return true;
 }
 
-std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
+void UIManagerBinding::createAndInstallIfNeeded(
     jsi::Runtime &runtime,
-    RuntimeExecutor const &runtimeExecutor) {
+    RuntimeExecutor const &runtimeExecutor,
+    std::shared_ptr<UIManager> const &uiManager) {
   auto uiManagerModuleName = "nativeFabricUIManager";
 
   auto uiManagerValue =
@@ -68,17 +69,12 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::createAndInstallIfNeeded(
   if (uiManagerValue.isUndefined()) {
     // The global namespace does not have an instance of the binding;
     // we need to create, install and return it.
-    auto uiManagerBinding = std::make_shared<UIManagerBinding>(runtimeExecutor);
+    auto uiManagerBinding =
+        std::make_shared<UIManagerBinding>(uiManager, runtimeExecutor);
     auto object = jsi::Object::createFromHostObject(runtime, uiManagerBinding);
     runtime.global().setProperty(
         runtime, uiManagerModuleName, std::move(object));
-    return uiManagerBinding;
   }
-
-  // The global namespace already has an instance of the binding;
-  // we need to return that.
-  auto uiManagerObject = uiManagerValue.asObject(runtime);
-  return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
 }
 
 std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
@@ -95,16 +91,14 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
   return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
 }
 
-UIManagerBinding::UIManagerBinding(RuntimeExecutor const &runtimeExecutor)
-    : runtimeExecutor_(runtimeExecutor) {}
+UIManagerBinding::UIManagerBinding(
+    std::shared_ptr<UIManager> const &uiManager,
+    RuntimeExecutor const &runtimeExecutor)
+    : uiManager_(uiManager), runtimeExecutor_(runtimeExecutor) {}
 
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
                << this << ").";
-}
-
-void UIManagerBinding::attach(std::shared_ptr<UIManager> const &uiManager) {
-  uiManager_ = uiManager;
 }
 
 static jsi::Value callMethodOfModule(
