@@ -231,7 +231,6 @@ private fun Project.cleanupVMFiles(
 
       if (cleanup) {
         // Reduce size by deleting the debugger/inspector
-        it.include("**/libhermes-inspector.so")
         it.include("**/libhermes-executor-debug.so")
       } else {
         // Release libs take precedence and must be removed
