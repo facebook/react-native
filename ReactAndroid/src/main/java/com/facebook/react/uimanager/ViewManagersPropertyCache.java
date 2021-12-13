@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class is responsible for holding view manager property setters and is used in a process of
@@ -30,7 +31,7 @@ import java.util.Map;
  */
 /*package*/ class ViewManagersPropertyCache {
 
-  private static final Map<Class, Map<String, PropSetter>> CLASS_PROPS_CACHE = new HashMap<>();
+  private static final Map<Class, Map<String, PropSetter>> CLASS_PROPS_CACHE = new ConcurrentHashMap<>();
   private static final Map<String, PropSetter> EMPTY_PROPS_MAP = new HashMap<>();
 
   public static void clear() {
