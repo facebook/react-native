@@ -31,11 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 /*package*/ class ViewManagersPropertyCache {
 
-  /**
-   * When the user needs to pre create a reactnative environment, multiple reactnative environments may be initialized at the same time.
-   * At this time, multiple threads will operate viewmanagerspropertycache concurrently, with a probability of Java util.
-   * HashMap$Node cannot be cast to java. util. Problems with HashMap $TreeNode
-   */
   private static final Map<Class, Map<String, PropSetter>> CLASS_PROPS_CACHE = new ConcurrentHashMap<>();
   private static final Map<String, PropSetter> EMPTY_PROPS_MAP = new HashMap<>();
 
