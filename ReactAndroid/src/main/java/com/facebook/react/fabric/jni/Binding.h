@@ -31,17 +31,21 @@ class Instance;
 
 struct CppMountItem final {
 #pragma mark - Designated Initializers
-  static CppMountItem CreateMountItem(ShadowView shadowView);
-  static CppMountItem DeleteMountItem(ShadowView shadowView);
-  static CppMountItem
-  InsertMountItem(ShadowView parentView, ShadowView shadowView, int index);
-  static CppMountItem
-  RemoveMountItem(ShadowView parentView, ShadowView shadowView, int index);
-  static CppMountItem UpdatePropsMountItem(ShadowView shadowView);
-  static CppMountItem UpdateStateMountItem(ShadowView shadowView);
-  static CppMountItem UpdateLayoutMountItem(ShadowView shadowView);
-  static CppMountItem UpdateEventEmitterMountItem(ShadowView shadowView);
-  static CppMountItem UpdatePaddingMountItem(ShadowView shadowView);
+  static CppMountItem CreateMountItem(ShadowView const &shadowView);
+  static CppMountItem DeleteMountItem(ShadowView const &shadowView);
+  static CppMountItem InsertMountItem(
+      ShadowView const &parentView,
+      ShadowView const &shadowView,
+      int index);
+  static CppMountItem RemoveMountItem(
+      ShadowView const &parentView,
+      ShadowView const &shadowView,
+      int index);
+  static CppMountItem UpdatePropsMountItem(ShadowView const &shadowView);
+  static CppMountItem UpdateStateMountItem(ShadowView const &shadowView);
+  static CppMountItem UpdateLayoutMountItem(ShadowView const &shadowView);
+  static CppMountItem UpdateEventEmitterMountItem(ShadowView const &shadowView);
+  static CppMountItem UpdatePaddingMountItem(ShadowView const &shadowView);
 
 #pragma mark - Type
 
@@ -178,9 +182,8 @@ class Binding : public jni::HybridClass<Binding>,
   std::mutex javaUIManagerMutex_;
 
   // LayoutAnimations
-  virtual void onAnimationStarted() override;
-  virtual void onAllAnimationsComplete() override;
-  LayoutAnimationDriver *getAnimationDriver();
+  void onAnimationStarted() override;
+  void onAllAnimationsComplete() override;
   std::shared_ptr<LayoutAnimationDriver> animationDriver_;
   std::unique_ptr<JBackgroundExecutor> backgroundExecutor_;
 
