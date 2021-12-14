@@ -84,7 +84,7 @@ public class LockFreeEventDispatcherImpl implements EventDispatcher, LifecycleEv
       listener.onEventDispatch(event);
     }
 
-    event.dispatchModernV2(mReactEventEmitter);
+    event.dispatchModern(mReactEventEmitter);
     event.dispose();
   }
 

@@ -105,10 +105,6 @@ public class ReactFeatureFlags {
 
   public static boolean enableScrollViewSnapToAlignmentProp = true;
 
-  public static boolean useDispatchUniqueForCoalescableEvents = false;
-
-  public static boolean useUpdatedTouchPreprocessing = false;
-
   /** TODO: T103427072 Delete ReactFeatureFlags.enableNestedTextOnPressEventFix */
   public static boolean enableNestedTextOnPressEventFix = true;
 

@@ -30,4 +30,6 @@ public interface RCTModernEventEmitter extends RCTEventEmitter {
       int customCoalesceKey,
       @Nullable WritableMap event,
       @EventCategoryDef int category);
+
+  void receiveTouches(TouchEvent event);
 }
