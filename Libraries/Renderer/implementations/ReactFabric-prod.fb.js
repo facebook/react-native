@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<d2675ef49da99531a7fa8940f853bd5f>>
+ * @generated SignedSource<<91162956144e0110fdc5f76b4de6f80e>>
  */
 
 "use strict";
@@ -4076,9 +4076,11 @@ var ContextOnlyDispatcher = {
     },
     useSyncExternalStore: mountSyncExternalStore,
     useId: function() {
-      var hook = mountWorkInProgressHook();
-      var id = "r:" + (globalClientIdCounter++).toString(32);
-      return (hook.memoizedState = id);
+      var hook = mountWorkInProgressHook(),
+        identifierPrefix = workInProgressRoot.identifierPrefix,
+        globalClientId = globalClientIdCounter++;
+      identifierPrefix = identifierPrefix + "r:" + globalClientId.toString(32);
+      return (hook.memoizedState = identifierPrefix);
     },
     unstable_isNewReconciler: !1
   },
@@ -4620,11 +4622,7 @@ function completeWork(current, workInProgress, renderLanes) {
         !renderLanes &&
         ((workInProgress.child.flags |= 8192), 0 !== (workInProgress.mode & 1))
       )
-        if (
-          (null === current &&
-            !0 !== workInProgress.memoizedProps.unstable_avoidThisFallback) ||
-          0 !== (suspenseStackCursor.current & 1)
-        )
+        if (null === current || 0 !== (suspenseStackCursor.current & 1))
           0 === workInProgressRootExitStatus &&
             (workInProgressRootExitStatus = 3);
         else {
@@ -5321,11 +5319,9 @@ function updateSuspenseComponent(current, workInProgress, renderLanes) {
       null !== current && null === current.memoizedState
         ? !1
         : 0 !== (suspenseContext & 2));
-  JSCompiler_temp
-    ? ((showFallback = !0), (workInProgress.flags &= -129))
-    : (null !== current && null === current.memoizedState) ||
-      !0 === nextProps.unstable_avoidThisFallback ||
-      (suspenseContext |= 1);
+  if (JSCompiler_temp) (showFallback = !0), (workInProgress.flags &= -129);
+  else if (null === current || null !== current.memoizedState)
+    suspenseContext |= 1;
   push(suspenseStackCursor, suspenseContext & 1);
   if (null === current) {
     current = nextProps.children;
@@ -6782,8 +6778,6 @@ function handleError(root$jscomp$0, thrownValue) {
           }
           b: {
             sourceFiber$jscomp$0 = returnFiber;
-            var hasInvisibleParentBoundary =
-              0 !== (suspenseStackCursor.current & 1);
             do {
               var JSCompiler_temp;
               if ((JSCompiler_temp = 13 === sourceFiber$jscomp$0.tag)) {
@@ -6793,12 +6787,6 @@ function handleError(root$jscomp$0, thrownValue) {
                     ? null !== nextState.dehydrated
                       ? !0
                       : !1
-                    : !0 !==
-                      sourceFiber$jscomp$0.memoizedProps
-                        .unstable_avoidThisFallback
-                    ? !0
-                    : hasInvisibleParentBoundary
-                    ? !1
                     : !0;
               }
               if (JSCompiler_temp) {
@@ -7957,7 +7945,7 @@ function createFiberFromPortal(portal, mode, lanes) {
   };
   return mode;
 }
-function FiberRootNode(containerInfo, tag, hydrate) {
+function FiberRootNode(containerInfo, tag, hydrate, identifierPrefix) {
   this.tag = tag;
   this.containerInfo = containerInfo;
   this.finishedWork = this.pingCache = this.current = this.pendingChildren = null;
@@ -7970,6 +7958,7 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   this.expirationTimes = createLaneMap(-1);
   this.entangledLanes = this.finishedLanes = this.mutableReadLanes = this.expiredLanes = this.pingedLanes = this.suspendedLanes = this.pendingLanes = 0;
   this.entanglements = createLaneMap(0);
+  this.identifierPrefix = identifierPrefix;
 }
 function createPortal(children, containerInfo, implementation) {
   var key =
@@ -8176,7 +8165,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_925 = {
     findFiberByHostInstance: getInstanceFromInstance,
     bundleType: 0,
-    version: "18.0.0-c1220ebdd-20211123",
+    version: "18.0.0-rc.0-a049aa015-20211213",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8191,7 +8180,7 @@ var roots = new Map(),
       }.bind(null, findNodeHandle)
     }
   };
-var internals$jscomp$inline_1179 = {
+var internals$jscomp$inline_1178 = {
   bundleType: devToolsConfig$jscomp$inline_925.bundleType,
   version: devToolsConfig$jscomp$inline_925.version,
   rendererPackageName: devToolsConfig$jscomp$inline_925.rendererPackageName,
@@ -8218,19 +8207,19 @@ var internals$jscomp$inline_1179 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-c1220ebdd-20211123"
+  reconcilerVersion: "18.0.0-rc.0-a049aa015-20211213"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1180 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1179 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1180.isDisabled &&
-    hook$jscomp$inline_1180.supportsFiber
+    !hook$jscomp$inline_1179.isDisabled &&
+    hook$jscomp$inline_1179.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1180.inject(
-        internals$jscomp$inline_1179
+      (rendererID = hook$jscomp$inline_1179.inject(
+        internals$jscomp$inline_1178
       )),
-        (injectedHook = hook$jscomp$inline_1180);
+        (injectedHook = hook$jscomp$inline_1179);
     } catch (err) {}
 }
 exports.createPortal = function(children, containerTag) {
@@ -8270,7 +8259,7 @@ exports.render = function(element, containerTag, callback, concurrentRoot) {
   var root = roots.get(containerTag);
   root ||
     ((root = concurrentRoot ? 1 : 0),
-    (concurrentRoot = new FiberRootNode(containerTag, root, !1)),
+    (concurrentRoot = new FiberRootNode(containerTag, root, !1, "")),
     (root = createFiber(3, null, null, 1 === root ? 1 : 0)),
     (concurrentRoot.current = root),
     (root.stateNode = concurrentRoot),

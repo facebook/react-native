@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<8b128574fdea8d0a11f1cf1c1aefe59b>>
+ * @generated SignedSource<<b669579a231fa2a949698a91b71718b9>>
  */
 
 'use strict';
@@ -156,7 +156,7 @@ var invokeGuardedCallbackImpl = invokeGuardedCallbackProd;
       // when we call document.createEvent(). However this can cause confusing
       // errors: https://github.com/facebook/create-react-app/issues/3482
       // So we preemptively throw with a better message instead.
-      if (typeof document === "undefined") {
+      if (typeof document === "undefined" || document === null) {
         throw new Error(
           "The `document` global was defined when React was initialized, but is not " +
             "defined anymore. This can happen in a test environment if a component " +
@@ -3156,6 +3156,7 @@ var enableProfilerCommitHooks = true;
 var enableLazyElements = false;
 var warnAboutStringRefs = false;
 var warnOnSubscriptionInsideStartTransition = false;
+var enableSuspenseAvoidThisFallback = false;
 var enableNewReconciler = false;
 var enableLazyContextPropagation = false;
 
@@ -6241,7 +6242,7 @@ function flushSyncCallbacks() {
   return null;
 }
 
-var ReactVersion = "18.0.0-c1220ebdd-20211123";
+var ReactVersion = "18.0.0-rc.0-a049aa015-20211213";
 
 var SCHEDULING_PROFILER_VERSION = 1;
 
@@ -10681,16 +10682,9 @@ function shouldCaptureSuspense(workInProgress, hasInvisibleParent) {
 
   var props = workInProgress.memoizedProps; // Regular boundaries always capture.
 
-  if (props.unstable_avoidThisFallback !== true) {
+  {
     return true;
   } // If it's a boundary we should avoid, then we prefer to bubble up to the
-  // parent boundary if it is currently invisible.
-
-  if (hasInvisibleParent) {
-    return false;
-  } // If the parent is not able to handle it, we must handle it.
-
-  return true;
 }
 function findFirstSuspended(row) {
   var node = row;
@@ -12439,12 +12433,19 @@ function getIsUpdatingOpaqueValueInRenderPhaseInDEV() {
 
 function mountId() {
   var hook = mountWorkInProgressHook();
+  var root = getWorkInProgressRoot(); // TODO: In Fizz, id generation is specific to each server config. Maybe we
+  // should do this in Fiber, too? Deferring this decision for now because
+  // there's no other place to store the prefix except for an internal field on
+  // the public createRoot object, which the fiber tree does not currently have
+  // a reference to.
+
+  var identifierPrefix = root.identifierPrefix;
   var id;
 
   {
     // Use a lowercase r prefix for client-generated ids.
     var globalClientId = globalClientIdCounter++;
-    id = "r:" + globalClientId.toString(32);
+    id = identifierPrefix + "r:" + globalClientId.toString(32);
   }
 
   hook.memoizedState = id;
@@ -13975,16 +13976,9 @@ function resetSuspendedComponent(sourceFiber, rootRenderLanes) {
 
 function getNearestSuspenseBoundaryToCapture(returnFiber) {
   var node = returnFiber;
-  var hasInvisibleParentBoundary = hasSuspenseContext(
-    suspenseStackCursor.current,
-    InvisibleParentSuspenseContext
-  );
 
   do {
-    if (
-      node.tag === SuspenseComponent &&
-      shouldCaptureSuspense(node, hasInvisibleParentBoundary)
-    ) {
+    if (node.tag === SuspenseComponent && shouldCaptureSuspense(node)) {
       return node;
     } // This boundary already captured during this render. Continue to the next
     // boundary.
@@ -14779,7 +14773,8 @@ function completeWork(current, workInProgress, renderLanes) {
           // should be able to immediately restart from within throwException.
           var hasInvisibleChildContext =
             current === null &&
-            workInProgress.memoizedProps.unstable_avoidThisFallback !== true;
+            (workInProgress.memoizedProps.unstable_avoidThisFallback !== true ||
+              !enableSuspenseAvoidThisFallback);
 
           if (
             hasInvisibleChildContext ||
@@ -16605,7 +16600,7 @@ function updateSuspenseComponent(current, workInProgress, renderLanes) {
       // Mark this subtree context as having at least one invisible parent that could
       // handle the fallback state.
       // Avoided boundaries are not considered since they cannot handle preferred fallback states.
-      if (nextProps.unstable_avoidThisFallback !== true) {
+      {
         suspenseContext = addSubtreeSuspenseContext(
           suspenseContext,
           InvisibleParentSuspenseContext
@@ -23942,7 +23937,7 @@ function assignFiberPropertiesInDEV(target, source) {
   return target;
 }
 
-function FiberRootNode(containerInfo, tag, hydrate) {
+function FiberRootNode(containerInfo, tag, hydrate, identifierPrefix) {
   this.tag = tag;
   this.containerInfo = containerInfo;
   this.pendingChildren = null;
@@ -23965,6 +23960,7 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   this.finishedLanes = NoLanes;
   this.entangledLanes = NoLanes;
   this.entanglements = createLaneMap(NoLanes);
+  this.identifierPrefix = identifierPrefix;
 
   {
     this.effectDuration = 0;
@@ -23999,9 +23995,10 @@ function createFiberRoot(
   hydrate,
   hydrationCallbacks,
   isStrictMode,
-  concurrentUpdatesByDefaultOverride
+  concurrentUpdatesByDefaultOverride,
+  identifierPrefix
 ) {
-  var root = new FiberRootNode(containerInfo, tag, hydrate);
+  var root = new FiberRootNode(containerInfo, tag, hydrate, identifierPrefix);
   // stateNode is any.
 
   var uninitializedFiber = createHostRootFiber(
@@ -24148,7 +24145,8 @@ function createContainer(
   hydrate,
   hydrationCallbacks,
   isStrictMode,
-  concurrentUpdatesByDefaultOverride
+  concurrentUpdatesByDefaultOverride,
+  identifierPrefix
 ) {
   return createFiberRoot(
     containerInfo,
@@ -24156,7 +24154,8 @@ function createContainer(
     hydrate,
     hydrationCallbacks,
     isStrictMode,
-    concurrentUpdatesByDefaultOverride
+    concurrentUpdatesByDefaultOverride,
+    identifierPrefix
   );
 }
 function updateContainer(element, container, parentComponent, callback) {
@@ -24935,7 +24934,15 @@ function render(element, containerTag, callback) {
   if (!root) {
     // TODO (bvaughn): If we decide to keep the wrapper component,
     // We could create a wrapper for containerTag as well to reduce special casing.
-    root = createContainer(containerTag, LegacyRoot, false, null, false, null);
+    root = createContainer(
+      containerTag,
+      LegacyRoot,
+      false,
+      null,
+      false,
+      null,
+      ""
+    );
     roots.set(containerTag, root);
   }
 
