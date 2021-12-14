@@ -920,13 +920,15 @@ workflows:
 
   releases:
     jobs:
-      # This job will trigger on pushes to release branch and commit a version tag to trigger `build_npm_package` for release
+      # This job will trigger on relevant `publish...` tags.
+      # It prepares the package and triggers `build_npm_package` for release
       - prepare_package_for_release:
           name: prepare_package_for_release
           filters:
             branches:
-              only:
-                - /^(\d+)\.(\d+)-stable$/
+              ignore: /.*/
+            tags:
+              only: /publish-v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
       # This job will trigger when a version tag is pushed (by prepare_package_for_release)
       - build_npm_package:
