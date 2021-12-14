@@ -273,24 +273,26 @@ function main(appRootDir, outputPath) {
       }
     });
 
-    console.log('\n\n>>>>> Creating component provider');
-    // Save the list of spec paths to a temp file.
-    const schemaListTmpPath = `${os.tmpdir()}/rn-tmp-schema-list.json`;
-    const fd = fs.openSync(schemaListTmpPath, 'w');
-    fs.writeSync(fd, JSON.stringify(schemaPaths));
-    fs.closeSync(fd);
-    console.log(`Generated schema list: ${schemaListTmpPath}`);
+    if (CODEGEN_FABRIC_ENABLED) {
+      console.log('\n\n>>>>> Creating component provider');
+      // Save the list of spec paths to a temp file.
+      const schemaListTmpPath = `${os.tmpdir()}/rn-tmp-schema-list.json`;
+      const fd = fs.openSync(schemaListTmpPath, 'w');
+      fs.writeSync(fd, JSON.stringify(schemaPaths));
+      fs.closeSync(fd);
+      console.log(`Generated schema list: ${schemaListTmpPath}`);
 
-    // Generate FabricComponentProvider.
-    // Only for iOS at this moment.
-    execSync(
-      `node ${path.join(
-        RN_ROOT,
-        'scripts',
-        'generate-provider-cli.js',
-      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${iosOutputDir}`,
-    );
-    console.log(`Generated provider in: ${iosOutputDir}`);
+      // Generate FabricComponentProvider.
+      // Only for iOS at this moment.
+      execSync(
+        `node ${path.join(
+          RN_ROOT,
+          'scripts',
+          'generate-provider-cli.js',
+        )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${iosOutputDir}`,
+      );
+      console.log(`Generated provider in: ${iosOutputDir}`);
+    }
   } catch (err) {
     console.error(err);
     process.exitCode = 1;
