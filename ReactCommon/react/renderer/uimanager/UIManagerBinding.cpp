@@ -107,7 +107,7 @@ static jsi::Value callMethodOfModule(
     std::string const &methodName,
     std::initializer_list<jsi::Value> args) {
   if (checkGetCallableModuleIsActive(runtime)) {
-    auto module = getModule(runtime, moduleName.c_str());
+    auto module = getModule(runtime, moduleName);
     if (module.isObject()) {
       jsi::Object object = module.asObject(runtime);
       react_native_assert(object.hasProperty(runtime, methodName.c_str()));
@@ -163,7 +163,7 @@ void UIManagerBinding::startSurface(
   parameters["initialProps"] = initalProps;
   parameters["fabric"] = true;
 
-  if (moduleName.compare("LogBox") != 0 &&
+  if (moduleName != "LogBox" &&
       runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
     auto registry =
         runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
@@ -197,7 +197,7 @@ void UIManagerBinding::setSurfaceProps(
   parameters["initialProps"] = initalProps;
   parameters["fabric"] = true;
 
-  if (moduleName.compare("LogBox") != 0 &&
+  if (moduleName != "LogBox" &&
       runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
     auto registry =
         runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");

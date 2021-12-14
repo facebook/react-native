@@ -36,7 +36,7 @@ namespace react {
 class Scheduler final : public UIManagerDelegate {
  public:
   Scheduler(
-      SchedulerToolbox schedulerToolbox,
+      SchedulerToolbox const &schedulerToolbox,
       UIManagerAnimationDelegate *animationDelegate,
       SchedulerDelegate *delegate);
   ~Scheduler();

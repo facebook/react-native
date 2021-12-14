@@ -26,7 +26,7 @@ namespace react {
  */
 class SurfaceManager final {
  public:
-  SurfaceManager(Scheduler const &scheduler) noexcept;
+  explicit SurfaceManager(Scheduler const &scheduler) noexcept;
 
 #pragma mark - Surface Management
 
@@ -55,7 +55,7 @@ class SurfaceManager final {
  private:
   void visit(
       SurfaceId surfaceId,
-      std::function<void(SurfaceHandler const &surfaceHandler)> callback)
+      std::function<void(SurfaceHandler const &surfaceHandler)> const &callback)
       const noexcept;
 
   Scheduler const &scheduler_;

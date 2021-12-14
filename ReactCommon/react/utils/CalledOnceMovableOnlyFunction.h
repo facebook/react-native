@@ -26,7 +26,7 @@ class CalledOnceMovableOnlyFunction {
   bool wasMovedFrom_;
 
  public:
-  CalledOnceMovableOnlyFunction(std::function<T> &&function)
+  explicit CalledOnceMovableOnlyFunction(std::function<T> &&function)
       : function_(std::move(function)) {
     wasCalled_ = false;
     wasMovedFrom_ = false;
