@@ -340,6 +340,16 @@ def get_react_codegen_spec(options={})
   return spec
 end
 
+def get_codegen_config_from_file(config_path, config_key)
+  empty = {'libraries': []}
+  if !File.exist?(config_path)
+    return empty
+  end
+
+  config = JSON.parse(File.read(config_path))
+  return config[config_key] ? config[config_key] : empty
+end
+
 def get_react_codegen_script_phases(options={})
   app_path = options[:app_path] ||= ''
   if !app_path
@@ -361,21 +371,29 @@ def get_react_codegen_script_phases(options={})
   # react_native_path should be relative already.
   react_native_path = options[:react_native_path] ||= "../node_modules/react-native"
 
+  # Generate input files for in-app libaraies which will be used to check if the script needs to be run.
+  # TODO: Ideally, we generate the input_files list from generate-artifacts.js and read the result here.
+  #       Or, generate this podspec in generate-artifacts.js as well.
+  config_key = options[:config_key] ||= 'codegenConfig'
+  app_package_path = File.join(app_path, 'package.json')
+  app_codegen_config = get_codegen_config_from_file(app_package_path, config_key)
+  file_list = []
+  app_codegen_config['libraries'].each do |library|
+    library_dir = File.join(app_path, library['jsSrcsDir'])
+    file_list.concat (`find #{library_dir} -type f \\( -name "Native*.js" -or -name "*NativeComponent.js" \\)`.split("\n").sort)
+  end
+  input_files = file_list.map { |filename| "${PODS_ROOT}/../#{Pathname.new(filename).relative_path_from(Pod::Config.instance.installation_root)}" }
+
   # Add a script phase to trigger generate artifact.
   # Some code is duplicated so that it's easier to delete the old way and switch over to this once it's stabilized.
   return {
     'name': 'Generate Specs',
     'execution_position': :before_compile,
-    'input_files' => ['${DERIVED_FILE_DIR}/.tmpfile'],
+    'input_files' => input_files,
     'show_env_vars_in_log': true,
     'output_files': ["${DERIVED_FILE_DIR}/react-codegen.log"],
     'script': %{set -o pipefail
 set -e
-
-# A known hack to run this script every time.
-# TODO: Further improvement will be to specify actual input files
-# so that it doesn't have to rebuild libraries every time.
-touch "${SCRIPT_INPUT_FILE_0}"
 
 pushd "${PODS_ROOT}/../" > /dev/null
 POD_INSTALLATION_ROOT=$(pwd)
