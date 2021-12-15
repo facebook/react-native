@@ -48,6 +48,8 @@
     "scripts/node-binary.sh",
     "scripts/packager.sh",
     "scripts/packager-reporter.js",
+    "scripts/react_native_pods_utils/script_phases.rb",
+    "scripts/react_native_pods_utils/script_phases.sh",
     "scripts/react_native_pods.rb",
     "scripts/react-native-xcode.sh",
     "template.config.js",
