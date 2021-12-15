@@ -51,17 +51,18 @@ const RNTesterApp = (): React.Node => {
         flexWrap: 'wrap',
         top: 100,
         borderWidth: 1,
-        rowGap: 10,
+        rowGap: 20,
         columnGap: 20,
       }}>
+      <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+      <View style={{backgroundColor: 'black', height: 30, width: 30}} />
       <View
         style={{
-          backgroundColor: 'black',
+          backgroundColor: 'pink',
           height: 30,
-          width: 30,
+          flexBasis: 30,
         }}
       />
-      <View style={{backgroundColor: 'black', height: 30, width: 30}} />
       <View style={{backgroundColor: 'black', height: 30, width: 30}} />
       <View style={{backgroundColor: 'black', height: 30, width: 30}} />
       <View style={{backgroundColor: 'black', height: 30, width: 30}} />
@@ -72,20 +73,6 @@ const RNTesterApp = (): React.Node => {
       <View style={{backgroundColor: 'pink', height: 30, width: 30}} />
     </View>
   );
-};
-
-const Tdd = () => {
-  const [height, setHeight] = React.useState(30);
-
-  React.useEffect(() => {
-    const a = setInterval(() => {
-      setHeight(pre => pre + 1);
-    }, 5000);
-    return () => {
-      clearInterval(a);
-    };
-  });
-  return <View style={{backgroundColor: 'black', height: height, width: 30}} />;
 };
 export default RNTesterApp;
 
