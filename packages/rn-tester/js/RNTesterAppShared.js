@@ -14,6 +14,9 @@ import {
   useColorScheme,
   View,
   LogBox,
+  Dimensions,
+  Text,
+  Image,
 } from 'react-native';
 import * as React from 'react';
 
@@ -41,173 +44,49 @@ const APP_STATE_KEY = 'RNTesterAppState.v3';
 LogBox.ignoreLogs([/AsyncStorage has been extracted from react-native/]);
 
 const RNTesterApp = (): React.Node => {
-  const [state, dispatch] = useAsyncStorageReducer(
-    RNTesterReducer,
-    initialState,
-    APP_STATE_KEY,
-  );
-  const colorScheme = useColorScheme();
-
-  const {
-    activeModuleKey,
-    activeModuleTitle,
-    activeModuleExampleKey,
-    screen,
-    bookmarks,
-    recentlyUsed,
-  } = state;
-
-  React.useEffect(() => {
-    getInitialStateFromAsyncStorage(APP_STATE_KEY).then(
-      initialStateFromStorage => {
-        dispatch({
-          type: RNTesterActionsType.INIT_FROM_STORAGE,
-          data: initialStateFromStorage,
-        });
-      },
-    );
-  }, [dispatch]);
-
-  const examplesList = React.useMemo(
-    () =>
-      getExamplesListWithBookmarksAndRecentlyUsed({bookmarks, recentlyUsed}),
-    [bookmarks, recentlyUsed],
-  );
-
-  const handleBackPress = React.useCallback(() => {
-    if (activeModuleKey != null) {
-      dispatch({type: RNTesterActionsType.BACK_BUTTON_PRESS});
-    }
-  }, [dispatch, activeModuleKey]);
-
-  // Setup hardware back button press listener
-  React.useEffect(() => {
-    const handleHardwareBackPress = () => {
-      if (activeModuleKey) {
-        handleBackPress();
-        return true;
-      }
-      return false;
-    };
-
-    BackHandler.addEventListener('hardwareBackPress', handleHardwareBackPress);
-
-    return () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        handleHardwareBackPress,
-      );
-    };
-  }, [activeModuleKey, handleBackPress]);
-
-  const handleModuleCardPress = React.useCallback(
-    ({exampleType, key, title}) => {
-      dispatch({
-        type: RNTesterActionsType.MODULE_CARD_PRESS,
-        data: {exampleType, key, title},
-      });
-    },
-    [dispatch],
-  );
-
-  const handleModuleExampleCardPress = React.useCallback(
-    exampleName => {
-      dispatch({
-        type: RNTesterActionsType.EXAMPLE_CARD_PRESS,
-        data: {key: exampleName},
-      });
-    },
-    [dispatch],
-  );
-
-  const toggleBookmark = React.useCallback(
-    ({exampleType, key}) => {
-      dispatch({
-        type: RNTesterActionsType.BOOKMARK_PRESS,
-        data: {exampleType, key},
-      });
-    },
-    [dispatch],
-  );
-
-  const handleNavBarPress = React.useCallback(
-    args => {
-      dispatch({
-        type: RNTesterActionsType.NAVBAR_PRESS,
-        data: {screen: args.screen},
-      });
-    },
-    [dispatch],
-  );
-
-  const theme = colorScheme === 'dark' ? themes.dark : themes.light;
-
-  if (examplesList === null) {
-    return null;
-  }
-
-  const activeModule =
-    activeModuleKey != null ? RNTesterList.Modules[activeModuleKey] : null;
-  const activeModuleExample =
-    activeModuleExampleKey != null
-      ? activeModule?.examples.find(e => e.name === activeModuleExampleKey)
-      : null;
-  const title =
-    activeModuleTitle != null
-      ? activeModuleTitle
-      : screen === Screens.COMPONENTS
-      ? 'Components'
-      : screen === Screens.APIS
-      ? 'APIs'
-      : 'Bookmarks';
-
-  const activeExampleList =
-    screen === Screens.COMPONENTS
-      ? examplesList.components
-      : screen === Screens.APIS
-      ? examplesList.apis
-      : examplesList.bookmarks;
-
   return (
-    <RNTesterThemeContext.Provider value={theme}>
-      <RNTTitleBar
-        title={title}
-        theme={theme}
-        onBack={activeModule ? handleBackPress : null}
-        documentationURL={activeModule?.documentationURL}
-      />
+    <View
+      style={{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        top: 100,
+        borderWidth: 1,
+        rowGap: 10,
+        columnGap: 20,
+      }}>
       <View
-        style={StyleSheet.compose(styles.container, {
-          backgroundColor: theme.GroupedBackgroundColor,
-        })}>
-        {activeModule != null ? (
-          <RNTesterModuleContainer
-            module={activeModule}
-            example={activeModuleExample}
-            onExampleCardPress={handleModuleExampleCardPress}
-          />
-        ) : screen === Screens.BOOKMARKS &&
-          examplesList.bookmarks.length === 0 ? (
-          <RNTesterEmptyBookmarksState />
-        ) : (
-          <RNTesterModuleList
-            sections={activeExampleList}
-            toggleBookmark={toggleBookmark}
-            handleModuleCardPress={handleModuleCardPress}
-          />
-        )}
-      </View>
-      <View style={styles.bottomNavbar}>
-        <RNTesterNavBar
-          screen={screen || Screens.COMPONENTS}
-          isExamplePageOpen={!!activeModule}
-          handleNavBarPress={handleNavBarPress}
-        />
-      </View>
-    </RNTesterThemeContext.Provider>
+        style={{
+          backgroundColor: 'black',
+          height: 30,
+          width: 30,
+        }}
+      />
+      <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+      <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+      <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+      <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+      <View style={{backgroundColor: 'black', height: 30, width: 30}} />
+      <View style={{backgroundColor: 'pink', height: 30, width: 30}} />
+      <View style={{backgroundColor: 'pink', height: 30, width: 30}} />
+      <View style={{backgroundColor: 'pink', height: 30, width: 30}} />
+      <View style={{backgroundColor: 'pink', height: 30, width: 30}} />
+    </View>
   );
 };
 
+const Tdd = () => {
+  const [height, setHeight] = React.useState(30);
+
+  React.useEffect(() => {
+    const a = setInterval(() => {
+      setHeight(pre => pre + 1);
+    }, 5000);
+    return () => {
+      clearInterval(a);
+    };
+  });
+  return <View style={{backgroundColor: 'black', height: height, width: 30}} />;
+};
 export default RNTesterApp;
 
 const styles = StyleSheet.create({
