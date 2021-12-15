@@ -6,6 +6,7 @@
  *
  * @flow strict-local
  * @format
+ * @lint-ignore-every LICENSELINT
  */
 
 'use strict';
