@@ -168,12 +168,12 @@ YGFloatOptional YGNode::getLeadingMargin(
                        }
                 
             } else {
-                if (this->getRelativeToLineIndex() > 0 && YGFlexDirectionIsColumn(axis) && owner_ != nullptr) {
+                if (this->getRelativeToLineIndex() > 0 && YGFlexDirectionIsColumn(axis)) {
                     float rowGap =  owner_->resolveRowGap();
                     float newMarginTop = value.isUndefined() || (value.unwrap() == 0.0f) ? rowGap :  value.unwrap() + rowGap;
                     return YGFloatOptional(newMarginTop);
                       }
-                else if (this->getLineIndex() > 0 && YGFlexDirectionIsRow(axis)  && owner_ != nullptr) {
+                else if (this->getLineIndex() > 0 && YGFlexDirectionIsRow(axis)) {
                               float columnGap =  owner_->resolveColumnGap();
                               float newMarginStart = value.isUndefined() || (value.unwrap() == 0.0f) ? columnGap :  value.unwrap() + columnGap;
                               return YGFloatOptional(newMarginStart);
