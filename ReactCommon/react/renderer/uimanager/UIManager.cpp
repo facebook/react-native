@@ -12,6 +12,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 
@@ -169,12 +170,7 @@ void UIManager::startSurface(
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     SystraceSection s("UIManager::startSurface::onRuntime");
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (!uiManagerBinding) {
-      return;
-    }
-
-    uiManagerBinding->startSurface(
+    SurfaceRegistryBinding::startSurface(
         runtime, surfaceId, moduleName, props, displayMode);
   });
 }
@@ -187,12 +183,7 @@ void UIManager::setSurfaceProps(
   SystraceSection s("UIManager::setSurfaceProps");
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (!uiManagerBinding) {
-      return;
-    }
-
-    uiManagerBinding->setSurfaceProps(
+    SurfaceRegistryBinding::setSurfaceProps(
         runtime, surfaceId, moduleName, props, displayMode);
   });
 }
@@ -212,12 +203,7 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   // the JavaScript side will not be able to reference a `ShadowTree` and will
   // fail silently.
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-    if (!uiManagerBinding) {
-      return;
-    }
-
-    uiManagerBinding->stopSurface(runtime, surfaceId);
+    SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
   });
 
   if (leakChecker_) {
