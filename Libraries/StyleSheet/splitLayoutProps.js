@@ -51,6 +51,7 @@ export default function splitLayoutProps(props: ?____ViewStyle_Internal): {
         case 'transform':
         case 'rowGap':
         case 'columnGap':
+        case 'gap':
           // $FlowFixMe[cannot-write]
           outer[prop] = props[prop];
           break;

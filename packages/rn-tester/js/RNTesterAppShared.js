@@ -51,8 +51,9 @@ const RNTesterApp = (): React.Node => {
         flexWrap: 'wrap',
         top: 100,
         borderWidth: 1,
-        rowGap: 20,
-        columnGap: 20,
+        gap: 20,
+        // rowGap: 20,
+        // columnGap: 30,
       }}>
       <View style={{backgroundColor: 'black', height: 30, width: 30}} />
       <View style={{backgroundColor: 'black', height: 30, width: 30}} />

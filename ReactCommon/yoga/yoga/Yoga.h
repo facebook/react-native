@@ -199,6 +199,9 @@ WIN_EXPORT float YGNodeStyleGetRowGap(YGNodeConstRef node);
 WIN_EXPORT void YGNodeStyleSetColumnGap(YGNodeRef node, float columnGap);
 WIN_EXPORT float YGNodeStyleGetColumnGap(YGNodeConstRef node);
 
+WIN_EXPORT void YGNodeStyleSetGap(YGNodeRef node, float gap);
+WIN_EXPORT float YGNodeStyleGetGap(YGNodeConstRef node);
+
 WIN_EXPORT void YGNodeStyleSetFlexShrink(YGNodeRef node, float flexShrink);
 WIN_EXPORT float YGNodeStyleGetFlexShrink(YGNodeConstRef node);
 

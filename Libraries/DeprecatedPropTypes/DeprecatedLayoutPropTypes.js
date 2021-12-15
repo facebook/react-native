@@ -218,6 +218,7 @@ const LayoutPropTypes = {
   flexGrow: ReactPropTypes.number,
   rowGap: ReactPropTypes.number,
   columnGap: ReactPropTypes.number,
+  gap: ReactPropTypes.number,
   flexShrink: ReactPropTypes.number,
   flexBasis: (ReactPropTypes.oneOfType([
     ReactPropTypes.number,

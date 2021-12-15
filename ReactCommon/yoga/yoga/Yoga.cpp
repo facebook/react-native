@@ -4402,6 +4402,12 @@ YOGA_EXPORT float YGNodeStyleGetColumnGap(const YGNodeConstRef node) {
       : node->getStyle().columnGap().unwrap();
 }
 
+YOGA_EXPORT float YGNodeStyleGetGap(const YGNodeConstRef node) {
+  return node->getStyle().gap().isUndefined()
+      ? 0.0
+      : node->getStyle().gap().unwrap();
+}
+
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 YOGA_EXPORT void YGNodeStyleSetRowGap(
     const YGNodeRef node,
@@ -4417,4 +4423,12 @@ YOGA_EXPORT void YGNodeStyleSetColumnGap(
     const float columnGap) {
   updateStyle<MSVC_HINT(columnGap)>(
       node, &YGStyle::columnGap, YGFloatOptional{columnGap});
+}
+
+// TODO(T26792433): Change the API to accept YGFloatOptional.
+YOGA_EXPORT void YGNodeStyleSetGap(
+    const YGNodeRef node,
+    const float gap) {
+  updateStyle<MSVC_HINT(gap)>(
+      node, &YGStyle::gap, YGFloatOptional{gap});
 }

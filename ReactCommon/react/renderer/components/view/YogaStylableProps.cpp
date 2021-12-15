@@ -69,6 +69,8 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
       debugStringConvertibleItem(
           "columnGap", yogaStyle.columnGap(), defaultYogaStyle.columnGap()),
       debugStringConvertibleItem(
+          "gap", yogaStyle.gap(), defaultYogaStyle.gap()),
+      debugStringConvertibleItem(
           "flexShrink", yogaStyle.flexShrink(), defaultYogaStyle.flexShrink()),
       debugStringConvertibleItem(
           "flexBasis", yogaStyle.flexBasis(), defaultYogaStyle.flexBasis()),

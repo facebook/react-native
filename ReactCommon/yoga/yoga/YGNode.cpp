@@ -491,13 +491,19 @@ float YGNode::resolveRowGap() const {
   if (owner_ == nullptr) {
     return 0.0;
   }
+
+  float rowGap = 0.0;
     
-    if (!style_.rowGap().isUndefined()) {
-        return style_.rowGap().unwrap();
-    }
+  if (!style_.gap().isUndefined()) {
+    rowGap = style_.gap().unwrap();
+  }
+    
+  if (!style_.rowGap().isUndefined()) {
+    rowGap = style_.rowGap().unwrap();
+  }
     
 
-  return 0.0;
+  return rowGap;
 }
 
 
@@ -506,12 +512,17 @@ float YGNode::resolveColumnGap() const {
     return 0.0;
   }
     
-    if (!style_.columnGap().isUndefined()) {
-        return style_.columnGap().unwrap();
-    }
+  float columnGap = 0.0;
     
-
-  return 0.0;
+  if (!style_.gap().isUndefined()) {
+        columnGap = style_.gap().unwrap();
+  }
+    
+  if (!style_.columnGap().isUndefined()) {
+        columnGap = style_.columnGap().unwrap();
+  }
+    
+  return columnGap;
 }
 
 float YGNode::resolveFlexShrink() const {

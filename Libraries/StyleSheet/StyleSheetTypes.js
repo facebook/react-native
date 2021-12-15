@@ -436,6 +436,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
   flexBasis?: number | string,
   rowGap?: number,
   columnGap?: number,
+  gap?: number,
 
   /**
    * Aspect ratio control the size of the undefined dimension of a node. Aspect ratio is a

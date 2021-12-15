@@ -238,6 +238,8 @@ static inline YGStyle convertRawProp(
       context, rawProps, "rowGap", sourceValue.rowGap(), yogaStyle.rowGap());
   yogaStyle.columnGap() = convertRawProp(
       context, rawProps, "columnGap", sourceValue.columnGap(), yogaStyle.columnGap());
+  yogaStyle.gap() = convertRawProp(
+      context, rawProps, "gap", sourceValue.gap(), yogaStyle.gap());
   yogaStyle.flexShrink() = convertRawProp(
       context,
       rawProps,

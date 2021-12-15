@@ -40,6 +40,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   flexGrow: true,
   rowGap: true,
   columnGap: true,
+  gap: true,
   flexShrink: true,
   flexWrap: true,
   height: true,

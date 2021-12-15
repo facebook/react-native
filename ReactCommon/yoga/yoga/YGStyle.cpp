@@ -48,6 +48,13 @@ bool operator==(const YGStyle& lhs, const YGStyle& rhs) {
         areNonFloatValuesEqual && lhs.rowGap() == rhs.rowGap();
   }
 
+  areNonFloatValuesEqual = areNonFloatValuesEqual &&
+      lhs.gap().isUndefined() == rhs.gap().isUndefined();
+  if (areNonFloatValuesEqual && !lhs.gap().isUndefined()) {
+    areNonFloatValuesEqual =
+        areNonFloatValuesEqual && lhs.gap() == rhs.gap();
+  }
+
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
       lhs.columnGap().isUndefined() == rhs.columnGap().isUndefined();
