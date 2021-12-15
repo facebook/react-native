@@ -47,6 +47,7 @@
     "scripts/launchPackager.command",
     "scripts/node-binary.sh",
     "scripts/packager.sh",
+    "scripts/packager-reporter.js",
     "scripts/react_native_pods.rb",
     "scripts/react-native-xcode.sh",
     "template.config.js",
