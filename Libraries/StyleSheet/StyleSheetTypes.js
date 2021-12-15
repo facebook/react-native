@@ -434,6 +434,8 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
   flexGrow?: number,
   flexShrink?: number,
   flexBasis?: number | string,
+  rowGap?: number,
+  columnGap?: number,
 
   /**
    * Aspect ratio control the size of the undefined dimension of a node. Aspect ratio is a
@@ -472,6 +474,10 @@ type ____LayoutStyle_Internal = $ReadOnly<{|
    *  @platform ios
    */
   direction?: 'inherit' | 'ltr' | 'rtl',
+
+  rowGap?: number,
+
+  columnGap?: number,
 |}>;
 
 type ____TransformStyle_Internal = $ReadOnly<{|

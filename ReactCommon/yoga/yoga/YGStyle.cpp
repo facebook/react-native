@@ -40,6 +40,23 @@ bool operator==(const YGStyle& lhs, const YGStyle& rhs) {
         areNonFloatValuesEqual && lhs.flexGrow() == rhs.flexGrow();
   }
 
+    
+  areNonFloatValuesEqual = areNonFloatValuesEqual &&
+      lhs.rowGap().isUndefined() == rhs.rowGap().isUndefined();
+  if (areNonFloatValuesEqual && !lhs.rowGap().isUndefined()) {
+    areNonFloatValuesEqual =
+        areNonFloatValuesEqual && lhs.rowGap() == rhs.rowGap();
+  }
+
+
+  areNonFloatValuesEqual = areNonFloatValuesEqual &&
+      lhs.columnGap().isUndefined() == rhs.columnGap().isUndefined();
+  if (areNonFloatValuesEqual && !lhs.columnGap().isUndefined()) {
+    areNonFloatValuesEqual =
+        areNonFloatValuesEqual && lhs.columnGap() == rhs.columnGap();
+  }
+
+
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
       lhs.flexShrink().isUndefined() == rhs.flexShrink().isUndefined();
   if (areNonFloatValuesEqual && !rhs.flexShrink().isUndefined()) {

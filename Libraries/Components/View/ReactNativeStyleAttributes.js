@@ -38,6 +38,8 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   flexBasis: true,
   flexDirection: true,
   flexGrow: true,
+  rowGap: true,
+  columnGap: true,
   flexShrink: true,
   flexWrap: true,
   height: true,

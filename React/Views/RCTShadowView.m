@@ -655,6 +655,8 @@ RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float
 RCT_STYLE_PROPERTY(Flex, flex, Flex, float)
 RCT_STYLE_PROPERTY(FlexGrow, flexGrow, FlexGrow, float)
 RCT_STYLE_PROPERTY(FlexShrink, flexShrink, FlexShrink, float)
+RCT_STYLE_PROPERTY(RowGap, rowGap, RowGap, float)
+RCT_STYLE_PROPERTY(ColumnGap, columnGap, ColumnGap, float)
 RCT_STYLE_PROPERTY(FlexDirection, flexDirection, FlexDirection, YGFlexDirection)
 RCT_STYLE_PROPERTY(JustifyContent, justifyContent, JustifyContent, YGJustify)
 RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, YGAlign)

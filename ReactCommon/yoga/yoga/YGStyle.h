@@ -107,6 +107,8 @@ private:
 
   YGFloatOptional flex_ = {};
   YGFloatOptional flexGrow_ = {};
+  YGFloatOptional rowGap_ = {};
+  YGFloatOptional columnGap_ = {};
   YGFloatOptional flexShrink_ = {};
   CompactValue flexBasis_ = CompactValue::ofAuto();
   Edges margin_ = {};
@@ -191,6 +193,12 @@ public:
 
   YGFloatOptional flexGrow() const { return flexGrow_; }
   Ref<YGFloatOptional, &YGStyle::flexGrow_> flexGrow() { return {*this}; }
+    
+  YGFloatOptional rowGap() const { return rowGap_; }
+  Ref<YGFloatOptional, &YGStyle::rowGap_> rowGap() { return {*this}; }
+    
+  YGFloatOptional columnGap() const { return columnGap_; }
+  Ref<YGFloatOptional, &YGStyle::columnGap_> columnGap() { return {*this}; }
 
   YGFloatOptional flexShrink() const { return flexShrink_; }
   Ref<YGFloatOptional, &YGStyle::flexShrink_> flexShrink() { return {*this}; }

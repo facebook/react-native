@@ -231,7 +231,8 @@ static inline ShadowNode::Unshared messWithYogaStyles(
       "marginRight",  "marginBottom",  "paddingLeft", "paddingTop",
       "paddingRight", "paddingBottom", "width",       "height",
       "maxWidth",     "maxHeight",     "minWidth",    "minHeight",
-  };
+      "rowGap",       "columnGap",
+      };
 
   for (auto const &property : properties) {
     if (entropy.random<bool>(0.1)) {

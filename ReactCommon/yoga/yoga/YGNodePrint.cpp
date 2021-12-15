@@ -162,6 +162,8 @@ void YGNodeToString(
           str, "align-self: %s; ", YGAlignToString(style.alignSelf()));
     }
     appendFloatOptionalIfDefined(str, "flex-grow", style.flexGrow());
+    appendFloatOptionalIfDefined(str, "row-gap", style.rowGap());
+    appendFloatOptionalIfDefined(str, "column-gap", style.columnGap());
     appendFloatOptionalIfDefined(str, "flex-shrink", style.flexShrink());
     appendNumberIfNotAuto(str, "flex-basis", style.flexBasis());
     appendFloatOptionalIfDefined(str, "flex", style.flex());

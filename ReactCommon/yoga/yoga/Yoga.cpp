@@ -1975,8 +1975,13 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
 
   // Add items to the current line until it's full or we run out of items.
   uint32_t endOfLineIndex = startOfLineIndex;
+  uint32_t relativeToLineIndex = 0;
+
   for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {
     const YGNodeRef child = node->getChild(endOfLineIndex);
+    
+    child->setRelativeToLineIndex(relativeToLineIndex);
+      
     if (child->getStyle().display() == YGDisplayNone ||
         child->getStyle().positionType() == YGPositionTypeAbsolute) {
       continue;
@@ -1999,6 +2004,9 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
                 flexBasisWithMinAndMaxConstraints + childMarginMainAxis >
             availableInnerMainDim &&
         isNodeFlexWrap && flexAlgoRowMeasurement.itemsOnLine > 0) {
+      
+      relativeToLineIndex = 0;
+
       break;
     }
 
@@ -2008,6 +2016,8 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
         flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
     flexAlgoRowMeasurement.itemsOnLine++;
 
+      relativeToLineIndex++;
+      
     if (child->isNodeFlexible()) {
       flexAlgoRowMeasurement.totalFlexGrowFactors += child->resolveFlexGrow();
 
@@ -4377,4 +4387,34 @@ void YGTraversePreOrder(
   }
   f(node);
   YGTraverseChildrenPreOrder(node->getChildren(), f);
+}
+
+
+YOGA_EXPORT float YGNodeStyleGetRowGap(const YGNodeConstRef node) {
+  return node->getStyle().rowGap().isUndefined()
+      ? 0.0
+      : node->getStyle().rowGap().unwrap();
+}
+
+YOGA_EXPORT float YGNodeStyleGetColumnGap(const YGNodeConstRef node) {
+  return node->getStyle().columnGap().isUndefined()
+      ? 0.0
+      : node->getStyle().columnGap().unwrap();
+}
+
+// TODO(T26792433): Change the API to accept YGFloatOptional.
+YOGA_EXPORT void YGNodeStyleSetRowGap(
+    const YGNodeRef node,
+    const float rowGap) {
+  updateStyle<MSVC_HINT(rowGap)>(
+      node, &YGStyle::rowGap, YGFloatOptional{rowGap});
+}
+
+
+// TODO(T26792433): Change the API to accept YGFloatOptional.
+YOGA_EXPORT void YGNodeStyleSetColumnGap(
+    const YGNodeRef node,
+    const float columnGap) {
+  updateStyle<MSVC_HINT(columnGap)>(
+      node, &YGStyle::columnGap, YGFloatOptional{columnGap});
 }

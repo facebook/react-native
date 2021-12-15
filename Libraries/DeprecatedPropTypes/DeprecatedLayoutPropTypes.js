@@ -216,6 +216,8 @@ const LayoutPropTypes = {
   ]): React$PropType$Primitive<'visible' | 'hidden' | 'scroll'>),
   flex: ReactPropTypes.number,
   flexGrow: ReactPropTypes.number,
+  rowGap: ReactPropTypes.number,
+  columnGap: ReactPropTypes.number,
   flexShrink: ReactPropTypes.number,
   flexBasis: (ReactPropTypes.oneOfType([
     ReactPropTypes.number,
