@@ -115,7 +115,7 @@
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
     "prop-types": "^15.7.2",
-    "react-devtools-core": "4.21.0",
+    "react-devtools-core": "4.22.1",
     "react-refresh": "^0.4.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.20.2",
