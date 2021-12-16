@@ -25,8 +25,6 @@
 @end
 #endif
 
-using namespace facebook::react;
-
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
