@@ -44,9 +44,7 @@ static void InitializeFlipper(UIApplication *application)
 }
 #endif
 
-@implementation RCTAppSetupUtils
-
-+ (void)prepareApp:(UIApplication *)application
+void RCTAppSetupPrepareApp(UIApplication *application)
 {
 #ifdef FB_SONARKIT_ENABLED
   InitializeFlipper(application);
@@ -57,9 +55,7 @@ static void InitializeFlipper(UIApplication *application)
 #endif
 }
 
-+ (UIView *)defaultRootViewWithBridge:(RCTBridge *)bridge
-                           moduleName:(NSString *)moduleName
-                    initialProperties:(NSDictionary *)initialProperties
+UIView *RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties)
 {
 #if RCT_NEW_ARCH_ENABLED
   return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge
@@ -71,7 +67,7 @@ static void InitializeFlipper(UIApplication *application)
 }
 
 #if RCT_NEW_ARCH_ENABLED
-+ (id<RCTTurboModule>)defaultModuleInstanceFromClass:(Class)moduleClass
+id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
 {
   // Set up the default RCTImageLoader and RCTNetworking modules.
   if (moduleClass == RCTImageLoader.class) {
@@ -96,9 +92,9 @@ static void InitializeFlipper(UIApplication *application)
   return [moduleClass new];
 }
 
-+ (std::unique_ptr<facebook::react::JSExecutorFactory>)defaultJsExecutorFactoryForBridge:(RCTBridge *)bridge
-                                                                  withTurboModuleManager:
-                                                                      (RCTTurboModuleManager *)turboModuleManager;
+std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutorFactory(
+    RCTBridge *bridge,
+    RCTTurboModuleManager *turboModuleManager)
 {
   // Necessary to allow NativeModules to lookup TurboModules
   [bridge setRCTTurboModuleRegistry:turboModuleManager];
@@ -131,5 +127,3 @@ static void InitializeFlipper(UIApplication *application)
 }
 
 #endif
-
-@end

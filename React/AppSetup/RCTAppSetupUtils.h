@@ -28,16 +28,16 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 #endif
 
-@interface RCTAppSetupUtils : NSObject
-+ (void)prepareApp:(UIApplication *_Nonnull)application;
-+ (UIView *_Nonnull)defaultRootViewWithBridge:(RCTBridge *_Nonnull)bridge
-                                   moduleName:(NSString *_Nonnull)moduleName
-                            initialProperties:(nullable NSDictionary *)initialProperties;
+RCT_EXTERN_C_BEGIN
+
+void RCTAppSetupPrepareApp(UIApplication *application);
+UIView *RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties);
 
 #if RCT_NEW_ARCH_ENABLED
-+ (id<RCTTurboModule> _Nonnull)defaultModuleInstanceFromClass:(Class _Nonnull)moduleClass;
-+ (std::unique_ptr<facebook::react::JSExecutorFactory>)
-    defaultJsExecutorFactoryForBridge:(RCTBridge *_Nonnull)bridge
-               withTurboModuleManager:(RCTTurboModuleManager *_Nonnull)turboModuleManager;
+id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass);
+std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsexecutorFactory(
+    RCTBridge *bridge,
+    RCTTurboModuleManager *turboModuleManager);
 #endif
-@end
+
+RCT_EXTERN_C_END

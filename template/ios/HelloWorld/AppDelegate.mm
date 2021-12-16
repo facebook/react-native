@@ -25,11 +25,13 @@
 @end
 #endif
 
+using namespace facebook::react;
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  [RCTAppSetupUtils prepareApp: application];
+  RCTAppSetupPrepareApp(application);
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 
@@ -41,9 +43,7 @@
   bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
 #endif
 
-  UIView *rootView = [RCTAppSetupUtils defaultRootViewWithBridge:bridge
-                                   moduleName:@"HelloWorld"
-                           initialProperties:nil];
+  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"HelloWorld", nil);
 
   if (@available(iOS 13.0, *)) {
       rootView.backgroundColor = [UIColor systemBackgroundColor];
@@ -77,7 +77,7 @@
   _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
                                                              delegate:self
                                                             jsInvoker:bridge.jsCallInvoker];
-  return [RCTAppSetupUtils defaultJsExecutorFactoryForBridge:bridge withTurboModuleManager:_turboModuleManager];
+  return RCTAppSetupDefaultJsExecutorFactory(bridge, _turboModuleManager);
 }
 
 #pragma mark RCTTurboModuleManagerDelegate
@@ -101,7 +101,7 @@
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
-  return [RCTAppSetupUtils defaultModuleInstanceFromClass: moduleClass];
+  return RCTAppSetupDefaultModuleFromClass(moduleClass);
 }
 
 #endif
