@@ -7,7 +7,7 @@
 
 package com.facebook.react.tests.core;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import androidx.test.runner.AndroidJUnit4;
 import com.facebook.react.bridge.NoSuchKeyException;

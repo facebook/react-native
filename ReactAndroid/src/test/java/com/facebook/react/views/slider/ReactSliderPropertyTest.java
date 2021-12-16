@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.slider;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.widget.SeekBar;
 import com.facebook.react.bridge.CatalystInstance;
