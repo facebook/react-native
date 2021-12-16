@@ -244,7 +244,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   NSNumberFormatter *num = [NSNumberFormatter new];
   for (NSString *item in words) {
     NSString *word; 
-    if ([num numberFromString:[item substringWithRange:NSMakeRange(0, 1)]] == nil) {
+    if ([item length] > 0 && [num numberFromString:[item substringWithRange:NSMakeRange(0, 1)]] == nil) {
       word = [item capitalizedString];
     } else {
       word = [item lowercaseString];
