@@ -9,7 +9,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
 
-#if RCT_TM_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 
 #ifndef RCT_USE_HERMES
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
@@ -34,7 +34,7 @@
                                    moduleName:(NSString *_Nonnull)moduleName
                             initialProperties:(nullable NSDictionary *)initialProperties;
 
-#if RCT_TM_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 + (id<RCTTurboModule> _Nonnull)defaultModuleInstanceFromClass:(Class _Nonnull)moduleClass;
 + (std::unique_ptr<facebook::react::JSExecutorFactory>)
     defaultJsExecutorFactoryForBridge:(RCTBridge *_Nonnull)bridge

@@ -7,7 +7,7 @@
 
 #import "RCTAppSetupUtils.h"
 
-#if RCT_TM_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 // Turbo Module
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTDataRequestHandler.h>
@@ -52,7 +52,7 @@ static void InitializeFlipper(UIApplication *application)
   InitializeFlipper(application);
 #endif
 
-#if RCT_TM_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
   RCTEnableTurboModule(YES);
 #endif
 }
@@ -61,7 +61,7 @@ static void InitializeFlipper(UIApplication *application)
                            moduleName:(NSString *)moduleName
                     initialProperties:(NSDictionary *)initialProperties
 {
-#if RCT_TM_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
   return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge
                                                            moduleName:moduleName
                                                     initialProperties:initialProperties];
@@ -70,7 +70,7 @@ static void InitializeFlipper(UIApplication *application)
 #endif
 }
 
-#if RCT_TM_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 + (id<RCTTurboModule>)defaultModuleInstanceFromClass:(Class)moduleClass
 {
   // Set up the default RCTImageLoader and RCTNetworking modules.

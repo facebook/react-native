@@ -6,7 +6,7 @@
 
 #import <React/RCTAppSetupUtils.h>
 
-#if RCT_TM_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTCxxBridgeDelegate.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
@@ -33,7 +33,7 @@
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 
-#if RCT_TM_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
   _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
   _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
@@ -68,7 +68,7 @@
 #endif
 }
 
-#if RCT_TM_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 
 #pragma mark - RCTCxxBridgeDelegate
 
