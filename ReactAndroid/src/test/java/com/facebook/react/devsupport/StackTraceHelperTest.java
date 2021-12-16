@@ -7,7 +7,7 @@
 
 package com.facebook.react.devsupport;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import org.junit.Test;

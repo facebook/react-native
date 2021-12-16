@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.textinput;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;

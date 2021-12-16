@@ -7,7 +7,7 @@
 
 package com.facebook.react.tests.core;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.app.Instrumentation;
 import android.view.View;

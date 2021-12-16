@@ -7,7 +7,7 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Locale;
 import org.junit.Test;
