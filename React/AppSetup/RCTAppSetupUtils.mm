@@ -8,6 +8,7 @@
 #import "RCTAppSetupUtils.h"
 
 #if RCT_TM_FABRIC_ENABLED
+// Turbo Module
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTDataRequestHandler.h>
 #import <React/RCTFileRequestHandler.h>
@@ -17,6 +18,9 @@
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
 #import <React/RCTLocalAssetImageLoader.h>
 #import <React/RCTNetworking.h>
+
+// Fabric
+#import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #endif
 
 #ifdef FB_SONARKIT_ENABLED
@@ -53,11 +57,17 @@ static void InitializeFlipper(UIApplication *application)
 #endif
 }
 
-+ (RCTRootView *)defaultRootViewWithBridge:(RCTBridge *)bridge
-                                moduleName:(NSString *)moduleName
-                         initialProperties:(NSDictionary *)initialProperties
++ (UIView *)defaultRootViewWithBridge:(RCTBridge *)bridge
+                           moduleName:(NSString *)moduleName
+                    initialProperties:(NSDictionary *)initialProperties
 {
+#if RCT_TM_FABRIC_ENABLED
+  return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge
+                                                           moduleName:moduleName
+                                                    initialProperties:initialProperties];
+#else
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+#endif
 }
 
 #if RCT_TM_FABRIC_ENABLED

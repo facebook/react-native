@@ -30,9 +30,9 @@
 
 @interface RCTAppSetupUtils : NSObject
 + (void)prepareApp:(UIApplication *_Nonnull)application;
-+ (RCTRootView *_Nonnull)defaultRootViewWithBridge:(RCTBridge *_Nonnull)bridge
-                                        moduleName:(NSString *_Nonnull)moduleName
-                                 initialProperties:(nullable NSDictionary *)initialProperties;
++ (UIView *_Nonnull)defaultRootViewWithBridge:(RCTBridge *_Nonnull)bridge
+                                   moduleName:(NSString *_Nonnull)moduleName
+                            initialProperties:(nullable NSDictionary *)initialProperties;
 
 #if RCT_TM_FABRIC_ENABLED
 + (id<RCTTurboModule> _Nonnull)defaultModuleInstanceFromClass:(Class _Nonnull)moduleClass;
