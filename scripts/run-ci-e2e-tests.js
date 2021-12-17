@@ -56,25 +56,13 @@ try {
     }
   }
 
-  if (argv.js) {
-    describe('Install Flow');
-    if (
-      tryExecNTimes(
-        () => {
-          return exec('npm install --save-dev flow-bin').code;
-        },
-        numberOfRetries,
-        () => exec('sleep 10s'),
-      )
-    ) {
-      echo('Failed to install Flow');
-      echo('Most common reason is npm registry connectivity, try again');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
+  describe('Create react-native package');
+  if (exec('node ./scripts/set-rn-version.js --version 1000.0.0').code) {
+    echo('Failed to set version and update package.json ready for release');
+    exitCode = 1;
+    throw Error(exitCode);
   }
 
-  describe('Create react-native package');
   if (exec('npm pack').code) {
     echo('Failed to pack react-native');
     exitCode = 1;
