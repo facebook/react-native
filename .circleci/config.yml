@@ -920,7 +920,8 @@ workflows:
 
   releases:
     jobs:
-      # This job will trigger on pushes to release branch and commit a version tag to trigger `build_npm_package` for release
+      # This job will trigger on relevant `publish...` tags.
+      # It prepares the package and triggers `build_npm_package` for release
       - prepare_package_for_release:
           name: prepare_package_for_release
           filters:
