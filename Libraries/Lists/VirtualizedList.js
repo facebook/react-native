@@ -1822,7 +1822,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
     // Mark as high priority if we're close to the end of the last item
     // But only if there are items after the last rendered item
-    if (last < itemCount - 1) {
+    if (last > 0 && last < itemCount - 1) {
       const distBottom =
         this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
       hiPri =
@@ -1933,7 +1933,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       // check for invalid frames due to row re-ordering
       return frame;
     } else {
-      const {getItemLayout} = this.props;
+      const {data, getItemCount, getItemLayout} = this.props;
+      invariant(
+        index >= 0 && index < getItemCount(data),
+        'Tried to get frame for out of range index ' + index,
+      );
       invariant(
         !getItemLayout,
         'Should not have to estimate frames when a measurement metrics function is provided',
@@ -1956,7 +1960,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   } => {
     const {data, getItem, getItemCount, getItemLayout} = this.props;
     invariant(
-      getItemCount(data) > index,
+      index >= 0 && index < getItemCount(data),
       'Tried to get frame for out of range index ' + index,
     );
     const item = getItem(data, index);
