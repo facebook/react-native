@@ -554,4 +554,48 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesImmediatePriorityTask) {
   EXPECT_TRUE(didRunSubsequentTask);
 }
 
+TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
+  bool didRunSynchronousTask = false;
+  bool didRunSubsequentTask = false;
+  std::thread t1([this, &didRunSynchronousTask, &didRunSubsequentTask]() {
+    runtimeScheduler_->executeNowOnTheSameThread(
+        [this, &didRunSynchronousTask, &didRunSubsequentTask](
+            jsi::Runtime &rt) {
+          didRunSynchronousTask = true;
+
+          auto callback = createHostFunctionFromLambda(
+              [&didRunSubsequentTask](bool didUserCallbackTimeout) {
+                didRunSubsequentTask = true;
+                EXPECT_FALSE(didUserCallbackTimeout);
+                return jsi::Value::undefined();
+              });
+
+          runtimeScheduler_->scheduleTask(
+              SchedulerPriority::LowPriority, std::move(callback));
+        });
+  });
+
+  auto hasTask = stubQueue_->waitForTask(1ms);
+
+  EXPECT_TRUE(hasTask);
+  EXPECT_FALSE(didRunSynchronousTask);
+  EXPECT_FALSE(didRunSubsequentTask);
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  t1.join();
+
+  EXPECT_TRUE(didRunSynchronousTask);
+  EXPECT_FALSE(didRunSubsequentTask);
+
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunSubsequentTask);
+
+  EXPECT_EQ(stubQueue_->size(), 0);
+}
+
 } // namespace facebook::react

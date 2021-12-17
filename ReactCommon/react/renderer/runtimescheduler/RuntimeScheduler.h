@@ -84,6 +84,12 @@ class RuntimeScheduler final {
   void startWorkLoop(jsi::Runtime &runtime) const;
 
   /*
+   * Schedules a work loop unless it has been already scheduled
+   * This is to avoid unnecessary calls to `runtimeExecutor`.
+   */
+  void scheduleWorkLoopIfNecessary() const;
+
+  /*
    * Returns a time point representing the current point in time. May be called
    * from multiple threads.
    */
@@ -93,7 +99,7 @@ class RuntimeScheduler final {
    * Flag indicating if callback on JavaScript queue has been
    * scheduled.
    */
-  mutable std::atomic_bool isCallbackScheduled_{false};
+  mutable std::atomic_bool isWorkLoopScheduled_{false};
 
   /*
    * Flag indicating if yielding is enabled.
@@ -107,7 +113,7 @@ class RuntimeScheduler final {
   /*
    * This flag is set while performing work, to prevent re-entrancy.
    */
-  mutable bool isPerformingWork_{false};
+  mutable std::atomic_bool isPerformingWork_{false};
 };
 
 } // namespace react
