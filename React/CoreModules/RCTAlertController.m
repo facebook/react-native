@@ -33,7 +33,16 @@
 - (void)show:(BOOL)animated completion:(void (^)(void))completion
 {
   [self.alertWindow makeKeyAndVisible];
-  [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
+
+  // [TODO(macOS GH#774)
+  // If the window is tracked by our application then it will show the alert
+  if ([[[UIApplication sharedApplication] windows] containsObject:self.alertWindow]) {
+    [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
+  } else {
+    // When using Scenes, we must present the alert from a view controller associated with a window in the Scene. A fresh window (i.e. _alertWindow) cannot show the alert.
+    [RCTPresentedViewController() presentViewController:self animated:animated completion:completion];
+  }
+  // TODO(macOS GH#774)]
 }
 #endif // ]TODO(macOS GH#774)
 
