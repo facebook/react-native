@@ -105,37 +105,37 @@ if (nightlyBuild || dryRunBuild) {
   }
 }
 
-// -------- Generating Android Artifacts with JavaDoc
-if (exec('./gradlew :ReactAndroid:installArchives').code) {
-  echo('Could not generate artifacts');
-  exit(1);
-}
+// // -------- Generating Android Artifacts with JavaDoc
+// if (exec('./gradlew :ReactAndroid:installArchives').code) {
+//   echo('Could not generate artifacts');
+//   exit(1);
+// }
 
-// undo uncommenting javadoc setting
-exec('git checkout ReactAndroid/gradle.properties');
+// // undo uncommenting javadoc setting
+// exec('git checkout ReactAndroid/gradle.properties');
 
-echo('Generated artifacts for Maven');
+// echo('Generated artifacts for Maven');
 
-let artifacts = ['.aar', '.pom'].map(suffix => {
-  return `react-native-${releaseVersion}${suffix}`;
-});
+// let artifacts = ['.aar', '.pom'].map(suffix => {
+//   return `react-native-${releaseVersion}${suffix}`;
+// });
 
-artifacts.forEach(name => {
-  if (
-    !test(
-      '-e',
-      `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
-    )
-  ) {
-    echo(`file ${name} was not generated`);
-    exit(1);
-  }
-});
+// artifacts.forEach(name => {
+//   if (
+//     !test(
+//       '-e',
+//       `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
+//     )
+//   ) {
+//     echo(`file ${name} was not generated`);
+//     exit(1);
+//   }
+// });
 
-if (dryRunBuild) {
-  echo('Skipping `npm publish` because --dry-run is set.');
-  exit(0);
-}
+// if (dryRunBuild) {
+//   echo('Skipping `npm publish` because --dry-run is set.');
+//   exit(0);
+// }
 
 // Running to see if this commit has been git tagged as `latest`
 const isLatest = isTaggedLatest(currentCommit);
@@ -155,11 +155,13 @@ const tagFlag = nightlyBuild
 
 // use otp from envvars if available
 const otpFlag = otp ? `--otp ${otp}` : '';
+console.log('We are not publishing anything');
+console.log(`This is the command we would've run: npm publish ${tagFlag}`);
 
-if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
-  echo('Failed to publish package to npm');
-  exit(1);
-} else {
-  echo(`Published to npm ${releaseVersion}`);
-  exit(0);
-}
+// if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
+//   echo('Failed to publish package to npm');
+//   exit(1);
+// } else {
+//   echo(`Published to npm ${releaseVersion}`);
+//   exit(0);
+// }

@@ -820,10 +820,11 @@ jobs:
             - run:
                 name: Update rn-diff-purge to generate upgrade-support diff
                 command: |
-                  curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \
-                    -H "Accept: application/vnd.github.v3+json" \
-                    -u "$PAT_USERNAME:$PAT_TOKEN" \
-                    -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
+                  echo "We are not updating rn-diff-purge as this is a test"
+                  # curl -X POST https://api.github.com/repos/react-native-community/rn-diff-purge/dispatches \
+                  #   -H "Accept: application/vnd.github.v3+json" \
+                  #   -u "$PAT_USERNAME:$PAT_TOKEN" \
+                  #   -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
 
   # -------------------------
   #    JOBS: Nightly

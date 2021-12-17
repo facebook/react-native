@@ -49,7 +49,7 @@ function getPublishVersion(tag) {
 
 function isTaggedLatest(commitSha) {
   return (
-    exec(`git rev-list -1 latest | grep ${commitSha}`, {
+    exec(`git rev-list -1 fake-latest | grep ${commitSha}`, {
       silent: true,
     }).stdout.trim() === commitSha
   );

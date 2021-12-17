@@ -70,13 +70,13 @@ if (exec(`node scripts/set-rn-version.js --to-version ${version}`).code) {
   exit(1);
 }
 
-// Release builds should commit the version bumps, and create tags.
-echo('Updating RNTester Podfile.lock...');
-if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
-  echo('Failed to update RNTester Podfile.lock.');
-  echo('Fix the issue, revert and try again.');
-  exit(1);
-}
+// // Release builds should commit the version bumps, and create tags.
+// echo('Updating RNTester Podfile.lock...');
+// if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
+//   echo('Failed to update RNTester Podfile.lock.');
+//   echo('Fix the issue, revert and try again.');
+//   exit(1);
+// }
 
 // Make commit [0.21.0-rc] Bump version numbers
 if (exec(`git commit -a -m "[${version}] Bump version numbers"`).code) {
@@ -99,11 +99,11 @@ if (exec(`git tag -a v${version} -m "v${version}"`).code) {
 // This tag will also update npm release as `latest`
 const isLatest = isTaggedLatest(currentCommit);
 if (isLatest) {
-  exec('git tag -d latest');
-  exec(`git push ${remote} :latest`);
+  exec('git tag -d fake-latest');
+  exec(`git push ${remote} :fake-latest`);
 
   // This will be pushed with the `--follow-tags`
-  exec('git tag -a latest -m "latest"');
+  exec('git tag -a fake-latest -m "fake-latest"');
 }
 
 exec(`git push ${remote} ${branch} --follow-tags`);

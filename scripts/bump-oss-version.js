@@ -117,9 +117,9 @@ async function main() {
   }
 
   if (setLatest) {
-    exec('git tag -d latest');
-    exec(`git push ${argv.remote} :latest`);
-    exec('git tag -a latest -m "latest"');
+    exec('git tag -d fake-latest');
+    exec(`git push ${argv.remote} :fake-latest`);
+    exec('git tag -a fake-latest -m "fake-latest"');
   }
 
   if (exec(`git push ${argv.remote} ${branch} --follow-tags`).code) {
