@@ -9,10 +9,10 @@
 
 const {
   parseVersion,
-  getNextVersionFromTags,
   isTaggedLatest,
-  isTaggedVersion,
+  getPublishVersion,
   isReleaseBranch,
+  getPublishTag,
 } = require('../version-utils');
 
 let execResult = null;
@@ -25,33 +25,6 @@ jest.mock('shelljs', () => ({
 }));
 
 describe('version-utils', () => {
-  describe('isTaggedVersion', () => {
-    it('should return true on pre-release versions', () => {
-      execResult = 'v0.66.0-rc.3\nlatest\n\n';
-      expect(isTaggedVersion('6c19dc3266b84f47a076b647a1c93b3c3b69d2c5')).toBe(
-        true,
-      );
-    });
-    it('should return true on release versions', () => {
-      execResult = 'latest\nv0.66.2\n\n';
-      expect(isTaggedVersion('6c19dc3266b84f47a076b647a1c93b3c3b69d2c5')).toBe(
-        true,
-      );
-    });
-    it('should return false when no tags', () => {
-      execResult = '\n';
-      expect(isTaggedVersion('6c19dc3266b84f47a076b647a1c93b3c3b69d2c5')).toBe(
-        false,
-      );
-    });
-    it('should return false on tags that are not versions', () => {
-      execResult = 'latest\n0.someother-made-up-tag\n\n';
-      expect(isTaggedVersion('6c19dc3266b84f47a076b647a1c93b3c3b69d2c5')).toBe(
-        false,
-      );
-    });
-  });
-
   describe('isReleaseBranch', () => {
     it('should identify as release branch', () => {
       expect(isReleaseBranch('v0.66-stable')).toBe(true);
@@ -76,22 +49,39 @@ describe('version-utils', () => {
     });
   });
 
-  describe('getNextVersionFromTags', () => {
-    it('should increment last stable tag', () => {
-      execResult =
-        'v0.66.3\nv0.66.2\nv0.66.1\nv0.66.0-rc.4\nv0.66.0-rc.3\nv0.66.0-rc.2\nv0.66.0-rc.1\nv0.66.0-rc.0';
-      expect(getNextVersionFromTags('0.66-stable')).toBe('0.66.4');
-    });
-
-    it('should find last prerelease tag and increment', () => {
-      execResult =
-        'v0.66.0-rc.4\nv0.66.0-rc.3\nv0.66.0-rc.2\nv0.66.0-rc.1\nv0.66.0-rc.0';
-      expect(getNextVersionFromTags('0.66-stable')).toBe('0.66.0-rc.5');
-    });
-
-    it('should return rc.0 version if no previous tags', () => {
+  describe('getPublishTag', () => {
+    it('Should return null no tags are returned', () => {
       execResult = '\n';
-      expect(getNextVersionFromTags('0.66-stable')).toBe('0.66.0-rc.0');
+      expect(getPublishTag()).toBe(null);
+    });
+    it('Should return tag', () => {
+      execResult = 'publish-v999.0.0-rc.0\n';
+      expect(getPublishTag()).toBe('publish-v999.0.0-rc.0');
+    });
+  });
+
+  describe('getPublishVersion', () => {
+    it('Should return null if invalid tag provided', () => {
+      expect(getPublishVersion('')).toBe(null);
+      expect(getPublishVersion('something')).toBe(null);
+    });
+    it('should throw error if invalid tag version provided', () => {
+      function testInvalidVersion() {
+        getPublishVersion('publish-<invalid-version>');
+      }
+      expect(testInvalidVersion).toThrowErrorMatchingInlineSnapshot(
+        `"You must pass a correctly formatted version; couldn't parse <invalid-version>"`,
+      );
+    });
+    it('Should return version for tag', () => {
+      const {version, major, minor, patch, prerelease} = getPublishVersion(
+        'publish-v0.67.0-rc.6',
+      );
+      expect(version).toBe('0.67.0-rc.6');
+      expect(major).toBe('0');
+      expect(minor).toBe('67');
+      expect(patch).toBe('0');
+      expect(prerelease).toBe('rc.6');
     });
   });
 
