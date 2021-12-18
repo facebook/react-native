@@ -32,6 +32,12 @@ function isReleaseBranch(branch) {
   return branch.endsWith('-stable');
 }
 
+function getBranchName() {
+  return exec('git rev-parse --abbrev-ref HEAD', {
+    silent: true,
+  }).stdout.trim();
+}
+
 function getPublishVersion(tag) {
   if (!tag.startsWith('publish-')) {
     return null;
@@ -58,6 +64,7 @@ function getPublishTag() {
 }
 
 module.exports = {
+  getBranchName,
   isTaggedLatest,
   getPublishTag,
   getPublishVersion,
