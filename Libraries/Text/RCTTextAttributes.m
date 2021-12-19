@@ -237,7 +237,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
-- (NSString *)capitalize:(NSString *)text
+static NSString *capitalizeText(NSString *text)
 {
   NSArray *words = [text componentsSeparatedByString:@" "];
   NSMutableArray *newWords = [NSMutableArray new];
@@ -265,7 +265,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     case RCTTextTransformUppercase:
       return [text uppercaseString];
     case RCTTextTransformCapitalize:
-      return [self capitalize:text];
+      return capitalizeText(text);
   }
 }
 
