@@ -210,7 +210,7 @@ jobs:
       - task: CmdLine@2
         displayName: gradlew installArchives
         inputs:
-          script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew installArchives -Pparam="excludeLibs"
+          script: REACT_NATIVE_BOOST_PATH=$(System.DefaultWorkingDirectory)/build_deps ./gradlew installArchives
 
       - template: templates\prep-android-nuget.yml
 
