@@ -32,8 +32,8 @@ void EventBeat::induce() const {
   // Default implementation does nothing.
 }
 
-void EventBeat::setBeatCallback(const BeatCallback &beatCallback) {
-  beatCallback_ = beatCallback;
+void EventBeat::setBeatCallback(BeatCallback beatCallback) {
+  beatCallback_ = std::move(beatCallback);
 }
 
 } // namespace react

@@ -19,7 +19,7 @@ EventQueue::EventQueue(
     : eventProcessor_(std::move(eventProcessor)),
       eventBeat_(std::move(eventBeat)) {
   eventBeat_->setBeatCallback(
-      std::bind(&EventQueue::onBeat, this, std::placeholders::_1));
+      [this](jsi::Runtime &runtime) { onBeat(runtime); });
 }
 
 void EventQueue::enqueueEvent(RawEvent &&rawEvent) const {

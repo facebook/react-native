@@ -1,5 +1,7 @@
 ---
+InheritParentConfig: true
 Checks: '>
 clang-diagnostic-*,
+modernize-avoid-bind,
 '
 ...
