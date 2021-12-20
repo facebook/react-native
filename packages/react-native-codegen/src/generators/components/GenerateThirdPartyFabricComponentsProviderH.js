@@ -87,9 +87,6 @@ module.exports = {
               })
               .map(componentName => {
                 const component = components[componentName];
-                if (component.interfaceOnly === true) {
-                  return;
-                }
 
                 return LookupFuncTemplate({
                   className: componentName,

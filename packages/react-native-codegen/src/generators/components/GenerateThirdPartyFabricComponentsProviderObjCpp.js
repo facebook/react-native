@@ -84,9 +84,6 @@ module.exports = {
                 );
               })
               .map(componentName => {
-                if (components[componentName].interfaceOnly === true) {
-                  return;
-                }
                 const replacedTemplate = LookupMapTemplate({
                   className: componentName,
                   libraryName,
