@@ -19,10 +19,7 @@ const COMMANDS_DEFINED_INLINE = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
 
 const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
@@ -31,20 +28,23 @@ import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+export interface ModuleProps extends ViewProps {
   // No props
-|}>;
+}
 
 export const Commands = codegenNativeCommands<{
-  +hotspotUpdate: (ref: React.Ref<'RCTView'>, x: Int32, y: Int32) => void,
+  readonly hotspotUpdate: (
+    ref: React.Ref<'RCTView'>,
+    x: Int32,
+    y: Int32,
+  ) => void;
 }>({
   supportedCommands: ['hotspotUpdate'],
 });
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const COMMANDS_DEFINED_MULTIPLE_TIMES = `
@@ -55,10 +55,7 @@ const COMMANDS_DEFINED_MULTIPLE_TIMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
 
 const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
@@ -68,13 +65,16 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  readonly hotspotUpdate: (
+    viewRef: React.Ref<'RCTView'>,
+    x: Int32,
+    y: Int32,
+  ) => void;
 }
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+export interface ModuleProps extends ViewProps {
   // No props or events
-|}>;
+}
 
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate'],
@@ -83,9 +83,9 @@ export const Commands2 = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate'],
 });
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const COMMANDS_DEFINED_WITHOUT_REF = `
@@ -96,10 +96,7 @@ const COMMANDS_DEFINED_WITHOUT_REF = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
 
 const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
@@ -109,21 +106,20 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
-  +hotspotUpdate: (x: Int32, y: Int32) => void;
+  readonly hotspotUpdate: (x: Int32, y: Int32) => void;
 }
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+export interface ModuleProps extends ViewProps {
   // No props or events
-|}>;
+}
 
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate'],
 });
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const COMMANDS_DEFINED_WITH_NULLABLE_REF = `
@@ -134,10 +130,7 @@ const COMMANDS_DEFINED_WITH_NULLABLE_REF = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
 
 const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
@@ -147,21 +140,20 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: ?React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  readonly hotspotUpdate: (viewRef: React.Ref<'RCTView'> | null | void, x: Int32, y: Int32) => void;
 }
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+export interface ModuleProps extends ViewProps {
   // No props or events
-|}>;
+}
 
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate'],
 });
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES = `
@@ -172,10 +164,7 @@ const COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
 
 const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
@@ -185,26 +174,24 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
-  +scrollTo: (
+  readonly hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  readonly scrollTo: (
     viewRef: React.Ref<'RCTView'>,
     y: Int32,
     animated: boolean,
   ) => void;
 }
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+export interface ModuleProps extends ViewProps {
   // No props or events
-|}>;
+}
 
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['scrollTo'],
 });
-
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const COMMANDS_DEFINED_WITHOUT_METHOD_NAMES = `
@@ -215,10 +202,7 @@ const COMMANDS_DEFINED_WITHOUT_METHOD_NAMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
 
 const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
@@ -228,24 +212,23 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
-  +scrollTo: (
+  readonly hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  readonly scrollTo: (
     viewRef: React.Ref<'RCTView'>,
     y: Int32,
     animated: boolean,
   ) => void;
 }
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+export interface ModuleProps extends ViewProps {
   // No props or events
-|}>;
+}
 
 export const Commands = codegenNativeCommands<NativeCommands>();
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const NULLABLE_WITH_DEFAULT = `
@@ -256,10 +239,7 @@ const NULLABLE_WITH_DEFAULT = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -267,14 +247,13 @@ import type {WithDefault, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-  nullable_with_default: ?WithDefault<Float, 1.0>,
-|}>;
+export interface ModuleProps extends ViewProps {
+  nullable_with_default: WithDefault<Float, 1.0> | null | void;
+}
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
@@ -285,10 +264,7 @@ const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -296,14 +272,13 @@ import type {WithDefault, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-  required_key_with_default: WithDefault<Float, 1.0>,
-|}>;
+export interface ModuleProps extends ViewProps {
+  required_key_with_default: WithDefault<Float, 1.0>;
+}
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const PROPS_CONFLICT_NAMES = `
@@ -314,26 +289,22 @@ const PROPS_CONFLICT_NAMES = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
 
-'use strict';
+const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
-const codegenNativeComponent = require('codegenNativeComponent');
-
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+export interface ModuleProps extends ViewProps {
   isEnabled: string,
 
   isEnabled: boolean,
-|}>;
+}
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const PROPS_CONFLICT_WITH_SPREAD_PROPS = `
@@ -344,64 +315,24 @@ const PROPS_CONFLICT_WITH_SPREAD_PROPS = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
 
-'use strict';
+const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
-const codegenNativeComponent = require('codegenNativeComponent');
-
-type PropsInFile = $ReadOnly<{|
+type PropsInFile = Readonly<{
   isEnabled: boolean,
-|}>;
+}>;
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-
-  ...PropsInFile,
+export interface ModuleProps extends ViewProps, PropsInFile {
   isEnabled: boolean,
-|}>;
+}
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
-`;
-
-const PROPS_SPREAD_CONFLICTS_WITH_PROPS = `
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @flow strict-local
- */
-
-'use strict';
-
-import type {ViewProps} from 'ViewPropTypes';
-import type {HostComponent} from 'react-native';
-
-const codegenNativeComponent = require('codegenNativeComponent');
-
-type PropsInFile = $ReadOnly<{|
-  isEnabled: boolean,
-|}>;
-
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-
-  isEnabled: boolean,
-  ...PropsInFile,
-|}>;
-
-export default (codegenNativeComponent<ModuleProps>(
-  'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const PROP_NUMBER_TYPE = `
@@ -412,25 +343,20 @@ const PROP_NUMBER_TYPE = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
 
-'use strict';
+const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
-const codegenNativeComponent = require('codegenNativeComponent');
-
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-
+export interface ModuleProps extends ViewProps {
   someProp: number
-|}>;
+}
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const PROP_MIXED_ENUM = `
@@ -441,25 +367,21 @@ const PROP_MIXED_ENUM = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
-
-import type {ViewProps} from 'ViewPropTypes';
-import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+import type {ViewProps} from 'ViewPropTypes';
+import type {HostComponent} from 'react-native';
+import type {WithDefault} from 'CodegenTypes';
 
-  someProp?: WithDefault<'foo' | 1, 1>
-|}>;
+export interface ModuleProps extends ViewProps {
+  someProp?: WithDefault<'foo' | 1, 1>;
+}
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const PROP_ENUM_BOOLEAN = `
@@ -470,25 +392,21 @@ const PROP_ENUM_BOOLEAN = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
-
-import type {ViewProps} from 'ViewPropTypes';
-import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+import type {ViewProps} from 'ViewPropTypes';
+import type {HostComponent} from 'react-native';
+import type {WithDefault} from 'CodegenTypes';
 
+export interface ModuleProps extends ViewProps {
   someProp?: WithDefault<false | true, false>
-|}>;
+}
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const PROP_ARRAY_MIXED_ENUM = `
@@ -499,25 +417,21 @@ const PROP_ARRAY_MIXED_ENUM = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
-
-import type {ViewProps} from 'ViewPropTypes';
-import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+import type {ViewProps} from 'ViewPropTypes';
+import type {HostComponent} from 'react-native';
+import type {WithDefault} from 'CodegenTypes';
 
-  someProp?: WithDefault<$ReadOnlyArray<'foo' | 1>, 1>
-|}>;
+export interface ModuleProps extends ViewProps {
+  someProp?: WithDefault<ReadonlyArray<'foo' | 1>, 1>;
+}
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const PROP_ARRAY_ENUM_BOOLEAN = `
@@ -528,25 +442,21 @@ const PROP_ARRAY_ENUM_BOOLEAN = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
-
-import type {ViewProps} from 'ViewPropTypes';
-import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+import type {ViewProps} from 'ViewPropTypes';
+import type {HostComponent} from 'react-native';
+import type {WithDefault} from 'CodegenTypes';
 
-  someProp?: WithDefault<$ReadOnlyArray<false | true>, false>
-|}>;
+export interface ModuleProps extends ViewProps {
+  someProp?: WithDefault<ReadonlyArray<false | true>, false>;
+}
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 const PROP_ARRAY_ENUM_INT = `
@@ -557,25 +467,21 @@ const PROP_ARRAY_ENUM_INT = `
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
-
-'use strict';
-
-import type {ViewProps} from 'ViewPropTypes';
-import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
+import type {ViewProps} from 'ViewPropTypes';
+import type {HostComponent} from 'react-native';
+import type {WithDefault} from 'CodegenTypes';
 
-  someProp?: WithDefault<$ReadOnlyArray<0 | 1>, 0>
-|}>;
+export interface ModuleProps extends ViewProps {
+  someProp?: WithDefault<ReadonlyArray<0 | 1>, 0>;
+}
 
-export default (codegenNativeComponent<ModuleProps>(
+export default codegenNativeComponent<ModuleProps>(
   'Module',
-): HostComponent<ModuleProps>);
+) as HostComponent<ModuleProps>;
 `;
 
 module.exports = {
@@ -589,7 +495,6 @@ module.exports = {
   NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE,
   PROPS_CONFLICT_NAMES,
   PROPS_CONFLICT_WITH_SPREAD_PROPS,
-  PROPS_SPREAD_CONFLICTS_WITH_PROPS,
   PROP_NUMBER_TYPE,
   PROP_MIXED_ENUM,
   PROP_ENUM_BOOLEAN,

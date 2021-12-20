@@ -1,40 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_INLINE 1`] = `"codegenNativeCommands doesn't support inline definitions. Specify a file local type alias"`;
+exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_INLINE 1`] = `"codegenNativeCommands doesn't support inline definitions. Specify a file local type alias"`;
 
-exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_MULTIPLE_TIMES 1`] = `"codegenNativeCommands may only be called once in a file"`;
+exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_MULTIPLE_TIMES 1`] = `"codegenNativeCommands may only be called once in a file"`;
 
-exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES 1`] = `"codegenNativeCommands expected the same supportedCommands specified in the NativeCommands interface: hotspotUpdate, scrollTo"`;
+exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES 1`] = `"codegenNativeCommands expected the same supportedCommands specified in the NativeCommands interface: hotspotUpdate, scrollTo"`;
 
-exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITH_NULLABLE_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<>"`;
+exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_WITH_NULLABLE_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<>"`;
 
-exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_METHOD_NAMES 1`] = `"codegenNativeCommands must be passed options including the supported commands"`;
+exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_WITHOUT_METHOD_NAMES 1`] = `"codegenNativeCommands must be passed options including the supported commands"`;
 
-exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<>"`;
+exports[`RN Codegen TypeScript Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<>"`;
 
-exports[`RN Codegen Flow Parser Fails with error message NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE 1`] = `"key required_key_with_default must be optional if used with WithDefault<> annotation"`;
+exports[`RN Codegen TypeScript Parser Fails with error message NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE 1`] = `"key required_key_with_default must be optional if used with WithDefault<> annotation"`;
 
-exports[`RN Codegen Flow Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it."`;
+exports[`RN Codegen TypeScript Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the union of void and/or null"`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", received \\"BooleanLiteralTypeAnnotation\\""`;
+exports[`RN Codegen TypeScript Parser Fails with error message PROP_ARRAY_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", received \\"BooleanLiteral\\""`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_INT 1`] = `"Arrays of int enums are not supported (see: \\"someProp\\")"`;
+exports[`RN Codegen TypeScript Parser Fails with error message PROP_ARRAY_ENUM_INT 1`] = `"Arrays of int enums are not supported (see: \\"someProp\\")"`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
+exports[`RN Codegen TypeScript Parser Fails with error message PROP_ARRAY_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROP_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", received \\"BooleanLiteralTypeAnnotation\\""`;
+exports[`RN Codegen TypeScript Parser Fails with error message PROP_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", received \\"BooleanLiteral\\""`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROP_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
+exports[`RN Codegen TypeScript Parser Fails with error message PROP_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROP_NUMBER_TYPE 1`] = `"Cannot use \\"NumberTypeAnnotation\\" type annotation for \\"someProp\\": must use a specific numeric type like Int32, Double, or Float"`;
+exports[`RN Codegen TypeScript Parser Fails with error message PROP_NUMBER_TYPE 1`] = `"Cannot use \\"TSNumberKeyword\\" type annotation for \\"someProp\\": must use a specific numeric type like Int32, Double, or Float"`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROPS_CONFLICT_NAMES 1`] = `"A prop was already defined with the name isEnabled"`;
+exports[`RN Codegen TypeScript Parser Fails with error message PROPS_CONFLICT_NAMES 1`] = `"A prop was already defined with the name isEnabled"`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROPS_CONFLICT_WITH_SPREAD_PROPS 1`] = `"A prop was already defined with the name isEnabled"`;
+exports[`RN Codegen TypeScript Parser Fails with error message PROPS_CONFLICT_WITH_SPREAD_PROPS 1`] = `"A prop was already defined with the name isEnabled"`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROPS_SPREAD_CONFLICTS_WITH_PROPS 1`] = `"A prop was already defined with the name isEnabled"`;
-
-exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`] = `
 "{
   'modules': {
     'Module': {
@@ -549,7 +547,7 @@ exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture ARRAY_PROP_TYPES_NO_EVENTS 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture ARRAY_PROP_TYPES_NO_EVENTS 1`] = `
 "{
   'modules': {
     'Module': {
@@ -1223,29 +1221,6 @@ exports[`RN Codegen Flow Parser can generate fixture ARRAY_PROP_TYPES_NO_EVENTS 
                   }
                 }
               }
-            },
-            {
-              'name': 'array_of_array_of_object_required_with_spread',
-              'optional': false,
-              'typeAnnotation': {
-                'type': 'ArrayTypeAnnotation',
-                'elementType': {
-                  'type': 'ArrayTypeAnnotation',
-                  'elementType': {
-                    'type': 'ObjectTypeAnnotation',
-                    'properties': [
-                      {
-                        'name': 'prop',
-                        'optional': false,
-                        'typeAnnotation': {
-                          'type': 'StringTypeAnnotation',
-                          'default': null
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
             }
           ],
           'commands': []
@@ -1256,7 +1231,7 @@ exports[`RN Codegen Flow Parser can generate fixture ARRAY_PROP_TYPES_NO_EVENTS 
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_EXPORTED 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_EXPORTED 1`] = `
 "{
   'modules': {
     'Module': {
@@ -2819,7 +2794,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_TYPES 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_TYPES 1`] = `
 "{
   'modules': {
     'Module': {
@@ -2922,7 +2897,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_T
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture COMMANDS_WITH_EXTERNAL_TYPES 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_WITH_EXTERNAL_TYPES 1`] = `
 "{
   'modules': {
     'Module': {
@@ -2970,7 +2945,7 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_WITH_EXTERNAL_TYPE
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_AS_NULL_INLINE 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_AS_NULL_INLINE 1`] = `
 "{
   'modules': {
     'Module': {
@@ -3116,7 +3091,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_AS_NULL_INLI
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_ALL_TYPES 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_ALL_TYPES 1`] = `
 "{
   'modules': {
     'Module': {
@@ -6922,7 +6897,7 @@ exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_INLINE_WITH_
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION 1`] = `
 "{
   'modules': {
     'Module': {
@@ -6946,7 +6921,7 @@ exports[`RN Codegen Flow Parser can generate fixture NO_PROPS_EVENTS_ONLY_DEPREC
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture OBJECT_PROP_TYPES_NO_EVENTS 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture OBJECT_PROP_TYPES_NO_EVENTS 1`] = `
 "{
   'modules': {
     'Module': {
@@ -7608,7 +7583,7 @@ exports[`RN Codegen Flow Parser can generate fixture OBJECT_PROP_TYPES_NO_EVENTS
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS 1`] = `
 "{
   'modules': {
     'Module': {
@@ -7667,7 +7642,7 @@ exports[`RN Codegen Flow Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFA
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST 1`] = `
 "{
   'modules': {
     'Module': {
@@ -7729,7 +7704,7 @@ exports[`RN Codegen Flow Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFA
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture PROPS_ALIASED_LOCALLY 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture PROPS_ALIASED_LOCALLY 1`] = `
 "{
   'modules': {
     'Module': {
@@ -7846,7 +7821,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_ALIASED_LOCALLY 1`] =
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPORTED 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPORTED 1`] = `
 "{
   'modules': {
     'Module': {
@@ -9384,7 +9359,7 @@ exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPO
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture PROPS_AS_EXTERNAL_TYPES 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AS_EXTERNAL_TYPES 1`] = `
 "{
   'modules': {
     'Module': {
