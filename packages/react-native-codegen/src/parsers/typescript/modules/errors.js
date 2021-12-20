@@ -13,27 +13,27 @@
 const invariant = require('invariant');
 const {ParserError} = require('../errors');
 
-class MisnamedModuleFlowInterfaceParserError extends ParserError {
+class MisnamedModuleTypeScriptInterfaceParserError extends ParserError {
   constructor(hasteModuleName: string, id: $FlowFixMe) {
     super(
       hasteModuleName,
       id,
-      `All Flow interfaces extending TurboModule must be called 'Spec'. Please rename Flow interface '${id.name}' to 'Spec'.`,
+      `All TypeScript interfaces extending TurboModule must be called 'Spec'. Please rename TypeScript interface '${id.name}' to 'Spec'.`,
     );
   }
 }
 
-class ModuleFlowInterfaceNotFoundParserError extends ParserError {
+class ModuleTypeScriptInterfaceNotFoundParserError extends ParserError {
   constructor(hasteModuleName: string, ast: $FlowFixMe) {
     super(
       hasteModuleName,
       ast,
-      'No Flow interfaces extending TurboModule were detected in this NativeModule spec.',
+      'No TypeScript interfaces extending TurboModule were detected in this NativeModule spec.',
     );
   }
 }
 
-class MoreThanOneModuleFlowInterfaceParserError extends ParserError {
+class MoreThanOneModuleTypeScriptInterfaceParserError extends ParserError {
   constructor(
     hasteModuleName: string,
     flowModuleInterfaces: $ReadOnlyArray<$FlowFixMe>,
@@ -49,7 +49,7 @@ class MoreThanOneModuleFlowInterfaceParserError extends ParserError {
     super(
       hasteModuleName,
       flowModuleInterfaces,
-      `Every NativeModule spec file must declare exactly one NativeModule Flow interface. This file declares ${names.length}: ${nameStr}. Please remove the extraneous Flow interface declarations.`,
+      `Every NativeModule spec file must declare exactly one NativeModule TypeScript interface. This file declares ${names.length}: ${nameStr}. Please remove the extraneous TypeScript interface declarations.`,
     );
   }
 }
@@ -64,28 +64,28 @@ class UnsupportedModulePropertyParserError extends ParserError {
     super(
       hasteModuleName,
       propertyValue,
-      `Flow interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's. Property '${propertyName}' refers to a '${invalidPropertyValueType}'.`,
+      `TypeScript interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's. Property '${propertyName}' refers to a '${invalidPropertyValueType}'.`,
     );
   }
 }
 
-class UnsupportedFlowTypeAnnotationParserError extends ParserError {
+class UnsupportedTypeScriptTypeAnnotationParserError extends ParserError {
   +typeAnnotationType: string;
   constructor(hasteModuleName: string, typeAnnotation: $FlowFixMe) {
     super(
       hasteModuleName,
       typeAnnotation,
-      `Flow type annotation '${typeAnnotation.type}' is unsupported in NativeModule specs.`,
+      `TypeScript type annotation '${typeAnnotation.type}' is unsupported in NativeModule specs.`,
     );
 
     this.typeAnnotationType = typeAnnotation.type;
   }
 }
 
-class UnsupportedFlowGenericParserError extends ParserError {
+class UnsupportedTypeScriptGenericParserError extends ParserError {
   +genericName: string;
   constructor(hasteModuleName: string, genericTypeAnnotation: $FlowFixMe) {
-    const genericName = genericTypeAnnotation.id.name;
+    const genericName = genericTypeAnnotation.typeName.name;
     super(
       hasteModuleName,
       genericTypeAnnotation,
@@ -96,7 +96,7 @@ class UnsupportedFlowGenericParserError extends ParserError {
   }
 }
 
-class IncorrectlyParameterizedFlowGenericParserError extends ParserError {
+class IncorrectlyParameterizedTypeScriptGenericParserError extends ParserError {
   +genericName: string;
   +numTypeParameters: number;
 
@@ -105,7 +105,7 @@ class IncorrectlyParameterizedFlowGenericParserError extends ParserError {
       super(
         hasteModuleName,
         genericTypeAnnotation,
-        `Generic '${genericTypeAnnotation.id.name}' must have type parameters.`,
+        `Generic '${genericTypeAnnotation.typeName.name}' must have type parameters.`,
       );
       return;
     }
@@ -118,7 +118,7 @@ class IncorrectlyParameterizedFlowGenericParserError extends ParserError {
       super(
         hasteModuleName,
         genericTypeAnnotation.typeParameters,
-        `Generic '${genericTypeAnnotation.id.name}' must have exactly one type parameter.`,
+        `Generic '${genericTypeAnnotation.typeName.name}' must have exactly one type parameter.`,
       );
       return;
     }
@@ -138,7 +138,7 @@ class UnsupportedArrayElementTypeAnnotationParserError extends ParserError {
   constructor(
     hasteModuleName: string,
     arrayElementTypeAST: $FlowFixMe,
-    arrayType: 'Array' | '$ReadOnlyArray',
+    arrayType: 'Array' | 'ReadonlyArray',
     invalidArrayElementType: string,
   ) {
     super(
@@ -160,10 +160,6 @@ class UnsupportedObjectPropertyTypeAnnotationParserError extends ParserError {
     invalidPropertyType: string,
   ) {
     let message = `'ObjectTypeAnnotation' cannot contain '${invalidPropertyType}'.`;
-
-    if (invalidPropertyType === 'ObjectTypeSpreadProperty') {
-      message = "Object spread isn't supported in 'ObjectTypeAnnotation's.";
-    }
 
     super(hasteModuleName, propertyAST, message);
   }
@@ -227,7 +223,7 @@ class UnsupportedFunctionReturnTypeAnnotationParserError extends ParserError {
   }
 }
 
-class UnusedModuleFlowInterfaceParserError extends ParserError {
+class UnusedModuleTypeScriptInterfaceParserError extends ParserError {
   constructor(hasteModuleName: string, flowInterface: $FlowFixMe) {
     super(
       hasteModuleName,
@@ -313,20 +309,20 @@ class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
 }
 
 module.exports = {
-  IncorrectlyParameterizedFlowGenericParserError,
-  MisnamedModuleFlowInterfaceParserError,
-  ModuleFlowInterfaceNotFoundParserError,
-  MoreThanOneModuleFlowInterfaceParserError,
+  IncorrectlyParameterizedTypeScriptGenericParserError,
+  MisnamedModuleTypeScriptInterfaceParserError,
+  ModuleTypeScriptInterfaceNotFoundParserError,
+  MoreThanOneModuleTypeScriptInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
-  UnsupportedFlowGenericParserError,
-  UnsupportedFlowTypeAnnotationParserError,
+  UnsupportedTypeScriptGenericParserError,
+  UnsupportedTypeScriptTypeAnnotationParserError,
   UnsupportedFunctionParamTypeAnnotationParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
-  UnusedModuleFlowInterfaceParserError,
+  UnusedModuleTypeScriptInterfaceParserError,
   MoreThanOneModuleRegistryCallsParserError,
   UntypedModuleRegistryCallParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
