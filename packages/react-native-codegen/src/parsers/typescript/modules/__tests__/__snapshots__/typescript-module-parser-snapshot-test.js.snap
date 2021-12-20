@@ -1,22 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
+exports[`RN Codegen TypeScript Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
+exports[`RN Codegen TypeScript Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Module NativeSampleTurboModule: Flow interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's. Property 'sampleBool' refers to a 'BooleanTypeAnnotation'."`;
+exports[`RN Codegen TypeScript Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Module NativeSampleTurboModule: TypeScript interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's. Property 'sampleBool' refers to a 'TSBooleanKeyword'."`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Module NativeSampleTurboModule: Generic 'Promise' must have type parameters."`;
+exports[`RN Codegen TypeScript Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Module NativeSampleTurboModule: Generic 'Promise' must have type parameters."`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT 1`] = `"Module NativeSampleTurboModule: Generic '$ReadOnly' must have exactly one type parameter."`;
+exports[`RN Codegen TypeScript Parser Fails with error message NATIVE_MODULES_WITH_UNNAMED_PARAMS 1`] = `"Module NativeSampleTurboModule: All function parameters must be named."`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_UNNAMED_PARAMS 1`] = `"Module NativeSampleTurboModule: All function parameters must be named."`;
+exports[`RN Codegen TypeScript Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"Module NativeSampleTurboModule: Every NativeModule spec file must declare exactly one NativeModule TypeScript interface. This file declares 2: 'Spec', and 'Spec2'. Please remove the extraneous TypeScript interface declarations."`;
 
-exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"Module NativeSampleTurboModule: Every NativeModule spec file must declare exactly one NativeModule Flow interface. This file declares 2: 'Spec', and 'Spec2'. Please remove the extraneous Flow interface declarations."`;
+exports[`RN Codegen TypeScript Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `"Module NativeSampleTurboModule: No TypeScript interfaces extending TurboModule were detected in this NativeModule spec."`;
 
-exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `"Module NativeSampleTurboModule: No Flow interfaces extending TurboModule were detected in this NativeModule spec."`;
-
-exports[`RN Codegen Flow Parser can generate fixture ANDROID_ONLY_NATIVE_MODULE 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture ANDROID_ONLY_NATIVE_MODULE 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -36,7 +34,7 @@ exports[`RN Codegen Flow Parser can generate fixture ANDROID_ONLY_NATIVE_MODULE 
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -53,7 +51,7 @@ exports[`RN Codegen Flow Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -73,7 +71,7 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -206,7 +204,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -249,7 +247,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -286,7 +284,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_ARRAY 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BASIC_ARRAY 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -354,7 +352,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_AR
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PARAM_TYPES 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PARAM_TYPES 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -448,7 +446,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -510,7 +508,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_ARRAY 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_ARRAY 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -571,7 +569,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_OBJECTS 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_OBJECTS 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -785,7 +783,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -891,7 +889,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AND_INT32 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AND_INT32 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -947,7 +945,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AN
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_ALIASES 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NESTED_ALIASES 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -1040,7 +1038,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_A
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE_PARAM 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE_PARAM 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -1080,7 +1078,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -1171,7 +1169,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -1222,7 +1220,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -1261,7 +1259,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_OBJECT 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_OBJECT 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {
@@ -1298,7 +1296,7 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_O
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_OBJECT 1`] = `
+exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_OBJECT 1`] = `
 "{
   'modules': {
     'NativeSampleTurboModule': {

@@ -9,8 +9,6 @@
  * @lint-ignore-every LICENSELINT
  */
 
-'use strict';
-
 const EMPTY_NATIVE_MODULE = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -18,21 +16,17 @@ const EMPTY_NATIVE_MODULE = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  // no methods
+
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_COMPLEX_OBJECTS = `
@@ -42,32 +36,29 @@ const NATIVE_MODULE_WITH_COMPLEX_OBJECTS = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export type String = string;
 
 export interface Spec extends TurboModule {
   // Exported methods.
-  +getObject: (arg: {|const1: {|const1: boolean|}|}) => {|
-    const1: {|const1: boolean|},
-  |};
-  +getReadOnlyObject: (arg: $ReadOnly<{|const1: $ReadOnly<{|const1: boolean|}>|}>) => $ReadOnly<{|
-    const1: {|const1: boolean|},
-  |}>;
-  +getObject2: (arg: { a: String }) => Object;
-  +getObjectInArray: (arg: {const1: {|const1: boolean|}}) => Array<{|
+  readonly getObject: (arg: {const1: {const1: boolean}}) => {
     const1: {const1: boolean},
-  |}>;
+  };
+  readonly getReadOnlyObject: (arg: Readonly<{const1: Readonly<{const1: boolean}>}>) => Readonly<{
+    const1: {const1: boolean},
+  }>;
+  readonly getObject2: (arg: { a: String }) => Object;
+  readonly getObjectInArray: (arg: {const1: {const1: boolean}}) => Array<{
+    const1: {const1: boolean},
+  }>;
 }
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 `;
 
 const NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY = `
@@ -77,33 +68,31 @@ const NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+export type String = string;
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {|
-    isTesting: boolean,
-    reactNativeVersion: {|
-      major: number,
-      minor: number,
-      patch?: number,
-      prerelease: ?number,
-    |},
-    forceTouchAvailable: boolean,
-    osVersion: string,
-    systemName: string,
-    interfaceIdiom: string,
-  |};
+  readonly getConstants: () => {
+    isTesting: boolean;
+    reactNativeVersion: {
+      major: number;
+      minor: number;
+      patch?: number;
+      prerelease: number | null | void;
+    };
+    forceTouchAvailable: boolean;
+    osVersion: string;
+    systemName: string;
+    interfaceIdiom: string;
+  };
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_BASIC_PARAM_TYPES = `
@@ -113,20 +102,18 @@ const NATIVE_MODULE_WITH_BASIC_PARAM_TYPES = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
 
 import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +passBool?: (arg: boolean) => void;
-  +passNumber: (arg: number) => void;
-  +passString: (arg: string) => void;
-  +passStringish: (arg: Stringish) => void;
+  readonly passBool?: (arg: boolean) => void;
+  readonly passNumber: (arg: number) => void;
+  readonly passString: (arg: string) => void;
+  readonly passStringish: (arg: Stringish) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -140,14 +127,11 @@ const NATIVE_MODULE_WITH_ALIASES = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 type NumNum = number;
 export type Num = (arg: NumNum) => void;
@@ -155,23 +139,22 @@ type Num2 = Num;
 export type Void = void;
 export type A = number;
 export type B = number;
-export type ObjectAlias = {|
-  x: number,
-  y: number,
-  label: string,
-  truthy: boolean,
-|}
+export type ObjectAlias = {
+  x: number;
+  y: number;
+  label: string;
+  truthy: boolean;
+};
 
 export interface Spec extends TurboModule {
   // Exported methods.
-  +getNumber: Num2;
-  +getVoid: () => Void;
-  +getArray: (a: Array<A>) => {| a: B |};
-  +getStringFromAlias: (a: ObjectAlias) => string;
+  readonly getNumber: Num2;
+  readonly getVoid: () => Void;
+  readonly getArray: (a: Array<A>) => {a: B};
+  readonly getStringFromAlias: (a: ObjectAlias) => string;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_NESTED_ALIASES = `
@@ -181,23 +164,21 @@ const NATIVE_MODULE_WITH_NESTED_ALIASES = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
 
 import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
-type Bar = {|
+type Bar = {
   z: number
-|};
+};
 
-type Foo = {|
+type Foo = {
   bar1: Bar,
   bar2: Bar,
-|};
+};
 
 export interface Spec extends TurboModule {
   // Exported methods.
@@ -216,19 +197,16 @@ const NATIVE_MODULE_WITH_FLOAT_AND_INT32 = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import type {Int32, Float} from 'react-native/Libraries/Types/CodegenTypes';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getInt: (arg: Int32) => Int32;
-  +getFloat: (arg: Float) => Float;
+  readonly getInt: (arg: Int32) => Int32;
+  readonly getFloat: (arg: Float) => Float;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -241,21 +219,17 @@ const NATIVE_MODULE_WITH_SIMPLE_OBJECT = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getObject: (o: Object) => Object,
+  readonly getObject: (o: Object) => Object,
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_UNSAFE_OBJECT = `
@@ -265,22 +239,18 @@ const NATIVE_MODULE_WITH_UNSAFE_OBJECT = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import type {UnsafeObject} from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
-  +getUnsafeObject: (o: UnsafeObject) => UnsafeObject,
+  readonly getUnsafeObject: (o: UnsafeObject) => UnsafeObject;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_ROOT_TAG = `
@@ -290,21 +260,20 @@ const NATIVE_MODULE_WITH_ROOT_TAG = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {RootTag, TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {
+  TurboModule,
+  RootTag,
+} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getRootTag: (rootTag: RootTag) => RootTag,
+  readonly getRootTag: (rootTag: RootTag) => RootTag;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_NULLABLE_PARAM = `
@@ -314,22 +283,17 @@ const NATIVE_MODULE_WITH_NULLABLE_PARAM = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  // Exported methods.
-  +voidFunc: (arg: ?string) => void;
+  readonly voidFunc: (arg: string | null | void) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_BASIC_ARRAY = `
@@ -339,22 +303,18 @@ const NATIVE_MODULE_WITH_BASIC_ARRAY = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getArray: (arg: Array<string>) => Array<string>;
-  +getArray: (arg: $ReadOnlyArray<string>) => $ReadOnlyArray<string>;
+  readonly getArray: (arg: Array<string>) => Array<string>;
+  readonly getArray: (arg: ReadonlyArray<string>) => ReadonlyArray<string>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY = `
@@ -364,34 +324,30 @@ const NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
-
-type DisplayMetricsAndroid = {|
- width: number,
-|};
+type DisplayMetricsAndroid = {
+  width: number;
+};
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {|
-    +Dimensions: {
-      windowPhysicalPixels: DisplayMetricsAndroid,
-    },
-  |};
-  +getConstants2: () => $ReadOnly<{|
-    +Dimensions: {
-      windowPhysicalPixels: DisplayMetricsAndroid,
-    },
-  |}>;
+  readonly getConstants: () => {
+    readonly Dimensions: {
+      windowPhysicalPixels: DisplayMetricsAndroid;
+    };
+  };
+  readonly getConstants2: () => Readonly<{
+    readonly Dimensions: {
+      windowPhysicalPixels: DisplayMetricsAndroid;
+    };
+  }>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE = `
@@ -401,21 +357,19 @@ const NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getArray: (arg: Array<[string, string]>) => Array<string | number | boolean>;
+  readonly getArray: (
+    arg: Array<[string, string]>,
+  ) => Array<string | number | boolean>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS = `
@@ -425,23 +379,19 @@ const NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export type SomeString = string;
 
 export interface Spec extends TurboModule {
-  +getArray: (arg: Array<SomeString>) => Array<string>;
+  readonly getArray: (arg: Array<SomeString>) => Array<string>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_COMPLEX_ARRAY = `
@@ -451,21 +401,19 @@ const NATIVE_MODULE_WITH_COMPLEX_ARRAY = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getArray: (arg: Array<Array<Array<Array<Array<string>>>>>) => Array<Array<Array<string>>>;
+  readonly getArray: (
+    arg: Array<Array<Array<Array<Array<string>>>>>,
+  ) => Array<Array<Array<string>>>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_PROMISE = `
@@ -475,26 +423,22 @@ const NATIVE_MODULE_WITH_PROMISE = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export type String = string;
-export type SomeObj = {| a: string |};
+export type SomeObj = { a: string };
 
 export interface Spec extends TurboModule {
-  +getValueWithPromise: () => Promise<string>;
-  +getValueWithPromiseDefinedSomewhereElse: () => Promise<String>;
-  +getValueWithPromiseObjDefinedSomewhereElse: () => Promise<SomeObj>;
+  readonly getValueWithPromise: () => Promise<string>;
+  readonly getValueWithPromiseDefinedSomewhereElse: () => Promise<String>;
+  readonly getValueWithPromiseObjDefinedSomewhereElse: () => Promise<SomeObj>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const NATIVE_MODULE_WITH_CALLBACK = `
@@ -504,24 +448,19 @@ const NATIVE_MODULE_WITH_CALLBACK = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
-
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  // Exported methods.
-  +getValueWithCallback: (
+  readonly getValueWithCallback: (
     callback: (value: string, arr: Array<Array<string>>) => void,
   ) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
-
 `;
 
 const ANDROID_ONLY_NATIVE_MODULE = `
@@ -531,21 +470,17 @@ const ANDROID_ONLY_NATIVE_MODULE = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+export interface Spec extends TurboModule {}
 
-export interface Spec extends TurboModule {
-  // no methods
-}
-
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleAndroid');
-
+export default TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModuleAndroid',
+);
 `;
 
 const IOS_ONLY_NATIVE_MODULE = `
@@ -555,21 +490,17 @@ const IOS_ONLY_NATIVE_MODULE = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
-'use strict';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+export interface Spec extends TurboModule {}
 
-export interface Spec extends TurboModule {
-  // no methods
-}
-
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleIOS');
-
+export default TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModuleIOS',
+);
 `;
 
 module.exports = {
