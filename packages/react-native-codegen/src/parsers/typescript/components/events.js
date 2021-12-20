@@ -22,12 +22,12 @@ function getPropertyType(
   typeAnnotation,
 ): NamedShape<EventTypeAnnotation> {
   const type =
-    typeAnnotation.type === 'GenericTypeAnnotation'
-      ? typeAnnotation.id.name
+    typeAnnotation.type === 'TSTypeReference'
+      ? typeAnnotation.typeName.name
       : typeAnnotation.type;
 
   switch (type) {
-    case 'BooleanTypeAnnotation':
+    case 'TSBooleanKeyword':
       return {
         name,
         optional,
@@ -35,7 +35,7 @@ function getPropertyType(
           type: 'BooleanTypeAnnotation',
         },
       };
-    case 'StringTypeAnnotation':
+    case 'TSStringKeyword':
       return {
         name,
         optional,
@@ -67,28 +67,48 @@ function getPropertyType(
           type: 'FloatTypeAnnotation',
         },
       };
-    case '$ReadOnly':
+    case 'Readonly':
       return getPropertyType(
         name,
         optional,
         typeAnnotation.typeParameters.params[0],
       );
-    case 'ObjectTypeAnnotation':
+
+    case 'TSTypeLiteral':
       return {
         name,
         optional,
         typeAnnotation: {
           type: 'ObjectTypeAnnotation',
-          properties: typeAnnotation.properties.map(buildPropertiesForEvent),
+          properties: typeAnnotation.members.map(buildPropertiesForEvent),
         },
       };
-    case 'UnionTypeAnnotation':
+
+    case 'TSUnionType':
+      // Check for <T | null | void>
+      if (
+        typeAnnotation.types.some(
+          t => t.type === 'TSNullKeyword' || t.type === 'TSVoidKeyword',
+        )
+      ) {
+        const optionalType = typeAnnotation.types.filter(
+          t => t.type !== 'TSNullKeyword' && t.type !== 'TSVoidKeyword',
+        )[0];
+
+        // Check for <(T | T2) | null | void>
+        if (optionalType.type === 'TSParenthesizedType') {
+          return getPropertyType(name, true, optionalType.typeAnnotation);
+        }
+
+        return getPropertyType(name, true, optionalType);
+      }
+
       return {
         name,
         optional,
         typeAnnotation: {
           type: 'StringEnumTypeAnnotation',
-          options: typeAnnotation.types.map(option => option.value),
+          options: typeAnnotation.types.map(option => option.literal.value),
         },
       };
     default:
@@ -103,13 +123,13 @@ function findEventArgumentsAndType(
   bubblingType,
   paperName,
 ) {
-  if (!typeAnnotation.id) {
+  if (!typeAnnotation.typeName) {
     throw new Error("typeAnnotation of event doesn't have a name");
   }
-  const name = typeAnnotation.id.name;
-  if (name === '$ReadOnly') {
+  const name = typeAnnotation.typeName.name;
+  if (name === 'Readonly') {
     return {
-      argumentProps: typeAnnotation.typeParameters.params[0].properties,
+      argumentProps: typeAnnotation.typeParameters.params[0].members,
       paperTopLevelNameDeprecated: paperName,
       bubblingType,
     };
@@ -117,12 +137,10 @@ function findEventArgumentsAndType(
     const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
     const paperTopLevelNameDeprecated =
       typeAnnotation.typeParameters.params.length > 1
-        ? typeAnnotation.typeParameters.params[1].value
+        ? typeAnnotation.typeParameters.params[1].literal.value
         : null;
-    if (
-      typeAnnotation.typeParameters.params[0].type ===
-      'NullLiteralTypeAnnotation'
-    ) {
+
+    if (typeAnnotation.typeParameters.params[0].type === 'TSNullKeyword') {
       return {
         argumentProps: [],
         bubblingType: eventType,
@@ -137,7 +155,7 @@ function findEventArgumentsAndType(
     );
   } else if (types[name]) {
     return findEventArgumentsAndType(
-      types[name].right,
+      types[name].typeAnnotation,
       types,
       bubblingType,
       paperName,
@@ -153,12 +171,8 @@ function findEventArgumentsAndType(
 
 function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   const name = property.key.name;
-  const optional =
-    property.value.type === 'NullableTypeAnnotation' || property.optional;
-  let typeAnnotation =
-    property.value.type === 'NullableTypeAnnotation'
-      ? property.value.typeAnnotation
-      : property.value;
+  const optional = property.optional || false;
+  let typeAnnotation = property.typeAnnotation.typeAnnotation;
 
   return getPropertyType(name, optional, typeAnnotation);
 }
@@ -175,18 +189,27 @@ function buildEventSchema(
   property: EventTypeAST,
 ): ?EventTypeShape {
   const name = property.key.name;
-  const optional =
-    property.optional || property.value.type === 'NullableTypeAnnotation';
 
-  let typeAnnotation =
-    property.value.type === 'NullableTypeAnnotation'
-      ? property.value.typeAnnotation
-      : property.value;
+  let optional = property.optional || false;
+  let typeAnnotation = property.typeAnnotation.typeAnnotation;
+
+  // Check for T | null | void
+  if (
+    typeAnnotation.type === 'TSUnionType' &&
+    typeAnnotation.types.some(
+      t => t.type === 'TSNullKeyword' || t.type === 'TSVoidKeyword',
+    )
+  ) {
+    typeAnnotation = typeAnnotation.types.filter(
+      t => t.type !== 'TSNullKeyword' && t.type !== 'TSVoidKeyword',
+    )[0];
+    optional = true;
+  }
 
   if (
-    typeAnnotation.type !== 'GenericTypeAnnotation' ||
-    (typeAnnotation.id.name !== 'BubblingEventHandler' &&
-      typeAnnotation.id.name !== 'DirectEventHandler')
+    typeAnnotation.type !== 'TSTypeReference' ||
+    (typeAnnotation.typeName.name !== 'BubblingEventHandler' &&
+      typeAnnotation.typeName.name !== 'DirectEventHandler')
   ) {
     return null;
   }
@@ -228,11 +251,11 @@ function buildEventSchema(
   }
 }
 
-// $FlowFixMe[unclear-type] there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type EventTypeAST = Object;
 
 type TypeMap = {
-  // $FlowFixMe[unclear-type] there's no flowtype for ASTs
+  // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
   [string]: Object,
   ...
 };
@@ -242,7 +265,7 @@ function getEvents(
   types: TypeMap,
 ): $ReadOnlyArray<EventTypeShape> {
   return eventTypeAST
-    .filter(property => property.type === 'ObjectTypeProperty')
+    .filter(property => property.type === 'TSPropertySignature')
     .map(property => buildEventSchema(types, property))
     .filter(Boolean);
 }

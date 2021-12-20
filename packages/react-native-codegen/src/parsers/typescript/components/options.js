@@ -12,7 +12,7 @@
 
 import type {OptionsShape} from '../../../CodegenSchema.js';
 
-// $FlowFixMe[unclear-type] there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type OptionsAST = Object;
 
 export type CommandOptions = $ReadOnly<{

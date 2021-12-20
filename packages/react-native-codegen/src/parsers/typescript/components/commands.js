@@ -22,17 +22,20 @@ type EventTypeAST = Object;
 
 function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
   const name = property.key.name;
-  const optional = property.optional;
-  const value = getValueFromTypes(property.value, types);
+  const optional = property.optional || false;
+  const value = getValueFromTypes(
+    property.typeAnnotation.typeAnnotation,
+    types,
+  );
 
-  const firstParam = value.params[0].typeAnnotation;
+  const firstParam = value.parameters[0].typeAnnotation;
 
   if (
     !(
-      firstParam.id != null &&
-      firstParam.id.type === 'QualifiedTypeIdentifier' &&
-      firstParam.id.qualification.name === 'React' &&
-      firstParam.id.id.name === 'ElementRef'
+      firstParam.typeAnnotation != null &&
+      firstParam.typeAnnotation.type === 'TSTypeReference' &&
+      firstParam.typeAnnotation.typeName.left?.name === 'React' &&
+      firstParam.typeAnnotation.typeName.right?.name === 'ElementRef'
     )
   ) {
     throw new Error(
@@ -40,12 +43,16 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
     );
   }
 
-  const params = value.params.slice(1).map(param => {
-    const paramName = param.name.name;
-    const paramValue = getValueFromTypes(param.typeAnnotation, types);
+  const params = value.parameters.slice(1).map(param => {
+    const paramName = param.name;
+    const paramValue = getValueFromTypes(
+      param.typeAnnotation.typeAnnotation,
+      types,
+    );
+
     const type =
-      paramValue.type === 'GenericTypeAnnotation'
-        ? paramValue.id.name
+      paramValue.type === 'TSTypeReference'
+        ? paramValue.typeName.name
         : paramValue.type;
     let returnType;
 
@@ -56,7 +63,7 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
           name: 'RootTag',
         };
         break;
-      case 'BooleanTypeAnnotation':
+      case 'TSBooleanKeyword':
         returnType = {
           type: 'BooleanTypeAnnotation',
         };
@@ -76,7 +83,7 @@ function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
           type: 'FloatTypeAnnotation',
         };
         break;
-      case 'StringTypeAnnotation':
+      case 'TSStringKeyword':
         returnType = {
           type: 'StringTypeAnnotation',
         };
@@ -112,7 +119,7 @@ function getCommands(
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
-    .filter(property => property.type === 'ObjectTypeProperty')
+    .filter(property => property.type === 'TSPropertySignature')
     .map(property => buildCommandSchema(property, types))
     .filter(Boolean);
 }

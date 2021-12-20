@@ -14,10 +14,10 @@ import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../utils.js';
 
 function extendsForProp(prop: PropsAST, types: TypeDeclarationMap) {
-  if (!prop.argument) {
+  if (!prop.expression) {
     console.log('null', prop);
   }
-  const name = prop.argument.id.name;
+  const name = prop.expression.name;
 
   if (types[name] != null) {
     // This type is locally defined in the file
@@ -42,12 +42,12 @@ function removeKnownExtends(
 ): $ReadOnlyArray<PropsAST> {
   return typeDefinition.filter(
     prop =>
-      prop.type !== 'ObjectTypeSpreadProperty' ||
+      prop.type !== 'TSExpressionWithTypeArguments' ||
       extendsForProp(prop, types) === null,
   );
 }
 
-// $FlowFixMe[unclear-type] there's no flowtype for ASTs
+// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type PropsAST = Object;
 
 function getExtendsProps(
@@ -55,7 +55,7 @@ function getExtendsProps(
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<ExtendsPropsShape> {
   return typeDefinition
-    .filter(prop => prop.type === 'ObjectTypeSpreadProperty')
+    .filter(prop => prop.type === 'TSExpressionWithTypeArguments')
     .map(prop => extendsForProp(prop, types))
     .filter(Boolean);
 }

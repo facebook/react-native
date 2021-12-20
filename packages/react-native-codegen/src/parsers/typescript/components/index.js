@@ -32,17 +32,17 @@ function findComponentConfig(ast) {
 
     // codegenNativeComponent can be nested inside a cast
     // expression so we need to go one level deeper
-    if (declaration.type === 'TypeCastExpression') {
+    if (declaration.type === 'TSAsExpression') {
       declaration = declaration.expression;
     }
 
     try {
       if (declaration.callee.name === 'codegenNativeComponent') {
-        const typeArgumentParams = declaration.typeArguments.params;
+        const typeArgumentParams = declaration.typeParameters.params;
         const funcArgumentParams = declaration.arguments;
 
         const nativeComponentType = {};
-        nativeComponentType.propsTypeName = typeArgumentParams[0].id.name;
+        nativeComponentType.propsTypeName = typeArgumentParams[0].typeName.name;
         nativeComponentType.componentName = funcArgumentParams[0].value;
         if (funcArgumentParams.length > 1) {
           nativeComponentType.optionsExpression = funcArgumentParams[1];
@@ -89,16 +89,16 @@ function findComponentConfig(ast) {
         );
       }
 
-      const typeArgumentParam = callExpression.typeArguments.params[0];
+      const typeArgumentParam = callExpression.typeParameters.params[0];
 
-      if (typeArgumentParam.type !== 'GenericTypeAnnotation') {
+      if (typeArgumentParam.type !== 'TSTypeReference') {
         throw new Error(
           "codegenNativeCommands doesn't support inline definitions. Specify a file local type alias",
         );
       }
 
       return {
-        commandTypeName: typeArgumentParam.id.name,
+        commandTypeName: typeArgumentParam.typeName.name,
         commandOptionsExpression: callExpression.arguments[0],
       };
     })
@@ -132,7 +132,7 @@ function getCommandProperties(
 
   const typeAlias = types[commandTypeName];
 
-  if (typeAlias.type !== 'InterfaceDeclaration') {
+  if (typeAlias.type !== 'TSInterfaceDeclaration') {
     throw new Error(
       `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
     );
@@ -140,14 +140,14 @@ function getCommandProperties(
 
   let properties;
   try {
-    properties = typeAlias.body.properties;
+    properties = typeAlias.body.body;
   } catch (e) {
     throw new Error(
-      `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen flow file`,
+      `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen typescript file`,
     );
   }
 
-  const flowPropertyNames = properties
+  const typeScriptPropertyNames = properties
     .map(property => property && property.key && property.key.name)
     .filter(Boolean);
 
@@ -158,13 +158,14 @@ function getCommandProperties(
   }
 
   if (
-    commandOptions.supportedCommands.length !== flowPropertyNames.length ||
+    commandOptions.supportedCommands.length !==
+      typeScriptPropertyNames.length ||
     !commandOptions.supportedCommands.every(supportedCommand =>
-      flowPropertyNames.includes(supportedCommand),
+      typeScriptPropertyNames.includes(supportedCommand),
     )
   ) {
     throw new Error(
-      `codegenNativeCommands expected the same supportedCommands specified in the ${commandTypeName} interface: ${flowPropertyNames.join(
+      `codegenNativeCommands expected the same supportedCommands specified in the ${commandTypeName} interface: ${typeScriptPropertyNames.join(
         ', ',
       )}`,
     );
@@ -173,7 +174,7 @@ function getCommandProperties(
   return properties;
 }
 
-// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+// $FlowFixMe[signature-verification-failure] TODO(T108222691): Use flow-types for @babel/parser
 function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
   const {
     componentName,
