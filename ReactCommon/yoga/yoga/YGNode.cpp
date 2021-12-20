@@ -488,10 +488,6 @@ float YGNode::resolveFlexGrow() const {
 }
 
 float YGNode::resolveRowGap() const {
-  if (owner_ == nullptr) {
-    return 0.0;
-  }
-
   float rowGap = 0.0;
     
   if (!style_.gap().isUndefined()) {
@@ -508,10 +504,6 @@ float YGNode::resolveRowGap() const {
 
 
 float YGNode::resolveColumnGap() const {
-  if (owner_ == nullptr) {
-    return 0.0;
-  }
-    
   float columnGap = 0.0;
     
   if (!style_.gap().isUndefined()) {
