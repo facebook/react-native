@@ -197,6 +197,11 @@ function isModuleRegistryCall(node: $FlowFixMe): boolean {
   ) {
     return false;
   }
+
+  if (memberExpression.computed) {
+    return false;
+  }
+
   return true;
 }
 

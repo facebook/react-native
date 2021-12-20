@@ -18,6 +18,7 @@
     "lib"
   ],
   "dependencies": {
+    "@babel/parser": "^7.14.0",
     "flow-parser": "^0.121.0",
     "jscodeshift": "^0.11.0",
     "nullthrows": "^1.1.1"
