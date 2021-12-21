@@ -265,12 +265,12 @@ jobs:
 
       - run:
           name: Lint code
-          command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
+          command: yarn lint
           when: always
 
       - run:
           name: Lint Java
-          command: scripts/circleci/exec_swallow_error.sh yarn lint-java --check
+          command: yarn lint-java --check
           when: always
 
       - run:
@@ -294,9 +294,6 @@ jobs:
           name: Check formatting
           command: yarn run format-check
           when: always
-
-      - store_test_results:
-          path: ./reports/junit
 
   # -------------------------
   #   JOBS: Test JavaScript
