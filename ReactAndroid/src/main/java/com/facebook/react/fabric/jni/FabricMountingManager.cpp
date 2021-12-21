@@ -307,8 +307,9 @@ void FabricMountingManager::executeMount(
           // children of the current view. The layout of current view may not
           // change, and we separate this part from layout mount items to not
           // pack too much data there.
-          if (oldChildShadowView.layoutMetrics.overflowInset !=
-              newChildShadowView.layoutMetrics.overflowInset) {
+          if (useOverflowInset_ &&
+              (oldChildShadowView.layoutMetrics.overflowInset !=
+               newChildShadowView.layoutMetrics.overflowInset)) {
             cppUpdateOverflowInsetMountItems.push_back(
                 CppMountItem::UpdateOverflowInsetMountItem(newChildShadowView));
           }
@@ -355,8 +356,10 @@ void FabricMountingManager::executeMount(
           // children of the current view. The layout of current view may not
           // change, and we separate this part from layout mount items to not
           // pack too much data there.
-          cppUpdateOverflowInsetMountItems.push_back(
-              CppMountItem::UpdateOverflowInsetMountItem(newChildShadowView));
+          if (useOverflowInset_) {
+            cppUpdateOverflowInsetMountItems.push_back(
+                CppMountItem::UpdateOverflowInsetMountItem(newChildShadowView));
+          }
         }
 
         // EventEmitter
@@ -860,6 +863,15 @@ void FabricMountingManager::onAllAnimationsComplete() {
   allAnimationsCompleteJNI(javaUIManager_);
 }
 
+bool doesUseOverflowInset() {
+  static const auto reactFeatureFlagsJavaDescriptor = jni::findClassStatic(
+      FabricMountingManager::ReactFeatureFlagsJavaDescriptor);
+  static const auto doesUseOverflowInset =
+      reactFeatureFlagsJavaDescriptor->getStaticMethod<jboolean()>(
+          "doesUseOverflowInset");
+  return doesUseOverflowInset(reactFeatureFlagsJavaDescriptor);
+}
+
 FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig> &config,
     global_ref<jobject> &javaUIManager)
@@ -872,6 +884,7 @@ FabricMountingManager::FabricMountingManager(
       config->getBool("react_fabric:disabled_view_preallocation_android");
   disableRevisionCheckForPreallocation_ =
       config->getBool("react_fabric:disable_revision_check_for_preallocation");
+  useOverflowInset_ = doesUseOverflowInset();
 }
 
 } // namespace react

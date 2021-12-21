@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.ReactHitSlopView;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -185,7 +186,8 @@ public class TouchTargetHelper {
         if (view instanceof ReactOverflowViewWithInset) {
           // If the touch point is outside of the overflowinset for the view, we can safely ignore
           // it.
-          if (!isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)) {
+          if (ReactFeatureFlags.doesUseOverflowInset()
+              && !isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)) {
             return null;
           }
 

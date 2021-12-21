@@ -94,6 +94,17 @@ public class ReactFeatureFlags {
     return mapBufferSerializationEnabled;
   }
 
+  /** Feature Flag to use overflowInset values provided by Yoga */
+  private static boolean useOverflowInset = false;
+
+  public static void setUseOverflowInset(boolean enabled) {
+    useOverflowInset = enabled;
+  }
+
+  public static boolean doesUseOverflowInset() {
+    return useOverflowInset;
+  }
+
   /** Enables Fabric for LogBox */
   public static boolean enableFabricInLogBox = false;
 
