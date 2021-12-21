@@ -18,9 +18,8 @@
  * --skip-cli-install - to skip react-native-cli global installation (for local debugging)
  * --retries [num] - how many times to retry possible flaky commands: yarn add and running tests, default 1
  */
-/*eslint-disable no-undef */
-require('shelljs/global');
 
+const {cd, cp, echo, exec, exit, mv} = require('shelljs');
 const spawn = require('child_process').spawn;
 const argv = require('yargs').argv;
 const path = require('path');
@@ -288,5 +287,3 @@ try {
   }
 }
 exit(exitCode);
-
-/*eslint-enable no-undef */

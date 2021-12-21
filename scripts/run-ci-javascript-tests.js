@@ -16,9 +16,8 @@
  * --jestBinary [path] - path to jest binary, defaults to local node modules
  * --yarnBinary [path] - path to yarn binary, defaults to yarn
  */
-/*eslint-disable no-undef */
-require('shelljs/global');
 
+const {echo, exec, exit} = require('shelljs');
 const argv = require('yargs').argv;
 
 const numberOfMaxWorkers = argv.maxWorkers || 1;
@@ -72,5 +71,3 @@ try {
   echo('Finished.');
 }
 exit(exitCode);
-
-/*eslint-enable no-undef */
