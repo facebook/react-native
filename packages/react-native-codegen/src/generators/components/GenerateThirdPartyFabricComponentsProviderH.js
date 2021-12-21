@@ -86,8 +86,6 @@ module.exports = {
                 );
               })
               .map(componentName => {
-                const component = components[componentName];
-
                 return LookupFuncTemplate({
                   className: componentName,
                   libraryName,
