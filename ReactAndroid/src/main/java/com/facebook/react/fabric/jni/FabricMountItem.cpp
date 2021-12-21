@@ -45,6 +45,10 @@ CppMountItem CppMountItem::UpdatePaddingMountItem(
     ShadowView const &shadowView) {
   return {CppMountItem::Type::UpdatePadding, {}, {}, shadowView, -1};
 }
+CppMountItem CppMountItem::UpdateOverflowInsetMountItem(
+    ShadowView const &shadowView) {
+  return {CppMountItem::Type::UpdateOverflowInset, {}, {}, shadowView, -1};
+}
 
 } // namespace react
 } // namespace facebook

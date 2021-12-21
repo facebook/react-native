@@ -182,8 +182,14 @@ public class TouchTargetHelper {
       if (!isTouchPointInView(eventCoords[0], eventCoords[1], view)) {
         // We don't allow touches on views that are outside the bounds of an `overflow: hidden` and
         // `overflow: scroll` View.
-        if (view instanceof ReactOverflowView) {
-          @Nullable String overflow = ((ReactOverflowView) view).getOverflow();
+        if (view instanceof ReactOverflowViewWithInset) {
+          // If the touch point is outside of the overflowinset for the view, we can safely ignore
+          // it.
+          if (!isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)) {
+            return null;
+          }
+
+          @Nullable String overflow = ((ReactOverflowViewWithInset) view).getOverflow();
           if (ViewProps.HIDDEN.equals(overflow) || ViewProps.SCROLL.equals(overflow)) {
             return null;
           }
@@ -251,6 +257,16 @@ public class TouchTargetHelper {
 
       return false;
     }
+  }
+
+  private static boolean isTouchPointInViewWithOverflowInset(float x, float y, View view) {
+    if (!(view instanceof ReactOverflowViewWithInset)) {
+      return false;
+    }
+
+    final Rect overflowInset = ((ReactOverflowViewWithInset) view).getOverflowInset();
+    return (x >= -overflowInset.left && x < view.getWidth() - overflowInset.right)
+        && (y >= -overflowInset.top && y < view.getHeight() - overflowInset.bottom);
   }
 
   /**
