@@ -213,6 +213,18 @@
   return ((RCTUITextFieldCell*)self.cell).font;
 }
 
+- (void)setEnableFocusRing:(BOOL)enableFocusRing {
+  if (_enableFocusRing != enableFocusRing) {
+    _enableFocusRing = enableFocusRing;
+  }
+
+  if (enableFocusRing) {
+    [self setFocusRingType:NSFocusRingTypeDefault];
+  } else {
+    [self setFocusRingType:NSFocusRingTypeNone];
+  }
+}
+
 #endif // ]TODO(macOS GH#774)
 
 - (void)setPlaceholder:(NSString *)placeholder

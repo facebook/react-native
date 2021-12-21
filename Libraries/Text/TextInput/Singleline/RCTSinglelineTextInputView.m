@@ -87,6 +87,13 @@
     [self replaceSubview:previousTextField with:_backedTextInputView];
   }
 }
+
+- (void)setEnableFocusRing:(BOOL)enableFocusRing {
+  [super setEnableFocusRing:enableFocusRing];
+  if ([_backedTextInputView respondsToSelector:@selector(setEnableFocusRing:)]) {
+    [_backedTextInputView setEnableFocusRing:enableFocusRing];
+  }
+}
 #endif // ]TODO(macOS GH#774)
 
 @end

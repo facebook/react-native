@@ -1191,6 +1191,7 @@ function InternalTextInput(props: Props): React.Node {
         accessibilityState={props.accessibilityState}
         nativeID={props.nativeID}
         testID={props.testID}
+        enableFocusRing={props.enableFocusRing} // TODO(macOS GH#774)
         {...additionalTouchableProps}>
         {textInput}
       </TouchableWithoutFeedback>
