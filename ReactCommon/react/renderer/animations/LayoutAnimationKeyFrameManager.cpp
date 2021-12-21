@@ -172,7 +172,7 @@ bool LayoutAnimationKeyFrameManager::shouldOverridePullTransaction() const {
   return shouldAnimateFrame();
 }
 
-better::optional<MountingTransaction>
+butter::optional<MountingTransaction>
 LayoutAnimationKeyFrameManager::pullTransaction(
     SurfaceId surfaceId,
     MountingTransaction::Number transactionNumber,
@@ -250,7 +250,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
         surfaceId, mutations, conflictingAnimations);
 
     // Are we animating this list of mutations?
-    better::optional<LayoutAnimation> currentAnimation{};
+    butter::optional<LayoutAnimation> currentAnimation{};
     {
       std::lock_guard<std::mutex> lock(currentAnimationMutex_);
       if (currentAnimation_) {
@@ -271,9 +271,9 @@ LayoutAnimationKeyFrameManager::pullTransaction(
       // TODO: to prevent this step we could tag Remove/Insert mutations as
       // being moves on the Differ level, since we know that there? We could use
       // TinyMap here, but it's not exposed by Differentiator (yet).
-      better::set<Tag> insertedTags;
-      better::set<Tag> deletedTags;
-      better::set<Tag> reparentedTags; // tags that are deleted and recreated
+      butter::set<Tag> insertedTags;
+      butter::set<Tag> deletedTags;
+      butter::set<Tag> reparentedTags; // tags that are deleted and recreated
       std::unordered_map<Tag, ShadowViewMutation> movedTags;
       for (const auto &mutation : mutations) {
         if (mutation.type == ShadowViewMutation::Type::Insert) {
@@ -320,7 +320,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
           continue;
         }
 
-        better::optional<ShadowViewMutation> executeMutationImmediately{};
+        butter::optional<ShadowViewMutation> executeMutationImmediately{};
 
         bool isRemoveReinserted =
             mutation.type == ShadowViewMutation::Type::Remove &&
@@ -1063,7 +1063,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
 void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
     LayoutAnimation layoutAnimation) const {
-  currentAnimation_ = better::optional<LayoutAnimation>{layoutAnimation};
+  currentAnimation_ = butter::optional<LayoutAnimation>{layoutAnimation};
 }
 
 void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
@@ -1616,7 +1616,7 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
 
   // Execute stopSurface on any ongoing animations
   if (inflightAnimationsExistInitially) {
-    better::set<SurfaceId> surfaceIdsToStop{};
+    butter::set<SurfaceId> surfaceIdsToStop{};
     {
       std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
       surfaceIdsToStop = surfaceIdsToStop_;

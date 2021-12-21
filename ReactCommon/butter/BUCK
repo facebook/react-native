@@ -13,7 +13,7 @@ load(
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
-    name = "better",
+    name = "butter",
     srcs = glob(
         ["**/*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
@@ -27,7 +27,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "better",
+        prefix = "butter",
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),

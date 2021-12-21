@@ -768,7 +768,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     RawValue const &value,
     AttributedString::Range &result) {
-  auto map = (better::map<std::string, int>)value;
+  auto map = (butter::map<std::string, int>)value;
 
   auto start = map.find("start");
   if (start != map.end()) {

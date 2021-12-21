@@ -101,7 +101,7 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   /*
    * Cached content of the subtree started from the node.
    */
-  mutable better::optional<Content> content_{};
+  mutable butter::optional<Content> content_{};
 };
 
 } // namespace react

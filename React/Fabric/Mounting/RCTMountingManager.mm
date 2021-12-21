@@ -7,7 +7,7 @@
 
 #import "RCTMountingManager.h"
 
-#import <better/map.h>
+#import <butter/map.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTComponent.h>

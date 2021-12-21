@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/map.h>
+#include <butter/map.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -88,8 +88,8 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     Point &result) {
-  if (value.hasType<better::map<std::string, Float>>()) {
-    auto map = (better::map<std::string, Float>)value;
+  if (value.hasType<butter::map<std::string, Float>>()) {
+    auto map = (butter::map<std::string, Float>)value;
     for (const auto &pair : map) {
       if (pair.first == "x") {
         result.x = pair.second;
@@ -119,8 +119,8 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     Size &result) {
-  if (value.hasType<better::map<std::string, Float>>()) {
-    auto map = (better::map<std::string, Float>)value;
+  if (value.hasType<butter::map<std::string, Float>>()) {
+    auto map = (butter::map<std::string, Float>)value;
     for (const auto &pair : map) {
       if (pair.first == "width") {
         result.width = pair.second;
@@ -159,8 +159,8 @@ inline void fromRawValue(
     return;
   }
 
-  if (value.hasType<better::map<std::string, Float>>()) {
-    auto map = (better::map<std::string, Float>)value;
+  if (value.hasType<butter::map<std::string, Float>>()) {
+    auto map = (butter::map<std::string, Float>)value;
     for (const auto &pair : map) {
       if (pair.first == "top") {
         result.top = pair.second;
@@ -203,8 +203,8 @@ inline void fromRawValue(
     return;
   }
 
-  if (value.hasType<better::map<std::string, Float>>()) {
-    auto map = (better::map<std::string, Float>)value;
+  if (value.hasType<butter::map<std::string, Float>>()) {
+    auto map = (butter::map<std::string, Float>)value;
     for (const auto &pair : map) {
       if (pair.first == "topLeft") {
         result.topLeft = pair.second;

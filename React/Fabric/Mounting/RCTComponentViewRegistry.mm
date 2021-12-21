@@ -15,15 +15,15 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTViewComponentView.h"
 
-#import <better/map.h>
+#import <butter/map.h>
 
 using namespace facebook::react;
 
 const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
 @implementation RCTComponentViewRegistry {
-  better::map<Tag, RCTComponentViewDescriptor> _registry;
-  better::map<ComponentHandle, std::vector<RCTComponentViewDescriptor>> _recyclePool;
+  butter::map<Tag, RCTComponentViewDescriptor> _registry;
+  butter::map<ComponentHandle, std::vector<RCTComponentViewDescriptor>> _recyclePool;
 }
 
 - (instancetype)init

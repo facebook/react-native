@@ -129,7 +129,7 @@ class Binding : public jni::HybridClass<Binding>,
   void uninstallFabricUIManager();
 
   // Private member variables
-  better::shared_mutex installMutex_;
+  butter::shared_mutex installMutex_;
   std::shared_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<Scheduler> scheduler_;
 
@@ -145,8 +145,8 @@ class Binding : public jni::HybridClass<Binding>,
 
   std::unique_ptr<JBackgroundExecutor> backgroundExecutor_;
 
-  better::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
-  better::shared_mutex
+  butter::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
+  butter::shared_mutex
       surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
 
   float pointScaleFactor_ = 1;

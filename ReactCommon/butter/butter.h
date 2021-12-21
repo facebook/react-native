@@ -8,20 +8,20 @@
 #pragma once
 
 namespace facebook {
-namespace better {
+namespace butter {
 
 /*
- * `Better` is a trivial collection of basic tools borrowed from other low-level
+ * `Butter` is a trivial collection of basic tools borrowed from other low-level
  * general purpose libraries (like Folly, Abseil or Boost). The main goals of
- * Better:
+ * Butter:
  * - Make the codebase more portable;
  * - Make the dependency list explicit (by decoupling it as a dependency list of
- * Better);
+ * Butter);
  * - Make relying on modern C++ patterns and tools in code simple and easy.
  * - Make executing experiments with different dependencies easier.
  *
- * What should be part of Better and what should not? Should I add some piece of
- * functionality in the Better? Here is a quick checklist.
+ * What should be part of Butter and what should not? Should I add some piece of
+ * functionality in the Butter? Here is a quick checklist.
  *
  * If one of the following is true, yes, go for it:
  * - If some feature is already in some future C++ standard (possibly in draft
@@ -55,8 +55,8 @@ namespace better {
  * introspections mechanisms.
  */
 #ifndef DEBUG
-#define BETTER_USE_FOLLY_CONTAINERS
+#define BUTTER_USE_FOLLY_CONTAINERS
 #endif
 
-} // namespace better
+} // namespace butter
 } // namespace facebook

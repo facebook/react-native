@@ -133,7 +133,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     AccessibilityState &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
   auto selected = map.find("selected");
   if (selected != map.end()) {
     fromRawValue(context, selected->second, result.selected);
@@ -212,7 +212,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     AccessibilityAction &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto name = map.find("name");
   react_native_assert(name != map.end() && name->second.hasType<std::string>());
@@ -232,7 +232,7 @@ inline void fromRawValue(
     const PropsParserContext &,
     const RawValue &value,
     AccessibilityValue &result) {
-  auto map = (better::map<std::string, RawValue>)value;
+  auto map = (butter::map<std::string, RawValue>)value;
 
   auto min = map.find("min");
   if (min != map.end()) {

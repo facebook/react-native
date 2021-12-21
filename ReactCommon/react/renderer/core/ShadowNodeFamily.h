@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include <better/mutex.h>
-#include <better/small_vector.h>
+#include <butter/mutex.h>
+#include <butter/small_vector.h>
 
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/ReactPrimitives.h>
@@ -32,7 +32,7 @@ class ShadowNodeFamily final {
   using Shared = std::shared_ptr<ShadowNodeFamily const>;
   using Weak = std::weak_ptr<ShadowNodeFamily const>;
 
-  using AncestorList = better::small_vector<
+  using AncestorList = butter::small_vector<
       std::pair<
           std::reference_wrapper<ShadowNode const> /* parentNode */,
           int /* childIndex */>,
@@ -101,7 +101,7 @@ class ShadowNodeFamily final {
 
   EventDispatcher::Weak eventDispatcher_;
   mutable std::shared_ptr<State const> mostRecentState_;
-  mutable better::shared_mutex mutex_;
+  mutable butter::shared_mutex mutex_;
 
   /*
    * Deprecated.

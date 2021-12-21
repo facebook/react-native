@@ -130,7 +130,7 @@ include $(BUILD_SHARED_LIBRARY)
 #   Whenever you encounter an include <dir>/<module-dir>/Android.mk, you
 #   tell andorid-ndk to compile the module in <dir>/<module-dir> according
 #   to the specification inside <dir>/<module-dir>/Android.mk.
-$(call import-module,better)
+$(call import-module,butter)
 $(call import-module,folly)
 $(call import-module,fb)
 $(call import-module,fbjni)

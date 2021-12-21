@@ -54,7 +54,7 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
   Transform transform{};
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
-  better::optional<int> zIndex{};
+  butter::optional<int> zIndex{};
 
   // Events
   PointerEventsMode pointerEvents{};

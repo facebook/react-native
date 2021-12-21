@@ -18,8 +18,8 @@ namespace react {
 inline ColorComponents parsePlatformColor(
     const PropsParserContext &context,
     const RawValue &value) {
-  if (value.hasType<better::map<std::string, RawValue>>()) {
-    auto items = (better::map<std::string, RawValue>)value;
+  if (value.hasType<butter::map<std::string, RawValue>>()) {
+    auto items = (butter::map<std::string, RawValue>)value;
     if (items.find("semantic") != items.end() &&
         items.at("semantic").hasType<std::vector<std::string>>()) {
       auto semanticItems = (std::vector<std::string>)items.at("semantic");

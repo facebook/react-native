@@ -50,7 +50,7 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
   SurfaceHandler const &getSurfaceHandler();
 
  private:
-  mutable better::shared_mutex lifecycleMutex_;
+  mutable butter::shared_mutex lifecycleMutex_;
   const SurfaceHandler surfaceHandler_;
 
   jni::alias_ref<SurfaceHandlerBinding::jhybriddata> jhybridobject_;

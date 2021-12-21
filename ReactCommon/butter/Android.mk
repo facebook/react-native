@@ -7,7 +7,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := better
+LOCAL_MODULE := butter
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
@@ -15,7 +15,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/
 
 LOCAL_CFLAGS := \
-  -DLOG_TAG=\"Better\"
+  -DLOG_TAG=\"Butter\"
 
 LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 

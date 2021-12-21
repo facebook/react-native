@@ -25,7 +25,7 @@ namespace react {
 
 class YogaLayoutableShadowNode : public LayoutableShadowNode {
  public:
-  using UnsharedList = better::small_vector<
+  using UnsharedList = butter::small_vector<
       YogaLayoutableShadowNode *,
       kShadowNodeChildrenSmallVectorSize>;
 

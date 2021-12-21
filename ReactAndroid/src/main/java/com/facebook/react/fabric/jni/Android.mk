@@ -12,7 +12,7 @@ LOCAL_MODULE := fabricjni
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
 LOCAL_SHARED_LIBRARIES := \
-  libbetter \
+  libbutter \
   libfb \
   libfbjni \
   libfolly_futures \

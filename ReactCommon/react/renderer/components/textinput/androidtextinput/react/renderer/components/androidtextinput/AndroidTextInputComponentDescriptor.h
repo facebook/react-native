@@ -180,7 +180,7 @@ class AndroidTextInputComponentDescriptor final
       "com/facebook/react/fabric/FabricUIManager";
 
   SharedTextLayoutManager textLayoutManager_;
-  mutable better::map<int, YGStyle::Edges> surfaceIdToThemePaddingMap_;
+  mutable butter::map<int, YGStyle::Edges> surfaceIdToThemePaddingMap_;
 };
 
 } // namespace react

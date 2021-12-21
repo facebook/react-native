@@ -58,7 +58,7 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   int const mostRecentEventCount{0};
 
   bool autoFocus{false};
-  better::optional<Selection> selection{};
+  butter::optional<Selection> selection{};
 
   std::string const inputAccessoryViewID{};
 

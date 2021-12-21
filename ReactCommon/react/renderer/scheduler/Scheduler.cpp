@@ -43,7 +43,7 @@ Scheduler::Scheduler(
 
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ =
-      std::make_shared<better::optional<EventDispatcher const>>();
+      std::make_shared<butter::optional<EventDispatcher const>>();
 
   auto uiManager = std::make_shared<UIManager>(
       runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);

@@ -376,7 +376,7 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
 
 void UIManager::registerCommitHook(
     UIManagerCommitHook const &commitHook) const {
-  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  std::unique_lock<butter::shared_mutex> lock(commitHookMutex_);
   react_native_assert(
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook) ==
       commitHooks_.end());
@@ -386,7 +386,7 @@ void UIManager::registerCommitHook(
 
 void UIManager::unregisterCommitHook(
     UIManagerCommitHook const &commitHook) const {
-  std::unique_lock<better::shared_mutex> lock(commitHookMutex_);
+  std::unique_lock<butter::shared_mutex> lock(commitHookMutex_);
   auto iterator =
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook);
   react_native_assert(iterator != commitHooks_.end());
@@ -400,7 +400,7 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     ShadowTree const &shadowTree,
     RootShadowNode::Shared const &oldRootShadowNode,
     RootShadowNode::Unshared const &newRootShadowNode) const {
-  std::shared_lock<better::shared_mutex> lock(commitHookMutex_);
+  std::shared_lock<butter::shared_mutex> lock(commitHookMutex_);
 
   auto resultRootShadowNode = newRootShadowNode;
   for (auto const *commitHook : commitHooks_) {

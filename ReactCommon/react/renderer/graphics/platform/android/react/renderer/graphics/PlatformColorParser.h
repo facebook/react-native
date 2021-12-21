@@ -21,8 +21,8 @@ inline ColorComponents parsePlatformColor(
     const RawValue &value) {
   ColorComponents colorComponents = {0, 0, 0, 0};
 
-  if (value.hasType<better::map<std::string, std::vector<std::string>>>()) {
-    auto map = (better::map<std::string, std::vector<std::string>>)value;
+  if (value.hasType<butter::map<std::string, std::vector<std::string>>>()) {
+    auto map = (butter::map<std::string, std::vector<std::string>>)value;
     auto resourcePaths = map["resource_paths"];
     auto dynamicResourcePaths = folly::dynamic::array();
     for (const auto &resourcePath : resourcePaths) {

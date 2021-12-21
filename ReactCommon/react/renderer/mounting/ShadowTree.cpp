@@ -270,7 +270,7 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
   auto revision = ShadowTreeRevision{};
 
   {
-    std::unique_lock<better::shared_mutex> lock(commitMutex_);
+    std::unique_lock<butter::shared_mutex> lock(commitMutex_);
     if (commitMode_ == commitMode) {
       return;
     }
@@ -287,7 +287,7 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
 }
 
 CommitMode ShadowTree::getCommitMode() const {
-  std::shared_lock<better::shared_mutex> lock(commitMutex_);
+  std::shared_lock<butter::shared_mutex> lock(commitMutex_);
   return commitMode_;
 }
 
@@ -330,7 +330,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Reading `currentRevision_` in shared manner.
-    std::shared_lock<better::shared_mutex> lock(commitMutex_);
+    std::shared_lock<butter::shared_mutex> lock(commitMutex_);
     commitMode = commitMode_;
     oldRevision = currentRevision_;
   }
@@ -367,7 +367,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Updating `currentRevision_` in unique manner if it hasn't changed.
-    std::unique_lock<better::shared_mutex> lock(commitMutex_);
+    std::unique_lock<butter::shared_mutex> lock(commitMutex_);
 
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;
@@ -410,7 +410,7 @@ CommitStatus ShadowTree::tryCommit(
 }
 
 ShadowTreeRevision ShadowTree::getCurrentRevision() const {
-  std::shared_lock<better::shared_mutex> lock(commitMutex_);
+  std::shared_lock<butter::shared_mutex> lock(commitMutex_);
   return currentRevision_;
 }
 
