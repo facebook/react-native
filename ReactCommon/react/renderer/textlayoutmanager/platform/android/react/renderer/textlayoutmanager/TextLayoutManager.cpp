@@ -225,9 +225,10 @@ TextMeasurement TextLayoutManager::doMeasure(
   if (attachmentsCount > 0) {
     folly::dynamic fragments = serializedAttributedString["fragments"];
     int attachmentIndex = 0;
-    for (int i = 0; i < fragments.size(); i++) {
-      folly::dynamic fragment = fragments[i];
-      if (fragment["isAttachment"] == true) {
+    for (auto const &fragment : fragments) {
+      auto isAttachment = fragment.find("isAttachment");
+      if (isAttachment != fragment.items().end() &&
+          isAttachment->second.getBool()) {
         float top = attachmentData[attachmentIndex * 2];
         float left = attachmentData[attachmentIndex * 2 + 1];
         float width = (float)fragment["width"].getDouble();

@@ -1322,11 +1322,7 @@ void LayoutAnimationKeyFrameManager::
       continue;
     }
 
-    for (auto it = inflightAnimation.keyFrames.begin();
-         it != inflightAnimation.keyFrames.end();
-         it++) {
-      auto &animatedKeyFrame = *it;
-
+    for (auto &animatedKeyFrame : inflightAnimation.keyFrames) {
       if (animatedKeyFrame.invalidated) {
         continue;
       }
@@ -1430,11 +1426,7 @@ void LayoutAnimationKeyFrameManager::adjustDelayedMutationIndicesForMutation(
       continue;
     }
 
-    for (auto it = inflightAnimation.keyFrames.begin();
-         it != inflightAnimation.keyFrames.end();
-         it++) {
-      auto &animatedKeyFrame = *it;
-
+    for (auto &animatedKeyFrame : inflightAnimation.keyFrames) {
       if (animatedKeyFrame.invalidated) {
         continue;
       }
