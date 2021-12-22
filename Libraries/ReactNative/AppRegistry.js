@@ -113,6 +113,9 @@ const AppRegistry = {
     runnables[appKey] = {
       componentProvider,
       run: (appParameters, displayMode) => {
+        const concurrentRootEnabled =
+          appParameters.initialProps?.concurrentRoot ||
+          appParameters.concurrentRoot;
         renderApplication(
           componentProviderInstrumentationHook(
             componentProvider,
@@ -127,7 +130,7 @@ const AppRegistry = {
           appKey === 'LogBox',
           appKey,
           coerceDisplayMode(displayMode),
-          appParameters.concurrentRoot,
+          concurrentRootEnabled,
         );
       },
     };
