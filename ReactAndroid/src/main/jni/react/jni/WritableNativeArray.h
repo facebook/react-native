@@ -29,6 +29,8 @@ struct WritableNativeArray
       "Lcom/facebook/react/bridge/WritableNativeArray;";
 
   WritableNativeArray();
+  WritableNativeArray(folly::dynamic &&val);
+
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
   void pushNull();

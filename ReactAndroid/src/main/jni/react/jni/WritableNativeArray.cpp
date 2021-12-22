@@ -17,6 +17,13 @@ namespace react {
 WritableNativeArray::WritableNativeArray()
     : HybridBase(folly::dynamic::array()) {}
 
+WritableNativeArray::WritableNativeArray(folly::dynamic &&val)
+    : HybridBase(std::move(val)) {
+  if (!array_.isArray()) {
+    throw std::runtime_error("WritableNativeArray value must be an array.");
+  }
+}
+
 local_ref<WritableNativeArray::jhybriddata> WritableNativeArray::initHybrid(
     alias_ref<jclass>) {
   return makeCxxInstance();
