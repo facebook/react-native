@@ -25,6 +25,8 @@ namespace react {
  */
 class TextInputState final {
  public:
+  TextInputState() = default;
+
   /*
    * All content of <TextInput> component.
    */
@@ -50,9 +52,17 @@ class TextInputState final {
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
    */
-  SharedTextLayoutManager layoutManager;
+  std::shared_ptr<TextLayoutManager const> layoutManager;
 
   size_t mostRecentEventCount{0};
+
+#ifdef ANDROID
+  TextInputState(TextInputState const &previousState, folly::dynamic data);
+
+  folly::dynamic getDynamic() const;
+
+  MapBuffer getMapBuffer() const;
+#endif
 };
 
 } // namespace react

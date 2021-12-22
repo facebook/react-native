@@ -20,15 +20,11 @@ namespace react {
 
 class TextLayoutManager;
 
-using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
-
 /*
  * Cross platform facade for iOS-specific RCTTTextLayoutManager.
  */
 class TextLayoutManager {
  public:
-  using Shared = std::shared_ptr<TextLayoutManager const>;
-
   TextLayoutManager(ContextContainer::Shared const &contextContainer);
 
   /*

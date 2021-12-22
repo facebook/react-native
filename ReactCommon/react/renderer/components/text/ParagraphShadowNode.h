@@ -57,7 +57,8 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    * `ParagraphShadowNode` uses the manager to measure text content
    * and construct `ParagraphState` objects.
    */
-  void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
+  void setTextLayoutManager(
+      std::shared_ptr<TextLayoutManager const> textLayoutManager);
 
 #pragma mark - LayoutableShadowNode
 
@@ -96,7 +97,7 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
    */
   void updateStateIfNeeded(Content const &content);
 
-  SharedTextLayoutManager textLayoutManager_;
+  std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 
   /*
    * Cached content of the subtree started from the node.

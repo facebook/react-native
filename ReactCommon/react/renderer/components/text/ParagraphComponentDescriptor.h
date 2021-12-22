@@ -41,7 +41,7 @@ class ParagraphComponentDescriptor final
   }
 
  private:
-  SharedTextLayoutManager textLayoutManager_;
+  std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 };
 
 } // namespace react

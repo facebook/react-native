@@ -93,9 +93,9 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
 }
 
 void ParagraphShadowNode::setTextLayoutManager(
-    SharedTextLayoutManager textLayoutManager) {
+    std::shared_ptr<TextLayoutManager const> textLayoutManager) {
   ensureUnsealed();
-  textLayoutManager_ = textLayoutManager;
+  textLayoutManager_ = std::move(textLayoutManager);
 }
 
 void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {

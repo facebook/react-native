@@ -71,9 +71,9 @@ AttributedString TextInputShadowNode::getAttributedString(
 }
 
 void TextInputShadowNode::setTextLayoutManager(
-    TextLayoutManager::Shared const &textLayoutManager) {
+    std::shared_ptr<TextLayoutManager const> textLayoutManager) {
   ensureUnsealed();
-  textLayoutManager_ = textLayoutManager;
+  textLayoutManager_ = std::move(textLayoutManager);
 }
 
 void TextInputShadowNode::updateStateIfNeeded(
