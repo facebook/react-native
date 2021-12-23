@@ -13,5 +13,6 @@ modernize-return-braced-init-list,
 modernize-use-auto,
 modernize-make-unique,
 modernize-pass-by-value,
+modernize-raw-string-literal,
 '
 ...
