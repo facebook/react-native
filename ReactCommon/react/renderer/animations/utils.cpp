@@ -20,7 +20,7 @@ std::pair<Float, Float> calculateAnimationProgress(
   }
 
   uint64_t startTime = animation.startTime;
-  uint64_t delay = (uint64_t)mutationConfig.delay;
+  auto delay = (uint64_t)mutationConfig.delay;
   uint64_t endTime = startTime + delay + (uint64_t)mutationConfig.duration;
 
   if (now >= endTime) {

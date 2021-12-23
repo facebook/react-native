@@ -10,5 +10,6 @@ modernize-loop-convert,
 modernize-make-shared,
 modernize-redundant-void-arg,
 modernize-return-braced-init-list,
+modernize-use-auto,
 '
 ...

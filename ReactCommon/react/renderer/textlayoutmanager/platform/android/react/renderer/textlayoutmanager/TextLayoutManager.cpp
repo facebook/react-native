@@ -231,8 +231,8 @@ TextMeasurement TextLayoutManager::doMeasure(
           isAttachment->second.getBool()) {
         float top = attachmentData[attachmentIndex * 2];
         float left = attachmentData[attachmentIndex * 2 + 1];
-        float width = (float)fragment["width"].getDouble();
-        float height = (float)fragment["height"].getDouble();
+        auto width = (float)fragment["width"].getDouble();
+        auto height = (float)fragment["height"].getDouble();
 
         auto rect = facebook::react::Rect{
             {left, top}, facebook::react::Size{width, height}};
