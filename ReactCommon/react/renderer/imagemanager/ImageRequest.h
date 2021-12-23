@@ -29,7 +29,7 @@ class ImageRequest final {
    * The default constructor
    */
   ImageRequest(
-      const ImageSource &imageSource,
+      ImageSource imageSource,
       std::shared_ptr<const ImageTelemetry> telemetry);
 
   /*

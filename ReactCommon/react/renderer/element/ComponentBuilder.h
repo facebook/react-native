@@ -27,7 +27,7 @@ namespace react {
 class ComponentBuilder final {
  public:
   ComponentBuilder(
-      ComponentDescriptorRegistry::Shared const &componentDescriptorRegistry);
+      ComponentDescriptorRegistry::Shared componentDescriptorRegistry);
 
   /*
    * Copyable and movable.

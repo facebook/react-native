@@ -34,9 +34,9 @@ class State {
    * Constructors are protected to make calling them directly with
    * type-erasured arguments impossible.
    */
-  explicit State(StateData::Shared const &data, State const &state);
+  explicit State(StateData::Shared data, State const &state);
   explicit State(
-      StateData::Shared const &data,
+      StateData::Shared data,
       ShadowNodeFamily::Shared const &family);
 
  public:

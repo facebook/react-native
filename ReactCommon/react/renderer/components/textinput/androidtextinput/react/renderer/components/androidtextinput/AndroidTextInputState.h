@@ -79,11 +79,11 @@ class AndroidTextInputState final {
 
   AndroidTextInputState(
       int64_t mostRecentEventCount,
-      AttributedString const &attributedString,
-      AttributedString const &reactTreeAttributedString,
-      ParagraphAttributes const &paragraphAttributes,
-      TextAttributes const &defaultTextAttributes,
-      ShadowView const &defaultParentShadowView,
+      AttributedString attributedString,
+      AttributedString reactTreeAttributedString,
+      ParagraphAttributes paragraphAttributes,
+      TextAttributes defaultTextAttributes,
+      ShadowView defaultParentShadowView,
       float defaultThemePaddingStart,
       float defaultThemePaddingEnd,
       float defaultThemePaddingTop,

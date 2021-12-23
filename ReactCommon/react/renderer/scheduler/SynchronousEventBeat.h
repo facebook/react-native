@@ -25,7 +25,7 @@ class SynchronousEventBeat final : public EventBeat,
   SynchronousEventBeat(
       RunLoopObserver::Unique uiRunLoopObserver,
       RuntimeExecutor runtimeExecutor,
-      std::shared_ptr<RuntimeScheduler> const &runtimeScheduler);
+      std::shared_ptr<RuntimeScheduler> runtimeScheduler);
 
   void induce() const override;
 

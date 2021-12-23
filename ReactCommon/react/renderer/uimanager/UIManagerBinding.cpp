@@ -15,6 +15,8 @@
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 
+#include <utility>
+
 #include "bindingUtils.h"
 
 namespace facebook::react {
@@ -53,9 +55,10 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
 }
 
 UIManagerBinding::UIManagerBinding(
-    std::shared_ptr<UIManager> const &uiManager,
-    RuntimeExecutor const &runtimeExecutor)
-    : uiManager_(uiManager), runtimeExecutor_(runtimeExecutor) {}
+    std::shared_ptr<UIManager> uiManager,
+    RuntimeExecutor runtimeExecutor)
+    : uiManager_(std::move(uiManager)),
+      runtimeExecutor_(std::move(runtimeExecutor)) {}
 
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "

@@ -7,13 +7,15 @@
 
 #include "ImageRequest.h"
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
 ImageRequest::ImageRequest(
-    const ImageSource &imageSource,
+    ImageSource imageSource,
     std::shared_ptr<const ImageTelemetry> telemetry)
-    : imageSource_(imageSource), telemetry_(telemetry) {
+    : imageSource_(std::move(imageSource)), telemetry_(std::move(telemetry)) {
   // Not implemented.
 }
 

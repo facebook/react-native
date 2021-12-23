@@ -7,12 +7,14 @@
 
 #include "ComponentBuilder.h"
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
 ComponentBuilder::ComponentBuilder(
-    ComponentDescriptorRegistry::Shared const &componentDescriptorRegistry)
-    : componentDescriptorRegistry_(componentDescriptorRegistry){};
+    ComponentDescriptorRegistry::Shared componentDescriptorRegistry)
+    : componentDescriptorRegistry_(std::move(componentDescriptorRegistry)){};
 
 ShadowNode::Unshared ComponentBuilder::build(
     ElementFragment const &elementFragment) const {

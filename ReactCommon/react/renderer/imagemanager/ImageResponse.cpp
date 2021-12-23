@@ -7,13 +7,15 @@
 
 #include "ImageResponse.h"
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
 ImageResponse::ImageResponse(
-    const std::shared_ptr<void> &image,
-    const std::shared_ptr<void> &metadata)
-    : image_(image), metadata_(metadata) {}
+    std::shared_ptr<void> image,
+    std::shared_ptr<void> metadata)
+    : image_(std::move(image)), metadata_(std::move(metadata)) {}
 
 std::shared_ptr<void> ImageResponse::getImage() const {
   return image_;

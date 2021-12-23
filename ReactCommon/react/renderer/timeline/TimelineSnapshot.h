@@ -20,9 +20,7 @@ class TimelineSnapshot final {
  public:
   using List = std::vector<TimelineSnapshot>;
 
-  TimelineSnapshot(
-      RootShadowNode::Shared const &rootShadowNode,
-      int index) noexcept;
+  TimelineSnapshot(RootShadowNode::Shared rootShadowNode, int index) noexcept;
 
   TimelineFrame getFrame() const noexcept;
   RootShadowNode::Shared getRootShadowNode() const noexcept;

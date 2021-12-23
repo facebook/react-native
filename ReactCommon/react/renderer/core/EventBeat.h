@@ -47,7 +47,7 @@ class EventBeat {
 
   using BeatCallback = std::function<void(jsi::Runtime &runtime)>;
 
-  EventBeat(SharedOwnerBox const &ownerBox);
+  EventBeat(SharedOwnerBox ownerBox);
 
   virtual ~EventBeat() = default;
 

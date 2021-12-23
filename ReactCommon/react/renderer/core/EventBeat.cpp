@@ -7,10 +7,13 @@
 
 #include "EventBeat.h"
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
-EventBeat::EventBeat(SharedOwnerBox const &ownerBox) : ownerBox_(ownerBox) {}
+EventBeat::EventBeat(SharedOwnerBox ownerBox)
+    : ownerBox_(std::move(ownerBox)) {}
 
 void EventBeat::request() const {
   isRequested_ = true;

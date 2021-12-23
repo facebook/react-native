@@ -9,6 +9,8 @@
 
 #include <react/debug/react_native_assert.h>
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
@@ -22,9 +24,10 @@ AttributedStringBox::AttributedStringBox(AttributedString const &value)
       value_(std::make_shared<AttributedString const>(value)),
       opaquePointer_({}){};
 
-AttributedStringBox::AttributedStringBox(
-    std::shared_ptr<void> const &opaquePointer)
-    : mode_(Mode::OpaquePointer), value_({}), opaquePointer_(opaquePointer) {}
+AttributedStringBox::AttributedStringBox(std::shared_ptr<void> opaquePointer)
+    : mode_(Mode::OpaquePointer),
+      value_({}),
+      opaquePointer_(std::move(opaquePointer)) {}
 
 AttributedStringBox::AttributedStringBox(AttributedStringBox &&other) noexcept
     : mode_(other.mode_),

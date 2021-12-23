@@ -9,13 +9,15 @@
 
 #include <react/utils/Telemetry.h>
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
 TimelineSnapshot::TimelineSnapshot(
-    RootShadowNode::Shared const &rootShadowNode,
+    RootShadowNode::Shared rootShadowNode,
     int index) noexcept
-    : rootShadowNode_(rootShadowNode),
+    : rootShadowNode_(std::move(rootShadowNode)),
       frame_(TimelineFrame{index, telemetryTimePointNow()}) {}
 
 RootShadowNode::Shared TimelineSnapshot::getRootShadowNode() const noexcept {

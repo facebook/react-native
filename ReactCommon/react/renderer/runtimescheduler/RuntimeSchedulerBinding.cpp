@@ -12,6 +12,7 @@
 #include <react/debug/react_native_assert.h>
 #include <chrono>
 #include <memory>
+#include <utility>
 
 namespace facebook {
 namespace react {
@@ -57,8 +58,8 @@ std::shared_ptr<RuntimeSchedulerBinding> RuntimeSchedulerBinding::getBinding(
 }
 
 RuntimeSchedulerBinding::RuntimeSchedulerBinding(
-    std::shared_ptr<RuntimeScheduler> const &runtimeScheduler)
-    : runtimeScheduler_(runtimeScheduler) {}
+    std::shared_ptr<RuntimeScheduler> runtimeScheduler)
+    : runtimeScheduler_(std::move(runtimeScheduler)) {}
 
 bool RuntimeSchedulerBinding::getIsSynchronous() const {
   return runtimeScheduler_->getIsSynchronous();

@@ -20,7 +20,7 @@ namespace react {
 class RuntimeScheduler final {
  public:
   RuntimeScheduler(
-      RuntimeExecutor const &runtimeExecutor,
+      RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
           RuntimeSchedulerClock::now);
   /*

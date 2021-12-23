@@ -37,7 +37,7 @@ class ComponentDescriptorRegistry {
    * be used later to create `ComponentDescriptor`s.
    */
   ComponentDescriptorRegistry(
-      ComponentDescriptorParameters const &parameters,
+      ComponentDescriptorParameters parameters,
       ComponentDescriptorProviderRegistry const &providerRegistry,
       ContextContainer::Shared contextContainer);
 

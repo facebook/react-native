@@ -80,7 +80,7 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
    */
   ShadowNode(
       ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family,
+      ShadowNodeFamily::Shared family,
       ShadowNodeTraits traits);
 
   /*

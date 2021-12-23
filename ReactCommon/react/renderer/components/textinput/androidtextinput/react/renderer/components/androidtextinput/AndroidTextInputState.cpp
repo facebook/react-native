@@ -10,27 +10,29 @@
 #include <react/renderer/components/text/conversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
 AndroidTextInputState::AndroidTextInputState(
     int64_t mostRecentEventCount,
-    AttributedString const &attributedString,
-    AttributedString const &reactTreeAttributedString,
-    ParagraphAttributes const &paragraphAttributes,
-    TextAttributes const &defaultTextAttributes,
-    ShadowView const &defaultParentShadowView,
+    AttributedString attributedString,
+    AttributedString reactTreeAttributedString,
+    ParagraphAttributes paragraphAttributes,
+    TextAttributes defaultTextAttributes,
+    ShadowView defaultParentShadowView,
     float defaultThemePaddingStart,
     float defaultThemePaddingEnd,
     float defaultThemePaddingTop,
     float defaultThemePaddingBottom)
     : mostRecentEventCount(mostRecentEventCount),
       cachedAttributedStringId(0),
-      attributedString(attributedString),
-      reactTreeAttributedString(reactTreeAttributedString),
-      paragraphAttributes(paragraphAttributes),
-      defaultTextAttributes(defaultTextAttributes),
-      defaultParentShadowView(defaultParentShadowView),
+      attributedString(std::move(attributedString)),
+      reactTreeAttributedString(std::move(reactTreeAttributedString)),
+      paragraphAttributes(std::move(paragraphAttributes)),
+      defaultTextAttributes(std::move(defaultTextAttributes)),
+      defaultParentShadowView(std::move(defaultParentShadowView)),
       defaultThemePaddingStart(defaultThemePaddingStart),
       defaultThemePaddingEnd(defaultThemePaddingEnd),
       defaultThemePaddingTop(defaultThemePaddingTop),

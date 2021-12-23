@@ -38,8 +38,8 @@ class UIManagerBinding : public jsi::HostObject {
   static std::shared_ptr<UIManagerBinding> getBinding(jsi::Runtime &runtime);
 
   UIManagerBinding(
-      std::shared_ptr<UIManager> const &uiManager,
-      RuntimeExecutor const &runtimeExecutor);
+      std::shared_ptr<UIManager> uiManager,
+      RuntimeExecutor runtimeExecutor);
 
   ~UIManagerBinding();
 

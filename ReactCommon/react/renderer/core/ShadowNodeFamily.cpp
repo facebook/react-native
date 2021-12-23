@@ -12,6 +12,8 @@
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/State.h>
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
@@ -21,7 +23,7 @@ ShadowNodeFamily::ShadowNodeFamily(
     ShadowNodeFamilyFragment const &fragment,
     EventDispatcher::Weak eventDispatcher,
     ComponentDescriptor const &componentDescriptor)
-    : eventDispatcher_(eventDispatcher),
+    : eventDispatcher_(std::move(eventDispatcher)),
       tag_(fragment.tag),
       surfaceId_(fragment.surfaceId),
       eventEmitter_(fragment.eventEmitter),

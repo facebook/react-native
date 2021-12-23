@@ -9,6 +9,8 @@
 
 #include <react/debug/react_native_assert.h>
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
@@ -19,7 +21,7 @@ TransactionTelemetry::TransactionTelemetry()
 
 TransactionTelemetry::TransactionTelemetry(
     std::function<TelemetryTimePoint()> now)
-    : now_{now} {}
+    : now_{std::move(now)} {}
 
 TransactionTelemetry *TransactionTelemetry::threadLocalTelemetry() {
   return threadLocalTransactionTelemetry;

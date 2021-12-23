@@ -11,9 +11,9 @@ namespace facebook {
 namespace react {
 
 ImageRequest::ImageRequest(
-    ImageSource const &imageSource,
+    ImageSource imageSource,
     std::shared_ptr<const ImageTelemetry> telemetry)
-    : imageSource_(imageSource), telemetry_(telemetry) {
+    : imageSource_(std::move(imageSource)), telemetry_(std::move(telemetry)) {
   coordinator_ = std::make_shared<ImageResponseObserverCoordinator>();
 }
 

@@ -6,6 +6,8 @@
  */
 
 #include "RuntimeScheduler.h"
+
+#include <utility>
 #include "ErrorUtils.h"
 
 namespace facebook {
@@ -14,9 +16,9 @@ namespace react {
 #pragma mark - Public
 
 RuntimeScheduler::RuntimeScheduler(
-    RuntimeExecutor const &runtimeExecutor,
+    RuntimeExecutor runtimeExecutor,
     std::function<RuntimeSchedulerTimePoint()> now)
-    : runtimeExecutor_(runtimeExecutor), now_(now) {}
+    : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
 
 void RuntimeScheduler::scheduleWork(
     std::function<void(jsi::Runtime &)> callback) const {

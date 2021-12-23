@@ -14,16 +14,18 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
-    ComponentDescriptorParameters const &parameters,
+    ComponentDescriptorParameters parameters,
     ComponentDescriptorProviderRegistry const &providerRegistry,
     ContextContainer::Shared contextContainer)
-    : parameters_(parameters),
+    : parameters_(std::move(parameters)),
       providerRegistry_(providerRegistry),
-      contextContainer_(contextContainer) {}
+      contextContainer_(std::move(contextContainer)) {}
 
 void ComponentDescriptorRegistry::add(
     ComponentDescriptorProvider componentDescriptorProvider) const {

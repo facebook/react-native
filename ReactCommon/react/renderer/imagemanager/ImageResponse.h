@@ -23,9 +23,7 @@ class ImageResponse final {
     Failed,
   };
 
-  ImageResponse(
-      const std::shared_ptr<void> &image,
-      const std::shared_ptr<void> &metadata);
+  ImageResponse(std::shared_ptr<void> image, std::shared_ptr<void> metadata);
 
   std::shared_ptr<void> getImage() const;
 

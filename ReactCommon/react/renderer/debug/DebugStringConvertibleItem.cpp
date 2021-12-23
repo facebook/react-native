@@ -7,17 +7,22 @@
 
 #include "DebugStringConvertibleItem.h"
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 DebugStringConvertibleItem::DebugStringConvertibleItem(
-    const std::string &name,
-    const std::string &value,
-    const SharedDebugStringConvertibleList &props,
-    const SharedDebugStringConvertibleList &children)
-    : name_(name), value_(value), debugProps_(props), children_(children) {}
+    std::string name,
+    std::string value,
+    SharedDebugStringConvertibleList props,
+    SharedDebugStringConvertibleList children)
+    : name_(std::move(name)),
+      value_(std::move(value)),
+      debugProps_(std::move(props)),
+      children_(std::move(children)) {}
 
 std::string DebugStringConvertibleItem::getDebugName() const {
   return name_;

@@ -7,12 +7,14 @@
 
 #include "RuntimeSchedulerCallInvoker.h"
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
 RuntimeSchedulerCallInvoker::RuntimeSchedulerCallInvoker(
     std::weak_ptr<RuntimeScheduler> runtimeScheduler)
-    : runtimeScheduler_(runtimeScheduler) {}
+    : runtimeScheduler_(std::move(runtimeScheduler)) {}
 
 void RuntimeSchedulerCallInvoker::invokeAsync(std::function<void()> &&func) {
   if (auto runtimeScheduler = runtimeScheduler_.lock()) {

@@ -24,10 +24,10 @@ class DebugStringConvertibleItem : public DebugStringConvertible {
   DebugStringConvertibleItem(const DebugStringConvertibleItem &item) = default;
 
   DebugStringConvertibleItem(
-      const std::string &name = "",
-      const std::string &value = "",
-      const SharedDebugStringConvertibleList &props = {},
-      const SharedDebugStringConvertibleList &children = {});
+      std::string name = "",
+      std::string value = "",
+      SharedDebugStringConvertibleList props = {},
+      SharedDebugStringConvertibleList children = {});
 
   std::string getDebugName() const override;
   std::string getDebugValue() const override;

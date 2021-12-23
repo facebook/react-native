@@ -7,6 +7,8 @@
 
 #include "TextMeasureCache.h"
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
@@ -30,7 +32,7 @@ LineMeasurement::LineMeasurement(
     Float capHeight,
     Float ascender,
     Float xHeight)
-    : text(text),
+    : text(std::move(text)),
       frame(frame),
       descender(descender),
       capHeight(capHeight),

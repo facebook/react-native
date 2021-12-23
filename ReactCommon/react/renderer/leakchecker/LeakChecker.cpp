@@ -10,11 +10,13 @@
 #include <glog/logging.h>
 #include <jsi/instrumentation.h>
 
+#include <utility>
+
 namespace facebook {
 namespace react {
 
-LeakChecker::LeakChecker(RuntimeExecutor const &runtimeExecutor)
-    : runtimeExecutor_(runtimeExecutor) {}
+LeakChecker::LeakChecker(RuntimeExecutor runtimeExecutor)
+    : runtimeExecutor_(std::move(runtimeExecutor)) {}
 
 void LeakChecker::uiManagerDidCreateShadowNodeFamily(
     ShadowNodeFamily::Shared const &shadowNodeFamily) const {

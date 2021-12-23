@@ -18,8 +18,7 @@ namespace react {
  */
 class RuntimeSchedulerBinding : public jsi::HostObject {
  public:
-  RuntimeSchedulerBinding(
-      std::shared_ptr<RuntimeScheduler> const &runtimeScheduler);
+  RuntimeSchedulerBinding(std::shared_ptr<RuntimeScheduler> runtimeScheduler);
 
   /*
    * Installs RuntimeSchedulerBinding into JavaScript runtime if needed.

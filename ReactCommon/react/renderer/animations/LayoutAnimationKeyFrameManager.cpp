@@ -8,6 +8,7 @@
 #include "LayoutAnimationKeyFrameManager.h"
 
 #include <algorithm>
+#include <utility>
 
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
@@ -96,7 +97,7 @@ LayoutAnimationKeyFrameManager::LayoutAnimationKeyFrameManager(
     RuntimeExecutor runtimeExecutor,
     ContextContainer::Shared &contextContainer,
     LayoutAnimationStatusDelegate *delegate)
-    : runtimeExecutor_(runtimeExecutor),
+    : runtimeExecutor_(std::move(runtimeExecutor)),
       contextContainer_(contextContainer),
       layoutAnimationStatusDelegate_(delegate),
       now_([]() {
