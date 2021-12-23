@@ -56,7 +56,7 @@ NativeModuleRegistry buildNativeModuleRegistry() {
 
 class MockReactNativeConfig : public ReactNativeConfig {
  public:
-  MockReactNativeConfig() {}
+  MockReactNativeConfig() = default;
   bool getBool(const std::string &param) const override {
     return mockSimpleTestValue_;
   }

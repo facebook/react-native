@@ -35,7 +35,7 @@ Sealable::Sealable(Sealable &&other) noexcept : sealed_(false) {
   other.ensureUnsealed();
 };
 
-Sealable::~Sealable() noexcept {};
+Sealable::~Sealable() noexcept = default;
 
 Sealable &Sealable::operator=(const Sealable &other) {
   ensureUnsealed();
