@@ -14,5 +14,6 @@ modernize-use-auto,
 modernize-make-unique,
 modernize-pass-by-value,
 modernize-raw-string-literal,
+modernize-replace-auto-ptr,
 '
 ...
