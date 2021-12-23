@@ -219,7 +219,8 @@ TextMeasurement TextLayoutManager::doMeasure(
       maximumSize.height,
       attachmentPositions);
 
-  jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
+  jfloat *attachmentData =
+      env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {
@@ -283,7 +284,8 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
       maximumSize.height,
       attachmentPositions);
 
-  jfloat *attachmentData = env->GetFloatArrayElements(attachmentPositions, 0);
+  jfloat *attachmentData =
+      env->GetFloatArrayElements(attachmentPositions, nullptr);
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {

@@ -33,7 +33,7 @@ static int FabricDefaultYogaLog(
   va_copy(args_copy, args);
 
   // Adding 1 to add space for terminating null character.
-  int size_s = vsnprintf(NULL, 0, format, args);
+  int size_s = vsnprintf(nullptr, 0, format, args);
   auto size = static_cast<size_t>(size_s);
   std::vector<char> buffer(size);
 
