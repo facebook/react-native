@@ -23,5 +23,6 @@ modernize-shrink-to-fit,
 modernize-use-equals-default,
 modernize-use-default-member-init,
 modernize-use-nullptr,
+modernize-use-noexcept,
 '
 ...
