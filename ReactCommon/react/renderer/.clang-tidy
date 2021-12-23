@@ -24,5 +24,6 @@ modernize-use-equals-default,
 modernize-use-default-member-init,
 modernize-use-nullptr,
 modernize-use-noexcept,
+modernize-use-equals-delete,
 '
 ...
