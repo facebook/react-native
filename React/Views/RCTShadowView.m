@@ -642,6 +642,20 @@ RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float
   return YGNodeStyleGetFlexBasis(_yogaNode);
 }
 
+#define RCT_GAP_PROPERTY(setProp, getProp, cssProp, type, gap) \
+  -(void)set##setProp : (type)value                         \
+  {                                                         \
+    YGNodeStyleSet##cssProp(_yogaNode, gap, value);              \
+  }                                                         \
+  -(type)getProp                                            \
+  {                                                         \
+    return YGNodeStyleGet##cssProp(_yogaNode, gap);              \
+  }
+
+RCT_GAP_PROPERTY(RowGap, rowGap, Gap, float, YGGapRow);
+RCT_GAP_PROPERTY(ColumnGap, columnGap, Gap, float, YGGapColumn);
+RCT_GAP_PROPERTY(Gap, gap, Gap, float, YGGapAll);
+
 #define RCT_STYLE_PROPERTY(setProp, getProp, cssProp, type) \
   -(void)set##setProp : (type)value                         \
   {                                                         \
@@ -655,9 +669,6 @@ RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float
 RCT_STYLE_PROPERTY(Flex, flex, Flex, float)
 RCT_STYLE_PROPERTY(FlexGrow, flexGrow, FlexGrow, float)
 RCT_STYLE_PROPERTY(FlexShrink, flexShrink, FlexShrink, float)
-RCT_STYLE_PROPERTY(RowGap, rowGap, RowGap, float)
-RCT_STYLE_PROPERTY(ColumnGap, columnGap, ColumnGap, float)
-RCT_STYLE_PROPERTY(Gap, gap, Gap, float)
 RCT_STYLE_PROPERTY(FlexDirection, flexDirection, FlexDirection, YGFlexDirection)
 RCT_STYLE_PROPERTY(JustifyContent, justifyContent, JustifyContent, YGJustify)
 RCT_STYLE_PROPERTY(AlignSelf, alignSelf, AlignSelf, YGAlign)

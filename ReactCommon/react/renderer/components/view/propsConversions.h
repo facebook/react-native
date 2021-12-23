@@ -234,12 +234,6 @@ static inline YGStyle convertRawProp(
       "flexGrow",
       sourceValue.flexGrow(),
       yogaStyle.flexGrow());
-  yogaStyle.rowGap() = convertRawProp(
-      context, rawProps, "rowGap", sourceValue.rowGap(), yogaStyle.rowGap());
-  yogaStyle.columnGap() = convertRawProp(
-      context, rawProps, "columnGap", sourceValue.columnGap(), yogaStyle.columnGap());
-  yogaStyle.gap() = convertRawProp(
-      context, rawProps, "gap", sourceValue.gap(), yogaStyle.gap());
   yogaStyle.flexShrink() = convertRawProp(
       context,
       rawProps,
@@ -268,6 +262,13 @@ static inline YGStyle convertRawProp(
       "",
       sourceValue.padding(),
       yogaStyle.padding());
+    
+  yogaStyle.gap()[YGGapRow] = convertRawProp(context, rawProps, "rowGap", sourceValue.gap()[YGGapRow], yogaStyle.gap()[YGGapRow]);
+    
+  yogaStyle.gap()[YGGapColumn] = convertRawProp(context, rawProps, "columnGap", sourceValue.gap()[YGGapColumn], yogaStyle.gap()[YGGapColumn]);
+    
+  yogaStyle.gap()[YGGapAll] = convertRawProp(context, rawProps, "gap", sourceValue.gap()[YGGapAll], yogaStyle.gap()[YGGapAll]);
+    
   yogaStyle.border() = convertRawProp(
       context,
       rawProps,

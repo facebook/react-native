@@ -83,6 +83,30 @@ CompactValue YGNode::computeEdgeValueForColumn(
   }
 }
 
+CompactValue YGNode::computeRowGap(
+    const YGStyle::Gaps& gaps,
+    CompactValue defaultValue) {
+  if (!gaps[YGGapRow].isUndefined()) {
+    return gaps[YGGapRow];
+  } else if (!gaps[YGGapAll].isUndefined()) {
+    return gaps[YGGapAll];
+  } else {
+    return defaultValue;
+  }
+}
+
+CompactValue YGNode::computeColumnGap(
+    const YGStyle::Gaps& gaps,
+    CompactValue defaultValue) {
+  if (!gaps[YGGapColumn].isUndefined()) {
+    return gaps[YGGapColumn];
+  } else if (!gaps[YGGapAll].isUndefined()) {
+    return gaps[YGGapAll];
+  } else {
+    return defaultValue;
+  }
+}
+
 YGFloatOptional YGNode::getLeadingPosition(
     const YGFlexDirection axis,
     const float axisSize) const {
@@ -143,48 +167,7 @@ YGFloatOptional YGNode::getLeadingMargin(
             style_.margin(), YGEdgeStart, leading[axis], CompactValue::ofZero())
       : computeEdgeValueForColumn(
             style_.margin(), leading[axis], CompactValue::ofZero());
-    
-        YGFloatOptional value = YGResolveValueMargin(leadingMargin, widthSize);
-
-        if (owner_ != nullptr) {
-          
-          // when parent's flex direction is row
-            // columnGap - adds margin(Left/Start) to items which is not first in the "same" line.
-            // rowGap - adds marginTop to items which is not first in flex lines (wrap lines).
-
-          // when parent's flex direction is column
-            // columnGap - adds margin(Left/Start) to items which is not first in flex lines (wrap lines).
-            // rowGap - adds marginTop to items which is not first in "same" line
-            if (YGFlexDirectionIsRow(owner_->getStyle().flexDirection())) {
-                 if (this->getRelativeToLineIndex() > 0 && YGFlexDirectionIsRow(axis)) {
-                           float columnGap = owner_->resolveColumnGap();
-                               float newMarginStart = value.isUndefined() || (value.unwrap() == 0.0f) ? columnGap :  value.unwrap() + columnGap;
-                               return YGFloatOptional(newMarginStart);
-                       }
-                 else if (this->getLineIndex() > 0 && YGFlexDirectionIsColumn(axis)) {
-                               float rowGap =  owner_->resolveRowGap();
-                               float newMarginTop = value.isUndefined() || (value.unwrap() == 0.0f) ? rowGap :  value.unwrap() + rowGap;
-                               return YGFloatOptional(newMarginTop);
-                       }
-                
-            } else {
-                if (this->getRelativeToLineIndex() > 0 && YGFlexDirectionIsColumn(axis)) {
-                    float rowGap =  owner_->resolveRowGap();
-                    float newMarginTop = value.isUndefined() || (value.unwrap() == 0.0f) ? rowGap :  value.unwrap() + rowGap;
-                    return YGFloatOptional(newMarginTop);
-                      }
-                else if (this->getLineIndex() > 0 && YGFlexDirectionIsRow(axis)) {
-                              float columnGap =  owner_->resolveColumnGap();
-                              float newMarginStart = value.isUndefined() || (value.unwrap() == 0.0f) ? columnGap :  value.unwrap() + columnGap;
-                              return YGFloatOptional(newMarginStart);
-                      }
-
-            }
-            
-        
-        }
-        
-        return value;
+  return YGResolveValueMargin(leadingMargin, widthSize);
 }
 
 YGFloatOptional YGNode::getTrailingMargin(
@@ -202,6 +185,15 @@ YGFloatOptional YGNode::getMarginForAxis(
     const YGFlexDirection axis,
     const float widthSize) const {
   return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
+}
+
+YGFloatOptional YGNode::getGapForAxis(
+    const YGFlexDirection axis,
+    const float widthSize) const {
+  auto gap = YGFlexDirectionIsRow(axis)
+      ? computeColumnGap(style_.gap(), CompactValue::ofZero())
+      : computeRowGap(style_.gap(), CompactValue::ofZero());
+  return YGResolveValue(gap, widthSize);
 }
 
 YGSize YGNode::measure(
@@ -485,36 +477,6 @@ float YGNode::resolveFlexGrow() const {
     return style_.flex().unwrap();
   }
   return kDefaultFlexGrow;
-}
-
-float YGNode::resolveRowGap() const {
-  float rowGap = 0.0;
-    
-  if (!style_.gap().isUndefined()) {
-    rowGap = style_.gap().unwrap();
-  }
-    
-  if (!style_.rowGap().isUndefined()) {
-    rowGap = style_.rowGap().unwrap();
-  }
-    
-
-  return rowGap;
-}
-
-
-float YGNode::resolveColumnGap() const {
-  float columnGap = 0.0;
-    
-  if (!style_.gap().isUndefined()) {
-        columnGap = style_.gap().unwrap();
-  }
-    
-  if (!style_.columnGap().isUndefined()) {
-        columnGap = style_.columnGap().unwrap();
-  }
-    
-  return columnGap;
 }
 
 float YGNode::resolveFlexShrink() const {

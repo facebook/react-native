@@ -193,15 +193,6 @@ WIN_EXPORT float YGNodeStyleGetFlex(YGNodeConstRef node);
 WIN_EXPORT void YGNodeStyleSetFlexGrow(YGNodeRef node, float flexGrow);
 WIN_EXPORT float YGNodeStyleGetFlexGrow(YGNodeConstRef node);
 
-WIN_EXPORT void YGNodeStyleSetRowGap(YGNodeRef node, float rowGap);
-WIN_EXPORT float YGNodeStyleGetRowGap(YGNodeConstRef node);
-
-WIN_EXPORT void YGNodeStyleSetColumnGap(YGNodeRef node, float columnGap);
-WIN_EXPORT float YGNodeStyleGetColumnGap(YGNodeConstRef node);
-
-WIN_EXPORT void YGNodeStyleSetGap(YGNodeRef node, float gap);
-WIN_EXPORT float YGNodeStyleGetGap(YGNodeConstRef node);
-
 WIN_EXPORT void YGNodeStyleSetFlexShrink(YGNodeRef node, float flexShrink);
 WIN_EXPORT float YGNodeStyleGetFlexShrink(YGNodeConstRef node);
 
@@ -240,6 +231,9 @@ WIN_EXPORT YGValue YGNodeStyleGetPadding(YGNodeConstRef node, YGEdge edge);
 
 WIN_EXPORT void YGNodeStyleSetBorder(YGNodeRef node, YGEdge edge, float border);
 WIN_EXPORT float YGNodeStyleGetBorder(YGNodeConstRef node, YGEdge edge);
+
+WIN_EXPORT void YGNodeStyleSetGap(YGNodeRef node, YGGap gap, float gapValue);
+WIN_EXPORT float YGNodeStyleGetGap(YGNodeConstRef node, YGGap gap);
 
 WIN_EXPORT void YGNodeStyleSetWidth(YGNodeRef node, float width);
 WIN_EXPORT void YGNodeStyleSetWidthPercent(YGNodeRef node, float width);

@@ -29,6 +29,7 @@ class YOGA_EXPORT YGStyle {
 public:
   using Dimensions = Values<YGDimension>;
   using Edges = Values<YGEdge>;
+  using Gaps = Values<YGGap>;
 
   template <typename T>
   struct BitfieldRef {
@@ -107,15 +108,13 @@ private:
 
   YGFloatOptional flex_ = {};
   YGFloatOptional flexGrow_ = {};
-  YGFloatOptional rowGap_ = {};
-  YGFloatOptional columnGap_ = {};
-  YGFloatOptional gap_ = {};
   YGFloatOptional flexShrink_ = {};
   CompactValue flexBasis_ = CompactValue::ofAuto();
   Edges margin_ = {};
   Edges position_ = {};
   Edges padding_ = {};
   Edges border_ = {};
+  Gaps gap_ = {};
   Dimensions dimensions_{CompactValue::ofAuto()};
   Dimensions minDimensions_ = {};
   Dimensions maxDimensions_ = {};
@@ -194,15 +193,6 @@ public:
 
   YGFloatOptional flexGrow() const { return flexGrow_; }
   Ref<YGFloatOptional, &YGStyle::flexGrow_> flexGrow() { return {*this}; }
-    
-  YGFloatOptional rowGap() const { return rowGap_; }
-  Ref<YGFloatOptional, &YGStyle::rowGap_> rowGap() { return {*this}; }
-    
-  YGFloatOptional columnGap() const { return columnGap_; }
-  Ref<YGFloatOptional, &YGStyle::columnGap_> columnGap() { return {*this}; }
-
-  YGFloatOptional gap() const { return gap_; }
-  Ref<YGFloatOptional, &YGStyle::gap_> gap() { return {*this}; }
 
   YGFloatOptional flexShrink() const { return flexShrink_; }
   Ref<YGFloatOptional, &YGStyle::flexShrink_> flexShrink() { return {*this}; }
@@ -221,6 +211,9 @@ public:
 
   const Edges& border() const { return border_; }
   IdxRef<YGEdge, &YGStyle::border_> border() { return {*this}; }
+
+  const Gaps& gap() const { return gap_; }
+  IdxRef<YGGap, &YGStyle::gap_> gap() { return {*this}; }
 
   const Dimensions& dimensions() const { return dimensions_; }
   IdxRef<YGDimension, &YGStyle::dimensions_> dimensions() { return {*this}; }

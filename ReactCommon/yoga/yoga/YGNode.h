@@ -56,7 +56,6 @@ private:
   YGStyle style_ = {};
   YGLayout layout_ = {};
   uint32_t lineIndex_ = 0;
-  uint32_t relativeToLineIndex_ = 0;
   YGNodeRef owner_ = nullptr;
   YGVector children_ = {};
   YGConfigRef config_;
@@ -146,8 +145,6 @@ public:
   const YGLayout& getLayout() const { return layout_; }
 
   uint32_t getLineIndex() const { return lineIndex_; }
-    
-  uint32_t getRelativeToLineIndex() const { return relativeToLineIndex_; }
 
   bool isReferenceBaseline() {
     return facebook::yoga::detail::getBooleanData(flags, isReferenceBaseline_);
@@ -207,6 +204,14 @@ public:
       YGEdge edge,
       CompactValue defaultValue);
 
+  static CompactValue computeRowGap(
+      const YGStyle::Gaps& gaps,
+      CompactValue defaultValue);
+
+  static CompactValue computeColumnGap(
+      const YGStyle::Gaps& gaps,
+      CompactValue defaultValue);
+
   // Methods related to positions, margin, padding and border
   YGFloatOptional getLeadingPosition(
       const YGFlexDirection axis,
@@ -237,6 +242,9 @@ public:
       const YGFlexDirection axis,
       const float widthSize) const;
   YGFloatOptional getMarginForAxis(
+      const YGFlexDirection axis,
+      const float widthSize) const;
+  YGFloatOptional getGapForAxis(
       const YGFlexDirection axis,
       const float widthSize) const;
   // Setters
@@ -287,8 +295,6 @@ public:
   void setLayout(const YGLayout& layout) { layout_ = layout; }
 
   void setLineIndex(uint32_t lineIndex) { lineIndex_ = lineIndex; }
-    
-  void setRelativeToLineIndex(uint32_t relativeToLineIndex) { relativeToLineIndex_ = relativeToLineIndex; }
 
   void setIsReferenceBaseline(bool isReferenceBaseline) {
     facebook::yoga::detail::setBooleanData(
@@ -343,8 +349,6 @@ public:
   void cloneChildrenIfNeeded(void*);
   void markDirtyAndPropogate();
   float resolveFlexGrow() const;
-  float resolveRowGap() const;
-  float resolveColumnGap() const;
   float resolveFlexShrink() const;
   bool isNodeFlexible();
   bool didUseLegacyFlag();

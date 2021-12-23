@@ -20,8 +20,11 @@ bool operator==(const YGStyle& lhs, const YGStyle& rhs) {
       lhs.flexWrap() == rhs.flexWrap() && lhs.overflow() == rhs.overflow() &&
       lhs.display() == rhs.display() &&
       YGValueEqual(lhs.flexBasis(), rhs.flexBasis()) &&
-      lhs.margin() == rhs.margin() && lhs.position() == rhs.position() &&
-      lhs.padding() == rhs.padding() && lhs.border() == rhs.border() &&
+      lhs.margin() == rhs.margin() &&
+      lhs.position() == rhs.position() &&
+      lhs.padding() == rhs.padding() &&
+      lhs.border() == rhs.border() &&
+      lhs.gap() == rhs.gap() &&
       lhs.dimensions() == rhs.dimensions() &&
       lhs.minDimensions() == rhs.minDimensions() &&
       lhs.maxDimensions() == rhs.maxDimensions();
@@ -39,30 +42,6 @@ bool operator==(const YGStyle& lhs, const YGStyle& rhs) {
     areNonFloatValuesEqual =
         areNonFloatValuesEqual && lhs.flexGrow() == rhs.flexGrow();
   }
-
-    
-  areNonFloatValuesEqual = areNonFloatValuesEqual &&
-      lhs.rowGap().isUndefined() == rhs.rowGap().isUndefined();
-  if (areNonFloatValuesEqual && !lhs.rowGap().isUndefined()) {
-    areNonFloatValuesEqual =
-        areNonFloatValuesEqual && lhs.rowGap() == rhs.rowGap();
-  }
-
-  areNonFloatValuesEqual = areNonFloatValuesEqual &&
-      lhs.gap().isUndefined() == rhs.gap().isUndefined();
-  if (areNonFloatValuesEqual && !lhs.gap().isUndefined()) {
-    areNonFloatValuesEqual =
-        areNonFloatValuesEqual && lhs.gap() == rhs.gap();
-  }
-
-
-  areNonFloatValuesEqual = areNonFloatValuesEqual &&
-      lhs.columnGap().isUndefined() == rhs.columnGap().isUndefined();
-  if (areNonFloatValuesEqual && !lhs.columnGap().isUndefined()) {
-    areNonFloatValuesEqual =
-        areNonFloatValuesEqual && lhs.columnGap() == rhs.columnGap();
-  }
-
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
       lhs.flexShrink().isUndefined() == rhs.flexShrink().isUndefined();
