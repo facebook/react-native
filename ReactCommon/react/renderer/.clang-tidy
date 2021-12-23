@@ -26,5 +26,6 @@ modernize-use-nullptr,
 modernize-use-noexcept,
 modernize-use-equals-delete,
 modernize-use-override,
+modernize-use-using,
 '
 ...
