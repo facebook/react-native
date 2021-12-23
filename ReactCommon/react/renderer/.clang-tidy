@@ -18,5 +18,6 @@ modernize-replace-auto-ptr,
 modernize-use-bool-literals,
 modernize-replace-random-shuffle,
 modernize-unary-static-assert,
+modernize-use-emplace,
 '
 ...

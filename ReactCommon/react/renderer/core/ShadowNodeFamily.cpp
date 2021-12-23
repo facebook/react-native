@@ -80,7 +80,7 @@ AncestorList ShadowNodeFamily::getAncestors(
     auto childIndex = 0;
     for (const auto &childNode : *parentNode->children_) {
       if (childNode->family_.get() == childFamily) {
-        ancestors.push_back({*parentNode, childIndex});
+        ancestors.emplace_back(*parentNode, childIndex);
         parentNode = childNode.get();
         found = true;
         break;
