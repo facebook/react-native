@@ -246,7 +246,7 @@
     NSInteger snapIndex = velocityAlongAxis > 0.0 ? ceil(fractionalIndex)
         : velocityAlongAxis < 0.0                 ? floor(fractionalIndex)
                                                   : round(fractionalIndex);
-    CGFloat newTargetContentOffset = (snapIndex * snapToIntervalF) - alignmentOffset;
+    CGFloat newTargetContentOffset = ((CGFloat)snapIndex * snapToIntervalF) - alignmentOffset;
 
     // Set new targetContentOffset
     if (isHorizontal) {

@@ -97,18 +97,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
       self->_label.text = [NSString stringWithFormat:@"%lu", (unsigned long)self->_FPS];
     });
 
-    CGFloat scale = 60.0 / _height;
+    CGFloat scale = 60.0 / (CGFloat)_height;
     for (NSUInteger i = 0; i < _length - 1; i++) {
       _frames[i] = _frames[i + 1];
     }
     _frames[_length - 1] = _FPS / scale;
 
     CGMutablePathRef path = CGPathCreateMutable();
-    CGPathMoveToPoint(path, NULL, 0, _height);
+    CGPathMoveToPoint(path, NULL, 0, (CGFloat)_height);
     for (NSUInteger i = 0; i < _length; i++) {
-      CGPathAddLineToPoint(path, NULL, i, _height - _frames[i]);
+      CGPathAddLineToPoint(path, NULL, (CGFloat)i, _height - _frames[i]);
     }
-    CGPathAddLineToPoint(path, NULL, _length - 1, _height);
+    CGPathAddLineToPoint(path, NULL, (CGFloat)_length - 1, (CGFloat)_height);
 
     _graph.path = path;
     CGPathRelease(path);
