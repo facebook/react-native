@@ -132,6 +132,13 @@ void Binding::startSurface(
     SystraceSection s3("FabricUIManagerBinding::startSurface::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
+
+  auto mountingManager =
+      verifyMountingManager("FabricUIManagerBinding::startSurface");
+  if (!mountingManager) {
+    return;
+  }
+  mountingManager->onSurfaceStart(surfaceId);
 }
 
 void Binding::startSurfaceWithConstraints(
@@ -196,6 +203,13 @@ void Binding::startSurfaceWithConstraints(
         "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
+
+  auto mountingManager = verifyMountingManager(
+      "FabricUIManagerBinding::startSurfaceWithConstraints");
+  if (!mountingManager) {
+    return;
+  }
+  mountingManager->onSurfaceStart(surfaceId);
 }
 
 void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
@@ -242,6 +256,13 @@ void Binding::stopSurface(jint surfaceId) {
     surfaceHandler.stop();
     scheduler->unregisterSurface(surfaceHandler);
   }
+
+  auto mountingManager =
+      verifyMountingManager("FabricUIManagerBinding::stopSurface");
+  if (!mountingManager) {
+    return;
+  }
+  mountingManager->onSurfaceStop(surfaceId);
 }
 
 void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {

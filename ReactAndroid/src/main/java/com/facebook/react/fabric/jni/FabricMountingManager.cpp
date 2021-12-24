@@ -27,6 +27,16 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
+void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
+  std::lock_guard lock(allocatedViewsMutex_);
+  allocatedViewRegistry_.emplace(surfaceId, butter::set<Tag>{});
+}
+
+void FabricMountingManager::onSurfaceStop(SurfaceId surfaceId) {
+  std::lock_guard lock(allocatedViewsMutex_);
+  allocatedViewRegistry_.erase(surfaceId);
+}
+
 static inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
   switch (mountItemType) {
     case CppMountItem::Type::Create:
@@ -243,134 +253,179 @@ void FabricMountingManager::executeMount(
   std::vector<CppMountItem> cppUpdateOverflowInsetMountItems;
   std::vector<CppMountItem> cppUpdateEventEmitterMountItems;
 
-  for (const auto &mutation : mutations) {
-    const auto &parentShadowView = mutation.parentShadowView;
-    const auto &oldChildShadowView = mutation.oldChildShadowView;
-    const auto &newChildShadowView = mutation.newChildShadowView;
-    auto &mutationType = mutation.type;
-    auto &index = mutation.index;
+  {
+    std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
 
-    bool isVirtual = mutation.mutatedViewIsVirtual();
+    auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
+    auto const &allocatedViewTags =
+        allocatedViewsIterator != allocatedViewRegistry_.end()
+        ? allocatedViewsIterator->second
+        : butter::set<Tag>{};
+    if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
+      LOG(ERROR) << "Executing commit after surface was stopped!";
+    }
 
     bool noRevisionCheck =
         disablePreallocateViews_ || disableRevisionCheckForPreallocation_;
 
-    switch (mutationType) {
-      case ShadowViewMutation::Create: {
-        if (noRevisionCheck || newChildShadowView.props->revision > 1) {
-          cppCommonMountItems.push_back(
-              CppMountItem::CreateMountItem(newChildShadowView));
-        }
-        break;
-      }
-      case ShadowViewMutation::Remove: {
-        if (!isVirtual) {
-          cppCommonMountItems.push_back(CppMountItem::RemoveMountItem(
-              parentShadowView, oldChildShadowView, index));
-        }
-        break;
-      }
-      case ShadowViewMutation::Delete: {
-        cppDeleteMountItems.push_back(
-            CppMountItem::DeleteMountItem(oldChildShadowView));
-        break;
-      }
-      case ShadowViewMutation::Update: {
-        if (!isVirtual) {
-          if (oldChildShadowView.props != newChildShadowView.props) {
-            cppUpdatePropsMountItems.push_back(
-                CppMountItem::UpdatePropsMountItem(newChildShadowView));
+    for (const auto &mutation : mutations) {
+      const auto &parentShadowView = mutation.parentShadowView;
+      const auto &oldChildShadowView = mutation.oldChildShadowView;
+      const auto &newChildShadowView = mutation.newChildShadowView;
+      auto &mutationType = mutation.type;
+      auto &index = mutation.index;
+
+      bool isVirtual = mutation.mutatedViewIsVirtual();
+
+      switch (mutationType) {
+        case ShadowViewMutation::Create: {
+          bool revisionCheck =
+              noRevisionCheck || newChildShadowView.props->revision > 1;
+          bool allocationCheck =
+              !allocatedViewTags.contains(newChildShadowView.tag);
+          bool shouldCreateView =
+              shouldRememberAllocatedViews_ ? allocationCheck : revisionCheck;
+
+          if (shouldCreateView) {
+            cppCommonMountItems.push_back(
+                CppMountItem::CreateMountItem(newChildShadowView));
           }
-          if (oldChildShadowView.state != newChildShadowView.state) {
-            cppUpdateStateMountItems.push_back(
-                CppMountItem::UpdateStateMountItem(newChildShadowView));
+          break;
+        }
+        case ShadowViewMutation::Remove: {
+          if (!isVirtual) {
+            cppCommonMountItems.push_back(CppMountItem::RemoveMountItem(
+                parentShadowView, oldChildShadowView, index));
+          }
+          break;
+        }
+        case ShadowViewMutation::Delete: {
+          cppDeleteMountItems.push_back(
+              CppMountItem::DeleteMountItem(oldChildShadowView));
+          break;
+        }
+        case ShadowViewMutation::Update: {
+          if (!isVirtual) {
+            if (oldChildShadowView.props != newChildShadowView.props) {
+              cppUpdatePropsMountItems.push_back(
+                  CppMountItem::UpdatePropsMountItem(newChildShadowView));
+            }
+            if (oldChildShadowView.state != newChildShadowView.state) {
+              cppUpdateStateMountItems.push_back(
+                  CppMountItem::UpdateStateMountItem(newChildShadowView));
+            }
+
+            // Padding: padding mountItems must be executed before layout props
+            // are updated in the view. This is necessary to ensure that events
+            // (resulting from layout changes) are dispatched with the correct
+            // padding information.
+            if (oldChildShadowView.layoutMetrics.contentInsets !=
+                newChildShadowView.layoutMetrics.contentInsets) {
+              cppUpdatePaddingMountItems.push_back(
+                  CppMountItem::UpdatePaddingMountItem(newChildShadowView));
+            }
+
+            if (oldChildShadowView.layoutMetrics !=
+                newChildShadowView.layoutMetrics) {
+              cppUpdateLayoutMountItems.push_back(
+                  CppMountItem::UpdateLayoutMountItem(
+                      mutation.newChildShadowView));
+            }
+
+            // OverflowInset: This is the values indicating boundaries including
+            // children of the current view. The layout of current view may not
+            // change, and we separate this part from layout mount items to not
+            // pack too much data there.
+            if (useOverflowInset_ &&
+                (oldChildShadowView.layoutMetrics.overflowInset !=
+                 newChildShadowView.layoutMetrics.overflowInset)) {
+              cppUpdateOverflowInsetMountItems.push_back(
+                  CppMountItem::UpdateOverflowInsetMountItem(
+                      newChildShadowView));
+            }
           }
 
-          // Padding: padding mountItems must be executed before layout props
-          // are updated in the view. This is necessary to ensure that events
-          // (resulting from layout changes) are dispatched with the correct
-          // padding information.
-          if (oldChildShadowView.layoutMetrics.contentInsets !=
-              newChildShadowView.layoutMetrics.contentInsets) {
+          if (oldChildShadowView.eventEmitter !=
+              newChildShadowView.eventEmitter) {
+            cppUpdateEventEmitterMountItems.push_back(
+                CppMountItem::UpdateEventEmitterMountItem(
+                    mutation.newChildShadowView));
+          }
+          break;
+        }
+        case ShadowViewMutation::Insert: {
+          if (!isVirtual) {
+            // Insert item
+            cppCommonMountItems.push_back(CppMountItem::InsertMountItem(
+                parentShadowView, newChildShadowView, index));
+
+            bool revisionCheck =
+                noRevisionCheck || newChildShadowView.props->revision > 1;
+            bool allocationCheck =
+                !allocatedViewTags.contains(newChildShadowView.tag);
+            bool shouldCreateView =
+                shouldRememberAllocatedViews_ ? allocationCheck : revisionCheck;
+            if (shouldCreateView) {
+              cppUpdatePropsMountItems.push_back(
+                  CppMountItem::UpdatePropsMountItem(newChildShadowView));
+            }
+
+            // State
+            if (newChildShadowView.state) {
+              cppUpdateStateMountItems.push_back(
+                  CppMountItem::UpdateStateMountItem(newChildShadowView));
+            }
+
+            // Padding: padding mountItems must be executed before layout props
+            // are updated in the view. This is necessary to ensure that events
+            // (resulting from layout changes) are dispatched with the correct
+            // padding information.
             cppUpdatePaddingMountItems.push_back(
-                CppMountItem::UpdatePaddingMountItem(newChildShadowView));
-          }
+                CppMountItem::UpdatePaddingMountItem(
+                    mutation.newChildShadowView));
 
-          if (oldChildShadowView.layoutMetrics !=
-              newChildShadowView.layoutMetrics) {
+            // Layout
             cppUpdateLayoutMountItems.push_back(
                 CppMountItem::UpdateLayoutMountItem(
                     mutation.newChildShadowView));
+
+            // OverflowInset: This is the values indicating boundaries including
+            // children of the current view. The layout of current view may not
+            // change, and we separate this part from layout mount items to not
+            // pack too much data there.
+            if (useOverflowInset_) {
+              cppUpdateOverflowInsetMountItems.push_back(
+                  CppMountItem::UpdateOverflowInsetMountItem(
+                      newChildShadowView));
+            }
           }
 
-          // OverflowInset: This is the values indicating boundaries including
-          // children of the current view. The layout of current view may not
-          // change, and we separate this part from layout mount items to not
-          // pack too much data there.
-          if (useOverflowInset_ &&
-              (oldChildShadowView.layoutMetrics.overflowInset !=
-               newChildShadowView.layoutMetrics.overflowInset)) {
-            cppUpdateOverflowInsetMountItems.push_back(
-                CppMountItem::UpdateOverflowInsetMountItem(newChildShadowView));
-          }
-        }
-
-        if (oldChildShadowView.eventEmitter !=
-            newChildShadowView.eventEmitter) {
+          // EventEmitter
           cppUpdateEventEmitterMountItems.push_back(
               CppMountItem::UpdateEventEmitterMountItem(
                   mutation.newChildShadowView));
+
+          break;
         }
-        break;
-      }
-      case ShadowViewMutation::Insert: {
-        if (!isVirtual) {
-          // Insert item
-          cppCommonMountItems.push_back(CppMountItem::InsertMountItem(
-              parentShadowView, newChildShadowView, index));
-
-          if (noRevisionCheck || newChildShadowView.props->revision > 1) {
-            cppUpdatePropsMountItems.push_back(
-                CppMountItem::UpdatePropsMountItem(newChildShadowView));
-          }
-
-          // State
-          if (newChildShadowView.state) {
-            cppUpdateStateMountItems.push_back(
-                CppMountItem::UpdateStateMountItem(newChildShadowView));
-          }
-
-          // Padding: padding mountItems must be executed before layout props
-          // are updated in the view. This is necessary to ensure that events
-          // (resulting from layout changes) are dispatched with the correct
-          // padding information.
-          cppUpdatePaddingMountItems.push_back(
-              CppMountItem::UpdatePaddingMountItem(
-                  mutation.newChildShadowView));
-
-          // Layout
-          cppUpdateLayoutMountItems.push_back(
-              CppMountItem::UpdateLayoutMountItem(mutation.newChildShadowView));
-
-          // OverflowInset: This is the values indicating boundaries including
-          // children of the current view. The layout of current view may not
-          // change, and we separate this part from layout mount items to not
-          // pack too much data there.
-          if (useOverflowInset_) {
-            cppUpdateOverflowInsetMountItems.push_back(
-                CppMountItem::UpdateOverflowInsetMountItem(newChildShadowView));
-          }
+        default: {
+          break;
         }
-
-        // EventEmitter
-        cppUpdateEventEmitterMountItems.push_back(
-            CppMountItem::UpdateEventEmitterMountItem(
-                mutation.newChildShadowView));
-
-        break;
       }
-      default: {
-        break;
+    }
+
+    if (shouldRememberAllocatedViews_) {
+      auto &views = allocatedViewsIterator->second;
+      for (auto const &mutation : mutations) {
+        switch (mutation.type) {
+          case ShadowViewMutation::Create:
+            views.insert(mutation.newChildShadowView.tag);
+            break;
+          case ShadowViewMutation::Delete:
+            views.erase(mutation.oldChildShadowView.tag);
+            break;
+          default:
+            break;
+        }
       }
     }
   }
@@ -732,6 +787,19 @@ void FabricMountingManager::executeMount(
 void FabricMountingManager::preallocateShadowView(
     SurfaceId surfaceId,
     ShadowView const &shadowView) {
+  if (shouldRememberAllocatedViews_) {
+    std::lock_guard lock(allocatedViewsMutex_);
+    auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
+    if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
+      return;
+    }
+    auto &allocatedViews = allocatedViewsIterator->second;
+    if (allocatedViews.contains(shadowView.tag)) {
+      return;
+    }
+    allocatedViews.insert(shadowView.tag);
+  }
+
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
   static auto preallocateView = jni::findClassStatic(UIManagerJavaDescriptor)
@@ -885,6 +953,8 @@ FabricMountingManager::FabricMountingManager(
   disableRevisionCheckForPreallocation_ =
       config->getBool("react_fabric:disable_revision_check_for_preallocation");
   useOverflowInset_ = doesUseOverflowInset();
+  shouldRememberAllocatedViews_ = config->getBool(
+      "react_native_new_architecture:remember_views_on_mount_android");
 }
 
 } // namespace react
