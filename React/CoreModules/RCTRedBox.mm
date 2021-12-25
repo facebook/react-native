@@ -167,8 +167,11 @@
 
     UIView *bottomSafeView = [UIView new];
     bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-    bottomSafeView.frame =
-        CGRectMake(0, frame.size.height - (CGFloat)[self bottomSafeViewHeight], frame.size.width, (CGFloat)[self bottomSafeViewHeight]);
+    bottomSafeView.frame = CGRectMake(
+        0,
+        frame.size.height - (CGFloat)[self bottomSafeViewHeight],
+        frame.size.width,
+        (CGFloat)[self bottomSafeViewHeight]);
 
     [rootView addSubview:bottomSafeView];
   }
