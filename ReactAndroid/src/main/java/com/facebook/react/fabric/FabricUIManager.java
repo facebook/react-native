@@ -769,7 +769,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactMarker.logFabricMarker(ReactMarkerConstants.FABRIC_COMMIT_END, null, commitNumber);
 
       if (ENABLE_FABRIC_LOGS) {
-        FLog.e(
+        FLog.i(
             TAG,
             "Statistic of Fabric commit #: "
                 + commitNumber
