@@ -4,7 +4,7 @@ exports[`GenerateShadowNodeCpp can generate fixture ARRAY_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,7 +29,7 @@ exports[`GenerateShadowNodeCpp can generate fixture ARRAY_PROPS_WITH_NESTED_OBJE
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -54,7 +54,7 @@ exports[`GenerateShadowNodeCpp can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -79,7 +79,7 @@ exports[`GenerateShadowNodeCpp can generate fixture COLOR_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -104,7 +104,7 @@ exports[`GenerateShadowNodeCpp can generate fixture COMMANDS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -129,7 +129,7 @@ exports[`GenerateShadowNodeCpp can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -154,7 +154,7 @@ exports[`GenerateShadowNodeCpp can generate fixture DOUBLE_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -179,7 +179,7 @@ exports[`GenerateShadowNodeCpp can generate fixture EVENT_NESTED_OBJECT_PROPS 1`
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -204,7 +204,7 @@ exports[`GenerateShadowNodeCpp can generate fixture EVENT_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -229,7 +229,7 @@ exports[`GenerateShadowNodeCpp can generate fixture EVENTS_WITH_PAPER_NAME 1`] =
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -254,7 +254,7 @@ exports[`GenerateShadowNodeCpp can generate fixture EXCLUDE_ANDROID 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -279,7 +279,7 @@ exports[`GenerateShadowNodeCpp can generate fixture EXCLUDE_ANDROID_IOS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -304,7 +304,7 @@ exports[`GenerateShadowNodeCpp can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -329,7 +329,7 @@ exports[`GenerateShadowNodeCpp can generate fixture IMAGE_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -354,7 +354,7 @@ exports[`GenerateShadowNodeCpp can generate fixture INSETS_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -379,7 +379,7 @@ exports[`GenerateShadowNodeCpp can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -404,7 +404,7 @@ exports[`GenerateShadowNodeCpp can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -429,7 +429,7 @@ exports[`GenerateShadowNodeCpp can generate fixture INTERFACE_ONLY 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -454,7 +454,7 @@ exports[`GenerateShadowNodeCpp can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -479,7 +479,7 @@ exports[`GenerateShadowNodeCpp can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -504,7 +504,7 @@ exports[`GenerateShadowNodeCpp can generate fixture OBJECT_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -529,7 +529,7 @@ exports[`GenerateShadowNodeCpp can generate fixture POINT_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -554,7 +554,7 @@ exports[`GenerateShadowNodeCpp can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -579,7 +579,7 @@ exports[`GenerateShadowNodeCpp can generate fixture STRING_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -604,7 +604,7 @@ exports[`GenerateShadowNodeCpp can generate fixture TWO_COMPONENTS_DIFFERENT_FIL
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -630,7 +630,7 @@ exports[`GenerateShadowNodeCpp can generate fixture TWO_COMPONENTS_SAME_FILE 1`]
 Map {
   "ShadowNodes.cpp" => "
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

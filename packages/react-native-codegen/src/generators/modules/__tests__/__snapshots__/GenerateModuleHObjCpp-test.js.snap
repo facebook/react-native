@@ -3,7 +3,7 @@
 exports[`GenerateModuleHObjCpp can generate fixture SampleWithUppercaseName 1`] = `
 Map {
   "SampleWithUppercaseName.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -54,7 +54,7 @@ namespace facebook {
 exports[`GenerateModuleHObjCpp can generate fixture complex_objects 1`] = `
 Map {
   "complex_objects.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -312,7 +312,7 @@ inline facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOpt
 exports[`GenerateModuleHObjCpp can generate fixture empty_native_modules 1`] = `
 Map {
   "empty_native_modules.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -363,7 +363,7 @@ namespace facebook {
 exports[`GenerateModuleHObjCpp can generate fixture native_modules_with_type_aliases 1`] = `
 Map {
   "native_modules_with_type_aliases.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -534,7 +534,7 @@ inline folly::Optional<bool> JS::AliasTurboModule::Options::allowExternalStorage
 exports[`GenerateModuleHObjCpp can generate fixture real_module_example 1`] = `
 Map {
   "real_module_example.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -824,7 +824,7 @@ inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::videoMode() co
 exports[`GenerateModuleHObjCpp can generate fixture simple_native_modules 1`] = `
 Map {
   "simple_native_modules.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -930,7 +930,7 @@ inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i) : _
 exports[`GenerateModuleHObjCpp can generate fixture two_modules_different_files 1`] = `
 Map {
   "two_modules_different_files.h" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
