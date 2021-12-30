@@ -99,6 +99,12 @@ TextInputProps::TextInputProps(
           rawProps,
           "onKeyPressSync",
           sourceProps.onKeyPressSync,
+          {})),
+      onChangeSync(convertRawProp(
+          context,
+          rawProps,
+          "onChangeSync",
+          sourceProps.onChangeSync,
           {})){};
 
 TextAttributes TextInputProps::getEffectiveTextAttributes(

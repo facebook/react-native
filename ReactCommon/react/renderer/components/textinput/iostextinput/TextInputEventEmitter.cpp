@@ -75,6 +75,12 @@ void TextInputEventEmitter::onChange(
   dispatchTextInputEvent("change", textInputMetrics);
 }
 
+void TextInputEventEmitter::onChangeSync(
+    TextInputMetrics const &textInputMetrics) const {
+  dispatchTextInputEvent(
+      "changeSync", textInputMetrics, EventPriority::SynchronousBatched);
+}
+
 void TextInputEventEmitter::onContentSizeChange(
     TextInputMetrics const &textInputMetrics) const {
   dispatchTextInputEvent("contentSizeChange", textInputMetrics);
