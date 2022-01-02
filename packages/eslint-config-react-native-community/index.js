@@ -37,6 +37,9 @@ module.exports = {
     {
       files: ['*.js'],
       parser: '@babel/eslint-parser',
+      parserOptions: {
+        requireConfigFile: false,
+      },
       plugins: ['flowtype'],
       rules: {
         // Flow Plugin
