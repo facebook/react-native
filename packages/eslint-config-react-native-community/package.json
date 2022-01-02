@@ -14,7 +14,7 @@
     "@react-native-community/eslint-plugin": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
-    "babel-eslint": "^10.1.0",
+    "@babel/eslint-parser": "^7.16.5",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-flowtype": "^7.0.0",
