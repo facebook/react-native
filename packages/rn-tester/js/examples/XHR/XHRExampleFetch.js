@@ -77,6 +77,7 @@ class XHRExampleFetch extends React.Component<any, any> {
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response:</Text>
         <TextInput
+          accessibilityLabel="Text input field"
           editable={false}
           multiline={true}
           defaultValue={this.state.responseText}
@@ -89,6 +90,7 @@ class XHRExampleFetch extends React.Component<any, any> {
       <View>
         <Text style={styles.label}>Edit URL to submit:</Text>
         <TextInput
+          accessibilityLabel="Text input field"
           returnKeyType="go"
           defaultValue="http://www.posttestserver.com/post.php"
           onSubmitEditing={event => {

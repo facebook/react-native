@@ -107,32 +107,44 @@ class AddRemoveExample extends React.Component<{...}, AddRemoveExampleState> {
     ));
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={this._onPressAddViewAnimated}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={this._onPressAddViewAnimated}>
           <View style={styles.button}>
             <Text>Add view</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this._onPressRemoveViewAnimated}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={this._onPressRemoveViewAnimated}>
           <View style={styles.button}>
             <Text>Remove view</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this._onPressReorderViewsAnimated}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={this._onPressReorderViewsAnimated}>
           <View style={styles.button}>
             <Text>Reorder Views</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this._onPressAddView}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={this._onPressAddView}>
           <View style={styles.button}>
             <Text>Add view (no animation)</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this._onPressRemoveView}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={this._onPressRemoveView}>
           <View style={styles.button}>
             <Text>Remove view (no animation)</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this._onPressReorderViews}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={this._onPressReorderViews}>
           <View style={styles.button}>
             <Text>Reorder Views (no animation)</Text>
           </View>
@@ -179,12 +191,16 @@ class ReparentingExample extends React.Component<
 
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={this._onPressToggleAnimated}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={this._onPressToggleAnimated}>
           <View style={styles.button}>
             <Text>Toggle</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={this._onPressToggle}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={this._onPressToggle}>
           <View style={styles.button}>
             <Text>Toggle (no animation)</Text>
           </View>
@@ -228,7 +244,9 @@ class CrossFadeExample extends React.Component<{...}, CrossFadeExampleState> {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={this._onPressToggle}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={this._onPressToggle}>
           <View style={styles.button}>
             <Text>Toggle</Text>
           </View>
@@ -290,7 +308,9 @@ class LayoutUpdateExample extends React.Component<
 
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={this._onPressToggle}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={this._onPressToggle}>
           <View style={styles.button}>
             <Text>Make box square</Text>
           </View>

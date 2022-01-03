@@ -21,7 +21,7 @@ const render = require('../../../../jest/renderer');
 describe('TouchableWithoutFeedback', () => {
   it('renders correctly', () => {
     const instance = render.create(
-      <TouchableNativeFeedback style={{}}>
+      <TouchableNativeFeedback accessibilityRole="button" style={{}}>
         <Text>Touchable</Text>
       </TouchableNativeFeedback>,
     );
@@ -39,7 +39,7 @@ describe('TouchableWithoutFeedback', () => {
 describe('<TouchableNativeFeedback />', () => {
   it('should render as expected', () => {
     const instance = ReactTestRenderer.create(
-      <TouchableNativeFeedback>
+      <TouchableNativeFeedback accessibilityRole="button">
         <View />
       </TouchableNativeFeedback>,
     );
@@ -52,7 +52,7 @@ describe('<TouchableNativeFeedback disabled={true}>', () => {
   it('should be disabled when disabled is true', () => {
     expect(
       ReactTestRenderer.create(
-        <TouchableNativeFeedback disabled={true}>
+        <TouchableNativeFeedback accessibilityRole="button" disabled={true}>
           <View />
         </TouchableNativeFeedback>,
       ),
@@ -64,7 +64,10 @@ describe('<TouchableNativeFeedback disabled={true} accessibilityState={{}}>', ()
   it('should be disabled when disabled is true and accessibilityState is empty', () => {
     expect(
       ReactTestRenderer.create(
-        <TouchableNativeFeedback disabled={true} accessibilityState={{}}>
+        <TouchableNativeFeedback
+          accessibilityRole="button"
+          disabled={true}
+          accessibilityState={{}}>
           <View />
         </TouchableNativeFeedback>,
       ),
@@ -77,6 +80,7 @@ describe('<TouchableNativeFeedback disabled={true} accessibilityState={{checked:
     expect(
       ReactTestRenderer.create(
         <TouchableNativeFeedback
+          accessibilityRole="button"
           disabled={true}
           accessibilityState={{checked: true}}>
           <View />
@@ -91,6 +95,7 @@ describe('<TouchableNativeFeedback disabled={true} accessibilityState={{disabled
     expect(
       ReactTestRenderer.create(
         <TouchableNativeFeedback
+          accessibilityRole="button"
           disabled={true}
           accessibilityState={{disabled: false}}>
           <View />
@@ -105,6 +110,7 @@ describe('<TouchableNativeFeedback disabled={false} accessibilityState={{disable
     expect(
       ReactTestRenderer.create(
         <TouchableNativeFeedback
+          accessibilityRole="button"
           disabled={false}
           accessibilityState={{disabled: true}}>
           <View />

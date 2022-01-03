@@ -37,6 +37,7 @@ const ExampleModuleRow = ({
   const onAndroid = !platform || platform === 'android';
   const rightAddOn = (
     <TouchableHighlight
+      accessibilityRole="button"
       style={styles.imageViewStyle}
       onPress={() =>
         toggleBookmark({

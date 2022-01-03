@@ -57,6 +57,7 @@ function LogBoxButton(props: Props): React.Node {
     content
   ) : (
     <TouchableWithoutFeedback
+      accessibilityRole="button"
       hitSlop={props.hitSlop}
       onPress={props.onPress}
       onPressIn={() => setPressed(true)}

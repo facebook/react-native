@@ -17,7 +17,9 @@ class TransparentHitTestExample extends React.Component<{...}> {
   render() {
     return (
       <View style={{flex: 1}}>
-        <TouchableOpacity onPress={() => Alert.alert('Alert', 'Hi!')}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={() => Alert.alert('Alert', 'Hi!')}>
           <Text>HELLO!</Text>
         </TouchableOpacity>
 

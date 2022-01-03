@@ -69,6 +69,7 @@ class ItemComponent extends React.PureComponent<{
     const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
     return (
       <TouchableHighlight
+        accessibilityRole="button"
         onPress={this._onPress}
         onShowUnderlay={this.props.onShowUnderlay}
         onHideUnderlay={this.props.onHideUnderlay}

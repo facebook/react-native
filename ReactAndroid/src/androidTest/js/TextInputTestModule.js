@@ -70,6 +70,7 @@ class TokenizedTextExample extends React.Component {
     return (
       <View>
         <TextInput
+          accessibilityLabel="Text input field"
           testID="tokenizedInput"
           multiline={true}
           style={styles.multiline}
@@ -96,6 +97,7 @@ class TextInputTestApp extends React.Component {
     return (
       <View style={styles.container}>
         <TextInput
+          accessibilityLabel="Text input field"
           style={styles.textInputHeight}
           autoCorrect={true}
           autoFocus={true}
@@ -106,6 +108,7 @@ class TextInputTestApp extends React.Component {
           testID="textInput1"
         />
         <TextInput
+          accessibilityLabel="Text input field"
           style={styles.textInput}
           autoCapitalize="sentences"
           autoCorrect={false}
@@ -117,25 +120,30 @@ class TextInputTestApp extends React.Component {
           testID="textInput2"
         />
         <TextInput
+          accessibilityLabel="Text input field"
           style={styles.textInput}
           defaultValue="Hello, World"
           testID="textInput3"
         />
         <TextInput
+          accessibilityLabel="Text input field"
           style={[styles.textInput, styles.textInputColor]}
           testID="textInput4"
         />
         <TextInput
+          accessibilityLabel="Text input field"
           style={[styles.textInput, styles.textInputColor]}
           defaultValue=""
           testID="textInput5"
         />
         <TextInput
+          accessibilityLabel="Text input field"
           style={[styles.textInput, styles.textInputColor]}
           defaultValue="Text"
           testID="textInput6"
         />
         <TextInput
+          accessibilityLabel="Text input field"
           onSubmitEditing={this.handleOnSubmitEditing.bind(this, 'onSubmit')}
           defaultValue=""
           testID="onSubmitTextInput"

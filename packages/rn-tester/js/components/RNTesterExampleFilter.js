@@ -126,6 +126,7 @@ class RNTesterExampleFilter<T> extends React.Component<Props<T>, State> {
                   style={styles.searchIcon}
                 />
                 <TextInput
+                  accessibilityLabel="Text input field"
                   autoCapitalize="none"
                   autoCorrect={false}
                   clearButtonMode="always"

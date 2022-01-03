@@ -54,7 +54,9 @@ class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={this.onPress}>
+      <TouchableWithoutFeedback
+        accessibilityRole="button"
+        onPress={this.onPress}>
         <View>
           <View>
             <Text>Native:</Text>
@@ -102,7 +104,9 @@ class ValueListenerExample extends React.Component<{...}, $FlowFixMeState> {
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={this._onPress}>
+      <TouchableWithoutFeedback
+        accessibilityRole="button"
+        onPress={this._onPress}>
         <View>
           <View style={styles.row}>
             <Animated.View
@@ -332,7 +336,9 @@ class TrackingExample extends React.Component<
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={this.onPress}>
+      <TouchableWithoutFeedback
+        accessibilityRole="button"
+        onPress={this.onPress}>
         <View>
           <View>
             <Text>Native:</Text>

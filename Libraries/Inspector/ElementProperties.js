@@ -50,6 +50,7 @@ class ElementProperties extends React.Component<Props> {
       const fileNameShort = parts[parts.length - 1];
       openFileButton = (
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.openButton}
           onPress={openFileInEditor.bind(null, fileName, lineNumber)}>
           <Text style={styles.openButtonTitle} numberOfLines={1}>
@@ -61,13 +62,14 @@ class ElementProperties extends React.Component<Props> {
     // Without the `TouchableWithoutFeedback`, taps on this inspector pane
     // would change the inspected element to whatever is under the inspector
     return (
-      <TouchableWithoutFeedback>
+      <TouchableWithoutFeedback accessibilityRole="button">
         <View style={styles.info}>
           <View style={styles.breadcrumb}>
             {mapWithSeparator(
               this.props.hierarchy,
               (hierarchyItem, i) => (
                 <TouchableHighlight
+                  accessibilityRole="button"
                   key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
                   // $FlowFixMe[not-a-function] found when converting React.createClass to ES6

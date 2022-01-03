@@ -63,6 +63,7 @@ class AnimatedTransformTestApp extends React.Component {
     return (
       <View style={StyleSheet.absoluteFill}>
         <TouchableOpacity
+          accessibilityRole="button"
           onPress={this.toggle}
           testID="TouchableOpacity"
           style={[styles.base, this.state.flag ? styles.transformed : null]}>

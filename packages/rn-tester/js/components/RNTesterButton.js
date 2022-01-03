@@ -26,6 +26,7 @@ class RNTesterButton extends React.Component<Props> {
   render(): React.Node {
     return (
       <TouchableHighlight
+        accessibilityRole="button"
         testID={this.props.testID}
         onPress={this.props.onPress}
         style={styles.button}

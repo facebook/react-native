@@ -43,6 +43,7 @@ function ModalOnShowOnDismiss(): React.Node {
                 onDismiss is called {onDismissCount} times
               </Text>
               <Pressable
+                accessibilityRole="button"
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(false)}>
                 <Text testID="dismiss-modal" style={styles.textStyle}>
@@ -50,6 +51,7 @@ function ModalOnShowOnDismiss(): React.Node {
                 </Text>
               </Pressable>
               <Pressable
+                accessibilityRole="button"
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalShowComponent(false)}>
                 <Text
@@ -67,6 +69,7 @@ function ModalOnShowOnDismiss(): React.Node {
         onDismiss is called {onDismissCount} times
       </Text>
       <Pressable
+        accessibilityRole="button"
         style={[styles.button, styles.buttonOpen]}
         onPress={() => {
           setModalShowComponent(true);

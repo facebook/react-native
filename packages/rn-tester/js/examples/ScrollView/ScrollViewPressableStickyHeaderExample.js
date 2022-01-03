@@ -30,6 +30,7 @@ function StickyHeader() {
         height: 100,
       }}>
       <Pressable
+        accessibilityRole="button"
         style={{flex: 1}}
         onPress={() => {
           setBackgroundColor(backgroundColor === 'blue' ? 'yellow' : 'blue');

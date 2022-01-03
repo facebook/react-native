@@ -42,7 +42,10 @@ class Button extends React.Component {
       );
     }
     return (
-      <TouchableOpacity onPress={this.props.onPress} style={styles.button}>
+      <TouchableOpacity
+        accessibilityRole="button"
+        onPress={this.props.onPress}
+        style={styles.button}>
         {label}
       </TouchableOpacity>
     );
@@ -227,6 +230,7 @@ class WebSocketExample extends React.Component<any, any, State> {
           {canSend ? <WebSocketImage url={this.state.url} /> : null}
         </Row>
         <TextInput
+          accessibilityLabel="Text input field"
           style={styles.textInput}
           autoCorrect={false}
           placeholder="Server URL..."
@@ -246,6 +250,7 @@ class WebSocketExample extends React.Component<any, any, State> {
           />
         </View>
         <TextInput
+          accessibilityLabel="Text input field"
           style={styles.textInput}
           autoCorrect={false}
           placeholder="Type message here..."
@@ -271,6 +276,7 @@ class WebSocketExample extends React.Component<any, any, State> {
           </Text>
         </View>
         <TextInput
+          accessibilityLabel="Text input field"
           style={styles.textInput}
           autoCorrect={false}
           placeholder="HTTP URL..."

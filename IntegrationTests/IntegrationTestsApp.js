@@ -73,6 +73,7 @@ class IntegrationTestsApp extends React.Component<{...}, $FlowFixMeState> {
         <ScrollView>
           {TESTS.map(test => [
             <TouchableOpacity
+              accessibilityRole="button"
               onPress={() => this.setState({test})}
               /* $FlowFixMe[incompatible-type] (>=0.115.0 site=react_native_fb)
                * This comment suppresses an error found when Flow v0.115 was

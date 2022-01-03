@@ -42,7 +42,9 @@ type ItemState = {||};
 class Item extends React.Component<ItemProps, ItemState> {
   render() {
     return (
-      <TouchableWithoutFeedback onPress={this.props.onPress}>
+      <TouchableWithoutFeedback
+        accessibilityRole="button"
+        onPress={this.props.onPress}>
         <View style={styles.item_container}>
           <Text style={styles.item_text}>{this.props.text}</Text>
         </View>

@@ -116,6 +116,7 @@ class ChangeImageSize extends React.Component<mixed, ChangeSizeState> {
     return (
       <View>
         <TouchableHighlight
+          accessibilityRole="button"
           onPress={() => {
             this.setState({width: this.state.width === 50 ? 100 : 50});
           }}>
@@ -152,6 +153,7 @@ class ChangeViewSize extends React.Component<mixed, ChangeSizeState> {
     return (
       <View>
         <TouchableHighlight
+          accessibilityRole="button"
           onPress={() => {
             this.setState({width: this.state.width === 50 ? 100 : 50});
           }}>
@@ -184,6 +186,7 @@ class ChangeInnerViewSize extends React.Component<mixed, ChangeSizeState> {
     return (
       <View>
         <TouchableHighlight
+          accessibilityRole="button"
           onPress={() => {
             this.setState({width: this.state.width === 50 ? 100 : 50});
           }}>

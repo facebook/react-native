@@ -33,10 +33,26 @@ const onButtonPress = () => {
 const TextInputForm = () => {
   return (
     <View>
-      <TextInput placeholder="Email" style={styles.textInput} />
-      <TextInput placeholder="Username" style={styles.textInput} />
-      <TextInput placeholder="Password" style={styles.textInput} />
-      <TextInput placeholder="Confirm Password" style={styles.textInput} />
+      <TextInput
+        accessibilityLabel="Text input field"
+        placeholder="Email"
+        style={styles.textInput}
+      />
+      <TextInput
+        accessibilityLabel="Text input field"
+        placeholder="Username"
+        style={styles.textInput}
+      />
+      <TextInput
+        accessibilityLabel="Text input field"
+        placeholder="Password"
+        style={styles.textInput}
+      />
+      <TextInput
+        accessibilityLabel="Text input field"
+        placeholder="Confirm Password"
+        style={styles.textInput}
+      />
       <Button title="Register" onPress={onButtonPress} />
     </View>
   );
@@ -50,6 +66,7 @@ const CloseButton = props => {
         {marginHorizontal: props.behavior === 'position' ? 0 : 25},
       ]}>
       <Pressable
+        accessibilityRole="button"
         onPress={() => props.setModalOpen(false)}
         style={styles.closeButton}>
         <Text>Close</Text>
@@ -71,6 +88,7 @@ const KeyboardAvoidingViewBehaviour = () => {
               justifyContent: 'center',
             }}>
             <TouchableOpacity
+              accessibilityRole="button"
               onPress={() => setBehavior('padding')}
               style={[
                 styles.pillStyle,
@@ -81,6 +99,7 @@ const KeyboardAvoidingViewBehaviour = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
+              accessibilityRole="button"
               onPress={() => setBehavior('position')}
               style={[
                 styles.pillStyle,
@@ -91,6 +110,7 @@ const KeyboardAvoidingViewBehaviour = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
+              accessibilityRole="button"
               onPress={() => setBehavior('height')}
               style={[
                 styles.pillStyle,
@@ -109,7 +129,9 @@ const KeyboardAvoidingViewBehaviour = () => {
         </KeyboardAvoidingView>
       </Modal>
       <View>
-        <Pressable onPress={() => setModalOpen(true)}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setModalOpen(true)}>
           <Text>Open Example</Text>
         </Pressable>
       </View>
@@ -131,7 +153,9 @@ const KeyboardAvoidingDisabled = () => {
         </KeyboardAvoidingView>
       </Modal>
       <View>
-        <Pressable onPress={() => setModalOpen(true)}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setModalOpen(true)}>
           <Text>Open Example</Text>
         </Pressable>
       </View>
@@ -153,7 +177,9 @@ const KeyboardAvoidingVerticalOffset = () => {
         </KeyboardAvoidingView>
       </Modal>
       <View>
-        <Pressable onPress={() => setModalOpen(true)}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setModalOpen(true)}>
           <Text>Open Example</Text>
         </Pressable>
       </View>
@@ -176,7 +202,9 @@ const KeyboardAvoidingContentContainerStyle = () => {
         </KeyboardAvoidingView>
       </Modal>
       <View>
-        <Pressable onPress={() => setModalOpen(true)}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setModalOpen(true)}>
           <Text>Open Example</Text>
         </Pressable>
       </View>

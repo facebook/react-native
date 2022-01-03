@@ -51,12 +51,14 @@ class TouchableHighlightBox extends React.Component<{...}, $FlowFixMeState> {
       <View>
         <View style={styles.row}>
           <TouchableHighlight
+            accessibilityRole="button"
             style={styles.wrapper}
             testID="touchable_highlight_image_button"
             onPress={this.touchableOnPress}>
             <Image source={remoteImage} style={styles.image} />
           </TouchableHighlight>
           <TouchableHighlight
+            accessibilityRole="button"
             style={styles.wrapper}
             testID="touchable_highlight_text_button"
             activeOpacity={1}
@@ -100,6 +102,7 @@ class TouchableWithoutFeedbackBox extends React.Component<
     return (
       <View>
         <TouchableWithoutFeedback
+          accessibilityRole="button"
           onPress={this.textOnPress}
           testID="touchable_without_feedback_button">
           <View style={styles.wrapperCustom}>
@@ -199,6 +202,7 @@ class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
       <View testID="touchable_delay_events">
         <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
+            accessibilityRole="button"
             style={styles.wrapper}
             testID="touchable_delay_events_button"
             onPress={() => this._appendEvent('press')}
@@ -287,6 +291,7 @@ class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
       <View testID="touchable_hit_slop">
         <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
+            accessibilityRole="button"
             onPress={this.onPress}
             style={styles.hitSlopWrapper}
             hitSlop={{top: 30, bottom: 30, left: 60, right: 60}}
@@ -348,15 +353,22 @@ class TouchableDisabled extends React.Component<{...}> {
   render() {
     return (
       <View>
-        <TouchableOpacity disabled={true} style={[styles.row, styles.block]}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          disabled={true}
+          style={[styles.row, styles.block]}>
           <Text style={styles.disabledButton}>Disabled TouchableOpacity</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity disabled={false} style={[styles.row, styles.block]}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          disabled={false}
+          style={[styles.row, styles.block]}>
           <Text style={styles.button}>Enabled TouchableOpacity</Text>
         </TouchableOpacity>
 
         <TouchableHighlight
+          accessibilityRole="button"
           activeOpacity={1}
           disabled={true}
           underlayColor="rgb(210, 230, 255)"
@@ -366,6 +378,7 @@ class TouchableDisabled extends React.Component<{...}> {
         </TouchableHighlight>
 
         <TouchableHighlight
+          accessibilityRole="button"
           activeOpacity={1}
           underlayColor="rgb(210, 230, 255)"
           style={[styles.row, styles.block]}
@@ -374,6 +387,7 @@ class TouchableDisabled extends React.Component<{...}> {
         </TouchableHighlight>
 
         <TouchableWithoutFeedback
+          accessibilityRole="button"
           onPress={() => console.log('TWOF has been clicked')}
           disabled={true}>
           <View style={styles.wrapperCustom}>
@@ -389,6 +403,7 @@ class TouchableDisabled extends React.Component<{...}> {
         </TouchableWithoutFeedback>
 
         <TouchableWithoutFeedback
+          accessibilityRole="button"
           onPress={() => console.log('TWOF has been clicked')}
           disabled={false}>
           <View style={styles.wrapperCustom}>
@@ -401,6 +416,7 @@ class TouchableDisabled extends React.Component<{...}> {
         {Platform.OS === 'android' && (
           <>
             <TouchableNativeFeedback
+              accessibilityRole="button"
               onPress={() => console.log('custom TNF has been clicked')}
               background={TouchableNativeFeedback.SelectableBackground()}>
               <View style={[styles.row, styles.block]}>
@@ -411,6 +427,7 @@ class TouchableDisabled extends React.Component<{...}> {
             </TouchableNativeFeedback>
 
             <TouchableNativeFeedback
+              accessibilityRole="button"
               disabled={true}
               onPress={() => console.log('custom TNF has been clicked')}
               background={TouchableNativeFeedback.SelectableBackground()}>
@@ -439,6 +456,7 @@ function CustomRippleRadius() {
         {justifyContent: 'space-around', alignItems: 'center'},
       ]}>
       <TouchableNativeFeedback
+        accessibilityRole="button"
         onPress={() => console.log('custom TNF has been clicked')}
         background={TouchableNativeFeedback.Ripple('orange', true, 30)}>
         <View>
@@ -449,6 +467,7 @@ function CustomRippleRadius() {
       </TouchableNativeFeedback>
 
       <TouchableNativeFeedback
+        accessibilityRole="button"
         onPress={() => console.log('custom TNF has been clicked')}
         background={TouchableNativeFeedback.SelectableBackgroundBorderless(
           150,
@@ -461,6 +480,7 @@ function CustomRippleRadius() {
       </TouchableNativeFeedback>
 
       <TouchableNativeFeedback
+        accessibilityRole="button"
         onPress={() => console.log('custom TNF has been clicked')}
         background={TouchableNativeFeedback.SelectableBackground(70)}>
         <View style={styles.block}>
@@ -491,6 +511,7 @@ const TouchableHighlightUnderlayMethods = () => {
   };
   return (
     <TouchableHighlight
+      accessibilityRole="button"
       style={styles.logBox}
       underlayColor={'#eee'}
       onShowUnderlay={shownUnderlay}
@@ -513,6 +534,7 @@ const TouchableTouchSoundDisabled = () => {
       {Platform.OS === 'android' ? (
         <>
           <TouchableWithoutFeedback
+            accessibilityRole="button"
             touchSoundDisabled={soundEnabled}
             onPress={() => console.log('touchSoundDisabled pressed!')}>
             <Text
@@ -523,6 +545,7 @@ const TouchableTouchSoundDisabled = () => {
             </Text>
           </TouchableWithoutFeedback>
           <TouchableOpacity
+            accessibilityRole="button"
             style={{
               padding: 10,
             }}
@@ -564,6 +587,7 @@ function TouchableOnFocus<T: React.AbstractComponent<any, any>>() {
 
   return (
     <TouchableHighlight
+      accessibilityRole="button"
       ref={ref}
       onFocus={toggleFocus}
       onPress={focusTouchable}>
@@ -692,7 +716,7 @@ exports.examples = [
       return (
         <View>
           <View style={styles.row}>
-            <TouchableNativeFeedback>
+            <TouchableNativeFeedback accessibilityRole="button">
               <Animated.View style={style} />
             </TouchableNativeFeedback>
           </View>

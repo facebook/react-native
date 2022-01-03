@@ -30,6 +30,7 @@ const AlertWithDefaultButton = () => {
   return (
     <View>
       <TouchableHighlight
+        accessibilityRole="button"
         testID="alert-with-default-button"
         style={styles.wrapper}
         onPress={() => Alert.alert('Alert', alertMessage)}>
@@ -49,6 +50,7 @@ const AlertWithTwoButtons = () => {
   return (
     <View>
       <TouchableHighlight
+        accessibilityRole="button"
         style={styles.wrapper}
         onPress={() =>
           Alert.alert('Action Required!', alertMessage, [
@@ -73,6 +75,7 @@ const AlertWithThreeButtons = () => {
   return (
     <View>
       <TouchableHighlight
+        accessibilityRole="button"
         testID="alert-with-three-buttons"
         style={styles.wrapper}
         onPress={() =>
@@ -101,6 +104,7 @@ const AlertWithManyButtons = () => {
   return (
     <View>
       <TouchableHighlight
+        accessibilityRole="button"
         style={styles.wrapper}
         onPress={() =>
           Alert.alert(
@@ -129,6 +133,7 @@ const AlertWithCancelableTrue = () => {
   return (
     <View>
       <TouchableHighlight
+        accessibilityRole="button"
         style={styles.wrapper}
         onPress={() =>
           Alert.alert(
@@ -161,6 +166,7 @@ const AlertWithStyles = () => {
   return (
     <View>
       <TouchableHighlight
+        accessibilityRole="button"
         style={styles.wrapper}
         onPress={() =>
           Alert.alert('Styled Buttons!', alertMessage, [

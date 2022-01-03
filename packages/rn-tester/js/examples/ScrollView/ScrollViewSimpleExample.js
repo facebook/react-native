@@ -29,7 +29,7 @@ class ScrollViewSimpleExample extends React.Component<{...}> {
     const items = [];
     for (let i = 0; i < nItems; i++) {
       items[i] = (
-        <TouchableOpacity key={i} style={styles}>
+        <TouchableOpacity accessibilityRole="button" key={i} style={styles}>
           <Text>{'Item ' + i}</Text>
         </TouchableOpacity>
       );

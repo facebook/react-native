@@ -57,6 +57,7 @@ class TextInputAccessoryViewChangeTextExample extends React.Component<
       <View>
         <Text>Set InputAccessoryView with ID & reset text:</Text>
         <TextInput
+          accessibilityLabel="Text input field"
           style={styles.default}
           inputAccessoryViewID={inputAccessoryViewID}
           onChangeText={text => this.setState({text})}
@@ -97,6 +98,7 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
       <View>
         <Text>Set InputAccessoryView with ID & switch keyboard:</Text>
         <TextInput
+          accessibilityLabel="Text input field"
           style={styles.default}
           inputAccessoryViewID={inputAccessoryViewID}
           onChangeText={text => this.setState({text})}
@@ -129,6 +131,7 @@ class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
   render() {
     return (
       <TextInput
+        accessibilityLabel="Text input field"
         style={styles.default}
         onChangeText={text => this.setState({text})}
         value={this.state.text}
@@ -148,6 +151,7 @@ class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
+          accessibilityLabel="Text input field"
           multiline={false}
           onChangeText={text => {
             this.setState({text: text.replace(/ひ/g, '日')});
@@ -173,6 +177,7 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
     return (
       <View>
         <TextInput
+          accessibilityLabel="Text input field"
           secureTextEntry={true}
           style={styles.default}
           defaultValue="abc"
@@ -186,6 +191,7 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
             flexDirection: 'row',
           }}>
           <TextInput
+            accessibilityLabel="Text input field"
             style={styles.default}
             defaultValue="cde"
             onChangeText={text => this.setState({password: text})}
@@ -375,7 +381,10 @@ exports.examples = ([
       return (
         <View>
           <WithLabel label="singleline">
-            <TextInput style={styles.default} value="(value property)">
+            <TextInput
+              accessibilityLabel="Text input field"
+              style={styles.default}
+              value="(value property)">
               (first raw text node)
               <Text style={{color: 'red'}}>(internal raw text node)</Text>
               (last raw text node)
@@ -383,6 +392,7 @@ exports.examples = ([
           </WithLabel>
           <WithLabel label="multiline">
             <TextInput
+              accessibilityLabel="Text input field"
               style={styles.default}
               multiline={true}
               value="(value property)">
@@ -402,7 +412,11 @@ exports.examples = ([
       const examples = keyboardAppearance.map(type => {
         return (
           <WithLabel key={type} label={type}>
-            <TextInput keyboardAppearance={type} style={styles.default} />
+            <TextInput
+              accessibilityLabel="Text input field"
+              keyboardAppearance={type}
+              style={styles.default}
+            />
           </WithLabel>
         );
       });
@@ -428,7 +442,11 @@ exports.examples = ([
       const examples = returnKeyTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
-            <TextInput returnKeyType={type} style={styles.default} />
+            <TextInput
+              accessibilityLabel="Text input field"
+              returnKeyType={type}
+              style={styles.default}
+            />
           </WithLabel>
         );
       });
@@ -442,6 +460,7 @@ exports.examples = ([
         <View>
           <WithLabel label="true">
             <TextInput
+              accessibilityLabel="Text input field"
               enablesReturnKeyAutomatically={true}
               style={styles.default}
             />
@@ -462,10 +481,12 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             style={[styles.default, {color: 'blue'}]}
             defaultValue="Blue"
           />
           <TextInput
+            accessibilityLabel="Text input field"
             style={[styles.default, {color: 'green'}]}
             defaultValue="Green"
           />
@@ -479,11 +500,13 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             style={styles.default}
             selectionColor={'green'}
             defaultValue="Highlight me"
           />
           <TextInput
+            accessibilityLabel="Text input field"
             style={styles.default}
             selectionColor={'rgba(86, 76, 205, 1)'}
             defaultValue="Highlight me"
@@ -505,6 +528,7 @@ exports.examples = ([
         return (
           <WithLabel key={mode} label={mode}>
             <TextInput
+              accessibilityLabel="Text input field"
               style={styles.default}
               clearButtonMode={mode}
               defaultValue={mode}
@@ -522,6 +546,7 @@ exports.examples = ([
         <View>
           <WithLabel label="clearTextOnFocus">
             <TextInput
+              accessibilityLabel="Text input field"
               placeholder="text is cleared on focus"
               defaultValue="text is cleared on focus"
               style={styles.default}
@@ -530,6 +555,7 @@ exports.examples = ([
           </WithLabel>
           <WithLabel label="selectTextOnFocus">
             <TextInput
+              accessibilityLabel="Text input field"
               placeholder="text is selected on focus"
               defaultValue="text is selected on focus"
               style={styles.default}
@@ -538,6 +564,7 @@ exports.examples = ([
           </WithLabel>
           <WithLabel label="clearTextOnFocus (multiline)">
             <TextInput
+              accessibilityLabel="Text input field"
               placeholder="text is cleared on focus"
               defaultValue="text is cleared on focus"
               style={styles.default}
@@ -547,6 +574,7 @@ exports.examples = ([
           </WithLabel>
           <WithLabel label="selectTextOnFocus (multiline)">
             <TextInput
+              accessibilityLabel="Text input field"
               placeholder="text is selected on focus"
               defaultValue="text is selected on focus"
               style={styles.default}
@@ -564,6 +592,7 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             style={styles.multiline}
             placeholder="blurOnSubmit = true"
             returnKeyType="next"
@@ -583,11 +612,13 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             placeholder="multiline text input"
             multiline={true}
             style={styles.multiline}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             placeholder="multiline text input with font styles and placeholder"
             multiline={true}
             clearTextOnFocus={true}
@@ -598,18 +629,21 @@ exports.examples = ([
             style={[styles.multiline, styles.multilineWithFontStyles]}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             placeholder="multiline text input with max length"
             maxLength={5}
             multiline={true}
             style={styles.multiline}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             placeholder="uneditable multiline text input"
             editable={false}
             multiline={true}
             style={styles.multiline}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             defaultValue="uneditable multiline text input with phone number detection: 88888888."
             editable={false}
             multiline={true}
@@ -628,6 +662,7 @@ exports.examples = ([
           <Text>Singleline TextInput</Text>
           <View style={{height: 80}}>
             <TextInput
+              accessibilityLabel="Text input field"
               style={{
                 position: 'absolute',
                 fontSize: 16,
@@ -647,6 +682,7 @@ exports.examples = ([
           <Text>Multiline TextInput</Text>
           <View style={{height: 130}}>
             <TextInput
+              accessibilityLabel="Text input field"
               style={{
                 position: 'absolute',
                 fontSize: 16,
@@ -667,6 +703,7 @@ exports.examples = ([
           </View>
           <View>
             <TextInput
+              accessibilityLabel="Text input field"
               style={{
                 fontSize: 16,
                 backgroundColor: '#eeeeee',
@@ -693,6 +730,7 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             placeholder="height increases with content"
             defaultValue="React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native."
             multiline={true}
@@ -741,10 +779,15 @@ exports.examples = ([
       return (
         <View>
           <WithLabel label="maxLength: 5">
-            <TextInput maxLength={5} style={styles.default} />
+            <TextInput
+              accessibilityLabel="Text input field"
+              maxLength={5}
+              style={styles.default}
+            />
           </WithLabel>
           <WithLabel label="maxLength: 5 with placeholder">
             <TextInput
+              accessibilityLabel="Text input field"
               maxLength={5}
               placeholder="ZIP code entry"
               style={styles.default}
@@ -752,6 +795,7 @@ exports.examples = ([
           </WithLabel>
           <WithLabel label="maxLength: 5 with default value already set">
             <TextInput
+              accessibilityLabel="Text input field"
               maxLength={5}
               defaultValue="94025"
               style={styles.default}
@@ -759,6 +803,7 @@ exports.examples = ([
           </WithLabel>
           <WithLabel label="maxLength: 5 with very long default value already set">
             <TextInput
+              accessibilityLabel="Text input field"
               maxLength={5}
               defaultValue="9402512345"
               style={styles.default}
@@ -774,10 +819,18 @@ exports.examples = ([
       return (
         <View>
           <WithLabel label="emailAddress">
-            <TextInput textContentType="emailAddress" style={styles.default} />
+            <TextInput
+              accessibilityLabel="Text input field"
+              textContentType="emailAddress"
+              style={styles.default}
+            />
           </WithLabel>
           <WithLabel label="name">
-            <TextInput textContentType="name" style={styles.default} />
+            <TextInput
+              accessibilityLabel="Text input field"
+              textContentType="name"
+              style={styles.default}
+            />
           </WithLabel>
         </View>
       );
@@ -790,6 +843,7 @@ exports.examples = ([
         <View>
           <WithLabel label="letterSpacing: 10 lineHeight: 20 textAlign: 'center'">
             <TextInput
+              accessibilityLabel="Text input field"
               placeholder="multiline text input"
               multiline={true}
               style={[styles.multiline, styles.multilinePlaceholderStyles]}
@@ -797,6 +851,7 @@ exports.examples = ([
           </WithLabel>
           <WithLabel label="letterSpacing: 10 textAlign: 'center'">
             <TextInput
+              accessibilityLabel="Text input field"
               placeholder="singleline"
               style={[styles.default, styles.singlelinePlaceholderStyles]}
             />
@@ -811,7 +866,11 @@ exports.examples = ([
       return (
         <View>
           <WithLabel label="showSoftInputOnFocus: false">
-            <TextInput showSoftInputOnFocus={false} style={[styles.default]} />
+            <TextInput
+              accessibilityLabel="Text input field"
+              showSoftInputOnFocus={false}
+              style={[styles.default]}
+            />
           </WithLabel>
         </View>
       );

@@ -125,7 +125,7 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
           </View>
         </View>
         <View style={styles.uploadButton}>
-          <TouchableHighlight onPress={this._upload}>
+          <TouchableHighlight accessibilityRole="button" onPress={this._upload}>
             <View style={styles.uploadButtonBox}>
               <Text style={styles.uploadButtonLabel}>Upload</Text>
             </View>

@@ -28,10 +28,12 @@ class TouchBubblingTestApp extends React.Component {
     return (
       <View style={styles.container}>
         <TouchableWithoutFeedback
+          accessibilityRole="button"
           onPress={this.handlePress.bind(this, 'outer')}
           testID="D">
           <View style={styles.outer}>
             <TouchableWithoutFeedback
+              accessibilityRole="button"
               onPress={this.handlePress.bind(this, 'inner')}
               testID="B">
               <View style={styles.inner}>
@@ -42,6 +44,7 @@ class TouchBubblingTestApp extends React.Component {
           </View>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
+          accessibilityRole="button"
           onPress={this.handlePress.bind(this, 'outsider')}
           testID="E">
           <View style={styles.element} />

@@ -64,6 +64,7 @@ exports.examples = [
     render(): React.Node {
       return (
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => Vibration.vibrate()}>
           <View style={styles.button}>
@@ -78,6 +79,7 @@ exports.examples = [
     render(): React.Node {
       return (
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => Vibration.vibrate(pattern)}>
           <View style={styles.button}>
@@ -92,6 +94,7 @@ exports.examples = [
     render(): React.Node {
       return (
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => Vibration.vibrate(pattern, true)}>
           <View style={styles.button}>
@@ -106,6 +109,7 @@ exports.examples = [
     render(): React.Node {
       return (
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => Vibration.cancel()}>
           <View style={styles.button}>

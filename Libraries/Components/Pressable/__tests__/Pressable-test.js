@@ -20,7 +20,7 @@ describe('<Pressable />', () => {
     expectRendersMatchingSnapshot(
       'Pressable',
       () => (
-        <Pressable>
+        <Pressable accessibilityRole="button">
           <View />
         </Pressable>
       ),
@@ -36,7 +36,7 @@ describe('<Pressable disabled={true} />', () => {
     expectRendersMatchingSnapshot(
       'Pressable',
       () => (
-        <Pressable disabled={true}>
+        <Pressable accessibilityRole="button" disabled={true}>
           <View />
         </Pressable>
       ),
@@ -52,7 +52,10 @@ describe('<Pressable disabled={true} accessibilityState={{}} />', () => {
     expectRendersMatchingSnapshot(
       'Pressable',
       () => (
-        <Pressable disabled={true} accessibilityState={{}}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={true}
+          accessibilityState={{}}>
           <View />
         </Pressable>
       ),
@@ -68,7 +71,10 @@ describe('<Pressable disabled={true} accessibilityState={{checked: true}} />', (
     expectRendersMatchingSnapshot(
       'Pressable',
       () => (
-        <Pressable disabled={true} accessibilityState={{checked: true}}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={true}
+          accessibilityState={{checked: true}}>
           <View />
         </Pressable>
       ),
@@ -84,7 +90,10 @@ describe('<Pressable disabled={true} accessibilityState={{disabled: false}} />',
     expectRendersMatchingSnapshot(
       'Pressable',
       () => (
-        <Pressable disabled={true} accessibilityState={{disabled: false}}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={true}
+          accessibilityState={{disabled: false}}>
           <View />
         </Pressable>
       ),

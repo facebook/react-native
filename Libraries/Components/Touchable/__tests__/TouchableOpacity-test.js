@@ -18,7 +18,7 @@ const TouchableOpacity = require('../TouchableOpacity');
 describe('TouchableOpacity', () => {
   it('renders correctly', () => {
     const instance = ReactTestRenderer.create(
-      <TouchableOpacity>
+      <TouchableOpacity accessibilityRole="button">
         <Text>Touchable</Text>
       </TouchableOpacity>,
     );
@@ -28,7 +28,7 @@ describe('TouchableOpacity', () => {
 
   it('renders in disabled state when a disabled prop is passed', () => {
     const instance = ReactTestRenderer.create(
-      <TouchableOpacity disabled={true}>
+      <TouchableOpacity accessibilityRole="button" disabled={true}>
         <Text>Touchable</Text>
       </TouchableOpacity>,
     );
@@ -38,7 +38,9 @@ describe('TouchableOpacity', () => {
 
   it('renders in disabled state when a key disabled in accessibilityState is passed', () => {
     const instance = ReactTestRenderer.create(
-      <TouchableOpacity accessibilityState={{disabled: true}}>
+      <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityState={{disabled: true}}>
         <Text>Touchable</Text>
       </TouchableOpacity>,
     );

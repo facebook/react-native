@@ -341,14 +341,21 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
-          <TextInput style={{margin: 0, padding: 0}}>{texts}</TextInput>
+          <TextInput
+            accessibilityLabel="Text input field"
+            style={{margin: 0, padding: 0}}>
+            {texts}
+          </TextInput>
           {marker}
         </View>
 
         <Text style={subtitleStyle}>{'<TextInput multiline/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
-          <TextInput multiline={true} style={{margin: 0, padding: 0}}>
+          <TextInput
+            accessibilityLabel="Text input field"
+            multiline={true}
+            style={{margin: 0, padding: 0}}>
             {texts}
           </TextInput>
           {marker}

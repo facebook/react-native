@@ -62,6 +62,7 @@ class PromptOptions extends React.Component<Props, State> {
         </Text>
 
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           // $FlowFixMe[method-unbinding] added when improving typing for this parameters
           // $FlowFixMe[incompatible-call]
@@ -72,6 +73,7 @@ class PromptOptions extends React.Component<Props, State> {
         </TouchableHighlight>
 
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() =>
             Alert.prompt('Type a value', null, this.customButtons)
@@ -82,6 +84,7 @@ class PromptOptions extends React.Component<Props, State> {
         </TouchableHighlight>
 
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() =>
             Alert.prompt(
@@ -99,6 +102,7 @@ class PromptOptions extends React.Component<Props, State> {
         </TouchableHighlight>
 
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() =>
             Alert.prompt(
@@ -117,6 +121,7 @@ class PromptOptions extends React.Component<Props, State> {
         </TouchableHighlight>
 
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() =>
             Alert.prompt(
@@ -177,6 +182,7 @@ exports.examples = ([
       return (
         <View>
           <TouchableHighlight
+            accessibilityRole="button"
             style={styles.wrapper}
             onPress={() => Alert.prompt('Plain Text Entry')}>
             <View style={styles.button}>
@@ -184,6 +190,7 @@ exports.examples = ([
             </View>
           </TouchableHighlight>
           <TouchableHighlight
+            accessibilityRole="button"
             style={styles.wrapper}
             onPress={() =>
               Alert.prompt('Secure Text', null, null, 'secure-text')
@@ -193,6 +200,7 @@ exports.examples = ([
             </View>
           </TouchableHighlight>
           <TouchableHighlight
+            accessibilityRole="button"
             style={styles.wrapper}
             onPress={() =>
               Alert.prompt('Login & Password', null, null, 'login-password')

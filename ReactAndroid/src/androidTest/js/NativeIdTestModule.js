@@ -43,17 +43,27 @@ class NativeIdTestApp extends React.Component<{...}> {
       <View>
         <Image nativeID="Image" source={{uri: uri}} style={styles.base} />
         <Text nativeID="Text">text</Text>
-        <TextInput nativeID="TextInput" value="Text input" />
-        <TouchableBounce nativeID="TouchableBounce">
+        <TextInput
+          accessibilityLabel="Text input field"
+          nativeID="TextInput"
+          value="Text input"
+        />
+        <TouchableBounce accessibilityRole="button" nativeID="TouchableBounce">
           <Text>TouchableBounce</Text>
         </TouchableBounce>
-        <TouchableHighlight nativeID="TouchableHighlight">
+        <TouchableHighlight
+          accessibilityRole="button"
+          nativeID="TouchableHighlight">
           <Text>TouchableHighlight</Text>
         </TouchableHighlight>
-        <TouchableOpacity nativeID="TouchableOpacity">
+        <TouchableOpacity
+          accessibilityRole="button"
+          nativeID="TouchableOpacity">
           <Text>TouchableOpacity</Text>
         </TouchableOpacity>
-        <TouchableWithoutFeedback nativeID="TouchableWithoutFeedback">
+        <TouchableWithoutFeedback
+          accessibilityRole="button"
+          nativeID="TouchableWithoutFeedback">
           <View>
             <Text>TouchableWithoutFeedback</Text>
           </View>

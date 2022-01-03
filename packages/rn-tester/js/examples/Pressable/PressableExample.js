@@ -38,6 +38,7 @@ function ContentPress() {
     <>
       <View style={styles.row}>
         <Pressable
+          accessibilityRole="button"
           onPress={() => {
             setTimesPressed(current => current + 1);
           }}>
@@ -130,6 +131,7 @@ function PressableDelayEvents() {
     <View testID="pressable_delay_events">
       <View style={[styles.row, styles.centered]}>
         <Pressable
+          accessibilityRole="button"
           style={styles.wrapper}
           testID="pressable_delay_events_button"
           onPress={() => appendEvent('press')}
@@ -189,6 +191,7 @@ function PressableHitSlop() {
     <View testID="pressable_hit_slop">
       <View style={[styles.row, styles.centered]}>
         <Pressable
+          accessibilityRole="button"
           onPress={() => setTimesPressed(num => num + 1)}
           style={styles.hitSlopWrapper}
           hitSlop={{top: 30, bottom: 30, left: 60, right: 60}}
@@ -214,7 +217,7 @@ function PressableNativeMethods() {
   return (
     <>
       <View style={[styles.row, styles.block]}>
-        <Pressable ref={ref}>
+        <Pressable accessibilityRole="button" ref={ref}>
           <View />
         </Pressable>
         <Text>
@@ -232,11 +235,15 @@ function PressableNativeMethods() {
 function PressableDisabled() {
   return (
     <>
-      <Pressable disabled={true} style={[styles.row, styles.block]}>
+      <Pressable
+        accessibilityRole="button"
+        disabled={true}
+        style={[styles.row, styles.block]}>
         <Text style={styles.disabledButton}>Disabled Pressable</Text>
       </Pressable>
 
       <Pressable
+        accessibilityRole="button"
         disabled={false}
         style={({pressed}) => [
           {opacity: pressed ? 0.5 : 1},
@@ -335,6 +342,7 @@ exports.examples = [
       return (
         <View style={styles.row}>
           <Pressable
+            accessibilityRole="button"
             style={({pressed}) => [
               {
                 backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
@@ -375,7 +383,9 @@ exports.examples = [
       };
       return (
         <View style={styles.row}>
-          <Pressable android_ripple={{color: 'green'}}>
+          <Pressable
+            accessibilityRole="button"
+            android_ripple={{color: 'green'}}>
             <Animated.View style={style} />
           </Pressable>
         </View>
@@ -400,6 +410,7 @@ exports.examples = [
               {justifyContent: 'space-around', alignItems: 'center'},
             ]}>
             <Pressable
+              accessibilityRole="button"
               android_ripple={{color: 'orange', borderless: true, radius: 30}}>
               <View>
                 <Text style={[styles.button, nativeFeedbackButton]}>
@@ -408,7 +419,9 @@ exports.examples = [
               </View>
             </Pressable>
 
-            <Pressable android_ripple={{borderless: true, radius: 150}}>
+            <Pressable
+              accessibilityRole="button"
+              android_ripple={{borderless: true, radius: 150}}>
               <View>
                 <Text style={[styles.button, nativeFeedbackButton]}>
                   radius 150
@@ -416,7 +429,9 @@ exports.examples = [
               </View>
             </Pressable>
 
-            <Pressable android_ripple={{borderless: false, radius: 70}}>
+            <Pressable
+              accessibilityRole="button"
+              android_ripple={{borderless: false, radius: 70}}>
               <View style={styles.block}>
                 <Text style={[styles.button, nativeFeedbackButton]}>
                   radius 70, with border
@@ -425,7 +440,9 @@ exports.examples = [
             </Pressable>
           </View>
 
-          <Pressable android_ripple={{borderless: false}}>
+          <Pressable
+            accessibilityRole="button"
+            android_ripple={{borderless: false}}>
             <View style={styles.block}>
               <Text style={[styles.button, nativeFeedbackButton]}>
                 with border, default color and radius
@@ -435,6 +452,7 @@ exports.examples = [
 
           <View style={{alignItems: 'center'}}>
             <Pressable
+              accessibilityRole="button"
               android_ripple={{
                 borderless: false,
                 foreground: true,

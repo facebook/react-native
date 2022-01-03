@@ -20,7 +20,7 @@ const render = require('../../../../jest/renderer');
 describe('TouchableHighlight', () => {
   it('renders correctly', () => {
     const instance = render.create(
-      <TouchableHighlight style={{}}>
+      <TouchableHighlight accessibilityRole="button" style={{}}>
         <Text>Touchable</Text>
       </TouchableHighlight>,
     );
@@ -37,7 +37,7 @@ describe('TouchableHighlight with disabled state', () => {
   it('should be disabled when disabled is true', () => {
     expect(
       render.create(
-        <TouchableHighlight disabled={true}>
+        <TouchableHighlight accessibilityRole="button" disabled={true}>
           <View />
         </TouchableHighlight>,
       ),
@@ -47,7 +47,10 @@ describe('TouchableHighlight with disabled state', () => {
   it('should be disabled when disabled is true and accessibilityState is empty', () => {
     expect(
       render.create(
-        <TouchableHighlight disabled={true} accessibilityState={{}}>
+        <TouchableHighlight
+          accessibilityRole="button"
+          disabled={true}
+          accessibilityState={{}}>
           <View />
         </TouchableHighlight>,
       ),
@@ -58,6 +61,7 @@ describe('TouchableHighlight with disabled state', () => {
     expect(
       render.create(
         <TouchableHighlight
+          accessibilityRole="button"
           disabled={true}
           accessibilityState={{checked: true}}>
           <View />
@@ -70,6 +74,7 @@ describe('TouchableHighlight with disabled state', () => {
     expect(
       render.create(
         <TouchableHighlight
+          accessibilityRole="button"
           disabled={true}
           accessibilityState={{disabled: false}}>
           <View />
@@ -81,7 +86,9 @@ describe('TouchableHighlight with disabled state', () => {
   it('should disable button when accessibilityState is disabled', () => {
     expect(
       render.create(
-        <TouchableHighlight accessibilityState={{disabled: true}}>
+        <TouchableHighlight
+          accessibilityRole="button"
+          accessibilityState={{disabled: true}}>
           <View />
         </TouchableHighlight>,
       ),

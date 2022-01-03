@@ -50,6 +50,7 @@ class RCTRootViewIntegrationTestApp extends React.Component {
         <ScrollView>
           {TESTS.map(test => [
             <TouchableOpacity
+              accessibilityRole="button"
               onPress={() => this.setState({test})}
               style={styles.row}>
               <Text style={styles.testName}>{test.displayName}</Text>

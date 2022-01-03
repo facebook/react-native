@@ -132,7 +132,10 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         </View>
       </View>
     ) : (
-      <TouchableHighlight style={styles.wrapper} onPress={this._download}>
+      <TouchableHighlight
+        accessibilityRole="button"
+        style={styles.wrapper}
+        onPress={this._download}>
         <View style={styles.button}>
           <Text>Download 7MB Text File</Text>
         </View>

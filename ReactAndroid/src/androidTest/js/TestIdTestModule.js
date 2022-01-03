@@ -48,21 +48,29 @@ class TestIdTestApp extends React.Component {
 
         <Text testID="Text">text</Text>
 
-        <TextInput testID="TextInput" value="Text input" />
+        <TextInput
+          accessibilityLabel="Text input field"
+          testID="TextInput"
+          value="Text input"
+        />
 
-        <TouchableBounce testID="TouchableBounce">
+        <TouchableBounce accessibilityRole="button" testID="TouchableBounce">
           <Text>TouchableBounce</Text>
         </TouchableBounce>
 
-        <TouchableHighlight testID="TouchableHighlight">
+        <TouchableHighlight
+          accessibilityRole="button"
+          testID="TouchableHighlight">
           <Text>TouchableHighlight</Text>
         </TouchableHighlight>
 
-        <TouchableOpacity testID="TouchableOpacity">
+        <TouchableOpacity accessibilityRole="button" testID="TouchableOpacity">
           <Text>TouchableOpacity</Text>
         </TouchableOpacity>
 
-        <TouchableWithoutFeedback testID="TouchableWithoutFeedback">
+        <TouchableWithoutFeedback
+          accessibilityRole="button"
+          testID="TouchableWithoutFeedback">
           <View>
             <Text>TouchableWithoutFeedback</Text>
           </View>

@@ -99,6 +99,7 @@ class RewriteExample extends React.Component<$FlowFixMeProps, any> {
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
+          accessibilityLabel="Text input field"
           testID="rewrite_sp_underscore_input"
           autoCorrect={false}
           multiline={false}
@@ -130,6 +131,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
+          accessibilityLabel="Text input field"
           testID="rewrite_no_sp_input"
           autoCorrect={false}
           multiline={false}
@@ -158,6 +160,7 @@ class RewriteInvalidCharactersAndClearExample extends React.Component<
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
+          accessibilityLabel="Text input field"
           testID="rewrite_clear_input"
           autoCorrect={false}
           ref={ref => {
@@ -195,6 +198,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
     return (
       <View>
         <TextInput
+          accessibilityLabel="Text input field"
           ref={this.ref1}
           style={styles.singleLine}
           placeholder="blurOnSubmit = false"
@@ -203,6 +207,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
           onSubmitEditing={() => this.ref2.current?.focus()}
         />
         <TextInput
+          accessibilityLabel="Text input field"
           ref={this.ref2}
           style={styles.singleLine}
           keyboardType="email-address"
@@ -212,6 +217,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
           onSubmitEditing={() => this.ref3.current?.focus()}
         />
         <TextInput
+          accessibilityLabel="Text input field"
           ref={this.ref3}
           style={styles.singleLine}
           keyboardType="url"
@@ -221,6 +227,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
           onSubmitEditing={() => this.ref4.current?.focus()}
         />
         <TextInput
+          accessibilityLabel="Text input field"
           ref={this.ref4}
           style={styles.singleLine}
           keyboardType="numeric"
@@ -229,6 +236,7 @@ class BlurOnSubmitExample extends React.Component<{...}> {
           onSubmitEditing={() => this.ref5.current?.focus()}
         />
         <TextInput
+          accessibilityLabel="Text input field"
           ref={this.ref5}
           style={styles.singleLine}
           keyboardType="numbers-and-punctuation"
@@ -263,6 +271,7 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
     return (
       <View>
         <TextInput
+          accessibilityLabel="Text input field"
           autoCapitalize="none"
           placeholder="Enter text to see events"
           autoCorrect={false}
@@ -351,6 +360,7 @@ class TokenizedTextExample extends React.Component<
     return (
       <View style={{flexDirection: 'row'}}>
         <TextInput
+          accessibilityLabel="Text input field"
           testID="text-input"
           multiline={true}
           style={styles.multiline}
@@ -427,6 +437,7 @@ class SelectionExample extends React.Component<
       <View>
         <View style={{flexDirection: 'row'}}>
           <TextInput
+            accessibilityLabel="Text input field"
             testID={`${this.props.testID}-text-input`}
             multiline={this.props.multiline}
             onChangeText={value => this.setState({value})}
@@ -514,6 +525,7 @@ module.exports = ([
         <View>
           <WithLabel label="none">
             <TextInput
+              accessibilityLabel="Text input field"
               testID="capitalize-none"
               autoCapitalize="none"
               style={styles.default}
@@ -521,6 +533,7 @@ module.exports = ([
           </WithLabel>
           <WithLabel label="sentences">
             <TextInput
+              accessibilityLabel="Text input field"
               testID="capitalize-sentences"
               autoCapitalize="sentences"
               style={styles.default}
@@ -528,6 +541,7 @@ module.exports = ([
           </WithLabel>
           <WithLabel label="words">
             <TextInput
+              accessibilityLabel="Text input field"
               testID="capitalize-words"
               autoCapitalize="words"
               style={styles.default}
@@ -535,6 +549,7 @@ module.exports = ([
           </WithLabel>
           <WithLabel label="characters">
             <TextInput
+              accessibilityLabel="Text input field"
               testID="capitalize-characters"
               autoCapitalize="characters"
               style={styles.default}
@@ -550,10 +565,18 @@ module.exports = ([
       return (
         <View>
           <WithLabel label="true">
-            <TextInput autoCorrect={true} style={styles.default} />
+            <TextInput
+              accessibilityLabel="Text input field"
+              autoCorrect={true}
+              style={styles.default}
+            />
           </WithLabel>
           <WithLabel label="false">
-            <TextInput autoCorrect={false} style={styles.default} />
+            <TextInput
+              accessibilityLabel="Text input field"
+              autoCorrect={false}
+              style={styles.default}
+            />
           </WithLabel>
         </View>
       );
@@ -581,7 +604,11 @@ module.exports = ([
       const examples = keyboardTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
-            <TextInput keyboardType={type} style={styles.default} />
+            <TextInput
+              accessibilityLabel="Text input field"
+              keyboardType={type}
+              style={styles.default}
+            />
           </WithLabel>
         );
       });
@@ -609,10 +636,12 @@ module.exports = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             style={[styles.singleLine, {fontFamily: fontFamilyA}]}
             placeholder={`Custom fonts like ${fontFamilyA} are supported`}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             style={[
               styles.singleLine,
               {fontFamily: fontFamilyA, fontWeight: 'bold'},
@@ -620,6 +649,7 @@ module.exports = ([
             placeholder={`${fontFamilyA} bold`}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             style={[
               styles.singleLine,
               {fontFamily: fontFamilyA, fontWeight: '500'},
@@ -627,6 +657,7 @@ module.exports = ([
             placeholder={`${fontFamilyA} 500`}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             style={[
               styles.singleLine,
               {fontFamily: fontFamilyA, fontStyle: 'italic'},
@@ -634,6 +665,7 @@ module.exports = ([
             placeholder={`${fontFamilyA} italic`}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             style={[styles.singleLine, {fontFamily: fontFamilyB}]}
             placeholder={fontFamilyB}
           />

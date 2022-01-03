@@ -30,7 +30,9 @@ class Row extends React.Component {
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={this._onPress}>
+      <TouchableWithoutFeedback
+        accessibilityRole="button"
+        onPress={this._onPress}>
         <View>
           <Text>{this.state.clicks + ' clicks'}</Text>
         </View>

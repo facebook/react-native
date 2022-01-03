@@ -68,6 +68,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
       </View>
     ) : (
       <TouchableHighlight
+        accessibilityRole="button"
         style={styles.wrapper}
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         onPress={this.loadTimeOutRequest.bind(this)}>

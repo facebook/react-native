@@ -19,7 +19,7 @@ import TouchableWithoutFeedback from '../TouchableWithoutFeedback';
 describe('TouchableWithoutFeedback', () => {
   it('renders correctly', () => {
     const instance = ReactTestRenderer.create(
-      <TouchableWithoutFeedback style={{}}>
+      <TouchableWithoutFeedback accessibilityRole="button" style={{}}>
         <Text>Touchable</Text>
       </TouchableWithoutFeedback>,
     );
@@ -38,7 +38,7 @@ describe('TouchableWithoutFeedback with disabled state', () => {
   it('should be disabled when disabled is true', () => {
     expect(
       ReactTestRenderer.create(
-        <TouchableWithoutFeedback disabled={true}>
+        <TouchableWithoutFeedback accessibilityRole="button" disabled={true}>
           <View />
         </TouchableWithoutFeedback>,
       ),
@@ -48,7 +48,10 @@ describe('TouchableWithoutFeedback with disabled state', () => {
   it('should be disabled when disabled is true and accessibilityState is empty', () => {
     expect(
       ReactTestRenderer.create(
-        <TouchableWithoutFeedback disabled={true} accessibilityState={{}}>
+        <TouchableWithoutFeedback
+          accessibilityRole="button"
+          disabled={true}
+          accessibilityState={{}}>
           <View />
         </TouchableWithoutFeedback>,
       ),
@@ -59,6 +62,7 @@ describe('TouchableWithoutFeedback with disabled state', () => {
     expect(
       ReactTestRenderer.create(
         <TouchableWithoutFeedback
+          accessibilityRole="button"
           disabled={true}
           accessibilityState={{checked: true}}>
           <View />
@@ -71,6 +75,7 @@ describe('TouchableWithoutFeedback with disabled state', () => {
     expect(
       ReactTestRenderer.create(
         <TouchableWithoutFeedback
+          accessibilityRole="button"
           disabled={true}
           accessibilityState={{disabled: false}}>
           <View />
@@ -82,7 +87,9 @@ describe('TouchableWithoutFeedback with disabled state', () => {
   it('should disable button when accessibilityState is disabled', () => {
     expect(
       ReactTestRenderer.create(
-        <TouchableWithoutFeedback accessibilityState={{disabled: true}}>
+        <TouchableWithoutFeedback
+          accessibilityRole="button"
+          accessibilityState={{disabled: true}}>
           <View />
         </TouchableWithoutFeedback>,
       ),

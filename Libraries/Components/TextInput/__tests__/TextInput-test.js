@@ -37,6 +37,7 @@ describe('TextInput tests', () => {
       <Component initialState={{text: initialValue}}>
         {({setState, state}) => (
           <TextInput
+            accessibilityLabel="Text input field"
             ref={inputRef}
             value={state.text}
             onChangeText={text => {
@@ -81,7 +82,13 @@ describe('TextInput tests', () => {
 
   it('should have support being focused and unfocused', () => {
     const textInputRef = React.createRef(null);
-    ReactTestRenderer.create(<TextInput ref={textInputRef} value="value1" />);
+    ReactTestRenderer.create(
+      <TextInput
+        accessibilityLabel="Text input field"
+        ref={textInputRef}
+        value="value1"
+      />,
+    );
 
     expect(textInputRef.current.isFocused()).toBe(false);
     ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
@@ -114,8 +121,16 @@ describe('TextInput tests', () => {
 
     ReactTestRenderer.create(
       <>
-        <TextInput ref={textInputRe1} value="value1" />
-        <TextInput ref={textInputRe2} value="value2" />
+        <TextInput
+          accessibilityLabel="Text input field"
+          ref={textInputRe1}
+          value="value1"
+        />
+        <TextInput
+          accessibilityLabel="Text input field"
+          ref={textInputRe2}
+          value="value2"
+        />
       </>,
     );
     ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
@@ -155,7 +170,7 @@ describe('TextInput tests', () => {
   it('should render as expected', () => {
     expectRendersMatchingSnapshot(
       'TextInput',
-      () => <TextInput />,
+      () => <TextInput accessibilityLabel="Text input field" />,
       () => {
         jest.dontMock('../TextInput');
       },

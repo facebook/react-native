@@ -36,7 +36,10 @@ class ToggleDefaultPaddingExample extends React.Component<
   render() {
     return (
       <View>
-        <TextInput style={this.state.hasPadding ? {padding: 0} : null} />
+        <TextInput
+          accessibilityLabel="Text input field"
+          style={this.state.hasPadding ? {padding: 0} : null}
+        />
         <Text
           onPress={() => this.setState({hasPadding: !this.state.hasPadding})}>
           Toggle padding
@@ -156,32 +159,39 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             style={[styles.singleLine]}
             defaultValue="Default color text"
           />
           <TextInput
+            accessibilityLabel="Text input field"
             style={[styles.singleLine, {color: 'green'}]}
             defaultValue="Green Text"
           />
           <TextInput
+            accessibilityLabel="Text input field"
             placeholder="Default placeholder text color"
             style={styles.singleLine}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             placeholder="Red placeholder text color"
             placeholderTextColor="red"
             style={styles.singleLine}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             placeholder="Default underline color"
             style={styles.singleLine}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             placeholder="Blue underline color"
             style={styles.singleLine}
             underlineColorAndroid="blue"
           />
           <TextInput
+            accessibilityLabel="Text input field"
             defaultValue="Same BackgroundColor as View "
             style={[
               styles.singleLine,
@@ -192,6 +202,7 @@ exports.examples = ([
             </Text>
           </TextInput>
           <TextInput
+            accessibilityLabel="Text input field"
             defaultValue="Highlight Color is red"
             selectionColor={'red'}
             style={styles.singleLine}
@@ -206,6 +217,7 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             defaultValue="Font Weight (default)"
             style={[styles.singleLine]}
           />
@@ -223,6 +235,7 @@ exports.examples = ([
             '100',
           ].map(fontWeight => (
             <TextInput
+              accessibilityLabel="Text input field"
               defaultValue={`Font Weight (${fontWeight})`}
               key={fontWeight}
               style={[styles.singleLine, {fontWeight}]}
@@ -237,6 +250,7 @@ exports.examples = ([
     render: function (): React.Node {
       return (
         <TextInput
+          accessibilityLabel="Text input field"
           placeholder="If you set height, beware of padding set from themes"
           style={[styles.singleLineWithHeightTextInput]}
         />
@@ -249,18 +263,22 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             style={[styles.singleLine, {letterSpacing: 0}]}
             placeholder="letterSpacing = 0"
           />
           <TextInput
+            accessibilityLabel="Text input field"
             style={[styles.singleLine, {letterSpacing: 2}]}
             placeholder="letterSpacing = 2"
           />
           <TextInput
+            accessibilityLabel="Text input field"
             style={[styles.singleLine, {letterSpacing: 9}]}
             placeholder="letterSpacing = 9"
           />
           <TextInput
+            accessibilityLabel="Text input field"
             style={[styles.singleLine, {letterSpacing: -1}]}
             placeholder="letterSpacing = -1"
           />
@@ -274,11 +292,13 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             defaultValue="iloveturtles"
             secureTextEntry={true}
             style={styles.singleLine}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             secureTextEntry={true}
             style={[styles.singleLine, {color: 'red'}]}
             placeholder="color is supported too"
@@ -293,6 +313,7 @@ exports.examples = ([
     render: function (): React.Node {
       return (
         <TextInput
+          accessibilityLabel="Text input field"
           defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
           editable={false}
           style={styles.singleLine}
@@ -306,6 +327,7 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             autoCorrect={true}
             placeholder="multiline, aligned top-left"
             placeholderTextColor="red"
@@ -316,6 +338,7 @@ exports.examples = ([
             ]}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             autoCorrect={true}
             placeholder="multiline, aligned center"
             placeholderTextColor="green"
@@ -326,6 +349,7 @@ exports.examples = ([
             ]}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             autoCorrect={true}
             multiline={true}
             style={[
@@ -348,11 +372,13 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             numberOfLines={2}
             multiline={true}
             placeholder="Two line input"
           />
           <TextInput
+            accessibilityLabel="Text input field"
             numberOfLines={5}
             multiline={true}
             placeholder="Five line input"
@@ -401,6 +427,7 @@ exports.examples = ([
       const examples = returnKeyTypes.map(type => {
         return (
           <TextInput
+            accessibilityLabel="Text input field"
             key={type}
             returnKeyType={type}
             placeholder={'returnKeyType: ' + type}
@@ -411,6 +438,7 @@ exports.examples = ([
       const types = returnKeyLabels.map(type => {
         return (
           <TextInput
+            accessibilityLabel="Text input field"
             key={type}
             returnKeyLabel={type}
             placeholder={'returnKeyLabel: ' + type}
@@ -432,17 +460,20 @@ exports.examples = ([
       return (
         <View>
           <TextInput
+            accessibilityLabel="Text input field"
             inlineImageLeft="ic_menu_black_24dp"
             placeholder="This has drawableLeft set"
             style={styles.singleLine}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             inlineImageLeft="ic_menu_black_24dp"
             inlineImagePadding={30}
             placeholder="This has drawableLeft and drawablePadding set"
             style={styles.singleLine}
           />
           <TextInput
+            accessibilityLabel="Text input field"
             placeholder="This does not have drawable props set"
             style={styles.singleLine}
           />

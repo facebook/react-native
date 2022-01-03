@@ -60,7 +60,9 @@ class AccessibilityAndroidExample extends React.Component<
     return (
       <RNTesterPage title={'Accessibility Android APIs'}>
         <RNTesterBlock title="LiveRegion">
-          <TouchableWithoutFeedback onPress={this._addOne}>
+          <TouchableWithoutFeedback
+            accessibilityRole="button"
+            onPress={this._addOne}>
             <View style={styles.embedded}>
               <Text>Click me</Text>
             </View>
@@ -107,6 +109,7 @@ class AccessibilityAndroidExample extends React.Component<
             </View>
           </View>
           <TouchableWithoutFeedback
+            accessibilityRole="button"
             onPress={this._changeBackgroundImportantForAcc}>
             <View style={styles.embedded}>
               <Text>
@@ -125,6 +128,7 @@ class AccessibilityAndroidExample extends React.Component<
             </Text>
           </View>
           <TouchableWithoutFeedback
+            accessibilityRole="button"
             onPress={this._changeForgroundImportantForAcc}>
             <View style={styles.embedded}>
               <Text>

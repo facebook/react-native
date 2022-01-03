@@ -185,6 +185,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
               {Platform.OS === 'android' && (
                 <View>
                   <TextInput
+                    accessibilityLabel="Text input field"
                     placeholder="Fading edge length"
                     underlineColorAndroid="black"
                     keyboardType={'numeric'}

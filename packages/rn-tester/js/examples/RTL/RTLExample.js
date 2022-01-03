@@ -93,7 +93,7 @@ const TextInputExample = withRTLState(({isRTL, setRTL, ...props}) => {
       <RTLToggler setRTL={setRTL} isRTL={isRTL} />
       <View style={directionStyle(isRTL)}>
         <Text style={props.style}>LRT or RTL TextInput.</Text>
-        <TextInput style={props.style} />
+        <TextInput accessibilityLabel="Text input field" style={props.style} />
       </View>
     </View>
   );
@@ -130,7 +130,9 @@ const IconsExample = withRTLState(({isRTL, setRTL}) => {
 function AnimationBlock(props) {
   return (
     <View style={styles.block}>
-      <TouchableWithoutFeedback onPress={props.onPress}>
+      <TouchableWithoutFeedback
+        accessibilityRole="button"
+        onPress={props.onPress}>
         <Animated.Image
           style={[styles.img, props.imgStyle]}
           source={require('../../assets/poke.png')}

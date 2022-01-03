@@ -83,6 +83,7 @@ class XHRExampleHeaders extends React.Component {
         </View>
       ) : (
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this.download.bind(this)}>
           <View style={styles.button}>

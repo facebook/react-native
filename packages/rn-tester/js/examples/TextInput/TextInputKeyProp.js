@@ -28,6 +28,7 @@ function TextInputKeyProp() {
     console.log('Adding a TextInput with key ' + key);
     textInputs.push(
       <TextInput
+        accessibilityLabel="Text input field"
         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
         key={key}
       />,

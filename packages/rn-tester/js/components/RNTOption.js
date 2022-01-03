@@ -35,6 +35,7 @@ export default function RNTOption(props: Props): React.Node {
 
   return (
     <Pressable
+      accessibilityRole="button"
       accessibilityState={{selected: !!props.selected}}
       disabled={
         props.disabled === false || props.multiSelect === true

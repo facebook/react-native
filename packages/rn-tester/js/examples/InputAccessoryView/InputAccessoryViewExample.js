@@ -42,6 +42,7 @@ class TextInputBar extends React.PureComponent<TextInputProps, TextInputState> {
     return (
       <View style={styles.textInputContainer}>
         <TextInput
+          accessibilityLabel="Text input field"
           style={styles.textInput}
           onChangeText={text => {
             this.setState({text});

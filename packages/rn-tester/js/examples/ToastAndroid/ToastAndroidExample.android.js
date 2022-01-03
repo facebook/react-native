@@ -17,6 +17,7 @@ const {StyleSheet, Text, ToastAndroid, Pressable} = require('react-native');
 const ToastWithShortDuration = () => {
   return (
     <Pressable
+      accessibilityRole="button"
       onPress={() =>
         ToastAndroid.show('Copied to clipboard!', ToastAndroid.SHORT)
       }>
@@ -28,6 +29,7 @@ const ToastWithShortDuration = () => {
 const ToastWithLongDuration = () => {
   return (
     <Pressable
+      accessibilityRole="button"
       onPress={() => ToastAndroid.show('Sending message..', ToastAndroid.LONG)}>
       <Text style={styles.text}>Tap to view toast</Text>
     </Pressable>
@@ -37,6 +39,7 @@ const ToastWithLongDuration = () => {
 const ToastWithTopGravity = () => {
   return (
     <Pressable
+      accessibilityRole="button"
       onPress={() =>
         ToastAndroid.showWithGravity(
           'Download Started..',
@@ -52,6 +55,7 @@ const ToastWithTopGravity = () => {
 const ToastWithCenterGravity = () => {
   return (
     <Pressable
+      accessibilityRole="button"
       onPress={() =>
         ToastAndroid.showWithGravity(
           'A problem has been occured while submitting your data.',
@@ -67,6 +71,7 @@ const ToastWithCenterGravity = () => {
 const ToastWithBottomGravity = () => {
   return (
     <Pressable
+      accessibilityRole="button"
       onPress={() =>
         ToastAndroid.showWithGravity(
           'Please read the contents carefully.',
@@ -82,6 +87,7 @@ const ToastWithBottomGravity = () => {
 const ToastWithXOffset = () => {
   return (
     <Pressable
+      accessibilityRole="button"
       onPress={() =>
         ToastAndroid.showWithGravityAndOffset(
           'Alex sent you a friend request',
@@ -99,6 +105,7 @@ const ToastWithXOffset = () => {
 const ToastWithYOffset = () => {
   return (
     <Pressable
+      accessibilityRole="button"
       onPress={() =>
         ToastAndroid.showWithGravityAndOffset(
           'There was a problem with your internet connection',

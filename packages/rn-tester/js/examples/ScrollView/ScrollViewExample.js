@@ -852,6 +852,7 @@ const MaxMinZoomScale = () => {
       </ScrollView>
       <Text style={styles.rowTitle}>Set Maximum Zoom Scale</Text>
       <TextInput
+        accessibilityLabel="Text input field"
         style={styles.textInput}
         value={maxZoomScale}
         onChangeText={val => setMaxZoomScale(val)}
@@ -859,6 +860,7 @@ const MaxMinZoomScale = () => {
       />
       <Text style={styles.rowTitle}>Set Minimum Zoom Scale</Text>
       <TextInput
+        accessibilityLabel="Text input field"
         style={styles.textInput}
         value={minZoomScale.toString()}
         onChangeText={val => setMinZoomScale(val)}
@@ -868,6 +870,7 @@ const MaxMinZoomScale = () => {
         <>
           <Text style={styles.rowTitle}>Set Zoom Scale</Text>
           <TextInput
+            accessibilityLabel="Text input field"
             style={styles.textInput}
             value={zoomScale.toString()}
             onChangeText={val => setZoomScale(val)}
@@ -892,6 +895,7 @@ const KeyboardExample = () => {
   return (
     <View>
       <TextInput
+        accessibilityLabel="Text input field"
         style={styles.textInput}
         value={textInputValue}
         onChangeText={val => setTextInputValue(val)}
@@ -1267,6 +1271,7 @@ const Button = (props: {
   testID?: string,
 }) => (
   <TouchableOpacity
+    accessibilityRole="button"
     style={StyleSheet.compose(
       styles.button,
       props.active === true ? styles.activeButton : null,

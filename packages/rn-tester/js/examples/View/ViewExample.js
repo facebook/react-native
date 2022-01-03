@@ -105,7 +105,9 @@ exports.examples = [
 
         render() {
           return (
-            <TouchableWithoutFeedback onPress={this._handlePress}>
+            <TouchableWithoutFeedback
+              accessibilityRole="button"
+              onPress={this._handlePress}>
               <View>
                 <View
                   style={[
@@ -294,7 +296,9 @@ exports.examples = [
 
         render() {
           return (
-            <TouchableWithoutFeedback onPress={this._handlePress}>
+            <TouchableWithoutFeedback
+              accessibilityRole="button"
+              onPress={this._handlePress}>
               <View>
                 <Text style={{paddingBottom: 10}}>Blobs</Text>
                 <View
@@ -383,7 +387,9 @@ exports.examples = [
         render() {
           const indices = this.state.flipped ? [-1, 0, 1, 2] : [2, 1, 0, -1];
           return (
-            <TouchableWithoutFeedback onPress={this._handlePress}>
+            <TouchableWithoutFeedback
+              accessibilityRole="button"
+              onPress={this._handlePress}>
               <View>
                 <Text style={{paddingBottom: 10}}>
                   Tap to flip sorting order
@@ -459,7 +465,9 @@ exports.examples = [
 
         render() {
           return (
-            <TouchableWithoutFeedback onPress={this._handlePress}>
+            <TouchableWithoutFeedback
+              accessibilityRole="button"
+              onPress={this._handlePress}>
               <View>
                 <Text style={{paddingBottom: 10}}>
                   Press to toggle `display: none`

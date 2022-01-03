@@ -40,7 +40,7 @@ class OpenURLButton extends React.Component<Props> {
 
   render() {
     return (
-      <TouchableOpacity onPress={this.handleClick}>
+      <TouchableOpacity accessibilityRole="button" onPress={this.handleClick}>
         <View style={styles.button}>
           <Text style={styles.text}>Open {this.props.url}</Text>
         </View>
@@ -70,7 +70,7 @@ class SendIntentButton extends React.Component<Props> {
 
   render() {
     return (
-      <TouchableOpacity onPress={this.handleIntent}>
+      <TouchableOpacity accessibilityRole="button" onPress={this.handleIntent}>
         <View style={[styles.button, styles.buttonIntent]}>
           <Text style={styles.text}>{this.props.action}</Text>
         </View>

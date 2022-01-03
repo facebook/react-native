@@ -27,6 +27,7 @@ class RNTesterBookmarkButton extends React.Component<Props> {
     const {size, onPress, isActive} = this.props;
     return (
       <TouchableOpacity
+        accessibilityRole="button"
         style={[
           styles.imageViewStyle,
           {

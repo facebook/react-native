@@ -62,7 +62,9 @@ class ScrollViewAnimatedExample extends Component<{...}> {
             [{nativeEvent: {contentOffset: {x: this._scrollViewPos}}}],
             {useNativeDriver: true},
           )}>
-          <TouchableOpacity onPress={this.startAnimation}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            onPress={this.startAnimation}>
             <View style={styles.button}>
               <Text>Scroll me horizontally</Text>
             </View>

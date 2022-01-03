@@ -41,6 +41,7 @@ const DATA = [
 const Item = ({item, section, separators}) => {
   return (
     <Pressable
+      accessibilityRole="button"
       onPressIn={() => {
         separators.highlight();
       }}

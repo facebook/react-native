@@ -37,6 +37,7 @@ const DATA = [
 const Item = ({item, separators}: RenderItemProps<string>) => {
   return (
     <Pressable
+      accessibilityRole="button"
       onPressIn={() => {
         separators.highlight();
       }}

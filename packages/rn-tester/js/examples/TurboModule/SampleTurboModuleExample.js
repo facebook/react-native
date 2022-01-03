@@ -117,6 +117,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       <View style={styles.container}>
         <View style={styles.item}>
           <TouchableOpacity
+            accessibilityRole="button"
             style={[styles.column, styles.button]}
             onPress={() =>
               Object.keys(this._tests).forEach(item =>
@@ -126,6 +127,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
             <Text style={styles.buttonTextLarge}>Run all tests</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            accessibilityRole="button"
             onPress={() => this.setState({testResults: {}})}
             style={[styles.column, styles.button]}>
             <Text style={styles.buttonTextLarge}>Clear results</Text>
@@ -137,6 +139,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
           renderItem={({item}) => (
             <View style={styles.item}>
               <TouchableOpacity
+                accessibilityRole="button"
                 style={[styles.column, styles.button]}
                 onPress={e => this._setResult(item, this._tests[item]())}>
                 <Text style={styles.buttonText}>{item}</Text>

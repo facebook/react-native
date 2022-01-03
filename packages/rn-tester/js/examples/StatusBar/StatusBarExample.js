@@ -67,6 +67,7 @@ class StatusBarHiddenExample extends React.Component<{...}, $FlowFixMeState> {
           animated={this.state.animated}
         />
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this._onChangeHidden}>
           <View style={styles.button}>
@@ -74,6 +75,7 @@ class StatusBarHiddenExample extends React.Component<{...}, $FlowFixMeState> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this._onChangeAnimated}>
           <View style={styles.button}>
@@ -83,6 +85,7 @@ class StatusBarHiddenExample extends React.Component<{...}, $FlowFixMeState> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this._onChangeTransition}>
           <View style={styles.button}>
@@ -123,6 +126,7 @@ class StatusBarStyleExample extends React.Component<{...}, $FlowFixMeState> {
           barStyle={this.state.barStyle}
         />
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this._onChangeBarStyle}>
           <View style={styles.button}>
@@ -130,6 +134,7 @@ class StatusBarStyleExample extends React.Component<{...}, $FlowFixMeState> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this._onChangeAnimated}>
           <View style={styles.button}>
@@ -165,6 +170,7 @@ class StatusBarNetworkActivityExample extends React.Component<
           }
         />
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this._onChangeNetworkIndicatorVisible}>
           <View style={styles.button}>
@@ -207,6 +213,7 @@ class StatusBarBackgroundColorExample extends React.Component<
           animated={this.state.animated}
         />
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this._onChangeBackgroundColor}>
           <View style={styles.button}>
@@ -214,6 +221,7 @@ class StatusBarBackgroundColorExample extends React.Component<
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this._onChangeAnimated}>
           <View style={styles.button}>
@@ -244,6 +252,7 @@ class StatusBarTranslucentExample extends React.Component<
       <View>
         <StatusBar translucent={this.state.translucent} />
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this._onChangeTranslucent}>
           <View style={styles.button}>
@@ -262,6 +271,7 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
     return (
       <View>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setHidden(true, 'slide');
@@ -271,6 +281,7 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setHidden(false, 'fade');
@@ -280,6 +291,7 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setBarStyle('default', true);
@@ -289,6 +301,7 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setBarStyle('light-content', true);
@@ -298,6 +311,7 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setNetworkActivityIndicatorVisible(true);
@@ -307,6 +321,7 @@ class StatusBarStaticIOSExample extends React.Component<{...}> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setNetworkActivityIndicatorVisible(false);
@@ -325,6 +340,7 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
     return (
       <View>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setHidden(true);
@@ -334,6 +350,7 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setHidden(false);
@@ -343,6 +360,7 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setBackgroundColor('#ff00ff', true);
@@ -352,6 +370,7 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setBackgroundColor('#00ff00', true);
@@ -361,6 +380,7 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setTranslucent(true);
@@ -374,6 +394,7 @@ class StatusBarStaticAndroidExample extends React.Component<{...}> {
           </View>
         </TouchableHighlight>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={() => {
             StatusBar.setTranslucent(false);
@@ -403,6 +424,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
     return (
       <View>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.wrapper}
           onPress={this._onChangeModalVisible}>
           <View style={styles.button}>
@@ -417,6 +439,7 @@ class ModalExample extends React.Component<{...}, $FlowFixMeState> {
             <View style={[styles.innerContainer]}>
               <Text>This modal was presented!</Text>
               <TouchableHighlight
+                accessibilityRole="button"
                 onPress={this._onChangeModalVisible}
                 style={styles.modalButton}>
                 <View style={styles.button}>

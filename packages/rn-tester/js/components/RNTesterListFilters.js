@@ -47,6 +47,7 @@ class RNTesterListFilters extends React.Component<
         {filters.map(filterLabel => {
           return (
             <TouchableOpacity
+              accessibilityRole="button"
               key={filterLabel}
               style={[
                 styles.pillStyle,

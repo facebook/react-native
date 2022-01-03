@@ -33,6 +33,7 @@ const BookmarkTab = ({
     />
     <View style={styles.floatContainer}>
       <Pressable
+        accessibilityRole="button"
         testID="bookmarks-tab"
         onPress={() => handleNavBarPress({screen: 'bookmarks'})}>
         <View
@@ -62,6 +63,7 @@ const NavbarButton = ({
   iconStyle,
 }) => (
   <Pressable
+    accessibilityRole="button"
     testID={testID}
     onPress={handlePress}
     style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>

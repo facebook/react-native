@@ -337,6 +337,7 @@ class NetworkOverlay extends React.Component<Props, State> {
 
     return (
       <TouchableHighlight
+        accessibilityRole="button"
         onPress={() => {
           this._pressRow(index);
         }}>
@@ -379,6 +380,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     return (
       <View>
         <TouchableHighlight
+          accessibilityRole="button"
           style={styles.closeButton}
           onPress={this._closeButtonClicked}>
           <View>
