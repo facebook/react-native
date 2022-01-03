@@ -16,7 +16,7 @@ module.exports = {
     sourceType: 'module',
   },
 
-  extends: ['plugin:prettier/recommended'],
+  extends: ['plugin:prettier/recommended', 'plugin:react-native-a11y/basic'],
 
   plugins: [
     'eslint-comments',
@@ -321,5 +321,8 @@ module.exports = {
     'jest/no-focused-tests': 1,
     'jest/no-identical-title': 1,
     'jest/valid-expect': 1,
+
+    // React-Native A11y
+    'react-native-a11y/has-accessibility-hint': 'warn', // if Touchables have accessibilityLabel but no accessibilityHint
   },
 };
