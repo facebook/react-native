@@ -54,6 +54,12 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+
+  CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkTriggered)];
+  if (@available(iOS 15.0, *)) {
+    displayLink.preferredFrameRateRange = CAFrameRateRangeMake(60, 120, 60);
+  }
+
   return YES;
 }
 
