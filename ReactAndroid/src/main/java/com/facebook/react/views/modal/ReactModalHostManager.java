@@ -24,6 +24,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.viewmanagers.ModalHostViewManagerDelegate;
 import com.facebook.react.viewmanagers.ModalHostViewManagerInterface;
+import java.util.HashMap;
 import java.util.Map;
 
 /** View manager for {@link ReactModalHostView} components. */
@@ -137,10 +138,16 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
 
   @Override
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put(RequestCloseEvent.EVENT_NAME, MapBuilder.of("registrationName", "onRequestClose"))
-        .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow"))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(RequestCloseEvent.EVENT_NAME, MapBuilder.of("registrationName", "onRequestClose"))
+            .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow"))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override

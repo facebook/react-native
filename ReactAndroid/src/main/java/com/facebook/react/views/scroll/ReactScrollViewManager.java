@@ -30,6 +30,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -335,7 +336,12 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   @Override
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return createExportedCustomDirectEventTypeConstants();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(createExportedCustomDirectEventTypeConstants());
+    return eventTypeConstants;
   }
 
   public static Map<String, Object> createExportedCustomDirectEventTypeConstants() {

@@ -24,6 +24,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
+import java.util.HashMap;
 import java.util.Map;
 
 @ReactModule(name = ReactImageManager.REACT_CLASS)
@@ -245,17 +246,23 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.of(
-        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
-        MapBuilder.of("registrationName", "onLoadStart"),
-        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_PROGRESS),
-        MapBuilder.of("registrationName", "onProgress"),
-        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
-        MapBuilder.of("registrationName", "onLoad"),
-        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
-        MapBuilder.of("registrationName", "onError"),
-        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
-        MapBuilder.of("registrationName", "onLoadEnd"));
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.of(
+            ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
+            MapBuilder.of("registrationName", "onLoadStart"),
+            ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_PROGRESS),
+            MapBuilder.of("registrationName", "onProgress"),
+            ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
+            MapBuilder.of("registrationName", "onLoad"),
+            ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
+            MapBuilder.of("registrationName", "onError"),
+            ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
+            MapBuilder.of("registrationName", "onLoadEnd")));
+    return eventTypeConstants;
   }
 
   @Override

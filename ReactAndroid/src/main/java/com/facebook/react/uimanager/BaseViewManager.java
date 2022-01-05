@@ -429,9 +429,17 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @Override
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put("topAccessibilityAction", MapBuilder.of("registrationName", "onAccessibilityAction"))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "topAccessibilityAction",
+                MapBuilder.of("registrationName", "onAccessibilityAction"))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override
