@@ -90,7 +90,7 @@ commands:
       - save_cache:
           paths:
             - /tmp/yarn
-          key: v5-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: v6-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
     steps:
