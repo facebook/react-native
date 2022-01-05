@@ -78,7 +78,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v5-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v6-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
       - run:
           name: "Yarn: Install Dependencies"
           command: |
