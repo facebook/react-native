@@ -18,7 +18,7 @@ import type {
   Layout,
   LayoutEvent,
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
@@ -474,7 +474,7 @@ export type ViewProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/view#hitslop
    */
-  hitSlop?: ?EdgeInsetsOrSizeProp,
+  hitSlop?: ?EdgeInsetsProp,
 
   /**
    * Controls whether the `View` can be the target of touch events.

@@ -10,9 +10,6 @@
 
 'use strict';
 
-import type {Rect, RectOrSize} from './Rect';
+import type {Rect} from './Rect';
 
-// TODO: allow all EdgeInsets-like property to be set using a single number
-// and unify EdgeInsetsProp with EdgeInsetsOrSizeProp
 export type EdgeInsetsProp = Rect;
-export type EdgeInsetsOrSizeProp = RectOrSize;
