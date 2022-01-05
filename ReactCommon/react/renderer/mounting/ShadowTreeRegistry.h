@@ -50,14 +50,14 @@ class ShadowTreeRegistry final {
    */
   bool visit(
       SurfaceId surfaceId,
-      std::function<void(const ShadowTree &shadowTree)> callback) const;
+      std::function<void(const ShadowTree &shadowTree)> const &callback) const;
 
   /*
    * Enumerates all stored shadow trees.
    * Can be called from any thread.
    */
   void enumerate(
-      std::function<void(const ShadowTree &shadowTree)> callback) const;
+      std::function<void(const ShadowTree &shadowTree)> const &callback) const;
 
  private:
   mutable butter::shared_mutex mutex_;

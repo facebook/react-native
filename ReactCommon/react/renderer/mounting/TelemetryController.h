@@ -43,9 +43,12 @@ class TelemetryController final {
    * Calls `MountingCoordinator::pullTransaction()` and aggregates telemetry.
    */
   bool pullTransaction(
-      std::function<void(MountingTransactionMetadata metadata)> willMount,
-      std::function<void(ShadowViewMutationList const &mutations)> doMount,
-      std::function<void(MountingTransactionMetadata metadata)> didMount) const;
+      std::function<void(MountingTransactionMetadata metadata)> const
+          &willMount,
+      std::function<void(ShadowViewMutationList const &mutations)> const
+          &doMount,
+      std::function<void(MountingTransactionMetadata metadata)> const &didMount)
+      const;
 
  private:
   MountingCoordinator const &mountingCoordinator_;

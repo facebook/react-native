@@ -27,7 +27,7 @@ SharedColor colorFromComponents(ColorComponents components) {
       ((int)round(components.blue * ratio) & 0xff));
 }
 
-ColorComponents colorComponentsFromColor(SharedColor sharedColor) {
+ColorComponents colorComponentsFromColor(SharedColor const &sharedColor) {
   float ratio = 255;
   Color color = *sharedColor;
   return ColorComponents{

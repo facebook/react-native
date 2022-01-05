@@ -153,7 +153,7 @@ class StackingContextTest : public ::testing::Test {
   }
 
   void mutateViewShadowNodeProps_(
-      std::shared_ptr<ViewShadowNode> node,
+      std::shared_ptr<ViewShadowNode> const &node,
       std::function<void(ViewProps &props)> callback) {
     rootShadowNode_ =
         std::static_pointer_cast<RootShadowNode>(rootShadowNode_->cloneTree(
@@ -165,7 +165,7 @@ class StackingContextTest : public ::testing::Test {
   }
 
   void testViewTree_(
-      std::function<void(StubViewTree const &viewTree)> callback) {
+      std::function<void(StubViewTree const &viewTree)> const &callback) {
     rootShadowNode_->layoutIfNeeded();
 
     callback(buildStubViewTreeUsingDifferentiator(*rootShadowNode_));

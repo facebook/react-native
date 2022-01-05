@@ -1075,7 +1075,7 @@ void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
 
 void LayoutAnimationKeyFrameManager::setClockNow(
     std::function<uint64_t()> now) {
-  now_ = now;
+  now_ = std::move(now);
 }
 
 void LayoutAnimationKeyFrameManager::enableSkipInvalidatedKeyFrames() {

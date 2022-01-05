@@ -27,7 +27,7 @@ void *TextLayoutManager::getNativeTextLayoutManager() const {
 }
 
 TextMeasurement TextLayoutManager::measure(
-    AttributedStringBox attributedStringBox,
+    AttributedStringBox const &attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   auto &attributedString = attributedStringBox.getValue();
@@ -59,7 +59,7 @@ TextMeasurement TextLayoutManager::measure(
 
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t cacheId,
-    ParagraphAttributes paragraphAttributes,
+    ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   auto env = Environment::current();
   auto attachmentPositions = env->NewFloatArray(0);
@@ -93,8 +93,8 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    AttributedString const &attributedString,
+    ParagraphAttributes const &paragraphAttributes,
     Size size) const {
   if (mapBufferSerializationEnabled_) {
     return measureLinesMapBuffer(attributedString, paragraphAttributes, size);
@@ -147,8 +147,8 @@ LinesMeasurements TextLayoutManager::measureLines(
 }
 
 LinesMeasurements TextLayoutManager::measureLinesMapBuffer(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    AttributedString const &attributedString,
+    ParagraphAttributes const &paragraphAttributes,
     Size size) const {
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
@@ -189,12 +189,12 @@ LinesMeasurements TextLayoutManager::measureLinesMapBuffer(
 
 TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
 
   int attachmentsCount = 0;
-  for (auto fragment : attributedString.getFragments()) {
+  for (auto const &fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
       attachmentsCount++;
     }
@@ -253,12 +253,12 @@ TextMeasurement TextLayoutManager::doMeasure(
 
 TextMeasurement TextLayoutManager::doMeasureMapBuffer(
     AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
+    ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
 
   int attachmentsCount = 0;
-  for (auto fragment : attributedString.getFragments()) {
+  for (auto const &fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
       attachmentsCount++;
     }
@@ -290,7 +290,7 @@ TextMeasurement TextLayoutManager::doMeasureMapBuffer(
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {
     int attachmentIndex = 0;
-    for (auto fragment : attributedString.getFragments()) {
+    for (const auto &fragment : attributedString.getFragments()) {
       if (fragment.isAttachment()) {
         float top = attachmentData[attachmentIndex * 2];
         float left = attachmentData[attachmentIndex * 2 + 1];

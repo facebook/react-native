@@ -183,7 +183,7 @@ TelemetryController const &MountingCoordinator::getTelemetryController() const {
 void MountingCoordinator::setMountingOverrideDelegate(
     std::weak_ptr<MountingOverrideDelegate const> delegate) const {
   std::lock_guard<std::mutex> lock(mutex_);
-  mountingOverrideDelegate_ = delegate;
+  mountingOverrideDelegate_ = std::move(delegate);
 }
 
 } // namespace react

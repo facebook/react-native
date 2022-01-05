@@ -17,6 +17,8 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/conversions.h>
 
+#include <utility>
+
 using namespace facebook::jni;
 
 namespace facebook {
@@ -91,7 +93,7 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
 void AndroidTextInputShadowNode::setTextLayoutManager(
     SharedTextLayoutManager textLayoutManager) {
   ensureUnsealed();
-  textLayoutManager_ = textLayoutManager;
+  textLayoutManager_ = std::move(textLayoutManager);
 }
 
 AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()

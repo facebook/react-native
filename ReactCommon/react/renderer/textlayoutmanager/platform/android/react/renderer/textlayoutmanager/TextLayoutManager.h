@@ -42,7 +42,7 @@ class TextLayoutManager {
    * Measures `attributedString` using native text rendering infrastructure.
    */
   TextMeasurement measure(
-      AttributedStringBox attributedStringBox,
+      AttributedStringBox const &attributedStringBox,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
@@ -52,7 +52,7 @@ class TextLayoutManager {
    */
   TextMeasurement measureCachedSpannableById(
       int64_t cacheId,
-      ParagraphAttributes paragraphAttributes,
+      ParagraphAttributes const &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   /*
@@ -60,8 +60,8 @@ class TextLayoutManager {
    * infrastructure.
    */
   LinesMeasurements measureLines(
-      AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
+      AttributedString const &attributedString,
+      ParagraphAttributes const &paragraphAttributes,
       Size size) const;
 
   /*
@@ -73,17 +73,17 @@ class TextLayoutManager {
  private:
   TextMeasurement doMeasure(
       AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
+      ParagraphAttributes const &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   TextMeasurement doMeasureMapBuffer(
       AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
+      ParagraphAttributes const &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
   LinesMeasurements measureLinesMapBuffer(
-      AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
+      AttributedString const &attributedString,
+      ParagraphAttributes const &paragraphAttributes,
       Size size) const;
 
   void *self_;

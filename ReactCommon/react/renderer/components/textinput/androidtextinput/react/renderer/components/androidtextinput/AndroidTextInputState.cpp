@@ -27,7 +27,6 @@ AndroidTextInputState::AndroidTextInputState(
     float defaultThemePaddingTop,
     float defaultThemePaddingBottom)
     : mostRecentEventCount(mostRecentEventCount),
-      cachedAttributedStringId(0),
       attributedString(std::move(attributedString)),
       reactTreeAttributedString(std::move(reactTreeAttributedString)),
       paragraphAttributes(std::move(paragraphAttributes)),

@@ -26,7 +26,7 @@ std::string DebugStringConvertible::getDebugChildrenDescription(
   auto trailing = options.format ? std::string{"\n"} : std::string{""};
   auto childrenString = std::string{""};
 
-  for (auto child : getDebugChildren()) {
+  for (auto const &child : getDebugChildren()) {
     if (!child) {
       continue;
     }
@@ -52,7 +52,7 @@ std::string DebugStringConvertible::getDebugPropsDescription(
 
   auto propsString = std::string{""};
 
-  for (auto prop : getDebugProps()) {
+  for (auto const &prop : getDebugProps()) {
     if (!prop) {
       continue;
     }

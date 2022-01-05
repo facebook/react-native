@@ -29,7 +29,7 @@ class EventDispatcher {
   using Weak = std::weak_ptr<EventDispatcher const>;
 
   EventDispatcher(
-      EventQueueProcessor eventProcessor,
+      EventQueueProcessor const &eventProcessor,
       EventBeat::Factory const &synchonousEventBeatFactory,
       EventBeat::Factory const &asynchonousEventBeatFactory,
       EventBeat::SharedOwnerBox const &ownerBox);
