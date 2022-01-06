@@ -269,7 +269,7 @@ try {
     // that is failing the flow check. We're removing it.
     rm(
       '-rf',
-      `${ROOT}/node_modules/resolve/test/resolver/malformed_package_json`,
+      './node_modules/resolve/test/resolver/malformed_package_json',
     );
     if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
       echo('Flow check failed.');
