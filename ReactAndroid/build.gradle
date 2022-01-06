@@ -10,8 +10,6 @@ plugins {
     id("com.facebook.react")
     id("maven-publish")
     id("de.undercouch.download")
-    id("kotlin-android")
-    id("org.jetbrains.kotlin.kapt")
 }
 
 import com.facebook.react.tasks.internal.*
@@ -369,7 +367,7 @@ android {
 }
 
 dependencies {
-    kapt("com.facebook.react:annotations-compiler")
+    annotationProcessor("com.facebook.react:annotations-compiler")
     api("com.facebook.react:annotations")
     api("com.facebook.infer.annotation:infer-annotation:0.18.0")
     api("com.facebook.yoga:proguard-annotations:1.19.0")

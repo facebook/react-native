@@ -8,8 +8,6 @@
 plugins {
     id("com.android.application")
     id("com.facebook.react")
-    id("kotlin-android")
-    id("org.jetbrains.kotlin.kapt")
 }
 
 /**
@@ -225,7 +223,7 @@ dependencies {
 
     // Build React Native from source
     implementation project(':ReactAndroid')
-    kapt "com.facebook.react:annotations-compiler"
+    annotationProcessor "com.facebook.react:annotations-compiler"
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
