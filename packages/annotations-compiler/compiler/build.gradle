@@ -5,6 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+repositories {
+  google()
+  mavenCentral()
+}
+
 apply plugin: 'java'
 
 sourceSets.configureEach { sourceSet ->
@@ -21,5 +26,5 @@ java {
 dependencies {
     implementation('com.squareup:javapoet:1.13.0')
     implementation('com.facebook.infer.annotation:infer-annotation:0.18.0')
-    implementation(project(':react-native-annotations'))
+    implementation('com.facebook.react:annotations')
 }
