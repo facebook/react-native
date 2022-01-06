@@ -81,7 +81,6 @@ commands:
             - v6-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
             - v6-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}
             - v6-yarn-cache-{{ .Environment.CIRCLE_JOB }}
-            - v6-yarn-cache-
       - run:
           name: "Yarn: Install Dependencies"
           command: |
