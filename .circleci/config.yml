@@ -87,11 +87,11 @@ commands:
             # Skip yarn install on metro bump commits as the package is not yet
             # available on npm
             if [[ $(echo "$GIT_COMMIT_DESC" | grep -c "Bump metro@") -eq 0 ]]; then
-              yarn install --non-interactive --cache-folder /tmp/yarn
+              yarn install --non-interactive --cache-folder ~/.cache/yarn
             fi
       - save_cache:
           paths:
-            - /tmp/yarn
+            - ~/.cache/yarn
           key: v6-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
@@ -117,7 +117,7 @@ commands:
     steps:
       - run:
           name: "Yarn: Install dependencies (GitHub bots)"
-          command: cd bots && yarn install --non-interactive --cache-folder /tmp/yarn
+          command: cd bots && yarn install --non-interactive --cache-folder ~/.cache/yarn
 
   brew_install:
     parameters:
