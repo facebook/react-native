@@ -78,7 +78,9 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v5-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}
+            - v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
       - run:
           name: "Yarn: Install Dependencies"
           command: |
@@ -90,7 +92,7 @@ commands:
       - save_cache:
           paths:
             - ~/.cache/yarn
-          key: v5-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
     steps:
