@@ -4,7 +4,7 @@ variables:
 trigger:
   branches:
     include:
-      - master
+      - main
       - '*-stable'
   paths:
     exclude:
@@ -12,7 +12,7 @@ trigger:
 pr:
   branches:
     include:
-      - master
+      - main
       - '*-stable'
   paths:
     exclude:

@@ -8,7 +8,7 @@ trigger:
   batch: true
   branches:
     include:
-      - master
+      - main
       - '*-stable'
   paths:
     exclude:
@@ -44,11 +44,11 @@ jobs:
 
       - bash: echo "##vso[task.setvariable variable=npmDistTag]canary"
         displayName: Set dist-tag to canary
-        condition: eq(variables['Build.SourceBranchName'], 'master')
+        condition: eq(variables['Build.SourceBranchName'], 'main')
 
       - bash: echo "##vso[task.setvariable variable=npmDistTag]v${{variables['Build.SourceBranchName']}}"
         displayName: Set dist-tag to v0.x-stable
-        condition: and(ne(variables['Build.SourceBranchName'], 'master'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
+        condition: and(ne(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
 
       - template: templates/apple-node-setup.yml
 
@@ -61,7 +61,7 @@ jobs:
         displayName: Bump stable package version
         inputs:
           script: node .ado/bumpFileVersions.js
-        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'master'))
+        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
 
       - task: CmdLine@2
         displayName: pod update React-TurboModuleCxx-RNW
@@ -69,13 +69,13 @@ jobs:
           script: |
             cd packages/rn-tester
             pod update React-TurboModuleCxx-RNW
-        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'master'))
+        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
 
       - task: CmdLine@2
         displayName: Bump canary package version
         inputs:
           script: node scripts/bump-oss-version.js --nightly
-        condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'master'))
+        condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'))
 
       # Publish will fail if package.json is marked as private
       - task: CmdLine@2
@@ -101,7 +101,7 @@ jobs:
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           githubApiToken: $(githubApiToken)
-        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'master'))
+        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
 
 
   - job: RNMacOSInitNpmJSPublish
@@ -110,7 +110,7 @@ jobs:
       vmImage: vs2017-win2016
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
-    condition: eq(variables['Build.SourceBranchName'], 'master')
+    condition: eq(variables['Build.SourceBranchName'], 'main')
     steps:
       - checkout: self # self represents the repo where the initial Pipelines YAML file was found
         clean: true # whether to fetch clean each time

@@ -9,7 +9,7 @@ trigger: none # will disable CI builds entirely
 pr:
   branches:
     include:
-      - master
+      - main
       - '*-stable'
   paths:
     exclude:
