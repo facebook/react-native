@@ -1,7 +1,7 @@
 rootProject.name = 'HelloWorld'
 
 include(":react-native-annotations")
-project(":react-native-annotations").projectDir = File(rootProject.projectDir, "../node_modules/react-native/packages/annotations-compiler/annotations")
+project(":react-native-annotations").projectDir = file(rootProject.projectDir, "../node_modules/react-native/packages/annotations-compiler/annotations")
 include(":react-native-annotations-compiler")
 project(":react-native-annotations-compiler").projectDir = File(rootProject.projectDir, "../node_modules/react-native/packages/annotations-compiler/compiler")
 
