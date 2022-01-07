@@ -647,7 +647,6 @@ jobs:
       - ANDROID_BUILD_VERSION: 31
       - ANDROID_TOOLS_VERSION: 31.0.0
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
-      - NDK_VERSION: 21.4.7075529
     steps:
       - checkout
 
@@ -693,7 +692,6 @@ jobs:
             sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
             sdkmanager "add-ons;addon-google_apis-google-23"
             sdkmanager "extras;android;m2repository"
-            sdkmanager "ndk;%NDK_VERSION%"
 
       # -------------------------
       # Run Tests
