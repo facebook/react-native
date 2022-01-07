@@ -24,6 +24,23 @@ export type Buttons = Array<{
   style?: AlertButtonStyle,
   ...
 }>;
+export type AlertKeyboardType =
+  // Cross Platform
+  | 'default'
+  | 'email-address'
+  | 'numeric'
+  | 'phone-pad'
+  | 'number-pad'
+  | 'decimal-pad'
+  | 'url'
+  // iOS-only
+  | 'ascii-capable'
+  | 'numbers-and-punctuation'
+  | 'name-phone-pad'
+  | 'twitter'
+  | 'web-search'
+  // Android-only
+  | 'visible-password';
 
 type Options = {
   cancelable?: ?boolean,
@@ -106,7 +123,7 @@ class Alert {
     callbackOrButtons?: ?(((text: string) => void) | Buttons),
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
-    keyboardType?: string,
+    keyboardType?: AlertKeyboardType,
   ): void {
     if (Platform.OS === 'ios') {
       let callbacks = [];
