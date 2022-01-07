@@ -4,7 +4,10 @@ load("//tools/build_defs/oss:rn_defs.bzl", "rn_prebuilt_jar")
 rn_prebuilt_jar(
     name = "javapoet",
     binary_jar = ":jsr305-binary.jar",
-    visibility = ["//ReactAndroid/...", "//packages/annotations-compiler/..."],
+    visibility = [
+        "//ReactAndroid/...",
+        "//packages/annotations-compiler/...",
+    ],
 )
 
 fb_native.remote_file(
