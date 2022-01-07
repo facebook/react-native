@@ -16,7 +16,6 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/jni/CxxModuleWrapper.h>
-#include <react/jni/JMessageQueueThread.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <memory>
 #include <unordered_map>

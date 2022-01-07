@@ -14,7 +14,6 @@
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
-#include <react/jni/JMessageQueueThread.h>
 
 #include "TurboModuleManager.h"
 
