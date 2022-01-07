@@ -162,6 +162,18 @@ void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
   turboModuleManagerDelegateLockingDisabled = disabled;
 }
 
+// Turn off TurboModule delegate locking
+static BOOL viewConfigEventValidAttributesDisabled = NO;
+BOOL RCTViewConfigEventValidAttributesDisabled(void)
+{
+  return viewConfigEventValidAttributesDisabled;
+}
+
+void RCTDisableViewConfigEventValidAttributes(BOOL disabled)
+{
+  viewConfigEventValidAttributesDisabled = disabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 

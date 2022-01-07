@@ -155,13 +155,6 @@ function normalizeInputEventName(name) {
   return name;
 }
 
-// Replicates the behavior of viewConfig in RCTComponentData.m
-function getValidAttributesForEvents(events) {
-  return events.map(eventType => {
-    return j.property('init', j.identifier(eventType.name), j.literal(true));
-  });
-}
-
 function generateBubblingEventInfo(event, nameOveride) {
   return j.property(
     'init',
@@ -234,7 +227,6 @@ function buildViewConfig(
         getReactDiffProcessValue(schemaProp.typeAnnotation),
       );
     }),
-    ...getValidAttributesForEvents(componentEvents),
   ]);
 
   const bubblingEventNames = component.events
