@@ -116,6 +116,7 @@ export function getWithFallback_DEPRECATED<Config>(
   viewConfigProvider: () => PartialViewConfig,
 ): React.AbstractComponent<Config> {
   if (getRuntimeConfig == null) {
+    // `getRuntimeConfig == null` when static view configs are disabled
     // If `setRuntimeConfigProvider` is not configured, use native reflection.
     if (hasNativeViewConfig(name)) {
       return get<Config>(name, viewConfigProvider);
