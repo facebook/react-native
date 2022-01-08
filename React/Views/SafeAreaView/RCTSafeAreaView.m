@@ -21,7 +21,6 @@
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _bridge = bridge;
-    _emulateUnlessSupported = YES; // The default.
   }
 
   return self;

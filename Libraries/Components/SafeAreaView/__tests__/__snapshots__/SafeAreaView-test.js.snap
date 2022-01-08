@@ -1,9 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<SafeAreaView /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
-<RCTSafeAreaView
-  emulateUnlessSupported={true}
->
+<RCTSafeAreaView>
   <View>
     <Text>
       Hello World!
@@ -13,9 +11,7 @@ exports[`<SafeAreaView /> should render as expected: should deep render when moc
 `;
 
 exports[`<SafeAreaView /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
-<RCTSafeAreaView
-  emulateUnlessSupported={true}
->
+<RCTSafeAreaView>
   <View>
     <Text>
       Hello World!

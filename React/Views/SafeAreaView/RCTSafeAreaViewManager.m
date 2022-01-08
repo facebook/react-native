@@ -15,8 +15,6 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_VIEW_PROPERTY(emulateUnlessSupported, BOOL) // TODO: To be deleted
-
 - (UIView *)view
 {
   return [[RCTSafeAreaView alloc] initWithBridge:self.bridge];
