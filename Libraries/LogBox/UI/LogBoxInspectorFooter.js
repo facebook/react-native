@@ -11,10 +11,10 @@
 import type {LogLevel} from '../Data/LogBoxLog';
 
 import * as React from 'react';
-import DeviceInfo from '../../Utilities/DeviceInfo';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';
+import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 
@@ -27,21 +27,21 @@ type Props = $ReadOnly<{|
 function LogBoxInspectorFooter(props: Props): React.Node {
   if (props.level === 'syntax') {
     return (
-      <View style={styles.root}>
+      <SafeAreaView style={styles.root}>
         <View style={styles.button}>
           <Text style={styles.syntaxErrorText}>
             This error cannot be dismissed.
           </Text>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.root}>
+    <SafeAreaView style={styles.root}>
       <FooterButton text="Dismiss" onPress={props.onDismiss} />
       <FooterButton text="Minimize" onPress={props.onMinimize} />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -58,7 +58,7 @@ function FooterButton(props: ButtonProps): React.Node {
         pressed: LogBoxStyle.getBackgroundDarkColor(),
       }}
       onPress={props.onPress}
-      style={buttonStyles.safeArea}>
+      style={buttonStyles.button}>
       <View style={buttonStyles.content}>
         <Text style={buttonStyles.label}>{props.text}</Text>
       </View>
@@ -67,10 +67,8 @@ function FooterButton(props: ButtonProps): React.Node {
 }
 
 const buttonStyles = StyleSheet.create({
-  safeArea: {
+  button: {
     flex: 1,
-    // $FlowFixMe[sketchy-null-bool]
-    paddingBottom: DeviceInfo.getConstants().isIPhoneX_deprecated ? 30 : 0,
   },
   content: {
     alignItems: 'center',

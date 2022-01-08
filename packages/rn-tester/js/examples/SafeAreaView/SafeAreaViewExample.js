@@ -14,7 +14,6 @@ const React = require('react');
 
 const {
   Button,
-  DeviceInfo,
   Modal,
   SafeAreaView,
   StyleSheet,
@@ -83,24 +82,6 @@ class SafeAreaViewExample extends React.Component<
   }
 }
 
-class IsIPhoneXExample extends React.Component<{...}> {
-  render() {
-    return (
-      <View>
-        <Text>
-          Is this an iPhone X:{' '}
-          {
-            // $FlowFixMe[sketchy-null-bool]
-            DeviceInfo.getConstants().isIPhoneX_deprecated
-              ? 'Yeah!'
-              : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'
-          }
-        </Text>
-      </View>
-    );
-  }
-}
-
 const styles = StyleSheet.create({
   modal: {
     flex: 1,
@@ -130,14 +111,5 @@ exports.examples = [
     description:
       'SafeAreaView automatically applies paddings reflect the portion of the view that is not covered by other (special) ancestor views.',
     render: (): React.Node => <SafeAreaViewExample />,
-  },
-  {
-    title: 'isIPhoneX_deprecated Example',
-    description:
-      ('`DeviceInfo.isIPhoneX_deprecated` returns true only on iPhone X. ' +
-        'Note: This prop is deprecated and will be removed in a future ' +
-        'release. Please use this only for a quick and temporary solution. ' +
-        'Use <SafeAreaView> instead.': string),
-    render: (): React.Node => <IsIPhoneXExample />,
   },
 ];
