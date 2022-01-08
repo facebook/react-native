@@ -66,8 +66,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
     return UIEdgeInsetsZero;
   }
 
-  CGFloat topLayoutOffset = vc.topLayoutGuide.length;
-  CGFloat bottomLayoutOffset = vc.bottomLayoutGuide.length;
+  CGFloat topLayoutOffset = vc.view.safeAreaInsets.top;
+  CGFloat bottomLayoutOffset = vc.view.safeAreaInsets.bottom;
   CGRect safeArea = vc.view.bounds;
   safeArea.origin.y += topLayoutOffset;
   safeArea.size.height -= topLayoutOffset + bottomLayoutOffset;
