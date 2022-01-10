@@ -11,18 +11,21 @@ import android.content.Context;
 import android.net.Uri;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableMap;
 import java.util.Objects;
 
 /** Class describing an image source (network URI or resource) and size. */
 public class ImageSource {
 
   private @Nullable Uri mUri;
+  private ReadableMap mHeaders;
   private String mSource;
   private double mSize;
   private boolean isResource;
 
-  public ImageSource(Context context, String source, double width, double height) {
+  public ImageSource(Context context, String source, ReadableMap headers, double width, double height) {
     mSource = source;
+    mHeaders = headers;
     mSize = width * height;
 
     // Important: we compute the URI here so that we don't need to hold a reference to the context,
@@ -46,8 +49,8 @@ public class ImageSource {
     return Objects.hash(mUri, mSource, mSize, isResource);
   }
 
-  public ImageSource(Context context, String source) {
-    this(context, source, 0.0d, 0.0d);
+  public ImageSource(Context context, String source, ReadableMap headers) {
+    this(context, source, headers, 0.0d, 0.0d);
   }
 
   /** Get the source of this image, as it was passed to the constructor. */
@@ -58,6 +61,11 @@ public class ImageSource {
   /** Get the URI for this image - can be either a parsed network URI or a resource URI. */
   public Uri getUri() {
     return Assertions.assertNotNull(mUri);
+  }
+
+  /** Get the headers for this image. */
+  public ReadableMap getHeaders() {
+    return mHeaders;
   }
 
   /** Get the area of this image. */

@@ -159,26 +159,24 @@ let Image = (props: ImagePropsType, forwardedRef) => {
     source = null;
   }
 
-  let style;
-  let sources;
-  if (source?.uri != null) {
-    const {width, height} = source;
-    style = flattenStyle([{width, height}, styles.base, props.style]);
-    sources = [{uri: source.uri}];
-  } else {
-    style = flattenStyle([styles.base, props.style]);
-    sources = source;
-  }
+  const sourceIsSingleImage = !Array.isArray(source) && source != null;
+  const style = flattenStyle(
+    sourceIsSingleImage && {
+      width: source.width,
+      height: source.height,
+    },
+    styles.base,
+    props.style,
+  );
 
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {
     ...props,
     style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
-    src: sources,
+    src: sourceIsSingleImage ? [source] : source,
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    headers: source?.headers,
     defaultSrc: defaultSource ? defaultSource.uri : null,
     loadingIndicatorSrc: loadingIndicatorSource
       ? loadingIndicatorSource.uri

@@ -239,11 +239,6 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setShouldNotifyLoadEvents(shouldNotifyLoadEvents);
   }
 
-  @ReactProp(name = "headers")
-  public void setHeaders(ReactImageView view, ReadableMap headers) {
-    view.setHeaders(headers);
-  }
-
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
     @Nullable
