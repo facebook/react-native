@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<e78790b1fea52e4a08e0efaf4b202318>>
+ * @generated SignedSource<<4e71e92e72eaaf313f601217395e6d50>>
  */
 
 "use strict";
@@ -8252,7 +8252,7 @@ var roots = new Map(),
   devToolsConfig$jscomp$inline_966 = {
     findFiberByHostInstance: getInstanceFromTag,
     bundleType: 0,
-    version: "18.0.0-rc.0-a049aa015-20211213",
+    version: "18.0.0-rc.0-fe905f152-20220107",
     rendererPackageName: "react-native-renderer",
     rendererConfig: {
       getInspectorDataForViewTag: function() {
@@ -8294,7 +8294,7 @@ var internals$jscomp$inline_1229 = {
   scheduleRoot: null,
   setRefreshHandler: null,
   getCurrentFiber: null,
-  reconcilerVersion: "18.0.0-rc.0-a049aa015-20211213"
+  reconcilerVersion: "18.0.0-rc.0-fe905f152-20220107"
 };
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   var hook$jscomp$inline_1230 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
