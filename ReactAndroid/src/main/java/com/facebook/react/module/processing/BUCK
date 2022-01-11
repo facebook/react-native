@@ -8,6 +8,6 @@ rn_java_annotation_processor(
         "PUBLIC",
     ],
     deps = [
-        "//packages/annotations-compiler/compiler/src/main/java/com/facebook/react/module/processing:processing-lib",
+        "//packages/annotations-compiler/annotations-compiler/src/main/java/com/facebook/react/module/processing:processing-lib",
     ],
 )

@@ -12,6 +12,8 @@ repositories {
 
 apply plugin: 'java'
 
+group = "com.facebook.react"
+
 sourceSets.configureEach { sourceSet ->
     tasks.named(sourceSet.compileJavaTaskName).configure {
         options.annotationProcessorGeneratedSourcesDirectory = file("$buildDir/generated/sources/annotationProcessor/java/${sourceSet.name}")

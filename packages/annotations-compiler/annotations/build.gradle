@@ -7,6 +7,8 @@
 
 apply plugin: 'java'
 
+group = "com.facebook.react"
+
 dependencies {
 
 }

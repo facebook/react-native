@@ -22,14 +22,5 @@ include(
 // Include this to enable codegen Gradle plugin.
 includeBuild("packages/react-native-gradle-plugin/")
 
-includeBuild("packages/annotations-compiler/annotations") {
-    dependencySubstitution {
-        substitute(module("com.facebook.react:annotations")).using(project(":"))
-    }
-}
-
-includeBuild("packages/annotations-compiler/compiler") {
-    dependencySubstitution {
-        substitute(module("com.facebook.react:annotations-compiler")).using(project(":"))
-    }
-}
+includeBuild("packages/annotations-compiler/annotations")
+includeBuild("packages/annotations-compiler/annotations-compiler")
