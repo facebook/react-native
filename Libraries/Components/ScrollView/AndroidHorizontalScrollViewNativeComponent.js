@@ -36,6 +36,18 @@ const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> =
       snapToStart: true,
       snapToOffsets: true,
       contentOffset: true,
+      borderBottomLeftRadius: true,
+      borderBottomRightRadius: true,
+      borderRadius: true,
+      borderStyle: true,
+      borderRightColor: {process: require('../../StyleSheet/processColor')},
+      borderColor: {process: require('../../StyleSheet/processColor')},
+      borderBottomColor: {process: require('../../StyleSheet/processColor')},
+      borderTopLeftRadius: true,
+      borderTopColor: {process: require('../../StyleSheet/processColor')},
+      removeClippedSubviews: true,
+      borderTopRightRadius: true,
+      borderLeftColor: {process: require('../../StyleSheet/processColor')},
     },
   }));
 
