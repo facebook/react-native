@@ -239,13 +239,6 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
       },
     },
 
-    topChange: {
-      phasedRegistrationNames: {
-        captured: 'onChangeCapture',
-        bubbled: 'onChange',
-      },
-    },
-
     topEnd: {
       phasedRegistrationNames: {
         captured: 'onEndCapture',
@@ -254,13 +247,6 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
     },
 
     paperBubblingName: {
-      phasedRegistrationNames: {
-        captured: 'onEventBubblingWithPaperNameCapture',
-        bubbled: 'onEventBubblingWithPaperName',
-      },
-    },
-
-    topEventBubblingWithPaperName: {
       phasedRegistrationNames: {
         captured: 'onEventBubblingWithPaperNameCapture',
         bubbled: 'onEventBubblingWithPaperName',
@@ -277,15 +263,7 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
       registrationName: 'onEventDirectWithPaperName',
     },
 
-    topEventDirectWithPaperName: {
-      registrationName: 'onEventDirectWithPaperName',
-    },
-
     paperBubblingName: {
-      registrationName: 'onOrientationChange',
-    },
-
-    topOrientationChange: {
       registrationName: 'onOrientationChange',
     },
   },
