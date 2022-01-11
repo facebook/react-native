@@ -14,6 +14,8 @@ import type {ViewProps} from '../View/ViewPropTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
+
+  removeClippedSubviews?: ?boolean,
 |}>;
 
 type NativeType = HostComponent<NativeProps>;
