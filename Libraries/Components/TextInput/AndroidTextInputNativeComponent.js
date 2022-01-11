@@ -635,7 +635,11 @@ let AndroidTextInputNativeComponent = NativeComponentRegistry.get<NativeProps>(
         },
       },
     },
-    directEventTypes: {},
+    directEventTypes: {
+      topScroll: {
+        registrationName: 'onScroll',
+      },
+    },
     validAttributes: {
       maxFontSizeMultiplier: true,
       adjustsFontSizeToFit: true,
@@ -666,7 +670,6 @@ let AndroidTextInputNativeComponent = NativeComponentRegistry.get<NativeProps>(
       keyboardType: true,
       multiline: true,
       color: {process: require('../../StyleSheet/processColor')},
-      autoCompleteType: true,
       autoComplete: true,
       numberOfLines: true,
       letterSpacing: true,
@@ -694,6 +697,17 @@ let AndroidTextInputNativeComponent = NativeComponentRegistry.get<NativeProps>(
       inlineImageLeft: true,
       editable: true,
       fontVariant: true,
+      borderBottomRightRadius: true,
+      borderBottomColor: {process: require('../../StyleSheet/processColor')},
+      borderRadius: true,
+      borderRightColor: {process: require('../../StyleSheet/processColor')},
+      borderColor: {process: require('../../StyleSheet/processColor')},
+      borderTopRightRadius: true,
+      borderStyle: true,
+      borderBottomLeftRadius: true,
+      borderLeftColor: {process: require('../../StyleSheet/processColor')},
+      borderTopLeftRadius: true,
+      borderTopColor: {process: require('../../StyleSheet/processColor')},
     },
   }),
 );
