@@ -27,6 +27,8 @@ gradlePlugin {
   }
 }
 
+group = "com.facebook.react"
+
 dependencies {
   implementation(gradleApi())
   implementation("com.android.tools.build:gradle:7.0.4")
