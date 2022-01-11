@@ -127,6 +127,10 @@ export default NativeComponentRegistry.get(nativeComponentName, () => VIEW_CONFI
 `.trim();
 };
 
+// If static view configs are enabled, get whether the native component exists
+// in the app binary using hasViewManagerConfig() instead of getViewManagerConfig().
+// Old getViewManagerConfig() checks for the existance of the native Paper view manager.
+// New hasViewManagerConfig() queries Fabric’s native component registry directly.
 const DeprecatedComponentNameCheckTemplate = ({
   componentName,
   paperComponentNameDeprecated,
@@ -135,12 +139,23 @@ const DeprecatedComponentNameCheckTemplate = ({
   paperComponentNameDeprecated: string,
 }) =>
   `
-if (UIManager.getViewManagerConfig('${componentName}')) {
-  nativeComponentName = '${componentName}';
-} else if (UIManager.getViewManagerConfig('${paperComponentNameDeprecated}')) {
-  nativeComponentName = '${paperComponentNameDeprecated}';
+const staticViewConfigsEnabled = global.__fbStaticViewConfig === true;
+if (staticViewConfigsEnabled) {
+  if (UIManager.hasViewManagerConfig('${componentName}')) {
+    nativeComponentName = '${componentName}';
+  } else if (UIManager.hasViewManagerConfig('${paperComponentNameDeprecated}')) {
+    nativeComponentName = '${paperComponentNameDeprecated}';
+  } else {
+    throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}", with SVC enabled.');
+  }
 } else {
-  throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}"');
+  if (UIManager.getViewManagerConfig('${componentName}')) {
+    nativeComponentName = '${componentName}';
+  } else if (UIManager.getViewManagerConfig('${paperComponentNameDeprecated}')) {
+    nativeComponentName = '${paperComponentNameDeprecated}';
+  } else {
+    throw new Error('Failed to find native component for either "${componentName}" or "${paperComponentNameDeprecated}", with SVC disabled.');
+  }
 }
 `.trim();
 
