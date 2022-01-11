@@ -23,10 +23,14 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
 });
 
 const MultilineTextInputNativeComponent: HostComponent<mixed> =
-  NativeComponentRegistry.get<mixed>(
-    'RCTMultilineTextInputView',
-    () => RCTTextInputViewConfig,
-  );
+  NativeComponentRegistry.get<mixed>('RCTMultilineTextInputView', () => ({
+    uiViewClassName: 'RCTMultilineTextInputView',
+    ...RCTTextInputViewConfig,
+    validAttributes: {
+      ...RCTTextInputViewConfig.validAttributes,
+      dataDetectorTypes: true,
+    },
+  }));
 
 // flowlint-next-line unclear-type:off
 export default ((MultilineTextInputNativeComponent: any): HostComponent<mixed>);
