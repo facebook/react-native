@@ -15,6 +15,8 @@
 namespace facebook {
 namespace react {
 
+class ReadableMapBuffer;
+
 /**
  * MapBuffer is an optimized map format for transferring data like props between
  * C++ and other platforms The implementation of this map is optimized to:
@@ -31,6 +33,8 @@ namespace react {
  * - have minimal APK size and build time impact.
  */
 class MapBuffer {
+  friend ReadableMapBuffer;
+
  private:
   // Buffer and its size
   std::vector<uint8_t> const bytes_;
