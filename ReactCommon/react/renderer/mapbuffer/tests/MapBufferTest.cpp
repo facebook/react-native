@@ -108,6 +108,18 @@ TEST(MapBufferTest, testUTFStringEntry) {
   EXPECT_EQ(map.getString(0), "Let's count: 的, 一, 是");
 }
 
+TEST(MapBufferTest, testEmojiStringEntry) {
+  auto builder = MapBufferBuilder();
+
+  builder.putString(
+      0, "Let's count: 1️⃣, 2️⃣, 3️⃣, 🤦🏿‍♀️");
+  auto map = builder.build();
+
+  EXPECT_EQ(
+      map.getString(0),
+      "Let's count: 1️⃣, 2️⃣, 3️⃣, 🤦🏿‍♀️");
+}
+
 TEST(MapBufferTest, testUTFStringEntries) {
   auto builder = MapBufferBuilder();
 

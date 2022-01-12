@@ -14,30 +14,24 @@ namespace react {
 
 // TODO T83483191: Extend MapBuffer C++ implementation to support basic random
 // access
-MapBuffer::MapBuffer(uint8_t *const data, int32_t dataSize) {
-  react_native_assert(
-      (data != nullptr) && "Error trying to build an invalid MapBuffer");
-
-  // Should we move the memory here or document it?
-  data_ = data;
-
+MapBuffer::MapBuffer(std::vector<uint8_t> data) : bytes_(std::move(data)) {
   count_ = 0;
   memcpy(
       reinterpret_cast<uint8_t *>(&count_),
-      reinterpret_cast<const uint8_t *>(data_ + HEADER_COUNT_OFFSET),
+      bytes_.data() + HEADER_COUNT_OFFSET,
       UINT16_SIZE);
 
   // TODO T83483191: extract memcpy calls into an inline function to simplify
   // the code
-  dataSize_ = 0;
+  int32_t dataSize;
   memcpy(
-      reinterpret_cast<uint8_t *>(&dataSize_),
-      reinterpret_cast<const uint8_t *>(data_ + HEADER_BUFFER_SIZE_OFFSET),
+      reinterpret_cast<uint8_t *>(&dataSize),
+      bytes_.data() + HEADER_BUFFER_SIZE_OFFSET,
       INT_SIZE);
 
-  if (dataSize != dataSize_) {
+  if (dataSize != bytes_.size()) {
     LOG(ERROR) << "Error: Data size does not match, expected " << dataSize
-               << " found: " << dataSize_;
+               << " found: " << bytes_.size();
     abort();
   }
 }
@@ -46,7 +40,7 @@ int32_t MapBuffer::getInt(Key key) const {
   int32_t value = 0;
   memcpy(
       reinterpret_cast<uint8_t *>(&value),
-      reinterpret_cast<const uint8_t *>(data_ + getValueOffset(key)),
+      bytes_.data() + getValueOffset(key),
       INT_SIZE);
   return value;
 }
@@ -61,7 +55,7 @@ double MapBuffer::getDouble(Key key) const {
   double value = 0;
   memcpy(
       reinterpret_cast<uint8_t *>(&value),
-      reinterpret_cast<const uint8_t *>(data_ + getValueOffset(key)),
+      bytes_.data() + getValueOffset(key),
       DOUBLE_SIZE);
   return value;
 }
@@ -80,15 +74,14 @@ std::string MapBuffer::getString(Key key) const {
   int32_t offset = getInt(key);
   memcpy(
       reinterpret_cast<uint8_t *>(&stringLength),
-      reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset + offset),
+      bytes_.data() + dynamicDataOffset + offset,
       INT_SIZE);
 
   char *value = new char[stringLength];
 
   memcpy(
       reinterpret_cast<char *>(value),
-      reinterpret_cast<const char *>(
-          data_ + dynamicDataOffset + offset + INT_SIZE),
+      bytes_.data() + dynamicDataOffset + offset + INT_SIZE,
       stringLength);
 
   return std::string(value, 0, stringLength);
@@ -103,18 +96,17 @@ MapBuffer MapBuffer::getMapBuffer(Key key) const {
   int32_t offset = getInt(key);
   memcpy(
       reinterpret_cast<uint8_t *>(&mapBufferLength),
-      reinterpret_cast<const uint8_t *>(data_ + dynamicDataOffset + offset),
+      bytes_.data() + dynamicDataOffset + offset,
       INT_SIZE);
 
-  uint8_t *value = new Byte[mapBufferLength];
+  std::vector<uint8_t> value(mapBufferLength);
 
   memcpy(
-      reinterpret_cast<uint8_t *>(value),
-      reinterpret_cast<const uint8_t *>(
-          data_ + dynamicDataOffset + offset + INT_SIZE),
+      value.data(),
+      bytes_.data() + dynamicDataOffset + offset + INT_SIZE,
       mapBufferLength);
 
-  return MapBuffer(value, mapBufferLength);
+  return MapBuffer(std::move(value));
 }
 
 bool MapBuffer::isNull(Key key) const {
@@ -122,27 +114,22 @@ bool MapBuffer::isNull(Key key) const {
 }
 
 int32_t MapBuffer::getBufferSize() const {
-  return dataSize_;
+  return bytes_.size();
 }
 
 void MapBuffer::copy(uint8_t *output) const {
-  memcpy(output, data_, dataSize_);
+  memcpy(output, bytes_.data(), bytes_.size());
 }
 
 uint16_t MapBuffer::getCount() const {
   uint16_t size = 0;
 
   memcpy(
-      reinterpret_cast<uint16_t *>(&size),
-      reinterpret_cast<const uint16_t *>(data_ + HEADER_COUNT_OFFSET),
-
+      reinterpret_cast<uint8_t *>(&size),
+      bytes_.data() + HEADER_COUNT_OFFSET,
       UINT16_SIZE);
 
   return size;
-}
-
-MapBuffer::~MapBuffer() {
-  delete[] data_;
 }
 
 } // namespace react
