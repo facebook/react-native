@@ -32,6 +32,7 @@ type Options = {
   excludedActivityTypes?: Array<string>,
   tintColor?: string,
   subject?: string,
+  userInterfaceStyle?: string,
   ...
 };
 
@@ -133,6 +134,7 @@ class Share {
             subject: options.subject,
             tintColor: typeof tintColor === 'number' ? tintColor : undefined,
             excludedActivityTypes: options.excludedActivityTypes,
+            userInterfaceStyle: typeof options.userInterfaceStyle === 'string' ? options.userInterfaceStyle : undefined,
           },
           error => reject(error),
           (success, activityType) => {
