@@ -377,7 +377,7 @@ const AccessibilityInfo = {
     if (deviceEventName != null) {
       // $FlowIgnore[incompatible-cast]
       (RCTDeviceEventEmitter: EventEmitter<$FlowFixMe>).removeListener(
-        'deviceEventName',
+        deviceEventName,
         // $FlowFixMe[invalid-tuple-arity]
         handler,
       );
