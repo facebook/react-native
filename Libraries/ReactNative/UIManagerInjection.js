@@ -10,6 +10,6 @@
 
 import type {UIManagerJSInterface} from './UIManager';
 
-const unstable_UIManager: ?UIManagerJSInterface = null;
-
-export {unstable_UIManager};
+export default {
+  unstable_UIManager: (null: ?UIManagerJSInterface),
+};
