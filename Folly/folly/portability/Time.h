@@ -28,8 +28,8 @@
 // then enable our implementation on the source side so that
 // gets linked in instead.
 #if __MACH__ &&                                                \
-    (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_12 || \
-     __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)
+    (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0 || \ // TODO(macOS GH#774): Upgrade min allowed version to fix type redefinition bug with clock_t
+     __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0) // TODO(macOS GH#774): Upgrade min allowed version to fix type redefinition bug with clock_t
 
 #ifdef FOLLY_HAVE_CLOCK_GETTIME
 #undef FOLLY_HAVE_CLOCK_GETTIME

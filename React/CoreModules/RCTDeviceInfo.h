@@ -7,9 +7,7 @@
 
 #import <React/RCTBridge.h>
 
-#if !TARGET_OS_OSX // [TODO(macOS GH#774) - RCTExportedDimensions is needed in RCTRootContentView
-NSDictionary *RCTExportedDimensions(RCTBridge *bridge);
-#else
+#if TARGET_OS_OSX // [TODO(macOS GH#774) - RCTExportedDimensions is needed in RCTRootContentView
 #ifdef __cplusplus
 extern "C"
 #endif

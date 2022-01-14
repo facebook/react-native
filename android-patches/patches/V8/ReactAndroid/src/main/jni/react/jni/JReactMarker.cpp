@@ -1,6 +1,6 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\jni\\react\\jni\\JReactMarker.cpp"	2020-10-27 20:26:17.027172300 -0700
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\jni\\react\\jni\\JReactMarker.cpp"	2020-10-13 21:51:47.447172900 -0700
-@@ -75,6 +75,15 @@
+--- ./ReactAndroid/src/main/jni/react/jni/JReactMarker.cpp	2021-11-08 14:22:26.000000000 -0800
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/V8/ReactAndroid/src/main/jni/react/jni/JReactMarker.cpp	2022-01-12 15:04:31.000000000 -0800
+@@ -92,6 +92,15 @@
      case ReactMarker::REACT_INSTANCE_INIT_STOP:
        // These are not used on Android.
        break;

@@ -1,6 +1,6 @@
---- "E:\\github\\rnm-63-fresh\\ReactCommon\\cxxreact\\CxxNativeModule.h"	2020-10-27 20:26:17.181166900 -0700
-+++ "E:\\github\\rnm-63\\ReactCommon\\cxxreact\\CxxNativeModule.h"	2020-10-13 21:55:26.637861300 -0700
-@@ -45,6 +45,12 @@
+--- ./ReactCommon/cxxreact/CxxNativeModule.h	2022-01-11 17:41:29.000000000 -0800
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/OfficeRNHost/ReactCommon/cxxreact/CxxNativeModule.h	2022-01-12 16:48:12.000000000 -0800
+@@ -48,6 +48,12 @@
        unsigned int hookId,
        folly::dynamic &&args) override;
  
@@ -10,6 +10,6 @@
 +                                               xplat::module::CxxModule::Provider provider,
 +                                               std::shared_ptr<MessageQueueThread> messageQueueThread);
 +
-  private:
-   void lazyInit();
+   static void setShouldWarnOnUse(bool value);
  
+  private:

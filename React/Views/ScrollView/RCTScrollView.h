@@ -36,12 +36,6 @@
 @property (nonatomic, readonly) RCTUIView *contentView; // TODO(macOS ISS#3536887)
 
 /**
- * If the `contentSize` is not specified (or is specified as {0, 0}, then the
- * `contentSize` will automatically be determined by the size of the subview.
- */
-@property (nonatomic, assign) CGSize contentSize;
-
-/**
  * The underlying scrollView (TODO: can we remove this?)
  */
 @property (nonatomic, readonly) RCTUIScrollView *scrollView; // TODO(macOS ISS#3536887)
@@ -79,7 +73,7 @@
 
 @interface RCTScrollView (Internal)
 
-- (void)updateContentOffsetIfNeeded;
+- (void)updateContentSizeIfNeeded;
 
 @end
 

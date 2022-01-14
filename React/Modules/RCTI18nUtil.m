@@ -18,7 +18,7 @@
   dispatch_once(&onceToken, ^{
     sharedInstance = [self new];
     [sharedInstance swapLeftAndRightInRTL:true];
-    [sharedInstance allowRTL:true]; // TODO(macOS#4904077)
+    [sharedInstance allowRTL:true];
   });
 
   return sharedInstance;

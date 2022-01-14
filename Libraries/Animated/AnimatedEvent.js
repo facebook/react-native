@@ -74,6 +74,7 @@ function attachNativeEvent(
           NativeAnimatedHelper.API.removeAnimatedEventFromView(
             viewTag,
             eventName,
+            // $FlowFixMe[incompatible-call]
             mapping.animatedValueTag,
           );
         });
@@ -210,9 +211,9 @@ class AnimatedEvent {
           }
         } else if (typeof recMapping === 'object') {
           for (const mappingKey in recMapping) {
-            /* $FlowFixMe(>=0.120.0) This comment suppresses an error found
-             * when Flow v0.120 was deployed. To see the error, delete this
-             * comment and run Flow. */
+            /* $FlowFixMe[prop-missing] (>=0.120.0) This comment suppresses an
+             * error found when Flow v0.120 was deployed. To see the error,
+             * delete this comment and run Flow. */
             traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
           }
         }

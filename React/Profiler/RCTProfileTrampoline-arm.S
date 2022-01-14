@@ -89,7 +89,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
 
   pop {lr} // pop the caller
   pop {r0} // pop the return value
-  bx lr // jump to the calleer
+  bx lr // jump to the caller
 
   trap
 

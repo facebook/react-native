@@ -423,7 +423,6 @@
 
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
 
     _scrollEventThrottle = 0.0;
@@ -543,7 +542,6 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   [super removeReactSubview:subview];
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
   _scrollView.documentView = nil;
-  _contentSize = CGSizeZero;
 #else // ]TODO(macOS GH#774)
   if ([subview conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
     [_scrollView setCustomRefreshControl:nil];
@@ -566,7 +564,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
   if ([changedProps containsObject:@"contentSize"]) {
-    [self updateContentOffsetIfNeeded];
+    [self updateContentSizeIfNeeded];
   }
 }
 
@@ -1001,9 +999,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     // Pick snap point based on direction and proximity
     CGFloat fractionalIndex = (targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF;
 
-    NSInteger snapIndex = velocityAlongAxis > 0.0
-        ? ceil(fractionalIndex)
-        : velocityAlongAxis < 0.0 ? floor(fractionalIndex) : round(fractionalIndex);
+    NSInteger snapIndex = velocityAlongAxis > 0.0 ? ceil(fractionalIndex)
+        : velocityAlongAxis < 0.0                 ? floor(fractionalIndex)
+                                                  : round(fractionalIndex);
     CGFloat newTargetContentOffset = (snapIndex * snapToIntervalF) - alignmentOffset;
 
     // Set new targetContentOffset
@@ -1087,8 +1085,6 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
 #endif // TODO(macOS GH#774)
 
-#pragma mark - Setters
-
 - (CGSize)_calculateViewportSize
 {
   CGSize viewportSize = self.bounds.size;
@@ -1104,71 +1100,16 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   return viewportSize;
 }
 
-- (CGPoint)calculateOffsetForContentSize:(CGSize)newContentSize
-{
-  CGPoint oldOffset = _scrollView.contentOffset;
-  CGPoint newOffset = oldOffset;
-
-  CGSize oldContentSize = _scrollView.contentSize;
-  CGSize viewportSize = [self _calculateViewportSize];
-
-  BOOL fitsinViewportY = oldContentSize.height <= viewportSize.height && newContentSize.height <= viewportSize.height;
-  if (newContentSize.height < oldContentSize.height && !fitsinViewportY) {
-    CGFloat offsetHeight = oldOffset.y + viewportSize.height;
-    if (oldOffset.y < 0) {
-      // overscrolled on top, leave offset alone
-    } else if (offsetHeight > oldContentSize.height) {
-      // overscrolled on the bottom, preserve overscroll amount
-      newOffset.y = MAX(0, oldOffset.y - (oldContentSize.height - newContentSize.height));
-    } else if (offsetHeight > newContentSize.height) {
-      // offset falls outside of bounds, scroll back to end of list
-      newOffset.y = MAX(0, newContentSize.height - viewportSize.height);
-    }
-  }
-
-  BOOL fitsinViewportX = oldContentSize.width <= viewportSize.width && newContentSize.width <= viewportSize.width;
-  if (newContentSize.width < oldContentSize.width && !fitsinViewportX) {
-    CGFloat offsetHeight = oldOffset.x + viewportSize.width;
-    if (oldOffset.x < 0) {
-      // overscrolled at the beginning, leave offset alone
-    } else if (offsetHeight > oldContentSize.width && newContentSize.width > viewportSize.width) {
-      // overscrolled at the end, preserve overscroll amount as much as possible
-      newOffset.x = MAX(0, oldOffset.x - (oldContentSize.width - newContentSize.width));
-    } else if (offsetHeight > newContentSize.width) {
-      // offset falls outside of bounds, scroll back to end
-      newOffset.x = MAX(0, newContentSize.width - viewportSize.width);
-    }
-  }
-
-  // all other cases, offset doesn't change
-  return newOffset;
-}
-
-/**
- * Once you set the `contentSize`, to a nonzero value, it is assumed to be
- * managed by you, and we'll never automatically compute the size for you,
- * unless you manually reset it back to {0, 0}
- */
 - (CGSize)contentSize
 {
-  if (!CGSizeEqualToSize(_contentSize, CGSizeZero)) {
-    return _contentSize;
-  }
-
   return self.contentView.frame.size; // TODO(OSS Candidate ISS#2710739) use property instead of ivar for mac
 }
 
-- (void)updateContentOffsetIfNeeded
+- (void)updateContentSizeIfNeeded
 {
   CGSize contentSize = self.contentSize;
   if (!CGSizeEqualToSize(_scrollView.contentSize, contentSize)) {
-    // When contentSize is set manually, ScrollView internals will reset
-    // contentOffset to  {0, 0}. Since we potentially set contentSize whenever
-    // anything in the ScrollView updates, we workaround this issue by manually
-    // adjusting contentOffset whenever this happens
-    CGPoint newOffset = [self calculateOffsetForContentSize:contentSize];
     _scrollView.contentSize = contentSize;
-    _scrollView.contentOffset = newOffset;
   }
 }
 
@@ -1352,6 +1293,19 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 
 #pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
 #pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
+- (void)setAutomaticallyAdjustsScrollIndicatorInsets:(BOOL)automaticallyAdjusts API_AVAILABLE(ios(13.0))
+{
+  // `automaticallyAdjustsScrollIndicatorInsets` is available since iOS 13.
+  if ([_scrollView respondsToSelector:@selector(setAutomaticallyAdjustsScrollIndicatorInsets:)]) {
+    if (@available(iOS 13.0, *)) {
+      _scrollView.automaticallyAdjustsScrollIndicatorInsets = automaticallyAdjusts;
+    }
+  }
+}
+#endif
+
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 - (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior API_AVAILABLE(ios(11.0))
 {

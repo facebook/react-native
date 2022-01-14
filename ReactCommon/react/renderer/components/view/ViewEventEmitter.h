@@ -38,11 +38,35 @@ class ViewEventEmitter : public TouchEventEmitter {
   void onLayout(const LayoutMetrics &layoutMetrics) const;
 
  private:
-  mutable std::mutex layoutMetricsMutex_;
-  mutable LayoutMetrics lastLayoutMetrics_;
+  /*
+   * Contains the most recent `frame` and a `mutex` protecting access to it.
+   */
+  struct LayoutEventState {
+    /*
+     * Protects an access to other fields of the struct.
+     */
+    std::mutex mutex;
 
-  mutable std::shared_ptr<std::atomic_uint_fast8_t> eventCounter_{
-      std::make_shared<std::atomic_uint_fast8_t>(0)};
+    /*
+     * Last dispatched `frame` value or value that's being dispatched right now.
+     */
+    Rect frame{};
+
+    /*
+     * Indicates that the `frame` value was already dispatched (and dispatching
+     * of the *same* value is not needed).
+     */
+    bool wasDispatched{false};
+
+    /*
+     * Indicates that some lambda is already being dispatching (and dispatching
+     * another one is not needed).
+     */
+    bool isDispatching{false};
+  };
+
+  mutable std::shared_ptr<LayoutEventState> layoutEventState_{
+      std::make_shared<LayoutEventState>()};
 };
 
 } // namespace react

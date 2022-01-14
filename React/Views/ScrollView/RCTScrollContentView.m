@@ -42,7 +42,7 @@
 
   RCTAssert([scrollView isKindOfClass:[RCTScrollView class]], @"Unexpected view hierarchy of RCTScrollView component.");
 
-  [scrollView updateContentOffsetIfNeeded];
+  [scrollView updateContentSizeIfNeeded];
 
 #if TARGET_OS_OSX // [TODO(macOS GH#774)
   // On macOS scroll indicators may float over the content view like they do in iOS

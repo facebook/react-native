@@ -26,9 +26,13 @@
 #include <fb/log.h>
 #include <fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
+
+#include <logger/react_native_log.h>
 
 #include "CxxModuleWrapper.h"
 #include "JNativeRunnable.h"
+#include "JReactSoftExceptionLogger.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
@@ -92,6 +96,10 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 CatalystInstanceImpl::CatalystInstanceImpl()
     : instance_(std::make_unique<Instance>()) {}
 
+void CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse() {
+  CxxNativeModule::setShouldWarnOnUse(true);
+}
+
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
@@ -127,9 +135,31 @@ void CatalystInstanceImpl::registerNatives() {
           CatalystInstanceImpl::handleMemoryPressure),
       makeNativeMethod(
           "getRuntimeExecutor", CatalystInstanceImpl::getRuntimeExecutor),
+      makeNativeMethod(
+          "warnOnLegacyNativeModuleSystemUse",
+          CatalystInstanceImpl::warnOnLegacyNativeModuleSystemUse),
   });
 
   JNativeRunnable::registerNatives();
+}
+
+void log(ReactNativeLogLevel level, const char *message) {
+  switch (level) {
+    case ReactNativeLogLevelInfo:
+      LOG(INFO) << message;
+      break;
+    case ReactNativeLogLevelWarning:
+      LOG(WARNING) << message;
+      JReactSoftExceptionLogger::logNoThrowSoftExceptionWithMessage(
+          "react_native_log#warning", message);
+      break;
+    case ReactNativeLogLevelError:
+      LOG(ERROR) << message;
+      break;
+    case ReactNativeLogLevelFatal:
+      LOG(FATAL) << message;
+      break;
+  }
 }
 
 void CatalystInstanceImpl::initializeBridge(
@@ -142,6 +172,8 @@ void CatalystInstanceImpl::initializeBridge(
         javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
         cxxModules) {
+  set_react_native_logfunc(&log);
+
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be
   // called once");
@@ -227,7 +259,30 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(
     const std::string &fileName,
     const std::string &sourceURL,
     bool loadSynchronously) {
-  if (Instance::isIndexedRAMBundle(fileName.c_str())) {
+  auto reactInstance = instance_;
+  if (reactInstance && Instance::isHBCBundle(fileName.c_str())) {
+    std::unique_ptr<const JSBigFileString> script;
+    RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+        [&fileName, &script]() {
+          script = JSBigFileString::fromPath(fileName);
+        });
+    const char *buffer = script->c_str();
+    uint32_t bufferLength = (uint32_t)script->size();
+    uint32_t offset = 8;
+    while (offset < bufferLength) {
+      uint32_t segment = offset + 4;
+      uint32_t moduleLength =
+          bufferLength < segment ? 0 : *(((uint32_t *)buffer) + offset / 4);
+
+      reactInstance->loadScriptFromString(
+          std::make_unique<const JSBigStdString>(
+              std::string(buffer + segment, buffer + moduleLength + segment)),
+          sourceURL,
+          false);
+
+      offset += ((moduleLength + 3) & ~3) + 4;
+    }
+  } else if (Instance::isIndexedRAMBundle(fileName.c_str())) {
     instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
   } else {
     std::unique_ptr<const JSBigFileString> script;

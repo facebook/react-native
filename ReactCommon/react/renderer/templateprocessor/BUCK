@@ -1,4 +1,3 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_preprocessor_flags_for_build_mode")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
@@ -7,6 +6,7 @@ load(
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
+    "get_preprocessor_flags_for_build_mode",
     "react_native_xplat_target",
     "rn_xplat_cxx_library",
     "subdir_glob",
@@ -34,7 +34,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
@@ -73,7 +73,7 @@ fb_xplat_cxx_test(
     compiler_flags = [
         "-fexceptions",
         "-frtti",
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],

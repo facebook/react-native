@@ -18,15 +18,24 @@ namespace facebook {
 namespace react {
 
 ParagraphProps::ParagraphProps(
+    const PropsParserContext &context,
     ParagraphProps const &sourceProps,
     RawProps const &rawProps)
-    : ViewProps(sourceProps, rawProps),
-      BaseTextProps(sourceProps, rawProps),
-      paragraphAttributes(
-          convertRawProp(rawProps, sourceProps.paragraphAttributes, {})),
-      isSelectable(
-          convertRawProp(rawProps, "selectable", sourceProps.isSelectable, {})),
+    : ViewProps(context, sourceProps, rawProps),
+      BaseTextProps(context, sourceProps, rawProps),
+      paragraphAttributes(convertRawProp(
+          context,
+          rawProps,
+          sourceProps.paragraphAttributes,
+          {})),
+      isSelectable(convertRawProp(
+          context,
+          rawProps,
+          "selectable",
+          sourceProps.isSelectable,
+          false)),
       onTextLayout(convertRawProp(
+          context,
           rawProps,
           "onTextLayout",
           sourceProps.onTextLayout,

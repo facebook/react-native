@@ -148,7 +148,7 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableDictionary<NSNumber *, RCTNetworkTask *> *_tasksByRequestID;
   std::mutex _handlersLock;
   NSArray<id<RCTURLRequestHandler>> *_handlers;
-  NSArray<id<RCTURLRequestHandler>> * (^_handlersProvider)(void);
+  NSArray<id<RCTURLRequestHandler>> * (^_handlersProvider)(RCTModuleRegistry *);
   NSMutableArray<id<RCTNetworkingRequestHandler>> *_requestHandlers;
   NSMutableArray<id<RCTNetworkingResponseHandler>> *_responseHandlers;
 }
@@ -157,7 +157,17 @@ static NSString *RCTGenerateFormBoundary()
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(void))getHandlers
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+
+- (instancetype)init
+{
+  return [super initWithDisabledObservation];
+}
+
+- (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(RCTModuleRegistry *moduleRegistry))getHandlers
 {
   if (self = [super initWithDisabledObservation]) {
     _handlersProvider = getHandlers;
@@ -199,7 +209,7 @@ RCT_EXPORT_MODULE()
 
     if (!_handlers) {
       if (_handlersProvider) {
-        _handlers = _handlersProvider();
+        _handlers = _handlersProvider(self.moduleRegistry);
       } else {
         _handlers = [self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)];
       }

@@ -1,6 +1,6 @@
---- "E:\\github\\rnm-63-fresh\\ReactCommon\\cxxreact\\Instance.cpp"	2020-10-27 20:26:17.182168000 -0700
-+++ "E:\\github\\rnm-63\\ReactCommon\\cxxreact\\Instance.cpp"	2020-10-13 21:55:46.414313400 -0700
-@@ -39,6 +39,11 @@
+--- ./ReactCommon/cxxreact/Instance.cpp	2022-01-11 17:41:29.000000000 -0800
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/OfficeRNHost/ReactCommon/cxxreact/Instance.cpp	2022-01-12 15:04:31.000000000 -0800
+@@ -40,6 +40,11 @@
    }
  }
  

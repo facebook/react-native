@@ -20,11 +20,11 @@ const ModuleTemplate = ({
   hasteModuleName,
   structs,
   methodSerializationOutputs,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   structs: $ReadOnlyArray<Struct>,
   methodSerializationOutputs: $ReadOnlyArray<MethodSerializationOutput>,
-|}>) => `${structs
+}>) => `${structs
   .map(struct =>
     RCTCxxConvertCategoryTemplate({hasteModuleName, structName: struct.name}),
   )
@@ -61,10 +61,10 @@ namespace facebook {
 const RCTCxxConvertCategoryTemplate = ({
   hasteModuleName,
   structName,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   structName: string,
-|}>) => `@implementation RCTCxxConvert (${hasteModuleName}_${structName})
+}>) => `@implementation RCTCxxConvert (${hasteModuleName}_${structName})
 + (RCTManagedPointer *)JS_${hasteModuleName}_${structName}:(id)json
 {
   return facebook::react::managedPointer<JS::${hasteModuleName}::${structName}>(json);
@@ -76,12 +76,12 @@ const InlineHostFunctionTemplate = ({
   methodName,
   returnJSType,
   selector,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   methodName: string,
   returnJSType: string,
   selector: string,
-|}>) => `
+}>) => `
     static facebook::jsi::Value __hostFunction_${hasteModuleName}SpecJSI_${methodName}(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ${returnJSType}, "${methodName}", ${selector}, args, count);
     }`;
@@ -91,12 +91,12 @@ const MethodMapEntryTemplate = ({
   methodName,
   structParamRecords,
   argCount,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   methodName: string,
   structParamRecords: $ReadOnlyArray<StructParameterRecord>,
   argCount: number,
-|}>) => `
+}>) => `
         methodMap_["${methodName}"] = MethodMetadata {${argCount}, __hostFunction_${hasteModuleName}SpecJSI_${methodName}};
         ${structParamRecords
           .map(({paramIndex, structName}) => {

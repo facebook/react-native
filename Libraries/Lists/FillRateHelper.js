@@ -135,7 +135,7 @@ class FillRateHelper {
     props: {
       data: any,
       getItemCount: (data: any) => number,
-      initialNumToRender: number,
+      initialNumToRender?: ?number,
       ...
     },
     state: {

@@ -15,8 +15,7 @@
 
 @end
 
-@implementation RCTLoggingTests
-{
+@implementation RCTLoggingTests {
   RCTBridge *_bridge;
 
   dispatch_semaphore_t _logSem;
@@ -34,7 +33,8 @@
       bundlePrefix = @"";
     } // TODO(macOS GH#774)]
     NSString *app = @"IntegrationTests/IntegrationTestsApp";
-    scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@%@.bundle?platform=ios&dev=true", bundlePrefix, app]];
+    scriptURL =
+        [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
   } else {
     scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
   }
@@ -64,18 +64,23 @@
 {
   // First console log call will fire after 2.0 sec, to allow for any initial log messages
   // that might come in (seeing this in tvOS)
-  [_bridge enqueueJSCall:@"LoggingTestModule.logToConsoleAfterWait" args:@[@"Invoking console.log",@2000]];
+  [_bridge enqueueJSCall:@"LoggingTestModule.logToConsoleAfterWait" args:@[ @"Invoking console.log", @2000 ]];
   // Spin native layer for 1.9 sec
   [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.9]];
   // Now set the log function to signal the semaphore
-  RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, __unused NSString *fileName, __unused NSNumber *lineNumber, NSString *message) {
-    if (source == RCTLogSourceJavaScript) {
-      self->_lastLogLevel = level;
-      self->_lastLogSource = source;
-      self->_lastLogMessage = message;
-      dispatch_semaphore_signal(self->_logSem);
-    }
-  });
+  RCTSetLogFunction(
+      ^(RCTLogLevel level,
+        RCTLogSource source,
+        __unused NSString *fileName,
+        __unused NSNumber *lineNumber,
+        NSString *message) {
+        if (source == RCTLogSourceJavaScript) {
+          self->_lastLogLevel = level;
+          self->_lastLogSource = source;
+          self->_lastLogMessage = message;
+          dispatch_semaphore_signal(self->_logSem);
+        }
+      });
   // Wait for console log to signal the semaphore
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
 
@@ -83,21 +88,21 @@
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Invoking console.log");
 
-  [_bridge enqueueJSCall:@"LoggingTestModule.warning" args:@[@"Generating warning"]];
+  [_bridge enqueueJSCall:@"LoggingTestModule.warning" args:@[ @"Generating warning" ]];
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelWarning);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Generating warning");
 
-  [_bridge enqueueJSCall:@"LoggingTestModule.invariant" args:@[@"Invariant failed"]];
+  [_bridge enqueueJSCall:@"LoggingTestModule.invariant" args:@[ @"Invariant failed" ]];
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertTrue([_lastLogMessage containsString:@"Invariant Violation: Invariant failed"]);
 
-  [_bridge enqueueJSCall:@"LoggingTestModule.logErrorToConsole" args:@[@"Invoking console.error"]];
+  [_bridge enqueueJSCall:@"LoggingTestModule.logErrorToConsole" args:@[ @"Invoking console.error" ]];
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
 
   // For local bundles, we'll first get a warning about symbolication
@@ -109,7 +114,7 @@
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Invoking console.error");
 
-  [_bridge enqueueJSCall:@"LoggingTestModule.throwError" args:@[@"Throwing an error"]];
+  [_bridge enqueueJSCall:@"LoggingTestModule.throwError" args:@[ @"Throwing an error" ]];
   dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
 
   // For local bundles, we'll first get a warning about symbolication

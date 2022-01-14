@@ -1,6 +1,6 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\build.gradle"	2020-10-27 20:26:16.652167500 -0700
-+++ "E:\\github\\rnm-63\\ReactAndroid\\build.gradle"	2020-10-13 22:03:22.833541000 -0700
-@@ -43,6 +43,8 @@
+--- ./ReactAndroid/build.gradle	2022-01-11 17:41:28.000000000 -0800
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/Build/ReactAndroid/build.gradle	2022-01-12 15:51:37.000000000 -0800
+@@ -39,6 +39,8 @@
  // and the build will use that.
  def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
  
@@ -9,7 +9,7 @@
  // Setup build type for NDK, supported values: {debug, release}
  def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
  
-@@ -92,11 +94,22 @@
+@@ -89,11 +91,22 @@
      dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
  }
  
@@ -32,7 +32,7 @@
      includeEmptyDirs = false
      into("$thirdPartyNdkDir/folly")
  }
-@@ -119,6 +132,14 @@
+@@ -161,6 +174,14 @@
      into "$thirdPartyNdkDir/hermes"
  }
  
@@ -47,16 +47,16 @@
  task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
      src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
      onlyIfNewer(true)
-@@ -303,7 +324,7 @@
+@@ -354,7 +375,7 @@
  }
  
  def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
--    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog, extractAARHeaders, extractJNIFiles)
-+    dependsOn(prepareJSC, prepareHermes, prepareV8, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog, extractAARHeaders, extractJNIFiles)
+-    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractAARHeaders, extractJNIFiles)
++    dependsOn(prepareJSC, prepareHermes, prepareV8, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, extractAARHeaders, extractJNIFiles)
      dependsOn("generateCodegenArtifactsFromSchema");
-
+ 
      inputs.dir("$projectDir/../ReactCommon")
-@@ -314,6 +335,7 @@
+@@ -370,6 +391,7 @@
              "NDK_OUT=" + temporaryDir,
              "NDK_LIBS_OUT=$buildDir/react-ndk/all",
              "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
@@ -64,7 +64,7 @@
              "REACT_COMMON_DIR=$projectDir/../ReactCommon",
              "REACT_GENERATED_SRC_DIR=$buildDir/generated/source",
              "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
-@@ -329,6 +351,7 @@
+@@ -384,6 +406,7 @@
      commandLine(getNdkBuildFullPath(),
              "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
              "THIRD_PARTY_NDK_DIR=$thirdPartyNdkDir",
@@ -72,7 +72,7 @@
              "REACT_COMMON_DIR=$projectDir/../ReactCommon",
              "-C", file("src/main/jni/react/jni").absolutePath,
              "clean")
-@@ -341,10 +364,16 @@
+@@ -395,10 +418,16 @@
  
  def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
      dependsOn(buildReactNdkLib)

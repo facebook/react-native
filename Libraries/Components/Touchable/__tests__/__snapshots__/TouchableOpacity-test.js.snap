@@ -1,0 +1,98 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TouchableOpacity renders correctly 1`] = `
+<View
+  acceptsFirstMouse={true}
+  accessible={true}
+  collapsable={false}
+  enableFocusRing={true}
+  focusable={true}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <Text>
+    Touchable
+  </Text>
+</View>
+`;
+
+exports[`TouchableOpacity renders in disabled state when a disabled prop is passed 1`] = `
+<View
+  acceptsFirstMouse={false}
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  enableFocusRing={false}
+  focusable={false}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <Text>
+    Touchable
+  </Text>
+</View>
+`;
+
+exports[`TouchableOpacity renders in disabled state when a key disabled in accessibilityState is passed 1`] = `
+<View
+  acceptsFirstMouse={true}
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  enableFocusRing={true}
+  focusable={true}
+  nativeID="animatedComponent"
+  onClick={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+>
+  <Text>
+    Touchable
+  </Text>
+</View>
+`;

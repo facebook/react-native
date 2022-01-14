@@ -54,8 +54,8 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const fileName = 'ShadowNodes.h';
 

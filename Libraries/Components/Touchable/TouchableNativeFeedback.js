@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import Pressability, {
   type PressabilityConfig,
 } from '../../Pressability/Pressability';
@@ -184,7 +182,10 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
   _createPressabilityConfig(): PressabilityConfig {
     return {
       cancelable: !this.props.rejectResponderTermination,
-      disabled: this.props.disabled,
+      disabled:
+        this.props.disabled != null
+          ? this.props.disabled
+          : this.props.accessibilityState?.disabled,
       hitSlop: this.props.hitSlop,
       delayLongPress: this.props.delayLongPress,
       delayPressIn: this.props.delayPressIn,
@@ -196,8 +197,8 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
       onPress: this.props.onPress,
       onPressIn: event => {
         if (Platform.OS === 'android') {
-          this._dispatchPressedStateChange(true);
           this._dispatchHotspotUpdate(event);
+          this._dispatchPressedStateChange(true);
         }
         if (this.props.onPressIn != null) {
           this.props.onPressIn(event);
@@ -271,6 +272,14 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
       ...eventHandlersWithoutBlurAndFocus
     } = this.state.pressability.getEventHandlers();
 
+    const accessibilityState =
+      this.props.disabled != null
+        ? {
+            ...this.props.accessibilityState,
+            disabled: this.props.disabled,
+          }
+        : this.props.accessibilityState;
+
     return React.cloneElement(
       element,
       {
@@ -285,7 +294,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
         accessibilityHint: this.props.accessibilityHint,
         accessibilityLabel: this.props.accessibilityLabel,
         accessibilityRole: this.props.accessibilityRole,
-        accessibilityState: this.props.accessibilityState,
+        accessibilityState: accessibilityState,
         accessibilityActions: this.props.accessibilityActions,
         onAccessibilityAction: this.props.onAccessibilityAction,
         accessibilityValue: this.props.accessibilityValue,
@@ -330,5 +339,7 @@ const getBackgroundProp =
           ? {nativeForegroundAndroid: background}
           : {nativeBackgroundAndroid: background}
     : (background, useForeground) => null;
+
+TouchableNativeFeedback.displayName = 'TouchableNativeFeedback';
 
 module.exports = TouchableNativeFeedback;

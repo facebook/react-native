@@ -26,7 +26,7 @@ type FilesOutput = Map<string, string>;
 const ModuleClassDeclarationTemplate = ({
   hasteModuleName,
   moduleProperties,
-}: $ReadOnly<{|hasteModuleName: string, moduleProperties: string|}>) => {
+}: $ReadOnly<{hasteModuleName: string, moduleProperties: string}>) => {
   return `class JSI_EXPORT ${hasteModuleName}CxxSpecJSI : public TurboModule {
 protected:
   ${hasteModuleName}CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
@@ -39,9 +39,9 @@ ${moduleProperties}
 
 const FileTemplate = ({
   modules,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   modules: string,
-|}>) => {
+}>) => {
   return `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
@@ -78,7 +78,7 @@ function translatePrimitiveJSTypeToCpp(
   }
 
   switch (realTypeAnnotation.type) {
-    case 'ReservedFunctionValueTypeAnnotation':
+    case 'ReservedTypeAnnotation':
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'double';
@@ -123,8 +123,8 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 

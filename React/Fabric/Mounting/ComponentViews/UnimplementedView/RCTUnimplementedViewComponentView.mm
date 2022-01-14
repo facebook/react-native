@@ -16,7 +16,7 @@
 
 #import <React/RCTConversions.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 

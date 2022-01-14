@@ -103,7 +103,7 @@ public class AnimationsDebugModule extends NativeAnimationsDebugModuleSpec {
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     if (mFrameCallback != null) {
       mFrameCallback.stop();
       mFrameCallback = null;

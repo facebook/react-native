@@ -58,10 +58,13 @@ const Platform = {
   },
   select: <D, N, I>(spec: PlatformSelectSpec<D, N, I>): D | N | I =>
     'macos' in spec
-      ? spec.macos
+      ? // $FlowFixMe[incompatible-return]
+        spec.macos
       : 'native' in spec
-      ? spec.native
-      : spec.default,
+      ? // $FlowFixMe[incompatible-return]
+        spec.native
+      : // $FlowFixMe[incompatible-return]
+        spec.default,
 };
 
 module.exports = Platform;

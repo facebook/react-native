@@ -1,14 +1,16 @@
 require_relative '../../scripts/react_native_pods'
 
 source 'https://cdn.cocoapods.org/'
-platform :ios, '10.0'
+platform :ios, '11.0'
 
 # TODO(macOS GH#214)
 # Otherwise duplicate UUIDs are being generated between the iOS and macOS targets.
 # FIXME: https://github.com/microsoft/react-native/issues/210
 install! 'cocoapods', :deterministic_uuids => false
 
-if ENV['USE_FRAMEWORKS'] == '1'
+USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
+
+if USE_FRAMEWORKS
   puts "Installing pods with use_frameworks!"
   use_frameworks!
 end
@@ -20,25 +22,25 @@ end
 def pods(options = {})
   project 'RNTesterPods.xcodeproj'
 
-  # Enable TurboModule
+  fabric_enabled = false
+
   prefix_path = "../.."
-  use_react_native!(path: prefix_path, hermes_enabled: ENV['USE_HERMES'] == '1')
+  use_react_native!(path: prefix_path, fabric_enabled: fabric_enabled, hermes_enabled: ENV['USE_HERMES'] == '1')
   pod 'ReactCommon/turbomodule/samples', :path => "#{prefix_path}/ReactCommon"
 
   # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTPushNotification', :path => "#{prefix_path}/Libraries/PushNotificationIOS"
   pod 'Yoga', :path => "#{prefix_path}/ReactCommon/yoga", :modular_headers => true
-  pod 'React-TurboModuleCxx-WinRTPort', :path => "#{prefix_path}/ReactTurboModuleCxx"
-  pod 'React-TurboModuleCxx-RNW', :podspec => "#{prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec"
+  pod 'React-TurboModuleCxx-WinRTPort', :path => "#{prefix_path}/ReactTurboModuleCxx" # TODO(macOS GH#774)
+  pod 'React-TurboModuleCxx-RNW', :podspec => "#{prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec" # TODO(macOS GH#774)
   # Additional Pods which are classed as unstable
-  #
-  # To use fabric: add `fabric_enabled` option to the use_react_native method above, like below
-  # use_react_native!(path: "..", fabric_enabled: true)
 end
 
 target 'RNTester' do
   pods()
-  use_flipper!
+  if !USE_FRAMEWORKS
+    use_flipper!
+  end
 end
 
 target 'RNTesterUnitTests' do
@@ -52,55 +54,40 @@ target 'RNTesterIntegrationTests' do
 end
 
 target 'RNTester-macOS' do
-  platform :osx, '10.14'
+  platform :osx, '10.15'
   pods(:hermes_enabled => false)
 end
 
 target 'RNTester-macOSUnitTests' do
-  platform :osx, '10.14'
+  platform :osx, '10.15'
   pods()
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 target 'RNTester-macOSIntegrationTests' do
-  platform :osx, '10.14'
+  platform :osx, '10.15'
   pods()
   pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 # [TODO(macOS GH#774): these are special targets used by the internal Microsoft build pipeline
 target 'iosDeviceBuild' do
-  platform :ios, '10.0'
+  platform :ios, '11.0'
   pods()
 end
 
 target 'iosSimulatorBuild' do
-  platform :ios, '10.0'
+  platform :ios, '11.0'
   pods()
 end
 
 target 'macOSBuild' do
-  platform :osx, '10.14'
+  platform :osx, '10.15'
   pods()
 end
 # ]TODO(macOS GH#774)
 
-def frameworks_pre_install(installer)
-  static_frameworks = ['FlipperKit', 'Flipper', 'Flipper-Folly',
-      'CocoaAsyncSocket', 'ComponentKit', 'Flipper-DoubleConversion',
-      'Flipper-Glog', 'Flipper-PeerTalk', 'Flipper-RSocket',
-      'CocoaLibEvent', 'OpenSSL-Universal', 'boost-for-react-native']
-
-  Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
-  installer.pod_targets.each do |pod|
-    if static_frameworks.include?(pod.name)
-      def pod.build_type
-        Pod::BuildType.static_library
-      end
-    end
-  end
-end
-
 post_install do |installer|
-  flipper_post_install(installer)
+  react_native_post_install(installer)
+  __apply_Xcode_12_5_M1_post_install_workaround(installer)
 end

@@ -8,17 +8,17 @@
  * @format
  */
 
-'use strict';
+import type {ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
 import ReactNativeViewViewConfigMacOS from './ReactNativeViewViewConfigMacOS'; // TODO(macOS GH#774)
 import {Platform} from 'react-native';
 
-const ReactNativeViewConfig = {
+const ReactNativeViewConfig: ViewConfig = {
   uiViewClassName: 'RCTView',
   baseModuleName: null,
   Manager: 'ViewManager',
-  Commands: ({}: {...}),
-  Constants: ({}: {...}),
+  Commands: {},
+  Constants: {},
   bubblingEventTypes: {
     ...ReactNativeViewViewConfigAndroid.bubblingEventTypes,
     topBlur: {
@@ -180,7 +180,7 @@ const ReactNativeViewConfig = {
     flexShrink: true,
     flexWrap: true,
     height: true,
-    hitSlop: {diff: (require('../../Utilities/differ/insetsDiffer'): any)},
+    hitSlop: {diff: require('../../Utilities/differ/insetsDiffer')},
     importantForAccessibility: true,
     justifyContent: true,
     left: true,
@@ -332,9 +332,10 @@ const ReactNativeViewConfig = {
       textTransform: true,
       tintColor: {process: require('../../StyleSheet/processColor')},
       top: true,
-      transform: ((Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS GH#774)
-        ? {diff: require('../../Utilities/differ/matricesDiffer')}
-        : {process: require('../../StyleSheet/processTransform')}): any),
+      transform:
+        Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS GH#774)
+          ? {diff: require('../../Utilities/differ/matricesDiffer')}
+          : {process: require('../../StyleSheet/processTransform')},
       transformMatrix: true,
       translateX: true,
       translateY: true,
@@ -344,9 +345,10 @@ const ReactNativeViewConfig = {
     },
     testID: true,
     top: true,
-    transform: ((Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS GH#774)
-      ? {diff: require('../../Utilities/differ/matricesDiffer')}
-      : {process: require('../../StyleSheet/processTransform')}): any),
+    transform:
+      Platform.OS === 'ios' || Platform.OS === 'macos' // TODO(macOS GH#774)
+        ? {diff: require('../../Utilities/differ/matricesDiffer')}
+        : {process: require('../../StyleSheet/processTransform')},
     translateX: true,
     translateY: true,
     validKeysDown: true,

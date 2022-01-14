@@ -10,12 +10,14 @@ package com.facebook.react.bridge;
 import android.os.Bundle;
 import android.os.Parcelable;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@DoNotStrip
 public class Arguments {
   private static Object makeNativeObject(Object object) {
     if (object == null) {
@@ -122,6 +124,7 @@ public class Arguments {
    * The best way to think of this is a way to generate a Java representation of a json object, from
    * Java types which have a natural representation in json.
    */
+  @DoNotStrip
   public static WritableNativeMap makeNativeMap(Map<String, Object> objects) {
     WritableNativeMap nativeMap = new WritableNativeMap();
     if (objects == null) {
@@ -134,6 +137,7 @@ public class Arguments {
   }
 
   /** Like the above, but takes a Bundle instead of a Map. */
+  @DoNotStrip
   public static WritableNativeMap makeNativeMap(Bundle bundle) {
     WritableNativeMap nativeMap = new WritableNativeMap();
     if (bundle == null) {

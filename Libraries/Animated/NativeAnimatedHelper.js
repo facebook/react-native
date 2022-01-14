@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import NativeAnimatedNonTurboModule from './NativeAnimatedModule';
 import NativeAnimatedTurboModule from './NativeAnimatedTurboModule';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
@@ -49,9 +47,9 @@ const API = {
     saveValueCallback: (value: number) => void,
   ): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
-    if (NativeAnimatedModule.getValue) {
+    API.queueOperation(() => {
       NativeAnimatedModule.getValue(tag, saveValueCallback);
-    }
+    });
   },
   setWaitingForIdentifier: function(id: string): void {
     waitingForQueuedOperations.add(id);
@@ -395,10 +393,17 @@ module.exports = {
   assertNativeAnimatedModule,
   shouldUseNativeDriver,
   transformDataType,
-  // $FlowExpectedError - unsafe getter lint suppresion
+  // $FlowExpectedError[unsafe-getters-setters] - unsafe getter lint suppresion
+  // $FlowExpectedError[missing-type-arg] - unsafe getter lint suppresion
   get nativeEventEmitter(): NativeEventEmitter {
     if (!nativeEventEmitter) {
-      nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);
+      nativeEventEmitter = new NativeEventEmitter(
+        // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+        // If you want to use the native module on other platforms, please remove this condition and test its behavior
+        Platform.OS !== 'ios' && Platform.OS !== 'macos' // TODO(macOS GH#774): Also use this parameter on macOS
+          ? null
+          : NativeAnimatedModule,
+      );
     }
     return nativeEventEmitter;
   },

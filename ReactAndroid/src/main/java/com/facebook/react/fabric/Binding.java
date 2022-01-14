@@ -12,9 +12,11 @@ import androidx.annotation.NonNull;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.fabric.events.EventBeatManager;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.uimanager.PixelUtil;
 
 @DoNotStrip
@@ -76,7 +78,9 @@ public class Binding {
 
   public native void driveCxxAnimations();
 
-  // TODO (T67721598) Remove the jsContext param once we've migrated to using RuntimeExecutor
+  public native ReadableNativeMap getInspectorDataForInstance(
+      EventEmitterWrapper eventEmitterWrapper);
+
   public void register(
       @NonNull RuntimeExecutor runtimeExecutor,
       @NonNull FabricUIManager fabricUIManager,
@@ -92,6 +96,7 @@ public class Binding {
         jsMessageQueueThread,
         componentFactory,
         reactNativeConfig);
+
     setPixelDensity(PixelUtil.getDisplayMetricDensity());
   }
 
@@ -100,4 +105,8 @@ public class Binding {
   public void unregister() {
     uninstallFabricUIManager();
   }
+
+  public native void registerSurface(SurfaceHandlerBinding surfaceHandler);
+
+  public native void unregisterSurface(SurfaceHandlerBinding surfaceHandler);
 }

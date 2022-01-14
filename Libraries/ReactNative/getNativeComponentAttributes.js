@@ -154,7 +154,8 @@ function getDifferForType(
     case 'UIEdgeInsets':
       return insetsDiffer;
     // Android Types
-    // (not yet implemented)
+    case 'Point':
+      return pointsDiffer;
   }
   return null;
 }

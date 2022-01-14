@@ -4,54 +4,40 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @flow
  */
 
-'use strict';
-
-import registerGeneratedViewConfig from '../../Utilities/registerGeneratedViewConfig';
-import requireNativeComponent from '../../ReactNative/requireNativeComponent';
-
+import type {ScrollViewNativeProps as Props} from './ScrollViewNativeComponentType';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-import type {ScrollViewNativeProps} from './ScrollViewNativeComponentType';
+import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';
 
-const AndroidHorizontalScrollViewViewConfig = {
-  uiViewClassName: 'AndroidHorizontalScrollView',
-  bubblingEventTypes: {},
-  directEventTypes: {},
-  validAttributes: {
-    decelerationRate: true,
-    disableIntervalMomentum: true,
-    endFillColor: {process: require('../../StyleSheet/processColor')},
-    fadingEdgeLength: true,
-    nestedScrollEnabled: true,
-    overScrollMode: true,
-    pagingEnabled: true,
-    persistentScrollbar: true,
-    scrollEnabled: true,
-    scrollPerfTag: true,
-    sendMomentumEvents: true,
-    showsHorizontalScrollIndicator: true,
-    snapToEnd: true,
-    snapToInterval: true,
-    snapToStart: true,
-    snapToOffsets: true,
-    contentOffset: true,
-  },
-};
+const AndroidHorizontalScrollViewNativeComponent: HostComponent<Props> = NativeComponentRegistry.get<Props>(
+  'AndroidHorizontalScrollView',
+  () => ({
+    uiViewClassName: 'AndroidHorizontalScrollView',
+    bubblingEventTypes: {},
+    directEventTypes: {},
+    validAttributes: {
+      decelerationRate: true,
+      disableIntervalMomentum: true,
+      endFillColor: {process: require('../../StyleSheet/processColor')},
+      fadingEdgeLength: true,
+      nestedScrollEnabled: true,
+      overScrollMode: true,
+      pagingEnabled: true,
+      persistentScrollbar: true,
+      scrollEnabled: true,
+      scrollPerfTag: true,
+      sendMomentumEvents: true,
+      showsHorizontalScrollIndicator: true,
+      snapToEnd: true,
+      snapToInterval: true,
+      snapToStart: true,
+      snapToOffsets: true,
+      contentOffset: true,
+    },
+  }),
+);
 
-let AndroidHorizontalScrollViewNativeComponent;
-if (global.RN$Bridgeless) {
-  registerGeneratedViewConfig(
-    'AndroidHorizontalScrollView',
-    AndroidHorizontalScrollViewViewConfig,
-  );
-  AndroidHorizontalScrollViewNativeComponent = 'AndroidHorizontalScrollView';
-} else {
-  AndroidHorizontalScrollViewNativeComponent = requireNativeComponent<ScrollViewNativeProps>(
-    'AndroidHorizontalScrollView',
-  );
-}
-
-export default ((AndroidHorizontalScrollViewNativeComponent: any): HostComponent<ScrollViewNativeProps>);
+export default AndroidHorizontalScrollViewNativeComponent;

@@ -22,8 +22,6 @@ const config = {
   },
   resolver: {
     platforms: ['ios', 'macos', 'android'],
-    // $FlowFixMe[signature-verification-failure] Can't infer RegExp type.
-    blacklistRE: /buck-out/,
     extraNodeModules: {
       'react-native': __dirname,
     },

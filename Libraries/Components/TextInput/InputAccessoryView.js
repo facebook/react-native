@@ -8,16 +8,14 @@
  * @format
  */
 
-'use strict';
-
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
+import * as React from 'react';
+import Platform from '../../Utilities/Platform';
+import StyleSheet, {
+  type ViewStyleProp,
+  type ColorValue,
+} from '../../StyleSheet/StyleSheet';
 
 import RCTInputAccessoryViewNativeComponent from './RCTInputAccessoryViewNativeComponent';
-
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 /**
  * Note: iOS only

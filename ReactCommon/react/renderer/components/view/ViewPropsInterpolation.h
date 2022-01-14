@@ -9,6 +9,8 @@
 
 #include "ViewProps.h"
 
+#include <react/debug/react_native_assert.h>
+
 namespace facebook {
 namespace react {
 
@@ -23,15 +25,11 @@ static inline void interpolateViewProps(
     const SharedProps &newPropsShared,
     SharedProps &interpolatedPropsShared) {
   ViewProps const *oldViewProps =
-      dynamic_cast<ViewProps const *>(oldPropsShared.get());
+      static_cast<ViewProps const *>(oldPropsShared.get());
   ViewProps const *newViewProps =
-      dynamic_cast<ViewProps const *>(newPropsShared.get());
+      static_cast<ViewProps const *>(newPropsShared.get());
   ViewProps *interpolatedProps = const_cast<ViewProps *>(
-      dynamic_cast<ViewProps const *>(interpolatedPropsShared.get()));
-
-  assert(
-      oldViewProps != nullptr && newViewProps != nullptr &&
-      interpolatedProps != nullptr);
+      static_cast<ViewProps const *>(interpolatedPropsShared.get()));
 
   interpolatedProps->opacity = oldViewProps->opacity +
       (newViewProps->opacity - oldViewProps->opacity) * animationProgress;

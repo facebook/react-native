@@ -103,7 +103,7 @@ public final class AsyncStorageModule extends NativeAsyncSQLiteDBStorageSpec
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     mShuttingDown = true;
   }
 

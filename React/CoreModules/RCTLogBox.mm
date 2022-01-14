@@ -43,22 +43,26 @@ RCT_EXPORT_METHOD(show)
       if (!strongSelf) {
         return;
       }
-      if (!strongSelf->_window) { // TODO(macOS GH#774) Renamed from _view to _window
-        if (self->_bridge) {
+
+      if (strongSelf->_window) { // TODO(macOS GH#774) Renamed from _view to _window
+        [strongSelf->_window show]; // TODO(macOS GH#774) Renamed from _view to _window
+        return;
+      }
+
+      if (strongSelf->_bridge) {
+        if (strongSelf->_bridge.valid) {
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
-          strongSelf->_window = [[RCTLogBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds bridge:self->_bridge]; // TODO(macOS GH#774) Renamed from _view to _window
+          strongSelf->_window = [[RCTLogBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds // TODO(macOS GH#774) Renamed from _view to _window
+                                                            bridge:strongSelf->_bridge];
 #else // [TODO(macOS GH#774)
           strongSelf->_window = [[RCTLogBoxWindow alloc] initWithBridge:self->_bridge]; // TODO(macOS GH#774) Renamed from _view to _window
 #endif // ]TODO(macOS GH#774)
-        } else {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:strongSelf, @"logbox", nil];
-          [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateLogBoxSurface"
-                                                              object:nil
-                                                            userInfo:userInfo];
-          return;
+          [strongSelf->_window show]; // TODO(macOS GH#774) Renamed from _view to _window
         }
+      } else {
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:strongSelf, @"logbox", nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"CreateLogBoxSurface" object:nil userInfo:userInfo];
       }
-      [strongSelf->_window show];
     });
   }
 }

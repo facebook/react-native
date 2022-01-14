@@ -85,8 +85,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final String mJsPendingCallsTitleForTrace =
       "pending_js_calls_instance" + sNextInstanceIdForTrace.getAndIncrement();
   private volatile boolean mDestroyed = false;
-  private volatile boolean mNativeModulesThreadDestructionComplete = false;
-  private volatile boolean mJSThreadDestructionComplete = false;
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
@@ -141,6 +139,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initializeCxxBridge");
+
+    if (ReactFeatureFlags.warnOnLegacyNativeModuleSystemUse) {
+      warnOnLegacyNativeModuleSystemUse();
+    }
+
     initializeBridge(
         new BridgeCallback(this),
         jsExecutor,
@@ -207,6 +210,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private native void jniExtendNativeModules(
       Collection<JavaModuleWrapper> javaModules, Collection<ModuleHolder> cxxModules);
+
+  private native void warnOnLegacyNativeModuleSystemUse();
 
   private native void initializeBridge(
       ReactCallback callback,
@@ -551,7 +556,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mJavaScriptContextHolder;
   }
 
-  @Override
   public native RuntimeExecutor getRuntimeExecutor();
 
   @Override

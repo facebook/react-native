@@ -10,6 +10,7 @@
 #include <better/map.h>
 #include <better/small_vector.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsKeyMap.h>
@@ -40,8 +41,16 @@ class RawPropsParser final {
         std::is_base_of<Props, PropsT>::value,
         "PropsT must be a descendant of Props");
     RawProps emptyRawProps{};
-    emptyRawProps.parse(*this);
-    PropsT({}, emptyRawProps);
+
+    // Create a stub parser context.
+    // Since this prepares the parser by passing in
+    // empty props, no prop parsers should actually reference the
+    // ContextContainer or SurfaceId here.
+    ContextContainer contextContainer{};
+    PropsParserContext parserContext{-1, contextContainer};
+
+    emptyRawProps.parse(*this, parserContext);
+    PropsT(parserContext, {}, emptyRawProps);
     postPrepare();
   }
 
@@ -64,8 +73,8 @@ class RawPropsParser final {
   /*
    * To be used by `RawProps` only.
    */
-  RawValue const *at(RawProps const &rawProps, RawPropsKey const &key) const
-      noexcept;
+  RawValue const *at(RawProps const &rawProps, RawPropsKey const &key)
+      const noexcept;
 
   mutable better::small_vector<RawPropsKey, kNumberOfPropsPerComponentSoftCap>
       keys_{};

@@ -10,6 +10,7 @@
 #include "AndroidSwitchMeasurementsManager.h"
 #include "AndroidSwitchShadowNode.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -27,10 +28,11 @@ class AndroidSwitchComponentDescriptor final
         measurementsManager_(std::make_shared<AndroidSwitchMeasurementsManager>(
             contextContainer_)) {}
 
-  void adopt(UnsharedShadowNode shadowNode) const override {
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    assert(std::dynamic_pointer_cast<AndroidSwitchShadowNode>(shadowNode));
+    react_native_assert(
+        std::dynamic_pointer_cast<AndroidSwitchShadowNode>(shadowNode));
     auto androidSwitchShadowNode =
         std::static_pointer_cast<AndroidSwitchShadowNode>(shadowNode);
 

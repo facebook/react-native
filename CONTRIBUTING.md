@@ -21,9 +21,18 @@ If you wish to contribute changes back to the **microsoft/react-native-macos** r
 git clone https://github.com/johndoe/react-native-macos.git
 ```
 
+### [Code of Conduct](https://github.com/facebook/react-native/blob/HEAD/CODE_OF_CONDUCT.md)
+
+As a reminder, all contributors are expected to adhere to the [Code of Conduct](https://github.com/facebook/react-native/blob/HEAD/CODE_OF_CONDUCT.md).
+
 ### Setting up the upstream repository
 
 Before starting to contribute changes, please setup your upstream repository to the primary **microsoft/react-native-macos** repository.
+
+
+1. **Replying and handling open issues.** We get a lot of issues every day, and some of them may lack necessary information. You can help out by guiding people through the process of filling out the issue template, asking for clarifying information, or pointing them to existing issues that match their description of the problem. We cover more about this process in the [Issue Triage wiki](https://github.com/facebook/react-native/wiki/Triaging-GitHub-Issues).
+2. **Reviewing pull requests for the docs.** Reviewing [documentation updates](https://github.com/facebook/react-native-website/pulls) can be as simple as checking for spelling and grammar. If you encounter situations that can be explained better in the docs, click **Edit** at the top of most docs pages to get started with your own contribution.
+3. **Help people write test plans.** Some pull requests sent to the main repository may lack a proper test plan. These help reviewers understand how the change was tested, and can speed up the time it takes for a contribution to be accepted.
 
 - When you run `git remote -v`, you should see only your fork in the output list
 
@@ -42,6 +51,9 @@ git remote add upstream https://github.com/microsoft/react-native-macos.git
 
 - Now running `git remote -v` should show the upstream repository also
 
+* [Issues](https://github.com/facebook/react-native/wiki/Triaging-GitHub-Issues)
+* [Pull Requests](https://github.com/facebook/react-native/wiki/Managing-Pull-Requests)
+
 ```bash
 git remote -v
 
@@ -57,11 +69,18 @@ git remote -v
 
 For each bug or task you complete, it is recommended that you start with a fresh branch. If you have any lingering changes in your current branch that you want to save, go ahead and commit them. If you are just beginning, then you are good to go. On github, navigate to your repository which should be forked from **microsoft/react-native-macos** as described in the above sections. Above the list of files is a dropdown that should say master. Use the dropdown to create a new branch and name is according to what you will be working on. (I.e. DropdownHighlight, CleanUpExamples, etc). Now you have created a new branch. 
 
+* **React Native website** which contains the source code for the website, including the documentation, located at <https://github.com/facebook/react-native-website>
+* **Releases** are coordinated through the <https://github.com/react-native-community/releases> repository. This includes important documents such as the Changelog.
+* **Discussions** about the future of React Native take place in the <https://github.com/react-native-community/discussions-and-proposals> repository.
+* **High-quality plugins** for React Native can be found throughout the [React Native Community GitHub Organization](http://github.com/react-native-community/).
+
 **SourceTree:**
 If you are using SourceTree you will want your branch to show up in SourceTree so you can commit changes to your branch. It takes time for it to show up automatically, so you can make it show by running `git pull --all` in your command prompt from the root. Once you see your new branch in SourceTree under Remotes on the left navigation pane, double click on your branch to check it out locally. A dialog will come up and the default settings should be fine, click Ok.  
 
 **Git Command Line**
 If you are using the command line, you will want to make sure you have your branch locally. It takes time for it to show up automatically, so you can make it show by running `git pull --all` in your command prompt from the root. Run `git branch -a` to see if your new branch shows up. Now you will want to check out your branch locally. You can do this with `git checkout -b branch-name`. Confirm you are now working out of the branch with `git branch`.
+
+We use GitHub issues to track bugs exclusively. We have documented our issue handling processes in the [Issues wiki](https://github.com/facebook/react-native/wiki/Triaging-GitHub-Issues).
 
 ### Merging upstream master into your fork master
 
@@ -102,6 +121,8 @@ sudo xcode-select -s /Applications/Xcode.app
 arch -x86_64 pod install
 ```
 
+The React Native blog is generated [from the Markdown sources for the blog](https://github.com/facebook/react-native-website/tree/HEAD/website/blog).
+
 ### Make the fix
 Now that your branch is set up and ready for commits, go ahead and fix the bug you are working on or make some small change that you want to check in. 
  
@@ -113,6 +134,8 @@ yarn test # run jest tests on JavaScript
 yarn lint # run eslint on JavaScript
 yarn flow-check-macos # run Flow checks on JavaScript
 ```
+
+We recommend referring to the [CONTRIBUTING](https://github.com/facebook/react-native-website/blob/HEAD/CONTRIBUTING.md) document for the `react-native-website` repository to learn more about contributing to the website in general.
 
 ### Commit your changes
 
@@ -127,7 +150,18 @@ You can commit multiple times until you are ready to make a pull request. You sh
 ### Provide changelog information
 Run `yarn change` in the root of the repo.
 
-### Create a Pull Request
+1. Fork the React Native repository and create your branch from `main`.
+2. Make the desired changes to React Native sources. Use the `packages/rn-tester` app to test them out.
+3. If you've added code that should be tested, add tests.
+4. If you've changed APIs, update the documentation, which lives in [another repo](https://github.com/facebook/react-native-website/).
+5. Ensure the test suite passes, either locally or on CI once you opened a pull request.
+6. Make sure your code lints (for example via `yarn lint --fix`).
+7. Push the changes to your fork.
+8. Create a pull request to the React Native repository.
+9. Review and address comments on your pull request.
+    1. A bot may comment with suggestions. Generally we ask you to resolve these first before a maintainer will review your code.
+    2. If changes are requested and addressed, please [request review](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/requesting-a-pull-request-review) to notify reviewers to take another look.
+10. If you haven't already, please complete the [Contributor License Agreement](https://github.com/facebook/react-native/wiki/Contributor-License-Agreement) ("CLA"). **[Complete your CLA here.](https://code.facebook.com/cla)**
 
 **SourceTree:**
 In SourceTree click Push.
@@ -135,13 +169,11 @@ In SourceTree click Push.
 **Git Command Line**
 Run `git push`. 
 
-This will push any staged files you have in your branch.
- 
-Now go back to your fork on github. You should see a yellow bar at the top with your change and a button that says "Compare & Pull Request". Click that button. 
+Whenever you are ready to contribute code, check out our [step-by-step guide to sending your first pull request](https://github.com/facebook/react-native/wiki/How-to-Open-a-Pull-Request), or read the [How to Contribute Code](https://github.com/facebook/react-native/wiki/How-to-Contribute-Code) wiki for more details.
 
 Click "Create Pull Request".
 
-A bunch of tests will automatically kick off to verify your PR.  The tests marked as `required` must pass before a PR can be merged.  
+Tests help us prevent regressions from being introduced to the codebase. The GitHub repository is continuously tested using Circle and Appveyor, the results of which are available through the Checks functionality on [commits](https://github.com/facebook/react-native/commits/HEAD) and pull requests. You can learn more about running and writing tests in the [Tests wiki](http://github.com/facebook/react-native/wiki/Tests).
 
 Someone will also have to review your change before the change is allowed to be merged in. They may ask questions for more information or ask you to change things. Be sure to respond to their comments and push additional changes to the branch if they ask you to modify things before they sign off.
 

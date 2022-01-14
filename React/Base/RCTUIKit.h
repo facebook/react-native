@@ -63,6 +63,8 @@ UIKIT_STATIC_INLINE CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path)
 #define RCTUIView UIView // TODO(macOS ISS#3536887)
 #define RCTUIScrollView UIScrollView // TODO(macOS ISS#3536887)
 
+#define RCTPlatformWindow UIWindow
+
 UIKIT_STATIC_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, UIEvent *event)
 {
   return [view hitTest:point withEvent:event];
@@ -360,6 +362,8 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 // UIView
 #define RCTPlatformView NSView
+
+#define RCTPlatformWindow NSWindow
 
 @interface RCTUIView : NSView // TODO(macOS ISS#3536887)
 

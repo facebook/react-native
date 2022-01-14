@@ -58,9 +58,11 @@ const INTERFACE_ONLY: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -110,9 +112,11 @@ const EVENTS_WITH_PAPER_NAME: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -129,9 +133,11 @@ const EVENTS_WITH_PAPER_NAME: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -615,14 +621,7 @@ const ARRAY_PROPS: SchemaType = {
                 elementType: {
                   type: 'StringEnumTypeAnnotation',
                   default: 'small',
-                  options: [
-                    {
-                      name: 'small',
-                    },
-                    {
-                      name: 'large',
-                    },
-                  ],
+                  options: ['small', 'large'],
                 },
               },
             },
@@ -837,11 +836,7 @@ const OBJECT_PROPS: SchemaType = {
                     typeAnnotation: {
                       type: 'StringEnumTypeAnnotation',
                       default: 'option1',
-                      options: [
-                        {
-                          name: 'option1',
-                        },
-                      ],
+                      options: ['option1'],
                     },
                   },
                   {
@@ -850,11 +845,7 @@ const OBJECT_PROPS: SchemaType = {
                     typeAnnotation: {
                       type: 'Int32EnumTypeAnnotation',
                       default: 0,
-                      options: [
-                        {
-                          value: 0,
-                        },
-                      ],
+                      options: [0],
                     },
                   },
                   {
@@ -1049,17 +1040,7 @@ const STRING_ENUM_PROP: SchemaType = {
               typeAnnotation: {
                 type: 'StringEnumTypeAnnotation',
                 default: 'center',
-                options: [
-                  {
-                    name: 'top',
-                  },
-                  {
-                    name: 'center',
-                  },
-                  {
-                    name: 'bottom-right',
-                  },
-                ],
+                options: ['top', 'center', 'bottom-right'],
               },
             },
           ],
@@ -1090,17 +1071,7 @@ const INT32_ENUM_PROP: SchemaType = {
               typeAnnotation: {
                 type: 'Int32EnumTypeAnnotation',
                 default: 0,
-                options: [
-                  {
-                    value: 0,
-                  },
-                  {
-                    value: 1,
-                  },
-                  {
-                    value: 2,
-                  },
-                ],
+                options: [0, 1, 2],
               },
             },
           ],
@@ -1134,24 +1105,32 @@ const EVENT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                     {
-                      type: 'StringTypeAnnotation',
                       name: 'source',
                       optional: true,
+                      typeAnnotation: {
+                        type: 'StringTypeAnnotation',
+                      },
                     },
                     {
-                      type: 'Int32TypeAnnotation',
                       name: 'progress',
                       optional: true,
+                      typeAnnotation: {
+                        type: 'Int32TypeAnnotation',
+                      },
                     },
                     {
-                      type: 'FloatTypeAnnotation',
                       name: 'scale',
                       optional: true,
+                      typeAnnotation: {
+                        type: 'FloatTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -1167,9 +1146,11 @@ const EVENT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'BooleanTypeAnnotation',
                       name: 'value',
                       optional: false,
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
                     },
                   ],
                 },
@@ -1185,17 +1166,12 @@ const EVENT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'StringEnumTypeAnnotation',
                       name: 'orientation',
                       optional: false,
-                      options: [
-                        {
-                          name: 'landscape',
-                        },
-                        {
-                          name: 'portrait',
-                        },
-                      ],
+                      typeAnnotation: {
+                        type: 'StringEnumTypeAnnotation',
+                        options: ['landscape', 'portrait'],
+                      },
                     },
                   ],
                 },
@@ -1250,33 +1226,43 @@ const EVENT_NESTED_OBJECT_PROPS: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
-                      type: 'ObjectTypeAnnotation',
                       name: 'location',
                       optional: false,
-                      properties: [
-                        {
-                          type: 'ObjectTypeAnnotation',
-                          name: 'source',
-                          optional: false,
-                          properties: [
-                            {
-                              type: 'StringTypeAnnotation',
-                              name: 'url',
-                              optional: false,
+                      typeAnnotation: {
+                        type: 'ObjectTypeAnnotation',
+                        properties: [
+                          {
+                            name: 'source',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'ObjectTypeAnnotation',
+                              properties: [
+                                {
+                                  name: 'url',
+                                  optional: false,
+                                  typeAnnotation: {
+                                    type: 'StringTypeAnnotation',
+                                  },
+                                },
+                              ],
                             },
-                          ],
-                        },
-                        {
-                          type: 'Int32TypeAnnotation',
-                          name: 'x',
-                          optional: false,
-                        },
-                        {
-                          type: 'Int32TypeAnnotation',
-                          name: 'y',
-                          optional: false,
-                        },
-                      ],
+                          },
+                          {
+                            name: 'x',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'Int32TypeAnnotation',
+                            },
+                          },
+                          {
+                            name: 'y',
+                            optional: false,
+                            typeAnnotation: {
+                              type: 'Int32TypeAnnotation',
+                            },
+                          },
+                        ],
+                      },
                     },
                   ],
                 },
@@ -1428,6 +1414,9 @@ const COMMANDS: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 params: [],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
             {
@@ -1438,35 +1427,43 @@ const COMMANDS: SchemaType = {
                 params: [
                   {
                     name: 'x',
+                    optional: false,
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
                     },
                   },
                   {
                     name: 'y',
+                    optional: false,
                     typeAnnotation: {
                       type: 'FloatTypeAnnotation',
                     },
                   },
                   {
                     name: 'z',
+                    optional: false,
                     typeAnnotation: {
                       type: 'DoubleTypeAnnotation',
                     },
                   },
                   {
                     name: 'message',
+                    optional: false,
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
                     },
                   },
                   {
                     name: 'animated',
+                    optional: false,
                     typeAnnotation: {
                       type: 'BooleanTypeAnnotation',
                     },
                   },
                 ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
           ],
@@ -1508,12 +1505,16 @@ const COMMANDS_AND_PROPS: SchemaType = {
                 params: [
                   {
                     name: 'rootTag',
+                    optional: false,
                     typeAnnotation: {
-                      type: 'ReservedFunctionValueTypeAnnotation',
+                      type: 'ReservedTypeAnnotation',
                       name: 'RootTag',
                     },
                   },
                 ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
             {
@@ -1524,17 +1525,22 @@ const COMMANDS_AND_PROPS: SchemaType = {
                 params: [
                   {
                     name: 'x',
+                    optional: false,
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
                     },
                   },
                   {
                     name: 'y',
+                    optional: false,
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
                     },
                   },
                 ],
+                returnTypeAnnotation: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
             },
           ],

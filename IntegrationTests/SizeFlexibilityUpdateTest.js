@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 const RCTNativeAppEventEmitter = require('react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter');
 const React = require('react');
 const ReactNative = require('react-native');

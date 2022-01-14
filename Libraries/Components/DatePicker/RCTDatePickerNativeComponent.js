@@ -8,8 +8,6 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
@@ -39,6 +37,7 @@ type NativeProps = $ReadOnly<{|
   mode?: WithDefault<'date' | 'time' | 'datetime', 'date'>,
   onChange?: ?BubblingEventHandler<Event>,
   timeZoneOffsetInMinutes?: ?Float,
+  pickerStyle?: WithDefault<'compact' | 'spinner' | 'inline', 'spinner'>,
 |}>;
 
 type ComponentType = HostComponent<NativeProps>;

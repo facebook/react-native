@@ -18,20 +18,18 @@
 + (instancetype)sharedInstance;
 
 - (BOOL)isRTL;
-// [ TODO(macOS#4904077)
 /**
  * Should be used very early during app start up
  * Before the bridge is initialized
  */
-@property(atomic, setter=allowRTL:) BOOL isRTLAllowed;
+@property (atomic, setter=allowRTL:) BOOL isRTLAllowed;
 
 /**
  * Could be used to test RTL layout with English
  * Used for development and testing purpose
  */
-@property(atomic, setter=forceRTL:) BOOL isRTLForced;
+@property (atomic, setter=forceRTL:) BOOL isRTLForced;
 
-@property(atomic, setter=swapLeftAndRightInRTL:) BOOL doLeftAndRightSwapInRTL;
-// ]TODO(macOS#4904077)
+@property (atomic, setter=swapLeftAndRightInRTL:) BOOL doLeftAndRightSwapInRTL;
 
 @end

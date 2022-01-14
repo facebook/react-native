@@ -8,6 +8,7 @@
 plugins {
     id("com.android.application")
     id("com.facebook.react.codegen")
+    id("com.facebook.react.app")
 }
 
 /**
@@ -66,7 +67,7 @@ plugins {
  *   // Root dir for all JS files for the app. Defaults to `root` above.
  *   jsRootDir: "../..",
  *
- *   // Enable Fabric at build time and runtime.
+ *   // Enable Fabric at runtime.
  *   enableFabric: true,
  *
  *   // Java package name to use for any codegen artifacts produced during build time.
@@ -75,21 +76,23 @@ plugins {
  * ]
  */
 
+reactApp {
+    cliPath = "$rootDir/cli.js"
+    bundleAssetName = "RNTesterApp.android.bundle"
+    entryFile = file("../../js/RNTesterApp.android.js")
+    reactRoot = rootDir
+    inputExcludes = ["android/**", "./**", ".gradle/**"]
+    composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
+    hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
+    enableHermesForVariant { def v -> v.name.contains("hermes") }
+}
+
 project.ext.react = [
-    cliPath: "$rootDir/cli.js",
-    bundleAssetName: "RNTesterApp.android.bundle",
-    entryFile: file("../../js/RNTesterApp.android.js"),
-    root: "$rootDir",
-    inputExcludes: ["android/**", "./**", ".gradle/**"],
-    composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
-    hermesCommand: "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc",
-    enableHermesForVariant: { def v -> v.name.contains("hermes") },
-    jsRootDir: "$rootDir/RNTester",
     enableCodegen: true, // Keep this here until it's sync'ed to Android template.
-    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean(),
+    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean()
 ]
 
-apply from: "../../../../react.gradle"
+//apply from: "../../../../react.gradle"
 
 /**
  * Set this to true to create three separate APKs instead of one:
@@ -113,7 +116,7 @@ def enableProguardInReleaseBuilds = true
 def enableCodegen = project.ext.react.enableCodegen
 
 /**
- * Build and enable Fabric in RN Tester app.
+ * Enable Fabric in RN Tester app.
  */
 def enableFabric = project.ext.react.enableFabric
 
@@ -125,13 +128,18 @@ def enableFabric = project.ext.react.enableFabric
  */
 def useIntlJsc = false
 
+/**
+ * Architectures to build native code for in debug.
+ */
+def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
+
 android {
     compileSdkVersion 29
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    ndkVersion ANDROID_NDK_VERSION
+    if (ANDROID_NDK_PATH != null) {
+        ndkPath ANDROID_NDK_PATH
     }
+
     dexOptions {
         javaMaxHeapSize "4g"
     }
@@ -174,9 +182,16 @@ android {
     }
     buildTypes {
         debug {
+            debuggable true
             signingConfig signingConfigs.release
+            if (nativeArchitectures) {
+                ndk {
+                    abiFilters nativeArchitectures.split(',')
+                }
+            }
         }
         release {
+            debuggable false
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
@@ -249,7 +264,6 @@ if (enableCodegen) {
         defaultConfig {
             externalNativeBuild {
                 ndkBuild {
-                    abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
                     arguments "APP_PLATFORM=android-21",
                             "APP_STL=c++_shared",
                             "NDK_TOOLCHAIN_VERSION=clang",

@@ -153,13 +153,13 @@ NSString *kBundleNameJS = @"RNTesterApp";
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   if (moduleClass == RCTImageLoader.class) {
-    return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *{
+    return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *(__unused RCTModuleRegistry * moduleRegistry) {
       return @[[RCTLocalAssetImageLoader new]];
-    } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *{
+    } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(__unused RCTModuleRegistry * moduleRegistry) {
       return @[[RCTGIFImageDecoder new]];
     }];
   } else if (moduleClass == RCTNetworking.class) {
-    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *{
+    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(__unused RCTModuleRegistry * moduleRegistry) {
       return @[
         [RCTHTTPRequestHandler new],
         [RCTDataRequestHandler new],

@@ -59,4 +59,4 @@ if (Platform.OS !== 'ios') {
   );
 }
 
-module.exports = exported;
+export default exported;

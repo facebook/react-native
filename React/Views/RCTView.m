@@ -822,7 +822,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   while (view) {
     UIViewController *controller = view.reactViewController;
     if (controller) {
-      return (UIEdgeInsets){controller.topLayoutGuide.length, 0, controller.bottomLayoutGuide.length, 0};
+      return controller.view.safeAreaInsets;
     }
     view = view.superview;
   }
@@ -978,12 +978,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
 #pragma mark - Borders
 
-- (RCTUIColor *)backgroundColor // TODO(OSS Candidate ISS#2710739)
+- (RCTUIColor *)backgroundColor // TODO(OSS Candidate ISS#2710739) RCTUIColor
 {
   return _backgroundColor;
 }
 
-- (void)setBackgroundColor:(RCTUIColor *)backgroundColor // TODO(OSS Candidate ISS#2710739)
+- (void)setBackgroundColor:(RCTUIColor *)backgroundColor // TODO(OSS Candidate ISS#2710739) RCTUIColor
 {
   if ([_backgroundColor isEqual:backgroundColor]) {
     return;
@@ -1091,28 +1091,28 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   const BOOL isRTL = _reactLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
 
   if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
-    const CGColorRef borderStartColor = _borderStartColor ?: _borderLeftColor;
-    const CGColorRef borderEndColor = _borderEndColor ?: _borderRightColor;
+    RCTUIColor *borderStartColor = _borderStartColor ?: _borderLeftColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
+    RCTUIColor *borderEndColor = _borderEndColor ?: _borderRightColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
 
-    const CGColorRef directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor;
-    const CGColorRef directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor;
+    RCTUIColor *directionAwareBorderLeftColor = isRTL ? borderEndColor : borderStartColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
+    RCTUIColor *directionAwareBorderRightColor = isRTL ? borderStartColor : borderEndColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
 
     return (RCTBorderColors){
-        _borderTopColor ?: _borderColor,
-        directionAwareBorderLeftColor ?: _borderColor,
-        _borderBottomColor ?: _borderColor,
-        directionAwareBorderRightColor ?: _borderColor,
+        (_borderTopColor ?: _borderColor).CGColor,
+        (directionAwareBorderLeftColor ?: _borderColor).CGColor,
+        (_borderBottomColor ?: _borderColor).CGColor,
+        (directionAwareBorderRightColor ?: _borderColor).CGColor,
     };
   }
 
-  const CGColorRef directionAwareBorderLeftColor = isRTL ? _borderEndColor : _borderStartColor;
-  const CGColorRef directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor;
+  RCTUIColor *directionAwareBorderLeftColor = isRTL ? _borderEndColor : _borderStartColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
+  RCTUIColor *directionAwareBorderRightColor = isRTL ? _borderStartColor : _borderEndColor; // TODO(OSS Candidate ISS#2710739) RCTUIColor
 
   return (RCTBorderColors){
-      _borderTopColor ?: _borderColor,
-      directionAwareBorderLeftColor ?: _borderLeftColor ?: _borderColor,
-      _borderBottomColor ?: _borderColor,
-      directionAwareBorderRightColor ?: _borderRightColor ?: _borderColor,
+    (_borderTopColor ?: _borderColor).CGColor,
+    (directionAwareBorderLeftColor ?: _borderLeftColor ?: _borderColor).CGColor,
+    (_borderBottomColor ?: _borderColor).CGColor,
+    (directionAwareBorderRightColor ?: _borderRightColor ?: _borderColor).CGColor,
   };
 }
 
@@ -1287,19 +1287,19 @@ static void RCTUpdateShadowPathForView(RCTView *view)
 
 #pragma mark Border Color
 
-#define setBorderColor(side)                                \
-  -(void)setBorder##side##Color : (CGColorRef)color         \
-  {                                                         \
-    if (CGColorEqualToColor(_border##side##Color, color)) { \
-      return;                                               \
-    }                                                       \
-    CGColorRelease(_border##side##Color);                   \
-    _border##side##Color = CGColorRetain(color);            \
-    [self.layer setNeedsDisplay];                           \
+// TODO(OSS Candidate ISS#2710739) RCTUIColor
+#define setBorderColor(side)                       \
+  -(void)setBorder##side##Color : (RCTUIColor *)color \
+  {                                                \
+    if ([_border##side##Color isEqual:color]) {    \
+      return;                                      \
+    }                                              \
+    _border##side##Color = color;                  \
+    [self.layer setNeedsDisplay];                  \
   }
 
 setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom) setBorderColor(Left)
-        setBorderColor(Start) setBorderColor(End)
+    setBorderColor(Start) setBorderColor(End)
 
 #pragma mark - Border Width
 
@@ -1313,8 +1313,8 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     [self.layer setNeedsDisplay];                \
   }
 
-            setBorderWidth() setBorderWidth(Top) setBorderWidth(Right) setBorderWidth(Bottom) setBorderWidth(Left)
-                setBorderWidth(Start) setBorderWidth(End)
+        setBorderWidth() setBorderWidth(Top) setBorderWidth(Right) setBorderWidth(Bottom) setBorderWidth(Left)
+            setBorderWidth(Start) setBorderWidth(End)
 
 #pragma mark - Border Radius
 
@@ -1328,9 +1328,9 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     [self.layer setNeedsDisplay];                  \
   }
 
-                    setBorderRadius() setBorderRadius(TopLeft) setBorderRadius(TopRight) setBorderRadius(TopStart)
-                        setBorderRadius(TopEnd) setBorderRadius(BottomLeft) setBorderRadius(BottomRight)
-                            setBorderRadius(BottomStart) setBorderRadius(BottomEnd)
+                setBorderRadius() setBorderRadius(TopLeft) setBorderRadius(TopRight) setBorderRadius(TopStart)
+                    setBorderRadius(TopEnd) setBorderRadius(BottomLeft) setBorderRadius(BottomRight)
+                        setBorderRadius(BottomStart) setBorderRadius(BottomEnd)
 
 #pragma mark - Border Style
 
@@ -1344,21 +1344,7 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
     [self.layer setNeedsDisplay];                       \
   }
 
-                                setBorderStyle()
-
-    - (void)dealloc
-{
-#if TARGET_OS_OSX // [TODO(macOS GH#774)
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-#endif // ]TODO(macOS GH#774)
-  CGColorRelease(_borderColor);
-  CGColorRelease(_borderTopColor);
-  CGColorRelease(_borderRightColor);
-  CGColorRelease(_borderBottomColor);
-  CGColorRelease(_borderLeftColor);
-  CGColorRelease(_borderStartColor);
-  CGColorRelease(_borderEndColor);
-}
+  setBorderStyle()
 
 #pragma mark Focus ring // [TODO(macOS GH#774)
 

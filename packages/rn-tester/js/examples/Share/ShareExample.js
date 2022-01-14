@@ -76,6 +76,46 @@ const ShareMessageWithTitle = () => {
   );
 };
 
+const SharedAction = () => {
+  const [shared, setShared] = React.useState();
+
+  const sharedAction = async () => {
+    try {
+      const result = await Share.share(
+        {
+          title: 'Create native apps',
+          message: ('React Native combines the best parts of native development with React, a best-in-class JavaScript library for building user interfaces.': string),
+          url: 'https://reactnative.dev/',
+        },
+        {
+          subject: 'MUST READ: Create native apps with React Native',
+          dialogTitle: 'Share React Native Home Page',
+          tintColor: 'blue',
+        },
+      );
+      if (result.action === Share.sharedAction) {
+        setShared(result.action);
+      } else if (result.action === Share.dismissedAction) {
+        //iOS only, if dialog was dismissed
+        setShared(null);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  return (
+    <View style={styles.container}>
+      <Text>action: {shared ? shared : 'null'}</Text>
+      <Text style={styles.title}>Create native apps</Text>
+      <Text>
+        React Native combines the best parts of native development with React, a
+        best-in-class JavaScript library for building user interfaces.
+      </Text>
+      <Button title="SHARE" onPress={sharedAction} />
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -102,6 +142,12 @@ exports.examples = [
     title: 'Share message, URL (iOS) and title (Android)',
     render(): React.Node {
       return <ShareMessageWithTitle />;
+    },
+  },
+  {
+    title: 'sharedAction: If the content was successfully shared',
+    render(): React.Node {
+      return <SharedAction />;
     },
   },
 ];

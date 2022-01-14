@@ -12,6 +12,8 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTCxxModule.h>
@@ -38,11 +40,16 @@
 #import <jsireact/JSIExecutor.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
-#if __has_include(<hermes/hermes.h>)
+#ifndef RCT_USE_HERMES
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #define RCT_USE_HERMES 1
+#else
+#define RCT_USE_HERMES 0
 #endif
+#endif
+
 #if RCT_USE_HERMES
-#import "HermesExecutorFactory.h"
+#import <reacthermes/HermesExecutorFactory.h>
 #else
 #import "JSCExecutorFactory.h"
 #endif
@@ -226,6 +233,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // Necessary for searching in TurboModules in TurboModuleManager
   id<RCTTurboModuleRegistry> _turboModuleRegistry;
+
+  RCTModuleRegistry *_objCModuleRegistry;
+  RCTViewRegistry *_viewRegistry_DEPRECATED;
+  RCTBundleManager *_bundleManager;
+  RCTCallableJSModules *_callableJSModules;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
@@ -236,6 +248,45 @@ struct RCTInstanceCallback : public InstanceCallback {
 - (void)setRCTTurboModuleRegistry:(id<RCTTurboModuleRegistry>)turboModuleRegistry
 {
   _turboModuleRegistry = turboModuleRegistry;
+  [_objCModuleRegistry setTurboModuleRegistry:_turboModuleRegistry];
+}
+
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+{
+  id<RCTBridgeModule> bridgeModule = (id<RCTBridgeModule>)module;
+  /**
+   * Attach the RCTViewRegistry to this TurboModule, which allows this TurboModule
+   * To query a React component's UIView, given its reactTag.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED`
+   */
+  if ([bridgeModule respondsToSelector:@selector(setViewRegistry_DEPRECATED:)]) {
+    bridgeModule.viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
+  }
+
+  /**
+   * Attach the RCTBundleManager to this TurboModule, which allows this TurboModule to
+   * read from/write to the app's bundle URL.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize bundleManager = _bundleManager`
+   */
+  if ([bridgeModule respondsToSelector:@selector(setBundleManager:)]) {
+    bridgeModule.bundleManager = _bundleManager;
+  }
+
+  /**
+   * Attach the RCTCallableJSModules to this TurboModule, which allows this TurboModule
+   * to call JS Module methods.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize callableJSModules = _callableJSModules`
+   */
+
+  if ([bridgeModule respondsToSelector:@selector(setCallableJSModules:)]) {
+    bridgeModule.callableJSModules = _callableJSModules;
+  }
 }
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
@@ -279,6 +330,14 @@ struct RCTInstanceCallback : public InstanceCallback {
     _moduleDataByName = [NSMutableDictionary new];
     _moduleClassesByID = [NSMutableArray new];
     _moduleDataByID = [NSMutableArray new];
+    _objCModuleRegistry = [RCTModuleRegistry new];
+    [_objCModuleRegistry setBridge:self];
+    _bundleManager = [RCTBundleManager new];
+    [_bundleManager setBridge:self];
+    _viewRegistry_DEPRECATED = [RCTViewRegistry new];
+    [_viewRegistry_DEPRECATED setBridge:self];
+    _callableJSModules = [RCTCallableJSModules new];
+    [_callableJSModules setBridge:self];
 
     [RCTBridge setCurrentBridge:self];
 
@@ -457,6 +516,14 @@ struct RCTInstanceCallback : public InstanceCallback {
   // Load the source asynchronously, then store it for later execution.
   dispatch_group_enter(prepareBridge);
   __block NSData *sourceCode;
+
+#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+  {
+    id<RCTDevLoadingViewProtocol> loadingView = [self moduleForName:@"DevLoadingView" lazilyLoadIfNecessary:YES];
+    [loadingView showWithURL:self.bundleURL];
+  }
+#endif
+
   [self
       loadSource:^(NSError *error, RCTSource *source) {
         if (error) {
@@ -755,7 +822,12 @@ struct RCTInstanceCallback : public InstanceCallback {
     // TODO #13258411: can we defer this until config generation?
     int32_t moduleDataId = getUniqueId();
     BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
-    moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass bridge:self];
+    moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
+                                                     bridge:self
+                                             moduleRegistry:_objCModuleRegistry
+                                    viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
+                                              bundleManager:_bundleManager
+                                          callableJSModules:_callableJSModules];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -773,11 +845,20 @@ struct RCTInstanceCallback : public InstanceCallback {
 {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge initModulesWithDispatchGroup:] extraModules", nil);
 
-  NSArray<id<RCTBridgeModule>> *extraModules = nil;
+  NSArray<id<RCTBridgeModule>> *appExtraModules = nil;
   if ([self.delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
-    extraModules = [self.delegate extraModulesForBridge:_parentBridge];
+    appExtraModules = [self.delegate extraModulesForBridge:_parentBridge];
   } else if (self.moduleProvider) {
-    extraModules = self.moduleProvider();
+    appExtraModules = self.moduleProvider();
+  }
+
+  NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray new];
+
+  // Prevent TurboModules from appearing the the NativeModule system
+  for (id<RCTBridgeModule> module in appExtraModules) {
+    if (!(RCTTurboModuleEnabled() && [module conformsToProtocol:@protocol(RCTTurboModule)])) {
+      [extraModules addObject:module];
+    }
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -818,7 +899,12 @@ struct RCTInstanceCallback : public InstanceCallback {
     // Instantiate moduleData container
     int32_t moduleDataId = getUniqueId();
     BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
-    RCTModuleData *moduleData = [[RCTModuleData alloc] initWithModuleInstance:module bridge:self];
+    RCTModuleData *moduleData = [[RCTModuleData alloc] initWithModuleInstance:module
+                                                                       bridge:self
+                                                               moduleRegistry:_objCModuleRegistry
+                                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
+                                                                bundleManager:_bundleManager
+                                                            callableJSModules:_callableJSModules];
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -869,7 +955,12 @@ struct RCTInstanceCallback : public InstanceCallback {
 
       int32_t moduleDataId = getUniqueId();
       BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
-      moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass bridge:self];
+      moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
+                                                       bridge:self
+                                               moduleRegistry:_objCModuleRegistry
+                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
+                                                bundleManager:_bundleManager
+                                            callableJSModules:_callableJSModules];
       BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
       _moduleDataByName[moduleName] = moduleData;

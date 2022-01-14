@@ -6,33 +6,17 @@
  */
 
 #include "BatchedEventQueue.h"
-#include <algorithm>
 
 namespace facebook {
 namespace react {
 
-void BatchedEventQueue::onEnqueue() const {
-  EventQueue::onEnqueue();
+BatchedEventQueue::BatchedEventQueue(
+    EventQueueProcessor eventProcessor,
+    std::unique_ptr<EventBeat> eventBeat)
+    : EventQueue(std::move(eventProcessor), std::move(eventBeat)) {}
 
+void BatchedEventQueue::onEnqueue() const {
   eventBeat_->request();
 }
-
-void BatchedEventQueue::enqueueUniqueEvent(const RawEvent &rawEvent) const {
-  {
-    std::lock_guard<std::mutex> lock(queueMutex_);
-    if (!eventQueue_.empty()) {
-      auto const position = eventQueue_.back();
-      if (position.type == rawEvent.type &&
-          position.eventTarget == rawEvent.eventTarget) {
-        eventQueue_.pop_back();
-      }
-    }
-
-    eventQueue_.push_back(rawEvent);
-  }
-
-  onEnqueue();
-}
-
 } // namespace react
 } // namespace facebook

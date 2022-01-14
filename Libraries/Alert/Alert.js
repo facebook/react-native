@@ -8,13 +8,9 @@
  * @flow
  */
 
-'use strict';
-
 import AlertMacOS from './AlertMacOS'; // TODO(macOS GH#774)
 import Platform from '../Utilities/Platform';
-import NativeDialogManagerAndroid, {
-  type DialogOptions,
-} from '../NativeModules/specs/NativeDialogManagerAndroid';
+import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
 
 export type AlertType =
@@ -54,6 +50,8 @@ class Alert {
     ) {
       Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
+      const NativeDialogManagerAndroid = require('../NativeModules/specs/NativeDialogManagerAndroid')
+        .default;
       if (!NativeDialogManagerAndroid) {
         return;
       }

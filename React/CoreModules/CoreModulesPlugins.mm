@@ -17,7 +17,8 @@
 #import <unordered_map>
 
 Class RCTCoreModulesClassProvider(const char *name) {
-  static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
+  // Intentionally leak to avoid crashing after static destructors are run.
+  static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
 #if !TARGET_OS_OSX // TODO(macOS) = Do we need these?
     {"AccessibilityManager", RCTAccessibilityManagerCls},
     {"Appearance", RCTAppearanceCls},
@@ -51,8 +52,8 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"EventDispatcher", RCTEventDispatcherCls},
   };
 
-  auto p = sCoreModuleClassMap.find(name);
-  if (p != sCoreModuleClassMap.end()) {
+  auto p = sCoreModuleClassMap->find(name);
+  if (p != sCoreModuleClassMap->end()) {
     auto classFunc = p->second;
     return classFunc();
   }

@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 
 const View = require('../../Components/View/View');
@@ -17,7 +15,9 @@ const createAnimatedComponent = require('../createAnimatedComponent');
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-module.exports = (createAnimatedComponent(View): AnimatedComponentType<
+module.exports = (createAnimatedComponent(View, {
+  collapsable: true,
+}): AnimatedComponentType<
   React.ElementConfig<typeof View>,
   React.ElementRef<typeof View>,
 >);

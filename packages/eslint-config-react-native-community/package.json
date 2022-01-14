@@ -1,6 +1,6 @@
 {
   "name": "@react-native-community/eslint-config",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "ESLint config for React Native",
   "main": "index.js",
   "license": "MIT",
@@ -9,11 +9,11 @@
     "url": "git@github.com:facebook/react-native.git",
     "directory": "packages/eslint-config-react-native-community"
   },
-  "homepage": "https://github.com/facebook/react-native/tree/master/packages/eslint-config-react-native-community#readme",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native-community#readme",
   "dependencies": {
     "@react-native-community/eslint-plugin": "^1.1.0",
-    "@typescript-eslint/eslint-plugin": "^3.1.0",
-    "@typescript-eslint/parser": "^3.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
     "babel-eslint": "^10.1.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-eslint-comments": "^3.1.2",
@@ -22,16 +22,13 @@
     "eslint-plugin-prettier": "3.1.2",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.7",
-    "eslint-plugin-react-native": "^3.8.1",
+    "eslint-plugin-react-native": "^3.10.0",
     "prettier": "^2.0.2"
   },
   "peerDependencies": {
-    "eslint": ">=6"
+    "eslint": ">=7"
   },
   "devDependencies": {
-    "eslint": "^6.5.1"
-  },
-  "beachball": {
-    "shouldPublish": false
+    "eslint": "7.12.0"
   }
 }

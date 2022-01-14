@@ -25,6 +25,7 @@ RCT_EXPORT_VIEW_PROPERTY(refreshing, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(title, NSString)
 RCT_EXPORT_VIEW_PROPERTY(titleColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(progressViewOffset, CGFloat)
 
 RCT_EXPORT_METHOD(setNativeRefreshing : (nonnull NSNumber *)viewTag toRefreshing : (BOOL)refreshing)
 {

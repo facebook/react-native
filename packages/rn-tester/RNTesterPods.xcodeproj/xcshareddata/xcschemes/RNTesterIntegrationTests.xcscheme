@@ -42,11 +42,6 @@
             value = "1"
             isEnabled = "YES">
          </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "RN_BUNDLE_PREFIX"
-            value = ""
-            isEnabled = "YES">
-         </EnvironmentVariable>
       </EnvironmentVariables>
       <Testables>
          <TestableReference

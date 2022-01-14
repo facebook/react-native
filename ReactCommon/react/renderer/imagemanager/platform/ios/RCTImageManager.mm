@@ -44,7 +44,6 @@ using namespace facebook::react;
   std::shared_ptr<ImageTelemetry> telemetry;
   if ([self->_imageLoader shouldEnablePerfLoggingForRequestUrl:request.URL]) {
     telemetry = std::make_shared<ImageTelemetry>(surfaceId);
-    telemetry->willRequestUrl();
   } else {
     telemetry = nullptr;
   }

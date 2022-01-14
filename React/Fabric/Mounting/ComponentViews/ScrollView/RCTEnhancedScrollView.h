@@ -52,6 +52,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL snapToEnd;
 @property (nonatomic, copy) NSArray<NSNumber *> *snapToOffsets;
 
+/*
+ * Makes `setContentOffset:` method no-op when given `block` is executed.
+ * The block is being executed synchronously.
+ */
+- (void)preserveContentOffsetWithBlock:(void (^)())block;
+
 @end
 
 NS_ASSUME_NONNULL_END

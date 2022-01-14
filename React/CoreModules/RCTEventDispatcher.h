@@ -9,9 +9,10 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcherProtocol.h>
+#import <React/RCTInitializing.h>
 /**
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
  * provides some convenience methods for generating event calls.
  */
-@interface RCTEventDispatcher : NSObject <RCTEventDispatcherProtocol>
+@interface RCTEventDispatcher : NSObject <RCTEventDispatcherProtocol, RCTInitializing>
 @end

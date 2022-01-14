@@ -22,6 +22,33 @@
 
 This repository is a working fork of **facebook/react-native** that adds support for the official React Native for macOS implementation from Microsoft. 
 
+[hello-world]: https://snack.expo.io/@hramos/hello,-world!
+[new-app]: https://reactnative.dev/docs/getting-started
+[existing]: https://reactnative.dev/docs/integration-with-existing-apps
+
+You can read more about the macOS implementation in our website - [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/)
+
+The full documentation for React Native can be found on our [website][docs].
+
+The React Native documentation discusses components, APIs, and topics that are specific to React Native. For further documentation on the React API that is shared between React Native and React DOM, refer to the [React documentation][r-docs].
+
+The source for the React Native documentation and website is hosted on a separate repo, [**@facebook/react-native-website**][repo-website].
+
+[docs]: https://reactnative.dev/docs/getting-started
+[r-docs]: https://reactjs.org/docs/getting-started.html
+[repo-website]: https://github.com/facebook/react-native-website
+
+## 🚀 Upgrading
+
+Upgrading to new versions of React Native may give you access to more APIs, views, developer tools, and other goodies. See the [Upgrading Guide][u] for instructions.
+
+React Native releases are discussed in the React Native Community, [**@react-native-community/react-native-releases**][repo-releases].
+
+[u]: https://reactnative.dev/docs/upgrading
+[repo-releases]: https://github.com/react-native-community/react-native-releases
+
+## 👏 How to Contribute
+
 You can read more about the macOS implementation on our website - [React Native for Windows + macOS](https://microsoft.github.io/react-native-windows/)
 
 ## Contents
@@ -73,3 +100,5 @@ The React Native for macOS extension, including modifications to the original Fa
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
+[l]: https://github.com/facebook/react-native/blob/HEAD/LICENSE
+[ld]: https://github.com/facebook/react-native/blob/HEAD/LICENSE-docs

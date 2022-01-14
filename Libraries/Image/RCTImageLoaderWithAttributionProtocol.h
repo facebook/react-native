@@ -10,13 +10,8 @@
 #import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTImageURLLoaderWithAttribution.h>
 
-RCT_EXTERN BOOL RCTImageLoadingInstrumentationEnabled(void);
 RCT_EXTERN BOOL RCTImageLoadingPerfInstrumentationEnabled(void);
-RCT_EXTERN void RCTEnableImageLoadingInstrumentation(BOOL enabled);
 RCT_EXTERN void RCTEnableImageLoadingPerfInstrumentation(BOOL enabled);
-
-RCT_EXTERN BOOL RCTGetImageLoadingPerfInstrumentationForFabricEnabled();
-RCT_EXTERN void RCTSetImageLoadingPerfInstrumentationForFabricEnabledBlock(BOOL (^getEnabled)());
 
 @protocol RCTImageLoaderWithAttributionProtocol<RCTImageLoaderProtocol, RCTImageLoaderLoggableProtocol>
 

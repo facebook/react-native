@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleHObjCpp can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "COMPLEX_OBJECTS.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -171,7 +171,7 @@ inline NSString *JS::NativeSampleTurboModule::SpecDifficultAE::F() const
 }
 inline double JS::NativeSampleTurboModule::SpecDifficultAE::id_() const
 {
-  id const p = _v[@\\"id_\\"];
+  id const p = _v[@\\"id\\"];
   return RCTBridgingToDouble(p);
 }
 inline bool JS::NativeSampleTurboModule::SpecDifficultA::D() const
@@ -260,7 +260,7 @@ inline facebook::react::LazyVector<JS::NativeSampleTurboModule::SpecGetArraysOpt
 
 exports[`GenerateModuleHObjCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "EMPTY_NATIVE_MODULES.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -311,7 +311,7 @@ namespace facebook {
 
 exports[`GenerateModuleHObjCpp can generate fixture NATIVE_MODULES_WITH_TYPE_ALIASES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "NATIVE_MODULES_WITH_TYPE_ALIASES.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -482,7 +482,7 @@ inline folly::Optional<bool> JS::AliasTurboModule::Options::allowExternalStorage
 
 exports[`GenerateModuleHObjCpp can generate fixture REAL_MODULE_EXAMPLE 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "REAL_MODULE_EXAMPLE.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -743,7 +743,7 @@ inline facebook::react::LazyVector<JS::NativeExceptionsManager::StackFrame> JS::
 }
 inline double JS::NativeExceptionsManager::ExceptionData::id_() const
 {
-  id const p = _v[@\\"id_\\"];
+  id const p = _v[@\\"id\\"];
   return RCTBridgingToDouble(p);
 }
 inline bool JS::NativeExceptionsManager::ExceptionData::isFatal() const
@@ -772,7 +772,7 @@ inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::videoMode() co
 
 exports[`GenerateModuleHObjCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "SIMPLE_NATIVE_MODULES.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -878,7 +878,7 @@ inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i) : _
 
 exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "SampleSpec.h" => "/**
+  "TWO_MODULES_DIFFERENT_FILES.h" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the

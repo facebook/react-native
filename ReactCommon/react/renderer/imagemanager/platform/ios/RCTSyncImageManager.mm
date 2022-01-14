@@ -92,7 +92,7 @@ using namespace facebook::react;
 
   auto result = dispatch_group_wait(imageWaitGroup, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
   if (result != 0) {
-    RCTLogError(@"Getting an image timed out");
+    RCTLogError(@"Image timed out in test environment for url: %@", loaderRequest.imageURL);
   }
   return imageRequest;
 }

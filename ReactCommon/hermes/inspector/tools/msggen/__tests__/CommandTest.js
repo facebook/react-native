@@ -5,9 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-'use strict';
-
-import { Command } from '../src/Command.js';
+import {Command} from '../src/Command.js';
 
 test('parses simple command', () => {
   let obj = {

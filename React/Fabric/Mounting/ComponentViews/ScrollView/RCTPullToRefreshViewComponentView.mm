@@ -16,7 +16,7 @@
 #import <React/RCTRefreshableProtocol.h>
 #import <React/RCTScrollViewComponentView.h>
 
-#import "FBRCTFabricComponentsPlugins.h"
+#import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 

@@ -9,6 +9,7 @@
 
 #include <cstdlib>
 #include <mutex>
+#include <sstream>
 
 #include <folly/Conv.h>
 #include <folly/Executor.h>
@@ -93,7 +94,12 @@ class Connection::Impl : public inspector::InspectorObserver,
       const m::heapProfiler::StartTrackingHeapObjectsRequest &req) override;
   void handle(
       const m::heapProfiler::StopTrackingHeapObjectsRequest &req) override;
+  void handle(const m::heapProfiler::StartSamplingRequest &req) override;
+  void handle(const m::heapProfiler::StopSamplingRequest &req) override;
   void handle(const m::heapProfiler::CollectGarbageRequest &req) override;
+  void handle(
+      const m::heapProfiler::GetObjectByHeapObjectIdRequest &req) override;
+  void handle(const m::heapProfiler::GetHeapObjectIdRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
   void handle(const m::runtime::RunIfWaitingForDebuggerRequest &req) override;
@@ -581,6 +587,45 @@ void Connection::Impl::handle(
 }
 
 void Connection::Impl::handle(
+    const m::heapProfiler::StartSamplingRequest &req) {
+  const auto id = req.id;
+  // This is the same default sampling interval that Chrome uses.
+  // https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler/#method-startSampling
+  constexpr size_t kDefaultSamplingInterval = 1 << 15;
+  const size_t samplingInterval =
+      req.samplingInterval.value_or(kDefaultSamplingInterval);
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.startSampling",
+          [this, samplingInterval](const debugger::ProgramState &) {
+            getRuntime().instrumentation().startHeapSampling(samplingInterval);
+          })
+      .via(executor_.get())
+      .thenValue(
+          [this, id](auto &&) { sendResponseToClient(m::makeOkResponse(id)); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(const m::heapProfiler::StopSamplingRequest &req) {
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.stopSampling",
+          [this, id = req.id](const debugger::ProgramState &) {
+            std::ostringstream stream;
+            getRuntime().instrumentation().stopHeapSampling(stream);
+            folly::dynamic json = folly::parseJson(stream.str());
+            m::heapProfiler::StopSamplingResponse resp;
+            resp.id = id;
+            m::heapProfiler::SamplingHeapProfile profile{json};
+            resp.profile = profile;
+            sendResponseToClient(resp);
+          })
+      .via(executor_.get())
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
     const m::heapProfiler::CollectGarbageRequest &req) {
   const auto id = req.id;
 
@@ -593,6 +638,76 @@ void Connection::Impl::handle(
       .via(executor_.get())
       .thenValue(
           [this, id](auto &&) { sendResponseToClient(m::makeOkResponse(id)); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::GetObjectByHeapObjectIdRequest &req) {
+  uint64_t objID = atoi(req.objectId.c_str());
+  folly::Optional<std::string> group = req.objectGroup;
+  auto remoteObjPtr = std::make_shared<m::runtime::RemoteObject>();
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.getObjectByHeapObjectId",
+          [this, remoteObjPtr, objID, group](const debugger::ProgramState &) {
+            jsi::Runtime *rt = &getRuntime();
+            if (auto *hermesRT = dynamic_cast<HermesRuntime *>(rt)) {
+              jsi::Value val = hermesRT->getObjectForID(objID);
+              if (val.isNull()) {
+                return;
+              }
+              *remoteObjPtr = m::runtime::makeRemoteObject(
+                  getRuntime(), val, objTable_, group.value_or(""));
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, id = req.id, remoteObjPtr](auto &&) {
+        if (!remoteObjPtr->type.empty()) {
+          m::heapProfiler::GetObjectByHeapObjectIdResponse resp;
+          resp.id = id;
+          resp.result = *remoteObjPtr;
+          sendResponseToClient(resp);
+        } else {
+          sendResponseToClient(m::makeErrorResponse(
+              id, m::ErrorCode::ServerError, "Object is not available"));
+        }
+      })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::GetHeapObjectIdRequest &req) {
+  // Use a shared_ptr because the stack frame will go away.
+  std::shared_ptr<uint64_t> snapshotID = std::make_shared<uint64_t>(0);
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.getHeapObjectId",
+          [this, req, snapshotID](const debugger::ProgramState &) {
+            if (const jsi::Value *valuePtr = objTable_.getValue(req.objectId)) {
+              jsi::Runtime *rt = &getRuntime();
+              if (auto *hermesRT = dynamic_cast<HermesRuntime *>(rt)) {
+                *snapshotID = hermesRT->getUniqueID(*valuePtr);
+              }
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, id = req.id, snapshotID](auto &&) {
+        if (*snapshotID) {
+          m::heapProfiler::GetHeapObjectIdResponse resp;
+          resp.id = id;
+          // std::to_string is not available on Android, use a std::ostream
+          // instead.
+          std::ostringstream stream;
+          stream << *snapshotID;
+          resp.heapSnapshotObjectId = stream.str();
+          sendResponseToClient(resp);
+        } else {
+          sendResponseToClient(m::makeErrorResponse(
+              id, m::ErrorCode::ServerError, "Object is not available"));
+        }
+      })
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 

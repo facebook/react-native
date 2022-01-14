@@ -26,7 +26,7 @@
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
+@synthesize moduleRegistry = _moduleRegistry;
 
 /**
  * Crops an image and adds the result to the image store.
@@ -53,11 +53,11 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
       @"height": @(cropData.size().height()),
     }]
   };
-  
+
   // We must keep a copy of cropData so that we can access data from it at a later time
   JS::NativeImageEditor::Options cropDataCopy = cropData;
 
-  [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
+  [[_moduleRegistry moduleForName:"ImageLoader"]
    loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
      if (error) {
        errorCallback(@[RCTJSErrorFromNSError(error)]);
@@ -80,7 +80,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
      }
 
      // Store image
-     [self->_bridge.imageStoreManager storeImage:croppedImage withBlock:^(NSString *croppedImageTag) {
+     [[self->_moduleRegistry moduleForName:"ImageStoreManager"] storeImage:croppedImage withBlock:^(NSString *croppedImageTag) {
        if (!croppedImageTag) {
          NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
          RCTLogWarn(@"%@", errorMessage);

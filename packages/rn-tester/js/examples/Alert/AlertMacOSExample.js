@@ -16,7 +16,7 @@ const {StyleSheet, View, Text, TouchableHighlight, AlertMacOS} = ReactNative;
 
 const {examples: SharedAlertExamples} = require('./AlertExample');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 exports.framework = 'React';
 exports.title = 'AlertMacOS';
@@ -149,7 +149,7 @@ exports.examples = ([
       );
     },
   },
-]: RNTesterExampleModuleItem[]);
+]: RNTesterModuleExample[]);
 
 class PromptOptions extends React.Component<$FlowFixMeProps, any> {
   state: any;
@@ -188,7 +188,9 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() =>
-            AlertMacOS.prompt('Type a value', null, this.saveResponse)
+            AlertMacOS.prompt('Type a value', null, value =>
+              this.saveResponse(value),
+            )
           }>
           <View style={styles.button}>
             <Text>prompt with title & callback</Text>
@@ -211,7 +213,7 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
             AlertMacOS.prompt(
               'Type a value',
               null,
-              this.saveResponse,
+              value => this.saveResponse(value),
               undefined,
               [{default: 'Default value', placeholder: ''}],
             )

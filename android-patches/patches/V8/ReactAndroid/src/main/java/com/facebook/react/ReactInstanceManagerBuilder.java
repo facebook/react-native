@@ -1,5 +1,5 @@
---- "E:\\gh\\react-native-macos2\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\ReactInstanceManagerBuilder.java"	2021-10-12 13:33:12.881732000 -0700
-+++ "E:\\gh\\react-native-macos\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\ReactInstanceManagerBuilder.java"	2021-10-12 13:26:43.722189600 -0700
+--- ./ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManagerBuilder.java	2022-01-11 17:41:29.000000000 -0800
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/V8/ReactAndroid/src/main/java/com/facebook/react/ReactInstanceManagerBuilder.java	2022-01-12 15:04:31.000000000 -0800
 @@ -26,6 +26,7 @@
  import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
  import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -8,9 +8,9 @@
  import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
  import com.facebook.react.packagerconnection.RequestHandler;
  import com.facebook.react.uimanager.UIImplementationProvider;
-@@ -59,8 +60,21 @@
-   private @Nullable JSIModulePackage mJSIModulesPackage;
+@@ -60,8 +61,21 @@
    private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
+   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
  
 +  public enum JSEngine {
 +    Hermes,
@@ -30,7 +30,7 @@
    /** Sets a provider of {@link UIImplementation}. Uses default provider if null is passed. */
    public ReactInstanceManagerBuilder setUIImplementationProvider(
        @Nullable UIImplementationProvider uiImplementationProvider) {
-@@ -291,40 +305,10 @@
+@@ -299,40 +313,10 @@
  
    private JavaScriptExecutorFactory getDefaultJSExecutorFactory(
        String appName, String deviceName, Context applicationContext) {

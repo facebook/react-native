@@ -8,8 +8,6 @@
  * @emails oncall+react_native
  */
 
-'use strict';
-
 import createPerformanceLogger from '../../Utilities/createPerformanceLogger';
 
 jest.unmock('../../Utilities/Platform');

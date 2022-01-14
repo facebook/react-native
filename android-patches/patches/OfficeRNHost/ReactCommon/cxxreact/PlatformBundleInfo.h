@@ -1,5 +1,5 @@
---- "E:\\github\\rnm-63-fresh\\ReactCommon\\cxxreact\\PlatformBundleInfo.h"	1969-12-31 16:00:00.000000000 -0800
-+++ "E:\\github\\rnm-63\\ReactCommon\\cxxreact\\PlatformBundleInfo.h"	2020-10-13 21:56:36.835848700 -0700
+--- /dev/null	2022-01-12 17:14:59.000000000 -0800
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/OfficeRNHost/ReactCommon/cxxreact/PlatformBundleInfo.h	2022-01-12 15:04:31.000000000 -0800
 @@ -0,0 +1,15 @@
 +#pragma once
 +

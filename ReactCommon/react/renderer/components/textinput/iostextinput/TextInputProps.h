@@ -14,6 +14,7 @@
 #include <react/renderer/components/text/BaseTextProps.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -25,7 +26,10 @@ namespace react {
 class TextInputProps final : public ViewProps, public BaseTextProps {
  public:
   TextInputProps() = default;
-  TextInputProps(TextInputProps const &sourceProps, RawProps const &rawProps);
+  TextInputProps(
+      const PropsParserContext &context,
+      TextInputProps const &sourceProps,
+      RawProps const &rawProps);
 
 #pragma mark - Props
 
@@ -54,6 +58,7 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   int const mostRecentEventCount{0};
 
   bool autoFocus{false};
+  better::optional<Selection> selection{};
 
   std::string const inputAccessoryViewID{};
 
@@ -62,10 +67,6 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
    */
   TextAttributes getEffectiveTextAttributes(Float fontSizeMultiplier) const;
   ParagraphAttributes getEffectiveParagraphAttributes() const;
-
-#ifdef ANDROID
-  folly::dynamic getDynamic() const;
-#endif
 };
 
 } // namespace react

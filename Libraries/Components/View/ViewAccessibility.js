@@ -21,6 +21,7 @@ export type AccessibilityNodeInfoProp = {
 export type AccessibilityRole =
   | 'none'
   | 'button'
+  | 'togglebutton'
   | 'link'
   | 'search'
   | 'image'
@@ -43,11 +44,13 @@ export type AccessibilityRole =
   | 'spinbutton'
   | 'switch'
   | 'tab'
+  | 'tabbar'
   | 'tablist'
   | 'timer'
+  | 'list'
   | 'toolbar'
   | 'popupbutton'
-  | 'menubutton';
+  | 'menubutton'; // TODO(macOS GH#774)
 
 // the info associated with an accessibility action
 export type AccessibilityActionInfo = $ReadOnly<{

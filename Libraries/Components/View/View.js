@@ -8,14 +8,12 @@
  * @flow strict-local
  */
 
-'use strict';
-
 import type {ViewProps} from './ViewPropTypes';
 
-const React = require('react');
 import ViewNativeComponent from './ViewNativeComponent';
-const TextAncestor = require('../../Text/TextAncestor');
+import TextAncestor from '../../Text/TextAncestor';
 import warnOnce from '../../Utilities/warnOnce'; // [macOS #656]
+import * as React from 'react';
 
 export type Props = ViewProps;
 

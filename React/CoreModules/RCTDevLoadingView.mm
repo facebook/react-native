@@ -16,9 +16,6 @@
 #import <React/RCTDefines.h>
 #import <React/RCTDevSettings.h> // TODO(OSS Candidate ISS#2710739)
 #import <React/RCTDevLoadingViewSetEnabled.h>
-#if !TARGET_OS_OSX
-#import <React/RCTModalHostViewController.h>
-#endif // !TARGET_OS_OSX
 #import <React/RCTUtils.h>
 #import <React/RCTUIKit.h> // TODO(macOS GH#774)
 
@@ -44,9 +41,24 @@ using namespace facebook::react;
   dispatch_block_t _initialMessageBlock;
 }
 
-@synthesize bridge = _bridge;
+@synthesize bundleManager = _bundleManager;
 
 RCT_EXPORT_MODULE()
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(hide)
+                                                 name:RCTJavaScriptDidLoadNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(hide)
+                                                 name:RCTJavaScriptDidFailToLoadNotification
+                                               object:nil];
+  }
+  return self;
+}
 
 + (void)setEnabled:(BOOL)enabled
 {
@@ -55,25 +67,7 @@ RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(hide)
-                                               name:RCTJavaScriptDidLoadNotification
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(hide)
-                                               name:RCTJavaScriptDidFailToLoadNotification
-                                             object:nil];
-
-  if (bridge.loading) {
-    [self showWithURL:bridge.bundleURL];
-  }
+  return NO;
 }
 
 - (void)clearInitialMessageDelay
@@ -114,11 +108,12 @@ RCT_EXPORT_MODULE()
 
 - (NSString *)getTextForHost
 {
-  if (self->_bridge.bundleURL == nil || self->_bridge.bundleURL.fileURL) {
+  NSURL *bundleURL = _bundleManager.bundleURL;
+  if (bundleURL == nil || bundleURL.fileURL) {
     return @"React Native";
   }
 
-  return [NSString stringWithFormat:@"%@:%@", self->_bridge.bundleURL.host, self->_bridge.bundleURL.port];
+  return [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
 }
 
 - (void)showMessage:(NSString *)message color:(RCTUIColor *)color backgroundColor:(RCTUIColor *)backgroundColor // TODO(OSS Candidate ISS#2710739)

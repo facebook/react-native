@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 
 const Image = require('../../Image/Image');
@@ -17,9 +15,9 @@ const createAnimatedComponent = require('../createAnimatedComponent');
 
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
-module.exports = (createAnimatedComponent(
-  (Image: $FlowFixMe),
-): AnimatedComponentType<
+module.exports = (createAnimatedComponent((Image: $FlowFixMe), {
+  collapsable: false,
+}): AnimatedComponentType<
   React.ElementConfig<typeof Image>,
   React.ElementRef<typeof Image>,
 >);

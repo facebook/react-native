@@ -5,9 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <memory>
-
-#include <assert.h>
 #include <gtest/gtest.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
@@ -20,28 +17,28 @@ namespace react {
 #ifdef ANDROID
 
 TEST(AttributedStringTest, testToDynamic) {
-  auto attString = new AttributedString();
-  auto fragment = new AttributedString::Fragment();
-  fragment->string = "test";
+  auto attributedString = AttributedString{};
+  auto fragment = AttributedString::Fragment{};
+  fragment.string = "test";
 
-  auto text = new TextAttributes();
-  text->foregroundColor = {
+  auto text = TextAttributes{};
+  text.foregroundColor = {
       colorFromComponents({100 / 255.0, 153 / 255.0, 200 / 255.0, 1.0})};
-  text->opacity = 0.5;
-  text->fontStyle = FontStyle::Italic;
-  text->fontWeight = FontWeight::Thin;
-  text->fontVariant = FontVariant::TabularNums;
-  fragment->textAttributes = *text;
+  text.opacity = 0.5;
+  text.fontStyle = FontStyle::Italic;
+  text.fontWeight = FontWeight::Thin;
+  text.fontVariant = FontVariant::TabularNums;
+  fragment.textAttributes = text;
 
-  attString->prependFragment(*fragment);
+  attributedString.appendFragment(fragment);
 
-  auto result = toDynamic(*attString);
-  assert(result["string"] == fragment->string);
+  auto result = toDynamic(attributedString);
+  EXPECT_EQ(result["string"], fragment.string);
   auto textAttribute = result["fragments"][0]["textAttributes"];
-  assert(textAttribute["foregroundColor"] == toDynamic(text->foregroundColor));
-  assert(textAttribute["opacity"] == text->opacity);
-  assert(textAttribute["fontStyle"] == toString(*text->fontStyle));
-  assert(textAttribute["fontWeight"] == toString(*text->fontWeight));
+  EXPECT_EQ(textAttribute["foregroundColor"], toDynamic(text.foregroundColor));
+  EXPECT_EQ(textAttribute["opacity"], text.opacity);
+  EXPECT_EQ(textAttribute["fontStyle"], toString(text.fontStyle.value()));
+  EXPECT_EQ(textAttribute["fontWeight"], toString(text.fontWeight.value()));
 }
 
 #endif

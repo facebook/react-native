@@ -21,3 +21,4 @@ include(
 
 // Include this to enable codegen Gradle plugin.
 includeBuild("packages/react-native-codegen/android")
+includeBuild("packages/react-native-gradle-plugin/")

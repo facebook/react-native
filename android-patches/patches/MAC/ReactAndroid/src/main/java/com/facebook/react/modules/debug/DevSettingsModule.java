@@ -1,5 +1,5 @@
---- "E:\\gh\\react-native-macos2\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\modules\\debug\\DevSettingsModule.java"	2021-08-31 19:52:47.502468000 -0700
-+++ "E:\\gh\\react-native-macos\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\modules\\debug\\DevSettingsModule.java"	2021-10-20 19:29:11.611192200 -0700
+--- ./ReactAndroid/src/main/java/com/facebook/react/modules/debug/DevSettingsModule.java	2021-01-28 10:24:44.000000000 -0800
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/MAC/ReactAndroid/src/main/java/com/facebook/react/modules/debug/DevSettingsModule.java	2022-01-12 15:04:31.000000000 -0800
 @@ -118,4 +118,9 @@
    public void removeListeners(double count) {
      // iOS only

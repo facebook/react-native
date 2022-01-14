@@ -26,11 +26,11 @@ const ModuleDeclarationTemplate = ({
   hasteModuleName,
   structDeclarations,
   protocolMethods,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   hasteModuleName: string,
   structDeclarations: string,
   protocolMethods: string,
-|}>) => `${structDeclarations}
+}>) => `${structDeclarations}
 @protocol ${hasteModuleName}Spec <RCTBridgeModule, RCTTurboModule>
 
 ${protocolMethods}
@@ -51,10 +51,13 @@ namespace facebook {
 const HeaderFileTemplate = ({
   moduleDeclarations,
   structInlineMethods,
-}: $ReadOnly<{|
+  assumeNonnull,
+}: $ReadOnly<{
   moduleDeclarations: string,
   structInlineMethods: string,
-|}>) => `/**
+  assumeNonnull: boolean,
+}>) =>
+  `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -81,17 +84,20 @@ const HeaderFileTemplate = ({
 #import <folly/Optional.h>
 #import <vector>
 
-${moduleDeclarations}
-${structInlineMethods}
-`;
+` +
+  (assumeNonnull ? '\nNS_ASSUME_NONNULL_BEGIN\n' : '') +
+  moduleDeclarations +
+  '\n' +
+  structInlineMethods +
+  (assumeNonnull ? '\nNS_ASSUME_NONNULL_END\n' : '\n');
 
 const SourceFileTemplate = ({
   headerFileName,
   moduleImplementations,
-}: $ReadOnly<{|
+}: $ReadOnly<{
   headerFileName: string,
   moduleImplementations: string,
-|}>) => `/**
+}>) => `/**
  * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -113,8 +119,8 @@ module.exports = {
   generate(
     libraryName: string,
     schema: SchemaType,
-    moduleSpecName: string,
     packageName?: string,
+    assumeNonnull: boolean,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
@@ -191,13 +197,14 @@ module.exports = {
       );
     }
 
-    const headerFileName = `${moduleSpecName}.h`;
+    const headerFileName = `${libraryName}.h`;
     const headerFile = HeaderFileTemplate({
       moduleDeclarations: moduleDeclarations.join('\n'),
       structInlineMethods: structInlineMethods.join('\n'),
+      assumeNonnull,
     });
 
-    const sourceFileName = `${moduleSpecName}-generated.mm`;
+    const sourceFileName = `${libraryName}-generated.mm`;
     const sourceFile = SourceFileTemplate({
       headerFileName,
       moduleImplementations: moduleImplementations.join('\n'),

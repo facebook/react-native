@@ -43,8 +43,6 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.modal.ReactModalHostManager;
-import com.facebook.react.views.picker.ReactDialogPickerManager;
-import com.facebook.react.views.picker.ReactDropdownPickerManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
@@ -160,9 +158,7 @@ public class MainReactPackage extends TurboReactPackage {
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     List<ViewManager> viewManagers = new ArrayList<>();
 
-    viewManagers.add(new ReactDialogPickerManager());
     viewManagers.add(new ReactDrawerLayoutManager());
-    viewManagers.add(new ReactDropdownPickerManager());
     viewManagers.add(new ReactHorizontalScrollViewManager());
     viewManagers.add(new ReactHorizontalScrollContainerViewManager());
     viewManagers.add(new ReactProgressBarViewManager());

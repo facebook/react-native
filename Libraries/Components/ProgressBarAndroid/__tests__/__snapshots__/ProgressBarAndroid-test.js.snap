@@ -18,7 +18,6 @@ exports[`<ProgressBarAndroid /> should render as expected: should deep render wh
 
 exports[`<ProgressBarAndroid /> should render as expected: should shallow render as <ProgressBarAndroid /> when mocked 1`] = `
 <ForwardRef(ProgressBarAndroid)
-  animating={true}
   indeterminate={true}
   styleAttr="Horizontal"
 />
@@ -26,7 +25,6 @@ exports[`<ProgressBarAndroid /> should render as expected: should shallow render
 
 exports[`<ProgressBarAndroid /> should render as expected: should shallow render as <ProgressBarAndroid /> when not mocked 1`] = `
 <ForwardRef(ProgressBarAndroid)
-  animating={true}
   indeterminate={true}
   styleAttr="Horizontal"
 />

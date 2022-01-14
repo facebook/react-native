@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.SoftAssertions;
 
 /**
@@ -22,6 +23,7 @@ import com.facebook.react.bridge.SoftAssertions;
  * these coalescing keys are determined.
  */
 public class TouchEvent extends Event<TouchEvent> {
+  private static final String TAG = TouchEvent.class.getSimpleName();
 
   private static final int TOUCH_EVENTS_POOL_SIZE = 3;
 
@@ -30,7 +32,28 @@ public class TouchEvent extends Event<TouchEvent> {
 
   public static final long UNSET = Long.MIN_VALUE;
 
+  @Deprecated
   public static TouchEvent obtain(
+      int viewTag,
+      TouchEventType touchEventType,
+      MotionEvent motionEventToCopy,
+      long gestureStartTime,
+      float viewX,
+      float viewY,
+      TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
+    return obtain(
+        -1,
+        viewTag,
+        touchEventType,
+        Assertions.assertNotNull(motionEventToCopy),
+        gestureStartTime,
+        viewX,
+        viewY,
+        touchEventCoalescingKeyHelper);
+  }
+
+  public static TouchEvent obtain(
+      int surfaceId,
       int viewTag,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
@@ -43,9 +66,10 @@ public class TouchEvent extends Event<TouchEvent> {
       event = new TouchEvent();
     }
     event.init(
+        surfaceId,
         viewTag,
         touchEventType,
-        motionEventToCopy,
+        Assertions.assertNotNull(motionEventToCopy),
         gestureStartTime,
         viewX,
         viewY,
@@ -64,6 +88,7 @@ public class TouchEvent extends Event<TouchEvent> {
   private TouchEvent() {}
 
   private void init(
+      int surfaceId,
       int viewTag,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
@@ -71,7 +96,7 @@ public class TouchEvent extends Event<TouchEvent> {
       float viewX,
       float viewY,
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
-    super.init(viewTag);
+    super.init(surfaceId, viewTag);
 
     SoftAssertions.assertCondition(
         gestureStartTime != UNSET, "Gesture start time must be initialized");
@@ -106,9 +131,25 @@ public class TouchEvent extends Event<TouchEvent> {
 
   @Override
   public void onDispose() {
-    Assertions.assertNotNull(mMotionEvent).recycle();
+    MotionEvent motionEvent = mMotionEvent;
     mMotionEvent = null;
-    EVENTS_POOL.release(this);
+    if (motionEvent != null) {
+      motionEvent.recycle();
+    }
+
+    // Either `this` is in the event pool, or motionEvent
+    // is null. It is in theory not possible for a TouchEvent to
+    // be in the EVENTS_POOL but for motionEvent to be null. However,
+    // out of an abundance of caution and to avoid memory leaks or
+    // other crashes at all costs, we attempt to release here and log
+    // a soft exception here if release throws an IllegalStateException
+    // due to `this` being over-released. This may indicate that there is
+    // a logic error in our events system or pooling mechanism.
+    try {
+      EVENTS_POOL.release(this);
+    } catch (IllegalStateException e) {
+      ReactSoftExceptionLogger.logSoftException(TAG, e);
+    }
   }
 
   @Override
@@ -140,13 +181,33 @@ public class TouchEvent extends Event<TouchEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
+    if (!hasMotionEvent()) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalStateException(
+              "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
+      return;
+    }
     TouchesHelper.sendTouchEvent(
-        rctEventEmitter, Assertions.assertNotNull(mTouchEventType), getViewTag(), this);
+        rctEventEmitter,
+        Assertions.assertNotNull(mTouchEventType),
+        getSurfaceId(),
+        getViewTag(),
+        this);
+  }
+
+  @Override
+  public void dispatchModern(RCTModernEventEmitter rctEventEmitter) {
+    dispatch(rctEventEmitter);
   }
 
   public MotionEvent getMotionEvent() {
     Assertions.assertNotNull(mMotionEvent);
     return mMotionEvent;
+  }
+
+  private boolean hasMotionEvent() {
+    return mMotionEvent != null;
   }
 
   public float getViewX() {

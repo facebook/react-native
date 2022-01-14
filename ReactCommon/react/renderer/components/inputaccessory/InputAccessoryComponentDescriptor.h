@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/components/inputaccessory/InputAccessoryShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -21,12 +22,13 @@ class InputAccessoryComponentDescriptor final
  public:
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
-  void adopt(UnsharedShadowNode shadowNode) const override {
-    assert(std::dynamic_pointer_cast<InputAccessoryShadowNode>(shadowNode));
+  void adopt(ShadowNode::Unshared const &shadowNode) const override {
+    react_native_assert(
+        std::dynamic_pointer_cast<InputAccessoryShadowNode>(shadowNode));
     auto concreteShadowNode =
         std::static_pointer_cast<InputAccessoryShadowNode>(shadowNode);
 
-    assert(std::dynamic_pointer_cast<YogaLayoutableShadowNode>(
+    react_native_assert(std::dynamic_pointer_cast<YogaLayoutableShadowNode>(
         concreteShadowNode));
     auto layoutableShadowNode =
         std::static_pointer_cast<YogaLayoutableShadowNode>(concreteShadowNode);

@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include <ReactCommon/LongLivedObject.h>
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
@@ -29,16 +30,21 @@ class TurboModuleBinding {
   static void install(
       jsi::Runtime &runtime,
       const TurboModuleProviderFunctionType &&moduleProvider);
+  static void install(
+      jsi::Runtime &runtime,
+      const TurboModuleProviderFunctionType &&moduleProvider,
+      std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
 
   TurboModuleBinding(const TurboModuleProviderFunctionType &&moduleProvider);
+  TurboModuleBinding(
+      const TurboModuleProviderFunctionType &&moduleProvider,
+      std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
   virtual ~TurboModuleBinding();
 
   /**
    * Get an TurboModule instance for the given module name.
    */
-  std::shared_ptr<TurboModule> getModule(
-      const std::string &name,
-      const jsi::Value *schema);
+  std::shared_ptr<TurboModule> getModule(const std::string &name);
 
  private:
   /**
@@ -52,6 +58,8 @@ class TurboModuleBinding {
       size_t count);
 
   TurboModuleProviderFunctionType moduleProvider_;
+  std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection_;
+  bool disableGlobalLongLivedObjectCollection_;
 };
 
 } // namespace react

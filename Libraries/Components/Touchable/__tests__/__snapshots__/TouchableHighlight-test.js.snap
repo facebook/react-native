@@ -22,3 +22,129 @@ exports[`TouchableHighlight renders correctly 1`] = `
   </Text>
 </View>
 `;
+
+exports[`TouchableHighlight with disabled state should be disabled when disabled is true 1`] = `
+<View
+  acceptsFirstMouse={false}
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  enableFocusRing={false}
+  focusable={false}
+  onClick={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`TouchableHighlight with disabled state should be disabled when disabled is true and accessibilityState is empty 1`] = `
+<View
+  acceptsFirstMouse={false}
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  enableFocusRing={false}
+  focusable={false}
+  onClick={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`TouchableHighlight with disabled state should disable button when accessibilityState is disabled 1`] = `
+<View
+  acceptsFirstMouse={true}
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  enableFocusRing={true}
+  focusable={true}
+  onClick={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`TouchableHighlight with disabled state should keep accessibilityState when disabled is true 1`] = `
+<View
+  acceptsFirstMouse={false}
+  accessibilityState={
+    Object {
+      "checked": true,
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  enableFocusRing={false}
+  focusable={false}
+  onClick={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;
+
+exports[`TouchableHighlight with disabled state should overwrite accessibilityState with value of disabled prop 1`] = `
+<View
+  acceptsFirstMouse={false}
+  accessibilityState={
+    Object {
+      "disabled": true,
+    }
+  }
+  accessible={true}
+  enableFocusRing={false}
+  focusable={false}
+  onClick={[Function]}
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <View />
+</View>
+`;

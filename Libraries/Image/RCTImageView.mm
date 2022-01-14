@@ -644,7 +644,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   
 - (RCTPlatformView *)reactAccessibilityElement
 {
-  return (RCTPlatformView *)_imageView.cell;
+  return _imageView;
 }
 
 - (NSColor *)tintColor

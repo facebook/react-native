@@ -8,8 +8,8 @@
 #include "RNTesterAppModuleProvider.h"
 
 #include <PackagesRnTesterAndroidAppSpec.h>
-#include <ReactAndroidSpec.h>
 #include <ReactCommon/SampleTurboModuleSpec.h>
+#include <rncore.h>
 
 namespace facebook {
 namespace react {
@@ -25,7 +25,7 @@ std::shared_ptr<TurboModule> RNTesterAppModuleProvider(const std::string moduleN
     return module;
   }
 
-  return ReactAndroidSpec_ModuleProvider(moduleName, params);
+  return rncore_ModuleProvider(moduleName, params);
 }
 
 } // namespace react

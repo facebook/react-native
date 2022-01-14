@@ -928,7 +928,7 @@ static RCTUIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
 }
 // ]TODO(macOS GH#774)
 
-/** Returns a comma seperated list of the valid semantic color names
+/** Returns an alphabetically sorted comma separated list of the valid semantic color names
  */
 static NSString *RCTSemanticColorNames()
 {
@@ -974,7 +974,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
 #endif //TARGET_OS_OSX
 // ]TODO(macOS GH#750)
 
-+ (RCTUIColor *)UIColor:(id)json // TODO(OSS Candidate ISS#2710739)
++ (RCTUIColor *)UIColor:(id)json // TODO(macOS GH#750)
 {
   if (!json) {
     return nil;
@@ -982,7 +982,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
   if ([json isKindOfClass:[NSArray class]]) {
     NSArray *components = [self NSNumberArray:json];
     CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
-    return [RCTUIColor colorWithRed:[self CGFloat:components[0]] // TODO(OSS Candidate ISS#2710739)
+    return [RCTUIColor colorWithRed:[self CGFloat:components[0]] // TODO(macOS GH#750)
                               green:[self CGFloat:components[1]]
                                blue:[self CGFloat:components[2]]
                               alpha:alpha];
@@ -992,15 +992,19 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
     CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
     CGFloat b = (argb & 0xFF) / 255.0;
-    return [RCTUIColor colorWithRed:r green:g blue:b alpha:a]; // TODO(OSS Candidate ISS#2710739)
-// [TODO(macOS GH#774)
+    return [RCTUIColor colorWithRed:r green:g blue:b alpha:a]; // TODO(macOS GH#750)
+
   } else if ([json isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dictionary = json;
     id value = nil;
     if ((value = [dictionary objectForKey:@"semantic"])) {
       if ([value isKindOfClass:[NSString class]]) {
         NSString *semanticName = value;
-        RCTUIColor *color = RCTColorFromSemanticColorName(semanticName);
+        RCTUIColor *color = [RCTUIColor colorNamed:semanticName]; // TODO(macOS GH#750)
+        if (color != nil) {
+          return color;
+        }
+        color = RCTColorFromSemanticColorName(semanticName);
         if (color == nil) {
           RCTLogConvertError(
               json,
@@ -1009,7 +1013,11 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
         return color;
       } else if ([value isKindOfClass:[NSArray class]]) {
         for (id name in value) {
-          RCTUIColor *color = RCTColorFromSemanticColorName(name);
+          RCTUIColor *color = [RCTUIColor colorNamed:name]; // TODO(macOS GH#750)
+          if (color != nil) {
+            return color;
+          }
+          color = RCTColorFromSemanticColorName(name);
           if (color != nil) {
             return color;
           }
@@ -1028,7 +1036,11 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
       id light = [appearances objectForKey:@"light"];
       RCTUIColor *lightColor = [RCTConvert UIColor:light];
       id dark = [appearances objectForKey:@"dark"];
-      RCTUIColor *darkColor = [RCTConvert UIColor:dark];
+      RCTUIColor *darkColor = [RCTConvert UIColor:dark]; // TODO(macOS GH#750)
+      id highContrastLight = [appearances objectForKey:@"highContrastLight"];
+      RCTUIColor *highContrastLightColor = [RCTConvert UIColor:highContrastLight]; // TODO(macOS GH#750)
+      id highContrastDark = [appearances objectForKey:@"highContrastDark"];
+      RCTUIColor *highContrastDarkColor = [RCTConvert UIColor:highContrastDark]; // TODO(macOS GH#750)
       if (lightColor != nil && darkColor != nil) {
 #if TARGET_OS_OSX
         RCTDynamicColor *color = [[RCTDynamicColor alloc] initWithAquaColor:lightColor darkAquaColor:darkColor];
@@ -1036,10 +1048,22 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
 #else
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         if (@available(iOS 13.0, *)) {
-          UIColor *color =
-              [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(UITraitCollection *_Nonnull collection) {
-                return collection.userInterfaceStyle == UIUserInterfaceStyleDark ? darkColor : lightColor;
-              }];
+          UIColor *color = [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(
+                                        UITraitCollection *_Nonnull collection) {
+            if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+              if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDarkColor != nil) {
+                return highContrastDarkColor;
+              } else {
+                return darkColor;
+              }
+            } else {
+              if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLightColor != nil) {
+                return highContrastLightColor;
+              } else {
+                return lightColor;
+              }
+            }
+          }];
           return color;
         } else {
 #endif

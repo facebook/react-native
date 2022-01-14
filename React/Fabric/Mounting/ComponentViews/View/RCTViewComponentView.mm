@@ -23,6 +23,9 @@ using namespace facebook::react;
   UIColor *_backgroundColor;
   CALayer *_borderLayer;
   BOOL _needsInvalidateLayer;
+  BOOL _isJSResponder;
+  BOOL _removeClippedSubviews;
+  NSMutableArray<UIView *> *_reactSubviews;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
 
@@ -31,6 +34,7 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static auto const defaultProps = std::make_shared<ViewProps const>();
     _props = defaultProps;
+    _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
   }
   return self;
@@ -85,6 +89,81 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<ViewComponentDescriptor>();
 }
 
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  RCTAssert(
+      childComponentView.superview == nil,
+      @"Attempt to mount already mounted component view. (parent: %@, child: %@, index: %@, existing parent: %@)",
+      self,
+      childComponentView,
+      @(index),
+      @([childComponentView.superview tag]));
+
+  if (_removeClippedSubviews) {
+    [_reactSubviews insertObject:childComponentView atIndex:index];
+  } else {
+    [self insertSubview:childComponentView atIndex:index];
+  }
+}
+
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  if (_removeClippedSubviews) {
+    [_reactSubviews removeObjectAtIndex:index];
+  } else {
+    RCTAssert(
+        childComponentView.superview == self,
+        @"Attempt to unmount a view which is mounted inside different view. (parent: %@, child: %@, index: %@)",
+        self,
+        childComponentView,
+        @(index));
+    RCTAssert(
+        (self.subviews.count > index) && [self.subviews objectAtIndex:index] == childComponentView,
+        @"Attempt to unmount a view which has a different index. (parent: %@, child: %@, index: %@, actual index: %@, tag at index: %@)",
+        self,
+        childComponentView,
+        @(index),
+        @([self.subviews indexOfObject:childComponentView]),
+        @([[self.subviews objectAtIndex:index] tag]));
+  }
+
+  [childComponentView removeFromSuperview];
+}
+
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+{
+  if (!_removeClippedSubviews) {
+    // Use default behavior if unmounting is disabled
+    return [super updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
+  }
+
+  if (_reactSubviews.count == 0) {
+    // Do nothing if we have no subviews
+    return;
+  }
+
+  if (CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
+    // Do nothing if layout hasn't happened yet
+    return;
+  }
+
+  // Convert clipping rect to local coordinates
+  clipRect = [clipView convertRect:clipRect toView:self];
+
+  // Mount / unmount views
+  for (UIView *view in _reactSubviews) {
+    if (CGRectIntersectsRect(clipRect, view.frame)) {
+      // View is at least partially visible, so remount it if unmounted
+      [self addSubview:view];
+      // View is visible, update clipped subviews
+      [view updateClippedSubviewsWithClipRect:clipRect relativeToView:self];
+    } else if (view.superview) {
+      // View is completely outside the clipRect, so unmount it
+      [view removeFromSuperview];
+    }
+  }
+}
+
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   RCTAssert(props, @"`props` must not be `null`.");
@@ -110,6 +189,14 @@ using namespace facebook::react;
       ![_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"opacity"]) {
     self.layer.opacity = (CGFloat)newViewProps.opacity;
     needsInvalidateLayer = YES;
+  }
+
+  if (RCTGetRemoveClippedSubviewsEnabled() &&
+      oldViewProps.removeClippedSubviews != newViewProps.removeClippedSubviews) {
+    _removeClippedSubviews = newViewProps.removeClippedSubviews;
+    if (_removeClippedSubviews && self.subviews.count > 0) {
+      _reactSubviews = [NSMutableArray arrayWithArray:self.subviews];
+    }
   }
 
   // `backgroundColor`
@@ -174,10 +261,11 @@ using namespace facebook::react;
 
   // `hitSlop`
   if (oldViewProps.hitSlop != newViewProps.hitSlop) {
-    self.hitTestEdgeInsets = {-newViewProps.hitSlop.top,
-                              -newViewProps.hitSlop.left,
-                              -newViewProps.hitSlop.bottom,
-                              -newViewProps.hitSlop.right};
+    self.hitTestEdgeInsets = {
+        -newViewProps.hitSlop.top,
+        -newViewProps.hitSlop.left,
+        -newViewProps.hitSlop.bottom,
+        -newViewProps.hitSlop.right};
   }
 
   // `overflow`
@@ -248,6 +336,29 @@ using namespace facebook::react;
 #endif
   }
 
+  // `accessibilityValue`
+  if (oldViewProps.accessibilityValue != newViewProps.accessibilityValue) {
+    if (newViewProps.accessibilityValue.text.hasValue()) {
+      self.accessibilityElement.accessibilityValue =
+          RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityValue.text.value());
+    } else if (
+        newViewProps.accessibilityValue.now.hasValue() && newViewProps.accessibilityValue.min.hasValue() &&
+        newViewProps.accessibilityValue.max.hasValue()) {
+      CGFloat val = (CGFloat)(newViewProps.accessibilityValue.now.value()) /
+          (newViewProps.accessibilityValue.max.value() - newViewProps.accessibilityValue.min.value());
+      self.accessibilityElement.accessibilityValue =
+          [NSNumberFormatter localizedStringFromNumber:@(val) numberStyle:NSNumberFormatterPercentStyle];
+      ;
+    } else {
+      self.accessibilityElement.accessibilityValue = nil;
+    }
+  }
+
+  // `testId`
+  if (oldViewProps.testId != newViewProps.testId) {
+    self.accessibilityIdentifier = RCTNSStringFromString(newViewProps.testId);
+  }
+
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 
   _props = std::static_pointer_cast<ViewProps const>(props);
@@ -278,6 +389,16 @@ using namespace facebook::react;
   }
 }
 
+- (BOOL)isJSResponder
+{
+  return _isJSResponder;
+}
+
+- (void)setIsJSResponder:(BOOL)isJSResponder
+{
+  _isJSResponder = isJSResponder;
+}
+
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
   [super finalizeUpdates:updateMask];
@@ -304,6 +425,9 @@ using namespace facebook::react;
 
   _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   _eventEmitter.reset();
+  _isJSResponder = NO;
+  _removeClippedSubviews = NO;
+  _reactSubviews = [NSMutableArray new];
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
@@ -332,9 +456,7 @@ using namespace facebook::react;
 
   BOOL clipsToBounds = self.clipsToBounds;
 
-  if (RCTExperimentGetOptimizedHitTesting()) {
-    clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
-  }
+  clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
 
   if (clipsToBounds && !isPointInside) {
     return nil;
@@ -367,18 +489,20 @@ using namespace facebook::react;
 
 static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 {
-  return RCTCornerRadii{.topLeft = (CGFloat)borderRadii.topLeft,
-                        .topRight = (CGFloat)borderRadii.topRight,
-                        .bottomLeft = (CGFloat)borderRadii.bottomLeft,
-                        .bottomRight = (CGFloat)borderRadii.bottomRight};
+  return RCTCornerRadii{
+      .topLeft = (CGFloat)borderRadii.topLeft,
+      .topRight = (CGFloat)borderRadii.topRight,
+      .bottomLeft = (CGFloat)borderRadii.bottomLeft,
+      .bottomRight = (CGFloat)borderRadii.bottomRight};
 }
 
 static RCTBorderColors RCTCreateRCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{.top = RCTCreateCGColorRefFromSharedColor(borderColors.top),
-                         .left = RCTCreateCGColorRefFromSharedColor(borderColors.left),
-                         .bottom = RCTCreateCGColorRefFromSharedColor(borderColors.bottom),
-                         .right = RCTCreateCGColorRefFromSharedColor(borderColors.right)};
+  return RCTBorderColors{
+      .top = RCTCreateCGColorRefFromSharedColor(borderColors.top),
+      .left = RCTCreateCGColorRefFromSharedColor(borderColors.left),
+      .bottom = RCTCreateCGColorRefFromSharedColor(borderColors.bottom),
+      .right = RCTCreateCGColorRefFromSharedColor(borderColors.right)};
 }
 
 static void RCTReleaseRCTBorderColors(RCTBorderColors borderColors)
@@ -486,9 +610,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     } else {
       CGSize imageSize = image.size;
       UIEdgeInsets imageCapInsets = image.capInsets;
-      CGRect contentsCenter =
-          CGRect{CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
-                 CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
+      CGRect contentsCenter = CGRect{
+          CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
+          CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
 
       _borderLayer.contents = (id)image.CGImage;
       _borderLayer.contentsScale = image.scale;
@@ -612,7 +736,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
   for (auto const &accessibilityAction : accessibilityActions) {
     [customActions
-        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
+        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction.name)
                                                              target:self
                                                            selector:@selector(didActivateAccessibilityCustomAction:)]];
   }

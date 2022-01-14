@@ -15,11 +15,14 @@
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
+
 #include <memory>
 #include <mutex>
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
+#include "EventEmitterWrapper.h"
 #include "JBackgroundExecutor.h"
+#include "SurfaceHandlerBinding.h"
 
 namespace facebook {
 namespace react {
@@ -75,6 +78,9 @@ class Binding : public jni::HybridClass<Binding>,
   constexpr static auto UIManagerJavaDescriptor =
       "com/facebook/react/fabric/FabricUIManager";
 
+  constexpr static auto ReactFeatureFlagsJavaDescriptor =
+      "com/facebook/react/config/ReactFeatureFlags";
+
   static void registerNatives();
 
  private:
@@ -91,6 +97,9 @@ class Binding : public jni::HybridClass<Binding>,
       jfloat offsetY,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
+
+  jni::local_ref<ReadableNativeMap::jhybridobject> getInspectorDataForInstance(
+      jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper);
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
@@ -124,25 +133,39 @@ class Binding : public jni::HybridClass<Binding>,
 
   void stopSurface(jint surfaceId);
 
+  void registerSurface(SurfaceHandlerBinding *surfaceHandler);
+
+  void unregisterSurface(SurfaceHandlerBinding *surfaceHandler);
+
   void schedulerDidFinishTransaction(
       MountingCoordinator::Shared const &mountingCoordinator) override;
 
+  void preallocateShadowView(
+      const SurfaceId surfaceId,
+      const ShadowView &shadowView);
+
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ShadowView &shadowView) override;
+      const ShadowNode &shadowNode) override;
+
+  void schedulerDidCloneShadowNode(
+      SurfaceId surfaceId,
+      const ShadowNode &oldShadowNode,
+      const ShadowNode &newShadowNode) override;
 
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       std::string const &commandName,
       folly::dynamic const args) override;
 
-  void schedulerDidSetJSResponder(
-      SurfaceId surfaceId,
+  void schedulerDidSendAccessibilityEvent(
       const ShadowView &shadowView,
-      const ShadowView &initialShadowView,
-      bool blockNativeResponder) override;
+      std::string const &eventType) override;
 
-  void schedulerDidClearJSResponder() override;
+  void schedulerDidSetIsJSResponder(
+      ShadowView const &shadowView,
+      bool isJSResponder,
+      bool blockNativeResponder) override;
 
   void setPixelDensity(float pointScaleFactor);
 
@@ -164,20 +187,18 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;
 
+  better::map<SurfaceId, SurfaceHandler> surfaceHandlerRegistry_{};
+  better::shared_mutex
+      surfaceHandlerRegistryMutex_; // Protects `surfaceHandlerRegistry_`.
+
   std::recursive_mutex commitMutex_;
 
   float pointScaleFactor_ = 1;
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
-  bool useIntBufferBatchMountItem_{false};
-  bool collapseDeleteCreateMountingInstructions_{false};
   bool disablePreallocateViews_{false};
-  bool disableVirtualNodePreallocation_{false};
   bool enableFabricLogs_{false};
-
- private:
-  void schedulerDidFinishTransactionIntBuffer(
-      MountingCoordinator::Shared const &mountingCoordinator);
+  bool enableEarlyEventEmitterUpdate_{false};
 };
 
 } // namespace react

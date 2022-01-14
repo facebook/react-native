@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 import type {DefaultInputsArray} from './AlertMacOS'; // TODO(macOS GH#774)

@@ -8,8 +8,6 @@
  * @format
  */
 
-'use strict';
-
 import * as React from 'react';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import View from '../Components/View/View';

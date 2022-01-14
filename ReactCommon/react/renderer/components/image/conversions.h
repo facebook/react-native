@@ -9,13 +9,19 @@
 
 #include <better/map.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
+#include <react/debug/react_native_assert.h>
+#include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/conversions.h>
 #include <react/renderer/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {
 
-inline void fromRawValue(const RawValue &value, ImageSource &result) {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    ImageSource &result) {
   if (value.hasType<std::string>()) {
     result = {
         /* .type = */ ImageSource::Type::Remote,
@@ -49,7 +55,7 @@ inline void fromRawValue(const RawValue &value, ImageSource &result) {
         items.at("scale").hasType<Float>()) {
       result.scale = (Float)items.at("scale");
     } else {
-      result.scale = items.find("deprecated") != items.end() ? 0.0 : 1.0;
+      result.scale = items.find("deprecated") != items.end() ? 0.0f : 1.0f;
     }
 
     if (items.find("url") != items.end() &&
@@ -87,30 +93,35 @@ inline std::string toString(const ImageSource &value) {
   return "{uri: " + value.uri + "}";
 }
 
-inline void fromRawValue(const RawValue &value, ImageResizeMode &result) {
-  assert(value.hasType<std::string>());
-  auto stringValue = (std::string)value;
-  if (stringValue == "cover") {
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    ImageResizeMode &result) {
+  react_native_assert(value.hasType<std::string>());
+  if (!value.hasType<std::string>()) {
+    LOG(ERROR) << "Unsupported ImageResizeMode type";
+    // "cover" is default in non-Fabric web and iOS
     result = ImageResizeMode::Cover;
     return;
   }
-  if (stringValue == "contain") {
+
+  auto stringValue = (std::string)value;
+  if (stringValue == "cover") {
+    result = ImageResizeMode::Cover;
+  } else if (stringValue == "contain") {
     result = ImageResizeMode::Contain;
-    return;
-  }
-  if (stringValue == "stretch") {
+  } else if (stringValue == "stretch") {
     result = ImageResizeMode::Stretch;
-    return;
-  }
-  if (stringValue == "center") {
+  } else if (stringValue == "center") {
     result = ImageResizeMode::Center;
-    return;
-  }
-  if (stringValue == "repeat") {
+  } else if (stringValue == "repeat") {
     result = ImageResizeMode::Repeat;
-    return;
+  } else {
+    LOG(ERROR) << "Unsupported ImageResizeMode value: " << stringValue;
+    react_native_assert(false);
+    // "cover" is default in non-Fabric web and iOS
+    result = ImageResizeMode::Cover;
   }
-  abort();
 }
 
 inline std::string toString(const ImageResizeMode &value) {

@@ -10,14 +10,14 @@
 
 'use strict';
 
-const invariant = require('invariant');
+import invariant from 'invariant';
 
 /**
  * Used to find the indices of the frames that overlap the given offsets. Useful for finding the
  * items that bound different windows of content, such as the visible area or the buffered overscan
  * area.
  */
-function elementsThatOverlapOffsets(
+export function elementsThatOverlapOffsets(
   offsets: Array<number>,
   itemCount: number,
   getFrameMetrics: (
@@ -57,7 +57,7 @@ function elementsThatOverlapOffsets(
  * can restrict the number of new items render at once so that content can appear on the screen
  * faster.
  */
-function newRangeCount(
+export function newRangeCount(
   prev: {
     first: number,
     last: number,
@@ -86,14 +86,11 @@ function newRangeCount(
  * prioritizes the visible area first, then expands that with overscan regions ahead and behind,
  * biased in the direction of scroll.
  */
-function computeWindowedRenderLimits(
-  props: {
-    data: any,
-    getItemCount: (data: any) => number,
-    maxToRenderPerBatch: number,
-    windowSize: number,
-    ...
-  },
+export function computeWindowedRenderLimits(
+  data: any,
+  getItemCount: (data: any) => number,
+  maxToRenderPerBatch: number,
+  windowSize: number,
   prev: {
     first: number,
     last: number,
@@ -118,7 +115,6 @@ function computeWindowedRenderLimits(
   last: number,
   ...
 } {
-  const {data, getItemCount, maxToRenderPerBatch, windowSize} = props;
   const itemCount = getItemCount(data);
   if (itemCount === 0) {
     return prev;
@@ -156,7 +152,7 @@ function computeWindowedRenderLimits(
   // Find the indices that correspond to the items at the render boundaries we're targeting.
   let [overscanFirst, first, last, overscanLast] = elementsThatOverlapOffsets(
     [overscanBegin, visibleBegin, visibleEnd, overscanEnd],
-    props.getItemCount(props.data),
+    itemCount,
     getFrameMetricsApprox,
   );
   overscanFirst = overscanFirst == null ? 0 : overscanFirst;
@@ -238,10 +234,12 @@ function computeWindowedRenderLimits(
   return {first, last};
 }
 
-const VirtualizeUtils = {
-  computeWindowedRenderLimits,
-  elementsThatOverlapOffsets,
-  newRangeCount,
-};
-
-module.exports = VirtualizeUtils;
+export function keyExtractor(item: any, index: number): string {
+  if (typeof item === 'object' && item?.key != null) {
+    return item.key;
+  }
+  if (typeof item === 'object' && item?.id != null) {
+    return item.id;
+  }
+  return String(index);
+}

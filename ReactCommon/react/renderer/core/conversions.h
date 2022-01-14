@@ -34,6 +34,17 @@ inline int toInt(const LayoutDirection &layoutDirection) {
   }
 }
 
+inline int toInt(const DisplayType &displayType) {
+  switch (displayType) {
+    case DisplayType::None:
+      return 0;
+    case DisplayType::Flex:
+      return 1;
+    case DisplayType::Inline:
+      return 2;
+  }
+}
+
 inline std::string toString(const DisplayType &displayType) {
   switch (displayType) {
     case DisplayType::None:

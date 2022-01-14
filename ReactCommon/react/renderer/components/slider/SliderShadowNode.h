@@ -43,14 +43,15 @@ class SliderShadowNode final : public ConcreteViewShadowNode<
       ShadowNodeFamilyFragment const &familyFragment,
       ComponentDescriptor const &componentDescriptor) {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};
-    return {imageSource,
-            {imageSource, nullptr},
-            imageSource,
-            {imageSource, nullptr},
-            imageSource,
-            {imageSource, nullptr},
-            imageSource,
-            {imageSource, nullptr}};
+    return {
+        imageSource,
+        {imageSource, nullptr},
+        imageSource,
+        {imageSource, nullptr},
+        imageSource,
+        {imageSource, nullptr},
+        imageSource,
+        {imageSource, nullptr}};
   }
 
 #pragma mark - LayoutableShadowNode

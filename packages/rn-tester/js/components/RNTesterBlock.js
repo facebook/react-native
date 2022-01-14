@@ -8,8 +8,6 @@
  * @flow
  */
 
-'use strict';
-
 import * as React from 'react';
 import {RNTesterThemeContext} from './RNTesterTheme';
 import {PlatformColor, StyleSheet, Text, View} from 'react-native';
@@ -24,11 +22,23 @@ type Props = $ReadOnly<{|
 const RNTesterBlock = ({description, title, children}: Props): React.Node => {
   const theme = React.useContext(RNTesterThemeContext);
   return (
-    <View style={[[styles.container], {borderColor: theme.SeparatorColor}]}>
+    <View
+      style={[
+        [styles.container],
+        {
+          borderColor: theme.SeparatorColor,
+          backgroundColor: theme.SystemBackgroundColor,
+        },
+      ]}>
       <View style={[styles.titleContainer]}>
-        <Text style={[styles.titleText]}>{title}</Text>
+        <Text style={[styles.titleText, {color: theme.LabelColor}]}>
+          {title}
+        </Text>
         <Text
-          style={[styles.descriptionText, {marginTop: description ? 10 : 0}]}>
+          style={[
+            styles.descriptionText,
+            {color: theme.LabelColor, marginTop: description ? 10 : 0},
+          ]}>
           {description}
         </Text>
       </View>
@@ -92,6 +102,7 @@ const styles = StyleSheet.create({
   descriptionText: {
     fontSize: 12,
     opacity: 0.5,
+    // [ TODO(macOS GH#774) Fix tester block description color in DarkMode
     ...Platform.select({
       macos: {
         color: PlatformColor('secondaryLabelColor'),
@@ -100,12 +111,11 @@ const styles = StyleSheet.create({
         color: PlatformColor('secondaryLabelColor'),
       },
       default: undefined,
-    }),
+    }), // TODO(macOS GH#774) ]
   },
   children: {
-    paddingTop: 10,
-    paddingHorizontal: 10,
-    margin: 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
 });
 

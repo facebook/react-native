@@ -23,12 +23,33 @@ class MisnamedModuleFlowInterfaceParserError extends ParserError {
   }
 }
 
-class ModuleFlowInterfaceNotParserError extends ParserError {
+class ModuleFlowInterfaceNotFoundParserError extends ParserError {
   constructor(hasteModuleName: string, ast: $FlowFixMe) {
     super(
       hasteModuleName,
       ast,
-      `Module ${hasteModuleName}: No Flow interfaces extending TurboModule were detected in this NativeModule spec.`,
+      'No Flow interfaces extending TurboModule were detected in this NativeModule spec.',
+    );
+  }
+}
+
+class MoreThanOneModuleFlowInterfaceParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    flowModuleInterfaces: $ReadOnlyArray<$FlowFixMe>,
+    names: $ReadOnlyArray<string>,
+  ) {
+    const finalName = names[names.length - 1];
+    const allButLastName = names.slice(0, -1);
+    const quote = x => `'${x}'`;
+
+    const nameStr =
+      allButLastName.map(quote).join(', ') + ', and ' + quote(finalName);
+
+    super(
+      hasteModuleName,
+      flowModuleInterfaces,
+      `Every NativeModule spec file must declare exactly one NativeModule Flow interface. This file declares ${names.length}: ${nameStr}. Please remove the extraneous Flow interface declarations.`,
     );
   }
 }
@@ -206,10 +227,96 @@ class UnsupportedFunctionReturnTypeAnnotationParserError extends ParserError {
   }
 }
 
+class UnusedModuleFlowInterfaceParserError extends ParserError {
+  constructor(hasteModuleName: string, flowInterface: $FlowFixMe) {
+    super(
+      hasteModuleName,
+      flowInterface,
+      "Unused NativeModule spec. Please load the NativeModule by calling TurboModuleRegistry.get<Spec>('<moduleName>').",
+    );
+  }
+}
+
+class MoreThanOneModuleRegistryCallsParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    flowCallExpressions: $FlowFixMe,
+    numCalls: number,
+  ) {
+    super(
+      hasteModuleName,
+      flowCallExpressions,
+      `Every NativeModule spec file must contain exactly one NativeModule load. This file contains ${numCalls}. Please simplify this spec file, splitting it as necessary, to remove the extraneous loads.`,
+    );
+  }
+}
+
+class UntypedModuleRegistryCallParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    flowCallExpression: $FlowFixMe,
+    methodName: string,
+    moduleName: string,
+  ) {
+    super(
+      hasteModuleName,
+      flowCallExpression,
+      `Please type this NativeModule load: TurboModuleRegistry.${methodName}<Spec>('${moduleName}').`,
+    );
+  }
+}
+
+class IncorrectModuleRegistryCallTypeParameterParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    flowTypeArguments: $FlowFixMe,
+    methodName: string,
+    moduleName: string,
+  ) {
+    super(
+      hasteModuleName,
+      flowTypeArguments,
+      `Please change these type arguments to reflect TurboModuleRegistry.${methodName}<Spec>('${moduleName}').`,
+    );
+  }
+}
+
+class IncorrectModuleRegistryCallArityParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    flowCallExpression: $FlowFixMe,
+    methodName: string,
+    incorrectArity: number,
+  ) {
+    super(
+      hasteModuleName,
+      flowCallExpression,
+      `Please call TurboModuleRegistry.${methodName}<Spec>() with exactly one argument. Detected ${incorrectArity}.`,
+    );
+  }
+}
+
+class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
+  constructor(
+    hasteModuleName: string,
+    flowArgument: $FlowFixMe,
+    methodName: string,
+    type: string,
+  ) {
+    const a = /[aeiouy]/.test(type.toLowerCase()) ? 'an' : 'a';
+    super(
+      hasteModuleName,
+      flowArgument,
+      `Please call TurboModuleRegistry.${methodName}<Spec>() with a string literal. Detected ${a} '${type}'`,
+    );
+  }
+}
+
 module.exports = {
   IncorrectlyParameterizedFlowGenericParserError,
   MisnamedModuleFlowInterfaceParserError,
-  ModuleFlowInterfaceNotParserError,
+  ModuleFlowInterfaceNotFoundParserError,
+  MoreThanOneModuleFlowInterfaceParserError,
   UnnamedFunctionParamParserError,
   UnsupportedArrayElementTypeAnnotationParserError,
   UnsupportedFlowGenericParserError,
@@ -219,4 +326,10 @@ module.exports = {
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
+  UnusedModuleFlowInterfaceParserError,
+  MoreThanOneModuleRegistryCallsParserError,
+  UntypedModuleRegistryCallParserError,
+  IncorrectModuleRegistryCallTypeParameterParserError,
+  IncorrectModuleRegistryCallArityParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
 };

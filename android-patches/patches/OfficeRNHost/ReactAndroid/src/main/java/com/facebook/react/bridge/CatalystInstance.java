@@ -1,5 +1,5 @@
---- "E:\\github\\rnm-63-fresh\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\bridge\\CatalystInstance.java"	2020-10-27 20:26:16.742190400 -0700
-+++ "E:\\github\\rnm-63\\ReactAndroid\\src\\main\\java\\com\\facebook\\react\\bridge\\CatalystInstance.java"	2020-10-13 21:28:17.283848100 -0700
+--- ./ReactAndroid/src/main/java/com/facebook/react/bridge/CatalystInstance.java	2021-11-08 14:22:26.000000000 -0800
++++ /var/folders/vs/8_b205053dddbcv7btj0w0v80000gn/T/update-1h8V3n/merge/OfficeRNHost/ReactAndroid/src/main/java/com/facebook/react/bridge/CatalystInstance.java	2022-01-12 15:04:31.000000000 -0800
 @@ -131,4 +131,11 @@
     * hasNativeModule, and getNativeModules can also return TurboModules.
     */

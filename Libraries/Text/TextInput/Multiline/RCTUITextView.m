@@ -488,6 +488,7 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 #else // [TODO(macOS GH#774)
   [self setNeedsDisplay:YES];
 #endif // ]TODO(macOS GH#774)
+  [self _invalidatePlaceholderVisibility];
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
@@ -502,6 +503,19 @@ static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 
   return textAttributes;
 }
+
+#pragma mark - Caret Manipulation
+#if !TARGET_OS_OSX // TODO(macOS GH#774)
+
+- (CGRect)caretRectForPosition:(UITextPosition *)position
+{
+  if (_caretHidden) {
+    return CGRectZero;
+  }
+
+  return [super caretRectForPosition:position];
+}
+#endif
 
 #pragma mark - Utility Methods
 
