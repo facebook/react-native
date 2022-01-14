@@ -4,7 +4,8 @@ variables:
 trigger:
   branches:
     include:
-      - main
+    # GH #948: Disable Integration on main, as we are not currently stable
+    # - main
       - '*-stable'
   paths:
     exclude:
@@ -12,7 +13,8 @@ trigger:
 pr:
   branches:
     include:
-      - main
+    # GH #948: Disable Integration on main, as we are not currently stable
+    # - main
       - '*-stable'
   paths:
     exclude:
