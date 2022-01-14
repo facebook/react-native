@@ -353,7 +353,6 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     if (timeout != mClient.connectTimeoutMillis()) {
       clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
     }
-    OkHttpClient client = clientBuilder.build();
 
     Headers requestHeaders = extractHeaders(headers, data);
     if (requestHeaders == null) {
@@ -448,109 +447,106 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         method, wrapRequestBodyWithProgressEmitter(requestBody, eventEmitter, requestId));
 
     addRequest(requestId);
-    client
-        .newCall(requestBuilder.build())
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(Call call, IOException e) {
-                if (mShuttingDown) {
-                  return;
-                }
-                removeRequest(requestId);
-                String errorMessage =
-                    e.getMessage() != null
-                        ? e.getMessage()
-                        : "Error while executing request: " + e.getClass().getSimpleName();
-                ResponseUtil.onRequestError(eventEmitter, requestId, errorMessage, e);
+    new HappyEyeballs(clientBuilder, requestBuilder, new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          if (mShuttingDown) {
+            return;
+          }
+          removeRequest(requestId);
+          String errorMessage =
+            e.getMessage() != null
+              ? e.getMessage()
+              : "Error while executing request: " + e.getClass().getSimpleName();
+          ResponseUtil.onRequestError(eventEmitter, requestId, errorMessage, e);
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+          if (mShuttingDown) {
+            return;
+          }
+          removeRequest(requestId);
+          // Before we touch the body send headers to JS
+          ResponseUtil.onResponseReceived(
+            eventEmitter,
+            requestId,
+            response.code(),
+            translateHeaders(response.headers()),
+            response.request().url().toString());
+
+          try {
+            // OkHttp implements something called transparent gzip, which mean that it will
+            // automatically add the Accept-Encoding gzip header and handle decoding
+            // internally.
+            // The issue is that it won't handle decoding if the user provides a
+            // Accept-Encoding
+            // header. This is also undesirable considering that iOS does handle the decoding
+            // even
+            // when the header is provided. To make sure this works in all cases, handle gzip
+            // body
+            // here also. This works fine since OKHttp will remove the Content-Encoding header
+            // if
+            // it used transparent gzip.
+            // See
+            // https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
+            ResponseBody responseBody = response.body();
+            if ("gzip".equalsIgnoreCase(response.header("Content-Encoding"))
+              && responseBody != null) {
+              GzipSource gzipSource = new GzipSource(responseBody.source());
+              String contentType = response.header("Content-Type");
+              responseBody =
+                ResponseBody.create(
+                  contentType != null ? MediaType.parse(contentType) : null,
+                  -1L,
+                  Okio.buffer(gzipSource));
+            }
+
+            // Check if a handler is registered
+            for (ResponseHandler handler : mResponseHandlers) {
+              if (handler.supports(responseType)) {
+                WritableMap res = handler.toResponseData(responseBody);
+                ResponseUtil.onDataReceived(eventEmitter, requestId, res);
+                ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+                return;
               }
+            }
 
-              @Override
-              public void onResponse(Call call, Response response) throws IOException {
-                if (mShuttingDown) {
-                  return;
-                }
-                removeRequest(requestId);
-                // Before we touch the body send headers to JS
-                ResponseUtil.onResponseReceived(
-                    eventEmitter,
-                    requestId,
-                    response.code(),
-                    translateHeaders(response.headers()),
-                    response.request().url().toString());
+            // If JS wants progress updates during the download, and it requested a text
+            // response,
+            // periodically send response data updates to JS.
+            if (useIncrementalUpdates && responseType.equals("text")) {
+              readWithProgress(eventEmitter, requestId, responseBody);
+              ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+              return;
+            }
 
-                try {
-                  // OkHttp implements something called transparent gzip, which mean that it will
-                  // automatically add the Accept-Encoding gzip header and handle decoding
-                  // internally.
-                  // The issue is that it won't handle decoding if the user provides a
-                  // Accept-Encoding
-                  // header. This is also undesirable considering that iOS does handle the decoding
-                  // even
-                  // when the header is provided. To make sure this works in all cases, handle gzip
-                  // body
-                  // here also. This works fine since OKHttp will remove the Content-Encoding header
-                  // if
-                  // it used transparent gzip.
-                  // See
-                  // https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
-                  ResponseBody responseBody = response.body();
-                  if ("gzip".equalsIgnoreCase(response.header("Content-Encoding"))
-                      && responseBody != null) {
-                    GzipSource gzipSource = new GzipSource(responseBody.source());
-                    String contentType = response.header("Content-Type");
-                    responseBody =
-                        ResponseBody.create(
-                            contentType != null ? MediaType.parse(contentType) : null,
-                            -1L,
-                            Okio.buffer(gzipSource));
-                  }
-
-                  // Check if a handler is registered
-                  for (ResponseHandler handler : mResponseHandlers) {
-                    if (handler.supports(responseType)) {
-                      WritableMap res = handler.toResponseData(responseBody);
-                      ResponseUtil.onDataReceived(eventEmitter, requestId, res);
-                      ResponseUtil.onRequestSuccess(eventEmitter, requestId);
-                      return;
-                    }
-                  }
-
-                  // If JS wants progress updates during the download, and it requested a text
-                  // response,
-                  // periodically send response data updates to JS.
-                  if (useIncrementalUpdates && responseType.equals("text")) {
-                    readWithProgress(eventEmitter, requestId, responseBody);
-                    ResponseUtil.onRequestSuccess(eventEmitter, requestId);
-                    return;
-                  }
-
-                  // Otherwise send the data in one big chunk, in the format that JS requested.
-                  String responseString = "";
-                  if (responseType.equals("text")) {
-                    try {
-                      responseString = responseBody.string();
-                    } catch (IOException e) {
-                      if (response.request().method().equalsIgnoreCase("HEAD")) {
-                        // The request is an `HEAD` and the body is empty,
-                        // the OkHttp will produce an exception.
-                        // Ignore the exception to not invalidate the request in the
-                        // Javascript layer.
-                        // Introduced to fix issue #7463.
-                      } else {
-                        ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
-                      }
-                    }
-                  } else if (responseType.equals("base64")) {
-                    responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
-                  }
-                  ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
-                  ResponseUtil.onRequestSuccess(eventEmitter, requestId);
-                } catch (IOException e) {
+            // Otherwise send the data in one big chunk, in the format that JS requested.
+            String responseString = "";
+            if (responseType.equals("text")) {
+              try {
+                responseString = responseBody.string();
+              } catch (IOException e) {
+                if (response.request().method().equalsIgnoreCase("HEAD")) {
+                  // The request is an `HEAD` and the body is empty,
+                  // the OkHttp will produce an exception.
+                  // Ignore the exception to not invalidate the request in the
+                  // Javascript layer.
+                  // Introduced to fix issue #7463.
+                } else {
                   ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
                 }
               }
-            });
+            } else if (responseType.equals("base64")) {
+              responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
+            }
+            ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
+            ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+          } catch (IOException e) {
+            ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+          }
+        }
+    });
   }
 
   private RequestBody wrapRequestBodyWithProgressEmitter(
