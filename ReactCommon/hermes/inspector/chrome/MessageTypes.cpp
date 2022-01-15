@@ -61,6 +61,7 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"HeapProfiler.takeHeapSnapshot",
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
+      {"Runtime.getHeapUsage", makeUnique<runtime::GetHeapUsageRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
       {"Runtime.runIfWaitingForDebugger",
        makeUnique<runtime::RunIfWaitingForDebuggerRequest>},
@@ -971,6 +972,26 @@ void runtime::EvaluateRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+runtime::GetHeapUsageRequest::GetHeapUsageRequest()
+    : Request("Runtime.getHeapUsage") {}
+
+runtime::GetHeapUsageRequest::GetHeapUsageRequest(const dynamic &obj)
+    : Request("Runtime.getHeapUsage") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic runtime::GetHeapUsageRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void runtime::GetHeapUsageRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 runtime::GetPropertiesRequest::GetPropertiesRequest()
     : Request("Runtime.getProperties") {}
 
@@ -1199,6 +1220,25 @@ dynamic runtime::EvaluateResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "result", result);
   put(res, "exceptionDetails", exceptionDetails);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+runtime::GetHeapUsageResponse::GetHeapUsageResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(usedSize, res, "usedSize");
+  assign(totalSize, res, "totalSize");
+}
+
+dynamic runtime::GetHeapUsageResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "usedSize", usedSize);
+  put(res, "totalSize", totalSize);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);

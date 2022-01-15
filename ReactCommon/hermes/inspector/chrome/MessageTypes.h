@@ -56,6 +56,8 @@ struct ExceptionDetails;
 struct ExecutionContextCreatedNotification;
 struct ExecutionContextDescription;
 using ExecutionContextId = int;
+struct GetHeapUsageRequest;
+struct GetHeapUsageResponse;
 struct GetPropertiesRequest;
 struct GetPropertiesResponse;
 struct InternalPropertyDescriptor;
@@ -123,6 +125,7 @@ struct RequestHandler {
       const heapProfiler::StopTrackingHeapObjectsRequest &req) = 0;
   virtual void handle(const heapProfiler::TakeHeapSnapshotRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
+  virtual void handle(const runtime::GetHeapUsageRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
   virtual void handle(const runtime::RunIfWaitingForDebuggerRequest &req) = 0;
 };
@@ -157,6 +160,7 @@ struct NoopRequestHandler : public RequestHandler {
       const heapProfiler::StopTrackingHeapObjectsRequest &req) override {}
   void handle(const heapProfiler::TakeHeapSnapshotRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
+  void handle(const runtime::GetHeapUsageRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
   void handle(const runtime::RunIfWaitingForDebuggerRequest &req) override {}
 };
@@ -563,6 +567,14 @@ struct runtime::EvaluateRequest : public Request {
   folly::Optional<bool> awaitPromise;
 };
 
+struct runtime::GetHeapUsageRequest : public Request {
+  GetHeapUsageRequest();
+  explicit GetHeapUsageRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+};
+
 struct runtime::GetPropertiesRequest : public Request {
   GetPropertiesRequest();
   explicit GetPropertiesRequest(const folly::dynamic &obj);
@@ -665,6 +677,15 @@ struct runtime::EvaluateResponse : public Response {
 
   runtime::RemoteObject result{};
   folly::Optional<runtime::ExceptionDetails> exceptionDetails;
+};
+
+struct runtime::GetHeapUsageResponse : public Response {
+  GetHeapUsageResponse() = default;
+  explicit GetHeapUsageResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  uint64_t usedSize{};
+  uint64_t totalSize{};
 };
 
 struct runtime::GetPropertiesResponse : public Response {
