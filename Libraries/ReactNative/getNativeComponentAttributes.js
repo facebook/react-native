@@ -164,6 +164,8 @@ function getDifferForType(
     // Android Types
     case 'Point':
       return pointsDiffer;
+    case 'EdgeInsets':
+      return insetsDiffer;
   }
   return null;
 }
