@@ -31,5 +31,6 @@ HeapProfiler.getHeapObjectId
 Runtime.consoleAPICalled
 Runtime.evaluate
 Runtime.executionContextCreated
+Runtime.getHeapUsage
 Runtime.getProperties
 Runtime.runIfWaitingForDebugger

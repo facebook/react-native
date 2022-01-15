@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<522f29c54f207a4f7b5c33af07cf64d0>>
+// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
 
 #include "MessageTypes.h"
 
@@ -488,12 +488,19 @@ debugger::ResumeRequest::ResumeRequest(const dynamic &obj)
     : Request("Debugger.resume") {
   assign(id, obj, "id");
   assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(terminateOnResume, params, "terminateOnResume");
 }
 
 dynamic debugger::ResumeRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "terminateOnResume", terminateOnResume);
+
   dynamic obj = dynamic::object;
   put(obj, "id", id);
   put(obj, "method", method);
+  put(obj, "params", std::move(params));
   return obj;
 }
 
@@ -882,12 +889,14 @@ heapProfiler::StopTrackingHeapObjectsRequest::StopTrackingHeapObjectsRequest(
   dynamic params = obj.at("params");
   assign(reportProgress, params, "reportProgress");
   assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+  assign(captureNumericValue, params, "captureNumericValue");
 }
 
 dynamic heapProfiler::StopTrackingHeapObjectsRequest::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "reportProgress", reportProgress);
   put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+  put(params, "captureNumericValue", captureNumericValue);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -913,12 +922,14 @@ heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest(
   dynamic params = obj.at("params");
   assign(reportProgress, params, "reportProgress");
   assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+  assign(captureNumericValue, params, "captureNumericValue");
 }
 
 dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "reportProgress", reportProgress);
   put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+  put(params, "captureNumericValue", captureNumericValue);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);

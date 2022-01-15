@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated SignedSource<<a541d174394c8959b9fb6a7c575e7040>>
+// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
 
 #pragma once
 
@@ -389,6 +389,8 @@ struct debugger::ResumeRequest : public Request {
 
   folly::dynamic toDynamic() const override;
   void accept(RequestHandler &handler) const override;
+
+  folly::Optional<bool> terminateOnResume;
 };
 
 struct debugger::SetBreakpointRequest : public Request {
@@ -537,6 +539,7 @@ struct heapProfiler::StopTrackingHeapObjectsRequest : public Request {
 
   folly::Optional<bool> reportProgress;
   folly::Optional<bool> treatGlobalObjectsAsRoots;
+  folly::Optional<bool> captureNumericValue;
 };
 
 struct heapProfiler::TakeHeapSnapshotRequest : public Request {
@@ -548,6 +551,7 @@ struct heapProfiler::TakeHeapSnapshotRequest : public Request {
 
   folly::Optional<bool> reportProgress;
   folly::Optional<bool> treatGlobalObjectsAsRoots;
+  folly::Optional<bool> captureNumericValue;
 };
 
 struct runtime::EvaluateRequest : public Request {
@@ -684,8 +688,8 @@ struct runtime::GetHeapUsageResponse : public Response {
   explicit GetHeapUsageResponse(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
 
-  uint64_t usedSize{};
-  uint64_t totalSize{};
+  double usedSize{};
+  double totalSize{};
 };
 
 struct runtime::GetPropertiesResponse : public Response {
