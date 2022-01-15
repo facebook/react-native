@@ -188,6 +188,8 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
       return processColor;
     case 'ColorArray':
       return processColorArray;
+    case 'ImageSource':
+      return resolveAssetSource;
   }
   return null;
 }

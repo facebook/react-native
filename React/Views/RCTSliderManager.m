@@ -86,5 +86,6 @@ RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSlider)
     view.enabled = defaultView.enabled;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(enabled, BOOL, RCTSlider) {}
 
 @end

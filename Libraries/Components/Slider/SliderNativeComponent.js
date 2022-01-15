@@ -48,8 +48,8 @@ type NativeProps = $ReadOnly<{|
 
   // Events
   onChange?: ?BubblingEventHandler<Event>,
-  onValueChange?: ?BubblingEventHandler<Event, 'paperValueChange'>,
-  onSlidingComplete?: ?DirectEventHandler<Event, 'paperSlidingComplete'>,
+  onValueChange?: ?BubblingEventHandler<Event>,
+  onSlidingComplete?: ?DirectEventHandler<Event>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>('Slider', {
