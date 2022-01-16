@@ -116,10 +116,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
     }
 
     ImageSource source = new ImageSource(getReactApplicationContext(), uriString, headers);
-    ImageRequestBuilder imageRequestBuilder =
-        ImageRequestBuilder.newBuilderWithSource(source.getUri());
-    ImageRequest request =
-        ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers);
+    ImageRequest request = source.createImageRequest();
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
         getImagePipeline().fetchDecodedImage(request, getCallerContext());

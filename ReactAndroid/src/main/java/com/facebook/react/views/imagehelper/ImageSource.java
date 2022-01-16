@@ -10,8 +10,13 @@ package com.facebook.react.views.imagehelper;
 import android.content.Context;
 import android.net.Uri;
 import androidx.annotation.Nullable;
+
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
+
 import java.util.Objects;
 
 /** Class describing an image source (network URI or resource) and size. */
@@ -53,6 +58,20 @@ public class ImageSource {
     this(context, source, headers, 0.0d, 0.0d);
   }
 
+  public ImageRequestBuilder createImageRequestBuilder() {
+    return ImageRequestBuilder.newBuilderWithSource(getUri());
+  }
+
+  public ImageRequest createImageRequestFromBuilder(final ImageRequestBuilder imageRequestBuilder) {
+    return ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
+  }
+
+  public ImageRequest createImageRequest() {
+    return createImageRequestFromBuilder(
+      createImageRequestBuilder()
+    );
+  }
+
   /** Get the source of this image, as it was passed to the constructor. */
   public String getSource() {
     return mSource;
@@ -61,11 +80,6 @@ public class ImageSource {
   /** Get the URI for this image - can be either a parsed network URI or a resource URI. */
   public Uri getUri() {
     return Assertions.assertNotNull(mUri);
-  }
-
-  /** Get the headers for this image. */
-  public ReadableMap getHeaders() {
-    return mHeaders;
   }
 
   /** Get the area of this image. */

@@ -558,14 +558,14 @@ public class ReactImageView extends GenericDraweeView {
     ResizeOptions resizeOptions = doResize ? new ResizeOptions(getWidth(), getHeight()) : null;
 
     ImageRequestBuilder imageRequestBuilder =
-        ImageRequestBuilder.newBuilderWithSource(mImageSource.getUri())
+        mImageSource.createImageRequestBuilder()
             .setPostprocessor(postprocessor)
             .setResizeOptions(resizeOptions)
             .setAutoRotateEnabled(true)
             .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled);
 
     ImageRequest imageRequest =
-        ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mImageSource.getHeaders());
+        mImageSource.createImageRequestFromBuilder(imageRequestBuilder);
 
     if (mGlobalImageLoadListener != null) {
       mGlobalImageLoadListener.onLoadAttempt(mImageSource.getUri());
@@ -582,7 +582,7 @@ public class ReactImageView extends GenericDraweeView {
 
     if (mCachedImageSource != null) {
       ImageRequest cachedImageRequest =
-          ImageRequestBuilder.newBuilderWithSource(mCachedImageSource.getUri())
+          mCachedImageSource.createImageRequestBuilder()
               .setPostprocessor(postprocessor)
               .setResizeOptions(resizeOptions)
               .setAutoRotateEnabled(true)
