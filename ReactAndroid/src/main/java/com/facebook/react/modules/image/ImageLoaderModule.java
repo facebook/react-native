@@ -101,7 +101,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
       return;
     }
 
-    ImageSource source = new ImageSource(getReactApplicationContext(), uriString);
+    ImageSource source = new ImageSource(getReactApplicationContext(), uriString, null);
     ImageRequest request = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
@@ -159,7 +159,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
       return;
     }
 
-    ImageSource source = new ImageSource(getReactApplicationContext(), uriString);
+    ImageSource source = new ImageSource(getReactApplicationContext(), uriString, headers);
     ImageRequestBuilder imageRequestBuilder =
         ImageRequestBuilder.newBuilderWithSource(source.getUri());
     ImageRequest request =

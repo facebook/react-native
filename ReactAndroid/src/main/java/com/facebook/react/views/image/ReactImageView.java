@@ -384,7 +384,7 @@ public class ReactImageView extends GenericDraweeView {
     List<ImageSource> tmpSources = new LinkedList<>();
 
     if (sources == null || sources.size() == 0) {
-      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
+      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI, null);
       tmpSources.add(imageSource);
     } else {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
@@ -653,7 +653,7 @@ public class ReactImageView extends GenericDraweeView {
   private void setSourceImage() {
     mImageSource = null;
     if (mSources.isEmpty()) {
-      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
+      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI, null);
       mSources.add(imageSource);
     } else if (hasMultipleSources()) {
       MultiSourceResult multiSource =
