@@ -96,51 +96,7 @@ public class ImageLoaderModule extends NativeImageLoaderAndroidSpec
    */
   @ReactMethod
   public void getSize(final String uriString, final Promise promise) {
-    if (uriString == null || uriString.isEmpty()) {
-      promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI");
-      return;
-    }
-
-    ImageSource source = new ImageSource(getReactApplicationContext(), uriString, null);
-    ImageRequest request = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
-
-    DataSource<CloseableReference<CloseableImage>> dataSource =
-        getImagePipeline().fetchDecodedImage(request, getCallerContext());
-
-    DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
-        new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
-          @Override
-          protected void onNewResultImpl(
-              DataSource<CloseableReference<CloseableImage>> dataSource) {
-            if (!dataSource.isFinished()) {
-              return;
-            }
-            CloseableReference<CloseableImage> ref = dataSource.getResult();
-            if (ref != null) {
-              try {
-                CloseableImage image = ref.get();
-
-                WritableMap sizes = Arguments.createMap();
-                sizes.putInt("width", image.getWidth());
-                sizes.putInt("height", image.getHeight());
-
-                promise.resolve(sizes);
-              } catch (Exception e) {
-                promise.reject(ERROR_GET_SIZE_FAILURE, e);
-              } finally {
-                CloseableReference.closeSafely(ref);
-              }
-            } else {
-              promise.reject(ERROR_GET_SIZE_FAILURE);
-            }
-          }
-
-          @Override
-          protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
-            promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
-          }
-        };
-    dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance());
+    getSizeWithHeaders(uriString, null, promise);
   }
 
   /**
