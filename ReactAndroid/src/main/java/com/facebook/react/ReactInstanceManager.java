@@ -1103,14 +1103,22 @@ public class ReactInstanceManager {
                 // create
                 mHasStartedCreatingInitialContext = true;
 
+                final ReactApplicationContext reactApplicationContext;
                 try {
                   Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
                   ReactMarker.logMarker(VM_INIT);
-                  final ReactApplicationContext reactApplicationContext =
-                      createReactContext(
-                          initParams.getJsExecutorFactory().create(),
-                          initParams.getJsBundleLoader());
-
+                  reactApplicationContext =
+                    createReactContext(
+                      initParams.getJsExecutorFactory().create(),
+                      initParams.getJsBundleLoader());
+                } catch (Exception e) {
+                    // Reset state and bail out. This lets us try again later.
+                    mHasStartedCreatingInitialContext = false;
+                    mCreateReactContextThread = null;
+                    mDevSupportManager.handleException(e);
+                    return;
+                }
+                try {
                   mCreateReactContextThread = null;
                   ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
                   final Runnable maybeRecreateReactContextRunnable =
