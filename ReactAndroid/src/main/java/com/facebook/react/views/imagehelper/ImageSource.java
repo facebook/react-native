@@ -17,10 +17,10 @@ import java.util.Objects;
 /** Class describing an image source (network URI or resource) and size. */
 public class ImageSource {
 
-  private @Nullable Uri mUri;
-  private ReadableMap mHeaders;
-  private String mSource;
-  private double mSize;
+  private final @Nullable Uri mUri;
+  private final ReadableMap mHeaders;
+  private final String mSource;
+  private final double mSize;
   private boolean isResource;
 
   public ImageSource(Context context, String source, ReadableMap headers, double width, double height) {
