@@ -19,7 +19,6 @@
     "clang-format": "^1.2.4",
     "connect": "^3.6.5",
     "coveralls": "^3.0.2",
-    "detox": "16.7.2",
     "eslint": "^7.32.0",
     "eslint-config-fb-strict": "^26.0.0",
     "eslint-config-fbjs": "^3.1.1",

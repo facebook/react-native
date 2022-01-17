@@ -354,10 +354,6 @@ jobs:
         description: Specifies whether unit tests should run.
         type: boolean
         default: false
-      run_detox_tests:
-        description: Specifies whether Detox e2e tests should run.
-        type: boolean
-        default: false
       run_disabled_tests:
         description: Specifies whether disabled tests should run. Set this to true to debug failing tests.
         type: boolean
@@ -435,13 +431,6 @@ jobs:
             - run:
                 name: "Run Tests: iOS Unit and Integration Tests"
                 command: yarn test-ios
-      # Runs iOS Detox e2e tests
-      - when:
-          condition: << parameters.run_detox_tests >>
-          steps:
-            - run:
-                name: "Run Tests: Detox iOS End-to-End Tests"
-                command: yarn run build-ios-e2e && yarn run test-ios-e2e
 
       # Optionally, run disabled tests
       - when:
@@ -898,15 +887,6 @@ workflows:
       #     use_hermes: true
       #     use_frameworks: true
       #     run_unit_tests: true
-      # DISABLED: Detox tests need to be fixed
-      # - test_ios:
-      #     name: test_ios_detox
-      #     run_detox_tests: true
-      # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
-      # - test_ios:
-      #     name: test_ios_detox_frameworks
-      #     use_frameworks: true
-      #     run_detox_tests: true
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
