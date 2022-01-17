@@ -148,7 +148,7 @@ void MapBufferBuilder::putString(Key key, std::string const &value) {
   dynamicDataOffset_ += sizeOfDynamicData;
 }
 
-void MapBufferBuilder::putMapBuffer(Key key, MapBuffer &map) {
+void MapBufferBuilder::putMapBuffer(Key key, MapBuffer const &map) {
   int32_t mapBufferSize = map.getBufferSize();
 
   // format [lenght of buffer (int)] + [bytes of MapBuffer]
