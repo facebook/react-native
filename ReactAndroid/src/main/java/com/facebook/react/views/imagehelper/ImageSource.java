@@ -58,6 +58,11 @@ public class ImageSource {
     this(context, source, headers, 0.0d, 0.0d);
   }
 
+  /** @deprecated for library backwards compatibility only */
+  public ImageSource(Context context, String source) {
+    this(context, source, null);
+  }
+
   public ImageRequestBuilder createImageRequestBuilder() {
     return ImageRequestBuilder.newBuilderWithSource(getUri());
   }
