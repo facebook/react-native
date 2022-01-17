@@ -87,7 +87,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   _onKeyboardChange = (event: ?KeyboardEvent) => {
     this._keyboardEvent = event;
-    this._updateBottomIfNecesarry();
+    this._updateBottomIfNecessary();
   };
 
   _onLayout = (event: ViewLayoutEvent) => {
@@ -99,7 +99,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     }
 
     if (wasFrameNull) {
-      this._updateBottomIfNecesarry();
+      this._updateBottomIfNecessary();
     }
 
     if (this.props.onLayout) {
@@ -107,7 +107,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     }
   };
 
-  _updateBottomIfNecesarry = () => {
+  _updateBottomIfNecessary = () => {
     if (this._keyboardEvent == null) {
       this.setState({bottom: 0});
       return;
