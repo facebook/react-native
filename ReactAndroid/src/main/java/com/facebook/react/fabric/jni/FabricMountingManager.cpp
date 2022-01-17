@@ -413,7 +413,8 @@ void FabricMountingManager::executeMount(
       }
     }
 
-    if (shouldRememberAllocatedViews_) {
+    if (shouldRememberAllocatedViews_ &&
+        allocatedViewsIterator != allocatedViewRegistry_.end()) {
       auto &views = allocatedViewsIterator->second;
       for (auto const &mutation : mutations) {
         switch (mutation.type) {
