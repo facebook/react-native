@@ -27,7 +27,7 @@ namespace react {
 struct Header {
   uint16_t alignment; // alignment of serialization
   uint16_t count; // amount of items in the map
-  int32_t bufferSize; // Amount of bytes used to store the map in memory
+  uint32_t bufferSize; // Amount of bytes used to store the map in memory
 };
 
 static_assert(sizeof(Header) == 8, "MapBuffer header size is incorrect.");
@@ -48,9 +48,10 @@ constexpr static int32_t DOUBLE_SIZE = sizeof(double);
 constexpr static int32_t UINT8_SIZE = sizeof(uint8_t);
 constexpr static int32_t UINT16_SIZE = sizeof(uint16_t);
 constexpr static int32_t UINT64_SIZE = sizeof(uint64_t);
-constexpr static int32_t HEADER_ALIGNMENT_OFFSET = 0;
-constexpr static int32_t HEADER_COUNT_OFFSET = UINT16_SIZE;
-constexpr static int32_t HEADER_BUFFER_SIZE_OFFSET = UINT16_SIZE * 2;
+constexpr static int32_t HEADER_ALIGNMENT_OFFSET = offsetof(Header, alignment);
+constexpr static int32_t HEADER_COUNT_OFFSET = offsetof(Header, count);
+constexpr static int32_t HEADER_BUFFER_SIZE_OFFSET =
+    offsetof(Header, bufferSize);
 
 constexpr static int32_t MAX_VALUE_SIZE = UINT64_SIZE;
 
@@ -69,10 +70,6 @@ inline int32_t getKeyOffset(Key key) {
  */
 inline int32_t getValueOffset(Key key) {
   return getKeyOffset(key) + KEY_SIZE;
-}
-
-static inline const char *getCstring(const std::string *str) {
-  return str ? str->c_str() : "";
 }
 
 inline void

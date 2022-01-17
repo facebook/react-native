@@ -15,7 +15,6 @@ namespace react {
 // TODO T83483191: Extend MapBuffer C++ implementation to support basic random
 // access
 MapBuffer::MapBuffer(std::vector<uint8_t> data) : bytes_(std::move(data)) {
-  count_ = 0;
   memcpy(
       reinterpret_cast<uint8_t *>(&count_),
       bytes_.data() + HEADER_COUNT_OFFSET,
@@ -23,7 +22,7 @@ MapBuffer::MapBuffer(std::vector<uint8_t> data) : bytes_(std::move(data)) {
 
   // TODO T83483191: extract memcpy calls into an inline function to simplify
   // the code
-  int32_t dataSize;
+  uint32_t dataSize;
   memcpy(
       reinterpret_cast<uint8_t *>(&dataSize),
       bytes_.data() + HEADER_BUFFER_SIZE_OFFSET,
@@ -113,23 +112,16 @@ bool MapBuffer::isNull(Key key) const {
   return getInt(key) == NULL_VALUE;
 }
 
-int32_t MapBuffer::getBufferSize() const {
+uint32_t MapBuffer::size() const {
   return bytes_.size();
 }
 
-void MapBuffer::copy(uint8_t *output) const {
-  memcpy(output, bytes_.data(), bytes_.size());
+uint8_t const *MapBuffer::data() const {
+  return bytes_.data();
 }
 
-uint16_t MapBuffer::getCount() const {
-  uint16_t size = 0;
-
-  memcpy(
-      reinterpret_cast<uint8_t *>(&size),
-      bytes_.data() + HEADER_COUNT_OFFSET,
-      UINT16_SIZE);
-
-  return size;
+uint16_t MapBuffer::count() const {
+  return count_;
 }
 
 } // namespace react

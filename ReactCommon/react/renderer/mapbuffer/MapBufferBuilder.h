@@ -25,23 +25,11 @@ class MapBufferBuilder {
  private:
   Header _header = {ALIGNMENT, 0, 0};
 
-  void ensureDynamicDataSpace(int32_t size);
-
-  void storeKeyValue(Key key, uint8_t *value, int32_t valueSize);
+  void storeKeyValue(Key key, uint8_t const *value, uint32_t valueSize);
 
   std::vector<Bucket> buckets_{};
 
-  // This array contains data for dynamic values in the MapBuffer.
-  // A dynamic value is a String or another MapBuffer.
-  uint8_t *dynamicDataValues_ = nullptr;
-
-  // Amount of bytes allocated on _dynamicDataValues
-  int32_t dynamicDataSize_ = 0;
-
-  // Relative offset on the _dynamicDataValues array.
-  // This represents the first byte that can be written in _dynamicDataValues
-  // array
-  int32_t dynamicDataOffset_ = 0;
+  std::vector<Byte> dynamicData_{};
 
   // Minimmum key to store in the MapBuffer (this is used to guarantee
   // consistency)
@@ -49,8 +37,6 @@ class MapBufferBuilder {
 
  public:
   MapBufferBuilder(uint32_t initialSize = INITIAL_BUCKETS_SIZE);
-
-  ~MapBufferBuilder();
 
   static MapBuffer EMPTY();
 
