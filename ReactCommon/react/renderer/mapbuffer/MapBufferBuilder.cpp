@@ -12,36 +12,16 @@ using namespace facebook::react;
 namespace facebook {
 namespace react {
 
-// TODO T83483191: Add asserts to check overflowing on additions
-MapBufferBuilder::MapBufferBuilder()
-    : MapBufferBuilder::MapBufferBuilder(INITIAL_KEY_VALUE_SIZE) {}
-
 MapBuffer MapBufferBuilder::EMPTY() {
   return MapBufferBuilder().build();
 }
 
-MapBufferBuilder::MapBufferBuilder(uint16_t initialSize) {
-  keyValuesSize_ = initialSize;
-  keyValues_ = new Byte[keyValuesSize_];
-  // First Key should be written right after the header.
-  keyValuesOffset_ = HEADER_SIZE;
+MapBufferBuilder::MapBufferBuilder(uint32_t initialSize) {
+  buckets_.reserve(initialSize);
 
   dynamicDataSize_ = 0;
   dynamicDataValues_ = nullptr;
   dynamicDataOffset_ = 0;
-}
-
-void MapBufferBuilder::ensureKeyValueSpace() {
-  int32_t oldKeyValuesSize = keyValuesSize_;
-  react_native_assert(
-      (keyValuesSize_ < std::numeric_limits<uint16_t>::max() / 2) &&
-      "Error trying to assign a value beyond the capacity of uint16_t: ");
-  keyValuesSize_ *= 2;
-  uint8_t *newKeyValues = new Byte[keyValuesSize_];
-  uint8_t *oldKeyValues = keyValues_;
-  memcpy(newKeyValues, keyValues_, oldKeyValuesSize);
-  keyValues_ = newKeyValues;
-  delete[] oldKeyValues;
 }
 
 void MapBufferBuilder::storeKeyValue(
@@ -58,24 +38,15 @@ void MapBufferBuilder::storeKeyValue(
     abort();
   }
 
-  // TODO T83483191: header.count points to the next index
-  // TODO T83483191: add test to verify storage of sparse keys
-  int32_t keyOffset = getKeyOffset(_header.count);
-  int32_t valueOffset = keyOffset + KEY_SIZE;
+  uint64_t data = 0;
+  auto *dataPtr = reinterpret_cast<uint8_t *>(&data);
+  memcpy(dataPtr, value, valueSize);
 
-  int32_t nextKeyValueOffset = keyOffset + BUCKET_SIZE;
-  if (nextKeyValueOffset >= keyValuesSize_) {
-    ensureKeyValueSpace();
-  }
-
-  memcpy(keyValues_ + keyOffset, &key, KEY_SIZE);
-  memcpy(keyValues_ + valueOffset, value, valueSize);
+  buckets_.emplace_back(key, data);
 
   _header.count++;
 
   minKeyToStore_ = key + 1;
-  // Move keyValuesOffset_ to the next available [key, value] position
-  keyValuesOffset_ = std::max(nextKeyValueOffset, keyValuesOffset_);
 }
 
 void MapBufferBuilder::putBool(Key key, bool value) {
@@ -168,56 +139,27 @@ void MapBufferBuilder::putMapBuffer(Key key, MapBuffer const &map) {
 }
 
 MapBuffer MapBufferBuilder::build() {
-  react_native_assert(
-      (keyValues_ != nullptr) &&
-      "Error when building mapbuffer with invalid datastructures.");
-
   // Create buffer: [header] + [key, values] + [dynamic data]
-  int32_t bufferSize = keyValuesOffset_ + dynamicDataOffset_;
+  auto bucketSize = buckets_.size() * BUCKET_SIZE;
+  int32_t bufferSize = HEADER_SIZE + bucketSize + dynamicDataOffset_;
 
   _header.bufferSize = bufferSize;
 
-  // Copy header at the beginning of "keyValues_"
-  memcpy(keyValues_, &_header, HEADER_SIZE);
-
   std::vector<uint8_t> buffer(bufferSize);
-
-  memcpy(buffer.data(), keyValues_, keyValuesOffset_);
+  memcpy(buffer.data(), &_header, HEADER_SIZE);
+  memcpy(buffer.data() + HEADER_SIZE, buckets_.data(), bucketSize);
 
   if (dynamicDataValues_ != nullptr) {
     memcpy(
-        buffer.data() + keyValuesOffset_,
+        buffer.data() + HEADER_SIZE + bucketSize,
         dynamicDataValues_,
         dynamicDataOffset_);
   }
 
-  auto map = MapBuffer(std::move(buffer));
-
-  // TODO T83483191: we should invalidate the class once the build() method is
-  // called.
-
-  if (keyValues_ != nullptr) {
-    delete[] keyValues_;
-  }
-  keyValues_ = nullptr;
-  keyValuesSize_ = 0;
-  keyValuesOffset_ = 0;
-
-  if (dynamicDataValues_ != nullptr) {
-    delete[] dynamicDataValues_;
-    dynamicDataValues_ = nullptr;
-  }
-  dynamicDataSize_ = 0;
-  dynamicDataOffset_ = 0;
-  _header = {ALIGNMENT, 0, 0};
-
-  return map;
+  return MapBuffer(std::move(buffer));
 }
 
 MapBufferBuilder::~MapBufferBuilder() {
-  if (keyValues_ != nullptr) {
-    delete[] keyValues_;
-  }
   if (dynamicDataValues_ != nullptr) {
     delete[] dynamicDataValues_;
   }

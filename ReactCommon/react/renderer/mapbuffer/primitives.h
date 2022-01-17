@@ -30,6 +30,17 @@ struct Header {
   int32_t bufferSize; // Amount of bytes used to store the map in memory
 };
 
+static_assert(sizeof(Header) == 8, "MapBuffer header size is incorrect.");
+
+struct __attribute__((__packed__)) Bucket {
+  Key key;
+  uint64_t data;
+
+  Bucket(Key key, uint64_t data) : key(key), data(data){};
+};
+
+static_assert(sizeof(Bucket) == 10, "MapBuffer bucket size is incorrect.");
+
 constexpr static int32_t KEY_SIZE = sizeof(Key);
 constexpr static int32_t HEADER_SIZE = sizeof(Header);
 constexpr static int32_t INT_SIZE = sizeof(int32_t);
