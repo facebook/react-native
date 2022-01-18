@@ -111,7 +111,6 @@ public class ReactEditText extends AppCompatEditText
   private int mFontStyle = UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
-  private Integer mMaximumTextLength = 0;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -522,7 +521,6 @@ public class ReactEditText extends AppCompatEditText
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
-    mMaximumTextLength = reactTextUpdate.getText().length();
     if (isSecureText() && TextUtils.equals(getText(), reactTextUpdate.getText())) {
       return;
     }
@@ -569,7 +567,6 @@ public class ReactEditText extends AppCompatEditText
       Integer startPosition = getSelectionStart();
       Integer endPosition = getSelectionEnd();
       setText(spannableStringBuilder);
-      mMaximumTextLength = spannableStringBuilder.length();
       maybeSetSelection(mNativeEventCount, startPosition, endPosition);
     }
     mDisableTextDiffing = false;
