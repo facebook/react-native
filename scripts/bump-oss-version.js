@@ -13,6 +13,7 @@
 /**
  * This script walks a releaser through bumping the version for a release
  * It will commit the appropriate tags to trigger the CircleCI jobs.
+ * TODO change this workflow to use POST a trigger vs. using tags
  */
 const {exec, exit} = require('shelljs');
 const yargs = require('yargs');
