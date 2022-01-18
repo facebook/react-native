@@ -160,14 +160,14 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   }
 
   const sourceIsSingleImage = !Array.isArray(source) && source != null;
-  const style = flattenStyle(
+  const style = flattenStyle([
     sourceIsSingleImage && {
       width: source.width,
       height: source.height,
     },
     styles.base,
     props.style,
-  );
+  ]);
 
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
   const nativeProps = {
