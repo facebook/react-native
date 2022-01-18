@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,8 +49,7 @@ module.exports = {
     return require('../Utilities/differ/deepDiffer');
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
-    // $FlowFixMe - can't properly parameterize the getter's type
-    *,
+    {...} | Array<mixed>,
   > {
     return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
   },
@@ -58,7 +57,7 @@ module.exports = {
     return require('../StyleSheet/flattenStyle');
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {
-    return require('../Core/ReactFiberErrorDialog');
+    return require('../Core/ReactFiberErrorDialog').default;
   },
   get legacySendAccessibilityEvent(): legacySendAccessibilityEvent {
     return require('../Components/AccessibilityInfo/legacySendAccessibilityEvent');

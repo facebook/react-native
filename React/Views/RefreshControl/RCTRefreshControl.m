@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,6 +21,7 @@
   BOOL _refreshingProgrammatically;
   NSString *_title;
   UIColor *_titleColor;
+  CGFloat _progressViewOffset;
 }
 
 - (instancetype)init
@@ -40,6 +41,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  [self _applyProgressViewOffset];
+
+  // Fix for bug #7976
+  if (self.backgroundColor == nil) {
+    self.backgroundColor = [UIColor clearColor];
+  }
 
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
@@ -47,18 +54,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     [self beginRefreshingProgrammatically];
   }
   _isInitialRender = false;
-}
-
-- (void)didMoveToWindow
-{
-  [super didMoveToWindow];
-
-  // Since iOS 14 there seems to be a bug where refresh control becomes
-  // visible if the view gets removed from window then added back again.
-  // Calling endRefreshing fixes the layout.
-  if (!_currentRefreshingState) {
-    [super endRefreshing];
-  }
 }
 
 - (void)beginRefreshingProgrammatically
@@ -120,6 +115,19 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
 }
 
+- (void)_applyProgressViewOffset
+{
+  // progressViewOffset must be converted from the ScrollView parent's coordinate space to
+  // the coordinate space of the RefreshControl. This ensures that the control respects any
+  // offset in the view hierarchy, and that progressViewOffset is not inadvertently applied
+  // multiple times.
+  UIView *scrollView = self.superview;
+  UIView *target = scrollView.superview;
+  CGPoint rawOffset = CGPointMake(0, _progressViewOffset);
+  CGPoint converted = [self convertPoint:rawOffset fromView:target];
+  self.frame = CGRectOffset(self.frame, 0, converted.y);
+}
+
 - (NSString *)title
 {
   return _title;
@@ -170,6 +178,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   _currentRefreshingState = refreshing;
   _currentRefreshingStateTimestamp = _currentRefreshingStateClock++;
+}
+
+- (void)setProgressViewOffset:(CGFloat)offset
+{
+  _progressViewOffset = offset;
+  [self _applyProgressViewOffset];
 }
 
 - (void)refreshControlValueChanged

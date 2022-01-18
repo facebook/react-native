@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,7 +26,7 @@ TEST(ConcreteShadowNodeTest, testSetStateData) {
 
   auto shadowNode = builder.build(element);
 
-  shadowNode->setStateData({{10, 11}, {{21, 22}, {301, 302}}});
+  shadowNode->setStateData({{10, 11}, {{21, 22}, {301, 302}}, 0});
 
   EXPECT_NE(
       shadowNode->getState(), shadowNode->getFamily().getMostRecentState());

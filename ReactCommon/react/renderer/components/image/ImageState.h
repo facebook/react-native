@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,13 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
 #include <react/renderer/imagemanager/ImageRequest.h>
 #include <react/renderer/imagemanager/primitives.h>
+
+#ifdef ANDROID
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
 
 namespace facebook {
 namespace react {
@@ -49,6 +53,10 @@ class ImageState final {
    */
   folly::dynamic getDynamic() const {
     return {};
+  };
+
+  MapBuffer getMapBuffer() const {
+    return MapBufferBuilder::EMPTY();
   };
 #endif
 

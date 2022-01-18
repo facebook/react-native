@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,7 @@
 
 #include <react/renderer/components/root/RootShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ShadowTree;
 class UIManager;
@@ -41,5 +40,4 @@ class UIManagerCommitHook {
   virtual ~UIManagerCommitHook() noexcept = default;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

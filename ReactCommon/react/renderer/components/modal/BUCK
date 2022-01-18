@@ -31,11 +31,8 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/components/modal",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++14",
-        "-Wall",
+    fbandroid_deps = [
+        react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
     ],
     fbandroid_exported_headers = subdir_glob(
         [

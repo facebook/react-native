@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -138,6 +138,21 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
+  @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)
+  public void setAccessibilityLabelledBy(@NonNull T view, @Nullable Dynamic nativeId) {
+    if (nativeId.isNull()) {
+      return;
+    }
+    if (nativeId.getType() == ReadableType.String) {
+      view.setTag(R.id.labelled_by, nativeId.asString());
+    } else if (nativeId.getType() == ReadableType.Array) {
+      // On Android, this takes a single View as labeledBy. If an array is specified, set the first
+      // element in the tag.
+      view.setTag(R.id.labelled_by, nativeId.asArray().getString(0));
+    }
+  }
+
+  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABEL)
   public void setAccessibilityLabel(@NonNull T view, @Nullable String accessibilityLabel) {
     view.setTag(R.id.accessibility_label, accessibilityLabel);
@@ -166,8 +181,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (accessibilityState == null) {
       return;
     }
+    if (accessibilityState.hasKey("selected")) {
+      boolean prevSelected = view.isSelected();
+      boolean nextSelected = accessibilityState.getBoolean("selected");
+      view.setSelected(nextSelected);
+
+      // For some reason, Android does not announce "unselected" when state changes.
+      // This is inconsistent with other platforms, but also with the "checked" state.
+      // So manually announce this.
+      if (view.isAccessibilityFocused() && prevSelected && !nextSelected) {
+        view.announceForAccessibility(
+            view.getContext().getString(R.string.state_unselected_description));
+      }
+    } else {
+      view.setSelected(false);
+    }
     view.setTag(R.id.accessibility_state, accessibilityState);
-    view.setSelected(false);
     view.setEnabled(true);
 
     // For states which don't have corresponding methods in
@@ -415,9 +444,17 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @Override
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.<String, Object>builder()
-        .put("topAccessibilityAction", MapBuilder.of("registrationName", "onAccessibilityAction"))
-        .build();
+    @Nullable
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "topAccessibilityAction",
+                MapBuilder.of("registrationName", "onAccessibilityAction"))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override
@@ -447,5 +484,20 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   private void logUnsupportedPropertyWarning(String propName) {
     FLog.w(ReactConstants.TAG, "%s doesn't support property '%s'", getName(), propName);
+  }
+
+  @ReactProp(name = "pointerenter")
+  public void setPointerEnter(@NonNull T view, @Nullable boolean value) {
+    view.setTag(R.id.pointer_enter, value);
+  }
+
+  @ReactProp(name = "pointerleave")
+  public void setPointerLeave(@NonNull T view, @Nullable boolean value) {
+    view.setTag(R.id.pointer_leave, value);
+  }
+
+  @ReactProp(name = "pointermove")
+  public void setPointerMove(@NonNull T view, @Nullable boolean value) {
+    view.setTag(R.id.pointer_move, value);
   }
 }

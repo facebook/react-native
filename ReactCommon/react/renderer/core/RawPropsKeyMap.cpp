@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -63,18 +63,18 @@ void RawPropsKeyMap::reindex() noexcept {
   buckets_.resize(kPropNameLengthHardCap);
 
   auto length = RawPropsPropNameLength{0};
-  for (auto i = 0; i < items_.size(); i++) {
+  for (size_t i = 0; i < items_.size(); i++) {
     auto &item = items_[i];
     if (item.length != length) {
       for (auto j = length; j < item.length; j++) {
-        buckets_[j] = i;
+        buckets_[j] = static_cast<RawPropsPropNameLength>(i);
       }
       length = item.length;
     }
   }
 
   for (auto j = length; j < buckets_.size(); j++) {
-    buckets_[j] = items_.size();
+    buckets_[j] = static_cast<RawPropsPropNameLength>(items_.size());
   }
 }
 

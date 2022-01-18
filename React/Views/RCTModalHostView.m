@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,6 +24,7 @@
   RCTTouchHandler *_touchHandler;
   UIView *_reactSubview;
   UIInterfaceOrientation _lastKnownOrientation;
+  RCTDirectEventBlock _onRequestClose;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
@@ -54,6 +55,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   if (_reactSubview && _isPresented) {
     [_bridge.uiManager setSize:newBounds.size forView:_reactSubview];
     [self notifyForOrientationChange];
+  }
+}
+
+- (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
+{
+  _onRequestClose = onRequestClose;
+}
+
+- (void)presentationControllerDidAttemptToDismiss:(UIPresentationController *)controller
+{
+  if (_onRequestClose != nil) {
+    _onRequestClose(nil);
   }
 }
 
@@ -119,31 +132,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     return;
   }
 
-  if (!_isPresented && self.window) {
-    RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
-
-    _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
-
-    if ([self.animationType isEqualToString:@"fade"]) {
-      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    } else if ([self.animationType isEqualToString:@"slide"]) {
-      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    }
-    if (self.presentationStyle != UIModalPresentationNone) {
-      _modalViewController.modalPresentationStyle = self.presentationStyle;
-    }
-    [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
-    _isPresented = YES;
-  }
+  [self ensurePresentedOnlyIfNeeded];
 }
 
 - (void)didMoveToSuperview
 {
   [super didMoveToSuperview];
-
-  if (_isPresented && !self.superview) {
-    [self dismissModalViewController];
-  }
+  [self ensurePresentedOnlyIfNeeded];
 }
 
 - (void)invalidate
@@ -161,6 +156,43 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 - (BOOL)hasAnimationType
 {
   return ![self.animationType isEqualToString:@"none"];
+}
+
+- (void)setVisible:(BOOL)visible
+{
+  if (_visible != visible) {
+    _visible = visible;
+    [self ensurePresentedOnlyIfNeeded];
+  }
+}
+
+- (void)ensurePresentedOnlyIfNeeded
+{
+  BOOL shouldBePresented = !_isPresented && _visible && self.window;
+  if (shouldBePresented) {
+    RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
+
+    _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
+
+    if ([self.animationType isEqualToString:@"fade"]) {
+      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    } else if ([self.animationType isEqualToString:@"slide"]) {
+      _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    }
+    if (self.presentationStyle != UIModalPresentationNone) {
+      _modalViewController.modalPresentationStyle = self.presentationStyle;
+    }
+    if (@available(iOS 13.0, *)) {
+      _modalViewController.presentationController.delegate = self;
+    }
+    [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
+    _isPresented = YES;
+  }
+
+  BOOL shouldBeHidden = _isPresented && (!_visible || !self.superview);
+  if (shouldBeHidden) {
+    [self dismissModalViewController];
+  }
 }
 
 - (void)setTransparent:(BOOL)transparent

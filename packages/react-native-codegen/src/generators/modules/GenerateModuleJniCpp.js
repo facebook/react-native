@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -99,7 +99,7 @@ const FileTemplate = ({
 }>) => {
   return `
 /**
- * ${'C'}opyright (c) Facebook, Inc. and its affiliates.
+ * ${'C'}opyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -184,10 +184,8 @@ function translateParamTypeToJniType(
   resolveAlias: AliasResolver,
 ): string {
   const {optional, typeAnnotation: nullableTypeAnnotation} = param;
-  const [
-    typeAnnotation,
-    nullable,
-  ] = unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
+  const [typeAnnotation, nullable] =
+    unwrapNullable<NativeModuleParamTypeAnnotation>(nullableTypeAnnotation);
   const isRequired = !optional && !nullable;
 
   let realTypeAnnotation = typeAnnotation;
@@ -291,9 +289,8 @@ function translateMethodTypeToJniSignature(
   resolveAlias: AliasResolver,
 ): string {
   const {name, typeAnnotation} = property;
-  let [
-    {returnTypeAnnotation, params},
-  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(typeAnnotation);
+  let [{returnTypeAnnotation, params}] =
+    unwrapNullable<NativeModuleFunctionTypeAnnotation>(typeAnnotation);
 
   params = [...params];
   let processedReturnTypeAnnotation = returnTypeAnnotation;
@@ -330,11 +327,8 @@ function translateMethodForImplementation(
   property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
 ): string {
-  const [
-    propertyTypeAnnotation,
-  ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
-    property.typeAnnotation,
-  );
+  const [propertyTypeAnnotation] =
+    unwrapNullable<NativeModuleFunctionTypeAnnotation>(property.typeAnnotation);
   const {returnTypeAnnotation} = propertyTypeAnnotation;
 
   if (
@@ -358,6 +352,7 @@ module.exports = {
     libraryName: string,
     schema: SchemaType,
     packageName?: string,
+    assumeNonnull: boolean = false,
   ): FilesOutput {
     const nativeModules = getModules(schema);
 
@@ -394,11 +389,10 @@ module.exports = {
             hasteModuleName,
             methods: properties
               .map(({name: propertyName, typeAnnotation}) => {
-                const [
-                  {returnTypeAnnotation, params},
-                ] = unwrapNullable<NativeModuleFunctionTypeAnnotation>(
-                  typeAnnotation,
-                );
+                const [{returnTypeAnnotation, params}] =
+                  unwrapNullable<NativeModuleFunctionTypeAnnotation>(
+                    typeAnnotation,
+                  );
 
                 if (
                   propertyName === 'getConstants' &&
@@ -420,6 +414,7 @@ module.exports = {
       })
       .join('\n');
 
+    // $FlowFixMe[missing-type-arg]
     const moduleLookups = Object.keys(nativeModules)
       .filter(hasteModuleName => {
         const module = nativeModules[hasteModuleName];

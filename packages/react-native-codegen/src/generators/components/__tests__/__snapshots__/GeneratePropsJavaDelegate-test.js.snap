@@ -3,7 +3,7 @@
 exports[`GeneratePropsJavaDelegate can generate fixture ARRAY_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ArrayPropsNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -71,7 +71,7 @@ public class ArrayPropsNativeComponentManagerDelegate<T extends View, U extends 
 exports[`GeneratePropsJavaDelegate can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ArrayPropsNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -109,7 +109,7 @@ public class ArrayPropsNativeComponentManagerDelegate<T extends View, U extends 
 exports[`GeneratePropsJavaDelegate can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/BooleanPropNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -146,7 +146,7 @@ public class BooleanPropNativeComponentManagerDelegate<T extends View, U extends
 exports[`GeneratePropsJavaDelegate can generate fixture COLOR_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ColorPropNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -184,7 +184,7 @@ public class ColorPropNativeComponentManagerDelegate<T extends View, U extends B
 exports[`GeneratePropsJavaDelegate can generate fixture COMMANDS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/CommandNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -228,7 +228,7 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
 exports[`GeneratePropsJavaDelegate can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/CommandNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -278,7 +278,7 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
 exports[`GeneratePropsJavaDelegate can generate fixture DOUBLE_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/DoublePropNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -330,7 +330,7 @@ public class DoublePropNativeComponentManagerDelegate<T extends View, U extends 
 exports[`GeneratePropsJavaDelegate can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/EventsNestedObjectNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -367,7 +367,7 @@ public class EventsNestedObjectNativeComponentManagerDelegate<T extends View, U 
 exports[`GeneratePropsJavaDelegate can generate fixture EVENT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/EventsNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -404,7 +404,7 @@ public class EventsNativeComponentManagerDelegate<T extends View, U extends Base
 exports[`GeneratePropsJavaDelegate can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/InterfaceOnlyComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -439,7 +439,7 @@ exports[`GeneratePropsJavaDelegate can generate fixture EXCLUDE_ANDROID_IOS 1`] 
 exports[`GeneratePropsJavaDelegate can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/FloatPropNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -491,7 +491,7 @@ public class FloatPropNativeComponentManagerDelegate<T extends View, U extends B
 exports[`GeneratePropsJavaDelegate can generate fixture IMAGE_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ImagePropNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -529,7 +529,7 @@ public class ImagePropNativeComponentManagerDelegate<T extends View, U extends B
 exports[`GeneratePropsJavaDelegate can generate fixture INSETS_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/InsetsPropNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -567,7 +567,7 @@ public class InsetsPropNativeComponentManagerDelegate<T extends View, U extends 
 exports[`GeneratePropsJavaDelegate can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Int32EnumPropsNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -604,7 +604,7 @@ public class Int32EnumPropsNativeComponentManagerDelegate<T extends View, U exte
 exports[`GeneratePropsJavaDelegate can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/IntegerPropNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -647,7 +647,7 @@ public class IntegerPropNativeComponentManagerDelegate<T extends View, U extends
 exports[`GeneratePropsJavaDelegate can generate fixture INTERFACE_ONLY 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/InterfaceOnlyComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -684,7 +684,7 @@ public class InterfaceOnlyComponentManagerDelegate<T extends View, U extends Bas
 exports[`GeneratePropsJavaDelegate can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ImageColorPropNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -732,7 +732,7 @@ public class ImageColorPropNativeComponentManagerDelegate<T extends View, U exte
 exports[`GeneratePropsJavaDelegate can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/NoPropsNoEventsComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -763,7 +763,7 @@ public class NoPropsNoEventsComponentManagerDelegate<T extends View, U extends B
 exports[`GeneratePropsJavaDelegate can generate fixture OBJECT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ObjectPropsManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -801,7 +801,7 @@ public class ObjectPropsManagerDelegate<T extends View, U extends BaseViewManage
 exports[`GeneratePropsJavaDelegate can generate fixture POINT_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/PointPropNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -839,7 +839,7 @@ public class PointPropNativeComponentManagerDelegate<T extends View, U extends B
 exports[`GeneratePropsJavaDelegate can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/StringEnumPropsNativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -876,7 +876,7 @@ public class StringEnumPropsNativeComponentManagerDelegate<T extends View, U ext
 exports[`GeneratePropsJavaDelegate can generate fixture STRING_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/StringPropComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -916,7 +916,7 @@ public class StringPropComponentManagerDelegate<T extends View, U extends BaseVi
 exports[`GeneratePropsJavaDelegate can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/MultiFile1NativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -948,7 +948,7 @@ public class MultiFile1NativeComponentManagerDelegate<T extends View, U extends 
 }
 ",
   "java/com/facebook/react/viewmanagers/MultiFile2NativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -985,7 +985,7 @@ public class MultiFile2NativeComponentManagerDelegate<T extends View, U extends 
 exports[`GeneratePropsJavaDelegate can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/MultiComponent1NativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1017,7 +1017,7 @@ public class MultiComponent1NativeComponentManagerDelegate<T extends View, U ext
 }
 ",
   "java/com/facebook/react/viewmanagers/MultiComponent2NativeComponentManagerDelegate.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -275,12 +275,7 @@ class NetworkAgent extends InspectorAgent {
     this._interceptor = null;
   }
 
-  getResponseBody({
-    requestId,
-  }: {
-    requestId: RequestId,
-    ...
-  }): {
+  getResponseBody({requestId}: {requestId: RequestId, ...}): {
     body: ?string,
     base64Encoded: boolean,
     ...

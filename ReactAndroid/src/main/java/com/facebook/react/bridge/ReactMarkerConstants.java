@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -119,5 +119,7 @@ public enum ReactMarkerConstants {
   REACT_BRIDGE_LOADING_START,
   REACT_BRIDGE_LOADING_END,
   REACT_BRIDGELESS_LOADING_START,
-  REACT_BRIDGELESS_LOADING_END
+  REACT_BRIDGELESS_LOADING_END,
+  LOAD_REACT_NATIVE_MAPBUFFER_SO_FILE_START,
+  LOAD_REACT_NATIVE_MAPBUFFER_SO_FILE_END,
 }

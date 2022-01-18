@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,12 +11,14 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** A event dispatched from a ScrollView scrolling. */
 public class ScrollEvent extends Event<ScrollEvent> {
+  private static String TAG = ScrollEvent.class.getSimpleName();
 
   private static final Pools.SynchronizedPool<ScrollEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(3);
@@ -90,7 +92,13 @@ public class ScrollEvent extends Event<ScrollEvent> {
 
   @Override
   public void onDispose() {
-    EVENTS_POOL.release(this);
+    try {
+      EVENTS_POOL.release(this);
+    } catch (IllegalStateException e) {
+      // This exception can be thrown when an event is double-released.
+      // This is a problem but won't cause user-visible impact, so it's okay to fail silently.
+      ReactSoftExceptionLogger.logSoftException(TAG, e);
+    }
   }
 
   private ScrollEvent() {}
@@ -122,12 +130,6 @@ public class ScrollEvent extends Event<ScrollEvent> {
   @Override
   public String getEventName() {
     return ScrollEventType.getJSEventName(Assertions.assertNotNull(mScrollEventType));
-  }
-
-  @Override
-  public short getCoalescingKey() {
-    // All scroll events for a given view can be coalesced
-    return 0;
   }
 
   @Override

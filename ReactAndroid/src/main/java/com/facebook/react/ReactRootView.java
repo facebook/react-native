@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,8 +16,11 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.DisplayCutout;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -35,12 +38,14 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -49,6 +54,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
@@ -180,15 +186,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onChildStartedNativeGesture(MotionEvent androidEvent) {
-    if (mReactInstanceManager == null
-        || !mIsAttachedToInstance
-        || mReactInstanceManager.getCurrentReactContext() == null) {
-      FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
-      return;
-    }
-    if (mJSTouchDispatcher == null) {
-      FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
+  public void onChildStartedNativeGesture(MotionEvent ev) {
+    if (!isDispatcherReady()) {
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
@@ -196,8 +195,42 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
-      mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
     }
+  }
+
+  @Override
+  public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
+    onChildStartedNativeGesture(ev);
+  }
+
+  @Override
+  public void onChildEndedNativeGesture(View childView, MotionEvent ev) {
+    if (!isDispatcherReady()) {
+      return;
+    }
+    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
+
+    if (uiManager != null) {
+      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+      mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
+    }
+  }
+
+  private boolean isDispatcherReady() {
+    if (mReactInstanceManager == null
+        || !mIsAttachedToInstance
+        || mReactInstanceManager.getCurrentReactContext() == null) {
+      FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
+      return false;
+    }
+    if (mJSTouchDispatcher == null) {
+      FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
+      return false;
+    }
+
+    return true;
   }
 
   @Override
@@ -302,9 +335,13 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     // No-op in non-Fabric since UIManagerModule handles actually laying out children.
 
     // In Fabric, update LayoutSpecs just so we update the offsetX and offsetY.
-    if (mWasMeasured && getUIManagerType() == FABRIC) {
+    if (mWasMeasured && isFabric()) {
       updateRootLayoutSpecs(false, mWidthMeasureSpec, mHeightMeasureSpec);
     }
+  }
+
+  private boolean isFabric() {
+    return getUIManagerType() == FABRIC;
   }
 
   @Override
@@ -329,8 +366,28 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onViewAdded(View child) {
+  public void onViewAdded(final View child) {
     super.onViewAdded(child);
+
+    // See comments in {@code ReactRootViewProhibitedChildView} for why we want this mechanism.
+    if (child instanceof ReactClippingProhibitedView) {
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              if (!child.isShown()) {
+                ReactSoftExceptionLogger.logSoftException(
+                    TAG,
+                    new ReactNoCrashSoftException(
+                        "A view was illegally added as a child of a ReactRootView. "
+                            + "This View should not be a direct child of a ReactRootView, because it is not visible and will never be reachable. Child: "
+                            + child.getClass().getCanonicalName().toString()
+                            + " child ID: "
+                            + child.getId()));
+              }
+            }
+          });
+    }
 
     if (mShouldLogContentAppeared) {
       mShouldLogContentAppeared = false;
@@ -388,10 +445,27 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mInitialUITemplate = initialUITemplate;
 
       mReactInstanceManager.createReactContextInBackground();
-
+      // if in this experiment, we initialize the root earlier in startReactApplication
+      // instead of waiting for the initial measure
+      if (ReactFeatureFlags.enableEagerRootViewAttachment) {
+        if (!mWasMeasured) {
+          // Ideally, those values will be used by default, but we only update them here to scope
+          // this change to `enableEagerRootViewAttachment` experiment.
+          setSurfaceConstraintsToScreenSize();
+        }
+        attachToReactInstanceManager();
+      }
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
+  }
+
+  private void setSurfaceConstraintsToScreenSize() {
+    DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+    mWidthMeasureSpec =
+        MeasureSpec.makeMeasureSpec(displayMetrics.widthPixels, MeasureSpec.AT_MOST);
+    mHeightMeasureSpec =
+        MeasureSpec.makeMeasureSpec(displayMetrics.heightPixels, MeasureSpec.AT_MOST);
   }
 
   @Override
@@ -439,7 +513,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
     // In Fabric we cannot call `updateRootLayoutSpecs` until a SurfaceId has been set.
     // Sometimes,
-    if (getUIManagerType() == FABRIC && !isRootViewTagSet()) {
+    boolean isFabricEnabled = isFabric();
+    if (isFabricEnabled && !isRootViewTagSet()) {
       ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_END);
       FLog.e(TAG, "Unable to update root layout specs for ReactRootView: no rootViewTag set yet");
       return;
@@ -456,7 +531,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         // In Fabric only, get position of view within screen
         int offsetX = 0;
         int offsetY = 0;
-        if (getUIManagerType() == FABRIC) {
+        if (isFabricEnabled) {
           Point viewportOffset = RootViewUtil.getViewportOffset(this);
           offsetX = viewportOffset.x;
           offsetY = viewportOffset.y;
@@ -491,7 +566,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     // all the views in the hierarchy.
     if (mReactInstanceManager != null) {
       final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
-      if (reactApplicationContext != null && getUIManagerType() == FABRIC) {
+      if (reactApplicationContext != null && isFabric()) {
         @Nullable
         UIManager uiManager =
             UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
@@ -507,7 +582,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           removeAllViews();
 
           if (surfaceId == NO_ID) {
-            ReactSoftException.logSoftException(
+            ReactSoftExceptionLogger.logSoftException(
                 TAG,
                 new RuntimeException(
                     "unmountReactApplication called on ReactRootView with invalid id"));
@@ -623,6 +698,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   /* package */ void simulateAttachForTesting() {
     mIsAttachedToInstance = true;
     mJSTouchDispatcher = new JSTouchDispatcher(this);
+  }
+
+  @VisibleForTesting
+  /* package */ void simulateCheckForKeyboardForTesting() {
+    getCustomGlobalLayoutListener().checkForKeyboardEvents();
   }
 
   private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {
@@ -744,8 +824,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
+      int notchHeight = 0;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        DisplayCutout displayCutout = getRootView().getRootWindowInsets().getDisplayCutout();
+        if (displayCutout != null) {
+          notchHeight = displayCutout.getSafeInsetTop();
+        }
+      }
       final int heightDiff =
-          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
+          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels
+              - mVisibleViewArea.bottom
+              + notchHeight;
 
       boolean isKeyboardShowingOrKeyboardHeightChanged =
           mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected;

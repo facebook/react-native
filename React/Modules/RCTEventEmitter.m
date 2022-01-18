@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,7 @@
   BOOL _observationDisabled;
 }
 
-@synthesize invokeJS = _invokeJS;
+@synthesize callableJSModules = _callableJSModules;
 
 + (NSString *)moduleName
 {
@@ -48,10 +48,10 @@
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
 {
   RCTAssert(
-      _bridge != nil || _invokeJS != nil,
+      _callableJSModules != nil,
       @"Error when sending event: %@ with body: %@. "
-       "Bridge is not set. This is probably because you've "
-       "explicitly synthesized the bridge in %@, even though it's inherited "
+       "RCTCallableJSModules is not set. This is probably because you've "
+       "explicitly synthesized the RCTCallableJSModules in %@, even though it's inherited "
        "from RCTEventEmitter.",
       eventName,
       body,
@@ -67,13 +67,10 @@
 
   BOOL shouldEmitEvent = (_observationDisabled || _listenerCount > 0);
 
-  if (shouldEmitEvent && _bridge) {
-    [_bridge enqueueJSCall:@"RCTDeviceEventEmitter"
-                    method:@"emit"
-                      args:body ? @[ eventName, body ] : @[ eventName ]
-                completion:NULL];
-  } else if (shouldEmitEvent && _invokeJS) {
-    _invokeJS(@"RCTDeviceEventEmitter", @"emit", body ? @[ eventName, body ] : @[ eventName ]);
+  if (shouldEmitEvent && _callableJSModules) {
+    [_callableJSModules invokeModule:@"RCTDeviceEventEmitter"
+                              method:@"emit"
+                            withArgs:body ? @[ eventName, body ] : @[ eventName ]];
   } else {
     RCTLogWarn(@"Sending `%@` with no listeners registered.", eventName);
   }

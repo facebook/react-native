@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,12 +43,16 @@ public class ReactClippingViewGroupHelper {
         // Intersect the view with the parent's rectangle
         // This will result in the overlap with coordinates in the parent space
         if (!sHelperRect.intersect(
-            view.getLeft(), view.getTop(), view.getRight(), view.getBottom())) {
+            view.getLeft(),
+            view.getTop() + (int) view.getTranslationY(),
+            view.getRight(),
+            view.getBottom() + (int) view.getTranslationY())) {
           outputRect.setEmpty();
           return;
         }
         // Now we move the coordinates to the View's coordinate space
         sHelperRect.offset(-view.getLeft(), -view.getTop());
+        sHelperRect.offset(-(int) view.getTranslationX(), -(int) view.getTranslationY());
         sHelperRect.offset(view.getScrollX(), view.getScrollY());
         outputRect.set(sHelperRect);
         return;

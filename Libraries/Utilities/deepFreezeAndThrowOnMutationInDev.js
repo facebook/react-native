@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,6 +42,7 @@ function deepFreezeAndThrowOnMutationInDev<T: {...} | Array<mixed>>(
 
     // $FlowFixMe[not-an-object] `object` can be an array, but Object.keys works with arrays too
     const keys = Object.keys((object: {...} | Array<mixed>));
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     const hasOwnProperty = Object.prototype.hasOwnProperty;
 
     for (let i = 0; i < keys.length; i++) {
@@ -69,7 +70,7 @@ function deepFreezeAndThrowOnMutationInDev<T: {...} | Array<mixed>>(
   return object;
 }
 
-function throwOnImmutableMutation(key, value) {
+function throwOnImmutableMutation(key: empty, value) {
   throw Error(
     'You attempted to set the key `' +
       key +
@@ -80,7 +81,7 @@ function throwOnImmutableMutation(key, value) {
   );
 }
 
-function identity(value) {
+function identity(value: mixed) {
   return value;
 }
 

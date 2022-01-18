@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
@@ -48,10 +49,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
       new ViewGroup.LayoutParams(0, 0);
 
-  private static final ViewGroup.LayoutParams WRAP_CONTENT_LAYOUT_PARAMS =
-      new ViewGroup.LayoutParams(
-          ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
   private boolean mContainsImages;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
@@ -61,6 +58,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mAdjustsFontSizeToFit = false;
   private int mLinkifyMaskType = 0;
   private boolean mNotifyOnInlineViewLayout;
+  private boolean mTextIsSelectable = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -129,6 +127,17 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
+    if (layout == null) {
+      // Text layout is calculated during pre-draw phase, so in some cases it can be empty during
+      // layout phase, which usually happens before drawing.
+      // The text layout is created by private {@link assumeLayout} method, which we can try to
+      // invoke directly through reflection or indirectly through some methods that compute it
+      // (e.g. {@link getExtendedPaddingTop}).
+      // It is safer, however, to just early return here, as next measure/layout passes are way more
+      // likely to have the text layout computed.
+      return;
+    }
+
     TextInlineViewPlaceholderSpan[] placeholders =
         text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
     ArrayList inlineViewInfoArray =
@@ -274,11 +283,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // null; explicitly set the LayoutParams to prevent this crash. See:
     // https://github.com/facebook/react-native/pull/7011
     if (getLayoutParams() == null) {
-      if (ReactFeatureFlags.enableSettingEmptyLayoutParams) {
-        setLayoutParams(EMPTY_LAYOUT_PARAMS);
-      } else {
-        setLayoutParams(WRAP_CONTENT_LAYOUT_PARAMS);
-      }
+      setLayoutParams(EMPTY_LAYOUT_PARAMS);
     }
     Spannable spannable = update.getText();
     if (mLinkifyMaskType > 0) {
@@ -368,7 +373,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         for (int i = 0; i < spans.length; i++) {
           int spanStart = spannedText.getSpanStart(spans[i]);
           int spanEnd = spannedText.getSpanEnd(spans[i]);
-          if (spanEnd > index && (spanEnd - spanStart) <= targetSpanTextLength) {
+          if (spanEnd >= index && (spanEnd - spanStart) <= targetSpanTextLength) {
             target = spans[i].getReactTag();
             targetSpanTextLength = (spanEnd - spanStart);
           }
@@ -377,6 +382,16 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     return target;
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    // The root view always assumes any view that was tapped wants the touch
+    // and sends the event to JS as such.
+    // We don't need to do bubbling in native (it's already happening in JS).
+    // For an explanation of bubbling and capturing, see
+    // http://javascript.info/tutorial/bubbling-and-capturing#capturing
+    return ReactFeatureFlags.enableNestedTextOnPressEventFix;
   }
 
   @Override
@@ -432,8 +447,15 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   }
 
   @Override
+  public void setTextIsSelectable(boolean selectable) {
+    mTextIsSelectable = selectable;
+    super.setTextIsSelectable(selectable);
+  }
+
+  @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
+    setTextIsSelectable(mTextIsSelectable);
     if (mContainsImages && getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);

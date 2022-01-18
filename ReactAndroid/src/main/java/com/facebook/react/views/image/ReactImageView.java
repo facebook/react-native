@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -48,6 +48,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
@@ -124,7 +125,7 @@ public class ReactImageView extends GenericDraweeView {
 
     @Override
     public void process(Bitmap output, Bitmap source) {
-      cornerRadii(sComputedCornerRadii);
+      getCornerRadii(sComputedCornerRadii);
 
       output.setHasAlpha(true);
       if (FloatUtil.floatsEqual(sComputedCornerRadii[0], 0f)
@@ -160,7 +161,6 @@ public class ReactImageView extends GenericDraweeView {
     @Override
     public CloseableReference<Bitmap> process(Bitmap source, PlatformBitmapFactory bitmapFactory) {
       final Rect destRect = new Rect(0, 0, getWidth(), getHeight());
-
       mScaleType.getTransform(
           sTileMatrix, destRect, source.getWidth(), source.getHeight(), 0.0f, 0.0f);
 
@@ -181,7 +181,7 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 
-  private final List<ImageSource> mSources;
+  private final List<ImageSource> mSources = new LinkedList<>();
 
   private @Nullable ImageSource mImageSource;
   private @Nullable ImageSource mCachedImageSource;
@@ -194,12 +194,12 @@ public class ReactImageView extends GenericDraweeView {
   private float mBorderWidth;
   private float mBorderRadius = YogaConstants.UNDEFINED;
   private @Nullable float[] mBorderCornerRadii;
-  private ScalingUtils.ScaleType mScaleType;
+  private ScalingUtils.ScaleType mScaleType = ImageResizeMode.defaultValue();
   private Shader.TileMode mTileMode = ImageResizeMode.defaultTileMode();
   private boolean mIsDirty;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
-  private final RoundedCornerPostprocessor mRoundedCornerPostprocessor;
-  private final TilePostprocessor mTilePostprocessor;
+  private @Nullable RoundedCornerPostprocessor mRoundedCornerPostprocessor;
+  private @Nullable TilePostprocessor mTilePostprocessor;
   private @Nullable IterativeBoxBlurPostProcessor mIterativeBoxBlurPostProcessor;
   private @Nullable ReactImageDownloadListener mDownloadListener;
   private @Nullable ControllerListener mControllerForTesting;
@@ -222,13 +222,9 @@ public class ReactImageView extends GenericDraweeView {
       @Nullable GlobalImageLoadListener globalImageLoadListener,
       @Nullable Object callerContext) {
     super(context, buildHierarchy(context));
-    mScaleType = ImageResizeMode.defaultValue();
     mDraweeControllerBuilder = draweeControllerBuilder;
-    mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
-    mTilePostprocessor = new TilePostprocessor();
     mGlobalImageLoadListener = globalImageLoadListener;
     mCallerContext = callerContext;
-    mSources = new LinkedList<>();
   }
 
   public void setShouldNotifyLoadEvents(boolean shouldNotify) {
@@ -357,6 +353,11 @@ public class ReactImageView extends GenericDraweeView {
   public void setScaleType(ScalingUtils.ScaleType scaleType) {
     if (mScaleType != scaleType) {
       mScaleType = scaleType;
+      if (shouldUseRoundedCornerPostprocessing()) {
+        mRoundedCornerPostprocessor = new RoundedCornerPostprocessor();
+      } else {
+        mRoundedCornerPostprocessor = null;
+      }
       mIsDirty = true;
     }
   }
@@ -364,6 +365,11 @@ public class ReactImageView extends GenericDraweeView {
   public void setTileMode(Shader.TileMode tileMode) {
     if (mTileMode != tileMode) {
       mTileMode = tileMode;
+      if (isTiled()) {
+        mTilePostprocessor = new TilePostprocessor();
+      } else {
+        mTilePostprocessor = null;
+      }
       mIsDirty = true;
     }
   }
@@ -448,7 +454,7 @@ public class ReactImageView extends GenericDraweeView {
     // no worth marking as dirty if it already rendered..
   }
 
-  private void cornerRadii(float[] computedCorners) {
+  private void getCornerRadii(float[] computedCorners) {
     float defaultBorderRadius = !YogaConstants.isUndefined(mBorderRadius) ? mBorderRadius : 0;
 
     computedCorners[0] =
@@ -510,14 +516,9 @@ public class ReactImageView extends GenericDraweeView {
       hierarchy.setPlaceholderImage(mLoadingImageDrawable, ScalingUtils.ScaleType.CENTER);
     }
 
-    boolean usePostprocessorScaling =
-        mScaleType != ScalingUtils.ScaleType.CENTER_CROP
-            && mScaleType != ScalingUtils.ScaleType.FOCUS_CROP;
+    getCornerRadii(sComputedCornerRadii);
 
     RoundingParams roundingParams = hierarchy.getRoundingParams();
-
-    cornerRadii(sComputedCornerRadii);
-
     roundingParams.setCornersRadii(
         sComputedCornerRadii[0],
         sComputedCornerRadii[1],
@@ -529,11 +530,9 @@ public class ReactImageView extends GenericDraweeView {
       mBackgroundImageDrawable.setRadii(roundingParams.getCornersRadii());
       hierarchy.setBackgroundImage(mBackgroundImageDrawable);
     }
-
-    if (usePostprocessorScaling) {
+    if (shouldUseRoundedCornerPostprocessing()) {
       roundingParams.setCornersRadius(0);
     }
-
     roundingParams.setBorder(mBorderColor, mBorderWidth);
     if (mOverlayColor != Color.TRANSPARENT) {
       roundingParams.setOverlayColor(mOverlayColor);
@@ -548,13 +547,13 @@ public class ReactImageView extends GenericDraweeView {
             : mImageSource.isResource() ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
 
     List<Postprocessor> postprocessors = new LinkedList<>();
-    if (usePostprocessorScaling) {
+    if (mRoundedCornerPostprocessor != null) {
       postprocessors.add(mRoundedCornerPostprocessor);
     }
     if (mIterativeBoxBlurPostProcessor != null) {
       postprocessors.add(mIterativeBoxBlurPostProcessor);
     }
-    if (isTiled()) {
+    if (mTilePostprocessor != null) {
       postprocessors.add(mTilePostprocessor);
     }
     Postprocessor postprocessor = MultiPostprocessor.from(postprocessors);
@@ -646,6 +645,12 @@ public class ReactImageView extends GenericDraweeView {
 
   private boolean isTiled() {
     return mTileMode != Shader.TileMode.CLAMP;
+  }
+
+  private boolean shouldUseRoundedCornerPostprocessing() {
+    return mScaleType != ScalingUtils.ScaleType.CENTER_CROP
+        && mScaleType != ScalingUtils.ScaleType.FOCUS_CROP
+        && ReactFeatureFlags.enableRoundedCornerPostprocessing;
   }
 
   private void setSourceImage() {

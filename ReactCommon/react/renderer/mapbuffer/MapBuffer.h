@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,13 +7,15 @@
 
 #pragma once
 
-#include <react/renderer/mapbuffer/Primitives.h>
+#include <react/debug/react_native_assert.h>
+#include <react/renderer/mapbuffer/primitives.h>
+
+#include <limits>
 
 namespace facebook {
 namespace react {
 
-// 506 = 5 entries = 50*10 + 6 sizeof(header)
-const int INITIAL_SIZE = 506;
+class ReadableMapBuffer;
 
 /**
  * MapBuffer is an optimized map format for transferring data like props between
@@ -31,51 +33,45 @@ const int INITIAL_SIZE = 506;
  * - have minimal APK size and build time impact.
  */
 class MapBuffer {
+  friend ReadableMapBuffer;
+
  private:
-  Header _header = {ALIGNMENT, 0, 0};
-
-  void makeSpace();
-
-  void putBytes(Key key, uint8_t *value, int valueSize);
-
   // Buffer and its size
-  uint8_t *_data;
+  std::vector<uint8_t> const bytes_;
 
-  uint16_t _dataSize;
+  // amount of items in the MapBuffer
+  uint16_t count_ = 0;
+
+  // returns the relative offset of the first byte of dynamic data
+  int32_t getDynamicDataOffset() const;
 
  public:
-  MapBuffer() : MapBuffer(INITIAL_SIZE) {}
+  explicit MapBuffer(std::vector<uint8_t> data);
 
-  MapBuffer(int initialSize);
+  MapBuffer(MapBuffer const &buffer) = delete;
 
-  ~MapBuffer();
+  MapBuffer &operator=(MapBuffer other) = delete;
 
-  void putInt(Key key, int value);
+  MapBuffer(MapBuffer &&buffer) = default;
 
-  void putBool(Key key, bool value);
+  int32_t getInt(Key key) const;
 
-  void putDouble(Key key, double value);
+  bool getBool(Key key) const;
 
-  void putNull(Key key);
+  double getDouble(Key key) const;
 
-  // TODO: create a MapBufferBuilder instead or add checks to verify
-  // if it's ok to read and write the Map
-  void finish();
+  std::string getString(Key key) const;
 
-  int getInt(Key key);
+  // TODO T83483191: review this declaration
+  MapBuffer getMapBuffer(Key key) const;
 
-  bool getBool(Key key);
+  bool isNull(Key key) const;
 
-  double getDouble(Key key);
+  uint32_t size() const;
 
-  uint16_t getBufferSize();
+  uint8_t const *data() const;
 
-  // TODO: review parameters of copy method
-  void copy(uint8_t *output);
-
-  bool isNull(Key key);
-
-  uint16_t getSize();
+  uint16_t count() const;
 };
 
 } // namespace react

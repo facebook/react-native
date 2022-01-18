@@ -12,12 +12,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "ReactCommon",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++14",
-        "-Wall",
-    ],
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
         FBJNI_TARGET,
@@ -34,7 +28,6 @@ rn_xplat_cxx_library(
         ],
     ),
     fbobjc_compiler_flags = [
-        "-Wall",
         "-fobjc-arc-exceptions",
     ],
     fbobjc_inherited_buck_flags = get_static_library_ios_flags(),
@@ -42,10 +35,10 @@ rn_xplat_cxx_library(
     force_static = True,
     ios_deps = [
         "//xplat/FBBaseLite:FBBaseLite",
-        "//xplat/js:RCTLinking",
-        "//xplat/js:RCTPushNotification",
         "//xplat/js/react-native-github:RCTCxxBridge",
         "//xplat/js/react-native-github:RCTCxxModule",
+        "//xplat/js/react-native-github:RCTLinking",
+        "//xplat/js/react-native-github:RCTPushNotification",
         "//xplat/js/react-native-github:ReactInternal",
     ],
     ios_exported_headers = subdir_glob(

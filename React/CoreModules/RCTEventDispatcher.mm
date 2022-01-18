@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,14 +42,12 @@ static uint16_t RCTUniqueCoalescingKeyGenerator = 0;
 
 @synthesize bridge = _bridge;
 @synthesize dispatchToJSThread = _dispatchToJSThread;
-@synthesize invokeJS = _invokeJS;
-@synthesize invokeJSWithModuleDotMethod = _invokeJSWithModuleDotMethod;
+@synthesize callableJSModules = _callableJSModules;
 
 RCT_EXPORT_MODULE()
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)initialize
 {
-  _bridge = bridge;
   _events = [NSMutableDictionary new];
   _eventQueue = [NSMutableArray new];
   _eventQueueLock = [NSLock new];
@@ -58,28 +56,21 @@ RCT_EXPORT_MODULE()
   _observersLock = [NSLock new];
 }
 
+- (void)sendViewEventWithName:(NSString *)name reactTag:(NSNumber *)reactTag
+{
+  [_callableJSModules invokeModule:@"RCTViewEventEmitter" method:@"emit" withArgs:@[ name, RCTNullIfNil(reactTag) ]];
+}
+
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {
-  if (_bridge) {
-    [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter"
-                    method:@"emit"
-                      args:body ? @[ name, body ] : @[ name ]
-                completion:NULL];
-  } else if (_invokeJS) {
-    _invokeJS(@"RCTNativeAppEventEmitter", @"emit", body ? @[ name, body ] : @[ name ]);
-  }
+  [_callableJSModules invokeModule:@"RCTNativeAppEventEmitter"
+                            method:@"emit"
+                          withArgs:body ? @[ name, body ] : @[ name ]];
 }
 
 - (void)sendDeviceEventWithName:(NSString *)name body:(id)body
 {
-  if (_bridge) {
-    [_bridge enqueueJSCall:@"RCTDeviceEventEmitter"
-                    method:@"emit"
-                      args:body ? @[ name, body ] : @[ name ]
-                completion:NULL];
-  } else if (_invokeJS) {
-    _invokeJS(@"RCTDeviceEventEmitter", @"emit", body ? @[ name, body ] : @[ name ]);
-  }
+  [_callableJSModules invokeModule:@"RCTDeviceEventEmitter" method:@"emit" withArgs:body ? @[ name, body ] : @[ name ]];
 }
 
 - (void)sendTextEventWithType:(RCTTextEventType)type
@@ -196,11 +187,12 @@ RCT_EXPORT_MODULE()
 
 - (void)dispatchEvent:(id<RCTEvent>)event
 {
-  if (_bridge) {
-    [_bridge enqueueJSCall:[[event class] moduleDotMethod] args:[event arguments]];
-  } else if (_invokeJSWithModuleDotMethod) {
-    _invokeJSWithModuleDotMethod([[event class] moduleDotMethod], [event arguments]);
-  }
+  NSString *moduleDotMethod = [[event class] moduleDotMethod];
+  NSArray<NSString *> *const components = [moduleDotMethod componentsSeparatedByString:@"."];
+  NSString *const moduleName = components[0];
+  NSString *const methodName = components[1];
+
+  [_callableJSModules invokeModule:moduleName method:methodName withArgs:[event arguments]];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -222,6 +214,12 @@ RCT_EXPORT_MODULE()
   for (NSNumber *eventId in eventQueue) {
     [self dispatchEvent:events[eventId]];
   }
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return nullptr;
 }
 
 @end

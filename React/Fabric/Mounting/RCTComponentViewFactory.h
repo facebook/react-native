@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,10 +9,12 @@
 
 #import <React/RCTComponentViewDescriptor.h>
 #import <React/RCTComponentViewProtocol.h>
-
+#import <jsi/jsi.h>
 #import <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+void RCTInstallNativeComponentRegistryBinding(facebook::jsi::Runtime &runtime);
 
 /**
  * Registry of supported component view classes that can instantiate
@@ -23,12 +25,18 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Constructs and returns an instance of the class with a bunch of already registered standard components.
  */
-+ (RCTComponentViewFactory *)standardComponentViewFactory;
++ (RCTComponentViewFactory *)currentComponentViewFactory;
 
 /**
  * Registers a component view class in the factory.
  */
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass;
+
+/**
+ * Registers component if there is a matching class. Returns true if it matching class is found or the component has
+ * already been registered, false otherwise.
+ */
+- (BOOL)registerComponentIfPossible:(std::string const &)componentName;
 
 /**
  * Creates a component view with given component handle.

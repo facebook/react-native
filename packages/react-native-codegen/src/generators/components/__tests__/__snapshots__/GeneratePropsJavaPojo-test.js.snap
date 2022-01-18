@@ -3,7 +3,7 @@
 exports[`GeneratePropsJavaPojo can generate fixture ARRAY_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentPropsObjectElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -14,16 +14,19 @@ Map {
 package com.facebook.react.viewmanagers.Slider;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentPropsObjectElement {
   private @Nullable String mStringProp;
+  @DoNotStrip
   public @Nullable String getStringProp() {
     return mStringProp;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentPropsArrayElementObjectElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -34,16 +37,19 @@ public class ArrayPropsNativeComponentPropsObjectElement {
 package com.facebook.react.viewmanagers.Slider;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentPropsArrayElementObjectElement {
   private @Nullable String mStringProp;
+  @DoNotStrip
   public @Nullable String getStringProp() {
     return mStringProp;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentPropsArrayElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -53,17 +59,20 @@ public class ArrayPropsNativeComponentPropsArrayElementObjectElement {
 
 package com.facebook.react.viewmanagers.Slider;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentPropsArrayElement {
   private ArrayList<ArrayPropsNativeComponentPropsArrayElementObjectElement> mObject;
+  @DoNotStrip
   public ArrayList<ArrayPropsNativeComponentPropsArrayElementObjectElement> getObject() {
     return mObject;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -74,16 +83,19 @@ public class ArrayPropsNativeComponentPropsArrayElement {
 package com.facebook.react.viewmanagers.Slider;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement {
   private @Nullable String mStringProp;
+  @DoNotStrip
   public @Nullable String getStringProp() {
     return mStringProp;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -110,36 +122,47 @@ public class ArrayPropsNativeComponentProps {
   private ArrayList<ArrayPropsNativeComponentPropsObjectElement> mObject;
   private ArrayList<ArrayPropsNativeComponentPropsArrayElement> mArray;
   private ArrayList<ArrayList<ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement>> mArrayOfArrayOfObject;
+  @DoNotStrip
   public ArrayList<String> getNames() {
     return mNames;
   }
+  @DoNotStrip
   public ArrayList<Boolean> getDisableds() {
     return mDisableds;
   }
+  @DoNotStrip
   public ArrayList<Integer> getProgress() {
     return mProgress;
   }
+  @DoNotStrip
   public ArrayList<Float> getRadii() {
     return mRadii;
   }
+  @DoNotStrip
   public ArrayList<Integer> getColors() {
     return mColors;
   }
+  @DoNotStrip
   public ArrayList<ReadableMap> getSrcs() {
     return mSrcs;
   }
+  @DoNotStrip
   public ArrayList<ReadableMap> getPoints() {
     return mPoints;
   }
+  @DoNotStrip
   public ArrayList<String> getSizes() {
     return mSizes;
   }
+  @DoNotStrip
   public ArrayList<ArrayPropsNativeComponentPropsObjectElement> getObject() {
     return mObject;
   }
+  @DoNotStrip
   public ArrayList<ArrayPropsNativeComponentPropsArrayElement> getArray() {
     return mArray;
   }
+  @DoNotStrip
   public ArrayList<ArrayList<ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement>> getArrayOfArrayOfObject() {
     return mArrayOfArrayOfObject;
   }
@@ -151,7 +174,7 @@ public class ArrayPropsNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentPropsNativePrimitivesElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -161,26 +184,31 @@ Map {
 
 package com.facebook.react.viewmanagers.Slider;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableMap;
 import java.util.ArrayList;
 
+@DoNotStrip
 public class ArrayPropsNativeComponentPropsNativePrimitivesElement {
   private ArrayList<Integer> mColors;
   private ArrayList<ReadableMap> mSrcs;
   private ArrayList<ReadableMap> mPoints;
+  @DoNotStrip
   public ArrayList<Integer> getColors() {
     return mColors;
   }
+  @DoNotStrip
   public ArrayList<ReadableMap> getSrcs() {
     return mSrcs;
   }
+  @DoNotStrip
   public ArrayList<ReadableMap> getPoints() {
     return mPoints;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/Slider/ArrayPropsNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -196,6 +224,7 @@ import java.util.ArrayList;
 @DoNotStrip
 public class ArrayPropsNativeComponentProps {
   private ArrayList<ArrayPropsNativeComponentPropsNativePrimitivesElement> mNativePrimitives;
+  @DoNotStrip
   public ArrayList<ArrayPropsNativeComponentPropsNativePrimitivesElement> getNativePrimitives() {
     return mNativePrimitives;
   }
@@ -207,7 +236,7 @@ public class ArrayPropsNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/BooleanPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -222,6 +251,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class BooleanPropNativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
@@ -233,7 +263,7 @@ public class BooleanPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture COLOR_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/ColorPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -249,6 +279,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class ColorPropNativeComponentProps {
   private @Nullable Integer mTintColor;
+  @DoNotStrip
   public @Nullable Integer getTintColor() {
     return mTintColor;
   }
@@ -260,7 +291,7 @@ public class ColorPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture COMMANDS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/CommandNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -284,7 +315,7 @@ public class CommandNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/CommandNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -300,6 +331,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class CommandNativeComponentProps {
   private @Nullable String mAccessibilityHint;
+  @DoNotStrip
   public @Nullable String getAccessibilityHint() {
     return mAccessibilityHint;
   }
@@ -311,7 +343,7 @@ public class CommandNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture DOUBLE_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/DoublePropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -331,21 +363,27 @@ public class DoublePropNativeComponentProps {
   private double mBlurRadius4;
   private double mBlurRadius5;
   private double mBlurRadius6;
+  @DoNotStrip
   public double getBlurRadius() {
     return mBlurRadius;
   }
+  @DoNotStrip
   public double getBlurRadius2() {
     return mBlurRadius2;
   }
+  @DoNotStrip
   public double getBlurRadius3() {
     return mBlurRadius3;
   }
+  @DoNotStrip
   public double getBlurRadius4() {
     return mBlurRadius4;
   }
+  @DoNotStrip
   public double getBlurRadius5() {
     return mBlurRadius5;
   }
+  @DoNotStrip
   public double getBlurRadius6() {
     return mBlurRadius6;
   }
@@ -357,7 +395,7 @@ public class DoublePropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/EventsNestedObjectNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -372,6 +410,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class EventsNestedObjectNativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
@@ -383,7 +422,7 @@ public class EventsNestedObjectNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture EVENT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/EventsNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -398,6 +437,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class EventsNativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
@@ -409,7 +449,7 @@ public class EventsNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/InterfaceOnlyComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -437,7 +477,7 @@ exports[`GeneratePropsJavaPojo can generate fixture EXCLUDE_ANDROID_IOS 1`] = `M
 exports[`GeneratePropsJavaPojo can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/FloatPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -457,21 +497,27 @@ public class FloatPropNativeComponentProps {
   private float mBlurRadius4;
   private float mBlurRadius5;
   private float mBlurRadius6;
+  @DoNotStrip
   public float getBlurRadius() {
     return mBlurRadius;
   }
+  @DoNotStrip
   public float getBlurRadius2() {
     return mBlurRadius2;
   }
+  @DoNotStrip
   public float getBlurRadius3() {
     return mBlurRadius3;
   }
+  @DoNotStrip
   public float getBlurRadius4() {
     return mBlurRadius4;
   }
+  @DoNotStrip
   public float getBlurRadius5() {
     return mBlurRadius5;
   }
+  @DoNotStrip
   public float getBlurRadius6() {
     return mBlurRadius6;
   }
@@ -483,7 +529,7 @@ public class FloatPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture IMAGE_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Slider/ImagePropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -500,6 +546,7 @@ import com.facebook.react.bridge.ReadableMap;
 @DoNotStrip
 public class ImagePropNativeComponentProps {
   private @Nullable ReadableMap mThumbImage;
+  @DoNotStrip
   public @Nullable ReadableMap getThumbImage() {
     return mThumbImage;
   }
@@ -511,7 +558,7 @@ public class ImagePropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture INSETS_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ScrollView/InsetsPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -528,6 +575,7 @@ import com.facebook.react.bridge.ReadableMap;
 @DoNotStrip
 public class InsetsPropNativeComponentProps {
   private @Nullable ReadableMap mContentInset;
+  @DoNotStrip
   public @Nullable ReadableMap getContentInset() {
     return mContentInset;
   }
@@ -539,7 +587,7 @@ public class InsetsPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/Int32EnumPropsNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -555,6 +603,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class Int32EnumPropsNativeComponentProps {
   private @Nullable Integer mMaxInterval;
+  @DoNotStrip
   public @Nullable Integer getMaxInterval() {
     return mMaxInterval;
   }
@@ -566,7 +615,7 @@ public class Int32EnumPropsNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/IntegerPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -583,12 +632,15 @@ public class IntegerPropNativeComponentProps {
   private int mProgress1;
   private int mProgress2;
   private int mProgress3;
+  @DoNotStrip
   public int getProgress1() {
     return mProgress1;
   }
+  @DoNotStrip
   public int getProgress2() {
     return mProgress2;
   }
+  @DoNotStrip
   public int getProgress3() {
     return mProgress3;
   }
@@ -600,7 +652,7 @@ public class IntegerPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture INTERFACE_ONLY 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/InterfaceOnlyComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -616,6 +668,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class InterfaceOnlyComponentProps {
   private @Nullable String mAccessibilityHint;
+  @DoNotStrip
   public @Nullable String getAccessibilityHint() {
     return mAccessibilityHint;
   }
@@ -627,7 +680,7 @@ public class InterfaceOnlyComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Slider/ImageColorPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -647,15 +700,19 @@ public class ImageColorPropNativeComponentProps {
   private @Nullable Integer mColor;
   private @Nullable Integer mThumbTintColor;
   private @Nullable ReadableMap mPoint;
+  @DoNotStrip
   public @Nullable ReadableMap getThumbImage() {
     return mThumbImage;
   }
+  @DoNotStrip
   public @Nullable Integer getColor() {
     return mColor;
   }
+  @DoNotStrip
   public @Nullable Integer getThumbTintColor() {
     return mThumbTintColor;
   }
+  @DoNotStrip
   public @Nullable ReadableMap getPoint() {
     return mPoint;
   }
@@ -667,7 +724,7 @@ public class ImageColorPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/NoPropsNoEvents/NoPropsNoEventsComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -691,7 +748,7 @@ public class NoPropsNoEventsComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture OBJECT_PROPS 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropObjectArrayProp.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -701,17 +758,20 @@ Map {
 
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectPropObjectArrayProp {
   private ArrayList<String> mArray;
+  @DoNotStrip
   public ArrayList<String> getArray() {
     return mArray;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -722,25 +782,30 @@ public class ObjectPropsPropsObjectPropObjectArrayProp {
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReadableMap;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp {
   private @Nullable ReadableMap mImage;
   private @Nullable Integer mColor;
   private @Nullable ReadableMap mPoint;
+  @DoNotStrip
   public @Nullable ReadableMap getImage() {
     return mImage;
   }
+  @DoNotStrip
   public @Nullable Integer getColor() {
     return mColor;
   }
+  @DoNotStrip
   public @Nullable ReadableMap getPoint() {
     return mPoint;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropNestedPropANestedPropB.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -751,16 +816,19 @@ public class ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp {
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectPropNestedPropANestedPropB {
   private @Nullable String mNestedPropC;
+  @DoNotStrip
   public @Nullable String getNestedPropC() {
     return mNestedPropC;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropNestedPropA.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -770,15 +838,19 @@ public class ObjectPropsPropsObjectPropNestedPropANestedPropB {
 
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
+import com.facebook.proguard.annotations.DoNotStrip;
+
+@DoNotStrip
 public class ObjectPropsPropsObjectPropNestedPropA {
   private ObjectPropsPropsObjectPropNestedPropANestedPropB mNestedPropB;
+  @DoNotStrip
   public ObjectPropsPropsObjectPropNestedPropANestedPropB getNestedPropB() {
     return mNestedPropB;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -789,16 +861,19 @@ public class ObjectPropsPropsObjectPropNestedPropA {
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement {
   private @Nullable String mStringProp;
+  @DoNotStrip
   public @Nullable String getStringProp() {
     return mStringProp;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectPropNestedArrayAsProperty.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -808,17 +883,20 @@ public class ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement {
 
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectPropNestedArrayAsProperty {
   private ArrayList<ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement> mArrayProp;
+  @DoNotStrip
   public ArrayList<ObjectPropsPropsObjectPropNestedArrayAsPropertyArrayPropElement> getArrayProp() {
     return mArrayProp;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsPropsObjectProp.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -829,7 +907,9 @@ public class ObjectPropsPropsObjectPropNestedArrayAsProperty {
 package com.facebook.react.viewmanagers.ObjectPropsNativeComponent;
 
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
+@DoNotStrip
 public class ObjectPropsPropsObjectProp {
   private @Nullable String mStringProp;
   private boolean mBooleanProp;
@@ -841,40 +921,50 @@ public class ObjectPropsPropsObjectProp {
   private ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp mObjectPrimitiveRequiredProp;
   private ObjectPropsPropsObjectPropNestedPropA mNestedPropA;
   private ObjectPropsPropsObjectPropNestedArrayAsProperty mNestedArrayAsProperty;
+  @DoNotStrip
   public @Nullable String getStringProp() {
     return mStringProp;
   }
+  @DoNotStrip
   public boolean getBooleanProp() {
     return mBooleanProp;
   }
+  @DoNotStrip
   public float getFloatProp() {
     return mFloatProp;
   }
+  @DoNotStrip
   public int getIntProp() {
     return mIntProp;
   }
+  @DoNotStrip
   public @Nullable String getStringEnumProp() {
     return mStringEnumProp;
   }
+  @DoNotStrip
   public @Nullable Integer getIntEnumProp() {
     return mIntEnumProp;
   }
+  @DoNotStrip
   public ObjectPropsPropsObjectPropObjectArrayProp getObjectArrayProp() {
     return mObjectArrayProp;
   }
+  @DoNotStrip
   public ObjectPropsPropsObjectPropObjectPrimitiveRequiredProp getObjectPrimitiveRequiredProp() {
     return mObjectPrimitiveRequiredProp;
   }
+  @DoNotStrip
   public ObjectPropsPropsObjectPropNestedPropA getNestedPropA() {
     return mNestedPropA;
   }
+  @DoNotStrip
   public ObjectPropsPropsObjectPropNestedArrayAsProperty getNestedArrayAsProperty() {
     return mNestedArrayAsProperty;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/ObjectPropsNativeComponent/ObjectPropsProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -889,6 +979,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class ObjectPropsProps {
   private ObjectPropsPropsObjectProp mObjectProp;
+  @DoNotStrip
   public ObjectPropsPropsObjectProp getObjectProp() {
     return mObjectProp;
   }
@@ -900,7 +991,7 @@ public class ObjectPropsProps {
 exports[`GeneratePropsJavaPojo can generate fixture POINT_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/PointPropNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -917,6 +1008,7 @@ import com.facebook.react.bridge.ReadableMap;
 @DoNotStrip
 public class PointPropNativeComponentProps {
   private @Nullable ReadableMap mStartPoint;
+  @DoNotStrip
   public @Nullable ReadableMap getStartPoint() {
     return mStartPoint;
   }
@@ -928,7 +1020,7 @@ public class PointPropNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/StringEnumPropsNativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -944,6 +1036,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class StringEnumPropsNativeComponentProps {
   private @Nullable String mAlignment;
+  @DoNotStrip
   public @Nullable String getAlignment() {
     return mAlignment;
   }
@@ -955,7 +1048,7 @@ public class StringEnumPropsNativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture STRING_PROP 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/Switch/StringPropComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -972,9 +1065,11 @@ import com.facebook.proguard.annotations.DoNotStrip;
 public class StringPropComponentProps {
   private @Nullable String mAccessibilityHint;
   private @Nullable String mAccessibilityRole;
+  @DoNotStrip
   public @Nullable String getAccessibilityHint() {
     return mAccessibilityHint;
   }
+  @DoNotStrip
   public @Nullable String getAccessibilityRole() {
     return mAccessibilityRole;
   }
@@ -986,7 +1081,7 @@ public class StringPropComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/ComponentFile1/MultiFile1NativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1001,13 +1096,14 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class MultiFile1NativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/ComponentFile2/MultiFile2NativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1022,6 +1118,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class MultiFile2NativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
@@ -1033,7 +1130,7 @@ public class MultiFile2NativeComponentProps {
 exports[`GeneratePropsJavaPojo can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
   "java/com/facebook/react/viewmanagers/MyComponents/MultiComponent1NativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1048,13 +1145,14 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class MultiComponent1NativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }
 }
 ",
   "java/com/facebook/react/viewmanagers/MyComponents/MultiComponent2NativeComponentProps.java" => "/**
-* Copyright (c) Facebook, Inc. and its affiliates.
+* Copyright (c) Meta Platforms, Inc. and affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
@@ -1069,6 +1167,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class MultiComponent2NativeComponentProps {
   private boolean mDisabled;
+  @DoNotStrip
   public boolean getDisabled() {
     return mDisabled;
   }

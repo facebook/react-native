@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -52,6 +52,7 @@ public class ReactTestHelper {
     when(reactInstance.getReactQueueConfiguration()).thenReturn(ReactQueueConfiguration);
     when(reactInstance.getNativeModule(UIManagerModule.class))
         .thenReturn(mock(UIManagerModule.class));
+    when(reactInstance.isDestroyed()).thenReturn(false);
 
     return reactInstance;
   }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -71,6 +71,7 @@ class Animation {
         this.__nativeId,
         animatedValue.__getNativeTag(),
         this.__getNativeAnimationConfig(),
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         this.__debouncedOnEnd.bind(this),
       );
     } catch (e) {

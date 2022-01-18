@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -63,7 +63,7 @@ class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
             {this.props.children(this.state.native)}
           </View>
           <View>
-            <Text>JavaScript:</Text>
+            <Text>JavaScript{':'}</Text>
           </View>
           <View style={styles.row}>{this.props.children(this.state.js)}</View>
         </View>
@@ -145,9 +145,9 @@ class LoopExample extends React.Component<{...}, $FlowFixMeState> {
             {
               opacity: this.state.value.interpolate({
                 inputRange: [0, 0.5, 1],
-                /* $FlowFixMe(>=0.38.0) - Flow error detected during the
-                 * deployment of v0.38.0. To see the error, remove this comment
-                 * and run flow */
+                /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
+                 * detected during the deployment of v0.38.0. To see the error,
+                 * remove this comment and run flow */
                 outputRange: [0, 1, 0],
               }),
             },
@@ -175,9 +175,9 @@ class InternalSettings extends React.Component<
           initialValue={false}
           label="Force JS Stalls"
           onEnable={() => {
-            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.63 was deployed. To see
-             * the error delete this comment and run Flow. */
+            /* $FlowFixMe[incompatible-type] (>=0.63.0 site=react_native_fb)
+             * This comment suppresses an error found when Flow v0.63 was
+             * deployed. To see the error delete this comment and run Flow. */
             this._stallInterval = setInterval(() => {
               const start = Date.now();
               console.warn('burn CPU');
@@ -185,9 +185,9 @@ class InternalSettings extends React.Component<
             }, 300);
           }}
           onDisable={() => {
-            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.63 was deployed. To see
-             * the error delete this comment and run Flow. */
+            /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb)
+             * This comment suppresses an error found when Flow v0.63 was
+             * deployed. To see the error delete this comment and run Flow. */
             clearInterval(this._stallInterval || 0);
           }}
         />
@@ -243,9 +243,9 @@ class EventExample extends React.Component<{...}, $FlowFixMeState> {
                 {
                   rotate: this.state.anim.interpolate({
                     inputRange: [0, 1],
-                    /* $FlowFixMe(>=0.38.0) - Flow error detected during the
-                     * deployment of v0.38.0. To see the error, remove this
-                     * comment and run flow */
+                    /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow
+                     * error detected during the deployment of v0.38.0. To see
+                     * the error, remove this comment and run flow */
                     outputRange: ['0deg', '1deg'],
                   }),
                 },
@@ -341,7 +341,7 @@ class TrackingExample extends React.Component<
             {this.renderBlock(this.state.native, this.state.toNative)}
           </View>
           <View>
-            <Text>JavaScript:</Text>
+            <Text>JavaScript{':'}</Text>
           </View>
           <View style={styles.row}>
             {this.renderBlock(this.state.js, this.state.toJS)}
@@ -380,7 +380,7 @@ exports.description = 'Test out Native Animations';
 exports.examples = [
   {
     title: 'Multistage With Multiply and rotation',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => (
@@ -428,7 +428,7 @@ exports.examples = [
   },
   {
     title: 'Multistage With Multiply',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => (
@@ -470,7 +470,7 @@ exports.examples = [
   },
   {
     title: 'Multistage With Subtract',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => (
@@ -512,7 +512,7 @@ exports.examples = [
   },
   {
     title: 'Scale interpolation with clamping',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => (
@@ -539,7 +539,7 @@ exports.examples = [
   },
   {
     title: 'Opacity with delay',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000, delay: 1000}}>
           {anim => (
@@ -558,7 +558,7 @@ exports.examples = [
   },
   {
     title: 'Rotate interpolation',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => (
@@ -584,7 +584,7 @@ exports.examples = [
   },
   {
     title: 'translateX => Animated.spring (bounciness/speed)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Tester type="spring" config={{bounciness: 0}}>
           {anim => (
@@ -610,7 +610,7 @@ exports.examples = [
   },
   {
     title: 'translateX => Animated.spring (stiffness/damping/mass)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Tester type="spring" config={{stiffness: 1000, damping: 500, mass: 3}}>
           {anim => (
@@ -636,7 +636,7 @@ exports.examples = [
   },
   {
     title: 'translateX => Animated.decay',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Tester
           type="decay"
@@ -662,7 +662,7 @@ exports.examples = [
   },
   {
     title: 'Drive custom property (tap to animate)',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => <AnimatedSlider style={{}} value={anim} />}
@@ -672,31 +672,31 @@ exports.examples = [
   },
   {
     title: 'Animated value listener',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <ValueListenerExample />;
     },
   },
   {
     title: 'Animated loop',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <LoopExample />;
     },
   },
   {
     title: 'Animated events',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <EventExample />;
     },
   },
   {
     title: 'Animated Tracking - tap me many times',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TrackingExample />;
     },
   },
   {
     title: 'Internal Settings',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <InternalSettings />;
     },
   },

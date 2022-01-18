@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,6 +38,12 @@ inline bool operator==(
     const LayoutConstraints &rhs) {
   return std::tie(lhs.minimumSize, lhs.maximumSize, lhs.layoutDirection) ==
       std::tie(rhs.minimumSize, rhs.maximumSize, rhs.layoutDirection);
+}
+
+inline bool operator!=(
+    const LayoutConstraints &lhs,
+    const LayoutConstraints &rhs) {
+  return !(lhs == rhs);
 }
 
 } // namespace react

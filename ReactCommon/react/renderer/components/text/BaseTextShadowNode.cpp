@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,7 @@ void BaseTextShadowNode::buildAttributedString(
   for (auto const &childNode : parentNode.getChildren()) {
     // RawShadowNode
     auto rawTextShadowNode =
-        std::dynamic_pointer_cast<RawTextShadowNode const>(childNode);
+        traitCast<RawTextShadowNode const *>(childNode.get());
     if (rawTextShadowNode) {
       auto fragment = AttributedString::Fragment{};
       fragment.string = rawTextShadowNode->getConcreteProps().text;
@@ -49,8 +49,7 @@ void BaseTextShadowNode::buildAttributedString(
     }
 
     // TextShadowNode
-    auto textShadowNode =
-        std::dynamic_pointer_cast<TextShadowNode const>(childNode);
+    auto textShadowNode = traitCast<TextShadowNode const *>(childNode.get());
     if (textShadowNode) {
       auto localTextAttributes = baseTextAttributes;
       localTextAttributes.apply(

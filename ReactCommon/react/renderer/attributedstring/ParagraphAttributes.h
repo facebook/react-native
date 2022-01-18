@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,7 +42,10 @@ class ParagraphAttributes : public DebugStringConvertible {
    */
   EllipsizeMode ellipsizeMode{};
 
-  TextBreakStrategy textBreakStrategy{};
+  /*
+   * (Android only) Break strategy for breaking paragraphs into lines.
+   */
+  TextBreakStrategy textBreakStrategy{TextBreakStrategy::HighQuality};
 
   /*
    * Enables font size adjustment to fit constrained boundaries.
@@ -54,6 +57,12 @@ class ParagraphAttributes : public DebugStringConvertible {
    * using the font ascent and descent strictly.
    */
   bool includeFontPadding{true};
+
+  /*
+   * (Android only) Frequency of automatic hyphenation to use when determining
+   * word breaks.
+   */
+  HyphenationFrequency android_hyphenationFrequency{};
 
   /*
    * In case of font size adjustment enabled, defines minimum and maximum
@@ -89,7 +98,8 @@ struct hash<facebook::react::ParagraphAttributes> {
         attributes.adjustsFontSizeToFit,
         attributes.minimumFontSize,
         attributes.maximumFontSize,
-        attributes.includeFontPadding);
+        attributes.includeFontPadding,
+        attributes.android_hyphenationFrequency);
   }
 };
 } // namespace std

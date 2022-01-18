@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,7 +32,7 @@ jsi::Value TurboModule::get(
   return jsi::Function::createFromHostFunction(
       runtime,
       propName,
-      meta.argCount,
+      static_cast<unsigned int>(meta.argCount),
       [this, meta](
           facebook::jsi::Runtime &rt,
           const facebook::jsi::Value &thisVal,

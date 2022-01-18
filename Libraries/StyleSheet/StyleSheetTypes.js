@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -673,7 +673,7 @@ export type ____ImageStyleProp_Internal = GenericStyleProp<
 
 export type ____Styles_Internal = {
   +[key: string]: $Shape<____DangerouslyImpreciseStyle_Internal>,
-  ...,
+  ...
 };
 
 export type ____FlattenStyleProp_Internal<+TStyleProp> = $Call<

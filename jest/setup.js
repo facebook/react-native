@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('@react-native/polyfills/Object.es7');
+jest.requireActual('@react-native/polyfills/Object.es8');
 jest.requireActual('@react-native/polyfills/error-guard');
 
 global.__DEV__ = true;
@@ -23,11 +23,12 @@ global.performance = {
 
 global.Promise = jest.requireActual('promise');
 global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
+global.window = global;
 
-global.requestAnimationFrame = function(callback) {
+global.requestAnimationFrame = function (callback) {
   return setTimeout(callback, 0);
 };
-global.cancelAnimationFrame = function(id) {
+global.cancelAnimationFrame = function (id) {
   clearTimeout(id);
 };
 
@@ -70,7 +71,7 @@ jest
       }
     }),
     hasViewManagerConfig: jest.fn(name => {
-      return true;
+      return name === 'AndroidDrawerLayout';
     }),
     measure: jest.fn(),
     manageChildren: jest.fn(),
@@ -109,25 +110,31 @@ jest
       getNativeRef: jest.fn(),
     }),
   )
-  .mock('../Libraries/Modal/Modal', () =>
-    mockComponent('../Libraries/Modal/Modal'),
-  )
+  .mock('../Libraries/Modal/Modal', () => {
+    const baseComponent = mockComponent('../Libraries/Modal/Modal');
+    const mockModal = jest.requireActual('./mockModal');
+    return mockModal(baseComponent);
+  })
   .mock('../Libraries/Components/View/View', () =>
     mockComponent('../Libraries/Components/View/View', MockNativeMethods),
   )
   .mock('../Libraries/Components/AccessibilityInfo/AccessibilityInfo', () => ({
-    addEventListener: jest.fn(),
-    announceForAccessibility: jest.fn(),
-    fetch: jest.fn(),
-    isBoldTextEnabled: jest.fn(),
-    isGrayscaleEnabled: jest.fn(),
-    isInvertColorsEnabled: jest.fn(),
-    isReduceMotionEnabled: jest.fn(),
-    isReduceTransparencyEnabled: jest.fn(),
-    isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
-    removeEventListener: jest.fn(),
-    setAccessibilityFocus: jest.fn(),
-    sendAccessibilityEvent_unstable: jest.fn(),
+    __esModule: true,
+    default: {
+      addEventListener: jest.fn(),
+      announceForAccessibility: jest.fn(),
+      isAccessibilityServiceEnabled: jest.fn(),
+      isBoldTextEnabled: jest.fn(),
+      isGrayscaleEnabled: jest.fn(),
+      isInvertColorsEnabled: jest.fn(),
+      isReduceMotionEnabled: jest.fn(),
+      isReduceTransparencyEnabled: jest.fn(),
+      isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
+      removeEventListener: jest.fn(),
+      setAccessibilityFocus: jest.fn(),
+      sendAccessibilityEvent_unstable: jest.fn(),
+      getRecommendedTimeoutMillis: jest.fn(),
+    },
   }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(
@@ -346,7 +353,7 @@ jest
   })
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',
-    () => function() {},
+    () => function () {},
   )
   .mock('../Libraries/Components/View/ViewNativeComponent', () => {
     const React = require('react');

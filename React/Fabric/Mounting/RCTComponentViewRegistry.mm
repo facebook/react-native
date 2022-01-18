@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,29 +15,25 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTViewComponentView.h"
 
-#import <better/map.h>
+#import <butter/map.h>
 
 using namespace facebook::react;
 
 const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
 @implementation RCTComponentViewRegistry {
-  better::map<Tag, RCTComponentViewDescriptor> _registry;
-  better::map<ComponentHandle, std::vector<RCTComponentViewDescriptor>> _recyclePool;
+  butter::map<Tag, RCTComponentViewDescriptor> _registry;
+  butter::map<ComponentHandle, std::vector<RCTComponentViewDescriptor>> _recyclePool;
 }
 
 - (instancetype)init
 {
   if (self = [super init]) {
-    _componentViewFactory = [RCTComponentViewFactory standardComponentViewFactory];
+    _componentViewFactory = [RCTComponentViewFactory currentComponentViewFactory];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleApplicationDidReceiveMemoryWarningNotification)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleApplicationDidEnterBackgroundNotification)
-                                                 name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -164,13 +160,6 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 - (void)handleApplicationDidReceiveMemoryWarningNotification
 {
   _recyclePool.clear();
-}
-
-- (void)handleApplicationDidEnterBackgroundNotification
-{
-  if (RCTExperimentGetReleaseResourcesWhenBackgrounded()) {
-    _recyclePool.clear();
-  }
 }
 
 @end

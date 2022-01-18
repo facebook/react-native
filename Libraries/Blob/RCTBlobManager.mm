@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,10 +40,8 @@ RCT_EXPORT_MODULE(BlobModule)
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize methodQueue = _methodQueue;
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)initialize
 {
-  _bridge = bridge;
-
   std::lock_guard<std::mutex> lock(_blobsMutex);
   _blobs = [NSMutableDictionary new];
 
@@ -264,7 +262,7 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
   NSDictionary *blob = [RCTConvert NSDictionary:data[@"blob"]];
 
   NSString *contentType = @"application/octet-stream";
-  NSString *blobType = [RCTConvert NSString:blob[@"type"]];
+  NSString *blobType = [RCTConvert NSString:RCTNilIfNull(blob[@"type"])];
   if (blobType != nil && blobType.length > 0) {
     contentType = blob[@"type"];
   }

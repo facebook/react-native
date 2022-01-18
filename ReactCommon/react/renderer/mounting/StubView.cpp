@@ -1,11 +1,15 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "StubView.h"
+
+#ifdef STUB_VIEW_TREE_VERBOSE
+#include <glog/logging.h>
+#endif
 
 namespace facebook {
 namespace react {
@@ -35,8 +39,23 @@ void StubView::update(ShadowView const &shadowView) {
 }
 
 bool operator==(StubView const &lhs, StubView const &rhs) {
-  return std::tie(lhs.props, lhs.layoutMetrics) ==
-      std::tie(rhs.props, rhs.layoutMetrics);
+  if (lhs.props != rhs.props) {
+#ifdef STUB_VIEW_TREE_VERBOSE
+    LOG(ERROR) << "StubView: props do not match. lhs hash: "
+               << std::hash<ShadowView>{}((ShadowView)lhs)
+               << " rhs hash: " << std::hash<ShadowView>{}((ShadowView)rhs);
+#endif
+    return false;
+  }
+  if (lhs.layoutMetrics != rhs.layoutMetrics) {
+#ifdef STUB_VIEW_TREE_VERBOSE
+    LOG(ERROR) << "StubView: layoutMetrics do not match lhs hash: "
+               << std::hash<ShadowView>{}((ShadowView)lhs)
+               << " rhs hash: " << std::hash<ShadowView>{}((ShadowView)rhs);
+#endif
+    return false;
+  }
+  return true;
 }
 
 bool operator!=(StubView const &lhs, StubView const &rhs) {

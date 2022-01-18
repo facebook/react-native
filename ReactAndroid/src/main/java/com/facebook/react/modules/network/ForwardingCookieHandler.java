@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -144,10 +144,7 @@ public class ForwardingCookieHandler extends CookieHandler {
         // specific exception.
         // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/webkit/WebViewFactory.java#348
         if (message != null
-            && exception
-                .getClass()
-                .getCanonicalName()
-                .equals("android.webkit.WebViewFactory.MissingWebViewPackageException")) {
+            && exception.getClass().getCanonicalName().contains("MissingWebViewPackageException")) {
           return null;
         } else {
           throw exception;

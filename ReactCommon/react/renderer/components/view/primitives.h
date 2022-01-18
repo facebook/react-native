@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <better/optional.h>
+#include <butter/optional.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Geometry.h>
 #include <array>
@@ -25,7 +25,7 @@ enum class BorderStyle { Solid, Dotted, Dashed };
 template <typename T>
 struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;
-  using OptionalT = better::optional<T>;
+  using OptionalT = butter::optional<T>;
 
   OptionalT left{};
   OptionalT top{};
@@ -38,18 +38,19 @@ struct CascadedRectangleEdges {
   OptionalT all{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
-    const auto leading = isRTL ? end : start;
-    const auto trailing = isRTL ? start : end;
+    const auto leadingEdge = isRTL ? end : start;
+    const auto trailingEdge = isRTL ? start : end;
     const auto horizontalOrAllOrDefault =
         horizontal.value_or(all.value_or(defaults));
     const auto verticalOrAllOrDefault =
         vertical.value_or(all.value_or(defaults));
 
     return {
-        /* .left = */ left.value_or(leading.value_or(horizontalOrAllOrDefault)),
+        /* .left = */
+        left.value_or(leadingEdge.value_or(horizontalOrAllOrDefault)),
         /* .top = */ top.value_or(verticalOrAllOrDefault),
         /* .right = */
-        right.value_or(trailing.value_or(horizontalOrAllOrDefault)),
+        right.value_or(trailingEdge.value_or(horizontalOrAllOrDefault)),
         /* .bottom = */ bottom.value_or(verticalOrAllOrDefault),
     };
   }
@@ -85,7 +86,7 @@ struct CascadedRectangleEdges {
 template <typename T>
 struct CascadedRectangleCorners {
   using Counterpart = RectangleCorners<T>;
-  using OptionalT = better::optional<T>;
+  using OptionalT = butter::optional<T>;
 
   OptionalT topLeft{};
   OptionalT topRight{};

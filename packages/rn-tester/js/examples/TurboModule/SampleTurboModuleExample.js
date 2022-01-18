@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@ import {
   FlatList,
   Platform,
   TouchableOpacity,
-  unstable_RootTagContext,
+  RootTagContext,
 } from 'react-native';
 import * as React from 'react';
 
@@ -28,12 +28,12 @@ type State = {|
       value: mixed,
       ...
     },
-    ...,
+    ...
   },
 |};
 
 class SampleTurboModuleExample extends React.Component<{||}, State> {
-  static contextType: React$Context<RootTag> = unstable_RootTagContext;
+  static contextType: React$Context<RootTag> = RootTagContext;
 
   state: State = {
     testResults: {},
@@ -75,14 +75,14 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
 
   _setResult(name, result) {
     this.setState(({testResults}) => ({
-      /* $FlowFixMe(>=0.122.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.122.0 was deployed. To see the error, delete
-       * this comment and run Flow. */
+      /* $FlowFixMe[cannot-spread-indexer] (>=0.122.0 site=react_native_fb)
+       * This comment suppresses an error found when Flow v0.122.0 was
+       * deployed. To see the error, delete this comment and run Flow. */
       testResults: {
         ...testResults,
-        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
-         * an error found when Flow v0.111 was deployed. To see the error,
-         * delete this comment and run Flow. */
+        /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb)
+         * This comment suppresses an error found when Flow v0.111 was
+         * deployed. To see the error, delete this comment and run Flow. */
         [name]: {value: result, type: typeof result},
       },
     }));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -69,7 +69,7 @@ class InspectorPanel extends React.Component<Props> {
             style={this.props.inspected.style}
             frame={this.props.inspected.frame}
             source={this.props.inspected.source}
-            // $FlowFixMe: Hierarchy should be non-nullable
+            // $FlowFixMe[incompatible-type] : Hierarchy should be non-nullable
             hierarchy={this.props.hierarchy}
             selection={this.props.selection}
             setSelection={this.props.setSelection}

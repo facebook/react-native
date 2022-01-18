@@ -16,11 +16,11 @@ APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 rn_xplat_cxx_library(
     name = "componentregistry",
     srcs = glob(
-        ["**/*.cpp"],
+        ["*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
-        ["**/*.h"],
+        ["*.h"],
         exclude = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",
@@ -30,12 +30,6 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/componentregistry",
     ),
-    compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-        "-std=c++14",
-        "-Wall",
-    ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
     force_static = True,

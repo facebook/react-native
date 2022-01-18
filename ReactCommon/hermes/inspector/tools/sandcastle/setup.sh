@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -14,10 +14,6 @@ set -o pipefail
 
 THIS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT_DIR=$(cd "$THIS_DIR" && hg root)
-
-# Buck by default uses clang-3.6 from /opt/local/bin.
-# Override it to use system clang.
-export PATH="/usr/bin:$PATH"
 
 # Enter xplat
 cd "$ROOT_DIR"/xplat || exit 1

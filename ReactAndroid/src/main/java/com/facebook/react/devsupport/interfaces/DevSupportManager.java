@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,17 +7,19 @@
 
 package com.facebook.react.devsupport.interfaces;
 
+import android.app.Activity;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import java.io.File;
 
 /**
  * Interface for accessing and interacting with development features. In dev mode, use the
- * implementation {@link DevSupportManagerImpl}. In production mode, use the dummy implementation
+ * implementation {@link BridgeDevSupportManager}. In production mode, use the dummy implementation
  * {@link DisabledDevSupportManager}.
  */
 public interface DevSupportManager extends NativeModuleCallExceptionHandler {
@@ -69,6 +71,8 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
 
   void reloadJSFromServer(final String bundleURL);
 
+  void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback);
+
   void loadSplitBundleFromServer(String bundlePath, DevSplitBundleCallback callback);
 
   void isPackagerRunning(PackagerStatusCallback callback);
@@ -90,6 +94,9 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   @Nullable
   StackFrame[] getLastErrorStack();
 
+  @Nullable
+  ErrorType getLastErrorType();
+
   void registerErrorCustomizer(ErrorCustomizer errorCustomizer);
 
   /**
@@ -102,4 +109,16 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   }
 
   void setPackagerLocationCustomizer(PackagerLocationCustomizer packagerLocationCustomizer);
+
+  @Nullable
+  Activity getCurrentActivity();
+
+  /**
+   * Create the surface delegate that the provided module should use to interact with
+   *
+   * @param moduleName the module name that helps decide which surface it should interact with
+   * @return a {@link SurfaceDelegate} instance
+   */
+  @Nullable
+  SurfaceDelegate createSurfaceDelegate(String moduleName);
 }

@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -22,9 +22,7 @@ LOCAL_LDLIBS := -llog
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall -llog
-
-LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -llog
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall -llog
 
 include $(BUILD_SHARED_LIBRARY)
 

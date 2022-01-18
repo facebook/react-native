@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,7 @@
 
 plugins {
     id("com.android.application")
-    id("com.facebook.react.codegen")
-    id("com.facebook.react.app")
+    id("com.facebook.react")
 }
 
 /**
@@ -76,8 +75,9 @@ plugins {
  * ]
  */
 
-reactApp {
-    cliPath = "$rootDir/cli.js"
+react {
+    applyAppPlugin = true
+    cliPath = "../../../../cli.js"
     bundleAssetName = "RNTesterApp.android.bundle"
     entryFile = file("../../js/RNTesterApp.android.js")
     reactRoot = rootDir
@@ -85,11 +85,16 @@ reactApp {
     composeSourceMapsPath = "$rootDir/scripts/compose-source-maps.js"
     hermesCommand = "$rootDir/node_modules/hermes-engine/%OS-BIN%/hermesc"
     enableHermesForVariant { def v -> v.name.contains("hermes") }
+
+    // Codegen Configs
+    jsRootDir = file("$rootDir/packages/rn-tester")
+    libraryName = "rntester"
+    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET")?.toBoolean() ?: false
 }
 
 project.ext.react = [
     enableCodegen: true, // Keep this here until it's sync'ed to Android template.
-    enableFabric: (System.getenv('USE_FABRIC') ?: '0').toBoolean()
+    enableFabric: (System.getenv('USE_FABRIC') ?: 'true').toBoolean()
 ]
 
 //apply from: "../../../../react.gradle"
@@ -128,16 +133,23 @@ def enableFabric = project.ext.react.enableFabric
  */
 def useIntlJsc = false
 
+/**
+ * Architectures to build native code for.
+ */
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 android {
-    compileSdkVersion 29
-    ndkVersion ANDROID_NDK_VERSION
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    compileSdkVersion 31
+
+    // Used to override the NDK path & version on internal CI
+    if (System.getenv("ANDROID_NDK") != null && System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
+        ndkPath System.getenv("ANDROID_NDK")
+        ndkVersion System.getenv("LOCAL_ANDROID_NDK_VERSION")
     }
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
+
     flavorDimensions "vm"
     productFlavors {
         hermes {
@@ -151,7 +163,7 @@ android {
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
@@ -172,7 +184,7 @@ android {
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false
             reset()
-            include "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
+            include (*reactNativeArchitectures())
         }
     }
     buildTypes {
@@ -196,6 +208,10 @@ android {
                 "$rootDir/ReactCommon/react/nativemodule/samples/platform/android",
             ]
         }
+    }
+    packagingOptions {
+        pickFirst '**/libhermes.so'
+        pickFirst '**/libjsc.so'
     }
 }
 
@@ -239,12 +255,6 @@ dependencies {
     androidTestImplementation 'junit:junit:4.12'
 }
 
-react {
-    jsRootDir = file("$rootDir/packages/rn-tester")
-    reactNativeRootDir = file("$rootDir")
-    useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
-}
-
 if (enableCodegen) {
     // TODO: Move all this logic to CodegenPlugin.java.
     def reactAndroidProjectDir = project(':ReactAndroid').projectDir;
@@ -254,7 +264,6 @@ if (enableCodegen) {
         defaultConfig {
             externalNativeBuild {
                 ndkBuild {
-                    abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
                     arguments "APP_PLATFORM=android-21",
                             "APP_STL=c++_shared",
                             "NDK_TOOLCHAIN_VERSION=clang",
@@ -264,7 +273,7 @@ if (enableCodegen) {
                             "REACT_ANDROID_DIR=$reactAndroidProjectDir",
                             "REACT_ANDROID_BUILD_DIR=$reactAndroidBuildDir"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
-                    cppFlags "-std=c++1y"
+                    cppFlags "-std=c++17"
                     targets "rntester_appmodules"
                 }
             }
@@ -276,28 +285,27 @@ if (enableCodegen) {
         }
     }
 
-    def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
+    def packageReactDebugNdkLibs = tasks.register("packageReactDebugNdkLibs", Copy) {
         // TODO: handle extracting .so from prebuilt :ReactAndroid.
-        dependsOn(":ReactAndroid:packageReactNdkLibs")
-        from("$reactAndroidBuildDir/react-ndk/exported")
+        dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
+        dependsOn("generateCodegenArtifactsFromSchema")
+        from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
+        into("$buildDir/react-ndk/exported")
+    }
+    def packageReactReleaseNdkLibs = tasks.register("packageReactReleaseNdkLibs", Copy) {
+        // TODO: handle extracting .so from prebuilt :ReactAndroid.
+        dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
+        dependsOn("generateCodegenArtifactsFromSchema")
+        from("$reactAndroidProjectDir/src/main/jni/prebuilt/lib")
         into("$buildDir/react-ndk/exported")
     }
 
-    def cleanProjectNdkBuild = tasks.register("cleanProjectNdkBuild", Exec) {
-        ignoreExitValue(true)
-        tasks.forEach {
-            t ->
-                if (t.name.startsWith("externalNativeBuildClean")) {
-                    dependsOn(t);
-                }
-        }
-        // This .cxx folder may cause stale ndkBuild configuration.
-        // See https://stackoverflow.com/a/58288851.
-        commandLine("rm", "-rf", "$projectDir/.cxx")
-    }
-
     afterEvaluate {
-        preBuild.dependsOn(packageReactNdkLibs)
-        clean.dependsOn(cleanProjectNdkBuild)
+        configureNdkBuildRelease.dependsOn(packageReactReleaseNdkLibs)
+        preHermesReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+        preJscReleaseBuild.dependsOn(packageReactReleaseNdkLibs)
+        configureNdkBuildDebug.dependsOn(packageReactDebugNdkLibs)
+        preHermesDebugBuild.dependsOn(packageReactDebugNdkLibs)
+        preJscDebugBuild.dependsOn(packageReactDebugNdkLibs)
     }
 }

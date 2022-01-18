@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,8 @@
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook {
@@ -23,6 +25,8 @@ namespace react {
  */
 class TextInputState final {
  public:
+  TextInputState() = default;
+
   /*
    * All content of <TextInput> component.
    */
@@ -48,9 +52,19 @@ class TextInputState final {
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
    */
-  SharedTextLayoutManager layoutManager;
+  std::shared_ptr<TextLayoutManager const> layoutManager;
 
   size_t mostRecentEventCount{0};
+
+#ifdef ANDROID
+  TextInputState(
+      TextInputState const &previousState,
+      folly::dynamic const &data);
+
+  folly::dynamic getDynamic() const;
+
+  MapBuffer getMapBuffer() const;
+#endif
 };
 
 } // namespace react

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,6 @@
 #import "RCTTouchHandler.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
-#import <UIKit/UIKit.h>
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
@@ -40,10 +39,6 @@
 
   __weak UIView *_cachedRootView;
 
-  // See Touch.h and usage. This gives us a time-basis for a monotonic
-  // clock that acts like a timestamp of milliseconds elapsed since UNIX epoch.
-  NSTimeInterval _unixEpochBasisTime;
-
   uint16_t _coalescingKey;
 }
 
@@ -57,9 +52,6 @@
     _nativeTouches = [NSMutableOrderedSet new];
     _reactTouches = [NSMutableArray new];
     _touchViews = [NSMutableArray new];
-
-    // Get a UNIX epoch basis time:
-    _unixEpochBasisTime = [[NSDate date] timeIntervalSince1970] - [NSProcessInfo processInfo].systemUptime;
 
     // `cancelsTouchesInView` and `delaysTouches*` are needed in order to be used as a top level
     // event delegated recognizer. Otherwise, lower-level components not built
@@ -167,13 +159,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   reactTouch[@"pageY"] = @(RCTSanitizeNaNValue(rootViewLocation.y, @"touchEvent.pageY"));
   reactTouch[@"locationX"] = @(RCTSanitizeNaNValue(touchViewLocation.x, @"touchEvent.locationX"));
   reactTouch[@"locationY"] = @(RCTSanitizeNaNValue(touchViewLocation.y, @"touchEvent.locationY"));
-  reactTouch[@"timestamp"] = @((_unixEpochBasisTime + nativeTouch.timestamp) * 1000); // in ms, for JS
+  reactTouch[@"timestamp"] = @(nativeTouch.timestamp * 1000); // in ms, for JS
 
   // TODO: force for a 'normal' touch is usually 1.0;
   // should we expose a `normalTouchForce` constant somewhere (which would
   // have a value of `1.0 / nativeTouch.maximumPossibleForce`)?
   if (RCTForceTouchAvailable()) {
     reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
+  } else if (nativeTouch.type == UITouchTypePencil) {
+    reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
+    reactTouch[@"altitudeAngle"] = @(RCTZeroIfNaN(nativeTouch.altitudeAngle));
   }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,155 +17,204 @@ namespace facebook {
 namespace react {
 
 ScrollViewProps::ScrollViewProps(
+    const PropsParserContext &context,
     ScrollViewProps const &sourceProps,
     RawProps const &rawProps)
-    : ViewProps(sourceProps, rawProps),
+    : ViewProps(context, sourceProps, rawProps),
       alwaysBounceHorizontal(convertRawProp(
+          context,
           rawProps,
           "alwaysBounceHorizontal",
           sourceProps.alwaysBounceHorizontal,
           {})),
       alwaysBounceVertical(convertRawProp(
+          context,
           rawProps,
           "alwaysBounceVertical",
           sourceProps.alwaysBounceVertical,
           {})),
-      bounces(convertRawProp(rawProps, "bounces", sourceProps.bounces, true)),
+      bounces(convertRawProp(
+          context,
+          rawProps,
+          "bounces",
+          sourceProps.bounces,
+          true)),
       bouncesZoom(convertRawProp(
+          context,
           rawProps,
           "bouncesZoom",
           sourceProps.bouncesZoom,
           true)),
       canCancelContentTouches(convertRawProp(
+          context,
           rawProps,
           "canCancelContentTouches",
           sourceProps.canCancelContentTouches,
           true)),
       centerContent(convertRawProp(
+          context,
           rawProps,
           "centerContent",
           sourceProps.centerContent,
           {})),
       automaticallyAdjustContentInsets(convertRawProp(
+          context,
           rawProps,
           "automaticallyAdjustContentInsets",
           sourceProps.automaticallyAdjustContentInsets,
           {})),
+      automaticallyAdjustsScrollIndicatorInsets(convertRawProp(
+          context,
+          rawProps,
+          "automaticallyAdjustsScrollIndicatorInsets",
+          sourceProps.automaticallyAdjustsScrollIndicatorInsets,
+          true)),
       decelerationRate(convertRawProp(
+          context,
           rawProps,
           "decelerationRate",
           sourceProps.decelerationRate,
           (Float)0.998)),
       directionalLockEnabled(convertRawProp(
+          context,
           rawProps,
           "directionalLockEnabled",
           sourceProps.directionalLockEnabled,
           {})),
       indicatorStyle(convertRawProp(
+          context,
           rawProps,
           "indicatorStyle",
           sourceProps.indicatorStyle,
           {})),
       keyboardDismissMode(convertRawProp(
+          context,
           rawProps,
           "keyboardDismissMode",
           sourceProps.keyboardDismissMode,
           {})),
       maximumZoomScale(convertRawProp(
+          context,
           rawProps,
           "maximumZoomScale",
           sourceProps.maximumZoomScale,
           (Float)1.0)),
       minimumZoomScale(convertRawProp(
+          context,
           rawProps,
           "minimumZoomScale",
           sourceProps.minimumZoomScale,
           (Float)1.0)),
       scrollEnabled(convertRawProp(
+          context,
           rawProps,
           "scrollEnabled",
           sourceProps.scrollEnabled,
           true)),
       pagingEnabled(convertRawProp(
+          context,
           rawProps,
           "pagingEnabled",
           sourceProps.pagingEnabled,
           {})),
       pinchGestureEnabled(convertRawProp(
+          context,
           rawProps,
           "pinchGestureEnabled",
           sourceProps.pinchGestureEnabled,
           true)),
       scrollsToTop(convertRawProp(
+          context,
           rawProps,
           "scrollsToTop",
           sourceProps.scrollsToTop,
           true)),
       showsHorizontalScrollIndicator(convertRawProp(
+          context,
           rawProps,
           "showsHorizontalScrollIndicator",
           sourceProps.showsHorizontalScrollIndicator,
           true)),
       showsVerticalScrollIndicator(convertRawProp(
+          context,
           rawProps,
           "showsVerticalScrollIndicator",
           sourceProps.showsVerticalScrollIndicator,
           true)),
       scrollEventThrottle(convertRawProp(
+          context,
           rawProps,
           "scrollEventThrottle",
           sourceProps.scrollEventThrottle,
           {})),
       zoomScale(convertRawProp(
+          context,
           rawProps,
           "zoomScale",
           sourceProps.zoomScale,
           (Float)1.0)),
       contentInset(convertRawProp(
+          context,
           rawProps,
           "contentInset",
           sourceProps.contentInset,
           {})),
       contentOffset(convertRawProp(
+          context,
           rawProps,
           "contentOffset",
           sourceProps.contentOffset,
           {})),
       scrollIndicatorInsets(convertRawProp(
+          context,
           rawProps,
           "scrollIndicatorInsets",
           sourceProps.scrollIndicatorInsets,
           {})),
       snapToInterval(convertRawProp(
+          context,
           rawProps,
           "snapToInterval",
           sourceProps.snapToInterval,
           {})),
       snapToAlignment(convertRawProp(
+          context,
           rawProps,
           "snapToAlignment",
           sourceProps.snapToAlignment,
           {})),
       disableIntervalMomentum(convertRawProp(
+          context,
           rawProps,
           "disableIntervalMomentum",
           sourceProps.disableIntervalMomentum,
           {})),
       snapToOffsets(convertRawProp(
+          context,
           rawProps,
           "snapToOffsets",
           sourceProps.snapToOffsets,
           {})),
-      snapToStart(
-          convertRawProp(rawProps, "snapToStart", sourceProps.snapToStart, {})),
-      snapToEnd(
-          convertRawProp(rawProps, "snapToEnd", sourceProps.snapToEnd, {})),
+      snapToStart(convertRawProp(
+          context,
+          rawProps,
+          "snapToStart",
+          sourceProps.snapToStart,
+          true)),
+      snapToEnd(convertRawProp(
+          context,
+          rawProps,
+          "snapToEnd",
+          sourceProps.snapToEnd,
+          true)),
       contentInsetAdjustmentBehavior(convertRawProp(
+          context,
           rawProps,
           "contentInsetAdjustmentBehavior",
           sourceProps.contentInsetAdjustmentBehavior,
           {ContentInsetAdjustmentBehavior::Never})),
       scrollToOverflowEnabled(convertRawProp(
+          context,
           rawProps,
           "scrollToOverflowEnabled",
           sourceProps.scrollToOverflowEnabled,
@@ -203,6 +252,10 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
               "automaticallyAdjustContentInsets",
               automaticallyAdjustContentInsets,
               defaultScrollViewProps.automaticallyAdjustContentInsets),
+          debugStringConvertibleItem(
+              "automaticallyAdjustsScrollIndicatorInsets",
+              automaticallyAdjustsScrollIndicatorInsets,
+              defaultScrollViewProps.automaticallyAdjustsScrollIndicatorInsets),
           debugStringConvertibleItem(
               "decelerationRate",
               decelerationRate,

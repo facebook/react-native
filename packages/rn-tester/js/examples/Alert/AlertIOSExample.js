@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,7 @@ const {
 
 const {examples: SharedAlertExamples} = require('./AlertExample');
 
-import type {RNTesterExampleModuleItem} from '../../types/RNTesterTypes';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 type Props = $ReadOnly<{||}>;
 type State = {|promptValue: ?string|};
@@ -29,10 +29,12 @@ type State = {|promptValue: ?string|};
 class PromptOptions extends React.Component<Props, State> {
   customButtons: Array<Object>;
 
-  constructor(props) {
+  constructor(props: void | Props) {
     super(props);
 
-    // $FlowFixMe this seems to be a Flow bug, `saveResponse` is defined below
+    /* $FlowFixMe[cannot-write] this seems to be a Flow bug, `saveResponse` is
+     * defined below */
+    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     this.saveResponse = this.saveResponse.bind(this);
 
     this.customButtons = [
@@ -61,6 +63,8 @@ class PromptOptions extends React.Component<Props, State> {
 
         <TouchableHighlight
           style={styles.wrapper}
+          // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+          // $FlowFixMe[incompatible-call]
           onPress={() => Alert.prompt('Type a value', null, this.saveResponse)}>
           <View style={styles.button}>
             <Text>prompt with title & callback</Text>
@@ -100,6 +104,8 @@ class PromptOptions extends React.Component<Props, State> {
             Alert.prompt(
               'Type a value',
               null,
+              // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+              // $FlowFixMe[incompatible-call]
               this.saveResponse,
               undefined,
               'Default value',
@@ -131,7 +137,7 @@ class PromptOptions extends React.Component<Props, State> {
     );
   }
 
-  saveResponse(promptValue) {
+  saveResponse(promptValue: any) {
     this.setState({promptValue: JSON.stringify(promptValue)});
   }
 }
@@ -199,4 +205,4 @@ exports.examples = ([
       );
     },
   },
-]: RNTesterExampleModuleItem[]);
+]: Array<RNTesterModuleExample>);
