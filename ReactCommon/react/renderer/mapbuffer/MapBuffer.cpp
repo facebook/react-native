@@ -15,22 +15,12 @@ namespace react {
 // TODO T83483191: Extend MapBuffer C++ implementation to support basic random
 // access
 MapBuffer::MapBuffer(std::vector<uint8_t> data) : bytes_(std::move(data)) {
-  memcpy(
-      reinterpret_cast<uint8_t *>(&count_),
-      bytes_.data() + HEADER_COUNT_OFFSET,
-      UINT16_SIZE);
+  auto header = reinterpret_cast<Header const *>(bytes_.data());
+  count_ = header->count;
 
-  // TODO T83483191: extract memcpy calls into an inline function to simplify
-  // the code
-  uint32_t dataSize;
-  memcpy(
-      reinterpret_cast<uint8_t *>(&dataSize),
-      bytes_.data() + HEADER_BUFFER_SIZE_OFFSET,
-      INT_SIZE);
-
-  if (dataSize != bytes_.size()) {
-    LOG(ERROR) << "Error: Data size does not match, expected " << dataSize
-               << " found: " << bytes_.size();
+  if (header->bufferSize != bytes_.size()) {
+    LOG(ERROR) << "Error: Data size does not match, expected "
+               << header->bufferSize << " found: " << bytes_.size();
     abort();
   }
 }
