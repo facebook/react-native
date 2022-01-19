@@ -466,21 +466,6 @@ export default class Pressability {
       },
     };
 
-    const keyEventHandlers = {
-      onKeyDown: (event: KeyEvent): void => {
-        const {onKeyDown} = this._config;
-        if (onKeyDown != null) {
-          onKeyDown(event);
-        }
-      },
-      onKeyUp: (event: KeyEvent): void => {
-        const {onKeyUp} = this._config;
-        if (onKeyUp != null) {
-          onKeyUp(event);
-        }
-      },
-    };
-
     const responderEventHandlers = {
       onStartShouldSetResponder: (): boolean => {
         const {disabled} = this._config;
@@ -636,11 +621,28 @@ export default class Pressability {
             },
           };
 
+    // [TODO(macOS GH#774)
+    const keyboardEventHandlers = {
+      onKeyDown: (event: KeyEvent): void => {
+        const {onKeyDown} = this._config;
+        if (onKeyDown != null) {
+          onKeyDown(event);
+        }
+      },
+      onKeyUp: (event: KeyEvent): void => {
+        const {onKeyUp} = this._config;
+        if (onKeyUp != null) {
+          onKeyUp(event);
+        }
+      },
+    };
+    // ]TODO(macOS GH#774)
+
     return {
       ...focusEventHandlers,
       ...responderEventHandlers,
       ...mouseEventHandlers,
-      ...keyEventHandlers,
+      ...keyboardEventHandlers, // [TODO(macOS GH#774)]
     };
   }
 
