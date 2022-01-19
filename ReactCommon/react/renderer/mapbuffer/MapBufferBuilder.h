@@ -23,7 +23,7 @@ constexpr uint16_t INITIAL_BUCKETS_SIZE = 10;
  */
 class MapBufferBuilder {
  private:
-  Header _header = {ALIGNMENT, 0, 0};
+  Header header_ = {ALIGNMENT, 0, 0};
 
   void storeKeyValue(Key key, uint8_t const *value, uint32_t valueSize);
 

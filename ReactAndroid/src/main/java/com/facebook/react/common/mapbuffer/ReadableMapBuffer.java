@@ -92,7 +92,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     int hi = getCount() - 1;
     while (lo <= hi) {
       final int mid = (lo + hi) >>> 1;
-      final int midVal = readKey(getKeyOffsetForBucketIndex(mid));
+      final int midVal = readUnsignedShort(getKeyOffsetForBucketIndex(mid));
       if (midVal < key) {
         lo = mid + 1;
       } else if (midVal > key) {
@@ -104,7 +104,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
     return -1;
   }
 
-  private int readKey(int position) {
+  private int readUnsignedShort(int position) {
     return mBuffer.getShort(position) & 0xFFFF;
   }
 
@@ -155,7 +155,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
       mBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
     // count
-    mCount = mBuffer.getShort() & 0xFFFF;
+    mCount = readUnsignedShort(mBuffer.position());
   }
 
   /**
@@ -229,7 +229,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
   }
 
   private void assertKeyExists(int key, int bucketIndex) {
-    int storedKey = readKey(getKeyOffsetForBucketIndex(bucketIndex));
+    int storedKey = readUnsignedShort(getKeyOffsetForBucketIndex(bucketIndex));
     if (storedKey != key) {
       throw new IllegalStateException(
           "Stored key doesn't match parameter - expected: " + key + " - found: " + storedKey);
@@ -289,7 +289,7 @@ public class ReadableMapBuffer implements Iterable<ReadableMapBuffer.MapBufferEn
 
     /** @return a {@link short} that represents the key of this {@link MapBufferEntry}. */
     public int getKey() {
-      return readKey(mBucketOffset);
+      return readUnsignedShort(mBucketOffset);
     }
 
     /** @return the double value that is stored in this {@link MapBufferEntry}. */

@@ -40,7 +40,7 @@ void MapBufferBuilder::storeKeyValue(
 
   buckets_.emplace_back(key, data);
 
-  _header.count++;
+  header_.count++;
 
   minKeyToStore_ = key + 1;
 }
@@ -99,10 +99,10 @@ MapBuffer MapBufferBuilder::build() {
   auto bucketSize = buckets_.size() * BUCKET_SIZE;
   uint32_t bufferSize = HEADER_SIZE + bucketSize + dynamicData_.size();
 
-  _header.bufferSize = bufferSize;
+  header_.bufferSize = bufferSize;
 
   std::vector<uint8_t> buffer(bufferSize);
-  memcpy(buffer.data(), &_header, HEADER_SIZE);
+  memcpy(buffer.data(), &header_, HEADER_SIZE);
   memcpy(buffer.data() + HEADER_SIZE, buckets_.data(), bucketSize);
   memcpy(
       buffer.data() + HEADER_SIZE + bucketSize,
