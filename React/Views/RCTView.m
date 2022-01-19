@@ -1393,19 +1393,6 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   return ([self focusable] && [NSApp isFullKeyboardAccessEnabled]) || [super acceptsFirstResponder];
 }
 
-- (BOOL)performKeyEquivalent:(NSEvent *)theEvent
-{
-  if (self.onClick != nil &&
-      [self focusable] &&
-      [[self window] firstResponder] == self) {
-    if ([[theEvent characters] isEqualToString:@" "] || [[theEvent characters] isEqualToString:@"\r"]) {
-      self.onClick(nil);
-      return YES;
-    }
-  }
-  return [super performKeyEquivalent:theEvent];
-}
-
 - (void)updateTrackingAreas
 {
   if (_trackingArea) {
