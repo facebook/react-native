@@ -10,17 +10,25 @@
 
 import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import type {UnsafeObject} from 'react-native/Libraries/Types/CodegenTypes';
+
+export type ScreenshotManagerOptions = UnsafeObject;
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
-  takeSnapshot(id: string): Promise<string>;
+  takeScreenshot(
+    id: string,
+    options: ScreenshotManagerOptions,
+  ): Promise<string>;
 }
 
 const NativeModule = TurboModuleRegistry.get<Spec>('ScreenshotManager');
-
-export function takeSnapshot(id: string): Promise<string> {
+export function takeScreenshot(
+  id: string,
+  options: ScreenshotManagerOptions,
+): Promise<string> {
   if (NativeModule != null) {
-    return NativeModule.takeSnapshot(id);
+    return NativeModule.takeScreenshot(id, options);
   }
   return Promise.reject();
 }

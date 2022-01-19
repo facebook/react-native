@@ -11,15 +11,8 @@
 'use strict';
 
 const React = require('react');
-const {
-  Alert,
-  Image,
-  NativeModules,
-  StyleSheet,
-  Text,
-  View,
-} = require('react-native');
-const ScreenshotManager = NativeModules.ScreenshotManager;
+const {Alert, Image, StyleSheet, Text, View} = require('react-native');
+const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 
 class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
   state = {
