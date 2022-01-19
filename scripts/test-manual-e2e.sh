@@ -171,20 +171,20 @@ test_template_app(){
 
 show_menu(){
     echo "Which app do you want to test?
-1 - RNTester
-2 - A new RN app using the template"
-    read selected_app
+  1 - RNTester
+  2 - A new RN app using the template"
+    read -p "> " selected_app
 
     echo "What platform do you want to test?
-1 - Android
-2 - iOS"
-    read selected_platform
+  1 - Android
+  2 - iOS"
+    read -p "> " selected_platform
 
     if [ "$selected_app" == "1" ]; then
         echo "What VM are you testing?
-1 - Hermes
-2 - JSC"
-        read selected_vm
+  1 - Hermes
+  2 - JSC"
+        read -p "> " selected_vm
     fi
 
 }
@@ -197,9 +197,9 @@ handle_menu_input(){
         read -r -n 1
 
         if [ "$selected_platform" == "1" ]; then
-            test_android selected_vm
+            test_android "$selected_vm"
         elif [ "$selected_platform" == "2" ]; then
-            test_ios selected_vm
+            test_ios "$selected_vm"
         fi
     elif [ "$selected_app" == "2" ]; then
         test_template_app
