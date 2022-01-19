@@ -145,7 +145,6 @@ function validateMapping(argMapping, args) {
 class AnimatedEvent {
   _argMapping: $ReadOnlyArray<?Mapping>;
   _listeners: Array<Function> = [];
-  _callListeners: Function;
   _attachedEvent: ?{detach: () => void, ...};
   __isNative: boolean;
 
@@ -160,7 +159,6 @@ class AnimatedEvent {
     if (config.listener) {
       this.__addListener(config.listener);
     }
-    this._callListeners = this._callListeners.bind(this);
     this._attachedEvent = null;
     this.__isNative = shouldUseNativeDriver(config);
   }
@@ -245,9 +243,9 @@ class AnimatedEvent {
     };
   }
 
-  _callListeners(...args: any) {
+  _callListeners = (...args: any) => {
     this._listeners.forEach(listener => listener(...args));
-  }
+  };
 }
 
 module.exports = {AnimatedEvent, attachNativeEvent};
