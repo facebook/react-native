@@ -4,7 +4,7 @@ rn_android_library(
     name = "imagehelper",
     srcs = glob(
         ["*.java"],
-        exclude = ["MultiSourceHelper.java"],
+        exclude = ["MultiSourceHelper.java","ImageSource.java"],
     ),
     autoglob = False,
     is_androidx = True,
@@ -37,4 +37,23 @@ rn_android_library(
     exported_deps = [
         ":imagehelper",
     ],
+)
+
+rn_android_library(
+    name = "imagesource",
+    srcs = ["ImageSource.java"],
+    autoglob = False,
+    is_androidx = True,
+    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_dep("libraries/fresco/fresco-react-native:imagepipeline"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/modules/fresco:fresco"),
+    ]
 )
