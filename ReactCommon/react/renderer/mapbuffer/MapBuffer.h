@@ -45,6 +45,8 @@ class MapBuffer {
   // returns the relative offset of the first byte of dynamic data
   int32_t getDynamicDataOffset() const;
 
+  uint32_t getKeyBucket(Key key) const;
+
  public:
   explicit MapBuffer(std::vector<uint8_t> data);
 

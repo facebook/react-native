@@ -6,6 +6,7 @@
  */
 
 #include "MapBufferBuilder.h"
+#include <algorithm>
 
 using namespace facebook::react;
 
@@ -24,10 +25,6 @@ void MapBufferBuilder::storeKeyValue(
     Key key,
     uint8_t const *value,
     uint32_t valueSize) {
-  if (key < minKeyToStore_) {
-    LOG(ERROR) << "Error: key out of order - key: " << key;
-    abort();
-  }
   if (valueSize > MAX_VALUE_SIZE) {
     LOG(ERROR) << "Error: size of value must be <= MAX_VALUE_SIZE. ValueSize: "
                << valueSize;
@@ -42,7 +39,10 @@ void MapBufferBuilder::storeKeyValue(
 
   header_.count++;
 
-  minKeyToStore_ = key + 1;
+  if (lastKey_ > key) {
+    needsSort_ = true;
+  }
+  lastKey_ = key;
 }
 
 void MapBufferBuilder::putBool(Key key, bool value) {
@@ -67,10 +67,8 @@ void MapBufferBuilder::putString(Key key, std::string const &value) {
   int32_t strSize = value.size();
   const char *strData = value.data();
 
-  auto offset = dynamicData_.size();
   // format [length of string (int)] + [Array of Characters in the string]
-  // TODO T83483191: review if map.size() should be an int32_t or long
-  // instead of an int16 (because strings can be longer than int16);
+  auto offset = dynamicData_.size();
   dynamicData_.resize(offset + INT_SIZE + strSize, 0);
   memcpy(dynamicData_.data() + offset, &strSize, INT_SIZE);
   memcpy(dynamicData_.data() + offset + INT_SIZE, strData, strSize);
@@ -94,12 +92,22 @@ void MapBufferBuilder::putMapBuffer(Key key, MapBuffer const &map) {
   putInt(key, offset);
 }
 
+static inline bool compareBuckets(Bucket const &a, Bucket const &b) {
+  return a.key < b.key;
+}
+
 MapBuffer MapBufferBuilder::build() {
   // Create buffer: [header] + [key, values] + [dynamic data]
   auto bucketSize = buckets_.size() * BUCKET_SIZE;
   uint32_t bufferSize = HEADER_SIZE + bucketSize + dynamicData_.size();
 
   header_.bufferSize = bufferSize;
+
+  if (needsSort_) {
+    std::sort(buckets_.begin(), buckets_.end(), compareBuckets);
+  }
+
+  // TODO(T83483191): add pass to check for duplicates
 
   std::vector<uint8_t> buffer(bufferSize);
   memcpy(buffer.data(), &header_, HEADER_SIZE);

@@ -166,3 +166,20 @@ TEST(MapBufferTest, testMapEntries) {
   EXPECT_EQ(readMap2.getString(0), "This is a test");
   EXPECT_EQ(readMap2.getInt(1), 1234);
 }
+
+TEST(MapBufferTest, testMapRandomAccess) {
+  auto builder = MapBufferBuilder();
+  builder.putInt(1234, 4321);
+  builder.putString(0, "This is a test");
+  builder.putDouble(8, 908.1);
+  builder.putNull(2);
+  builder.putString(65535, "Let's count: 的, 一, 是");
+  auto map = builder.build();
+
+  EXPECT_EQ(map.count(), 5);
+  EXPECT_EQ(map.getString(0), "This is a test");
+  EXPECT_EQ(map.getDouble(8), 908.1);
+  EXPECT_EQ(map.isNull(2), true);
+  EXPECT_EQ(map.getInt(1234), 4321);
+  EXPECT_EQ(map.getString(65535), "Let's count: 的, 一, 是");
+}

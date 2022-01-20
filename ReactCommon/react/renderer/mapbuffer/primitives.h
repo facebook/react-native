@@ -56,21 +56,7 @@ constexpr static int32_t HEADER_BUFFER_SIZE_OFFSET =
 constexpr static int32_t MAX_VALUE_SIZE = UINT64_SIZE;
 
 // 10 bytes : 2 key + 8 value
-constexpr static int32_t BUCKET_SIZE = KEY_SIZE + UINT64_SIZE;
-
-/**
- * Returns the offset of the key received by parameter.
- */
-inline int32_t getKeyOffset(Key key) {
-  return HEADER_SIZE + BUCKET_SIZE * key;
-}
-
-/**
- * Returns the offset of the value associated to the key received by parameter.
- */
-inline int32_t getValueOffset(Key key) {
-  return getKeyOffset(key) + KEY_SIZE;
-}
+constexpr static int32_t BUCKET_SIZE = sizeof(Bucket);
 
 inline void
 checkKeyConsistency(const Header &header, const uint8_t *data, Key key) {

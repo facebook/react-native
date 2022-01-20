@@ -22,19 +22,6 @@ constexpr uint16_t INITIAL_BUCKETS_SIZE = 10;
  * MapBufferBuilder is a builder class for MapBuffer
  */
 class MapBufferBuilder {
- private:
-  Header header_ = {ALIGNMENT, 0, 0};
-
-  void storeKeyValue(Key key, uint8_t const *value, uint32_t valueSize);
-
-  std::vector<Bucket> buckets_{};
-
-  std::vector<Byte> dynamicData_{};
-
-  // Minimmum key to store in the MapBuffer (this is used to guarantee
-  // consistency)
-  uint16_t minKeyToStore_ = 0;
-
  public:
   MapBufferBuilder(uint32_t initialSize = INITIAL_BUCKETS_SIZE);
 
@@ -52,8 +39,20 @@ class MapBufferBuilder {
 
   void putMapBuffer(Key key, MapBuffer const &map);
 
-  // TODO T83483191: This should return MapBuffer!
   MapBuffer build();
+
+ private:
+  Header header_ = {ALIGNMENT, 0, 0};
+
+  std::vector<Bucket> buckets_{};
+
+  std::vector<Byte> dynamicData_{};
+
+  uint16_t lastKey_{0};
+
+  bool needsSort_{false};
+
+  void storeKeyValue(Key key, uint8_t const *value, uint32_t valueSize);
 };
 
 } // namespace react
