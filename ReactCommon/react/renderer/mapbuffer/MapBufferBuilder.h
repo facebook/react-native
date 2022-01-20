@@ -9,8 +9,6 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/primitives.h>
-#include <cstdlib>
 
 namespace facebook {
 namespace react {
@@ -27,33 +25,33 @@ class MapBufferBuilder {
 
   static MapBuffer EMPTY();
 
-  void putInt(Key key, int32_t value);
+  void putInt(MapBuffer::Key key, int32_t value);
 
-  void putBool(Key key, bool value);
+  void putBool(MapBuffer::Key key, bool value);
 
-  void putDouble(Key key, double value);
+  void putDouble(MapBuffer::Key key, double value);
 
-  void putString(Key key, std::string const &value);
+  void putString(MapBuffer::Key key, std::string const &value);
 
-  void putMapBuffer(Key key, MapBuffer const &map);
+  void putMapBuffer(MapBuffer::Key key, MapBuffer const &map);
 
   MapBuffer build();
 
  private:
-  Header header_ = {ALIGNMENT, 0, 0};
+  MapBuffer::Header header_ = {.count = 0, .bufferSize = 0};
 
-  std::vector<Bucket> buckets_{};
+  std::vector<MapBuffer::Bucket> buckets_{};
 
-  std::vector<Byte> dynamicData_{};
+  std::vector<uint8_t> dynamicData_{};
 
   uint16_t lastKey_{0};
 
   bool needsSort_{false};
 
   void storeKeyValue(
-      Key key,
+      MapBuffer::Key key,
       MapBuffer::DataType type,
-      Byte const *value,
+      uint8_t const *value,
       uint32_t valueSize);
 };
 

@@ -8,14 +8,21 @@
 #pragma once
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/mapbuffer/primitives.h>
 
+#include <glog/logging.h>
+
+#include <cstdint>
+#include <cstdlib>
 #include <limits>
+#include <string>
+#include <vector>
 
 namespace facebook {
 namespace react {
 
 class ReadableMapBuffer;
+
+// clang-format off
 
 /**
  * MapBuffer is an optimized sparse array format for transferring props-like
@@ -31,9 +38,60 @@ class ReadableMapBuffer;
  * - Supports dynamic types that map to JSON.
  * - Don't require mutability - single-write on creation.
  * - have minimal APK size and build time impact.
+ *
+ * MapBuffer data is stored in a continuous chunk of memory (bytes_ field below) with the following layout:
+ *
+ * ┌─────────────────────Header──────────────────────┐
+ * │                    10 bytes                     │
+ * ├─Alignment─┬─Item count─┬──────Buffer size───────┤
+ * │  2 bytes  │  2 bytes   │        4 bytes         │
+ * └───────────┴────────────┴────────────────────────┘
+ * ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ * │                           Buckets (one per item in the map)                            │
+ * │                                                                                        │
+ * ├───────────────────────────Bucket───────────────────────────┬───Bucket────┬─────────────┤
+ * │                          12 bytes                          │  12 bytes   │             │
+ * ├───Key───┬──Type───┬──────Value (primitive or offset)───────┤     ...     │     ...     │
+ * │ 2 bytes │ 2 bytes │                8 bytes                 │             │             │
+ * └─────────┴─────────┴────────────────────────────────────────┴─────────────┴─────────────┘
+ * ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ * │  Dynamic data                                                                          │
+ * │                                                                                        │
+ * │  Free-form data for complex objects (e.g. strings or nested MapBuffers).               │
+ * │  When dynamic data is serialized with some object, bucket value contains an offset of  │
+ * │  associated byte in the array. The format of the data is not restricted, but common    │
+ * │  practice is to use [length | bytes].                                                  │
+ * └────────────────────────────────────────────────────────────────────────────────────────┘
  */
+
+// clang-format on
+
 class MapBuffer {
  public:
+  using Key = uint16_t;
+
+  // The first value in the buffer, used to check correct encoding/endianness on
+  // JVM side.
+  constexpr static uint16_t HEADER_ALIGNMENT = 0xFE;
+
+  struct Header {
+    uint16_t alignment = HEADER_ALIGNMENT; // alignment of serialization
+    uint16_t count; // amount of items in the map
+    uint32_t bufferSize; // Amount of bytes used to store the map in memory
+  };
+
+  struct __attribute__((__packed__)) Bucket {
+    Key key;
+    uint16_t type;
+    uint64_t data;
+
+    Bucket(Key key, uint16_t type, uint64_t data)
+        : key(key), type(type), data(data) {}
+  };
+
+  static_assert(sizeof(Header) == 8, "MapBuffer header size is incorrect.");
+  static_assert(sizeof(Bucket) == 12, "MapBuffer bucket size is incorrect.");
+
   /**
    * Data types available for serialization in MapBuffer
    * Keep in sync with `DataType` enum in `ReadableMapBuffer.java`, which
@@ -55,16 +113,16 @@ class MapBuffer {
 
   MapBuffer(MapBuffer &&buffer) = default;
 
-  int32_t getInt(Key key) const;
+  int32_t getInt(MapBuffer::Key key) const;
 
-  bool getBool(Key key) const;
+  bool getBool(MapBuffer::Key key) const;
 
-  double getDouble(Key key) const;
+  double getDouble(MapBuffer::Key key) const;
 
-  std::string getString(Key key) const;
+  std::string getString(MapBuffer::Key key) const;
 
   // TODO T83483191: review this declaration
-  MapBuffer getMapBuffer(Key key) const;
+  MapBuffer getMapBuffer(MapBuffer::Key key) const;
 
   uint32_t size() const;
 
@@ -82,7 +140,7 @@ class MapBuffer {
   // returns the relative offset of the first byte of dynamic data
   int32_t getDynamicDataOffset() const;
 
-  uint32_t getKeyBucket(Key key) const;
+  uint32_t getKeyBucket(MapBuffer::Key key) const;
 
   friend ReadableMapBuffer;
 };

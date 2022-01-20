@@ -13,6 +13,10 @@ using namespace facebook::react;
 namespace facebook {
 namespace react {
 
+constexpr uint32_t INT_SIZE = sizeof(uint32_t);
+constexpr double DOUBLE_SIZE = sizeof(double);
+constexpr uint32_t MAX_BUCKET_VALUE_SIZE = sizeof(uint64_t);
+
 MapBuffer MapBufferBuilder::EMPTY() {
   return MapBufferBuilder(0).build();
 }
@@ -22,11 +26,11 @@ MapBufferBuilder::MapBufferBuilder(uint32_t initialSize) {
 }
 
 void MapBufferBuilder::storeKeyValue(
-    Key key,
+    MapBuffer::Key key,
     MapBuffer::DataType type,
-    Byte const *value,
+    uint8_t const *value,
     uint32_t valueSize) {
-  if (valueSize > MAX_VALUE_SIZE) {
+  if (valueSize > MAX_BUCKET_VALUE_SIZE) {
     LOG(ERROR) << "Error: size of value must be <= MAX_VALUE_SIZE. ValueSize: "
                << valueSize;
     abort();
@@ -46,7 +50,7 @@ void MapBufferBuilder::storeKeyValue(
   lastKey_ = key;
 }
 
-void MapBufferBuilder::putBool(Key key, bool value) {
+void MapBufferBuilder::putBool(MapBuffer::Key key, bool value) {
   int intValue = (int)value;
   storeKeyValue(
       key,
@@ -55,7 +59,7 @@ void MapBufferBuilder::putBool(Key key, bool value) {
       INT_SIZE);
 }
 
-void MapBufferBuilder::putDouble(Key key, double value) {
+void MapBufferBuilder::putDouble(MapBuffer::Key key, double value) {
   storeKeyValue(
       key,
       MapBuffer::DataType::Double,
@@ -63,7 +67,7 @@ void MapBufferBuilder::putDouble(Key key, double value) {
       DOUBLE_SIZE);
 }
 
-void MapBufferBuilder::putInt(Key key, int32_t value) {
+void MapBufferBuilder::putInt(MapBuffer::Key key, int32_t value) {
   storeKeyValue(
       key,
       MapBuffer::DataType::Int,
@@ -71,7 +75,7 @@ void MapBufferBuilder::putInt(Key key, int32_t value) {
       INT_SIZE);
 }
 
-void MapBufferBuilder::putString(Key key, std::string const &value) {
+void MapBufferBuilder::putString(MapBuffer::Key key, std::string const &value) {
   int32_t strSize = value.size();
   const char *strData = value.data();
 
@@ -89,7 +93,7 @@ void MapBufferBuilder::putString(Key key, std::string const &value) {
       INT_SIZE);
 }
 
-void MapBufferBuilder::putMapBuffer(Key key, MapBuffer const &map) {
+void MapBufferBuilder::putMapBuffer(MapBuffer::Key key, MapBuffer const &map) {
   int32_t mapBufferSize = map.size();
 
   auto offset = dynamicData_.size();
@@ -108,14 +112,17 @@ void MapBufferBuilder::putMapBuffer(Key key, MapBuffer const &map) {
       INT_SIZE);
 }
 
-static inline bool compareBuckets(Bucket const &a, Bucket const &b) {
+static inline bool compareBuckets(
+    MapBuffer::Bucket const &a,
+    MapBuffer::Bucket const &b) {
   return a.key < b.key;
 }
 
 MapBuffer MapBufferBuilder::build() {
   // Create buffer: [header] + [key, values] + [dynamic data]
-  auto bucketSize = buckets_.size() * BUCKET_SIZE;
-  uint32_t bufferSize = HEADER_SIZE + bucketSize + dynamicData_.size();
+  auto bucketSize = buckets_.size() * sizeof(MapBuffer::Bucket);
+  auto headerSize = sizeof(MapBuffer::Header);
+  uint32_t bufferSize = headerSize + bucketSize + dynamicData_.size();
 
   header_.bufferSize = bufferSize;
 
@@ -126,10 +133,10 @@ MapBuffer MapBufferBuilder::build() {
   // TODO(T83483191): add pass to check for duplicates
 
   std::vector<uint8_t> buffer(bufferSize);
-  memcpy(buffer.data(), &header_, HEADER_SIZE);
-  memcpy(buffer.data() + HEADER_SIZE, buckets_.data(), bucketSize);
+  memcpy(buffer.data(), &header_, headerSize);
+  memcpy(buffer.data() + headerSize, buckets_.data(), bucketSize);
   memcpy(
-      buffer.data() + HEADER_SIZE + bucketSize,
+      buffer.data() + headerSize + bucketSize,
       dynamicData_.data(),
       dynamicData_.size());
 

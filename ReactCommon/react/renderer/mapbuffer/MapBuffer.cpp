@@ -13,11 +13,11 @@ namespace facebook {
 namespace react {
 
 static inline int32_t bucketOffset(int32_t index) {
-  return HEADER_SIZE + BUCKET_SIZE * index;
+  return sizeof(MapBuffer::Header) + sizeof(MapBuffer::Bucket) * index;
 }
 
 static inline int32_t valueOffset(int32_t bucketIndex) {
-  return bucketOffset(bucketIndex) + offsetof(Bucket, data);
+  return bucketOffset(bucketIndex) + offsetof(MapBuffer::Bucket, data);
 }
 
 // TODO T83483191: Extend MapBuffer C++ implementation to support basic random
@@ -88,7 +88,7 @@ std::string MapBuffer::getString(Key key) const {
   int32_t stringLength = *reinterpret_cast<int32_t const *>(
       bytes_.data() + dynamicDataOffset + offset);
   uint8_t const *stringPtr =
-      bytes_.data() + dynamicDataOffset + offset + INT_SIZE;
+      bytes_.data() + dynamicDataOffset + offset + sizeof(int);
 
   return std::string(stringPtr, stringPtr + stringLength);
 }
@@ -106,7 +106,7 @@ MapBuffer MapBuffer::getMapBuffer(Key key) const {
 
   memcpy(
       value.data(),
-      bytes_.data() + dynamicDataOffset + offset + INT_SIZE,
+      bytes_.data() + dynamicDataOffset + offset + sizeof(int32_t),
       mapBufferLength);
 
   return MapBuffer(std::move(value));
