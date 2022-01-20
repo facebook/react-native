@@ -19,6 +19,8 @@ const invariant = require('invariant');
 
 const {shouldUseNativeDriver} = require('./NativeAnimatedHelper');
 
+import type {PlatformConfig} from './AnimatedPlatformConfig';
+
 export type Mapping =
   | {[key: string]: Mapping, ...}
   | AnimatedValue
@@ -26,12 +28,14 @@ export type Mapping =
 export type EventConfig = {
   listener?: ?Function,
   useNativeDriver: boolean,
+  platformConfig?: PlatformConfig,
 };
 
 function attachNativeEvent(
   viewRef: any,
   eventName: string,
   argMapping: $ReadOnlyArray<?Mapping>,
+  platformConfig: ?PlatformConfig,
 ): {detach: () => void} {
   // Find animated values in `argMapping` and create an array representing their
   // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
@@ -39,7 +43,7 @@ function attachNativeEvent(
 
   const traverse = (value, path) => {
     if (value instanceof AnimatedValue) {
-      value.__makeNative();
+      value.__makeNative(platformConfig);
 
       eventMappings.push({
         nativeEventPath: path,
@@ -147,6 +151,7 @@ class AnimatedEvent {
   _listeners: Array<Function> = [];
   _attachedEvent: ?{detach: () => void, ...};
   __isNative: boolean;
+  __platformConfig: ?PlatformConfig;
 
   constructor(argMapping: $ReadOnlyArray<?Mapping>, config: EventConfig) {
     this._argMapping = argMapping;
@@ -161,6 +166,7 @@ class AnimatedEvent {
     }
     this._attachedEvent = null;
     this.__isNative = shouldUseNativeDriver(config);
+    this.__platformConfig = config.platformConfig;
   }
 
   __addListener(callback: Function): void {
@@ -181,6 +187,7 @@ class AnimatedEvent {
       viewRef,
       eventName,
       this._argMapping,
+      this.__platformConfig,
     );
   }
 
