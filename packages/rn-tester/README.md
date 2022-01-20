@@ -18,6 +18,17 @@ If you are testing non-fabric component, modify [the fabric_enabled flag in RNTe
 fabric_enabled = false
 ```
 
+Also, if you previously built RNTester with fabric enabled, you might need to clean up the build files and Pods.
+```sh
+# Clean the generated files and folders to clean install RNTester
+cd packages/rn-tester/
+rm -rf build/generated/ios
+rm -rf Pods
+rm Podfile.lock
+```
+
+If you are still having a problem after doing the clean up (which can happen if you have built RNTester with older React Native versions where files were generated inside the react-native folder.), the best way might be to clean-install react-native (e.g. remove node_modules and yarn install).
+
 Both macOS and Xcode are required.
 - `cd packages/rn-tester`
 - Install [Bundler](https://bundler.io/): `gem install bundler`. We use bundler to install the right version of [CocoaPods](https://cocoapods.org/) locally.
