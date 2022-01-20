@@ -11,8 +11,8 @@
 #include <folly/dynamic.h>
 #include <folly/json.h>
 
-#include "ReadableNativeMap.h"
 #include "ReadableNativeArray.h"
+#include "ReadableNativeMap.h"
 
 namespace facebook {
 namespace react {
