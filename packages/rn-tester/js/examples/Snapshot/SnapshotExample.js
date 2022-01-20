@@ -21,7 +21,7 @@ class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
 
   render() {
     return (
-      <View>
+      <View style={style.container}>
         <Text onPress={this.takeScreenshot} style={style.button}>
           Click to take a screenshot
         </Text>
@@ -38,13 +38,15 @@ class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
 }
 
 const style = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   button: {
     marginBottom: 10,
     fontWeight: '500',
   },
   image: {
     flex: 1,
-    height: 300,
     resizeMode: 'contain',
     backgroundColor: 'black',
   },
