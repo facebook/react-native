@@ -81,8 +81,6 @@
     "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
-    "build-ios-e2e": "detox build -c ios.sim.release",
-    "test-ios-e2e": "detox test -c ios.sim.release packages/rn-tester/e2e",
     "test-ios": "./scripts/objc-test.sh test"
   },
   "workspaces": [
@@ -128,43 +126,6 @@
   "devDependencies": {
     "flow-bin": "^0.168.0",
     "react": "17.0.2"
-  },
-  "detox": {
-    "test-runner": "jest",
-    "runner-config": "packages/rn-tester/e2e/config.json",
-    "specs": "",
-    "configurations": {
-      "android.emu.release": {
-        "binaryPath": "packages/rn-tester/android/app/build/outputs/apk/hermes/release/app-hermes-x86-release.apk",
-        "testBinaryPath": "packages/rn-tester/android/app/build/outputs/apk/androidTest/hermes/release/app-hermes-release-androidTest.apk",
-        "build": "./gradlew :packages:rn-tester:android:app:assembleRelease :packages:rn-tester:android:app:assembleAndroidTest -DtestBuildType=release",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "Nexus_6_API_29"
-        }
-      },
-      "android.emu.debug": {
-        "binaryPath": "packages/rn-tester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86-debug.apk",
-        "testBinaryPath": "packages/rn-tester/android/app/build/outputs/apk/androidTest/hermes/debug/app-hermes-debug-androidTest.apk",
-        "build": "./gradlew :packages:rn-tester:android:app:assembleDebug :packages:rn-tester:android:app:assembleAndroidTest -DtestBuildType=debug",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "Nexus_6_API_29"
-        }
-      },
-      "ios.sim.release": {
-        "binaryPath": "packages/rn-tester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -workspace packages/rn-tester/RNTesterPods.xcworkspace -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath packages/rn-tester/build -UseModernBuildSystem=NO -quiet",
-        "type": "ios.simulator",
-        "name": "iPhone 8"
-      },
-      "ios.sim.debug": {
-        "binaryPath": "packages/rn-tester/build/Build/Products/Debug-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -workspace packages/rn-tester/RNTesterPods.xcworkspace -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath packages/rn-tester/build -UseModernBuildSystem=NO -quiet",
-        "type": "ios.simulator",
-        "name": "iPhone 8"
-      }
-    }
   },
   "codegenConfig": {
     "libraries": [
