@@ -34,12 +34,14 @@ static_assert(sizeof(Header) == 8, "MapBuffer header size is incorrect.");
 
 struct __attribute__((__packed__)) Bucket {
   Key key;
+  uint16_t type;
   uint64_t data;
 
-  Bucket(Key key, uint64_t data) : key(key), data(data){};
+  Bucket(Key key, uint16_t type, uint64_t data)
+      : key(key), type(type), data(data) {}
 };
 
-static_assert(sizeof(Bucket) == 10, "MapBuffer bucket size is incorrect.");
+static_assert(sizeof(Bucket) == 12, "MapBuffer bucket size is incorrect.");
 
 constexpr static int32_t KEY_SIZE = sizeof(Key);
 constexpr static int32_t HEADER_SIZE = sizeof(Header);
@@ -55,7 +57,6 @@ constexpr static int32_t HEADER_BUFFER_SIZE_OFFSET =
 
 constexpr static int32_t MAX_VALUE_SIZE = UINT64_SIZE;
 
-// 10 bytes : 2 key + 8 value
 constexpr static int32_t BUCKET_SIZE = sizeof(Bucket);
 
 inline void

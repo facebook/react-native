@@ -16,7 +16,7 @@ namespace facebook {
 namespace react {
 
 // Default reserved size for buckets_ vector
-constexpr uint16_t INITIAL_BUCKETS_SIZE = 10;
+constexpr uint32_t INITIAL_BUCKETS_SIZE = 10;
 
 /**
  * MapBufferBuilder is a builder class for MapBuffer
@@ -32,8 +32,6 @@ class MapBufferBuilder {
   void putBool(Key key, bool value);
 
   void putDouble(Key key, double value);
-
-  void putNull(Key key);
 
   void putString(Key key, std::string const &value);
 
@@ -52,7 +50,11 @@ class MapBufferBuilder {
 
   bool needsSort_{false};
 
-  void storeKeyValue(Key key, uint8_t const *value, uint32_t valueSize);
+  void storeKeyValue(
+      Key key,
+      MapBuffer::DataType type,
+      Byte const *value,
+      uint32_t valueSize);
 };
 
 } // namespace react

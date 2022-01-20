@@ -72,7 +72,6 @@ double MapBuffer::getDouble(Key key) const {
 
   return *reinterpret_cast<double const *>(
       bytes_.data() + valueOffset(bucketIndex));
-  ;
 }
 
 int32_t MapBuffer::getDynamicDataOffset() const {
@@ -111,10 +110,6 @@ MapBuffer MapBuffer::getMapBuffer(Key key) const {
       mapBufferLength);
 
   return MapBuffer(std::move(value));
-}
-
-bool MapBuffer::isNull(Key key) const {
-  return getInt(key) == NULL_VALUE;
 }
 
 uint32_t MapBuffer::size() const {

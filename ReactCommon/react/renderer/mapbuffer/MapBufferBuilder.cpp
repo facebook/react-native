@@ -23,7 +23,8 @@ MapBufferBuilder::MapBufferBuilder(uint32_t initialSize) {
 
 void MapBufferBuilder::storeKeyValue(
     Key key,
-    uint8_t const *value,
+    MapBuffer::DataType type,
+    Byte const *value,
     uint32_t valueSize) {
   if (valueSize > MAX_VALUE_SIZE) {
     LOG(ERROR) << "Error: size of value must be <= MAX_VALUE_SIZE. ValueSize: "
@@ -35,7 +36,7 @@ void MapBufferBuilder::storeKeyValue(
   auto *dataPtr = reinterpret_cast<uint8_t *>(&data);
   memcpy(dataPtr, value, valueSize);
 
-  buckets_.emplace_back(key, data);
+  buckets_.emplace_back(key, static_cast<uint16_t>(type), data);
 
   header_.count++;
 
@@ -46,21 +47,28 @@ void MapBufferBuilder::storeKeyValue(
 }
 
 void MapBufferBuilder::putBool(Key key, bool value) {
-  putInt(key, (int)value);
+  int intValue = (int)value;
+  storeKeyValue(
+      key,
+      MapBuffer::DataType::Boolean,
+      reinterpret_cast<uint8_t const *>(&intValue),
+      INT_SIZE);
 }
 
 void MapBufferBuilder::putDouble(Key key, double value) {
-  auto const *bytePointer = reinterpret_cast<uint8_t *>(&value);
-  storeKeyValue(key, bytePointer, DOUBLE_SIZE);
-}
-
-void MapBufferBuilder::putNull(Key key) {
-  putInt(key, NULL_VALUE);
+  storeKeyValue(
+      key,
+      MapBuffer::DataType::Double,
+      reinterpret_cast<uint8_t const *>(&value),
+      DOUBLE_SIZE);
 }
 
 void MapBufferBuilder::putInt(Key key, int32_t value) {
-  auto const *bytePointer = reinterpret_cast<uint8_t *>(&(value));
-  storeKeyValue(key, bytePointer, INT_SIZE);
+  storeKeyValue(
+      key,
+      MapBuffer::DataType::Int,
+      reinterpret_cast<uint8_t const *>(&value),
+      INT_SIZE);
 }
 
 void MapBufferBuilder::putString(Key key, std::string const &value) {
@@ -74,7 +82,11 @@ void MapBufferBuilder::putString(Key key, std::string const &value) {
   memcpy(dynamicData_.data() + offset + INT_SIZE, strData, strSize);
 
   // Store Key and pointer to the string
-  putInt(key, offset);
+  storeKeyValue(
+      key,
+      MapBuffer::DataType::String,
+      reinterpret_cast<uint8_t const *>(&offset),
+      INT_SIZE);
 }
 
 void MapBufferBuilder::putMapBuffer(Key key, MapBuffer const &map) {
@@ -89,7 +101,11 @@ void MapBufferBuilder::putMapBuffer(Key key, MapBuffer const &map) {
   memcpy(dynamicData_.data() + offset + INT_SIZE, map.data(), mapBufferSize);
 
   // Store Key and pointer to the string
-  putInt(key, offset);
+  storeKeyValue(
+      key,
+      MapBuffer::DataType::Map,
+      reinterpret_cast<uint8_t const *>(&offset),
+      INT_SIZE);
 }
 
 static inline bool compareBuckets(Bucket const &a, Bucket const &b) {

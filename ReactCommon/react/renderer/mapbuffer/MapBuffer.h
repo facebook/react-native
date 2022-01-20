@@ -18,11 +18,11 @@ namespace react {
 class ReadableMapBuffer;
 
 /**
- * MapBuffer is an optimized map format for transferring data like props between
- * C++ and other platforms The implementation of this map is optimized to:
+ * MapBuffer is an optimized sparse array format for transferring props-like
+ * between C++ and other VMs. The implementation of this map is optimized to:
  * - be compact to optimize space when sparse (sparse is the common case).
  * - be accessible through JNI with zero/minimal copying via ByteBuffer.
- * - be Have excellent C++ single-write and many-read performance by maximizing
+ * - Have excellent C++ single-write and many-read performance by maximizing
  *   CPU cache performance through compactness, data locality, and fixed offsets
  *   where possible.
  * - be optimized for iteration and intersection against other maps, but with
@@ -33,21 +33,20 @@ class ReadableMapBuffer;
  * - have minimal APK size and build time impact.
  */
 class MapBuffer {
-  friend ReadableMapBuffer;
-
- private:
-  // Buffer and its size
-  std::vector<uint8_t> const bytes_;
-
-  // amount of items in the MapBuffer
-  uint16_t count_ = 0;
-
-  // returns the relative offset of the first byte of dynamic data
-  int32_t getDynamicDataOffset() const;
-
-  uint32_t getKeyBucket(Key key) const;
-
  public:
+  /**
+   * Data types available for serialization in MapBuffer
+   * Keep in sync with `DataType` enum in `ReadableMapBuffer.java`, which
+   * expects the same values after reading them through JNI.
+   */
+  enum DataType : uint16_t {
+    Boolean = 0,
+    Int = 1,
+    Double = 2,
+    String = 3,
+    Map = 4,
+  };
+
   explicit MapBuffer(std::vector<uint8_t> data);
 
   MapBuffer(MapBuffer const &buffer) = delete;
@@ -67,13 +66,25 @@ class MapBuffer {
   // TODO T83483191: review this declaration
   MapBuffer getMapBuffer(Key key) const;
 
-  bool isNull(Key key) const;
-
   uint32_t size() const;
 
   uint8_t const *data() const;
 
   uint16_t count() const;
+
+ private:
+  // Buffer and its size
+  std::vector<uint8_t> const bytes_;
+
+  // amount of items in the MapBuffer
+  uint16_t count_ = 0;
+
+  // returns the relative offset of the first byte of dynamic data
+  int32_t getDynamicDataOffset() const;
+
+  uint32_t getKeyBucket(Key key) const;
+
+  friend ReadableMapBuffer;
 };
 
 } // namespace react

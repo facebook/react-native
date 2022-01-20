@@ -59,23 +59,6 @@ TEST(MapBufferTest, testBoolEntries) {
   EXPECT_EQ(map.getBool(1), false);
 }
 
-TEST(MapBufferTest, testNullEntries) {
-  auto buffer = MapBufferBuilder();
-
-  buffer.putNull(0);
-  buffer.putInt(1, 1234);
-
-  auto map = buffer.build();
-
-  EXPECT_EQ(map.count(), 2);
-  EXPECT_EQ(map.isNull(0), true);
-  EXPECT_EQ(map.isNull(1), false);
-  // TODO T83483191: serialize null values to be distinguishable from '0'
-  // values
-  // EXPECT_EQ(map.isNull(1),  false);
-  // EXPECT_EQ(map.getBool(1),  false);
-}
-
 TEST(MapBufferTest, testDoubleEntries) {
   auto buffer = MapBufferBuilder();
 
@@ -172,14 +155,12 @@ TEST(MapBufferTest, testMapRandomAccess) {
   builder.putInt(1234, 4321);
   builder.putString(0, "This is a test");
   builder.putDouble(8, 908.1);
-  builder.putNull(2);
   builder.putString(65535, "Let's count: 的, 一, 是");
   auto map = builder.build();
 
-  EXPECT_EQ(map.count(), 5);
+  EXPECT_EQ(map.count(), 4);
   EXPECT_EQ(map.getString(0), "This is a test");
   EXPECT_EQ(map.getDouble(8), 908.1);
-  EXPECT_EQ(map.isNull(2), true);
   EXPECT_EQ(map.getInt(1234), 4321);
   EXPECT_EQ(map.getString(65535), "Let's count: 的, 一, 是");
 }
