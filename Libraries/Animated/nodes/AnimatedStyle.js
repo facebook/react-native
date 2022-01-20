@@ -17,6 +17,8 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 const flattenStyle = require('../../StyleSheet/flattenStyle');
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
 class AnimatedStyle extends AnimatedWithChildren {
   _style: Object;
 
@@ -95,14 +97,14 @@ class AnimatedStyle extends AnimatedWithChildren {
     super.__detach();
   }
 
-  __makeNative() {
+  __makeNative(platformConfig: ?PlatformConfig) {
     for (const key in this._style) {
       const value = this._style[key];
       if (value instanceof AnimatedNode) {
-        value.__makeNative();
+        value.__makeNative(platformConfig);
       }
     }
-    super.__makeNative();
+    super.__makeNative(platformConfig);
   }
 
   __getNativeConfig(): Object {
@@ -110,7 +112,7 @@ class AnimatedStyle extends AnimatedWithChildren {
     for (const styleKey in this._style) {
       if (this._style[styleKey] instanceof AnimatedNode) {
         const style = this._style[styleKey];
-        style.__makeNative();
+        style.__makeNative(this.__getPlatformConfig());
         styleConfig[styleKey] = style.__getNativeTag();
       }
       // Non-animated styles are set using `setNativeProps`, no need

@@ -15,6 +15,8 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 const invariant = require('invariant');
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+
 type ValueListenerCallback = (state: {value: number, ...}) => mixed;
 
 let _uniqueId = 1;
@@ -23,6 +25,7 @@ let _uniqueId = 1;
 // support them yet
 class AnimatedNode {
   _listeners: {[key: string]: ValueListenerCallback, ...};
+  _platformConfig: ?PlatformConfig;
   __nativeAnimatedValueListener: ?any;
   __attach(): void {}
   __detach(): void {
@@ -50,11 +53,12 @@ class AnimatedNode {
     this._listeners = {};
   }
 
-  __makeNative() {
+  __makeNative(platformConfig: ?PlatformConfig) {
     if (!this.__isNative) {
       throw new Error('This node cannot be made a "native" animated node');
     }
 
+    this._platformConfig = platformConfig;
     if (this.hasListeners()) {
       this._startListeningToNativeValueUpdates();
     }
@@ -163,10 +167,11 @@ class AnimatedNode {
 
     if (this.__nativeTag == null) {
       this.__nativeTag = nativeTag;
-      NativeAnimatedHelper.API.createAnimatedNode(
-        nativeTag,
-        this.__getNativeConfig(),
-      );
+      const config = this.__getNativeConfig();
+      if (this._platformConfig) {
+        config.platformConfig = this._platformConfig;
+      }
+      NativeAnimatedHelper.API.createAnimatedNode(nativeTag, config);
       this.__shouldUpdateListenersForNewNativeTag = true;
     }
 
@@ -179,6 +184,13 @@ class AnimatedNode {
   }
   toJSON(): any {
     return this.__getValue();
+  }
+
+  __getPlatformConfig(): ?PlatformConfig {
+    return this._platformConfig;
+  }
+  __setPlatformConfig(platformConfig: ?PlatformConfig) {
+    this._platformConfig = platformConfig;
   }
 }
 
