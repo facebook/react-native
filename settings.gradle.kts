@@ -22,3 +22,20 @@ include(
 // Include this to enable codegen Gradle plugin.
 includeBuild("packages/react-native-gradle-plugin/")
 
+rootProject.name = "react-native-github"
+
+plugins {
+    id("com.gradle.enterprise").version("3.7.1")
+}
+
+if (System.getenv("GRADLE_ENTERPRISE_URL") != null) {
+    gradleEnterprise {
+        server = System.getenv("GRADLE_ENTERPRISE_URL")
+        buildScan {
+            publishAlways()
+            tag("ReactNative")
+            tag(if(System.getenv("CI") != null) "CI" else "Local")
+        }
+    }
+}
+
