@@ -6,11 +6,11 @@
 
 #### Android specific
 
-  - Do not remove libjscexecutor.so from release builds ([574a773f8f](https://github.com/facebook/react-native/commit/574a773f8f55fe7808fbb672066be8174c64d76d) by [@cortinico](https://github.com/cortinico))
+- Do not remove libjscexecutor.so from release builds ([574a773f8f](https://github.com/facebook/react-native/commit/574a773f8f55fe7808fbb672066be8174c64d76d) by [@cortinico](https://github.com/cortinico))
 
 #### iOS specific
 
-  - Remove alert's window when call to `hide`. ([a46a99e120](https://github.com/facebook/react-native/commit/a46a99e12039c2b92651af1996489d660e237f1b) by [@asafkorem](https://github.com/asafkorem))
+- Remove alert's window when call to `hide`. ([a46a99e120](https://github.com/facebook/react-native/commit/a46a99e12039c2b92651af1996489d660e237f1b) by [@asafkorem](https://github.com/asafkorem))
 
 ## v0.67.0
 
