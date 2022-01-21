@@ -224,6 +224,30 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     super.setFlexGrow(flexGrow);
   }
 
+  @ReactProp(name = ViewProps.ROW_GAP, defaultFloat = 0f)
+  public void setRowGap(float rowGap) {
+    if (isVirtual()) {
+      return;
+    }
+    super.setRowGap(rowGap);
+  }
+
+  @ReactProp(name = ViewProps.COLUMN_GAP, defaultFloat = 0f)
+  public void setColumnGap(float columnGap) {
+    if (isVirtual()) {
+      return;
+    }
+    super.setColumnGap(columnGap);
+  }
+
+  @ReactProp(name = ViewProps.GAP, defaultFloat = 0f)
+  public void setGap(float gap) {
+    if (isVirtual()) {
+      return;
+    }
+    super.setGap(gap);
+  }
+
   @ReactProp(name = ViewProps.FLEX_SHRINK, defaultFloat = 0f)
   public void setFlexShrink(float flexShrink) {
     if (isVirtual()) {

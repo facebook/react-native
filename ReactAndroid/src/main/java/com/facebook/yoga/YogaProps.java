@@ -84,6 +84,12 @@ public interface YogaProps {
   void setFlexDirection(YogaFlexDirection direction);
 
   void setFlexGrow(float flexGrow);
+  
+  void setRowGap(float rowGap);
+  
+  void setColumnGap(float columnGap);
+  
+  void setGap(float gap);
 
   void setFlexShrink(float flexShrink);
 
@@ -134,6 +140,12 @@ public interface YogaProps {
   YogaPositionType getPositionType();
 
   float getFlexGrow();
+
+  float getRowGap();
+
+  float getGap();
+  
+  float getColumnGap();
 
   float getFlexShrink();
 

@@ -68,6 +68,12 @@ public class YogaNative {
   static native void jni_YGNodeStyleSetFlexJNI(long nativePointer, float flex);
   static native float jni_YGNodeStyleGetFlexGrowJNI(long nativePointer);
   static native void jni_YGNodeStyleSetFlexGrowJNI(long nativePointer, float flexGrow);
+  static native float jni_YGNodeStyleGetRowGapJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetRowGapJNI(long nativePointer, float rowGap);
+  static native float jni_YGNodeStyleGetColumnGapJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetColumnGapJNI(long nativePointer, float columnGap);
+  static native float jni_YGNodeStyleGetGapJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetGapJNI(long nativePointer, float gap);
   static native float jni_YGNodeStyleGetFlexShrinkJNI(long nativePointer);
   static native void jni_YGNodeStyleSetFlexShrinkJNI(long nativePointer, float flexShrink);
   static native long jni_YGNodeStyleGetFlexBasisJNI(long nativePointer);

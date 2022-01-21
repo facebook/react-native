@@ -493,6 +493,19 @@ static void jni_YGNodeCopyStyleJNI(
         static_cast<float>(value));                                   \
   }
 
+
+#define YG_NODE_JNI_STYLE_GAP_PROP(name, gapType)                         \
+  static jfloat jni_YGNodeStyleGet##name##JNI(                             \
+      JNIEnv* env, jobject obj, jlong nativePointer) {                       \
+    return (jfloat) YGNodeStyleGetGap(_jlong2YGNodeRef(nativePointer), gapType); \
+  }                                                                          \
+                                                                             \
+  static void jni_YGNodeStyleSet##name##JNI(                                 \
+      JNIEnv* env, jobject obj, jlong nativePointer, jfloat value) {       \
+    YGNodeStyleSetGap(                                                    \
+        _jlong2YGNodeRef(nativePointer), gapType, static_cast<float>(value));          \
+  }
+
 YG_NODE_JNI_STYLE_PROP(jint, YGDirection, Direction);
 YG_NODE_JNI_STYLE_PROP(jint, YGFlexDirection, FlexDirection);
 YG_NODE_JNI_STYLE_PROP(jint, YGJustify, JustifyContent);
@@ -506,6 +519,10 @@ YG_NODE_JNI_STYLE_PROP(jint, YGDisplay, Display);
 YG_NODE_JNI_STYLE_PROP(jfloat, float, Flex);
 YG_NODE_JNI_STYLE_PROP(jfloat, float, FlexGrow);
 YG_NODE_JNI_STYLE_PROP(jfloat, float, FlexShrink);
+
+YG_NODE_JNI_STYLE_GAP_PROP(Gap, YGGapAll);
+YG_NODE_JNI_STYLE_GAP_PROP(RowGap, YGGapRow);
+YG_NODE_JNI_STYLE_GAP_PROP(ColumnGap, YGGapColumn);
 
 YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(FlexBasis);
 YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(Width);
@@ -852,6 +869,24 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetFlexGrowJNI",
      "(JF)V",
      (void*) jni_YGNodeStyleSetFlexGrowJNI},
+     {"jni_YGNodeStyleGetGapJNI",
+     "(J)F",
+     (void*) jni_YGNodeStyleGetGapJNI},
+    {"jni_YGNodeStyleSetGapJNI",
+     "(JF)V",
+     (void*) jni_YGNodeStyleSetGapJNI},
+     {"jni_YGNodeStyleGetRowGapJNI",
+     "(J)F",
+     (void*) jni_YGNodeStyleGetRowGapJNI},
+    {"jni_YGNodeStyleSetRowGapJNI",
+     "(JF)V",
+     (void*) jni_YGNodeStyleSetRowGapJNI},
+     {"jni_YGNodeStyleGetColumnGapJNI",
+     "(J)F",
+     (void*) jni_YGNodeStyleGetColumnGapJNI},
+    {"jni_YGNodeStyleSetColumnGapJNI",
+     "(JF)V",
+     (void*) jni_YGNodeStyleSetColumnGapJNI},
     {"jni_YGNodeStyleGetFlexShrinkJNI",
      "(J)F",
      (void*) jni_YGNodeStyleGetFlexShrinkJNI},

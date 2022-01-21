@@ -344,6 +344,30 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeStyleSetFlexGrowJNI(mNativePointer, flexGrow);
   }
 
+   public float getRowGap() {
+     return YogaNative.jni_YGNodeStyleGetRowGapJNI(mNativePointer);
+   }
+
+   public void setRowGap(float rowGap) {
+     YogaNative.jni_YGNodeStyleSetRowGapJNI(mNativePointer, rowGap);
+   }
+
+   public float getColumnGap() {
+     return YogaNative.jni_YGNodeStyleGetColumnGapJNI(mNativePointer);
+   }
+
+   public void setColumnGap(float columnGap) {
+     YogaNative.jni_YGNodeStyleSetColumnGapJNI(mNativePointer, columnGap);
+   }
+
+   public float getGap() {
+     return YogaNative.jni_YGNodeStyleGetGapJNI(mNativePointer);
+   }
+
+   public void setGap(float gap) {
+     YogaNative.jni_YGNodeStyleSetGapJNI(mNativePointer, gap);
+   }
+
   public float getFlexShrink() {
     return YogaNative.jni_YGNodeStyleGetFlexShrinkJNI(mNativePointer);
   }

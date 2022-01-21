@@ -108,6 +108,18 @@ public abstract class YogaNode implements YogaProps {
 
   public abstract void setFlexGrow(float flexGrow);
 
+  public abstract float getGap();
+
+  public abstract void setGap(float gap);
+
+  public abstract float getRowGap();
+
+  public abstract void setRowGap(float rowGap);
+
+  public abstract float getColumnGap();
+
+  public abstract void setColumnGap(float columnGap);
+
   public abstract float getFlexShrink();
 
   public abstract void setFlexShrink(float flexShrink);
