@@ -17,6 +17,8 @@
 const {exec, exit} = require('shelljs');
 const yargs = require('yargs');
 const inquirer = require('inquirer');
+const request = require('request');
+
 const {
   parseVersion,
   isReleaseBranch,
@@ -27,6 +29,17 @@ let argv = yargs
   .option('r', {
     alias: 'remote',
     default: 'origin',
+  })
+  .option('t', {
+    alias: 'token',
+    describe:
+      'Your CircleCI personal API token. See https://circleci.com/docs/2.0/managing-api-tokens/#creating-a-personal-api-token to set one',
+    required: true,
+  })
+  .option('v', {
+    alias: 'to-version',
+    describe: 'Version you aim to release, ex. 0.67.0-rc.1, 0.66.3',
+    required: true,
   })
   .check(() => {
     const branch = getBranchName();
@@ -56,47 +69,47 @@ function getLatestTag(versionPrefix) {
   return null;
 }
 
+function triggerReleaseWorkflow(options) {
+  return new Promise((resolve, reject) => {
+    request(options, function (error, response, body) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(body);
+      }
+    });
+  });
+}
+
 async function main() {
   const branch = getBranchName();
+  const token = argv.token;
+  const releaseVersion = argv.toVersion;
 
-  const {pulled} = await inquirer.prompt({
+  const {pushed} = await inquirer.prompt({
     type: 'confirm',
-    name: 'pulled',
-    message: `You are currently on branch: ${branch}. Have you run "git pull ${argv.remote} ${branch} --tags"?`,
+    name: 'pushed',
+    message: `This script will trigger a release with whatever changes are on the remote branch: ${branch}. \nMake sure you have pushed any updates remotely.`,
   });
 
-  if (!pulled) {
-    console.log(`Please run 'git pull ${argv.remote} ${branch} --tags'`);
+  if (!pushed) {
+    console.log(`Please run 'git push ${argv.remote} ${branch}'`);
     exit(1);
     return;
   }
 
-  const lastVersionTag = getLatestTag(branch.replace('-stable', ''));
-  const lastVersion = lastVersionTag
-    ? parseVersion(lastVersionTag).version
-    : null;
-  const lastVersionMessage = lastVersion
-    ? `Last version tagged is ${lastVersion}.\n`
-    : '';
-
-  const {releaseVersion} = await inquirer.prompt({
-    type: 'input',
-    name: 'releaseVersion',
-    message: `What version are you releasing? (Ex. 0.66.0-rc.4)\n${lastVersionMessage}`,
-  });
-
-  let setLatest = false;
-
+  let latest = false;
   const {version, prerelease} = parseVersion(releaseVersion);
   if (!prerelease) {
-    const {latest} = await inquirer.prompt({
+    const {setLatest} = await inquirer.prompt({
       type: 'confirm',
-      name: 'latest',
-      message: 'Set this version as "latest" on npm?',
+      name: 'setLatest',
+      message: `Do you want to set ${version} as "latest" release on npm?`,
     });
-    setLatest = latest;
+    latest = setLatest;
   }
-  const npmTag = setLatest ? 'latest' : !prerelease ? branch : 'next';
+
+  const npmTag = latest ? 'latest' : !prerelease ? branch : 'next';
   const {confirmRelease} = await inquirer.prompt({
     type: 'confirm',
     name: 'confirmRelease',
@@ -108,32 +121,36 @@ async function main() {
     return;
   }
 
-  if (
-    exec(`git tag -a publish-v${version} -m "publish version ${version}"`).code
-  ) {
-    console.error(`Failed to tag publish-v${version}`);
-    exit(1);
-    return;
-  }
+  const parameters = {
+    release_version: version,
+    release_latest: latest,
+    run_package_release_workflow_only: true,
+  };
 
-  if (setLatest) {
-    exec('git tag -d latest');
-    exec(`git push ${argv.remote} :latest`);
-    exec('git tag -a latest -m "latest"');
-  }
+  const options = {
+    method: 'POST',
+    url: 'https://circleci.com/api/v2/project/github/facebook/react-native/pipeline',
+    headers: {
+      'Circle-Token': token,
+      'content-type': 'application/json',
+    },
+    body: {
+      branch,
+      parameters,
+    },
+    json: true,
+  };
 
-  if (exec(`git push ${argv.remote} ${branch} --follow-tags`).code) {
-    console.error(`Failed to push tag publish-v${version}`);
-    exit(1);
-    return;
-  }
+  // See response: https://circleci.com/docs/api/v2/#operation/triggerPipeline
+  const body = await triggerReleaseWorkflow(options);
+  console.log(
+    `Monitor your release workflow: https://app.circleci.com/pipelines/github/facebook/react-native/${body.number}`,
+  );
 
   // TODO
-  // 1. Link to CircleCI job to watch
-  // 2. Output the release changelog to paste into Github releases
-  // 3. Link to release discussions to update
-  // 4. Verify RN-diff publish is through
-  // 5. General changelog update on PR?
+  // - Output the release changelog to paste into Github releases
+  // - Link to release discussions to update
+  // - Verify RN-diff publish is through
 }
 
 main().then(() => {
