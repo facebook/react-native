@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.Spacing;
@@ -319,6 +320,15 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
       view.scrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
     } else {
       view.scrollTo(0, 0);
+    }
+  }
+
+  @ReactProp(name = ViewProps.POINTER_EVENTS)
+  public void setPointerEvents(ReactHorizontalScrollView view, @Nullable String pointerEventsStr) {
+    if (pointerEventsStr == null) {
+      view.setPointerEvents(PointerEvents.AUTO);
+    } else {
+      view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
     }
   }
 }

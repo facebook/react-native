@@ -36,6 +36,7 @@ import com.facebook.react.R;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactOverflowViewWithInset;
@@ -102,6 +103,7 @@ public class ReactScrollView extends ScrollView
   private final ReactScrollViewScrollState mReactScrollViewScrollState =
       new ReactScrollViewScrollState(ViewCompat.LAYOUT_DIRECTION_LTR);
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
+  private PointerEvents mPointerEvents = PointerEvents.AUTO;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -332,6 +334,11 @@ public class ReactScrollView extends ScrollView
       return false;
     }
 
+    // We intercept the touch event if the children are not supposed to receive it.
+    if (!PointerEvents.canChildrenBeTouchTarget(mPointerEvents)) {
+      return true;
+    }
+
     try {
       if (super.onInterceptTouchEvent(ev)) {
         NativeGestureUtil.notifyNativeGestureStarted(this, ev);
@@ -354,6 +361,11 @@ public class ReactScrollView extends ScrollView
   @Override
   public boolean onTouchEvent(MotionEvent ev) {
     if (!mScrollEnabled) {
+      return false;
+    }
+
+    // We do not accept the touch event if this view is not supposed to receive it.
+    if (!PointerEvents.canBeTouchTarget(mPointerEvents)) {
       return false;
     }
 
@@ -1114,5 +1126,13 @@ public class ReactScrollView extends ScrollView
     // the init velocity. We use the overscroller to decide the fling distance.
     return ReactScrollViewHelper.predictFinalScrollPosition(this, 0, velocityY, 0, getMaxScrollY())
         .y;
+  }
+
+  public void setPointerEvents(PointerEvents pointerEvents) {
+    mPointerEvents = pointerEvents;
+  }
+
+  public PointerEvents getPointerEvents() {
+    return mPointerEvents;
   }
 }

@@ -7,6 +7,8 @@
 
 package com.facebook.react.uimanager;
 
+import java.util.Locale;
+
 /**
  * Possible values for pointer events that a view and its descendants should receive. See
  * https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events for more info.
@@ -25,4 +27,16 @@ public enum PointerEvents {
   /** Container and all of its children receive touch events (like pointerEvents is unspecified). */
   AUTO,
   ;
+
+  public static PointerEvents parsePointerEvents(String pointerEventsStr) {
+    return PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
+  }
+
+  public static boolean canBeTouchTarget(PointerEvents pointerEvents) {
+    return pointerEvents == AUTO || pointerEvents == PointerEvents.BOX_ONLY;
+  }
+
+  public static boolean canChildrenBeTouchTarget(PointerEvents pointerEvents) {
+    return pointerEvents == PointerEvents.AUTO || pointerEvents == PointerEvents.BOX_NONE;
+  }
 }
