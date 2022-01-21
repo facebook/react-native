@@ -180,6 +180,31 @@ const AccessibilityInfo = {
   },
 
   /**
+   * Query whether reduce motion and prefer cross-fade transitions settings are currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when  prefer cross-fade transitions is enabled and `false` otherwise.
+   *
+   * See https://reactnative.dev/docs/accessibilityinfo#prefersCrossFadeTransitions
+   */
+  prefersCrossFadeTransitions(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Platform.OS === 'android') {
+        return Promise.resolve(false);
+      } else {
+        if (NativeAccessibilityManagerIOS != null) {
+          NativeAccessibilityManagerIOS.getCurrentPrefersCrossFadeTransitionsState(
+            resolve,
+            reject,
+          );
+        } else {
+          reject(null);
+        }
+      }
+    });
+  },
+
+  /**
    * Query whether reduced transparency is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
