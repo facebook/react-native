@@ -261,23 +261,53 @@ class TouchableOpacity extends React.Component<Props, State> {
 
   componentDidUpdate(prevProps: Props, prevState: State) {
     //function to check equality of two objects
-    let isEqual = (obj1, obj2) => {
-      let obj1Keys = Object.keys(obj1);
-      let obj2Keys = Object.keys(obj2);
-      if (obj1Keys.length !== obj2Keys.length) {
+    let object_equals = (x, y) => {
+      if (x === y) {
+        return true;
+      }
+
+      if (!(x instanceof Object) || !(y instanceof Object)) {
         return false;
       }
-      for (let objkey of obj1Keys) {
-        if (obj1[objkey] !== obj2[objkey]) {
+
+      if (x.constructor !== y.constructor) {
+        return false;
+      }
+
+      for (var p in x) {
+        if (!x.hasOwnProperty(p)) {
+          continue;
+        }
+
+        if (!y.hasOwnProperty(p)) {
+          return false;
+        }
+
+        if (x[p] === y[p]) {
+          continue;
+        }
+
+        if (typeof x[p] !== 'object') {
+          return false;
+        }
+
+        if (!object_equals(x[p], y[p])) {
           return false;
         }
       }
+
+      for (p in y) {
+        if (y.hasOwnProperty(p) && !x.hasOwnProperty(p)) {
+          return false;
+        }
+      }
+
       return true;
     };
     this.state.pressability.configure(this._createPressabilityConfig());
     if (
       this.props.disabled !== prevProps.disabled ||
-      !isEqual(this.props.style, prevProps.style)
+      !object_equals(this.props.style, prevProps.style)
     ) {
       this._opacityInactive(250);
     }
