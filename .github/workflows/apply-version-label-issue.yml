@@ -1,0 +1,15 @@
+name: Apply version label to issue
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  add-version-label-issue:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: gabrieldonadel/core-workflow-apply-version-label@v0.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
