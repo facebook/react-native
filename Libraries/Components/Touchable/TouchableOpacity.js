@@ -260,10 +260,23 @@ class TouchableOpacity extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
+    let isEqual = (obj1, obj2) => {
+      let obj1Keys = Object.keys(obj1);
+      let obj2Keys = Object.keys(obj2);
+      if (obj1Keys.length !== obj2Keys.length) {
+        return false;
+      }
+      for (let objkey of obj1Keys) {
+        if (obj1[objkey] !== obj2[objkey]) {
+          return false;
+        }
+      }
+      return true;
+    };
     this.state.pressability.configure(this._createPressabilityConfig());
     if (
       this.props.disabled !== prevProps.disabled ||
-      this.props.style !== prevProps.style
+      isEqual(this.props.style, prevProps.style)
     ) {
       this._opacityInactive(250);
     }
