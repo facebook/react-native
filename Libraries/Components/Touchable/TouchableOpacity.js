@@ -263,7 +263,7 @@ class TouchableOpacity extends React.Component<Props, State> {
     this.state.pressability.configure(this._createPressabilityConfig());
     if (
       this.props.disabled !== prevProps.disabled ||
-      JSON.stringify(this.props.style) !== JSON.stringify(prevProps.style)
+      JSON.stringify(prevProps.style) !== JSON.stringify(this.props.style)
     ) {
       this._opacityInactive(250);
     }
