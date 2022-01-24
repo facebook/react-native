@@ -38,15 +38,6 @@ function getBranchName() {
   }).stdout.trim();
 }
 
-function getPublishVersion(tag) {
-  if (!tag.startsWith('publish-')) {
-    return null;
-  }
-
-  const versionStr = tag.replace('publish-', '');
-  return parseVersion(versionStr);
-}
-
 function isTaggedLatest(commitSha) {
   return (
     exec(`git rev-list -1 latest | grep ${commitSha}`, {
@@ -55,19 +46,9 @@ function isTaggedLatest(commitSha) {
   );
 }
 
-function getPublishTag() {
-  // Assumes we only ever have one tag with the prefix `publish-v`
-  const tag = exec("git tag --points-at HEAD | grep 'publish-v'", {
-    silent: true,
-  }).stdout.trim();
-  return tag ? tag : null;
-}
-
 module.exports = {
   getBranchName,
   isTaggedLatest,
-  getPublishTag,
-  getPublishVersion,
   parseVersion,
   isReleaseBranch,
 };

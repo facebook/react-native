@@ -711,6 +711,12 @@ jobs:
   #      JOBS: Releases
   # -------------------------
   prepare_package_for_release:
+    parameters:
+      version:
+        type: string
+      latest:
+        type: boolean
+        default: false
     executor: reactnativeios
     steps:
       - checkout
@@ -721,7 +727,7 @@ jobs:
       - run:
           name: "Set new react-native version and commit changes"
           command: |
-            node ./scripts/prepare-package-for-release.js
+            node ./scripts/prepare-package-for-release.js -v << parameters.version >> -l << parameters.latest >>
 
   build_npm_package:
     parameters:
@@ -787,13 +793,35 @@ jobs:
           command: |
             echo "Nightly build run"
 
+
+# -------------------------
+#        PIPELINE PARAMETERS
+# -------------------------
+parameters:
+  run_package_release_workflow_only:
+    default: false
+    type: boolean
+
+  release_latest:
+    default: false
+    type: boolean
+
+  release_version:
+    default: "9999"
+    type: string
+
 # -------------------------
 #        WORK FLOWS
+#
+#  When creating a new workflow, make sure to include condition `unless: << pipeline.parameters.run_package_release_workflow_only >>`
+#  It's setup this way so we can trigger a release via a POST
+#  See limitations: https://support.circleci.com/hc/en-us/articles/360050351292-How-to-trigger-a-workflow-via-CircleCI-API-v2
 # -------------------------
 workflows:
   version: 2
 
   tests:
+    unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
       - test_js:
           run_disabled_tests: false
@@ -854,20 +882,20 @@ workflows:
               ignore: gh-pages
           run_disabled_tests: false
 
-  releases:
+  # This workflow should only be triggered by release script
+  package_release:
+    when: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
-      # This job will trigger on relevant release branch pushes.
-      # It prepares the package and triggers `build_npm_package` for release
+      # This job will trigger publish_release workflow
       - prepare_package_for_release:
           name: prepare_package_for_release
-          # Since CircleCI does not support branch AND tag filters, we manually check in job
-          # and no-op if there is no `publish-v{version}` tag set.
-          filters:
-            branches:
-              only:
-                - /^(\d+)\.(\d+)-stable$/
+          version: << pipeline.parameters.release_version >>
+          latest : << pipeline.parameters.release_latest >>
 
-      # This job will trigger when a version tag is pushed (by prepare_package_for_release)
+  publish_release:
+    unless: << pipeline.parameters.run_package_release_workflow_only >>
+    jobs:
+      # This job will trigger when a version tag is pushed (by package_release)
       - build_npm_package:
           name: build_and_publish_npm_package
           publish_npm_args: --release
@@ -895,6 +923,7 @@ workflows:
               ignore: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
   analysis:
+    unless: << pipeline.parameters.run_package_release_workflow_only >>
     jobs:
       # Run lints on every commit other than those to the gh-pages branch
       - analyze_code:
@@ -915,6 +944,7 @@ workflows:
               ignore: gh-pages
 
   nightly:
+    unless: << pipeline.parameters.run_package_release_workflow_only >>
     triggers:
       - schedule:
           cron: "0 20 * * *"

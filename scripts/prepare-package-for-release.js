@@ -11,7 +11,7 @@
 
 /**
  * This script prepares a release package to be pushed to npm
- * It is run by CircleCI on a push to a release branch
+ * It is triggered to run on CircleCI
  * It will:
  *    * It updates the version in json/gradle files and makes sure they are consistent between each other (set-rn-version)
  *    * Updates podfile for RNTester
@@ -20,50 +20,40 @@
  */
 const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
-const {
-  isReleaseBranch,
-  isTaggedLatest,
-  getPublishVersion,
-  getPublishTag,
-} = require('./version-utils');
+const {isReleaseBranch, parseVersion} = require('./version-utils');
 
-const argv = yargs.option('r', {
-  alias: 'remote',
-  default: 'origin',
-}).argv;
+const argv = yargs
+  .option('r', {
+    alias: 'remote',
+    default: 'origin',
+  })
+  .option('v', {
+    alias: 'to-version',
+    type: 'string',
+    required: true,
+  })
+  .option('l', {
+    alias: 'latest',
+    type: 'boolean',
+    default: false,
+  }).argv;
 
 const currentCommit = process.env.CIRCLE_SHA1;
 const branch = process.env.CIRCLE_BRANCH;
 const remote = argv.remote;
-
-const tag = getPublishTag();
-if (tag == null) {
-  console.log(
-    'No publish tag set. Not publishing this release.\nCircleCI cannot filter workflows on both branch and tag so we do this check in prepare-package-for-release',
-  );
-  exit(0);
-}
+const releaseVersion = argv.toVersion;
+const isLatest = argv.latest;
 
 if (!isReleaseBranch(branch)) {
   console.error(`This needs to be on a release branch. On branch: ${branch}`);
   exit(1);
 }
 
-// Get the version we're publishing from the publish tag
-// Tag of the form `publish-v{versionStr}`
-const versionInfo = getPublishVersion(tag);
-if (versionInfo == null) {
-  console.error(
-    `Invalid tag provided: ${tag}, needs to be of form 'publish-v{major}.{minor}.{patch}'`,
-  );
+const {version} = parseVersion(releaseVersion);
+if (version == null) {
+  console.error(`Invalid version provided: ${releaseVersion}`);
   exit(1);
 }
-
-// Clean up tag now that we're publishing the release.
-exec(`git tag -d ${tag}`);
-exec(`git push ${remote} :${tag}`);
-
-const {version} = versionInfo;
 
 if (exec(`node scripts/set-rn-version.js --to-version ${version}`).code) {
   echo(`Failed to set React Native version to ${version}`);
@@ -94,10 +84,7 @@ if (exec(`git tag -a v${version} -m "v${version}"`).code) {
   exit(1);
 }
 
-// See if `latest` was set on the commit that triggered this script
-// If yes, move the tag to commit we just made
-// This tag will also update npm release as `latest`
-const isLatest = isTaggedLatest(currentCommit);
+// If `isLatest`, this git tag will also set npm release as `latest`
 if (isLatest) {
   exec('git tag -d latest');
   exec(`git push ${remote} :latest`);
