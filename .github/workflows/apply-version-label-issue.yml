@@ -10,6 +10,6 @@ jobs:
     continue-on-error: true
 
     steps:
-      - uses: gabrieldonadel/core-workflow-apply-version-label@v0.0.1
+      - uses: gabrieldonadel/actions-apply-version-label@v0.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
