@@ -12,7 +12,7 @@
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
 @interface RCTSwitch : UISwitch
 #else // [TODO(macOS GH#774)
-@interface RCTSwitch : NSButton
+@interface RCTSwitch : NSSwitch
 #endif // ]TODO(macOS GH#774)
 
 #if !TARGET_OS_OSX // TODO(macOS GH#774)
