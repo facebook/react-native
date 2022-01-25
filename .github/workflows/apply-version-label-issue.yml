@@ -10,6 +10,7 @@ jobs:
     continue-on-error: true
 
     steps:
-      - uses: gabrieldonadel/actions-apply-version-label@v0.0.1
+      - uses: gabrieldonadel/actions-apply-version-label@v0.0.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          required-label: "Type: Upgrade Issue"
