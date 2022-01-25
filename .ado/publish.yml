@@ -107,7 +107,7 @@ jobs:
   - job: RNMacOSInitNpmJSPublish
     displayName: react-native-macos-init Publish to npmjs.org
     pool:
-      vmImage: vs2017-win2016
+      vmImage: ubuntu-18.04
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     condition: eq(variables['Build.SourceBranchName'], 'main')

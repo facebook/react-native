@@ -48,7 +48,6 @@
     "scripts/launchPackager.command",
     "scripts/node-binary.sh",
     "scripts/packager.sh",
-    "scripts/postInstall.js",
     "scripts/react_native_pods.rb",
     "scripts/react-native-xcode.sh",
     "template.config.js",
@@ -84,8 +83,7 @@
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
     "build-ios-e2e": "detox build -c ios.sim.release",
     "test-ios-e2e": "detox test -c ios.sim.release packages/rn-tester/e2e",
-    "test-ios": "./scripts/objc-test.sh test",
-    "postinstall": "node scripts/postInstall.js"
+    "test-ios": "./scripts/objc-test.sh test"
   },
   "workspaces": [
     "packages/!(eslint-config-react-native-community)",
