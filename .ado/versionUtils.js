@@ -43,7 +43,7 @@ function updateVersionsInFiles(patchVersionPrefix) {
  
     pkgJson.version = releaseVersion;
     console.log(`Bumping files to version ${releaseVersion}`);
-    execSync(`node ./scripts/bump-oss-version.js --rnmpublish ${releaseVersion}`, {stdio: 'inherit', env: process.env});
+    execSync(`node ./scripts/bump-oss-version.js --rnmpublish --version ${releaseVersion}`, {stdio: 'inherit', env: process.env});
 
     return {releaseVersion, branchVersionSuffix};
 }
