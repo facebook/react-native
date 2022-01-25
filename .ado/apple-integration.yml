@@ -83,6 +83,7 @@ jobs:
         displayName: Bundle JavaScript
         workingDirectory: react-native-test-app/example
       - bash: |
+          rm macos/Podfile.lock
           pod install --project-directory=macos
         displayName: Install Pods
         workingDirectory: react-native-test-app/example
