@@ -782,7 +782,6 @@
 			buildConfigurationList = 9F153487233AB2C7006DFE44 /* Build configuration list for PBXNativeTarget "RNTester-macOSIntegrationTests" */;
 			buildPhases = (
 				BB5A1780C83FBE6D71CF684F /* [CP] Check Pods Manifest.lock */,
-				3328F106F9BD3562E3CF9D5E /* Start Metro */,
 				9F153474233AB2C7006DFE44 /* Sources */,
 				9F153475233AB2C7006DFE44 /* Frameworks */,
 				9F153476233AB2C7006DFE44 /* Resources */,
@@ -1810,7 +1809,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1894,7 +1893,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
