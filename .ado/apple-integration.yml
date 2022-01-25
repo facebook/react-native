@@ -4,8 +4,7 @@ variables:
 trigger:
   branches:
     include:
-    # GH #948: Disable Integration on main, as we are not currently stable
-    # - main
+      - main
       - '*-stable'
   paths:
     exclude:
@@ -13,8 +12,7 @@ trigger:
 pr:
   branches:
     include:
-    # GH #948: Disable Integration on main, as we are not currently stable
-    # - main
+      - main
       - '*-stable'
   paths:
     exclude:
@@ -83,6 +81,7 @@ jobs:
         displayName: Bundle JavaScript
         workingDirectory: react-native-test-app/example
       - bash: |
+          rm macos/Podfile.lock
           pod install --project-directory=macos
         displayName: Install Pods
         workingDirectory: react-native-test-app/example
