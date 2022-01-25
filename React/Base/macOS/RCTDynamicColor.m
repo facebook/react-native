@@ -59,14 +59,12 @@ static NSString *const RCTDarkAquaColor = @"darkAquaColor";
 - (NSColor *)effectiveColor
 {
   NSColor *effectiveColor = _aquaColor;
-  if (@available(macOS 10.14, *)) {
-    NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
+  NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
 
-    NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+  NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 
-    if (_darkAquaColor != nil && [appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
-      effectiveColor = _darkAquaColor;
-    }
+  if (_darkAquaColor != nil && [appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+    effectiveColor = _darkAquaColor;
   }
   return effectiveColor;
 }

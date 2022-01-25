@@ -78,7 +78,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "Hermes" do |ss|
-    ss.platforms = { :osx => "10.15" }
+    ss.platforms = { :osx => "10.15", :ios => "11.0"  }
     ss.source_files = "ReactCommon/hermes/executor/*.{cpp,h}",
                       "ReactCommon/hermes/inspector/*.{cpp,h}",
                       "ReactCommon/hermes/inspector/chrome/*.{cpp,h}",
