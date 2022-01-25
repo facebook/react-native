@@ -6,12 +6,8 @@ target 'HelloWorld-macOS' do
   use_native_modules!
   use_react_native!(
     :path => '../node_modules/react-native-macos',
-    
-    # To use Hermes, install the `hermes-engine-darwin` npm package, e.g.:
-    #   $ yarn add 'hermes-engine-darwin@~0.5.3'
-    #
-    # Then enable this option:
-    #   :hermes_enabled => true
+    # to enable hermes on macOS, change `false` to `true` and then install pods
+    :hermes_enabled => false
   )
 
   # Pods specifically for macOS target
@@ -29,7 +25,6 @@ target 'HelloWorld-iOS' do
   use_flipper!
 
   post_install do |installer|
-    flipper_post_install(installer)
     react_native_post_install(installer)
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
