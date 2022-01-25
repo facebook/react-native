@@ -196,7 +196,6 @@ class AnimatedValue extends AnimatedWithChildren {
   resetAnimation(callback?: ?(value: number) => void): void {
     this.stopAnimation(callback);
     this._value = this._startingValue;
-    // TODO(macOS GH#774): A bug fix that hasn't been merged to upstream yet.
     if (this.__isNative) {
       NativeAnimatedAPI.setAnimatedNodeValue(
         this.__getNativeTag(),

@@ -84,7 +84,7 @@ We use GitHub issues to track bugs exclusively. We have documented our issue han
 
 ### Merging upstream master into your fork master
 
-From time to time, your fork will get out of sync with the upstream remote. Use the following commands to get the master branch of your fork up up to date.
+We use GitHub issues to track bugs exclusively. We have documented our issue handling processes in the [Issues wiki](https://github.com/facebook/react-native/wiki/Triaging-GitHub-Issues).
 
 ```bash
 git fetch upstream

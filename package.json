@@ -1,7 +1,7 @@
 {
   "name": "react-native-macos",
   "private": true,
-  "version": "1000.0.0",
+  "version": "0.66.4",
   "bin": "./cli.js",
   "description": "[Microsoft Fork] A framework for building native apps using React",
   "license": "MIT",
@@ -128,8 +128,6 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.158.0",
-    "react": "17.0.2",
     "@babel/core": "^7.14.0",
     "@babel/generator": "^7.14.0",
     "@babel/template": "^7.0.0",
@@ -157,12 +155,15 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-react-native": "3.10.0",
     "eslint-plugin-relay": "1.8.1",
+    "flow-bin": "^0.158.0",
     "jest": "^26.6.3",
     "jest-junit": "^10.0.0",
     "jscodeshift": "^0.11.0",
+    "metro-babel-register": "0.66.2",
     "metro-transform-plugins": "^0.66.0",
     "mkdirp": "^0.5.1",
     "prettier": "1.19.1",
+    "react": "17.0.2",
     "react-shallow-renderer": "16.14.1",
     "react-test-renderer": "17.0.2",
     "shelljs": "^0.7.8",

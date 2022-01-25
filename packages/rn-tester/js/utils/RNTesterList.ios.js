@@ -74,6 +74,21 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'ListView',
   },
   {
+    key: 'FlatList-withSeparators',
+    module: require('../examples/FlatList/FlatList-withSeparators'),
+    category: 'ListView',
+  },
+  {
+    key: 'FlatList-onViewableItemsChanged',
+    module: require('../examples/FlatList/FlatList-onViewableItemsChanged'),
+    category: 'ListView',
+  },
+  {
+    key: 'FlatList-onEndReached',
+    module: require('../examples/FlatList/FlatList-onEndReached'),
+    category: 'ListView',
+  },
+  {
     key: 'ImageExample',
     module: require('../examples/Image/ImageExample'),
     skipTest: {

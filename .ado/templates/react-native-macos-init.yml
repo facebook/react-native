@@ -59,7 +59,7 @@ steps:
   - task: CmdLine@2
     displayName: Bump package version
     inputs:
-      script: node scripts/bump-oss-version.js --ci 0.0.1000
+      script: node scripts/bump-oss-version.js --nightly -v 0.0.1000
 
   - script: |
       npm publish --registry http://localhost:4873
