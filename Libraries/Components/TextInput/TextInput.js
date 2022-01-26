@@ -301,6 +301,13 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   textContentType?: ?TextContentType,
+
+  /**
+   * If `true`, it will hide the done button above the keyboard
+   * Only work for any number pads keyboardType
+   * @platform ios
+   */
+   hideDoneButtonIOS?: ?boolean,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
