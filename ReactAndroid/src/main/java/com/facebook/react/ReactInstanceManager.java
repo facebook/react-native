@@ -1390,7 +1390,7 @@ public class ReactInstanceManager {
           mJSIModulePackage.getJSIModules(
               reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
-    if (ReactFeatureFlags.eagerInitializeFabric) {
+    if (ReactFeatureFlags.enableFabricRenderer) {
       catalystInstance.getJSIModule(JSIModuleType.UIManager);
     }
     if (mBridgeIdleDebugListener != null) {
