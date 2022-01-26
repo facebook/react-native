@@ -72,10 +72,15 @@
 
  let branch;
  if (!nightlyBuild) {
-   // Check we are in release branch, e.g. 0.33-stable
-   branch = exec('git symbolic-ref --short HEAD', {
-     silent: true,
-   }).stdout.trim();
+   if (process.env.BUILD_SOURCEBRANCH) {
+     console.log(`BUILD_SOURCEBRANCH: ${process.env.BUILD_SOURCEBRANCH}`);
+     branch = process.env.BUILD_SOURCEBRANCH.match(/refs\/heads\/(.*)/)[1];
+     console.log(`Identified branch: ${branch}`);
+   } else {
+     branch = exec('git symbolic-ref --short HEAD', {
+       silent: true,
+     }).stdout.trim();
+   }
 
    if (branch.indexOf('-stable') === -1) {
      echo('You must be in 0.XX-stable branch to bump a version');
