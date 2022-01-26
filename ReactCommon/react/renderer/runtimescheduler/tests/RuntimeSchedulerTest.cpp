@@ -159,7 +159,7 @@ TEST_F(RuntimeSchedulerTest, taskExpiration) {
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
-  uint firstTaskCallOrder;
+  uint firstTaskCallOrder = 0;
   auto callbackOne =
       createHostFunctionFromLambda([this, &firstTaskCallOrder](bool) {
         firstTaskCallOrder = hostFunctionCallCount_;
@@ -192,7 +192,7 @@ TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithSamePriority) {
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleTwoTasksWithDifferentPriorities) {
-  uint lowPriorityTaskCallOrder;
+  uint lowPriorityTaskCallOrder = 0;
   auto callbackOne =
       createHostFunctionFromLambda([this, &lowPriorityTaskCallOrder](bool) {
         lowPriorityTaskCallOrder = hostFunctionCallCount_;
