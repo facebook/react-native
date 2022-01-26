@@ -36,6 +36,11 @@
      type: 'boolean',
      default: false,
    })
+   .option('a', { // TODO(macOS GH#774): See note below
+     alias: 'autogenerate-version-number',
+     type: 'boolean',
+     default: false,
+   })
    .option('v', {
      alias: 'to-version',
      type: 'string',
@@ -46,14 +51,23 @@
      default: false,
    }).argv;
 
+ const autogenerateVersionNumber = argv.autogenerateVersionNumber;
  const nightlyBuild = argv.nightly;
- const version = argv.toVersion;
+ let version = argv.toVersion;
 
  if (!version) {
-   echo(
-     'You must specify a version using -v',
-   );
-   exit(1);
+   // TODO(macOS GH#774): Some of our calls to bump-oss-version.js still depend on an automatically generated version number
+   if (nightlyBuild && autogenerateVersionNumber) {
+     const currentCommit = exec('git rev-parse HEAD', {
+       silent: true,
+     }).stdout.trim();
+     version = `0.0.0-${currentCommit.slice(0, 9)}`;
+   } else {
+     echo(
+       'You must specify a version using -v',
+     );
+     exit(1);
+   }
  }
 
  let branch;
