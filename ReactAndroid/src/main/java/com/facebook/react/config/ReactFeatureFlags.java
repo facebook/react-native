@@ -74,9 +74,6 @@ public class ReactFeatureFlags {
   /** Enables a more aggressive cleanup during destruction of ReactContext */
   public static boolean enableReactContextCleanupFix = false;
 
-  /** Feature flag to configure eager initialization of MapBuffer So file */
-  public static boolean enableEagerInitializeMapBufferSoFile = false;
-
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
