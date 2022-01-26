@@ -237,7 +237,7 @@ TEST_F(RuntimeSchedulerTest, cancelTask) {
   EXPECT_FALSE(didRunTask);
   EXPECT_EQ(stubQueue_->size(), 1);
 
-  runtimeScheduler_->cancelTask(task);
+  runtimeScheduler_->cancelTask(*task);
 
   stubQueue_->tick();
 

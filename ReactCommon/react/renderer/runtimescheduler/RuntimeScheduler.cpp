@@ -52,8 +52,8 @@ bool RuntimeScheduler::getIsSynchronous() const noexcept {
   return isSynchronous_;
 }
 
-void RuntimeScheduler::cancelTask(const std::shared_ptr<Task> &task) noexcept {
-  task->callback.reset();
+void RuntimeScheduler::cancelTask(Task &task) noexcept {
+  task.callback.reset();
 }
 
 SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const noexcept {

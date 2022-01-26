@@ -57,14 +57,43 @@ class RuntimeScheduler final {
       SchedulerPriority priority,
       jsi::Function callback);
 
-  void cancelTask(std::shared_ptr<Task> const &task) noexcept;
+  /*
+   * Cancelled task will never be executed.
+   *
+   * Operates on JSI object.
+   * Thread synchronization must be enforced externally.
+   */
+  void cancelTask(Task &task) noexcept;
 
+  /*
+   * Return value indicates if host platform has a pending access to the
+   * runtime.
+   *
+   * Can be called from any thread.
+   */
   bool getShouldYield() const noexcept;
 
+  /*
+   * Return value informs if the current task is executed inside synchronous
+   * block.
+   *
+   * Can be called from any thread.
+   */
   bool getIsSynchronous() const noexcept;
 
+  /*
+   * Returns value of currently executed task. Designed to be called from React.
+   *
+   * Thread synchronization must be enforced externally.
+   */
   SchedulerPriority getCurrentPriorityLevel() const noexcept;
 
+  /*
+   * Returns current monotonic time. This time is not related to wall clock
+   * time.
+   *
+   * Thread synchronization must be enforced externally.
+   */
   RuntimeSchedulerTimePoint now() const noexcept;
 
  private:
