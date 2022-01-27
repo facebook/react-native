@@ -244,10 +244,6 @@ private fun Project.cleanupVMFiles(
     } else {
       // For JSC, delete all the libhermes* files
       it.include("**/libhermes*.so")
-      // Delete the libjscexecutor from release build
-      if (cleanup) {
-        it.include("**/libjscexecutor.so")
-      }
     }
   }
       .visit { visit ->

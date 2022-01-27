@@ -35,6 +35,12 @@
 
 - (void)hide
 {
+  [_alertWindow setHidden:YES];
+
+  if (@available(iOS 13, *)) {
+    _alertWindow.windowScene = nil;
+  }
+
   _alertWindow = nil;
 }
 

@@ -381,7 +381,8 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       # ensure IPHONEOS_DEPLOYMENT_TARGET is at least 11.0
-      should_upgrade = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].split('.')[0].to_i < 11
+      deployment_target = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f
+      should_upgrade = deployment_target < 11.0 && deployment_target != 0.0
       if should_upgrade
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
       end
