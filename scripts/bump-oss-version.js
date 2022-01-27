@@ -72,6 +72,7 @@
 
  let branch;
  if (!nightlyBuild) {
+   // Check we are in release branch, e.g. 0.33-stable
    if (process.env.BUILD_SOURCEBRANCH) {
      console.log(`BUILD_SOURCEBRANCH: ${process.env.BUILD_SOURCEBRANCH}`);
      branch = process.env.BUILD_SOURCEBRANCH.match(/refs\/heads\/(.*)/)[1];
