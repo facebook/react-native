@@ -367,10 +367,6 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public void setPointerEvents(ReactScrollView view, @Nullable String pointerEventsStr) {
-    if (pointerEventsStr == null) {
-      view.setPointerEvents(PointerEvents.AUTO);
-    } else {
-      view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
-    }
+    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr));
   }
 }
