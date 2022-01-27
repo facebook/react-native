@@ -65,6 +65,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable, readonly) NSObject *accessibilityElement;
 
 /**
+ * Accessibility properties
+ */
+@property (nonatomic, assign) BOOL shouldPreventAccessibilityFocus;
+
+/**
  * Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;

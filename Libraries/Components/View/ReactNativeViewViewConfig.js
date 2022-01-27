@@ -131,6 +131,7 @@ const ReactNativeViewConfig: ViewConfig = {
     accessibilityLabel: true,
     accessibilityLiveRegion: true,
     accessibilityRole: true,
+    accessibilitySplitFocus: true,
     accessibilityState: true,
     accessibilityValue: true,
     accessibilityViewIsModal: true,

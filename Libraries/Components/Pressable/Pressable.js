@@ -47,6 +47,7 @@ type Props = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
   accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
   accessibilityRole?: ?AccessibilityRole,
+  accessibilitySplitFocus?: ?boolean,
   accessibilityState?: ?AccessibilityState,
   accessibilityValue?: ?AccessibilityValue,
   accessibilityViewIsModal?: ?boolean,

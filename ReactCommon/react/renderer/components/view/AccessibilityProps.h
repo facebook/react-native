@@ -36,6 +36,7 @@ class AccessibilityProps {
   bool accessibilityViewIsModal{false};
   bool accessibilityElementsHidden{false};
   bool accessibilityIgnoresInvertColors{false};
+  bool accessibilitySplitFocus{false};
   bool onAccessibilityTap{};
   bool onAccessibilityMagicTap{};
   bool onAccessibilityEscape{};

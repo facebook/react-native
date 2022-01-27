@@ -11,7 +11,12 @@
 'use strict';
 
 const React = require('react');
-const {Text, View, Alert} = require('react-native');
+const {
+  Alert,
+  StyleSheet,
+  Text,
+  View,
+} = require('react-native');
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
 
@@ -55,10 +60,41 @@ class AccessibilityIOSExample extends React.Component<Props> {
             This view's children are hidden from the accessibility tree
           </Text>
         </View>
+        <View
+          style={styles.outerBlock}
+          accessible={true}
+          accessibilitySplitFocus={true}
+          accessibilityLabel={'Parent Element'}>
+          <Text>
+            Accessibility split focus example
+          </Text>
+          <View
+            style={styles.innerBlock}
+            accessible={true}
+            accessibilityLabel={'First Child Element'} />
+          <View
+            style={styles.innerBlock}
+            accessible={true}
+            accessibilityLabel={'Second Child Element'} />
+        </View>
       </RNTesterBlock>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  outerBlock: {
+    marginVertical: 15,
+    paddingVertical: 15,
+    backgroundColor: 'blue',
+  },
+  innerBlock: {
+    marginVertical: 15,
+    marginHorizontal: 15,
+    height: 40,
+    backgroundColor: 'green',
+  },
+});
 
 exports.title = 'AccessibilityIOS';
 exports.description = 'iOS specific Accessibility APIs';

@@ -63,11 +63,27 @@ using namespace facebook::react;
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
+  BOOL result = NO;
   if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
-    return [super pointInside:point withEvent:event];
+    result = [super pointInside:point withEvent:event];
+  } else {
+    CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+    result = CGRectContainsPoint(hitFrame, point);
   }
-  CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
-  return CGRectContainsPoint(hitFrame, point);
+  
+  if (result && _props->accessibilitySplitFocus) {
+    UIView *hitSubview = nil;
+    for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
+      CGPoint convertedPoint = [subview convertPoint:point fromView:self];
+      hitSubview = [subview hitTest:convertedPoint withEvent:event];
+      if (hitSubview != nil) {
+        break;
+      }
+    }
+    _shouldPreventAccessibilityFocus = hitSubview != nil && [hitSubview isAccessibilityElement];
+  }
+
+  return result;
 }
 
 - (UIColor *)backgroundColor
@@ -652,6 +668,15 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 - (NSObject *)accessibilityElement
 {
   return self;
+}
+
+- (BOOL)isAccessibilityElement
+{
+  if ([super isAccessibilityElement]) {
+    return _props->accessibilitySplitFocus ? !_shouldPreventAccessibilityFocus : YES;
+  } else {
+    return NO;
+  }
 }
 
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)

@@ -131,6 +131,7 @@ RCT_REMAP_VIEW_PROPERTY(
     accessibilityIgnoresInvertColors,
     reactAccessibilityElement.shouldAccessibilityIgnoresInvertColors,
     BOOL)
+RCT_EXPORT_VIEW_PROPERTY(accessibilitySplitFocus, BOOL)
 RCT_REMAP_VIEW_PROPERTY(onAccessibilityAction, reactAccessibilityElement.onAccessibilityAction, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(onAccessibilityTap, reactAccessibilityElement.onAccessibilityTap, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(onMagicTap, reactAccessibilityElement.onMagicTap, RCTDirectEventBlock)
