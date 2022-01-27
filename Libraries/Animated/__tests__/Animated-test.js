@@ -782,6 +782,19 @@ describe('Animated tests', () => {
       value1.setValue(1492);
       expect(value2.__getValue()).toBe(7);
     });
+
+    it('should start tracking immediately on animation start', () => {
+      const value1 = new Animated.Value(42);
+      const value2 = new Animated.Value(0);
+      Animated.timing(value2, {
+        toValue: value1,
+        duration: 0,
+        useNativeDriver: false,
+      }).start();
+      expect(value2.__getValue()).toBe(42);
+      value1.setValue(7);
+      expect(value2.__getValue()).toBe(7);
+    });
   });
 
   describe('Animated Vectors', () => {
