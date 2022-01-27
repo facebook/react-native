@@ -1,7 +1,6 @@
 {
   "name": "react-native-macos",
-  "private": true,
-  "version": "0.66.5",
+  "version": "0.66.6",
   "bin": "./cli.js",
   "description": "[Microsoft Fork] A framework for building native apps using React",
   "license": "MIT",
@@ -87,10 +86,6 @@
     "test-ios": "./scripts/objc-test.sh test",
     "postinstall": "node scripts/postInstall.js"
   },
-  "workspaces": [
-    "packages/!(eslint-config-react-native-community)",
-    "repo-config"
-  ],
   "peerDependencies": {
     "react": "17.0.2"
   },
@@ -169,7 +164,10 @@
     "shelljs": "^0.7.8",
     "signedsource": "^1.0.0",
     "ws": "^6.1.4",
-    "yargs": "^15.3.1"
+    "yargs": "^15.3.1",
+    "@typescript-eslint/eslint-plugin": "4.30.0",
+    "@typescript-eslint/parser": "4.30.0",
+    "typescript": "4.4.2"
   },
   "detox": {
     "test-runner": "jest",
