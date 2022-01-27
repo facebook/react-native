@@ -13,6 +13,13 @@
 const AUTO_SET_TIMESTAMP = -1;
 const DUMMY_INSTANCE_KEY = 0;
 
+// Defines map of annotations for markEvent
+// Use as following:
+// {string: {key1: value1, key2: value2}}
+export type AnnotationsMap = $Shape<{
+  string: ?{[string]: string, ...},
+}>;
+
 const QuickPerformanceLogger = {
   markerStart(
     markerId: number,
@@ -90,9 +97,13 @@ const QuickPerformanceLogger = {
     }
   },
 
-  markEvent(markerId: number, type: string): void {
+  markEvent(
+    markerId: number,
+    type: string,
+    annotations: ?AnnotationsMap = null,
+  ): void {
     if (global.nativeQPLMarkEvent) {
-      global.nativeQPLMarkEvent(markerId, type);
+      global.nativeQPLMarkEvent(markerId, type, annotations);
     }
   },
 
