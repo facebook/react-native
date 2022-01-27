@@ -74,7 +74,7 @@ jobs:
       - task: CmdLine@2
         displayName: Bump canary package version
         inputs:
-          script: node scripts/bump-oss-version.js --nightly
+          script: node scripts/bump-oss-version.js --nightly --autogenerateVersionNumber
         condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'))
 
       # Publish will fail if package.json is marked as private
