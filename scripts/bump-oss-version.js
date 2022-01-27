@@ -166,13 +166,16 @@
 
  let packageJson = JSON.parse(cat('package.json'));
  packageJson.version = version;
- delete packageJson.workspaces;
- delete packageJson.private;
+
+ // [MacOS - We do this seperately in a non-destructive way as part of our publish steps
+//  delete packageJson.workspaces;
+//  delete packageJson.private;
 
  // Copy dependencies over from repo-config/package.json
- const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
- packageJson.devDependencies = {...packageJson.devDependencies, ...repoConfigJson.dependencies};
- fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
+//  const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
+//  packageJson.devDependencies = {...packageJson.devDependencies, ...repoConfigJson.dependencies};
+//  fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
+// macOS]
 
  // Change ReactAndroid/gradle.properties
  if (
@@ -211,6 +214,12 @@
      echo('Fix the issue, revert and try again');
      exec('git diff');
      exit(1);
+   }
+
+   // [macOS we run this script when publishing react-native-macos and when publishing react-native microsoft fork
+   // The react-native publish build runs on an agent without cocopods - so we cannot update the podfile.lock
+   if (require('../package.json').name !== 'react-native-macos') {
+     exit(0);
    }
 
    // Update Podfile.lock only on release builds, not nightlies.
