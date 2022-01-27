@@ -90,6 +90,12 @@ const QuickPerformanceLogger = {
     }
   },
 
+  markEvent(markerId: number, type: string): void {
+    if (global.nativeQPLMarkEvent) {
+      global.nativeQPLMarkEvent(markerId, type);
+    }
+  },
+
   currentTimestamp(): number {
     if (global.nativeQPLTimestamp) {
       return global.nativeQPLTimestamp();
