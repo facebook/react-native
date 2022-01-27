@@ -216,10 +216,17 @@
    // Update Podfile.lock only on release builds, not nightlies.
    // Nightly builds don't need it as the main branch will already be up-to-date.
    echo('Updating RNTester Podfile.lock...');
-   if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
+   if (exec('. scripts/update_podfile_lock.sh && update_pods').code) {
      echo('Failed to update RNTester Podfile.lock.');
      echo('Fix the issue, revert and try again.');
      exit(1);
+   }
+
+   // [macOS we run this script when publishing react-native-macos and when publishing react-native microsoft fork
+   // We have seperate logic to tag and commit changes.  -- If we used the rest of the logic we'd end up with two publish jobs
+   // competing and conflicting to tag / commit the changes.
+   if (argv.rnmpublish) {
+     exit(0);
    }
 
    // Make commit [0.21.0-rc] Bump version numbers
@@ -252,6 +259,7 @@
    }
 
    exec(`git push ${remote} ${branch} --follow-tags`);
+
  }
 
  exit(0);
