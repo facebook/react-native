@@ -184,13 +184,13 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
           "StatusBarModule: Ignored status bar change, current activity is null.");
       return;
     }
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @TargetApi(Build.VERSION_CODES.R)
-          @Override
-          public void run() {
+    
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @TargetApi(Build.VERSION_CODES.R)
+        @Override
+        public void run() {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowInsetsController insetsController = activity.getWindow().getInsetsController();
             if ("light-content".equals(style)) {
               // light-content means white icons on a dark status bar
@@ -204,24 +204,17 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
               );
             }
-          }
-        });
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      UiThreadUtil.runOnUiThread(
-          new Runnable() {
-            @TargetApi(Build.VERSION_CODES.M)
-            @Override
-            public void run() {
-              View decorView = activity.getWindow().getDecorView();
-              int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
-              if ("dark-content".equals(style)) {
-                systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-              } else {
-                systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-              }
-              decorView.setSystemUiVisibility(systemUiVisibilityFlags);
+          } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            View decorView = activity.getWindow().getDecorView();
+            int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
+            if ("dark-content".equals(style)) {
+              systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            } else {
+              systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
             }
-          });
-    }
+            decorView.setSystemUiVisibility(systemUiVisibilityFlags);
+          }
+        }
+      });
   }
 }
