@@ -528,8 +528,17 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   }
 
   if (yogaNode_.getStyle().overflow() == YGOverflowVisible) {
+    auto transform = getTransform();
+    auto transformedContentFrame = contentFrame;
+    if (Transform::Identity() != transform) {
+      // When animation uses native driver, Yoga has no knowledge of the
+      // animation. In case the content goes out from current container, we need
+      // to union the content frame with its transformed frame.
+      transformedContentFrame = contentFrame * getTransform();
+      transformedContentFrame.unionInPlace(contentFrame);
+    }
     layoutMetrics_.overflowInset =
-        calculateOverflowInset(layoutMetrics_.frame, contentFrame);
+        calculateOverflowInset(layoutMetrics_.frame, transformedContentFrame);
   } else {
     layoutMetrics_.overflowInset = {};
   }
