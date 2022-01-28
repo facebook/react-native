@@ -336,7 +336,7 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          rootView.setIsFabric(ReactFeatureFlags.enableFabricInLogBox);
+          rootView.setIsFabric(ReactFeatureFlags.enableFabricRenderer);
           rootView.startReactApplication(ReactInstanceManager.this, appKey, null);
           return rootView;
         }

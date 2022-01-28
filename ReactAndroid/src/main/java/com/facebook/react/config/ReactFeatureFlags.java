@@ -99,9 +99,6 @@ public class ReactFeatureFlags {
     return useOverflowInset;
   }
 
-  /** Enables Fabric for LogBox */
-  public static boolean enableFabricInLogBox = false;
-
   public static boolean enableLockFreeEventDispatcher = false;
 
   public static boolean enableAggressiveEventEmitterCleanup = false;
