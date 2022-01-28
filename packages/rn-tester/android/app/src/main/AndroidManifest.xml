@@ -59,5 +59,23 @@
       android:exported="false"
     />
   </application>
+  <queries>
+    <package android:name="com.facebook.katana" />
+    <package android:name="com.facebook.lite" />
+    <package android:name="com.facebook.android" />
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.BROWSABLE" />
+      <data android:scheme="https" />
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="geo" />
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.DIAL" />
+      <data android:scheme="tel" />
+    </intent>
+  </queries>
 
 </manifest>

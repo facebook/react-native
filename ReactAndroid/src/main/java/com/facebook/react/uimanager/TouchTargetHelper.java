@@ -271,8 +271,8 @@ public class TouchTargetHelper {
     }
 
     final Rect overflowInset = ((ReactOverflowViewWithInset) view).getOverflowInset();
-    return (x >= -overflowInset.left && x < view.getWidth() - overflowInset.right)
-        && (y >= -overflowInset.top && y < view.getHeight() - overflowInset.bottom);
+    return (x >= overflowInset.left && x < view.getWidth() - overflowInset.right)
+        && (y >= overflowInset.top && y < view.getHeight() - overflowInset.bottom);
   }
 
   /**

@@ -109,7 +109,7 @@ def use_react_native! (options={})
 
   if hermes_enabled
     pod 'React-hermes', :path => "#{prefix}/ReactCommon/hermes"
-    pod 'hermes-engine', '~> 0.10.0'
+    pod 'hermes-engine', '~> 0.11.0'
     pod 'libevent', '~> 2.1.12'
   end
 end
@@ -646,5 +646,6 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   #   "Time.h:52:17: error: typedef redefinition with different types"
   # We need to make a patch to RCT-Folly - remove the `__IPHONE_OS_VERSION_MIN_REQUIRED` check.
   # See https://github.com/facebook/flipper/issues/834 for more details.
-  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' Pods/RCT-Folly/folly/portability/Time.h`
+  time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
+  `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' #{time_header}`
 end

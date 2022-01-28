@@ -60,3 +60,10 @@ if [[ -x "$HOME/.volta/bin/node" ]]; then
   export VOLTA_HOME="$HOME/.volta"
   export PATH="$VOLTA_HOME/bin:$PATH"
 fi
+
+# Set up the fnm node version manager if present
+if [[ -x "$HOME/.fnm/fnm" ]]; then
+  eval "$("$HOME/.fnm/fnm" env)"
+elif [[ -x "$(command -v brew)" && -x "$(brew --prefix fnm)/bin/fnm" ]]; then
+  eval "$("$(brew --prefix fnm)/bin/fnm" env)"
+fi

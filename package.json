@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": "github:facebook/react-native",
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   },
   "jest-junit": {
     "outputDirectory": "reports/junit",
@@ -103,16 +103,16 @@
     "base64-js": "^1.1.2",
     "deprecated-react-native-prop-types": "^2.3.0",
     "event-target-shim": "^5.0.1",
-    "hermes-engine": "~0.10.0",
+    "hermes-engine": "~0.11.0",
     "invariant": "^2.2.4",
     "jsc-android": "^250230.2.1",
-    "metro-react-native-babel-transformer": "0.66.2",
-    "metro-runtime": "0.66.2",
-    "metro-source-map": "0.66.2",
+    "metro-react-native-babel-transformer": "0.67.0",
+    "metro-runtime": "0.67.0",
+    "metro-source-map": "0.67.0",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.0.3",
-    "react-devtools-core": "4.22.1",
+    "react-devtools-core": "^4.23.0",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "16.14.1",
     "regenerator-runtime": "^0.13.2",
@@ -123,7 +123,7 @@
     "ws": "^6.1.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.168.0",
+    "flow-bin": "^0.170.0",
     "react": "17.0.2"
   },
   "codegenConfig": {

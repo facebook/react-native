@@ -23,7 +23,7 @@ fi
 # Check that the correct version of node is installed
 NODE_VERSION="$(command node --version | sed 's/[-/a-zA-Z]//g' |sed 's/.\{2\}$//')"
 
-if (( $(echo "${NODE_VERSION} < 12.0" | bc -l) )); then
+if (( $(echo "${NODE_VERSION} < 14.0" | bc -l) )); then
   echo "Node ${NODE_VERSION} detected. This version of Node is not supported."
   echo "See https://reactnative.dev/docs/getting-started for instructions."
   exit 1

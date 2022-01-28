@@ -57,17 +57,44 @@ class RuntimeScheduler final {
       SchedulerPriority priority,
       jsi::Function callback);
 
-  void cancelTask(std::shared_ptr<Task> const &task) noexcept;
+  /*
+   * Cancelled task will never be executed.
+   *
+   * Operates on JSI object.
+   * Thread synchronization must be enforced externally.
+   */
+  void cancelTask(Task &task) noexcept;
 
+  /*
+   * Return value indicates if host platform has a pending access to the
+   * runtime.
+   *
+   * Can be called from any thread.
+   */
   bool getShouldYield() const noexcept;
 
+  /*
+   * Return value informs if the current task is executed inside synchronous
+   * block.
+   *
+   * Can be called from any thread.
+   */
   bool getIsSynchronous() const noexcept;
 
+  /*
+   * Returns value of currently executed task. Designed to be called from React.
+   *
+   * Thread synchronization must be enforced externally.
+   */
   SchedulerPriority getCurrentPriorityLevel() const noexcept;
 
+  /*
+   * Returns current monotonic time. This time is not related to wall clock
+   * time.
+   *
+   * Thread synchronization must be enforced externally.
+   */
   RuntimeSchedulerTimePoint now() const noexcept;
-
-  void setEnableYielding(bool enableYielding);
 
  private:
   mutable std::priority_queue<
@@ -100,15 +127,6 @@ class RuntimeScheduler final {
    * scheduled.
    */
   mutable std::atomic_bool isWorkLoopScheduled_{false};
-
-  /*
-   * Flag indicating if yielding is enabled.
-   *
-   * If set to true and Concurrent Mode is enabled on the surface,
-   * React Native will ask React to yield in case any work has been scheduled.
-   * Default value is false
-   */
-  bool enableYielding_{false};
 
   /*
    * This flag is set while performing work, to prevent re-entrancy.

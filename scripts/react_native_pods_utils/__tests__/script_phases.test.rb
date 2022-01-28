@@ -9,13 +9,22 @@ require 'minitest/autorun'
 
 class TestScriptPhases < Minitest::Test
 
-    def test_get_script_phases_with_codegen_discovery
+    def test_get_script_phases_with_codegen_discovery_with_config_file_dir
       result = get_script_phases_with_codegen_discovery(
         react_native_path: '../..',
         relative_app_root: '',
         relative_config_file_dir: 'node_modules',
         fabric_enabled: true)
-      assert_equal snap_get_script_phases_with_codegen_discovery, result
+      assert_equal snap_get_script_phases_with_codegen_discovery_with_config_file_dir, result
+    end
+
+    def test_get_script_phases_with_codegen_discovery_without_config_file_dir
+      result = get_script_phases_with_codegen_discovery(
+        react_native_path: '../..',
+        relative_app_root: '',
+        relative_config_file_dir: '',
+        fabric_enabled: true)
+      assert_equal snap_get_script_phases_with_codegen_discovery_without_config_file_dir, result
     end
 
     def test_get_script_phases_no_codegen_discovery()

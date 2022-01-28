@@ -63,12 +63,10 @@ const easingSections = [
     data: [
       {
         title: 'In + Bounce',
-        // $FlowFixMe[method-unbinding]
         easing: Easing.in(Easing.bounce),
       },
       {
         title: 'Out + Exp',
-        // $FlowFixMe[method-unbinding]
         easing: Easing.out(Easing.exp),
       },
       {
