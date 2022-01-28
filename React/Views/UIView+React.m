@@ -345,6 +345,16 @@
       self, @selector(accessibilityValueInternal), accessibilityValue, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (NSString *)accessibilityLanguage
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityLanguage:(NSString *)accessibilityLanguage
+{
+  objc_setAssociatedObject(self, @selector(accessibilityLanguage), accessibilityLanguage, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 #pragma mark - Debug
 - (void)react_addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
 {

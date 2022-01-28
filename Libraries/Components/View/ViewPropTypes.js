@@ -406,6 +406,11 @@ export type ViewProps = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
 
   /**
+   *
+   */
+  accessibilityLanguage?: ?Stringish,
+
+  /**
    * An accessibility hint helps users understand what will happen when they perform
    * an action on the accessibility element when that result is not obvious from the
    * accessibility label.

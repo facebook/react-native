@@ -31,6 +31,7 @@ class AccessibilityProps {
   AccessibilityState accessibilityState;
   std::string accessibilityLabel{""};
   std::string accessibilityHint{""};
+  std::string accessibilityLanguage{""};
   AccessibilityValue accessibilityValue;
   std::vector<AccessibilityAction> accessibilityActions{};
   bool accessibilityViewIsModal{false};

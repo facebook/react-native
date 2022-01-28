@@ -127,6 +127,7 @@ const ReactNativeViewConfig: ViewConfig = {
     accessibilityActions: true,
     accessibilityElementsHidden: true,
     accessibilityHint: true,
+    accessibilityLanguage: true,
     accessibilityIgnoresInvertColors: true,
     accessibilityLabel: true,
     accessibilityLiveRegion: true,

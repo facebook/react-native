@@ -49,6 +49,12 @@ AccessibilityProps::AccessibilityProps(
           "accessibilityHint",
           sourceProps.accessibilityHint,
           "")),
+      accessibilityLanguage(convertRawProp(
+          context,
+          rawProps,
+          "accessibilityLanguage",
+          sourceProps.accessibilityLanguage,
+          "")),
       accessibilityValue(convertRawProp(
           context,
           rawProps,

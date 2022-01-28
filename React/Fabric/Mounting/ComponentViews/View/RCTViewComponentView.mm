@@ -301,6 +301,11 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
   }
 
+  // `accessibilityLanguage`
+  if (oldViewProps.accessibilityLanguage != newViewProps.accessibilityLanguage) {
+    self.accessibilityElement.accessibilityLanguage = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLanguage);
+  }
+
   // `accessibilityViewIsModal`
   if (oldViewProps.accessibilityViewIsModal != newViewProps.accessibilityViewIsModal) {
     self.accessibilityElement.accessibilityViewIsModal = newViewProps.accessibilityViewIsModal;
