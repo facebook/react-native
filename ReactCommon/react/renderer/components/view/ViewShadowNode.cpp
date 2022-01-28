@@ -33,10 +33,9 @@ void ViewShadowNode::initialize() noexcept {
 
   bool formsStackingContext = !viewProps.collapsable ||
       viewProps.pointerEvents == PointerEventsMode::None ||
-      viewProps.onLayout || viewProps.pointerEnter || viewProps.pointerLeave ||
-      viewProps.pointerMove || !viewProps.nativeId.empty() ||
-      viewProps.accessible || viewProps.opacity != 1.0 ||
-      viewProps.transform != Transform{} || viewProps.elevation != 0 ||
+      !viewProps.nativeId.empty() || viewProps.accessible ||
+      viewProps.opacity != 1.0 || viewProps.transform != Transform{} ||
+      viewProps.elevation != 0 ||
       (viewProps.zIndex.has_value() &&
        viewProps.yogaStyle.positionType() != YGPositionTypeStatic) ||
       viewProps.yogaStyle.display() == YGDisplayNone ||
@@ -49,7 +48,8 @@ void ViewShadowNode::initialize() noexcept {
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) ||
-      isColorMeaningful(viewProps.foregroundColor) ||
+      isColorMeaningful(viewProps.foregroundColor) || viewProps.pointerEnter ||
+      viewProps.pointerLeave || viewProps.pointerMove ||
       !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
       !viewProps.testId.empty();
 
