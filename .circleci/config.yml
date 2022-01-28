@@ -28,11 +28,11 @@ executors:
     <<: *defaults
     docker:
       # Note: Version set separately for Windows builds, see below.
-      - image: circleci/node:14
+      - image: circleci/node:16
   nodeprevlts:
     <<: *defaults
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
   reactnativeandroid:
     <<: *defaults
     docker:
@@ -376,7 +376,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@14/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH=/usr/local/opt/node@16/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
 
       - with_brew_cache_span:
@@ -393,7 +393,7 @@ jobs:
           name: Configure Node
           # Sourcing find-node.sh will ensure nvm is set up.
           # It also helps future invocation of find-node.sh prevent permission issue with nvm.sh.
-          command: source scripts/find-node.sh && nvm install 14 && nvm alias default 14
+          command: source scripts/find-node.sh && nvm install 16 && nvm alias default 16
 
       - run:
           name: Configure Watchman
@@ -644,8 +644,8 @@ jobs:
           name: Install Node
           # Note: Version set separately for non-Windows builds, see above.
           command: |
-            nvm install 14.17.0
-            nvm use 14.17.0
+            nvm install 16
+            nvm use 16
 
       # Setup Dependencies
       - run:
