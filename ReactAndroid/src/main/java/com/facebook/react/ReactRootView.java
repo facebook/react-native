@@ -829,10 +829,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         WindowInsets insets = getRootView().getRootWindowInsets();
         if (insets != null) {
-        DisplayCutout displayCutout = insets.getDisplayCutout();
-        if (displayCutout != null) {
-          notchHeight = displayCutout.getSafeInsetTop();
-        }
+          DisplayCutout displayCutout = insets.getDisplayCutout();
+          if (displayCutout != null) {
+            notchHeight = displayCutout.getSafeInsetTop();
+          }
         }
       }
       final int heightDiff =
