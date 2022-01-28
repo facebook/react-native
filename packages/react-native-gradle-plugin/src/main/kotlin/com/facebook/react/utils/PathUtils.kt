@@ -68,7 +68,18 @@ private fun detectCliPath(
 ): String {
   // 1. preconfigured path
   if (preconfiguredCliPath != null) {
-    return File(projectDir, preconfiguredCliPath).toString()
+    val preconfiguredCliJsAbsolute = File(preconfiguredCliPath)
+    if (preconfiguredCliJsAbsolute.exists()) {
+      return preconfiguredCliJsAbsolute.absolutePath
+    }
+    val preconfiguredCliJsRelativeToReactRoot = File(reactRoot, preconfiguredCliPath)
+    if (preconfiguredCliJsRelativeToReactRoot.exists()) {
+      return preconfiguredCliJsRelativeToReactRoot.absolutePath
+    }
+    val preconfiguredCliJsRelativeToProject = File(projectDir, preconfiguredCliPath)
+    if (preconfiguredCliJsRelativeToProject.exists()) {
+      return preconfiguredCliJsRelativeToProject.absolutePath
+    }
   }
 
   // 2. node module path
@@ -82,7 +93,10 @@ private fun detectCliPath(
   val nodeProcessOutput = nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
 
   if (nodeProcessOutput.isNotEmpty()) {
-    return nodeProcessOutput
+    val nodeModuleCliJs = File(nodeProcessOutput)
+    if (nodeModuleCliJs.exists()) {
+      return nodeModuleCliJs.absolutePath
+    }
   }
 
   // 3. cli.js in the root folder

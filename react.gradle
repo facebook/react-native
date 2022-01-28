@@ -25,14 +25,37 @@ def detectEntryFile(config) {
  * Detects CLI location in a similar fashion to the React Native CLI
  */
 def detectCliPath(config) {
+    // 1. preconfigured path
     if (config.cliPath) {
-        return (config.cliPath.startsWith("/")) ? config.cliPath : "${projectDir}/${config.cliPath}"
+        def cliJsAbsolute = new File(config.cliPath)
+        if (cliJsAbsolute.exists()) {
+            return cliJsAbsolute.getAbsolutePath()
+        }
+        def cliJsRelativeToRoot = new File("${rootDir}/${config.cliPath}")
+        if (cliJsRelativeToRoot.exists()) {
+            return cliJsRelativeToRoot.getAbsolutePath()
+        }
+        def cliJsRelativeToProject = new File("${projectDir}/${config.cliPath}")
+        if (cliJsRelativeToProject.exists()) {
+            return cliJsRelativeToProject.getAbsolutePath()
+        }
     }
-    if (new File("${projectDir}/../../node_modules/react-native/cli.js").exists()) {
-        return "${projectDir}/../../node_modules/react-native/cli.js"
+
+    // 2. node module path
+    def cliJsFromNode = new File(["node", "--print", "require.resolve('react-native/cli').bin"].execute(null, rootDir).text.trim())
+    if (cliJsFromNode.exists()) {
+        return cliJsFromNode.getAbsolutePath()
     }
+
+    // 3. cli.js in the root folder
+    def rootCliJs = new File(reactRoot, "node_modules/react-native/cli.js")
+    if (rootCliJs.exists()) {
+        return rootCliJs.getAbsolutePath()
+    }
+
     throw new Exception("Couldn't determine CLI location. " +
-             "Please set `project.ext.react.cliPath` to the path of the react-native cli.js file. This file typically resides in `node_modules/react-native/cli.js`");
+             "Please set `project.ext.react.cliPath` to the path of the react-native cli.js file. " +
+             "This file typically resides in `node_modules/react-native/cli.js`");
 }
 
 def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
