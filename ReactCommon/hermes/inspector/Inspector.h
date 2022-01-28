@@ -15,11 +15,13 @@
 #include <unordered_map>
 
 #include <folly/Executor.h>
+#include <folly/Optional.h>
 #include <folly/Unit.h>
 #include <folly/futures/Future.h>
 #include <hermes/DebuggerAPI.h>
 #include <hermes/hermes.h>
 #include <hermes/inspector/AsyncPauseState.h>
+#include <hermes/inspector/Exceptions.h>
 #include <hermes/inspector/RuntimeAdapter.h>
 
 namespace facebook {
@@ -362,6 +364,18 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
   // NOTE: This needs to be declared LAST because it should be destroyed FIRST.
   std::unique_ptr<folly::Executor> executor_;
 };
+
+/// Helper function that guards user code execution in a try-catch block.
+template <typename C, typename... A>
+folly::Optional<UserCallbackException> runUserCallback(C &cb, A &&...arg) {
+  try {
+    cb(std::forward<A>(arg)...);
+  } catch (const std::exception &e) {
+    return UserCallbackException(e);
+  }
+
+  return {};
+}
 
 } // namespace inspector
 } // namespace hermes

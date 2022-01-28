@@ -589,8 +589,11 @@ void Inspector::executeIfEnabledOnExecutor(
 
   state_->pushPendingFunc(
       [wrappedFunc = std::move(wrappedFunc), promise]() mutable {
-        wrappedFunc();
-        promise->setValue();
+        if (auto userCallbackException = runUserCallback(wrappedFunc)) {
+          promise->setException(*userCallbackException);
+        } else {
+          promise->setValue();
+        }
       });
 }
 
