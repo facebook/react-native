@@ -184,7 +184,7 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
           "StatusBarModule: Ignored status bar change, current activity is null.");
       return;
     }
-    
+
     UiThreadUtil.runOnUiThread(
       new Runnable() {
         @TargetApi(Build.VERSION_CODES.R)
@@ -192,15 +192,15 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
         public void run() {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowInsetsController insetsController = activity.getWindow().getInsetsController();
-            if ("light-content".equals(style)) {
-              // light-content means white icons on a dark status bar
+            if ("dark-content".equals(style)) {
+              // dark-content means dark icons on a light status bar
               insetsController.setSystemBarsAppearance(
-                0,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
               );
             } else {
               insetsController.setSystemBarsAppearance(
-                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                0,
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
               );
             }
