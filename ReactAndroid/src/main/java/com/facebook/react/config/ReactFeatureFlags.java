@@ -64,9 +64,6 @@ public class ReactFeatureFlags {
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
-  /** Enables Static ViewConfig in RN Android native code. */
-  public static boolean enableExperimentalStaticViewConfigs = false;
-
   public static boolean enableRuntimeScheduler = false;
 
   public static boolean enableRuntimeSchedulerInTurboModule = false;
