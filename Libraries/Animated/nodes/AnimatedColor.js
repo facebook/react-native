@@ -15,11 +15,12 @@ import AnimatedWithChildren from './AnimatedWithChildren';
 import normalizeColor from '../../StyleSheet/normalizeColor';
 import {processColorObject} from '../../StyleSheet/PlatformColorValueTypes';
 
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {NativeColorValue} from '../../StyleSheet/PlatformColorValueTypes';
 
 type ColorListenerCallback = (value: string) => mixed;
-type RgbaValue = {
+export type RgbaValue = {
   +r: number,
   +g: number,
   +b: number,
@@ -262,5 +263,23 @@ export default class AnimatedColor extends AnimatedWithChildren {
     this.b.__removeChild(this);
     this.a.__removeChild(this);
     super.__detach();
+  }
+
+  __makeNative(platformConfig: ?PlatformConfig) {
+    this.r.__makeNative(platformConfig);
+    this.g.__makeNative(platformConfig);
+    this.b.__makeNative(platformConfig);
+    this.a.__makeNative(platformConfig);
+    super.__makeNative(platformConfig);
+  }
+
+  __getNativeConfig(): {...} {
+    return {
+      type: 'color',
+      r: this.r.__getNativeTag(),
+      g: this.g.__getNativeTag(),
+      b: this.b.__getNativeTag(),
+      a: this.a.__getNativeTag(),
+    };
   }
 }
