@@ -2,9 +2,12 @@ load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "r
 
 rn_robolectric_test(
     name = "views",
-    # TODO Disabled temporarily until Yoga linking is fixed t14964130
+    # TODO (T110934492): Disabled temporarily until tests are fixed
     # srcs = glob(['**/*.java']),
-    srcs = glob(["image/*.java"]),
+    srcs = glob([
+        "image/*.java",
+        "view/*.java",
+    ]),
     contacts = ["oncall+fbandroid_sheriff@xmail.facebook.com"],
     deps = [
         YOGA_TARGET,
