@@ -96,6 +96,17 @@ class RuntimeScheduler final {
    */
   RuntimeSchedulerTimePoint now() const noexcept;
 
+  /*
+   * Immediate is a task that is expired and should have been already executed
+   * or has priority set to Immediate. Designed to be called in the event
+   * pipeline after an event is dispatched to React. React may schedule events
+   * with immediate priority which need to be handled before the next event is
+   * sent to React.
+   *
+   * Thread synchronization must be enforced externally.
+   */
+  void callImmediates(jsi::Runtime &runtime);
+
  private:
   mutable std::priority_queue<
       std::shared_ptr<Task>,
