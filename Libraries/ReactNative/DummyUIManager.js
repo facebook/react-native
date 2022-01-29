@@ -19,14 +19,16 @@ module.exports = {
       'getViewManagerConfig is unavailable in Bridgeless, use hasViewManagerConfig instead. viewManagerName: ' +
         viewManagerName,
     );
-    if (viewManagerName === 'RCTVirtualText') {
+    if (
+      viewManagerName === 'RCTVirtualText' ||
+      viewManagerName === 'RCTShimmeringView'
+    ) {
       return {};
     }
     return null;
   },
   hasViewManagerConfig: (viewManagerName: string): boolean => {
-    const staticViewConfigsEnabled = global.__fbStaticViewConfig === true;
-    if (staticViewConfigsEnabled) {
+    if (global.__nativeComponentRegistry__hasComponent) {
       return unstable_hasComponent(viewManagerName);
     } else {
       return (
