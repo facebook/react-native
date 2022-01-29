@@ -406,11 +406,6 @@ export type ViewProps = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
 
   /**
-   *
-   */
-  accessibilityLanguage?: ?Stringish,
-
-  /**
    * An accessibility hint helps users understand what will happen when they perform
    * an action on the accessibility element when that result is not obvious from the
    * accessibility label.
@@ -419,6 +414,13 @@ export type ViewProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/view#accessibilityHint
    */
   accessibilityHint?: ?Stringish,
+
+  /**
+   * Indicates to the accessibility services that the UI component is in
+   * a specific language. The provided string should be formatted following
+   * the BCP 47 specification (https://www.rfc-editor.org/info/bcp47).
+   */
+  accessibilityLanguage?: ?Stringish,
 
   /**
    * Indicates to accessibility services to treat UI component like a specific role.
