@@ -225,6 +225,7 @@ class TouchableOpacity extends React.Component<Props, State> {
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
+        accessibilityLanguage={this.props.accessibilityLanguage}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityState={accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
