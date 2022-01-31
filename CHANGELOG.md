@@ -9,6 +9,7 @@
 #### Android specific
 
 - Fix potential crash if ReactRootView does not have insets attached. ([6239e2f5ce](https://github.com/facebook/react-native/commit/6239e2f5ce82f7c2e683eb4699b9ce3ff1b58ac5) by [@enahum](https://github.com/enahum))
+- Upgrading OkHttp from 4.9.1 to 4.9.2 to fix CVE-2021-0341. ([e896d21](https://github.com/facebook/react-native/commit/e896d21ced3c0c917c2fc0044d2b93b44df9a081) by [@owjsub](https://github.com/owjsub))
 
 #### iOS specific
 
