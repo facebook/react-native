@@ -13,6 +13,7 @@ import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 // $FlowFixMe[nonstrict-import]
 import {createViewConfig} from './ViewConfig';
+import {isIgnored} from './ViewConfigIgnore';
 
 type Difference =
   | {
@@ -183,7 +184,10 @@ function accumulateDifferences(
   }
 
   for (const staticKey in staticObject) {
-    if (!nativeObject.hasOwnProperty(staticKey)) {
+    if (
+      !nativeObject.hasOwnProperty(staticKey) &&
+      !isIgnored(staticObject[staticKey])
+    ) {
       differences.push({
         path: [...path, staticKey],
         type: 'unexpected',
