@@ -21,6 +21,16 @@ def detectEntryFile(config) {
     return "index.js";
 }
 
+def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
+def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
+def entryFile = detectEntryFile(config)
+def bundleCommand = config.bundleCommand ?: "bundle"
+def reactRoot = file(config.root ?: "../../")
+def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
+def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
+def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
+def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermesc"
+
 /**
  * Detects CLI location in a similar fashion to the React Native CLI
  */
@@ -57,16 +67,6 @@ def detectCliPath(config) {
              "Please set `project.ext.react.cliPath` to the path of the react-native cli.js file. " +
              "This file typically resides in `node_modules/react-native/cli.js`");
 }
-
-def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
-def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
-def entryFile = detectEntryFile(config)
-def bundleCommand = config.bundleCommand ?: "bundle"
-def reactRoot = file(config.root ?: "../../")
-def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
-def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
-def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
-def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermesc"
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
