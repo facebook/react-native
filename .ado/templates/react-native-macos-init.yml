@@ -61,9 +61,21 @@ steps:
     inputs:
       script: node scripts/bump-oss-version.js --nightly -v 0.0.1000
 
+  # Publish will fail if package.json is marked as private
+  - task: CmdLine@2
+    displayName: Remove workspace config from package.json
+    inputs:
+      script: node .ado/removeWorkspaceConfig.js
+
   - script: |
       npm publish --registry http://localhost:4873
     displayName: Publish react-native-macos to verdaccio
+
+  # Put the private flag back
+  - task: CmdLine@2
+    displayName: Restore package.json workspace config
+    inputs:
+      script: node .ado/restoreWorkspaceConfig.js
 
   - script: |
       npx beachball publish --branch origin/$(System.PullRequest.TargetBranch) --no-push --registry http://localhost:4873 --yes --access public
