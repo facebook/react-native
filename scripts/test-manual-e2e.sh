@@ -22,6 +22,10 @@ info() {
     echo -e "$BLUE""$*""$ENDCOLOR"
 }
 
+# Ensures commands are executed from the repo root folder
+dir_absolute_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+cd "$dir_absolute_path/../"
+
 repo_root=$(pwd)
 selected_platform=""
 selected_vm=""
