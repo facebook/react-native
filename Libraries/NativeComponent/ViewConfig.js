@@ -8,11 +8,11 @@
  * @format
  */
 
-import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
 import type {
   PartialViewConfig,
   ViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
+import PlatformBaseViewConfig from './PlatformBaseViewConfig';
 
 /**
  * Creates a complete `ViewConfig` from a `PartialViewConfig`.
@@ -24,16 +24,16 @@ export function createViewConfig(
     uiViewClassName: partialViewConfig.uiViewClassName,
     Commands: {},
     bubblingEventTypes: composeIndexers(
-      ReactNativeViewViewConfig.bubblingEventTypes,
+      PlatformBaseViewConfig.bubblingEventTypes,
       partialViewConfig.bubblingEventTypes,
     ),
     directEventTypes: composeIndexers(
-      ReactNativeViewViewConfig.directEventTypes,
+      PlatformBaseViewConfig.directEventTypes,
       partialViewConfig.directEventTypes,
     ),
     validAttributes: composeIndexers(
       // $FlowFixMe[incompatible-call] `style` property confuses Flow.
-      ReactNativeViewViewConfig.validAttributes,
+      PlatformBaseViewConfig.validAttributes,
       // $FlowFixMe[incompatible-call] `style` property confuses Flow.
       partialViewConfig.validAttributes,
     ),
