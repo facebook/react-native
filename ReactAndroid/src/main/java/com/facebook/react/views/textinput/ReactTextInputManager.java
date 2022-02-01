@@ -828,11 +828,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // This will supercede secureTextEntry={false}. If it doesn't, due to the way
       //  the flags work out, the underlying field will end up a URI-type field.
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
-    } else if ((view.getStagedInputType() & AUTOCAPITALIZE_FLAGS) != 0) {
-      // This prevents KEYBOARD_TYPE_FLAGS from being unset when the keyboardType is
-      // default, null, or unsupported, and autocapitalize is on.
-      // Unsetting these flags breaks the autoCapitalize functionality.
-      unsettingFlagsBreaksAutocomplete = true;
     } else if (KEYBOARD_TYPE_URI.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_TEXT_VARIATION_URI;
     }
