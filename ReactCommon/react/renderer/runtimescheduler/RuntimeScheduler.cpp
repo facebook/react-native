@@ -22,13 +22,19 @@ RuntimeScheduler::RuntimeScheduler(
 
 void RuntimeScheduler::scheduleWork(
     std::function<void(jsi::Runtime &)> callback) const {
-  shouldYield_ = true;
-  runtimeExecutor_(
-      [this, callback = std::move(callback)](jsi::Runtime &runtime) {
-        shouldYield_ = false;
-        callback(runtime);
-        startWorkLoop(runtime);
-      });
+  if (enableYielding_) {
+    shouldYield_ = true;
+    runtimeExecutor_(
+        [this, callback = std::move(callback)](jsi::Runtime &runtime) {
+          shouldYield_ = false;
+          callback(runtime);
+          startWorkLoop(runtime);
+        });
+  } else {
+    runtimeExecutor_([callback = std::move(callback)](jsi::Runtime &runtime) {
+      callback(runtime);
+    });
+  }
 }
 
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
@@ -62,6 +68,10 @@ SchedulerPriority RuntimeScheduler::getCurrentPriorityLevel() const noexcept {
 
 RuntimeSchedulerTimePoint RuntimeScheduler::now() const noexcept {
   return now_();
+}
+
+void RuntimeScheduler::setEnableYielding(bool enableYielding) {
+  enableYielding_ = enableYielding;
 }
 
 void RuntimeScheduler::executeNowOnTheSameThread(

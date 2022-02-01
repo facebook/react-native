@@ -323,7 +323,7 @@ TEST_F(RuntimeSchedulerTest, scheduleWork) {
 
   EXPECT_FALSE(wasCalled);
 
-  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
 
   EXPECT_EQ(stubQueue_->size(), 1);
 
@@ -334,6 +334,7 @@ TEST_F(RuntimeSchedulerTest, scheduleWork) {
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
+  runtimeScheduler_->setEnableYielding(true);
   bool wasCalled = false;
   runtimeScheduler_->scheduleWork(
       [&](jsi::Runtime const &) { wasCalled = true; });
@@ -352,6 +353,8 @@ TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
 }
 
 TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
+  runtimeScheduler_->setEnableYielding(true);
+
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
@@ -379,6 +382,8 @@ TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
 }
 
 TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
+  runtimeScheduler_->setEnableYielding(true);
+
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
@@ -407,6 +412,8 @@ TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
 }
 
 TEST_F(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
+  runtimeScheduler_->setEnableYielding(true);
+
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
