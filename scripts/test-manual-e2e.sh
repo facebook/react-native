@@ -11,6 +11,7 @@ ENDCOLOR="\033[0m"
 
 error() {
     echo -e "$RED""$*""$ENDCOLOR"
+    popd >/dev/null
     exit 1
 }
 
@@ -24,7 +25,7 @@ info() {
 
 # Ensures commands are executed from the repo root folder
 dir_absolute_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-cd "$dir_absolute_path/../"
+pushd "$dir_absolute_path/../" >/dev/null
 
 repo_root=$(pwd)
 selected_platform=""
@@ -130,7 +131,7 @@ init_template_app(){
 
     project_name="RNTestProject"
 
-    cd /tmp/ || exit
+    pushd /tmp/ >/dev/null || exit
     rm -rf "$project_name"
     node "$repo_root/cli.js" init "$project_name" --template "$repo_root"
 
@@ -139,6 +140,7 @@ init_template_app(){
     grep -E "com.facebook.react:react-native:\\+" "${project_name}/android/app/build.gradle" || error "Dependency in /tmp/${project_name}/android/app/build.gradle must be com.facebook.react:react-native:+"
 
     success "New sample project generated at /tmp/${project_name}"
+    popd >/dev/null
 }
 
 test_template_app(){
@@ -146,6 +148,7 @@ test_template_app(){
         init_template_app
     fi
 
+    pushd "/tmp/${project_name}" >/dev/null
     if [ "$selected_platform" == "1" ]; then
         info "Test the following on Android:"
         info "   - Disable Fast Refresh. It might be enabled from last time (the setting is stored on the device)"
@@ -154,7 +157,7 @@ test_template_app(){
         info "Press any key to run the sample in Android emulator/device"
         info ""
         read -r -n 1
-        cd "/tmp/${project_name}" && npx react-native run-android
+        npx react-native run-android
     elif [ "$selected_platform" == "2" ]; then
         info "Test the following on iOS:"
         info "   - Disable Fast Refresh. It might be enabled from last time (the setting is stored on the device)"
@@ -167,9 +170,9 @@ test_template_app(){
         info "Press any key to open the project in Xcode"
         info ""
         read -r -n 1
-        open "/tmp/${project_name}/ios/${project_name}.xcworkspace"
+        open "ios/${project_name}.xcworkspace"
     fi
-    cd "$repo_root" || exit
+    popd >/dev/null || exit
 }
 
 
@@ -213,6 +216,7 @@ handle_menu_input(){
     if [ "$confirm" == "${confirm#[Yy]}" ]; then
         info "Next steps:"
         info "https://github.com/facebook/react-native/wiki/Release-Process"
+        popd >/dev/null
         exit 1
     else
         show_menu
