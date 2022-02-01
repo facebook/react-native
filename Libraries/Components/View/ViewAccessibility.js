@@ -49,7 +49,6 @@ export type AccessibilityRole =
   | 'timer'
   | 'list'
   | 'toolbar'
-  | 'popupbutton'
   | 'menubutton'; // TODO(macOS GH#774)
 
 // the info associated with an accessibility action

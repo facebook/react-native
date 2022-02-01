@@ -907,7 +907,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          cron: "0 20 * * *"
           filters:
             branches:
               # [TODO(macOS GH#774): disable this release.  We never want to release anything from this fork via CCI.

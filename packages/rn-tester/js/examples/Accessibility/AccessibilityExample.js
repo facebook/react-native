@@ -1199,12 +1199,6 @@ exports.examples = [
       return <SliderAccessibilityExample />;
     },
   },
-  {
-    title: 'Fake Slider Example',
-    render(): React.Element<typeof FakeSliderExample> {
-      return <FakeSliderExample />;
-    },
-  },
   // [TODO(OSS Candidate ISS#2710739)
   {
     title: 'Check if the display options are enabled',

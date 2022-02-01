@@ -83,7 +83,7 @@ fi
 
 # Find path to Node
 # shellcheck source=/dev/null
-source "$RN_DIR/scripts/find-node.sh"
+source "$REACT_NATIVE_DIR/scripts/find-node.sh"
 
 # check and assign NODE_BINARY env
 # shellcheck source=/dev/null
