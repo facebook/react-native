@@ -101,7 +101,6 @@
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
-    "deprecated-react-native-prop-types": "^2.3.0",
     "event-target-shim": "^5.0.1",
     "hermes-engine": "~0.11.0",
     "invariant": "^2.2.4",
