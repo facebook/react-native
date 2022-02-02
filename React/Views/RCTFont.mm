@@ -320,7 +320,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
     if (font) {
       // It's actually a font name, not a font family name,
       // but we'll do what was meant, not what was said.
-      familyName = font.familyName;
+      // familyName = font.familyName;
       fontWeight = weight ? fontWeight : weightOfFont(font);
       isItalic = style ? isItalic : isItalicFont(font);
       isCondensed = isCondensedFont(font);
