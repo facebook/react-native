@@ -141,7 +141,7 @@ exports.examples = [
   {
     title: 'Open external URLs',
     description:
-      'Custom schemes may require specific apps to be installed oo the device. Note: Phone app is not supported in the simulator.',
+      'Custom schemes may require specific apps to be installed on the device. Note: Phone app is not supported in the simulator.',
     render: function (): React.Element<typeof IntentAndroidExample> {
       return <IntentAndroidExample />;
     },
