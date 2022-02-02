@@ -7,6 +7,9 @@
 
 package com.facebook.react.animated;
 
+import android.graphics.Color;
+import com.facebook.react.bridge.ColorPropConverter;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.view.ColorUtil;
 
@@ -14,6 +17,7 @@ import com.facebook.react.views.view.ColorUtil;
 /*package*/ class ColorAnimatedNode extends AnimatedNode {
 
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
+  private final ReactApplicationContext mReactApplicationContext;
   private final int mRNodeId;
   private final int mGNodeId;
   private final int mBNodeId;
@@ -21,14 +25,16 @@ import com.facebook.react.views.view.ColorUtil;
   private int mColor;
 
   public ColorAnimatedNode(
-      ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager) {
+      ReadableMap config,
+      NativeAnimatedNodesManager nativeAnimatedNodesManager,
+      ReactApplicationContext reactApplicationContext) {
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
+    mReactApplicationContext = reactApplicationContext;
     mRNodeId = config.getInt("r");
     mGNodeId = config.getInt("g");
     mBNodeId = config.getInt("b");
     mANodeId = config.getInt("a");
-
-    // TODO (T110930421): Support platform color
+    setNativeColor(config.getMap("nativeColor"));
   }
 
   public int getColor() {
@@ -37,15 +43,15 @@ import com.facebook.react.views.view.ColorUtil;
 
   @Override
   public void update() {
-    AnimatedNode rNode = mNativeAnimatedNodesManager.getNodeById(mRNodeId);
-    AnimatedNode gNode = mNativeAnimatedNodesManager.getNodeById(mGNodeId);
-    AnimatedNode bNode = mNativeAnimatedNodesManager.getNodeById(mBNodeId);
-    AnimatedNode aNode = mNativeAnimatedNodesManager.getNodeById(mANodeId);
+    ValueAnimatedNode rNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mRNodeId);
+    ValueAnimatedNode gNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mGNodeId);
+    ValueAnimatedNode bNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mBNodeId);
+    ValueAnimatedNode aNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mANodeId);
 
-    double r = ((ValueAnimatedNode) rNode).getValue();
-    double g = ((ValueAnimatedNode) gNode).getValue();
-    double b = ((ValueAnimatedNode) bNode).getValue();
-    double a = ((ValueAnimatedNode) aNode).getValue();
+    double r = rNode.getValue();
+    double g = gNode.getValue();
+    double b = bNode.getValue();
+    double a = aNode.getValue();
 
     mColor = ColorUtil.normalize(r, g, b, a);
   }
@@ -62,5 +68,26 @@ import com.facebook.react.views.view.ColorUtil;
         + mBNodeId
         + " a: "
         + mANodeId;
+  }
+
+  private void setNativeColor(ReadableMap nativeColor) {
+    if (nativeColor == null) {
+      return;
+    }
+
+    int color =
+        ColorPropConverter.getColor(nativeColor, mReactApplicationContext.getCurrentActivity());
+
+    ValueAnimatedNode rNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mRNodeId);
+    ValueAnimatedNode gNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mGNodeId);
+    ValueAnimatedNode bNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mBNodeId);
+    ValueAnimatedNode aNode = (ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(mANodeId);
+
+    rNode.mValue = Color.red(color);
+    gNode.mValue = Color.green(color);
+    bNode.mValue = Color.blue(color);
+    aNode.mValue = Color.alpha(color) / 255.0;
+
+    update();
   }
 }

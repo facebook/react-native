@@ -130,7 +130,7 @@ import java.util.Queue;
     } else if ("value".equals(type)) {
       node = new ValueAnimatedNode(config);
     } else if ("color".equals(type)) {
-      node = new ColorAnimatedNode(config, this);
+      node = new ColorAnimatedNode(config, this, mReactApplicationContext);
     } else if ("props".equals(type)) {
       node = new PropsAnimatedNode(config, this);
     } else if ("interpolation".equals(type)) {

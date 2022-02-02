@@ -91,6 +91,7 @@ export default class AnimatedColor extends AnimatedWithChildren {
   g: AnimatedValue;
   b: AnimatedValue;
   a: AnimatedValue;
+  nativeColor: Object;
   _listeners: {
     [key: string]: {
       r: string,
@@ -105,8 +106,16 @@ export default class AnimatedColor extends AnimatedWithChildren {
   constructor(valueIn?: ?(RgbaValue | RgbaAnimatedValue | ColorValue)) {
     super();
     let value: RgbaValue | RgbaAnimatedValue | ColorValue =
-      valueIn || defaultColor;
+      valueIn ?? defaultColor;
+    this.setValue(value);
+    this._listeners = {};
+  }
 
+  /**
+   * Directly set the value. This will stop any animations running on the value
+   * and update all the bound properties.
+   */
+  setValue(value: RgbaValue | RgbaAnimatedValue | ColorValue): void {
     if (isRgbaAnimatedValue(value)) {
       // $FlowIgnore[incompatible-cast] - Type is verified above
       const rgbaAnimatedValue: RgbaAnimatedValue = (value: RgbaAnimatedValue);
@@ -118,29 +127,50 @@ export default class AnimatedColor extends AnimatedWithChildren {
       // Handle potential parsable string color or platform color object
       if (!isRgbaValue(value)) {
         // $FlowIgnore[incompatible-cast] - Type is verified via conditionals
-        value = processColor((value: ColorValue)) || {r: 0, g: 0, b: 0, a: 1.0};
-        // TODO: support platform color
+        value = processColor((value: ColorValue)) ?? defaultColor;
       }
 
-      // $FlowIgnore[incompatible-cast] - Type is verified via conditionals
-      const rgbaValue: RgbaValue = (value: RgbaValue);
-      this.r = new AnimatedValue(rgbaValue.r);
-      this.g = new AnimatedValue(rgbaValue.g);
-      this.b = new AnimatedValue(rgbaValue.b);
-      this.a = new AnimatedValue(rgbaValue.a);
-    }
-    this._listeners = {};
-  }
+      if (!isRgbaValue(value)) {
+        // We are using a platform color
+        this.nativeColor = value;
+        value = defaultColor;
+      }
 
-  /**
-   * Directly set the value. This will stop any animations running on the value
-   * and update all the bound properties.
-   */
-  setValue(value: {r: number, g: number, b: number, a: number, ...}): void {
-    this.r.setValue(value.r);
-    this.g.setValue(value.g);
-    this.b.setValue(value.b);
-    this.a.setValue(value.a);
+      if (isRgbaValue(value)) {
+        // $FlowIgnore[incompatible-cast] - Type is verified via conditionals
+        const rgbaValue: RgbaValue = (value: RgbaValue);
+
+        if (this.r) {
+          this.r.setValue(rgbaValue.r);
+        } else {
+          this.r = new AnimatedValue(rgbaValue.r);
+        }
+
+        if (this.g) {
+          this.g.setValue(rgbaValue.g);
+        } else {
+          this.g = new AnimatedValue(rgbaValue.g);
+        }
+
+        if (this.b) {
+          this.b.setValue(rgbaValue.b);
+        } else {
+          this.b = new AnimatedValue(rgbaValue.b);
+        }
+
+        if (this.a) {
+          this.a.setValue(rgbaValue.a);
+        } else {
+          this.a = new AnimatedValue(rgbaValue.a);
+        }
+      }
+
+      if (this.nativeColor) {
+        this.__makeNative();
+        // TODO (T111170195): In order to support setValue() with a platform color, update the
+        // native AnimatedNode (if it exists) with a new config.
+      }
+    }
   }
 
   /**
@@ -148,7 +178,7 @@ export default class AnimatedColor extends AnimatedWithChildren {
    * via `setValue`, an animation, or `Animated.event`. Useful for compensating
    * things like the start of a pan gesture.
    */
-  setOffset(offset: {r: number, g: number, b: number, a: number, ...}): void {
+  setOffset(offset: RgbaValue): void {
     this.r.setOffset(offset.r);
     this.g.setOffset(offset.g);
     this.b.setOffset(offset.b);
@@ -280,6 +310,7 @@ export default class AnimatedColor extends AnimatedWithChildren {
       g: this.g.__getNativeTag(),
       b: this.b.__getNativeTag(),
       a: this.a.__getNativeTag(),
+      nativeColor: this.nativeColor,
     };
   }
 }
