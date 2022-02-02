@@ -11,7 +11,7 @@ ENDCOLOR="\033[0m"
 
 error() {
     echo -e "$RED""$*""$ENDCOLOR"
-    popd >/dev/null
+    popd >/dev/null || exit
     exit 1
 }
 
@@ -24,8 +24,8 @@ info() {
 }
 
 # Ensures commands are executed from the repo root folder
-dir_absolute_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
-pushd "$dir_absolute_path/../" >/dev/null
+dir_absolute_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit ; pwd -P )
+pushd "$dir_absolute_path/../" >/dev/null || exit
 
 repo_root=$(pwd)
 selected_platform=""
@@ -140,7 +140,7 @@ init_template_app(){
     grep -E "com.facebook.react:react-native:\\+" "${project_name}/android/app/build.gradle" || error "Dependency in /tmp/${project_name}/android/app/build.gradle must be com.facebook.react:react-native:+"
 
     success "New sample project generated at /tmp/${project_name}"
-    popd >/dev/null
+    popd >/dev/null || exit
 }
 
 test_template_app(){
@@ -148,7 +148,7 @@ test_template_app(){
         init_template_app
     fi
 
-    pushd "/tmp/${project_name}" >/dev/null
+    pushd "/tmp/${project_name}" >/dev/null || exit
     if [ "$selected_platform" == "1" ]; then
         info "Test the following on Android:"
         info "   - Disable Fast Refresh. It might be enabled from last time (the setting is stored on the device)"
@@ -216,7 +216,7 @@ handle_menu_input(){
     if [ "$confirm" == "${confirm#[Yy]}" ]; then
         info "Next steps:"
         info "https://github.com/facebook/react-native/wiki/Release-Process"
-        popd >/dev/null
+        popd >/dev/null || exit
         exit 1
     else
         show_menu
