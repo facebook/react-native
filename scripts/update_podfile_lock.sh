@@ -22,7 +22,7 @@ validate_env () {
     exit 1
   fi
 
-  # // [(macOS) Commenting this out to avoid hitting breaks everytime the agents images are updated
+  # // [TODO(macOS GH#774) Commenting this out to avoid hitting breaks everytime the agents images are updated
   # COCOAPODS_VERSION=$(pod --version)
   # if [[ "$COCOAPODS_VERSION" != "$REQUIRED_COCOAPODS_VERSION" ]];
   # then
