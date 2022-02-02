@@ -197,7 +197,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     final String bundleFile = subclassTag + "ReactNativeDevBundle.js";
     mJSBundleDownloadedFile = new File(applicationContext.getFilesDir(), bundleFile);
 
-    final String splitBundlesDir = subclassTag.toLowerCase() + "_dev_js_split_bundles";
+    final String splitBundlesDir = subclassTag.toLowerCase(Locale.ROOT) + "_dev_js_split_bundles";
     mJSSplitBundlesDir = mApplicationContext.getDir(splitBundlesDir, Context.MODE_PRIVATE);
 
     mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
