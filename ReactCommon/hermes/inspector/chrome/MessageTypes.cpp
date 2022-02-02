@@ -62,6 +62,7 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
        makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.callFunctionOn", makeUnique<runtime::CallFunctionOnRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
+      {"Runtime.getHeapUsage", makeUnique<runtime::GetHeapUsageRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
       {"Runtime.runIfWaitingForDebugger",
        makeUnique<runtime::RunIfWaitingForDebuggerRequest>},
@@ -503,12 +504,19 @@ debugger::ResumeRequest::ResumeRequest(const dynamic &obj)
     : Request("Debugger.resume") {
   assign(id, obj, "id");
   assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(terminateOnResume, params, "terminateOnResume");
 }
 
 dynamic debugger::ResumeRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "terminateOnResume", terminateOnResume);
+
   dynamic obj = dynamic::object;
   put(obj, "id", id);
   put(obj, "method", method);
+  put(obj, "params", std::move(params));
   return obj;
 }
 
@@ -897,12 +905,14 @@ heapProfiler::StopTrackingHeapObjectsRequest::StopTrackingHeapObjectsRequest(
   dynamic params = obj.at("params");
   assign(reportProgress, params, "reportProgress");
   assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+  assign(captureNumericValue, params, "captureNumericValue");
 }
 
 dynamic heapProfiler::StopTrackingHeapObjectsRequest::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "reportProgress", reportProgress);
   put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+  put(params, "captureNumericValue", captureNumericValue);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -928,12 +938,14 @@ heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest(
   dynamic params = obj.at("params");
   assign(reportProgress, params, "reportProgress");
   assign(treatGlobalObjectsAsRoots, params, "treatGlobalObjectsAsRoots");
+  assign(captureNumericValue, params, "captureNumericValue");
 }
 
 dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "reportProgress", reportProgress);
   put(params, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots);
+  put(params, "captureNumericValue", captureNumericValue);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -1027,6 +1039,26 @@ dynamic runtime::EvaluateRequest::toDynamic() const {
 }
 
 void runtime::EvaluateRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+runtime::GetHeapUsageRequest::GetHeapUsageRequest()
+    : Request("Runtime.getHeapUsage") {}
+
+runtime::GetHeapUsageRequest::GetHeapUsageRequest(const dynamic &obj)
+    : Request("Runtime.getHeapUsage") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic runtime::GetHeapUsageRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void runtime::GetHeapUsageRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
@@ -1277,6 +1309,25 @@ dynamic runtime::EvaluateResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "result", result);
   put(res, "exceptionDetails", exceptionDetails);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+runtime::GetHeapUsageResponse::GetHeapUsageResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(usedSize, res, "usedSize");
+  assign(totalSize, res, "totalSize");
+}
+
+dynamic runtime::GetHeapUsageResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "usedSize", usedSize);
+  put(res, "totalSize", totalSize);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
