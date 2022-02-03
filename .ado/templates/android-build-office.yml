@@ -43,12 +43,12 @@ steps:
   # ReactCommon/cxxreact/ReactNativeVersion.h
   # Libraries/Core/ReactNativeVersion.js
   #
-  # --nightly => version = `0.0.0-${currentCommit.slice(0, 9)}`;
+  # --nightly --autogenerateVersionNumber => version = `0.0.0-${currentCommit.slice(0, 9)}`;
   # When on main branch or non-stable branch.
   - task: CmdLine@2
     displayName: Bump canary package version
     inputs:
-      script: node scripts/bump-oss-version.js --nightly
+      script: node scripts/bump-oss-version.js --nightly --autogenerateVersionNumber
     condition: or(eq(variables['Build.SourceBranchName'], 'main'), not(contains(variables['Build.SourceBranchName'], '-stable')))
 
   # TODO: We don't seem to be running bump-oss-version.js for stable branches, hence we would end up publishing using the values in the repository.

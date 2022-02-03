@@ -104,7 +104,13 @@
   NSString *superDescription = super.description;
   NSRange semicolonRange = [superDescription rangeOfString:@";"];
   NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@; text: %@", self.reactTag, _textStorage.string];
-  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
+  // [TODO(macOS GH#774): super.description isn't guaranteed to have a semicolon in it on macOS
+  if (semicolonRange.location == NSNotFound) {
+    return [superDescription stringByAppendingString:replacement];
+  } else {
+    return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
+  }
+  // TODO(macOS GH#774)]
 }
 
 - (void)setSelectable:(BOOL)selectable

@@ -1,0 +1,23 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict
+ * @format
+ */
+
+<<<<<<< HEAD
+export type {RootTag} from '../ReactNative/RootTag';
+=======
+<<<<<<< HEAD:Libraries/Components/DatePicker/DatePickerIOS.macos.js
+// TODO(macOS GH#774)
+
+'use strict';
+
+module.exports = require('../UnimplementedViews/UnimplementedView');
+=======
+export type {RootTag} from '../ReactNative/RootTag';
+>>>>>>> facebook/0.66-stable:Libraries/Types/RootTagTypes.js
+>>>>>>> facebook/0.66-stable
