@@ -30,6 +30,7 @@
 
 #### Android specific
 
+- Added DoNotStripAny proguard rules ([48318b1542](https://github.com/facebook/react-native/commit/48318b1542910b939ab977c0bc82e98f098abe50) by [@ShikaSD](https://github.com/ShikaSD))
 - Add new API in ScrollView and HorizontalScrollView to process pointerEvents prop. ([48f6967ae8](https://github.com/facebook/react-native/commit/48f6967ae88100110160e1faf03e6c0d37e404bd) by [@ryancat](https://github.com/ryancat))
 - Add `accessibilityLabelledBy` props ([36037fa81b](https://github.com/facebook/react-native/commit/36037fa81bbdcc460057e7e7cf608cd364ca48a6) by [@grgr-dkrk](https://github.com/grgr-dkrk))
 - Added missing constructor to WritableNativeArray ([c68c47d2ba](https://github.com/facebook/react-native/commit/c68c47d2bafa8e8e25b534d6cdd1a63bc77a1cf4) by [@piaskowyk](https://github.com/piaskowyk))
@@ -48,6 +49,7 @@
 
 ### Changed
 
+- Bump RN CLI to v7, and Metro to 67 ([848ba6fb1d](https://github.com/facebook/react-native/commit/848ba6fb1db81bbb44efd373af9e81f31f227aef) by [@kelset](https://github.com/kelset))
 - CI moved to Node 16. ([f1488db109](https://github.com/facebook/react-native/commit/f1488db109d13e748b071c02b40e90cdca1cc79d) by [@kelset](https://github.com/kelset))
 - Upgraded react-devtools-core dependency to 4.23.0 ([1cc217d5ef](https://github.com/facebook/react-native/commit/1cc217d5effdbee4cf2f64063a443ecb331673d4) by [@bvaughn](https://github.com/bvaughn))
 - Bump Flipper to 0.125.0 ([50057158ca](https://github.com/facebook/react-native/commit/50057158ca32842d70160541e3cb5d4bd512f8f5) by [@cortinico](https://github.com/cortinico))
