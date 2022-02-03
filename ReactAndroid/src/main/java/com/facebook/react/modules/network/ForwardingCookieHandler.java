@@ -146,7 +146,10 @@ public class ForwardingCookieHandler extends CookieHandler {
         // and OS version. It is better to check the message for clues regarding the exception
         // as that is somewhat consistent across OEMs.
         // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/webkit/WebViewFactory.java#348
-        if (message!=null && message.contains("WebView")) {
+        if (message!=null && 
+              (message.contains("WebView provider") 
+                || message.contains("No WebView installed")
+                  || message.contains("WebView")) {
           return null;
         } else {
           throw exception;
