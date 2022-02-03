@@ -14,8 +14,8 @@
 @interface RCTEventEmitter : NSObject <RCTBridgeModule, RCTInvalidating>
 
 @property (nonatomic, weak) RCTBridge * _Nullable bridge; // TODO(macOS GH#774)
-@property (nonatomic, weak) RCTModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) RCTViewRegistry *viewRegistry_DEPRECATED;
+@property (nonatomic, weak) RCTModuleRegistry * _Nullable moduleRegistry; // TODO(macOS GH#774)
+@property (nonatomic, weak) RCTViewRegistry * _Nullable viewRegistry_DEPRECATED; // TODO(macOS GH#774)
 
 - (instancetype _Nullable)initWithDisabledObservation; // TODO(macOS GH#774)
 
