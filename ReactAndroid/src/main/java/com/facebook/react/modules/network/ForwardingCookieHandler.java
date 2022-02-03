@@ -149,7 +149,7 @@ public class ForwardingCookieHandler extends CookieHandler {
         if (message!=null && 
               (message.contains("WebView provider") 
                 || message.contains("No WebView installed")
-                  || message.contains("WebView")) {
+                  || message.contains("WebView"))) {
           return null;
         } else {
           throw exception;
