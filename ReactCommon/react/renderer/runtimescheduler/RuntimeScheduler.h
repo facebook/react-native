@@ -117,7 +117,12 @@ class RuntimeScheduler final {
 
   RuntimeExecutor const runtimeExecutor_;
   mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
-  mutable std::atomic_bool shouldYield_{false};
+
+  /*
+   * Counter indicating how many access to the runtime have been requested.
+   */
+  mutable std::atomic<uint_fast8_t> runtimeAccessRequests_{0};
+
   mutable std::atomic_bool isSynchronous_{false};
 
   void startWorkLoop(jsi::Runtime &runtime) const;

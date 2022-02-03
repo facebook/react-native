@@ -23,10 +23,10 @@ RuntimeScheduler::RuntimeScheduler(
 void RuntimeScheduler::scheduleWork(
     std::function<void(jsi::Runtime &)> callback) const {
   if (enableYielding_) {
-    shouldYield_ = true;
+    runtimeAccessRequests_ += 1;
     runtimeExecutor_(
         [this, callback = std::move(callback)](jsi::Runtime &runtime) {
-          shouldYield_ = false;
+          runtimeAccessRequests_ -= 1;
           callback(runtime);
           startWorkLoop(runtime);
         });
@@ -51,7 +51,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
 }
 
 bool RuntimeScheduler::getShouldYield() const noexcept {
-  return shouldYield_;
+  return runtimeAccessRequests_ > 0;
 }
 
 bool RuntimeScheduler::getIsSynchronous() const noexcept {
@@ -76,11 +76,11 @@ void RuntimeScheduler::setEnableYielding(bool enableYielding) {
 
 void RuntimeScheduler::executeNowOnTheSameThread(
     std::function<void(jsi::Runtime &runtime)> callback) {
-  shouldYield_ = true;
+  runtimeAccessRequests_ += 1;
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
       runtimeExecutor_,
       [this, callback = std::move(callback)](jsi::Runtime &runtime) {
-        shouldYield_ = false;
+        runtimeAccessRequests_ -= 1;
         isSynchronous_ = true;
         callback(runtime);
         isSynchronous_ = false;

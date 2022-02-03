@@ -43,6 +43,7 @@ class RuntimeSchedulerTest : public testing::Test {
 
     runtimeScheduler_ =
         std::make_unique<RuntimeScheduler>(runtimeExecutor, stubNow);
+    runtimeScheduler_->setEnableYielding(true);
   }
 
   jsi::Function createHostFunctionFromLambda(
@@ -317,6 +318,7 @@ TEST_F(RuntimeSchedulerTest, getCurrentPriorityLevel) {
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleWork) {
+  runtimeScheduler_->setEnableYielding(false);
   bool wasCalled = false;
   runtimeScheduler_->scheduleWork(
       [&](jsi::Runtime const &) { wasCalled = true; });
@@ -334,7 +336,6 @@ TEST_F(RuntimeSchedulerTest, scheduleWork) {
 }
 
 TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
-  runtimeScheduler_->setEnableYielding(true);
   bool wasCalled = false;
   runtimeScheduler_->scheduleWork(
       [&](jsi::Runtime const &) { wasCalled = true; });
@@ -353,8 +354,6 @@ TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
 }
 
 TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
-  runtimeScheduler_->setEnableYielding(true);
-
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
@@ -382,8 +381,6 @@ TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
 }
 
 TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
-  runtimeScheduler_->setEnableYielding(true);
-
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
@@ -412,8 +409,6 @@ TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
 }
 
 TEST_F(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
-  runtimeScheduler_->setEnableYielding(true);
-
   bool didRunJavaScriptTask = false;
   bool didRunPlatformWork = false;
 
@@ -601,6 +596,44 @@ TEST_F(RuntimeSchedulerTest, sameThreadTaskCreatesLowPriorityTask) {
   EXPECT_TRUE(didRunSubsequentTask);
 
   EXPECT_EQ(stubQueue_->size(), 0);
+}
+
+TEST_F(RuntimeSchedulerTest, twoThreadsRequestAccessToTheRuntime) {
+  bool didRunSynchronousTask = false;
+  bool didRunWork = false;
+
+  runtimeScheduler_->scheduleWork(
+      [&didRunWork](jsi::Runtime &) { didRunWork = true; });
+
+  std::thread t1([this, &didRunSynchronousTask]() {
+    runtimeScheduler_->executeNowOnTheSameThread(
+        [&didRunSynchronousTask](jsi::Runtime &runtime) {
+          didRunSynchronousTask = true;
+        });
+  });
+
+  auto hasTask = stubQueue_->waitForTasks(2, 1ms);
+
+  EXPECT_TRUE(hasTask);
+  EXPECT_FALSE(didRunWork);
+  EXPECT_FALSE(didRunSynchronousTask);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 2);
+
+  stubQueue_->tick();
+
+  EXPECT_TRUE(didRunWork);
+  EXPECT_FALSE(didRunSynchronousTask);
+  EXPECT_TRUE(runtimeScheduler_->getShouldYield());
+  EXPECT_EQ(stubQueue_->size(), 1);
+
+  stubQueue_->tick();
+
+  t1.join();
+
+  EXPECT_TRUE(didRunWork);
+  EXPECT_TRUE(didRunSynchronousTask);
+  EXPECT_FALSE(runtimeScheduler_->getShouldYield());
 }
 
 } // namespace facebook::react
